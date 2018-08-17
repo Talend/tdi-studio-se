@@ -348,6 +348,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	            %>
 
 	            row2Count<%=cid%>++;
+				commitCounter_<%=cid%> += exInsertColValueList<%=cid%>.size();
 	        }
 	        try{
 	        	insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();

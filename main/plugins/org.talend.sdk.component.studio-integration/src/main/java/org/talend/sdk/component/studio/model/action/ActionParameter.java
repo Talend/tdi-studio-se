@@ -15,10 +15,14 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.regex.Pattern;
 import org.talend.core.model.utils.ContextParameterUtils;
+import org.talend.sdk.component.studio.lang.Pair;
+import org.talend.sdk.component.studio.lang.Strings;
 
-public class ActionParameter {
+public class ActionParameter implements IActionParameter {
 
     private static final Pattern QUOTES_PATTERN = Pattern.compile("^\"|\"$");
 
@@ -56,9 +60,10 @@ public class ActionParameter {
         setValue(value);
     }
 
-    void setValue(final String newValue) {
+    @Override
+    public void setValue(final String newValue) {
         if (newValue != null) {
-            this.value = removeQuotes(newValue);
+            this.value = Strings.removeQuotes(newValue);
             // todo: if context -> evaluate
             this.hasDirectValue = !this.value.equals(newValue) || !ContextParameterUtils.containContextVariables(newValue);
         } else {
@@ -67,28 +72,25 @@ public class ActionParameter {
         }
     }
 
-    protected String removeQuotes(final String quotedString) {
-        return QUOTES_PATTERN.matcher(quotedString).replaceAll("");
-    }
-
     /**
      * ElementParameter name (which also denotes its path)
      */
-    String getName() {
+    public String getName() {
         return this.name;
     }
 
     /**
      * Action parameter alias, which used to make callback
      */
-    String getParameter() {
+    protected String getParameter() {
         return this.parameter;
     }
 
     /**
      * Denotes whether associated ElementParameter is set and usable. Once set it can't be unset
      */
-    boolean isHasDirectValue() {
+    @Override
+    public boolean isHasDirectValue() {
         return this.hasDirectValue;
     }
 
@@ -97,5 +99,11 @@ public class ActionParameter {
      */
     String getValue() {
         return this.value;
+    }
+
+    @Override
+    public Collection<Pair<String, String>> parameters() {
+        final Pair parameter = new Pair(getParameter(), getValue());
+        return Collections.singletonList(parameter);
     }
 }

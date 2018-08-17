@@ -1707,10 +1707,8 @@ public class ImportItemUtil {
                 resource.load(stream, null);
                 EmfHelper.loadResource(resource, stream, null);
                 Project project = (Project) EcoreUtil.getObjectByType(resource.getContents(), PropertiesPackage.eINSTANCE.getProject());
-                File parentFile = path.toFile().getParentFile();
-                if (parentFile.isDirectory()) {
-                     ProjectDataJsonProvider.loadProjectData(project, Path.fromPortableString(parentFile.getAbsolutePath()), ProjectDataJsonProvider.CONTENT_ALL);
-                }
+                IPath projectRootPath = path.removeLastSegments(1);
+                ProjectDataJsonProvider.loadProjectData(project, projectRootPath, manager);
                 projects.put(path, project);
             }
             return projects.get(path);

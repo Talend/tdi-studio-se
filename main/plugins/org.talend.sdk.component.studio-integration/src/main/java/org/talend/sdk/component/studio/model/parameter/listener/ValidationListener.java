@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.action.Action;
+import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
 
 public class ValidationListener extends Action implements PropertyChangeListener {
@@ -35,7 +36,10 @@ public class ValidationListener extends Action implements PropertyChangeListener
 
     @Override
     public void propertyChange(final PropertyChangeEvent event) {
-        setParameterValue(event.getPropertyName(), (String) event.getNewValue());
+        if(!"value".equals(event.getPropertyName())){
+            return;
+        }
+        setParameterValue(TaCoKitElementParameter.class.cast(event.getSource()).getName(), (String) event.getNewValue());
         if (!areParametersSet()) {
             return;
         }
@@ -51,9 +55,12 @@ public class ValidationListener extends Action implements PropertyChangeListener
     private void notify(final Map<String, String> validation) {
         if (OK.equals(validation.get(STATUS))) {
             label.hideValidation();
+            label.firePropertyChange("show", null, false);
         } else {
             label.showValidation(validation.get(MESSAGE));
+            label.firePropertyChange("show", null, true);
         }
+
     }
 
 }

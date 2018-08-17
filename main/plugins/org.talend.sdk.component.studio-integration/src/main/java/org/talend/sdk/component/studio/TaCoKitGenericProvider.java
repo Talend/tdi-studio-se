@@ -33,6 +33,7 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.repository.ProjectManager;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
+import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.service.ComponentService;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
@@ -50,14 +51,8 @@ public class TaCoKitGenericProvider implements IGenericProvider {
         }
 
         final WebSocketClient client = Lookups.client();
-        // TODO How to check isEmpty() now?
-        // final ComponentIndices indices =
-        // client.v1().component().getIndex(Locale.getDefault().getLanguage());
-        // if (indices.getComponents().isEmpty()) {
-        // return;
-        // }
-        Stream<Pair<ComponentIndex, ComponentDetail>> details =
-                client.v1().component().details(Locale.getDefault().getLanguage());
+        Stream<Pair<ComponentIndex, ComponentDetail>> details = client.v1().component().details(Locale.getDefault().getLanguage());
+        final ConfigTypeNodes configTypes = client.v1().configurationType().getRepositoryModel(true);
 
         final ComponentService service = Lookups.service();
         final IComponentsFactory factory = ComponentsFactoryProvider.getInstance();
@@ -65,7 +60,7 @@ public class TaCoKitGenericProvider implements IGenericProvider {
         synchronized (components) {
             components.removeIf(component -> {
                 if (TaCoKitConst.GUESS_SCHEMA_COMPONENT_NAME.equals(component.getName())) { // this should likely
-                                                                                            // move...
+                    // move...
                     Lookups.taCoKitCache().setTaCoKitGuessSchemaComponent(component);
                 }
                 return ComponentModel.class.isInstance(component);
@@ -79,7 +74,7 @@ public class TaCoKitGenericProvider implements IGenericProvider {
             details.forEach(pair -> {
                 ComponentIndex index = pair.getFirst();
                 ComponentDetail detail = pair.getSecond();
-                components.add(new ComponentModel(index, detail, service.toEclipseIcon(index.getIcon()), reportPath,
+                components.add(new ComponentModel(index, detail, configTypes, service.toEclipseIcon(index.getIcon()), reportPath,
                         isCatcherAvailable));
             });
         }

@@ -25,7 +25,6 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQPatternService;
 import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.model.components.ComponentCategory;
-import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IODataComponent;
 import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -275,8 +274,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 if (paramFlag == extraFlag) {
                     // for memo sql
                     if (param.getFieldType() == EParameterFieldType.MEMO_SQL) {
-                        IElementParameter querystoreParam = elem.getElementParameterFromField(
-                                EParameterFieldType.QUERYSTORE_TYPE, param.getCategory());
+                        IElementParameter querystoreParam = elem.getElementParameterFromField(EParameterFieldType.QUERYSTORE_TYPE,
+                                param.getCategory());
                         if (querystoreParam != null) {
                             Map<String, IElementParameter> childParam = querystoreParam.getChildParameters();
                             if (childParam != null) {
@@ -304,7 +303,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                         .getService(IGenericWizardService.class);
             }
             if (wizardService != null && wizardService.isGenericConnection(connection)) {
-                componentProperties = wizardService.getAllComponentProperties(connection, null);
+                componentProperties = wizardService.getAllComponentProperties(connection, null, true);
             }
             IElementParameter propertyParam = elem.getElementParameter(propertyName);
             List<IElementParameter> elementParameters = new ArrayList<>(elem.getElementParameters());
@@ -312,8 +311,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
             // (bug 5198)
             IElementParameter parentParameter = propertyParam.getParentParameter();
             if (parentParameter != null) {
-                IElementParameter param = parentParameter.getChildParameters().get(
-                        EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                IElementParameter param = parentParameter.getChildParameters()
+                        .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
                 if (param != null && propertyParam == param) { // avoid to process twice.
                     ConnectionItem connItem = UpdateRepositoryUtils.getConnectionItemByItemId((String) param.getValue());
                     if (connItem != null) {
@@ -347,18 +346,17 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     param.setRepositoryValue(repositoryValue);
                     param.setRepositoryValueUsed(true);
                 }
-                if (repositoryValue == null || param.getRepositoryProperty() != null
-                        && !param.getRepositoryProperty().equals(propertyParamName)) {
+                if (repositoryValue == null
+                        || param.getRepositoryProperty() != null && !param.getRepositoryProperty().equals(propertyParamName)) {
                     continue;
                 }
                 String componentName = elem instanceof INode ? (((INode) elem).getComponent().getName()) : null;
-                boolean b = elem instanceof INode
-                        && (((INode) elem).getComponent().getName().equals("tHL7Input") //$NON-NLS-1$
-                                || ((INode) elem).getComponent().getName().equals("tAdvancedFileOutputXML") //$NON-NLS-1$
-                                || ((INode) elem).getComponent().getName().equals("tMDMOutput")
-                                || ((INode) elem).getComponent().getName().equals("tWebService")
-                                || ((INode) elem).getComponent().getName().equals("tCreateTable") || ((INode) elem)
-                                .getComponent().getName().equals("tWriteJSONField")); //$NON-NLS-1$
+                boolean b = elem instanceof INode && (((INode) elem).getComponent().getName().equals("tHL7Input") //$NON-NLS-1$
+                        || ((INode) elem).getComponent().getName().equals("tAdvancedFileOutputXML") //$NON-NLS-1$
+                        || ((INode) elem).getComponent().getName().equals("tMDMOutput")
+                        || ((INode) elem).getComponent().getName().equals("tWebService")
+                        || ((INode) elem).getComponent().getName().equals("tCreateTable")
+                        || ((INode) elem).getComponent().getName().equals("tWriteJSONField")); //$NON-NLS-1$
 
                 if ((repositoryValue != null || isGenericRepositoryValue || b) && (!param.getName().equals(propertyTypeName))) {
                     if (param.getRepositoryProperty() != null && !param.getRepositoryProperty().equals(propertyParamName)) {
@@ -375,9 +373,10 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                         param.setRepositoryValueUsed(false);
                     } else if (connection instanceof SalesforceSchemaConnection && "MODULENAME".equals(repositoryValue)) { //$NON-NLS-1$
                         /*
-                         * SalesforceSchemaConnection is no longer available with new TCOMP Wizard(?). In debug, connection is GenericConnectionImpl. 
-                         * "MODULENAME" is also unavailable, since it has to be module.moduleName. The same situation with "CUSTOM_MODULE_NAME".
-                         * Feel free to remove this code, or improve it by fixing SalesforceSchemaConnection usage and corrected repositoryValue.
+                         * SalesforceSchemaConnection is no longer available with new TCOMP Wizard(?). In debug,
+                         * connection is GenericConnectionImpl. "MODULENAME" is also unavailable, since it has to be
+                         * module.moduleName. The same situation with "CUSTOM_MODULE_NAME". Feel free to remove this
+                         * code, or improve it by fixing SalesforceSchemaConnection usage and corrected repositoryValue.
                          */
                         if (this.moduleUnit != null) {
                             objectValue = moduleUnit.getModuleName();
@@ -389,10 +388,10 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                       // module which was the last one be retrived
                     else if (connection instanceof SalesforceSchemaConnection && "CUSTOM_MODULE_NAME".equals(repositoryValue)) { //$NON-NLS-1$
                         if (this.moduleUnit != null) {
-                             objectValue = moduleUnit.getModuleName();
-                         } else {
-                             objectValue = null;
-                         }
+                            objectValue = moduleUnit.getModuleName();
+                        } else {
+                            objectValue = null;
+                        }
                     } else if ("table.tableName".equals(repositoryValue)) {
                         objectValue = null;
                         param.setRepositoryValueUsed(false);
@@ -421,8 +420,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     }
 
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IJsonFileService.class)) {
-                        IJsonFileService jsonService = (IJsonFileService) GlobalServiceRegister.getDefault().getService(
-                                IJsonFileService.class);
+                        IJsonFileService jsonService = (IJsonFileService) GlobalServiceRegister.getDefault()
+                                .getService(IJsonFileService.class);
                         boolean paramChanged = jsonService.changeFilePathFromRepository(connection, param, elem, objectValue);
                         if (paramChanged) {
                             continue;
@@ -452,10 +451,10 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                 elementParameter = elem.getElementParameter(EParameterName.DB_VERSION.getName());
                                 elementParameter2 = elem.getElementParameter(EParameterName.SCHEMA_DB.getName());
                             } else {
-                                elementParameter = elem.getElementParameter(JobSettingsConstants
-                                        .getExtraParameterName(EParameterName.DB_VERSION.getName()));
-                                elementParameter2 = elem.getElementParameter(JobSettingsConstants
-                                        .getExtraParameterName(EParameterName.SCHEMA_DB.getName()));
+                                elementParameter = elem.getElementParameter(
+                                        JobSettingsConstants.getExtraParameterName(EParameterName.DB_VERSION.getName()));
+                                elementParameter2 = elem.getElementParameter(
+                                        JobSettingsConstants.getExtraParameterName(EParameterName.SCHEMA_DB.getName()));
                             }
                             String dbType = "";
                             if (param.getValue() != null) {
@@ -523,8 +522,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                             }
                         } else {
                             if (repositoryValue.equals("ENCODING")) { //$NON-NLS-1$
-                                IElementParameter paramEncoding = param.getChildParameters().get(
-                                        EParameterName.ENCODING_TYPE.getName());
+                                IElementParameter paramEncoding = param.getChildParameters()
+                                        .get(EParameterName.ENCODING_TYPE.getName());
                                 if (connection instanceof FTPConnection) {
                                     if (((FTPConnection) connection).getEcoding() != null) {
                                         paramEncoding.setValue(((FTPConnection) connection).getEcoding());
@@ -601,8 +600,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                         Map map = new HashMap();
                                         String driver = String.valueOf(((Map) value).get("drivers"));
                                         if (driver != null) {
-                                            MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils
-                                                    .removeQuotes(driver));
+                                            MavenArtifact artifact = MavenUrlHelper
+                                                    .parseMvnUrl(TalendTextUtils.removeQuotes(driver));
                                             if (artifact != null) {
                                                 driver = artifact.getFileName();
                                             }
@@ -646,8 +645,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     } else {
                         // For SAP
                         String paramName = param.getName();
-                        if ("SAP_PROPERTIES".equals(paramName)
-                                || "MAPPING_INPUT".equals(paramName)
+                        if ("SAP_PROPERTIES".equals(paramName) || "MAPPING_INPUT".equals(paramName)
                                 || "SAP_FUNCTION".equals(paramName) // INPUT_PARAMS should be MAPPING_INPUT,bug16426
                                 || "OUTPUT_PARAMS".equals(paramName) || "SAP_ITERATE_OUT_TYPE".equals(paramName)
                                 || "SAP_ITERATE_OUT_TABLENAME".equals(paramName)) {
@@ -729,22 +727,22 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 if ("JDBC".equals(databaseType)) {
                     boolean supportJDBC = false;
                     List<IElementParameter> params = node.getElementParametersFromField(EParameterFieldType.PROPERTY_TYPE);
-                    for(IElementParameter proParam : params){
-                    	if(proParam.getRepositoryValue() != null && proParam.getRepositoryValue().contains("JDBC")){
-                    		supportJDBC = true;
-                    		break;
-                    	}
+                    for (IElementParameter proParam : params) {
+                        if (proParam.getRepositoryValue() != null && proParam.getRepositoryValue().contains("JDBC")) {
+                            supportJDBC = true;
+                            break;
+                        }
                     }
                     if (supportJDBC) {
-                        if (EParameterName.URL.getName().equals(paramName) 
-                        		|| EParameterName.URL.getName().equals(param.getRepositoryValue())) {
+                        if (EParameterName.URL.getName().equals(paramName)
+                                || EParameterName.URL.getName().equals(param.getRepositoryValue())) {
                             return "connection.jdbcUrl";
                         } else if (EParameterName.DRIVER_JAR.getName().equals(paramName)) {
                             return "connection.driverTable";
                         } else if (EParameterName.DRIVER_CLASS.getName().equals(paramName)) {
                             return "connection.driverClass";
-                        }else if (EParameterName.MAPPING.getName().equals(paramName)) {
-                        	return "connection.mappingFile";
+                        } else if (EParameterName.MAPPING.getName().equals(paramName)) {
+                            return "connection.mappingFile";
                         }
                     }
                 }
@@ -805,8 +803,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 metadataInput = true;
             }
 
-            boolean hasSchema = elem.getElementParameterFromField(EParameterFieldType.SCHEMA_TYPE) != null ? true : elem
-                    .getElementParameterFromField(EParameterFieldType.SCHEMA_REFERENCE) != null;
+            boolean hasSchema = elem.getElementParameterFromField(EParameterFieldType.SCHEMA_TYPE) != null ? true
+                    : elem.getElementParameterFromField(EParameterFieldType.SCHEMA_REFERENCE) != null;
             if (value.equals(EmfComponent.BUILTIN)) {
                 if (!metadataInput && hasSchema) {
                     elem.setPropertyValue(EParameterName.SCHEMA_TYPE.getName(), value);
@@ -816,11 +814,11 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 if (hasSchema) {
                     for (IElementParameter param : new ArrayList<IElementParameter>(elem.getElementParameters())) {
                         if (param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
-                                || (param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE) && EConnectionType.FLOW_MAIN
-                                        .getName().equals(param.getContext()))) {
+                                || (param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)
+                                        && EConnectionType.FLOW_MAIN.getName().equals(param.getContext()))) {
                             if (!metadataInput) {
-                                IElementParameter repositorySchemaTypeParameter = param.getChildParameters().get(
-                                        EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
+                                IElementParameter repositorySchemaTypeParameter = param.getChildParameters()
+                                        .get(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
                                 String repositoryTable = null;
                                 if (propertyName.split(":")[1].equals(EParameterName.PROPERTY_TYPE.getName())) { //$NON-NLS-1$
                                     repositoryTable = (String) repositorySchemaTypeParameter.getValue();
@@ -902,10 +900,9 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                     }
                                     // TDI-29176:support tBRMS drag here ,same as tWebService,but for tBRMS's input
                                     // schema,it is invisible which design in the component
-                                    else if (item != null
-                                            && UpdateRepositoryUtils.getMetadataTablesFromItem(item) != null
-                                            && (((INode) elem).getComponent().getName().equals("tWebService") || ((INode) elem)
-                                                    .getComponent().getName().equals("tBRMS"))
+                                    else if (item != null && UpdateRepositoryUtils.getMetadataTablesFromItem(item) != null
+                                            && (((INode) elem).getComponent().getName().equals("tWebService")
+                                                    || ((INode) elem).getComponent().getName().equals("tBRMS"))
                                             && UpdateRepositoryUtils.getMetadataTablesFromItem(item).size() == 2) {
                                         final List<MetadataTable> tables = UpdateRepositoryUtils.getMetadataTablesFromItem(item);
                                         if (tables != null && !tables.isEmpty()) {
@@ -932,8 +929,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                                     INodeConnector outputConnector = mainConnector;
                                                     if (mainConnector.getMaxLinkOutput() == 0) {
                                                         for (INodeConnector currentConnector : node.getListConnector()) {
-                                                            if (!currentConnector.getBaseSchema().equals(
-                                                                    EConnectionType.FLOW_MAIN.getName())
+                                                            if (!currentConnector.getBaseSchema()
+                                                                    .equals(EConnectionType.FLOW_MAIN.getName())
                                                                     && currentConnector.getMaxLinkOutput() > 0) {
                                                                 outputConnector = currentConnector;
 
@@ -1045,8 +1042,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     private void setQueryToRepositoryMode(IElementParameter queryParam, List<Query> queries, Item item) {
 
-        IElementParameter repositoryParam = queryParam.getChildParameters().get(
-                EParameterName.REPOSITORY_QUERYSTORE_TYPE.getName());
+        IElementParameter repositoryParam = queryParam.getChildParameters()
+                .get(EParameterName.REPOSITORY_QUERYSTORE_TYPE.getName());
         Query query = UpdateRepositoryUtils.getQueryById(item, (String) repositoryParam.getValue());
         if (query == null && queries != null && !queries.isEmpty()) {
             query = queries.get(0);
@@ -1162,8 +1159,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 IElementParameter queryParam = elem.getElementParameterFromField(EParameterFieldType.QUERYSTORE_TYPE,
                         currentParam.getCategory());
                 if (queryParam != null) {
-                    IElementParameter queryStoreType = queryParam.getChildParameters().get(
-                            EParameterName.QUERYSTORE_TYPE.getName());
+                    IElementParameter queryStoreType = queryParam.getChildParameters()
+                            .get(EParameterName.QUERYSTORE_TYPE.getName());
                     queryStoreType.setValue(EmfComponent.BUILTIN);
                 }
             }

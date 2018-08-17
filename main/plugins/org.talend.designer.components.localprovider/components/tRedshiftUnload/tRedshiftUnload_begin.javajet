@@ -25,7 +25,6 @@ imports="
 	String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 	String table = ElementParameterParser.getValue(node, "__TABLE__");
 	String userName = ElementParameterParser.getValue(node, "__USER__");
-	
 	String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
 	
 	String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
@@ -140,10 +139,19 @@ imports="
 	}
 	boolean encrypt = "true".equals(ElementParameterParser.getValue(node, "__ENCRYPT__"));
 	if(encrypt) {
-		String encryptedKey = ElementParameterParser.getValue(node,"__ENCRYPTED_KEY__");
+		String encryptionKeyPropertyName = "__ENCRYPTED_KEY__";
 %>
-		.append(";master_symmetric_key=").append(<%=encryptedKey%>)
+		.append(";master_symmetric_key=")
 <%
+		if (ElementParameterParser.canEncrypt(node, encryptionKeyPropertyName)) {
+%>
+			.append(routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, encryptionKeyPropertyName)%>))
+<%
+		} else {
+%>
+			.append(<%=ElementParameterParser.getValue(node, encryptionKeyPropertyName)%>)
+<%
+		}
 	}
 %>
 	.append("' ")

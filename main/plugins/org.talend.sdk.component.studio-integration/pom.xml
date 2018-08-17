@@ -15,7 +15,7 @@
   <description>Studio integration of the Talend Component Kit framework.</description>
 
   <properties>
-    <component-runtime.version>1.0.4-SNAPSHOT</component-runtime.version>
+    <component-runtime.version>1.0.5-SNAPSHOT</component-runtime.version>
     <commons-lang3.version>3.6</commons-lang3.version>
     <oro.version>2.0.8</oro.version>
     <log4j.version>1.2.17</log4j.version>
@@ -103,6 +103,7 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Test Dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>

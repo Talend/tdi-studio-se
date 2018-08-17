@@ -34,7 +34,7 @@ public class ActionParametersUpdater implements PropertyChangeListener {
 
     @Override
     public void propertyChange(final PropertyChangeEvent event) {
-        action.setParameterValue(event.getPropertyName(), (String) event.getNewValue());
+        action.setParameterValue(TaCoKitElementParameter.class.cast(event.getSource()).getName(), (String) event.getNewValue());
     }
     
     public Action getAction() {

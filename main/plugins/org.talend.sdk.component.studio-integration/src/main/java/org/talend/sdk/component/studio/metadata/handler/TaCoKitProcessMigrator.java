@@ -17,7 +17,7 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
 
 public class TaCoKitProcessMigrator extends AbstractImportResourcesHandler {
-    
+
     private final TaCoKitMigrationManager manager = Lookups.taCoKitCache().getMigrationManager();
 
     @Override
@@ -36,13 +36,12 @@ public class TaCoKitProcessMigrator extends AbstractImportResourcesHandler {
             }
         }
     }
-    
+
     /**
      * Loads repository item. Implementation was copied from
      * ImportBasicHandler.applyMigrationTasks()
-     * 
-     * @param importItem
-     *            item which is imported
+     *
+     * @param importItem item which is imported
      * @return Process item stored in repository
      * @throws PersistenceException
      */
@@ -53,7 +52,7 @@ public class TaCoKitProcessMigrator extends AbstractImportResourcesHandler {
         for (IRepositoryViewObject repositoryObject : allVersion) {
             if (repositoryObject.getProperty().getVersion().equals(importItem.getItemVersion())) {
                 final Item item = repositoryObject.getProperty().getItem();
-                if (ProcessItem.class.isInstance(item)) {
+                if (item instanceof ProcessItem) {
                     return Optional.of((ProcessItem) item);
                 }
             }

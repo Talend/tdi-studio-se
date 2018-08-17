@@ -24,6 +24,7 @@ package org.talend.repository.ui.wizards.exportjob.handler;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,10 +34,12 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.runtime.process.TalendProcessArgumentConstant;
+import org.talend.designer.maven.launch.MavenPomCommandLauncher;
 import org.talend.designer.maven.model.MavenSystemFolders;
+import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
@@ -73,6 +76,18 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
     @Override
     public IProcessor generateJobFiles(IProgressMonitor monitor) throws Exception {
         IProcessor processor = super.generateJobFiles(monitor);
+
+        // Generate class before the final build goal, JobJavaScriptOSGIForESBManager.createAnalyzer needs the classes
+        // to compute import-package for the manifest.mf. TalendJavaProjectManager.getTalendJobJavaProject is always
+        // disabled MavenNature when create project(false), it will stop jdt to compile, and imporve this part will help
+        // to avoid using maven in this step.
+        final Map<String, Object> argumentsMap = new HashMap<String, Object>();
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, "-P !ci-builder");
+        MavenPomCommandLauncher mavenLauncher = new MavenPomCommandLauncher(talendProcessJavaProject.getProjectPom(),
+                TalendMavenConstants.GOAL_COMPILE);
+        mavenLauncher.setArgumentsMap(argumentsMap);
+        mavenLauncher.execute(monitor);
+
         List<ExportFileResource> resources = osgiMavenManager
                 .getExportResources(new ExportFileResource[] { new ExportFileResource(processItem, "") });
         for (ExportFileResource resource : resources) {

@@ -36,7 +36,10 @@ public class ProviderManager extends ResourcesManager {
 
     @Override
     public InputStream getStream(IPath path) {
-        return provider.getContents(path2Object.get(path));
+        if (path2Object.get(path) != null) {
+            return provider.getContents(path2Object.get(path));
+        }
+        return null;
     }
 
     @Override

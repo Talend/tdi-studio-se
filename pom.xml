@@ -128,7 +128,8 @@
 		<module>main/plugins/org.talend.presentation.onboarding.resource.tos</module>
 		<module>main/plugins/org.talend.rcp.branding.tos</module>
 		<module>main/plugins/org.talend.repository</module>
-		<module>main/plugins/org.talend.repository.ftp</module>		
+		<module>main/plugins/org.talend.repository.ftp</module>
+		<module>main/plugins/org.talend.repository.resource</module>		
 		<module>main/plugins/org.talend.libraries.json</module>
 		<module>main/plugins/org.talend.repository.json</module>
 		<module>main/plugins/org.talend.repository.view.di</module>

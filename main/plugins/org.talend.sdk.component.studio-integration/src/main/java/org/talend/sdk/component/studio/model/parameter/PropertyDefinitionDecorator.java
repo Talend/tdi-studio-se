@@ -16,18 +16,22 @@
 package org.talend.sdk.component.studio.model.parameter;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_HEALTHCHECK;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_PARAMETERS;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_PARAMETERS;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_EVALUTIONSTRATEGY;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_NEGATE;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_TARGET;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_VALUE;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_TYPE;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.MAIN_FORM;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ORDER_SEPARATOR;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.PARAMETER_INDEX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_PREFIX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_SUFFIX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_OPTIONS_ORDER;
@@ -41,11 +45,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
+
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
 
 /**
  * Extends functionality of {@link SimplePropertyDefinition}
@@ -85,7 +93,8 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      *
      * @param property {@link SimplePropertyDefinition} to wrap
      */
-    PropertyDefinitionDecorator(final SimplePropertyDefinition property) {
+    @JsonbCreator
+    public PropertyDefinitionDecorator(@JsonbProperty("delegate") final SimplePropertyDefinition property) {
         this.delegate = property;
     }
 
@@ -98,7 +107,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      */
     public static Collection<PropertyDefinitionDecorator> wrap(final Collection<SimplePropertyDefinition> properties) {
         return properties.stream()
-                .map(property -> new PropertyDefinitionDecorator(property))
+                .map(PropertyDefinitionDecorator::new)
                 .collect(toList());
     }
     
@@ -358,11 +367,15 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                 .filter(meta -> meta.getKey().startsWith(CONDITION_IF_TARGET))
                 .map(meta -> {
                     final String[] split = meta.getKey().split("::");
-                    final String valueKey =
-                            CONDITION_IF_VALUE + (split.length == 4 ? "::" + split[split.length - 1] : "");
+                    final String index = split.length == 4 ? "::" + split[split.length - 1] : "";
+                    final String valueKey = CONDITION_IF_VALUE + index;
+                    final String negateKey = CONDITION_IF_NEGATE + index;
+                    final String evaluationStrategyKey = CONDITION_IF_EVALUTIONSTRATEGY + index;
                     return new Condition(meta.getValue(),
                             delegate.getMetadata().getOrDefault(valueKey, "true").split(VALUE_SEPARATOR),
-                            delegate.getPath());
+                            delegate.getPath(),
+                            Boolean.parseBoolean(delegate.getMetadata().getOrDefault(negateKey, "false")),
+                            delegate.getMetadata().getOrDefault(evaluationStrategyKey, "DEFAULT"));
                 }).collect(toList());
     }
 
@@ -567,6 +580,12 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         final List<String> parameters = Arrays.asList(parametersValue.split(VALUE_SEPARATOR));
         return new Suggestions(name, parameters);
     }
+    
+    public Parameter getParameter() {
+        return ofNullable(delegate.getMetadata().get(PARAMETER_INDEX))
+                .map(s -> new Parameter(Integer.parseInt(s)))
+                .orElse(new Parameter());
+    }
 
     @Override
     public int hashCode() {
@@ -582,16 +601,22 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
         private final String target;
 
-        private final String[] values;
-
         private String targetPath;
 
         private String sourcePath;
 
-        public Condition(final String target, final String[] values, final String sourcePath) {
+        private boolean negation;
+
+        private String evaluationStrategy;
+
+        private final String[] values;
+
+        public Condition(final String target, final String[] values, final String sourcePath, final boolean negation, final String evaluationStrategy) {
             this.target = target;
             this.sourcePath = sourcePath;
             this.values = values;
+            this.negation = negation;
+            this.evaluationStrategy = evaluationStrategy == null || evaluationStrategy.isEmpty() ? "DEFAULT" : evaluationStrategy;
         }
 
         public String getTarget() {
@@ -614,8 +639,12 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             return sourcePath;
         }
 
-        public void setSourcePath(final String sourcePath) {
-            this.sourcePath = sourcePath;
+        public boolean isNegation() {
+            return negation;
+        }
+
+        public String getEvaluationStrategy() {
+            return evaluationStrategy;
         }
 
         @Override
@@ -624,7 +653,8 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                     + Arrays.deepToString(this.getValues()) + ")";
         }
 
-        @Override public boolean equals(final Object o) {
+        @Override
+        public boolean equals(final Object o) {
             if (this == o)
                 return true;
             if (o == null || getClass() != o.getClass())
@@ -636,9 +666,9 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                     Objects.equals(sourcePath, condition.sourcePath);
         }
 
-        @Override public int hashCode() {
-
-            int result = Objects.hash(target, targetPath, sourcePath);
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(target, targetPath, sourcePath, negation, evaluationStrategy);
             result = 31 * result + Arrays.hashCode(values);
             return result;
         }
@@ -650,7 +680,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
         private final String value;
 
-        public static enum Type {
+        public enum Type {
             IN,
             OUT;
         }
@@ -708,13 +738,13 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             return "PropertyDefinitionDecorator.Connection(type=" + this.getType() + ", value=" + this.getValue() + ")";
         }
     }
-    
+
     public static class Suggestions {
-        
+
         private final String name;
-        
+
         private final List<String> parameters;
-        
+
         Suggestions(final String name, final List<String> parameters) {
             this.name = name;
             this.parameters = parameters;
@@ -727,10 +757,33 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         public List<String> getParameters() {
             return parameters;
         }
-        
+
         @Override
         public String toString() {
             return "Suggestions(name=" + this.getName() + ", parameters=" + this.getParameters() + ")";
+        }
+    }
+    
+    public static class Parameter {
+        
+        private static int UNDEFINED = -1;
+        
+        private int index = UNDEFINED;
+        
+        Parameter() {
+            // no-op
+        }
+        
+        Parameter(final int index) {
+            this.index = index;
+        }
+        
+        public int getIndex() {
+            return index;
+        }
+        
+        public boolean isRoot() {
+            return index != UNDEFINED;
         }
     }
 }

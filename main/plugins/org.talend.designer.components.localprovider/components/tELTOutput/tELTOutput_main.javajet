@@ -1,0 +1,271 @@
+<%@ jet 
+imports="
+    	org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.process.INode
+		org.talend.core.model.process.ElementParameterParser  
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.metadata.MappingTypeRetriever
+		org.talend.core.model.metadata.MetadataTalendType
+	 	org.talend.commons.utils.generation.CodeGenerationUtils
+	 	org.talend.core.model.utils.NodeUtil
+		java.util.List
+		java.util.ArrayList
+		java.util.LinkedList
+		java.util.Map
+		java.util.HashMap
+"
+skeleton="../templates/db_output_bulk.skeleton"
+%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/Log4jDBConnUtil.javajet"%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
+	<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	
+	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	String cid = node.getUniqueName();
+
+	String dbtable = null;
+	String dbschema = ElementParameterParser.getValue(node,"__ELT_SCHEMA_NAME__");
+	String uniqueNameConnection = null;
+	INode previousNode = null;
+	
+	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
+	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
+	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
+	%>
+	String select_query_<%=cid %> = null;	
+	String tableName_<%=cid%> = null;
+	String selectQueryColumnsName_<%=cid %> = null;
+	<%
+	List<IConnection> connections = (List<IConnection>) node.getIncomingConnections();
+	if(connections != null && connections.size() > 0 && connections.get(0) != null) {
+	    IConnection connection = connections.get(0);
+	    previousNode = connection.getSource();
+	    String previousComponentName = previousNode.getUniqueName();
+		dbtable = connection.getName();
+		uniqueNameConnection = connection.getUniqueName();
+		
+		%>
+		select_query_<%=cid %> = (String) globalMap.get("<%=previousComponentName%>"+"QUERY"+"<%=uniqueNameConnection%>");
+		selectQueryColumnsName_<%=cid %> = (String) globalMap.get("<%=previousComponentName%>"+"QUERY_COLUMNS_NAME"+"<%=uniqueNameConnection%>");
+		<%
+	}
+	 String tableName=null;
+	 if(useDifferentTable){
+		  tableName=differenttable;
+	 }else{
+	 	  if(isTableNameVariable){
+	 	      tableName=dbtable;
+	 	  }else{
+	 	      tableName="\""+dbtable +"\"";
+	 	  }
+	 }
+	%>
+	String dbschema_<%=cid%> = <%=dbschema%>;
+	if(dbschema_<%=cid%> != null && dbschema_<%=cid%>.trim().length() > 0) {
+		tableName_<%=cid%> = <%=dbschema%> + "." + <%=tableName%>;
+	}else {
+		tableName_<%=cid%> = <%=tableName%>;
+	}
+	<%
+	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
+    String driverClass = null;
+    String jdbcUrl  = null;
+    String dbuser = null;
+    boolean useExistingConn = false;
+    if(previousNode != null) {
+		driverClass = ElementParameterParser.getValue(previousNode, "__DRIVER_CLASS__");
+		jdbcUrl = ElementParameterParser.getValue(previousNode, "__URL__");
+		dbuser = ElementParameterParser.getValue(previousNode, "__USER__");
+    	useExistingConn = ("true").equals(ElementParameterParser.getValue(previousNode, "__USE_EXISTING_CONNECTION__"));
+    }
+    String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
+    %>
+    String dbUser_<%=cid %> = null;
+    <%
+    if(useExistingConn) {
+        String connection = ElementParameterParser.getValue(previousNode, "__CONNECTION__");
+        INode connNode=NodeUtil.getNodeByUniqueName(previousNode.getProcess(),connection);
+        String conn = "conn_" + connection;
+        String username = "username_" + connection;
+        String connectionKey=null;
+        if(connNode.getComponent().getName().indexOf("tJDBCConnection")<0){
+           connectionKey=connection+"_Connection";
+        }else{
+        	  connectionKey=conn;
+        }
+        %>
+        java.sql.Connection conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=connectionKey%>");
+        dbUser_<%=cid %> = (String)globalMap.get("<%=username%>");
+        <%
+        log4jCodeGenerateUtil.useExistConnection(node);
+    } else {
+        %>
+        String driverClass_<%=cid%> = <%=driverClass %>;
+        java.lang.Class.forName(driverClass_<%=cid%>);
+        String url_<%=cid %> = <%=jdbcUrl %>; 
+        dbUser_<%=cid %> = <%=dbuser%>;	        
+    	<%
+    	String passwordFieldName = "__PASS__";
+    	%>
+    	
+    	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/eltpassword.javajet"%>
+       	String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
+        java.sql.Connection conn_<%=cid%> = null;
+        <%
+    	log4jCodeGenerateUtil.debugConnectionParams(node);
+       	log4jCodeGenerateUtil.connect(node);
+    }
+    
+    List<IMetadataColumn> columnList = null;
+    
+    List<IMetadataTable> metadatas = node.getMetadataList();
+    if(metadatas !=null && metadatas.size()>0){
+    	IMetadataTable metadata = metadatas.get(0);
+    	if(metadata != null){
+    		columnList = metadata.getListColumns();
+    	}
+    }
+    
+    if(columnList != null && columnList.size()>0){
+        StringBuilder insertColName = new StringBuilder();
+        
+        StringBuilder updateSetStmt = new StringBuilder();
+        
+        int counterOuter = 0;
+        for(IMetadataColumn column : columnList){
+        	String suffix = ",";
+        	
+        	if(counterOuter==(columnList.size()-1)){
+    			suffix = "";
+        	}
+        	
+        	String columnName = column.getOriginalDbColumnName();
+    		if(columnName==null || columnName.trim().isEmpty()){
+				columnName = column.getLabel();
+    		}
+        	
+        	insertColName.append(columnName).append(suffix);
+        	
+        	updateSetStmt.append(columnName+"=(\"+select_query_"+ cid +".replaceFirst(java.util.regex.Pattern.quote(selectQueryColumnsName_"+ cid +"),routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "])+\")" + suffix);
+        	
+        	counterOuter++;
+        }
+
+        if(("INSERT").equals(dataAction)){
+        %>	
+        	String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>)  ("+select_query_<%=cid %>+")";
+        <%
+    	} else if (("UPDATE").equals(dataAction)){
+        %>
+        	String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> "
+        <%
+    		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+        %>
+        		+"  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
+        <%
+    		}
+        %>
+        	;
+        <%
+    	} else if (("DELETE").equals(dataAction)){
+    	%>
+        	String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") " 
+        	<%
+        	if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+        	%>
+        	+"  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
+        	<%
+        	}
+        	%>
+        	;
+    	<%
+    	}
+    	%>
+    	
+        int nb_line_<%=cid%> = 0;
+        int nb_line_updated_<%=cid%> = 0;
+        int nb_line_inserted_<%=cid%> = 0;
+        int nb_line_deleted_<%=cid%> = 0;
+        <%
+    }
+
+	if(dbtable != null && columnList != null){
+		{//use the block to limit the code scope for table action
+    		Manager manager = null;
+    		String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+    		String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
+    		
+    		List<Column> stmtStructure = getELTManager(dbmsId, cid, node).createColumnList(columnList, false, null, null);
+    		
+    		String table = useDifferentTable ? differenttable : ("\""+dbtable +"\"");
+    		
+    		dbLog = new DBLogUtil(node);
+    		%>
+    		<%@ include file="../templates/_tableActionForELT.javajet"%>
+    		<%
+		}
+		
+		if(("INSERT").equals(dataAction)){
+		%>
+        System.out.println("Inserting with : \n" + insertQuery_<%=cid %> + "\n");
+        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+insertQuery_"+ cid +"+\"");%>
+        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery_<%=cid %>);
+        nb_line_inserted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
+        System.out.println("--> " + nb_line_inserted_<%=cid%> + " rows inserted. \n");
+        pstmt_<%=cid %>.close();
+		<%
+    	} else if(("UPDATE").equals(dataAction)){
+    	%>
+        System.out.println("Updating with : \n" + updateQuery_<%=cid %> +"\n");
+        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+updateQuery_"+ cid +"+\"");%>
+        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
+        nb_line_updated_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
+    	System.out.println("--> " + nb_line_updated_<%=cid%> + " rows updated. \n");
+    	pstmt_<%=cid %>.close();
+    	<%
+    	} else if (("DELETE").equals(dataAction)){
+		%>
+    	System.out.println("Deleting with : \n" + deleteQuery_<%=cid %> +"\n");
+		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery_"+ cid +"+\"");%>
+		java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
+		nb_line_deleted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
+    	System.out.println("--> " + nb_line_deleted_<%=cid%> + " rows deleted. \n");
+    	pstmt_<%=cid %>.close();
+		<%
+		}
+	}
+	// END
+	%>
+
+    <%
+    if(!useExistingConn) {
+    %>
+        if(conn_<%=cid%> != null && !conn_<%=cid%>.isClosed()) {
+    		<%log4jCodeGenerateUtil.close(node);%>
+        }
+    <%
+    }
+    %>
+    nb_line_<%=cid%> = nb_line_updated_<%=cid%> + nb_line_inserted_<%=cid%> + nb_line_deleted_<%=cid%>;
+    globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid%>);
+    globalMap.put("<%=cid %>_NB_LINE_UPDATED",nb_line_updated_<%=cid%>);
+    globalMap.put("<%=cid %>_NB_LINE_INSERTED",nb_line_inserted_<%=cid%>);
+    globalMap.put("<%=cid %>_NB_LINE_DELETED",nb_line_deleted_<%=cid%>);
+    <%
+    if(isLog4jEnabled){
+    	Map<String,String> actionMap=new java.util.HashMap<String,String>();
+    	actionMap.put("INSERT","inserted");
+    	actionMap.put("UPDATE","updated");
+    	actionMap.put("DELETE","deleted");
+    	%>
+    	log.info("<%=cid%> - Has <%=actionMap.get(dataAction)%> records count: " + nb_line_<%=actionMap.get(dataAction)%>_<%=cid%> + ".");
+    <%
+    }
+    %>
