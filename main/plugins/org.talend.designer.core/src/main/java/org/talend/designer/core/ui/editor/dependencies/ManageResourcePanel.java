@@ -97,6 +97,7 @@ public class ManageResourcePanel extends Composite {
 
         resourcesTV = new TableViewer(this, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
         final Table table = resourcesTV.getTable();
+        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         resourcesTV.getTable().setEnabled(!isReadOnly);
         table.setLinesVisible(true);
         table.setHeaderVisible(true);

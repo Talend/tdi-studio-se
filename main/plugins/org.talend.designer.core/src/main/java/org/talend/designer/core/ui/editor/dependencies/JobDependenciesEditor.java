@@ -91,7 +91,6 @@ public class JobDependenciesEditor extends EditorPart implements IJobDependencie
         top.setExpandHorizontal(true);
         top.setExpandVertical(true);
         top.setContent(mainForm);
-        top.setMinSize(mainForm.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
         // create status
         Composite statusComposite = toolkit.createComposite(parent);
