@@ -215,7 +215,8 @@ public class ResourceContextHelper {
             boolean resetToDefault = false;
             String defaultType = null;
             String defaultValue = null;
-            if (sourceId.equals(originalModel.getContextSource())) {
+            if (result == null || (sourceId.equals(originalModel.getContextSource())
+                    && !result.getName().equals(originalModel.getContextVar()))) {
                 resetToDefault = true;
                 ECodeLanguage curLanguage = LanguageManager.getCurrentLanguage();
                 if (curLanguage == ECodeLanguage.JAVA) {
