@@ -2330,31 +2330,40 @@ if(columnList != null && columnList.size() > 0) {
                         break;
                     }
                 }
-            <%
-            } else if ("GREENPLUM".equalsIgnoreCase(dbType) || "POSTGRE".equalsIgnoreCase(dbType) || "POSTGREPLUS".equalsIgnoreCase(dbType)) {
-            %>                  
-                java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
-                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
-                String defaultSchema_<%=cid%> = "public";
-                if(dbSchema_<%=cid%> == null || dbSchema_<%=cid%>.trim().length() == 0) {
-                	java.sql.Statement stmtSchema_<%=cid%> = conn_<%=cid%>.createStatement();
-                	java.sql.ResultSet rsSchema_<%=cid%> = stmtSchema_<%=cid%>.executeQuery("select current_schema() ");
-                	while(rsSchema_<%=cid%>.next()){
-                                defaultSchema_<%=cid%> = rsSchema_<%=cid%>.getString("current_schema");
-                	}
-                	rsSchema_<%=cid%>.close();
-                	stmtSchema_<%=cid%>.close();
-                }
-                while(rsTable_<%=cid%>.next()) {
-                    String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
-                    String schema_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_SCHEM");
-                    if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=tableName%>) 
-                        && (schema_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(dbSchema_<%=cid%>) || ((dbSchema_<%=cid%> ==null || dbSchema_<%=cid%>.trim().length() ==0) && defaultSchema_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(schema_<%=cid%>)))) {
-                        whetherExist_<%=cid%> = true;
-                        break;
-                    }
-                }
 <%
+            } else if ("GREENPLUM".equalsIgnoreCase(dbType) || "POSTGRE".equalsIgnoreCase(dbType) || "POSTGREPLUS".equalsIgnoreCase(dbType)) {
+                if ("true".equals(ElementParameterParser.getValue(node, "__TEMPTABLE__"))) {
+%>
+                    java.sql.PreparedStatement tempTablePs_<%=cid %> = conn_<%=cid %>.prepareStatement("SELECT * FROM information_schema.tables WHERE table_type='LOCAL TEMPORARY' AND table_name = ?");
+                    tempTablePs_<%=cid %>.setString(1, <%=tableName%>);
+                    java.sql.ResultSet rsTable_<%=cid %> = tempTablePs_<%=cid %>.executeQuery();
+                    whetherExist_<%=cid%> = rsTable_<%=cid %>.next();
+<%
+                } else {
+%>
+                    java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                    java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
+                    String defaultSchema_<%=cid%> = "public";
+                    if(dbSchema_<%=cid%> == null || dbSchema_<%=cid%>.trim().length() == 0) {
+                        java.sql.Statement stmtSchema_<%=cid%> = conn_<%=cid%>.createStatement();
+                        java.sql.ResultSet rsSchema_<%=cid%> = stmtSchema_<%=cid%>.executeQuery("select current_schema() ");
+                        while(rsSchema_<%=cid%>.next()){
+                            defaultSchema_<%=cid%> = rsSchema_<%=cid%>.getString("current_schema");
+                        }
+                        rsSchema_<%=cid%>.close();
+                        stmtSchema_<%=cid%>.close();
+                    }
+                    while(rsTable_<%=cid%>.next()) {
+                        String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
+                        String schema_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_SCHEM");
+                        if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=tableName%>) 
+                            && (schema_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(dbSchema_<%=cid%>) || ((dbSchema_<%=cid%> ==null || dbSchema_<%=cid%>.trim().length() ==0) && defaultSchema_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(schema_<%=cid%>)))) {
+                            whetherExist_<%=cid%> = true;
+                            break;
+                        }
+                    }
+<%
+                }
             } else if ("MSSQL".equalsIgnoreCase(dbType)){
 %>
                 java.sql.Statement rsTable_<%=cid%> = conn_<%=cid%>.createStatement();
