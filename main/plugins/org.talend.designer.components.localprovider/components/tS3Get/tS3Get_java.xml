@@ -308,6 +308,7 @@
                 <ITEM NAME="SOCKETRECEIVEBUFFERSIZEHINT" VALUE="SocketReceiveBufferSizeHints"/>
                 <ITEM NAME="SOCKETSENDBUFFERSIZEHINT" VALUE="SocketSendBufferSizeHints"/>
                 <ITEM NAME="SIGNEROVERRIDE" VALUE="SignerOverride"/>
+                <ITEM NAME="ENABLEACCELERATEMODE" VALUE="EnableAccelerateMode"/>
             </ITEMS>
         </ITEM>
         <ITEM NAME="VALUE" />
