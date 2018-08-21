@@ -211,7 +211,7 @@
 					cc_<%=cid%>.setProtocol(com.amazonaws.Protocol.<%=value.toUpperCase().replaceAll("\"","")%>);
 				<%
 				}else if("EnableAccelerateMode".equals(client_parameter)){
-				    value = TalendQuoteUtils.removeQuotes(value);
+				    value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
 				    if("enable".equalsIgnoreCase(value)||"yes".equalsIgnoreCase(value)||"true".equalsIgnoreCase(value))
                         enableAccelerateMode = true;
 				}else{
@@ -260,7 +260,6 @@
                     <%if(enableAccelerateMode){%>
                     .withAccelerateModeEnabled(true)
                     <%}%>
-                   //<%=enableAccelerateMode%>
                     .withCredentials(credentialsProvider_<%=cid%>)
                     .withClientConfiguration(cc_<%=cid%>)
                     .withEncryptionMaterials(encryptionMaterialsProvider_<%=cid%>)
@@ -281,7 +280,6 @@
                     <%if(enableAccelerateMode){%>
                     .withAccelerateModeEnabled(true)
                     <%}%>
-                    //<%=enableAccelerateMode%>
                     .withCredentials(credentialsProvider_<%=cid%>)
                     .withClientConfiguration(cc_<%=cid%>)
                     .build();
