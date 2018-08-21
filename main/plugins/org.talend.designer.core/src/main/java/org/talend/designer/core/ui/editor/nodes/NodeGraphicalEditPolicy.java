@@ -15,7 +15,6 @@ package org.talend.designer.core.ui.editor.nodes;
 import java.util.List;
 
 import org.eclipse.draw2d.ConnectionRouter;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
@@ -49,31 +48,11 @@ public class NodeGraphicalEditPolicy extends GraphicalNodeEditPolicy {
     @SuppressWarnings("unchecked")
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         Node source = (Node) getHost().getModel();
-        if (source.isReadOnly()) {
+        if (checkConnectionStatus(source)) {
             return null;
         }
         String style = (String) request.getNewObjectType();
-        // Testcase
-        ConnectionCreateCommand cmd = null;
-        EditPart sourceEditPart = request.getSourceEditPart();
-        EditPart targetEditPart = request.getTargetEditPart();
-        if (sourceEditPart != null && targetEditPart != null && sourceEditPart != targetEditPart
-                && sourceEditPart.getModel() instanceof Node && targetEditPart.getModel() instanceof Node) {
-            Node sourceNode = (Node) sourceEditPart.getModel();
-            Node targetNode = (Node) targetEditPart.getModel();
-            if (ProcessUtils.isTestContainer(sourceNode.getProcess()) || ProcessUtils.isTestContainer(targetNode.getProcess())) {
-                cmd = new ConnectionCreateCommand(sourceNode, style, (List<Object>) request.getNewObject());
-                cmd.setTarget(targetNode);
-                if (cmd.canExecute()) {
-                    cmd.execute();
-                } else {
-                    cmd = null;
-                }
-            }
-        }
-        if (cmd == null) {
-            cmd = new ConnectionCreateCommand(source, style, (List<Object>) request.getNewObject());
-        }
+        ConnectionCreateCommand cmd = new ConnectionCreateCommand(source, style, (List<Object>) request.getNewObject());
         request.setStartCommand(cmd);
         return cmd;
     }
@@ -82,7 +61,7 @@ public class NodeGraphicalEditPolicy extends GraphicalNodeEditPolicy {
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
         Connection conn = (Connection) request.getConnectionEditPart().getModel();
         Node newSource = (Node) getHost().getModel();
-        if (newSource.isReadOnly()) {
+        if (checkConnectionStatus(newSource)) {
             return null;
         }
         ConnectionReconnectCommand cmd = new ConnectionReconnectCommand(conn);
@@ -94,7 +73,7 @@ public class NodeGraphicalEditPolicy extends GraphicalNodeEditPolicy {
     protected Command getReconnectTargetCommand(ReconnectRequest request) {
         Connection conn = (Connection) request.getConnectionEditPart().getModel();
         Node newTarget = (Node) getHost().getModel();
-        if (newTarget.isReadOnly()) {
+        if (checkConnectionStatus(newTarget)) {
             return null;
         }
 
@@ -130,5 +109,12 @@ public class NodeGraphicalEditPolicy extends GraphicalNodeEditPolicy {
             return new TalendBorderItemRectilinearRouter(request);
         }
         return super.getDummyConnectionRouter(request);
+    }
+
+    private boolean checkConnectionStatus(Node node) {
+        if (node.isReadOnly() && !ProcessUtils.isTestContainer(node.getProcess())) {
+            return true;
+        }
+        return false;
     }
 }
