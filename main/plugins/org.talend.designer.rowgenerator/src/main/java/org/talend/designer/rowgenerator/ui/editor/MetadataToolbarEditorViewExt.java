@@ -128,6 +128,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
         GridDataFactory.swtDefaults().hint(rowNumberWidth(), SWT.DEFAULT).applyTo(numRowText);
 
         numRowText.setBackground(ColorConstants.white);
+        numRowText.setEnabled(!extendedTableViewer.isReadOnly());
 
         IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
         IProcess process = ((AbstractMultiPageTalendEditor) editor).getTalendEditor().getProcess();
