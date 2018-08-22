@@ -244,6 +244,14 @@ public class DefaultRunProcessService implements IRunProcessService {
                     }
                 }
             }
+            if ("REST_MS".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+                if (microService != null) {
+                    IProcessor processor = microService.createJavaProcessor(process, property, filenameFromLabel, false);
+                    if (processor != null) {
+                        return processor;
+                    }
+                }
+            }
         }
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRouteService.class)) {
