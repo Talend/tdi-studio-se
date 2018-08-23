@@ -15,11 +15,16 @@
  */
 package org.talend.sdk.component.studio.model.parameter.listener;
 
+import static java.util.function.Function.identity;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
@@ -42,13 +47,17 @@ public class ActiveIfListener implements PropertyChangeListener {
 
     private final TaCoKitElementParameter sourceParameter;
 
+    private final String operator;
+
     public ActiveIfListener(
             final Map<Integer, List<PropertyDefinitionDecorator.Condition>> conditions,
             final TaCoKitElementParameter sourceParam,
-            final Map<String, TaCoKitElementParameter> targetParams) {
+            final Map<String, TaCoKitElementParameter> targetParams,
+            final String operator) {
         this.conditions = conditions;
         this.sourceParameter = sourceParam;
         this.targetParams = targetParams;
+        this.operator = operator;
     }
 
     @Override
@@ -56,14 +65,19 @@ public class ActiveIfListener implements PropertyChangeListener {
         if(!"value".equals(event.getPropertyName())){
             return;
         }
-        final boolean show = conditions.entrySet().stream()
-                .flatMap(e -> e.getValue().stream())
-                .allMatch(condition -> {
-                    final boolean negate = condition.isNegation();
-                    return negate != Arrays.stream(condition.getValues())
-                            .anyMatch(conditionValue -> evaluate(condition, conditionValue));
+        final Stream<Boolean> evaluationStream = conditions.entrySet()
+                                                      .stream()
+                                                      .flatMap(e -> e.getValue()
+                                                                     .stream())
+                                                      .map(condition -> {
+                                                          final boolean negate = condition.isNegation();
+                                                          return negate != Arrays.stream(condition.getValues())
+                                                                                 .anyMatch(conditionValue -> evaluate(
+                                                                                         condition, conditionValue));
 
-                });
+                                                      });
+        final boolean show = "OR".equalsIgnoreCase(operator) ?
+                evaluationStream.anyMatch(i -> i) : evaluationStream.anyMatch(i -> i);
         sourceParameter.setShow(show);
         sourceParameter.redraw();//request source parameter redraw
         sourceParameter.firePropertyChange("show", null, show);

@@ -19,6 +19,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
 
@@ -107,7 +108,7 @@ public class SettingVisitor implements PropertyVisitor {
 
     private final Collection<ActionReference> actions;
 
-    private final Map<String, Map<Integer, List<PropertyDefinitionDecorator.Condition>>> activations =
+    private final Map<String, ConditionPerLevel> activations =
             new LinkedHashMap<>();
 
     private final List<ParameterResolver> actionResolvers = new ArrayList<>();
@@ -146,7 +147,7 @@ public class SettingVisitor implements PropertyVisitor {
      * @return created parameters
      */
     public List<IElementParameter> getSettings() {
-        activations.forEach((path, conditions) -> {
+        activations.forEach((path, condition) -> {
             settings.keySet().stream()
                     .filter(key -> key.equals(path))
                     .filter(p -> TaCoKitElementParameter.class.isInstance(settings.get(p)))
@@ -154,12 +155,12 @@ public class SettingVisitor implements PropertyVisitor {
                     .forEach(param -> {
                         param.setRedrawParameter(redrawParameter);
                         final Map<String, TaCoKitElementParameter> targetParams =
-                                conditions.values().stream().flatMap(Collection::stream)
+                                condition.conditions.values().stream().flatMap(Collection::stream)
                                         .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
                                         .collect(toMap(ElementParameter::getName, identity()));
 
                         final ActiveIfListener activationListener =
-                                new ActiveIfListener(conditions, param, targetParams);
+                                new ActiveIfListener(condition.conditions, param, targetParams, condition.operator);
 
                         targetParams.forEach((name, p) -> {
                             p.setRedrawParameter(redrawParameter);
@@ -503,16 +504,18 @@ public class SettingVisitor implements PropertyVisitor {
             return;
         }
 
-        node.getProperty().getCondition()
-                .forEach(c -> {
-                    c.setTargetPath(pathResolver.resolvePath(node.getProperty().getPath(), c.getTarget()));
-                    activations.computeIfAbsent(origin.getProperty().getPath(), (key) -> new HashMap<>());
-                    activations.get(origin.getProperty().getPath()).computeIfAbsent(level, (k) -> new ArrayList<>());
-                    activations.get(origin.getProperty().getPath()).get(level).add(c);
-                });
+        final List<PropertyDefinitionDecorator.Condition> conditions = node.getProperty().getConditions();
+        if (!conditions.isEmpty()) {
+            final ConditionPerLevel condition = activations.computeIfAbsent(origin.getProperty().getPath(), key -> new ConditionPerLevel());
+            condition.operator = origin.getProperty().getMetadata().getOrDefault("condition::ifs::operator", "AND");
+            condition.conditions
+                       .computeIfAbsent(level, lvl -> new ArrayList<>())
+                       .addAll(conditions.stream()
+                            .peek(c -> c.setTargetPath(pathResolver.resolvePath(node.getProperty().getPath(), c.getTarget())))
+                            .collect(toList()));
+        }
 
-        final int l = level + 1;
-        buildActivationCondition(node.getParent(), origin, l);
+        buildActivationCondition(node.getParent(), origin, level + 1);
     }
 
     /**
@@ -601,5 +604,10 @@ public class SettingVisitor implements PropertyVisitor {
             canAddGuessSchema = hasOutputConnector;
         }
         return canAddGuessSchema;
+    }
+
+    private static class ConditionPerLevel {
+        private String operator;
+        private Map<Integer, List<PropertyDefinitionDecorator.Condition>> conditions = new HashMap<>();
     }
 }

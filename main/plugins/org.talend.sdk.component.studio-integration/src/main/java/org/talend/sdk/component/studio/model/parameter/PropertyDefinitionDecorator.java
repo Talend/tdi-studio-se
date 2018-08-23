@@ -361,7 +361,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         return delegate.getMetadata().get(buildGridLayoutKey(form));
     }
 
-    List<Condition> getCondition() {
+    List<Condition> getConditions() {
         return delegate.getMetadata()
                 .entrySet()
                 .stream()
