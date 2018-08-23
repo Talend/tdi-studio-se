@@ -251,12 +251,25 @@
 			if(encrypt) {
 			%>
 				com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
-					<%if(!set_region){%>
-				    .withRegion("us-east-1") // The first region to try your request against
-                    .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
-                    <%}else{%>
-                    .withRegion(<%=region%>)
-                    <%}%>
+					<%if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()){%>
+			        
+			            <%if(!set_region){%>
+			            .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,null))
+			            .withForceGlobalBucketAccessEnabled(true)
+			            <%}else{%>
+			            .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,<%=region%>))
+			            <%}%>
+			        
+		            <%}else{%>
+		            
+		            	<%if(!set_region){%>
+				        .withRegion("us-east-1") // The first region to try your request against
+                        .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
+                        <%}else{%>
+                        .withRegion(<%=region%>)
+                        <%}%>
+		            
+		            <%}%>
                     <%if(enableAccelerateMode){%>
                     .withAccelerateModeEnabled(true)
                     <%}%>
@@ -271,12 +284,26 @@
 			} else {
 			%>
 				com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3ClientBuilder.standard()
-				    <%if(!set_region){%>
-				    .withRegion("us-east-1") // The first region to try your request against
-                    .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
-                    <%}else{%>
-                    .withRegion(<%=region%>)
-                    <%}%>
+					<%if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()){%>
+			        
+			            <%if(!set_region){%>
+			            .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,null))
+			            .withForceGlobalBucketAccessEnabled(true)
+			            <%}else{%>
+			            .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,<%=region%>))
+			            <%}%>
+			        
+		            <%}else{%>
+		            
+		            	<%if(!set_region){%>
+				        .withRegion("us-east-1") // The first region to try your request against
+                        .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
+                        <%}else{%>
+                        .withRegion(<%=region%>)
+                        <%}%>
+		            
+		            <%}%>
+
                     <%if(enableAccelerateMode){%>
                     .withAccelerateModeEnabled(true)
                     <%}%>
@@ -285,11 +312,6 @@
                     .build();
 			<%
 			}
-		if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()){
-		%>
-			conn_<%=cid%>.setEndpoint(<%=regionEndpoint%>);
-		<%
-		}
 		if(isLog4jEnabled){
 		%>	
 			log.info("<%=cid%> - Creating new connection successfully.");
