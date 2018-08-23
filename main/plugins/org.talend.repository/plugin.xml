@@ -3009,7 +3009,7 @@
               description="Change output Date pattern to 'yyyy-MM-dd'"
               id="org.talend.repository.model.migration.AddSchemaDatePatternUseForImpalaTask"
               name="AddSchemaDatePatternUseForImpalaTask"
-              version="7.1.1">
+              version="7.0.1">
         </projecttask>
         <projecttask
               beforeLogon="false"
