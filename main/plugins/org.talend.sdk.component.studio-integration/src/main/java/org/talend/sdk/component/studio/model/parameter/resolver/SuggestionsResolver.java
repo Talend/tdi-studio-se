@@ -17,23 +17,16 @@ package org.talend.sdk.component.studio.model.parameter.resolver;
 
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.model.action.Action;
+import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
-import org.talend.sdk.component.studio.model.parameter.listener.ActionParametersUpdater;
 
 import java.util.Collection;
 import java.util.List;
 
 public class SuggestionsResolver extends AbstractParameterResolver {
 
-    /**
-     * Constructor
-     *
-     * @param actionOwner
-     * @param actions
-     * @param updater ActionParameterUpdater which updates action parameters whenever corresponding ElementParameters are changed
-     */
-    public SuggestionsResolver(final PropertyNode actionOwner, final Collection<ActionReference> actions, final ActionParametersUpdater updater) {
-        super(updater.getAction(), actionOwner, getActionRef(actionOwner, actions), updater);
+    public SuggestionsResolver(final SuggestionsAction action, final PropertyNode actionOwner, final Collection<ActionReference> actions) {
+        super(action, actionOwner, getActionRef(actionOwner, actions));
     }
     
     private static ActionReference getActionRef(final PropertyNode actionOwner, final Collection<ActionReference> actions) {

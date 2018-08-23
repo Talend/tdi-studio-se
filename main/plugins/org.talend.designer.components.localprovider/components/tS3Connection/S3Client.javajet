@@ -67,7 +67,7 @@
 		boolean encrypt = "true".equals(ElementParameterParser.getValue(node,"__ENCRYPT__"));
 		
 		//work for tRedshiftOutputBulk
-		String encrypted_key = ElementParameterParser.getValue(node,"__ENCRYPTED_KEY__");
+		String encryptionKeyPropertyName = "__ENCRYPTED_KEY__";
 		
 		//work for s3 components
 		String key_type = ElementParameterParser.getValue(node,"__KEY_TYPE__");
@@ -80,8 +80,16 @@
 		String private_key = ElementParameterParser.getValue(node,"__PRIVATE_KEY__");
 		
 		if(encrypt && node.getComponent().getName().startsWith("tRedshift")) {
-		%>
-			String masterKey_<%=cid%> = <%=encrypted_key%>; 
+			if (ElementParameterParser.canEncrypt(node, encryptionKeyPropertyName)) {
+%>
+				String masterKey_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, encryptionKeyPropertyName)%>);
+<%
+			} else {
+%>
+				String masterKey_<%=cid%> = <%=ElementParameterParser.getValue(node, encryptionKeyPropertyName) %>; 
+<%
+			}
+%>
 			javax.crypto.spec.SecretKeySpec symmetricKey_<%=cid%> = new javax.crypto.spec.SecretKeySpec(org.apache.commons.codec.binary.Base64.decodeBase64(masterKey_<%=cid%>.getBytes("UTF-8")), "AES");
 			com.amazonaws.services.s3.model.EncryptionMaterials encryptionMaterials_<%=cid%> = new com.amazonaws.services.s3.model.EncryptionMaterials(symmetricKey_<%=cid%>);
 			com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider encryptionMaterialsProvider_<%=cid%> = new com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider(encryptionMaterials_<%=cid%>);

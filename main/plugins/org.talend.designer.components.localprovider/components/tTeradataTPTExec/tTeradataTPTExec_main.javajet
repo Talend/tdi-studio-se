@@ -51,6 +51,8 @@ boolean applyOptionalAttributes = "true".equals(ElementParameterParser.getValue(
 
 boolean customScript = ("true").equals(ElementParameterParser.getValue(node, "__CUSTOM_SCRIPT__"));
 String customScriptPath = ElementParameterParser.getValue(node, "__CUSTOM_SCRIPT_FILE__");
+boolean defineDataCharset = ("true").equals(ElementParameterParser.getValue(node, "__DEFINE_DATA_CHARSET__"));
+String dataCharset = ElementParameterParser.getValue(node, "__DATA_CHARSET__");
 
 String passwordFieldName="__PASS__";
 
@@ -153,6 +155,13 @@ try{
 			<%}%>
 
 			java.io.FileWriter fw_<%=cid %> = new java.io.FileWriter(file_<%=cid%>);
+			<%
+				if(defineDataCharset){
+			%>
+					fw_<%=cid %>.write("USING CHARACTER SET "+<%=dataCharset%>+"<%=lineSeparator%>");
+			<%
+				}
+			%>
 			fw_<%=cid %>.write("DEFINE JOB "+<%=jobName %>+"<%=lineSeparator%>");
 			fw_<%=cid %>.write("  ("+"<%=lineSeparator%>");
 

@@ -200,6 +200,7 @@
                 <ITEM NAME="USERAGENT" VALUE="UserAgent"/>
                 <ITEM NAME="SOCKETRECEIVEBUFFERSIZEHINT" VALUE="SocketReceiveBufferSizeHints"/>
                 <ITEM NAME="SOCKETSENDBUFFERSIZEHINT" VALUE="SocketSendBufferSizeHints"/>
+                <ITEM NAME="SIGNEROVERRIDE" VALUE="SignerOverride"/>
             </ITEMS>
         </ITEM>
         <ITEM NAME="VALUE" />

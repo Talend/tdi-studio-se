@@ -448,7 +448,7 @@
       FIELD="CHECK"
       NUM_ROW="100"
       REQUIRED="true"
-      SHOW_IF="(DBTYPE=='MYSQL')"
+      SHOW_IF="(DBTYPE=='MYSQL') OR (DBTYPE =='POSTGRE')"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -556,7 +556,15 @@
 			<ITEM NAME="V9_X" VALUE="V9_X" />
 		</ITEMS>
 	</PARAMETER>
-    
+    <PARAMETER
+      NAME="UNLOGGED"
+      FIELD="CHECK"
+      NUM_ROW="100"
+      REQUIRED="true"
+      SHOW_IF="(DBTYPE == 'POSTGRE') AND (TEMPTABLE == 'false') AND (((USE_EXISTING_CONNECTION == 'false') AND (DB_POSTGRE_VERSION == 'V9_X')) OR ((USE_EXISTING_CONNECTION == 'true') AND (#LINK@NODE.CONNECTION_POSTGRE.DB_VERSION == 'V9_X')))"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
 	<!--Postgre configuration end-->
 
 	<!--PostgrePlus configuration start-->

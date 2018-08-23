@@ -339,6 +339,24 @@
       SHOW_IF="DEFINE_CHARSET=='true'">
       <DEFAULT>"ASCII"</DEFAULT>
     </PARAMETER>
+	
+    <PARAMETER
+      NAME="DEFINE_DATA_CHARSET"
+      FIELD="CHECK"
+      NUM_ROW="52"
+      REQUIRED="true"
+	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="DATA_CHARSET"
+      FIELD="TEXT"
+      NUM_ROW="52"
+      REQUIRED="true"
+      SHOW_IF="(DEFINE_DATA_CHARSET=='true') AND (CUSTOM_SCRIPT=='false')">
+      <DEFAULT>"ASCII"</DEFAULT>
+    </PARAMETER>
 
     <!-- TPT Consumer Operator Optional Attributes -->
     <PARAMETER 

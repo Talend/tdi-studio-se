@@ -15,48 +15,51 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.parameter.SuggestionValues;
 import org.talend.sdk.component.studio.ui.composite.controller.TaCoKitValueSelectionController;
-import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * It should be Thread-safe as it is used in a Job launched by {@link TaCoKitValueSelectionController}
  */
-public final class SuggestionsAction extends Action {
-    
-    private final V1Action actionService = Lookups.client().v1().action();
-    
+public class SuggestionsAction extends Action {
+
     /**
-     * Denotes whetere parameters were changed since last callback
+     * Cached previously used payload and corresponding response
      */
-    private boolean parametersChanged = true;
-    
-    /**
-     * Cached server response
-     */
-    private SuggestionValues cachedValue;
+    private Cache cached;
 
     public SuggestionsAction(String actionName, String family) {
         super(actionName, family, Action.Type.SUGGESTIONS);
     }
     
     private synchronized SuggestionValues callSuggestions() {
-        SuggestionValues result;
-        if (cachedValue == null || parametersChanged) {
-            final SuggestionValues values = actionService.execute(SuggestionValues.class, getFamily(), getType(), getActionName(), payload());
-            if (values.isCacheable()) {
-                cachedValue = values.clone();
-            }
-            result = values;
+        final Map<String, String> newPayload = payload();
+        if (responseNotCached() || payloadChanged(newPayload)) {
+            return doCallback(newPayload);
         } else {
-            result = cachedValue.clone();
+            return cached.response();
         }
-        parametersChanged = false;
-        return result;
+    }
+
+    private boolean responseNotCached() {
+        return cached == null;
+    }
+
+    private boolean payloadChanged(final Map<String, String> newPayload) {
+        return !cached.payload().equals(newPayload);
+    }
+
+    private SuggestionValues doCallback(Map<String, String> payload) {
+        final SuggestionValues response = actionClient().execute(SuggestionValues.class, getFamily(), getType(), getActionName(), payload);
+        if (response.isCacheable()) {
+            cached = new Cache(payload, response);
+        } else {
+            cached = null;
+        }
+        return response;
     }
     
     /**
@@ -66,19 +69,28 @@ public final class SuggestionsAction extends Action {
     public Map<String, String> callback() {
         final SuggestionValues response = callSuggestions();
         final Map<String, String> result = new LinkedHashMap<>();
-        response.getItems().forEach(item -> {
-            result.put(item.getLabel(), item.getId());
-        });
+        response.getItems().forEach(item -> result.put(item.getLabel(), item.getId()));
         return result;
     }
-    
-    /**
-     * Extends {@link Action#setParameterValue(String, String)} to set {@link #parametersChanged} flag to true
-     */
-    @Override
-    public synchronized void setParameterValue(final String parameterName, final String parameterValue) {
-        super.setParameterValue(parameterName, parameterValue);
-        parametersChanged = true;
+
+    private static class Cache {
+
+        private final Map<String, String> cachedPayload;
+
+        private final SuggestionValues cachedResponse;
+
+        Cache(final Map<String, String> payload, SuggestionValues response) {
+            this.cachedPayload = payload;
+            this.cachedResponse = response;
+        }
+
+        Map<String, String> payload() {
+            return cachedPayload;
+        }
+
+        SuggestionValues response() {
+            return cachedResponse;
+        }
     }
 
 }

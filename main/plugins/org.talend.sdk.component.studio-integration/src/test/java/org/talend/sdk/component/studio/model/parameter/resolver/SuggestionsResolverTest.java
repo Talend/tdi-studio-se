@@ -19,10 +19,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
-import org.talend.sdk.component.studio.model.action.Action;
+import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TableElementParameter;
-import org.talend.sdk.component.studio.model.parameter.listener.ActionParametersUpdater;
 import org.talend.sdk.component.studio.test.TestComponent;
 
 import java.util.*;
@@ -47,13 +46,11 @@ class SuggestionsResolverTest {
         final PropertyNode actionOwner = component.getNode("conf.basedOnTwoPrimitives");
         final Collection<ActionReference> actions = component.getActions();
         final ActionReference actionRef = component.getAction("basedOnTwoPrimitives");
-        final ActionParametersUpdater listener = createActionParametersUpdater(actionRef);
-        final SuggestionsResolver resolver = new SuggestionsResolver(actionOwner, actions, listener);
+        final ActionMock action = new ActionMock(actionRef.getName(), actionRef.getFamily());
+        final SuggestionsResolver resolver = new SuggestionsResolver(action, actionOwner, actions);
 
         final Map<String, IElementParameter> settings = component.getSettings();
         resolver.resolveParameters(settings);
-
-        final ActionMock action = (ActionMock) listener.getAction();
 
         assertEquals(expectedPayload, action.checkPayload());
     }
@@ -69,13 +66,11 @@ class SuggestionsResolverTest {
         final PropertyNode actionOwner = component.getNode("conf.basedOnComplex");
         final Collection<ActionReference> actions = component.getActions();
         final ActionReference actionRef = component.getAction("basedOnComplex");
-        final ActionParametersUpdater listener = createActionParametersUpdater(actionRef);
-        final SuggestionsResolver resolver = new SuggestionsResolver(actionOwner, actions, listener);
+        final ActionMock action = new ActionMock(actionRef.getName(), actionRef.getFamily());
+        final SuggestionsResolver resolver = new SuggestionsResolver(action, actionOwner, actions);
 
         final Map<String, IElementParameter> settings = component.getSettings();
         resolver.resolveParameters(settings);
-
-        final ActionMock action = (ActionMock) listener.getAction();
 
         assertEquals(expectedPayload, action.checkPayload());
     }
@@ -95,8 +90,8 @@ class SuggestionsResolverTest {
         final PropertyNode actionOwner = component.getNode("conf.basedOnTable");
         final Collection<ActionReference> actions = component.getActions();
         final ActionReference actionRef = component.getAction("basedOnTable");
-        final ActionParametersUpdater listener = createActionParametersUpdater(actionRef);
-        final SuggestionsResolver resolver = new SuggestionsResolver(actionOwner, actions, listener);
+        final ActionMock action = new ActionMock(actionRef.getName(), actionRef.getFamily());
+        final SuggestionsResolver resolver = new SuggestionsResolver(action, actionOwner, actions);
 
         final Map<String, IElementParameter> settings = component.getSettings();
         final TableElementParameter tableParam = createTableParameter();
@@ -104,7 +99,6 @@ class SuggestionsResolverTest {
 
         resolver.resolveParameters(settings);
 
-        final ActionMock action = (ActionMock) listener.getAction();
         assertEquals(expectedPayload, action.checkPayload());
     }
 
@@ -130,15 +124,10 @@ class SuggestionsResolverTest {
         return tableParam;
     }
 
-    private ActionParametersUpdater createActionParametersUpdater(final ActionReference action) {
-        final Action actionMock = new ActionMock(action.getName(), action.getFamily(), Action.Type.SUGGESTIONS);
-        return new ActionParametersUpdater(actionMock);
-    }
+    private static class ActionMock extends SuggestionsAction {
 
-    private static class ActionMock extends Action {
-
-        public ActionMock(final String actionName, final String family, final Type type) {
-            super(actionName, family, type);
+        public ActionMock(final String actionName, final String family) {
+            super(actionName, family);
         }
 
         public Map<String, String> checkPayload() {

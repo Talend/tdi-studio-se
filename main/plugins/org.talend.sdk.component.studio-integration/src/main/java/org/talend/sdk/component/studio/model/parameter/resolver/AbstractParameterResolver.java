@@ -5,13 +5,11 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.ActionParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 
-import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -36,20 +34,16 @@ abstract class AbstractParameterResolver implements ParameterResolver {
     
     protected final ActionReference actionRef;
 
-    private final PropertyChangeListener listener;
-
     private final ElementParameter redrawParameter;
 
-    AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final PropertyChangeListener listener) {
-        this(action, actionOwner, actionRef, listener, null);
+    AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef) {
+        this(action, actionOwner, actionRef,null);
     }
     
-    AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final PropertyChangeListener listener,
-                              final ElementParameter redrawParameter) {
+    AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final ElementParameter redrawParameter) {
         this.action = action;
         this.actionOwner = actionOwner;
         this.actionRef = actionRef;
-        this.listener = listener;
         this.redrawParameter = redrawParameter;
     }
 
@@ -74,7 +68,6 @@ abstract class AbstractParameterResolver implements ParameterResolver {
                 final List<TaCoKitElementParameter> parameters = findParameters(absolutePath, settings);
                 final SimplePropertyDefinition parameterRoot = expectedParameters.next();
                 parameters.forEach(parameter -> {
-                    parameter.registerListener("value", listener);
                     if (redrawParameter != null) {
                         parameter.setRedrawParameter(redrawParameter);
                     }

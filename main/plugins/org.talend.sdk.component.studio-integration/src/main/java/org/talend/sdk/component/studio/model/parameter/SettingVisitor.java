@@ -53,7 +53,6 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
-import org.talend.sdk.component.studio.model.parameter.listener.ActionParametersUpdater;
 import org.talend.sdk.component.studio.model.parameter.listener.ActiveIfListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory;
@@ -360,8 +359,7 @@ public class SettingVisitor implements PropertyVisitor {
 
     private SuggestionsAction createSuggestionsAction(final PropertyNode node) {
         final SuggestionsAction action = new SuggestionsAction(node.getProperty().getSuggestions().getName(), family);
-        final ActionParametersUpdater updater = new ActionParametersUpdater(action);
-        final SuggestionsResolver resolver = new SuggestionsResolver(node, actions, updater);
+        final SuggestionsResolver resolver = new SuggestionsResolver(action, node, actions);
         actionResolvers.add(resolver);
         return action;
     }
@@ -574,6 +572,7 @@ public class SettingVisitor implements PropertyVisitor {
         if (node.getProperty().hasValidation()) {
             final ValidationListener listener =
                     new ValidationListener(label, family, node.getProperty().getValidationName());
+            target.registerListener("value", listener);
             final ValidationResolver resolver = new ValidationResolver(node, actions, listener, redrawParameter);
             actionResolvers.add(resolver);
         }

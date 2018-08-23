@@ -60,7 +60,9 @@ import org.talend.designer.core.model.components.NodeReturn;
 import org.talend.designer.core.model.process.DataNode;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
+import org.talend.sdk.component.server.front.model.ComponentId;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
+import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.enums.ETaCoKitComponentType;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
@@ -103,11 +105,14 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
 
     private ETaCoKitComponentType tacokitComponentType;
 
-    public ComponentModel(final ComponentIndex component, final ComponentDetail detail, final ImageDescriptor image32,
+    private final ConfigTypeNodes configTypeNodes;
+
+    public ComponentModel(final ComponentIndex component, final ComponentDetail detail, final ConfigTypeNodes configTypeNodes, final ImageDescriptor image32,
             final String reportPath, final boolean isCatcherAvailable) {
         setPaletteType(ComponentCategory.CATEGORY_4_DI.getName());
         this.index = component;
         this.detail = detail;
+        this.configTypeNodes = configTypeNodes;
         this.tacokitComponentType = ETaCoKitComponentType.valueOf(this.detail.getType().toLowerCase());
         this.paletteValue = computePaletteValue();
         this.codePartListX = createCodePartList();
@@ -132,6 +137,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         this.reportPath = null;
         this.isCatcherAvailable = false;
         createCodePartList();
+        this.configTypeNodes = null;
     }
 
     @Override // this is our binding of slf4j
@@ -663,5 +669,13 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
             this.tacokitComponentType = ETaCoKitComponentType.valueOf(this.detail.getType().toLowerCase());
         }
         return this.tacokitComponentType;
+    }
+
+    public ConfigTypeNodes getConfigTypeNodes() {
+        return configTypeNodes;
+    }
+
+    public ComponentId getId(){
+        return this.index.getId();
     }
 }

@@ -14,19 +14,19 @@ package org.talend.sdk.component.studio.model.parameter;
 
 import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.lang.Strings;
-import org.talend.sdk.component.studio.model.action.ActionParameter;
+import org.talend.sdk.component.studio.model.action.AbstractActionParameter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-class TableActionParameter extends ActionParameter {
+class TableActionParameter extends AbstractActionParameter {
 
     private final TableElementParameter elementParameter;
 
     TableActionParameter(final TableElementParameter elementParameter, final String actionParameter) {
-        super(elementParameter.getName(), actionParameter, null);
+        super(elementParameter.getName(), actionParameter);
         this.elementParameter = elementParameter;
     }
 

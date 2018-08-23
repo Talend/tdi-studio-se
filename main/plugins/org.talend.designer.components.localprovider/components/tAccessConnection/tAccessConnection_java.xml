@@ -115,10 +115,10 @@
 	 <IMPORTS>
 		<IMPORT NAME="Driver-HSQLDb" MODULE="hsqldb.jar" MVN="mvn:org.talend.libraries/hsqldb/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.hsql/lib/hsqldb.jar" REQUIRED="true"/>
 		<IMPORT NAME="Driver-ucanaccess" MODULE="ucanaccess-2.0.9.5.jar" MVN="mvn:org.talend.libraries/ucanaccess-2.0.9.5/6.0.0"  REQUIRED="true"/>
-		<IMPORT NAME="Driver-JACKCESS" MODULE="jackcess-2.1.0.jar" MVN="mvn:org.talend.libraries/jackcess-2.1.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.access/lib/jackcess-2.1.0.jar" REQUIRED="true"/>
+		<IMPORT NAME="Driver-JACKCESS" MODULE="jackcess-2.1.12.jar" MVN="mvn:com.healthmarketscience.jackcess/jackcess/2.1.12" REQUIRED="true"/>
 		
-		<IMPORT NAME="jackcess-encrypt-2.1.0" MODULE="jackcess-encrypt-2.1.0.jar" MVN="mvn:org.talend.libraries/jackcess-encrypt-2.1.0/6.4.0" REQUIRED="true"/>
-		<IMPORT NAME="bcprov-jdk15on-1.51" MODULE="bcprov-jdk15on-1.51.jar" MVN="mvn:org.talend.libraries/bcprov-jdk15on-1.51/6.0.0" REQUIRED="true"/>
+		<IMPORT NAME="jackcess-encrypt-2.1.4" MODULE="jackcess-encrypt-2.1.4.jar" MVN="mvn:com.healthmarketscience.jackcess/jackcess-encrypt/2.1.4" REQUIRED="true"/>
+		<IMPORT NAME="bcprov-jdk15on-1.60" MODULE="bcprov-jdk15on-1.60.jar" MVN="mvn:org.bouncycastle/bcprov-jdk15on/1.60" REQUIRED="true"/>
 		<IMPORT NAME="talend-ucanaccess-utils-1.0.0" MODULE="talend-ucanaccess-utils-1.0.0.jar" MVN="mvn:org.talend.libraries/talend-ucanaccess-utils-1.0.0/6.4.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.access/lib/talend-ucanaccess-utils-1.0.0.jar" REQUIRED="true"/>
 		
 		<IMPORT NAME="common2.6" MODULE="commons-lang-2.6.jar" MVN="mvn:org.talend.libraries/commons-lang-2.6/6.0.0"   UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.6.jar" REQUIRED="true"/>

@@ -1,7 +1,5 @@
 package org.talend.sdk.studio.process;
 
-import static org.talend.core.model.process.EParameterFieldType.TEXT;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +19,7 @@ import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
+import org.talend.sdk.component.studio.model.parameter.VersionParameter;
 import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
 
 /**
@@ -28,78 +27,74 @@ import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
  * Provides additional functionality
  */
 public final class TaCoKitNode {
-    
+
     public static final String TACOKIT_COMPONENT_ID = "TACOKIT_COMPONENT_ID";
-    
+
     private final NodeTypeImpl node;
-    
+
     private final ComponentDetail detail;
-    
-    private static final Set<String> TECHNICAL_PARAMETERS = new HashSet<>(
-            Arrays.asList(EParameterName.UNIQUE_NAME.getName())); 
-    
+
+    private static final Set<String> MIGRATION_EXCLUSIONS = new HashSet<>(Arrays.asList(EParameterName.UNIQUE_NAME.getName(), TACOKIT_COMPONENT_ID));
+
     public TaCoKitNode(final NodeTypeImpl node) {
         Objects.requireNonNull(node, "Node should not be null");
-        if(!isTacokit(node)) {
+        if (!isTacokit(node)) {
             throw new IllegalArgumentException("It is not Tacokit node " + node.getComponentName());
         }
         this.node = node;
-        final String componentId = getComponentId(node).orElseThrow(() -> 
-            new IllegalStateException("No component detail for " + node.getComponentName()));
+        final String componentId = getComponentId(node).orElseThrow(() ->
+                new IllegalStateException("No component detail for " + node.getComponentName()));
         this.detail = Lookups.service().getDetailById(componentId);
     }
-    
+
     public String getId() {
         return detail.getId().getId();
     }
-    
+
     public boolean needsMigration() {
-        final int currentVersion = getCurrentVersion();
+        final int currentVersion = detail.getVersion();
         final int persistedVersion = getPersistedVersion();
         if (currentVersion < persistedVersion) {
-            throw new IllegalStateException(
-                    "current version: " + currentVersion + " persisted version: " + persistedVersion);
+            throw new IllegalStateException("current version: " + currentVersion + " persisted version: " + persistedVersion);
         }
         return currentVersion != persistedVersion;
     }
-    
-    public Map<String, String> getProperties() {
+
+    public Map<String, String> getPropertiesToMigrate() {
         Map<String, String> properties = new HashMap<>();
         @SuppressWarnings("rawtypes")
         EList parameters = node.getElementParameter();
         for (final Object elem : parameters) {
             ElementParameterTypeImpl parameter = (ElementParameterTypeImpl) elem;
-            if (!TECHNICAL_PARAMETERS.contains(parameter.getName()) || !EParameterFieldType.TECHNICAL.name().equals(parameter.getField())) {
+            if (!MIGRATION_EXCLUSIONS.contains(parameter.getName()) && (isComponentProperty(parameter.getName()) || parameter.getName().endsWith(VersionParameter.VERSION_SUFFIX))) {
                 properties.put(parameter.getName(), parameter.getValue());
             }
         }
         return properties;
     }
-    
+
+    private boolean isComponentProperty(final String name) {
+        return detail.getProperties().stream().anyMatch(property -> property.getPath().equals(name));
+    }
+
     @SuppressWarnings("unchecked")
     public void migrate(final Map<String, String> properties) {
-        final List<ElementParameterTypeImpl> technicalParameters = getTechnicalParameters();
+        final List<ElementParameterTypeImpl> noMigration = getParametersExcludedFromMigration();
         node.getElementParameter().clear();
-        node.getElementParameter().addAll(technicalParameters);
-        properties.forEach((name, value) -> {
-            if (isComponentProperty(name)) {
-                final ElementParameterTypeImpl parameter = createParameter(name, value);
-                node.getElementParameter().add(parameter);
-            }
-        });
-        setPersistedVersion(detail.getVersion());
+        node.getElementParameter().addAll(noMigration);
+        properties.entrySet().stream().filter(e -> isComponentProperty(e.getKey())).forEach(e -> node.getElementParameter().add(createParameter(e.getKey(), e.getValue())));
+        properties.entrySet().stream().filter(e -> e.getKey().endsWith(VersionParameter.VERSION_SUFFIX))
+                .forEach(e -> {
+                    final ElementParameterTypeImpl parameter = new ElementParameter();
+                    parameter.setName(e.getKey());
+                    parameter.setValue(e.getValue());
+                    parameter.setField(EParameterFieldType.TECHNICAL.getName());
+                    parameter.setShow(false);
+                    node.getElementParameter().add(parameter);
+                });
+        node.setComponentVersion(Integer.toString(detail.getVersion()));
     }
-    
-    /**
-     * Workaround method to filter *validation properties, which should not be serialized normally.
-     * This method should be removed after skipping *validation properties serialization.
-     * 
-     * @return true, if property is stored in SimplePropertyDefinition
-     */
-    private boolean isComponentProperty(final String name) {
-        return detail.getProperties().stream().filter(property -> property.getPath().equals(name)).count() != 0;
-    }
-    
+
     private ElementParameterTypeImpl createParameter(final String name, final String value) {
         final ElementParameterTypeImpl parameter = new ElementParameter();
         parameter.setName(name);
@@ -107,56 +102,35 @@ public final class TaCoKitNode {
         parameter.setField(getPropertyType(name));
         return parameter;
     }
-    
-    private SimplePropertyDefinition getProperty(final String name) {
-        return detail.getProperties().stream().filter(property -> property.getPath().equals(name)).findFirst().orElseThrow(
-                () -> new IllegalArgumentException("Can't find property for name: " + name));
+
+    private SimplePropertyDefinition getProperty(final String path) {
+        return detail.getProperties().stream().filter(property -> property.getPath().equals(path)).findFirst().orElseThrow(
+                () -> new IllegalArgumentException("Can't find property for name: " + path));
     }
-    
-    private String getPropertyType(final String name) {
-        final PropertyDefinitionDecorator property = PropertyDefinitionDecorator.wrap(getProperty(name));
-        final String type = new WidgetTypeMapper().getFieldType(property).getName();
-        return type;
+
+    private String getPropertyType(final String path) {
+        final PropertyDefinitionDecorator property = PropertyDefinitionDecorator.wrap(getProperty(path));
+        return new WidgetTypeMapper().getFieldType(property).getName();
     }
-    
-    /**
-     * Returns a list of technical parameters. These parameters should not be lost during migration
-     *
-     * @return a list with technical parameters 
-     */
-    private List<ElementParameterTypeImpl> getTechnicalParameters() {
+
+    private List<ElementParameterTypeImpl> getParametersExcludedFromMigration() {
         List<ElementParameterTypeImpl> technical = new ArrayList<>();
-        @SuppressWarnings("rawtypes")
-        EList parameters = node.getElementParameter();
-        for (final Object elem : parameters) {
-            ElementParameterTypeImpl parameter = (ElementParameterTypeImpl) elem;
-            if (isTechnical(parameter)) {
-                technical.add(parameter);
+        for (final Object elem : node.getElementParameter()) {
+            if (MIGRATION_EXCLUSIONS.contains(((ElementParameterTypeImpl) elem).getName())) {
+                technical.add((ElementParameterTypeImpl) elem);
             }
         }
         return technical;
     }
-    
-    private boolean isTechnical(final ElementParameterTypeImpl parameter) {
-        return TECHNICAL_PARAMETERS.contains(parameter.getName()) || EParameterFieldType.TECHNICAL.toString().equals(parameter.getField());
-    }
-    
-    public int getCurrentVersion() {
-        return detail.getVersion();
-    }
-    
+
     public int getPersistedVersion() {
         return Integer.parseInt(node.getComponentVersion());
     }
-    
-    private void setPersistedVersion(final int version) {
-        node.setComponentVersion(Integer.toString(version));
-    }
-    
+
     public static boolean isTacokit(final NodeTypeImpl node) {
         return getComponentId(node).isPresent();
     }
-    
+
     private static Optional<String> getComponentId(final NodeTypeImpl node) {
         for (final Object elem : node.getElementParameter()) {
             ElementParameterTypeImpl parameter = (ElementParameterTypeImpl) elem;
@@ -166,12 +140,12 @@ public final class TaCoKitNode {
         }
         return Optional.empty();
     }
-    
+
     /**
      * This class extends ElementParameterTypeImpl to allow instance creation
      */
     private static class ElementParameter extends ElementParameterTypeImpl {
-        
+
         /**
          * Extends super class constructor visibility
          */

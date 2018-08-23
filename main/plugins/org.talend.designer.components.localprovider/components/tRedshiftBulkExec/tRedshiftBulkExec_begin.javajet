@@ -275,12 +275,20 @@ skeleton="../templates/db_output_bulk.skeleton"
 	}
 	boolean encrypt = "true".equals(ElementParameterParser.getValue(node, "__ENCRYPT__"));
 	encrypt = encrypt && s3Mode;
-	
 	if(encrypt) {
-		String encryptedKey = ElementParameterParser.getValue(node,"__ENCRYPTED_KEY__");
+		String encryptionKeyPropertyName = "__ENCRYPTED_KEY__";
 %>
-		.append(";master_symmetric_key=").append(<%=encryptedKey%>)
+		.append(";master_symmetric_key=")
 <%
+		if (ElementParameterParser.canEncrypt(node, encryptionKeyPropertyName)) {
+%>
+			.append(routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, encryptionKeyPropertyName)%>))
+<%
+		} else {
+%>
+			.append(<%=ElementParameterParser.getValue(node, encryptionKeyPropertyName)%>)
+<%
+		}
 	}
 %>
 	.append("' ")

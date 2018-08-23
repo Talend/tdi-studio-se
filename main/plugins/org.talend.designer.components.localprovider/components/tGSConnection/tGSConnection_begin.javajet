@@ -17,7 +17,7 @@ final String GoogleTracker = org.talend.core.utils.TrackerUtil.getGoogleTracker(
 
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 	   
-org.jets3t.service.Jets3tProperties jets3tProperties = new org.jets3t.service.Jets3tProperties();
+org.jets3t.service.Jets3tProperties jets3tProperties = org.jets3t.service.Jets3tProperties.getInstance(org.jets3t.service.Constants.JETS3T_PROPERTIES_FILENAME);
 jets3tProperties.setProperty("httpclient.useragent", "<%=AWSTracker%>");
 org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
 org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," <%=GoogleTracker%>", null, jets3tProperties);

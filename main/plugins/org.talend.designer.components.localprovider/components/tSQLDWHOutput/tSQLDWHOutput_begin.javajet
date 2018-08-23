@@ -189,10 +189,6 @@ if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || (
 java.sql.Connection conn_<%=cid%> = null;
 <%
 boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-boolean isEnableDatasource = false;
-if(cid.indexOf("tMSSqlOutput")>-1 || cid.indexOf("tMSSqlSP")>-1 ){
-	isEnableDatasource = true;
-}
 %>
 String dbUser_<%=cid %> = null;
 <%
@@ -208,7 +204,7 @@ if(useExistingConnection) {
 } else {
 	boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));   
 	String driver = ElementParameterParser.getValue(node, "__DRIVER__");
-	if(isEnableDatasource && specify_alias){
+	if(specify_alias){
 		String alias = ElementParameterParser.getValue(node, "__DATASOURCE_ALIAS__");
 		%>
 		java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES);
@@ -279,7 +275,7 @@ if(useExistingConnection) {
     conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
     <%dbLog.conn().connDone(dbLog.var("url"));%>
 	<%
-	if(isEnableDatasource && specify_alias){
+	if(specify_alias){
 	%>
 		}
 	<%
