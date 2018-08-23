@@ -440,9 +440,8 @@
 		/* ----START-CREATING-JOB (Cloud API)---- */
 		com.google.cloud.bigquery.TableId tableId_<%=cid%> = com.google.cloud.bigquery.TableId.of(<%=projectId%>, <%=dataset%>, <%=table%>);
 		com.google.cloud.bigquery.Table table_<%=cid%> = bigquery_<%=cid%>.getTable(tableId_<%=cid%>);
-		boolean isOutputNonExistent = table_<%=cid%> == null && "<%=cid%>".contains("tBigQueryOutput");
-		boolean isBulkExecNonExistent = table_<%=cid%>.getDefinition().getSchema() == null && "<%=cid%>".contains("tBigQueryBulkExec");
-		if (isOutputNonExistent || isBulkExecNonExistent) {
+		boolean tableNotExist = table_<%=cid%> == null;
+		if (tableNotExist) {
 			if (!<%=ElementParameterParser.getBooleanValue(node, "__CREATE_TABLE_IF_NOT_EXIST__")%>) {
 				throw new RuntimeException("table [" + <%=dataset%> + "." + <%=table%> + "] does not exist");
 			}
@@ -482,9 +481,6 @@
 			%>
 			com.google.cloud.bigquery.Schema schema_<%=cid%> = com.google.cloud.bigquery.Schema.of(fields_<%=cid%>);
 			com.google.cloud.bigquery.TableInfo tableInfo_<%=cid%> = com.google.cloud.bigquery.TableInfo.newBuilder(tableId_<%=cid%>, com.google.cloud.bigquery.StandardTableDefinition.of(schema_<%=cid%>)).build();
-			if (isBulkExecNonExistent) {
-				table_<%=cid%>.delete();
-			}
 			table_<%=cid%> = bigquery_<%=cid%>.create(tableInfo_<%=cid%>);
 		}
 		com.google.cloud.bigquery.Job job_<%=cid%> = table_<%=cid%>.load(com.google.cloud.bigquery.FormatOptions.csv(), <%=gsFile%>);
