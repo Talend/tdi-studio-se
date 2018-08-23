@@ -2891,6 +2891,15 @@
                name="Fill the default db version of mssql for Jobsetting"
                version="6.3.1">
          </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.3.1"
+              class="org.talend.repository.model.migration.spark.UseSqlDateTypeInDataframesTask"
+              description="Keep Date type for component impacted by change from Date to Timestamp"
+              id="org.talend.repository.model.migration.spark.UseSqlDateTypeInDataframesTask"
+              name="UseSqlDateTypeInDataframesTask"
+              version="6.3.2">
+        </projecttask>
    </extension>
 
    <extension
