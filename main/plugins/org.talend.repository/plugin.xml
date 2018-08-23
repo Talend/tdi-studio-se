@@ -2965,12 +2965,12 @@
         </projecttask>
         <projecttask
 	          beforeLogon="false"
-	          breaks="6.4.2"
+	          breaks="6.5.1"
 	          class="org.talend.repository.model.migration.AddSchemaDatePatternUseForImpalaTask"
 	          description="Change output Date pattern to 'yyyy-MM-dd'"
 	          id="org.talend.repository.model.migration.AddSchemaDatePatternUseForImpalaTask"
 	          name="AddSchemaDatePatternUseForImpalaTask"
-	          version="6.4.2">
+	          version="6.5.2">
 	    </projecttask>
         <projecttask
             beforeLogon="false"
@@ -2986,6 +2986,15 @@
               class="org.talend.repository.model.migration.AddDbMappingTTeradataFastLoadMigrationTask"
               id="org.talend.repository.model.migration.AddDbMappingTTeradataFastLoadMigrationTask"
               name="AddDbMappingTTeradataFastLoadMigrationTask"
+              version="6.5.2">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.5.1"
+              class="org.talend.repository.model.migration.spark.UseSqlDateTypeInDataframesTask"
+              description="Keep Date type for component impacted by change from Date to Timestamp"
+              id="org.talend.repository.model.migration.spark.UseSqlDateTypeInDataframesTask"
+              name="UseSqlDateTypeInDataframesTask"
               version="6.5.2">
         </projecttask>
    </extension>
