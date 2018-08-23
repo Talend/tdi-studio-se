@@ -255,7 +255,7 @@
 				    .withRegion("us-east-1") // The first region to try your request against
                     .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
                     <%}else{%>
-                    .withRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>))
+                    .withRegion(<%=region%>)
                     <%}%>
                     <%if(enableAccelerateMode){%>
                     .withAccelerateModeEnabled(true)
@@ -275,7 +275,7 @@
 				    .withRegion("us-east-1") // The first region to try your request against
                     .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
                     <%}else{%>
-                    .withRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>))
+                    .withRegion(<%=region%>)
                     <%}%>
                     <%if(enableAccelerateMode){%>
                     .withAccelerateModeEnabled(true)
