@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.function.BooleanSupplier;
 
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
@@ -54,10 +55,10 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
+import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
 import org.talend.sdk.component.studio.model.parameter.listener.ActiveIfListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory;
-import org.talend.sdk.component.studio.model.parameter.resolver.AbsolutePathResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
@@ -108,12 +109,10 @@ public class SettingVisitor implements PropertyVisitor {
 
     private final Collection<ActionReference> actions;
 
-    private final Map<String, ConditionPerLevel> activations =
+    private final Map<String, Map<Integer, List<ConditionGroup>>> activations =
             new LinkedHashMap<>();
 
     private final List<ParameterResolver> actionResolvers = new ArrayList<>();
-    
-    private final AbsolutePathResolver pathResolver = new AbsolutePathResolver();
 
     public SettingVisitor(final IElement iNode,
             final ElementParameter redrawParameter, final ConfigTypeNode config) {
@@ -140,6 +139,21 @@ public class SettingVisitor implements PropertyVisitor {
         return this;
     }
 
+    private void buildActivationCondition(final PropertyNode node, final PropertyNode origin, final int level) {
+        if (node == null) {
+            return;
+        }
+
+        final ConditionGroup group = node.getProperty().getConditions();
+        if (!group.getConditions().isEmpty()) {
+            activations.computeIfAbsent(origin.getProperty().getPath(), key -> new HashMap<>())
+                       .computeIfAbsent(level, lvl -> new ArrayList<>())
+                       .add(group);
+        }
+
+        buildActivationCondition(node.getParent(), origin, level + 1);
+    }
+
     /**
      * Registers created Listeners in {@link TaCoKitElementParameter} and returns list of created parameters.
      * Also setup initial visibility according initial value of target parameters
@@ -147,20 +161,23 @@ public class SettingVisitor implements PropertyVisitor {
      * @return created parameters
      */
     public List<IElementParameter> getSettings() {
-        activations.forEach((path, condition) -> {
+        activations.forEach((path, conditions) -> {
             settings.keySet().stream()
                     .filter(key -> key.equals(path))
                     .filter(p -> TaCoKitElementParameter.class.isInstance(settings.get(p)))
                     .map(setting -> TaCoKitElementParameter.class.cast(settings.get(setting)))
                     .forEach(param -> {
                         param.setRedrawParameter(redrawParameter);
-                        final Map<String, TaCoKitElementParameter> targetParams =
-                                condition.conditions.values().stream().flatMap(Collection::stream)
-                                        .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
-                                        .collect(toMap(ElementParameter::getName, identity()));
 
-                        final ActiveIfListener activationListener =
-                                new ActiveIfListener(condition.conditions, param, targetParams, condition.operator);
+                        final Map<String, TaCoKitElementParameter> targetParams = conditions.values().stream()
+                            .flatMap(Collection::stream)
+                            .flatMap(it -> it.getConditions().stream())
+                            .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
+                            .collect(toMap(ElementParameter::getName, identity()));
+
+                        final ActiveIfListener activationListener = new ActiveIfListener(
+                            conditions.values().stream().flatMap(Collection::stream).collect(toList()),
+                            param, targetParams);
 
                         targetParams.forEach((name, p) -> {
                             p.setRedrawParameter(redrawParameter);
@@ -499,25 +516,6 @@ public class SettingVisitor implements PropertyVisitor {
         buildActivationCondition(node, node, 0);
     }
 
-    private void buildActivationCondition(final PropertyNode node, final PropertyNode origin, final int level) {
-        if (node == null) {
-            return;
-        }
-
-        final List<PropertyDefinitionDecorator.Condition> conditions = node.getProperty().getConditions();
-        if (!conditions.isEmpty()) {
-            final ConditionPerLevel condition = activations.computeIfAbsent(origin.getProperty().getPath(), key -> new ConditionPerLevel());
-            condition.operator = origin.getProperty().getMetadata().getOrDefault("condition::ifs::operator", "AND");
-            condition.conditions
-                       .computeIfAbsent(level, lvl -> new ArrayList<>())
-                       .addAll(conditions.stream()
-                            .peek(c -> c.setTargetPath(pathResolver.resolvePath(node.getProperty().getPath(), c.getTarget())))
-                            .collect(toList()));
-        }
-
-        buildActivationCondition(node.getParent(), origin, level + 1);
-    }
-
     /**
      * Creates table parameters (columns) for Table property
      *
@@ -604,10 +602,5 @@ public class SettingVisitor implements PropertyVisitor {
             canAddGuessSchema = hasOutputConnector;
         }
         return canAddGuessSchema;
-    }
-
-    private static class ConditionPerLevel {
-        private String operator;
-        private Map<Integer, List<PropertyDefinitionDecorator.Condition>> conditions = new HashMap<>();
     }
 }
