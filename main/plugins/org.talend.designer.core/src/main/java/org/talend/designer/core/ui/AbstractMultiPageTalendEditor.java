@@ -162,7 +162,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType
 import org.talend.designer.core.ui.editor.AbstractTalendEditor;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.TalendJavaEditor;
-import org.talend.designer.core.ui.editor.dependencies.JobDependenciesEditor;
 import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletUtil;
@@ -279,8 +278,6 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
     protected AbstractTalendEditor designerEditor;
 
     private AbstractDecoratedTextEditor jobletEditor;
-
-    private JobDependenciesEditor dependenciesEditor;
 
     protected List propertyInformation;
 
@@ -909,11 +906,6 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         createPage0();
         createPage1();
         createPage2();
-        
-        // only ee products can show "Dependencies" page
-        if (PluginChecker.isTIS()) {
-            createPage3();
-        }
 
         if (getPageCount() == 1) {
             Composite container = getContainer();
@@ -1064,18 +1056,6 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
         } catch (CoreException e) {
-            ExceptionHandler.process(e);
-        }
-    }
-
-    // create Dependencies editor
-    protected void createPage3() {
-        dependenciesEditor = new JobDependenciesEditor(this, designerEditor.isReadOnly());
-        try {
-            int index = addPage(dependenciesEditor, getEditorInput());
-            setPageText(index, Messages.getString("AbstractMultiPageTalendEditor.DependenciesPage")); //$NON-NLS-1$
-            setPageImage(index, DesignerPlugin.getImageDescriptor("icons/dependencies/dependencies.gif").createImage());
-        } catch (PartInitException e) {
             ExceptionHandler.process(e);
         }
     }

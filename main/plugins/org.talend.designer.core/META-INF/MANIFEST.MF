@@ -164,7 +164,6 @@ Export-Package: org.talend.designer.core;
    org.eclipse.gef.ui.palette",
  org.talend.designer.core.ui.editor.cmd,
  org.talend.designer.core.ui.editor.connections,
- org.talend.designer.core.ui.editor.dependencies.util,
  org.talend.designer.core.ui.editor.jobletcontainer,
  org.talend.designer.core.ui.editor.nodecontainer,
  org.talend.designer.core.ui.editor.nodes,
@@ -247,6 +246,5 @@ Export-Package: org.talend.designer.core;
  org.talend.designer.unifiedcomponent.delegate.service,
  org.talend.designer.unifiedcomponent.unifier
 Bundle-Vendor: .Talend SA.
-Import-Package: org.talend.camel.core.model.camelProperties,
- org.talend.hadoop.distribution,
+Import-Package: org.talend.hadoop.distribution,
  org.talend.hadoop.distribution.component
