@@ -84,7 +84,7 @@ imports="
 						%>
 						java.util.Map<String,String> userMetadata_<%=cid%> = metadataResult_<%=cid%>.getUserMetadata();
 						if((userMetadata_<%=cid%>!=null) && userMetadata_<%=cid%>.get("x-amz-iv")!=null) {
-								throw new RuntimeException("the metadata key : \"x-amz-iv\" exists in the current object metadata, its value is important for client encrypt with kms, can't copy it now as s3 service limit with multi part copy");
+								throw new RuntimeException("the metadata key : \"x-amz-iv\" exists in the current object metadata, its value is important for client encrypt with KMS, which can't be copied as s3 service limit it");
 						}
 						
     				com.amazonaws.services.s3.model.InitiateMultipartUploadRequest putRequest_<%=cid%> = null;
