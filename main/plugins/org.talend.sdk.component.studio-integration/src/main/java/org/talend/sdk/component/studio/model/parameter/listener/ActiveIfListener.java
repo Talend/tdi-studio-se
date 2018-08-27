@@ -42,6 +42,9 @@ public class ActiveIfListener implements PropertyChangeListener {
 
     private final Map<String, TaCoKitElementParameter> targetParams;
 
+    /**
+     * Parameter which visibility is controlled by ActiveIfs annotations
+     */
     private final TaCoKitElementParameter sourceParameter;
 
     public ActiveIfListener(
