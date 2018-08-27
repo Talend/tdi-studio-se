@@ -49,8 +49,8 @@
     
     <PARAMETER NAME="AUTH_MODE" FIELD="CLOSED_LIST" NUM_ROW="15" REQUIRED="true" GROUP="AUTHENTICATION" REPOSITORY_VALUE="AUTH_MODE">
 			<ITEMS DEFAULT="SERVICEACCOUNT">
-				<ITEM NAME="SERVICEACCOUNT" VALUE="Service account" />
-				<ITEM NAME="OAUTH" VALUE="OAuth 2.0" />
+				<ITEM NAME="SERVICEACCOUNT" VALUE="SERVICEACCOUNT" />
+				<ITEM NAME="OAUTH" VALUE="OAUTH" />
 			</ITEMS>
 	</PARAMETER>
 
@@ -60,7 +60,7 @@
 			FIELD="FILE" 
 			NUM_ROW="18" 
 			REQUIRED="true" 
-			SHOW_IF="AUTH_MODE == 'Service account'"
+			SHOW_IF="AUTH_MODE == 'SERVICEACCOUNT'"
 			GROUP="AUTHENTICATION"
 			>
 			<DEFAULT>""</DEFAULT>
@@ -71,7 +71,7 @@
       FIELD="TEXT"
       NUM_ROW="20"
       REQUIRED="true"
-      SHOW_IF="AUTH_MODE == 'OAuth 2.0'"
+      SHOW_IF="AUTH_MODE == 'OAUTH'"
       GROUP="AUTHENTICATION"
     >
       <DEFAULT>""</DEFAULT>
@@ -82,7 +82,7 @@
       FIELD="PASSWORD"
       NUM_ROW="21"
       REQUIRED="true"
-      SHOW_IF="AUTH_MODE == 'OAuth 2.0'"
+      SHOW_IF="AUTH_MODE == 'OAUTH'"
       GROUP="AUTHENTICATION"
     >
       <DEFAULT>""</DEFAULT>
@@ -93,7 +93,7 @@
       FIELD="TEXT"
       NUM_ROW="30"
       REQUIRED="true"
-      SHOW_IF="AUTH_MODE == 'OAuth 2.0'"
+      SHOW_IF="AUTH_MODE == 'OAUTH'"
       GROUP="AUTHENTICATION"
     >
       <DEFAULT>""</DEFAULT>
@@ -131,7 +131,7 @@
 
     <PARAMETER
       NAME="ACTION_ON_DATA"
-      SHOW_IF="AUTH_MODE == 'OAuth 2.0'"
+      SHOW_IF="AUTH_MODE == 'OAUTH'"
       FIELD="CLOSED_LIST"
       NUM_ROW="51"
       REQUIRED="true"
