@@ -76,14 +76,14 @@ public class ActiveIfListener implements PropertyChangeListener {
     private String evaluateValue(final PropertyDefinitionDecorator.Condition condition) {
         switch (condition.getEvaluationStrategy()) {
         case "DEFAULT":
-            return String.valueOf(targetParams.get(condition.getTargetPath()).getValue());
+            return targetParams.get(condition.getTargetPath()).getStringValue();
         case "LENGTH":
             final TaCoKitElementParameter targetParam = targetParams.get(condition.getTargetPath());
             if (targetParam.getValue() == null) {
                 return "0";
             }
             if (TextElementParameter.class.isInstance(targetParam)) {
-                return String.valueOf(String.valueOf(targetParam.getValue()).length());
+                return String.valueOf(targetParam.getStringValue().length());
             } else if (TableElementParameter.class.isInstance(targetParam)) {
                 return String.valueOf(((List) (targetParam.getValue())).size());
             }
