@@ -162,31 +162,28 @@ public class SettingVisitor implements PropertyVisitor {
      */
     public List<IElementParameter> getSettings() {
         activations.forEach((path, conditions) -> {
-            settings.keySet().stream()
-                    .filter(key -> key.equals(path))
-                    .filter(p -> TaCoKitElementParameter.class.isInstance(settings.get(p)))
-                    .map(setting -> TaCoKitElementParameter.class.cast(settings.get(setting)))
-                    .forEach(param -> {
-                        param.setRedrawParameter(redrawParameter);
+            final TaCoKitElementParameter param = (TaCoKitElementParameter) settings.get(path);
+            if (param == null) {
+                throw new RuntimeException("ElementParameter not found. Path: " + path);
+            }
+            param.setRedrawParameter(redrawParameter);
 
-                        final Map<String, TaCoKitElementParameter> targetParams = conditions.values().stream()
-                            .flatMap(Collection::stream)
-                            .flatMap(it -> it.getConditions().stream())
-                            .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
-                            .collect(toMap(ElementParameter::getName, identity()));
+            final Map<String, TaCoKitElementParameter> targetParams = conditions.values().stream()
+                    .flatMap(Collection::stream)
+                    .flatMap(it -> it.getConditions().stream())
+                    .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
+                    .collect(toMap(ElementParameter::getName, identity()));
 
-                        final ActiveIfListener activationListener = new ActiveIfListener(
-                            conditions.values().stream().flatMap(Collection::stream).collect(toList()),
-                            param, targetParams);
+            final ActiveIfListener activationListener = new ActiveIfListener(
+                    conditions.values().stream().flatMap(Collection::stream).collect(toList()),
+                    param, targetParams);
 
-                        targetParams.forEach((name, p) -> {
-                            p.setRedrawParameter(redrawParameter);
-                            p.registerListener("value", activationListener);
-                            //Sends initial event to listener to set initial visibility
-                            activationListener.propertyChange(
-                                    new PropertyChangeEvent(p, "value", p.getValue(), p.getValue()));
-                        });
-                    });
+            targetParams.forEach((name, p) -> {
+                p.registerListener("value", activationListener);
+                //Sends initial event to listener to set initial visibility
+                activationListener.propertyChange(
+                        new PropertyChangeEvent(p, "value", p.getValue(), p.getValue()));
+            });
         });
 
         actionResolvers.forEach(resolver -> resolver.resolveParameters(Collections.unmodifiableMap(settings)));
