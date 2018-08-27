@@ -375,9 +375,10 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                     final String valueKey = CONDITION_IF_VALUE + index;
                     final String negateKey = CONDITION_IF_NEGATE + index;
                     final String evaluationStrategyKey = CONDITION_IF_EVALUTIONSTRATEGY + index;
+                    final String absoluteTargetPath = PATH_RESOLVER.resolvePath(delegate.getPath(), meta.getValue());
                     return new Condition(
                             delegate.getMetadata().getOrDefault(valueKey, "true").split(VALUE_SEPARATOR),
-                            PATH_RESOLVER.resolvePath(delegate.getPath(), delegate.getPath()),
+                            absoluteTargetPath,
                             Boolean.parseBoolean(delegate.getMetadata().getOrDefault(negateKey, "false")),
                             delegate.getMetadata().getOrDefault(evaluationStrategyKey, "DEFAULT"));
                 }).collect(toList()), "AND".equalsIgnoreCase(delegate.getMetadata().getOrDefault("condition::ifs::operator", "AND")));
@@ -603,6 +604,9 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
     public static class Condition {
 
+        /**
+         * Path to property to be evaluated (corresponds to ActiveIf.target())
+         */
         private final String targetPath;
 
         private final boolean negation;
