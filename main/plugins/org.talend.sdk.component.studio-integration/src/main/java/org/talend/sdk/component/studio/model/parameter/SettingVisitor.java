@@ -109,7 +109,16 @@ public class SettingVisitor implements PropertyVisitor {
 
     private final Collection<ActionReference> actions;
 
-    private final Map<String, Map<Integer, List<ConditionGroup>>> activations =
+    /**
+     * A cache of ConditionGroups, which is used to collect them and create ActiveIfListeners
+     * after all ElementParameters are created.
+     * A key is a path of controlled ElementParameter (i.e. ElementParameter which shown/hidden according ActiveIf logic).
+     * Value is a List of ConditionGroups.
+     * Each ConditionGroup corresponds to one ActiveIfs annotation.
+     * ElementProperty may have several ConditionGroups because its visibility is controlled not only by its own
+     * ActiveIfs annotation, but also by its parents' ActiveIfs annotations
+     */
+    private final Map<String, List<ConditionGroup>> activations =
             new LinkedHashMap<>();
 
     private final List<ParameterResolver> actionResolvers = new ArrayList<>();
@@ -139,19 +148,18 @@ public class SettingVisitor implements PropertyVisitor {
         return this;
     }
 
-    private void buildActivationCondition(final PropertyNode node, final PropertyNode origin, final int level) {
+    private void buildActivationCondition(final PropertyNode node, final PropertyNode origin) {
         if (node == null) {
             return;
         }
 
         final ConditionGroup group = node.getProperty().getConditions();
         if (!group.getConditions().isEmpty()) {
-            activations.computeIfAbsent(origin.getProperty().getPath(), key -> new HashMap<>())
-                       .computeIfAbsent(level, lvl -> new ArrayList<>())
+            activations.computeIfAbsent(origin.getProperty().getPath(), key -> new ArrayList<>())
                        .add(group);
         }
 
-        buildActivationCondition(node.getParent(), origin, level + 1);
+        buildActivationCondition(node.getParent(), origin);
     }
 
     /**
@@ -161,22 +169,19 @@ public class SettingVisitor implements PropertyVisitor {
      * @return created parameters
      */
     public List<IElementParameter> getSettings() {
-        activations.forEach((path, conditions) -> {
+        activations.forEach((path, conditionGroups) -> {
             final TaCoKitElementParameter param = (TaCoKitElementParameter) settings.get(path);
             if (param == null) {
                 throw new RuntimeException("ElementParameter not found. Path: " + path);
             }
             param.setRedrawParameter(redrawParameter);
 
-            final Map<String, TaCoKitElementParameter> targetParams = conditions.values().stream()
-                    .flatMap(Collection::stream)
+            final Map<String, TaCoKitElementParameter> targetParams = conditionGroups.stream()
                     .flatMap(it -> it.getConditions().stream())
                     .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
                     .collect(toMap(ElementParameter::getName, identity()));
 
-            final ActiveIfListener activationListener = new ActiveIfListener(
-                    conditions.values().stream().flatMap(Collection::stream).collect(toList()),
-                    param, targetParams);
+            final ActiveIfListener activationListener = new ActiveIfListener(conditionGroups, param, targetParams);
 
             targetParams.forEach((name, p) -> {
                 p.registerListener("value", activationListener);
@@ -510,7 +515,7 @@ public class SettingVisitor implements PropertyVisitor {
             createValidationLabel(node, (TaCoKitElementParameter) parameter);
         }
 
-        buildActivationCondition(node, node, 0);
+        buildActivationCondition(node, node);
     }
 
     /**
