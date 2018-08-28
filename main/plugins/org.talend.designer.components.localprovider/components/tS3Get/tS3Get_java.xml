@@ -308,7 +308,6 @@
                 <ITEM NAME="SOCKETRECEIVEBUFFERSIZEHINT" VALUE="SocketReceiveBufferSizeHints"/>
                 <ITEM NAME="SOCKETSENDBUFFERSIZEHINT" VALUE="SocketSendBufferSizeHints"/>
                 <ITEM NAME="SIGNEROVERRIDE" VALUE="SignerOverride"/>
-                <ITEM NAME="ENABLEACCELERATEMODE" VALUE="EnableAccelerateMode"/>
             </ITEMS>
         </ITEM>
         <ITEM NAME="VALUE" />
@@ -330,6 +329,14 @@
       SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
     >
       <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="ENABLE_ACCELERATE"
+      FIELD="CHECK"
+      NUM_ROW="50"
+    >   	
+    <DEFAULT>false</DEFAULT>
     </PARAMETER>
 
     </ADVANCED_PARAMETERS>

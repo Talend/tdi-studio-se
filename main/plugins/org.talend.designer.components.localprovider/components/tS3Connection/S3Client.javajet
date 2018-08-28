@@ -20,7 +20,7 @@
 	boolean setStsEndpoint = "true".equals(ElementParameterParser.getValue(node,"__SET_STS_ENDPOINT__"));
 	String stsEndpoint = ElementParameterParser.getValue(node,"__STS_ENDPOINT__");
 	
-	boolean enableAccelerateMode = false;
+	boolean enableAccelerateMode = "true".equals(ElementParameterParser.getValue(node,"__ENABLE_ACCELERATE__"));
 	
 	String sessionDuration = ElementParameterParser.getValue(node,"__SESSION_DURATION__");
 	if(sessionDuration == null || sessionDuration.isEmpty()) {
@@ -210,10 +210,6 @@
 				%>
 					cc_<%=cid%>.setProtocol(com.amazonaws.Protocol.<%=value.toUpperCase().replaceAll("\"","")%>);
 				<%
-				}else if("EnableAccelerateMode".equals(client_parameter)){
-				    value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
-				    if("enable".equalsIgnoreCase(value)||"yes".equalsIgnoreCase(value)||"true".equalsIgnoreCase(value))
-                        enableAccelerateMode = true;
 				}else{
 				%>
 					cc_<%=cid%>.set<%=client_parameter%>(<%=value%>);

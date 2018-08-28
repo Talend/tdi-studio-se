@@ -270,7 +270,6 @@
                 <ITEM NAME="SOCKETRECEIVEBUFFERSIZEHINT" VALUE="SocketReceiveBufferSizeHints"/>
                 <ITEM NAME="SOCKETSENDBUFFERSIZEHINT" VALUE="SocketSendBufferSizeHints"/>
                 <ITEM NAME="SIGNEROVERRIDE" VALUE="SignerOverride"/>
-                <ITEM NAME="ENABLEACCELERATEMODE" VALUE="EnableAccelerateMode"/>
             </ITEMS>
         </ITEM>
         <ITEM NAME="VALUE" />
@@ -301,6 +300,14 @@
       NUM_ROW="40"
     >   	
     <DEFAULT>true</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="ENABLE_ACCELERATE"
+      FIELD="CHECK"
+      NUM_ROW="50"
+    >   	
+    <DEFAULT>false</DEFAULT>
     </PARAMETER>
 
     </ADVANCED_PARAMETERS>
