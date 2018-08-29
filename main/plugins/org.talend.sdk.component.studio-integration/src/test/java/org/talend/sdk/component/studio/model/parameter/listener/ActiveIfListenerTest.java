@@ -27,11 +27,46 @@ import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.Condition;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
+import org.talend.sdk.component.studio.model.parameter.TextElementParameter;
 import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
 
 // todo: check why these tests are correct, seems it happens on the property change
 //       and not the relational conditions changes
 class ActiveIfListenerTest {
+    @Test
+    void containsNegative() {
+        final TacokitTestParameter param = new TacokitTestParameter("-");
+        new ActiveIfListener(singletonList(
+                new ConditionGroup(
+                    singletonList(new Condition(new String[] { "A" }, "a", false, "contains")), true)),
+                param, singletonMap("a", new TacokitTestParameter("foo")))
+                .propertyChange(new PropertyChangeEvent(param, "value", "bar", "foo"));
+        assertFalse(param.setShowValue);
+    }
+
+    @Test
+    void contains() {
+        final TacokitTestParameter param = new TacokitTestParameter("-");
+        new ActiveIfListener(singletonList(
+                new ConditionGroup(
+                    singletonList(new Condition(new String[] { "A" }, "a", false, "contains")), true)),
+                param, singletonMap("a", new TacokitTestParameter("bAr")))
+                .propertyChange(new PropertyChangeEvent(param, "value", "foo", "bAr"));
+        assertTrue(param.setShowValue);
+    }
+
+    @Test
+    void containsLowercase() {
+        final TacokitTestParameter param = new TacokitTestParameter("-");
+        new ActiveIfListener(singletonList(
+                new ConditionGroup(
+                    singletonList(new Condition(
+                            new String[] { "a" }, "a", false, "contains(lowercase=true)")), true)),
+                param, singletonMap("a", new TacokitTestParameter("bAR")))
+                .propertyChange(new PropertyChangeEvent(param, "value", "foo", "bAr"));
+        assertTrue(param.setShowValue);
+    }
+
     @Test
     void notActivatedCondition() {
         final TacokitTestParameter param = new TacokitTestParameter("-");
@@ -86,11 +121,12 @@ class ActiveIfListenerTest {
         assertTrue(param.setShowValue);
     }
 
-    private static class TacokitTestParameter extends TaCoKitElementParameter {
+    private static class TacokitTestParameter extends TextElementParameter {
         private final String value;
         private boolean setShowValue;
 
         private TacokitTestParameter(final String value) {
+            super(null);
             this.value = value;
         }
 

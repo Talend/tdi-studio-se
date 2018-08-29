@@ -15,6 +15,8 @@
  */
 package org.talend.sdk.component.studio;
 
+import static java.util.Optional.ofNullable;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
@@ -32,6 +34,7 @@ import org.talend.core.model.process.Element;
 import org.talend.core.model.process.INode;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.sdk.component.studio.debounce.DebounceManager;
+import org.talend.sdk.component.studio.debounce.DebouncedAction;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.service.ComponentService;
 import org.talend.sdk.component.studio.service.Configuration;
@@ -75,7 +78,29 @@ public final class Lookups {
     }
 
     public static DebounceManager debouncer() {
-        return lookup(DebounceManager.class);
+        try {
+            return lookup(DebounceManager.class);
+        } catch (final Exception e) {
+            // for tests mainly
+            return new DebounceManager() {
+                @Override
+                public DebouncedAction createAction() {
+                    return new DebouncedAction(this) {
+                        private Runnable task;
+
+                        @Override
+                        public synchronized void debounce(final Runnable task, final int timeoutMillis) {
+                            this.task = task;
+                        }
+
+                        @Override
+                        public void run() {
+                            ofNullable(task).ifPresent(Runnable::run);
+                        }
+                    };
+                }
+            };
+        }
     }
 
     public static Configuration configuration() {
