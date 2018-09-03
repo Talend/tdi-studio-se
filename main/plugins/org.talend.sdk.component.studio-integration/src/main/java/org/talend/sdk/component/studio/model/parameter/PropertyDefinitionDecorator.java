@@ -18,24 +18,7 @@ package org.talend.sdk.component.studio.model.parameter;
 import static java.util.stream.Collectors.toList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_HEALTHCHECK;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_NAME;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_PARAMETERS;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_NAME;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_PARAMETERS;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_EVALUTIONSTRATEGY;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_NEGATE;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_TARGET;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_VALUE;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_NAME;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_TYPE;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.MAIN_FORM;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ORDER_SEPARATOR;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.PARAMETER_INDEX;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_PREFIX;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_SUFFIX;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_OPTIONS_ORDER;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.VALUE_SEPARATOR;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -585,6 +568,16 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         final List<String> parameters = Arrays.asList(parametersValue.split(VALUE_SEPARATOR));
         return new Suggestions(name, parameters);
     }
+
+    public Optional<Updatable> getUpdatable() {
+        final String strategy = delegate.getMetadata().get(ACTION_UPDATABLE_STRATEGY);
+        final String target = delegate.getMetadata().get(ACTION_UPDATABLE_TARGET);
+        if (target != null && strategy != null) {
+            return Optional.of(new Updatable(strategy, target));
+        } else {
+            return Optional.empty();
+        }
+    }
     
     public Parameter getParameter() {
         return ofNullable(delegate.getMetadata().get(PARAMETER_INDEX))
@@ -662,6 +655,32 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         @Override
         public int hashCode() {
             return hash;
+        }
+    }
+
+    public static class Updatable {
+
+        /**
+         * Strategy defines, how resulting value is computed
+         */
+        private final String strategy;
+
+        /**
+         * Path to property, which triggers other property update on change.
+         */
+        private final String target;
+
+        public Updatable(final String strategy, final String target) {
+            this.strategy = strategy;
+            this.target = target;
+        }
+
+        public String getTarget() {
+            return target;
+        }
+
+        public String getStrategy() {
+            return strategy;
         }
     }
 
