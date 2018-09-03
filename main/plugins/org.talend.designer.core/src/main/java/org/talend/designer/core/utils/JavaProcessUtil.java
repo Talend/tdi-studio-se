@@ -474,10 +474,10 @@ public class JavaProcessUtil {
                                         mn.setMavenUri("mvn:org.talend.libraries/" + a + "/"
                                                 + line.get("JAR_NEXUS_VERSION") + "/jar");
 
-                                        if (mn.getStatus() == ELibraryInstallStatus.NOT_INSTALLED) {
-                                            mn.setCustomMavenUri(mn.getMavenUri());
-                                            updateCustomMavenUri = true;
-                                        }
+//                                        if (mn.getStatus() == ELibraryInstallStatus.NOT_INSTALLED) {
+//                                            mn.setCustomMavenUri(mn.getMavenUri());
+//                                            updateCustomMavenUri = true;
+//                                        }
                                     }
                                     modulesNeeded.add(mn);
                                 }
@@ -486,12 +486,12 @@ public class JavaProcessUtil {
                     }
                 }
             }
-            if (updateCustomMavenUri) {
-                ILibraryManagerService libManagerService =
-                        (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
-                                ILibraryManagerService.class);
-                libManagerService.saveCustomMavenURIMap();
-            }
+//            if (updateCustomMavenUri) {
+//                ILibraryManagerService libManagerService =
+//                        (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
+//                                ILibraryManagerService.class);
+//                libManagerService.saveCustomMavenURIMap();
+//            }
         }
 
     }
@@ -554,10 +554,10 @@ public class JavaProcessUtil {
                                                         + TalendTextUtils.removeQuotes(driverName).replaceFirst(
                                                                 "[.][^.]+$", "")
                                                         + "/" + (String) map.get("JAR_NEXUS_VERSION") + "/jar");
-                                        if (module.getStatus() == ELibraryInstallStatus.NOT_INSTALLED) {
-                                            module.setCustomMavenUri(module.getMavenUri());
-                                            updateCustomMavenUri = true;
-                                        }
+//                                        if (module.getStatus() == ELibraryInstallStatus.NOT_INSTALLED) {
+//                                            module.setCustomMavenUri(module.getMavenUri());
+//                                            updateCustomMavenUri = true;
+//                                        }
 
                                     } else {
                                         String moduleName = TalendTextUtils.removeQuotes(driverName);
@@ -576,12 +576,12 @@ public class JavaProcessUtil {
                         }
                     }
                 }
-                if (updateCustomMavenUri) {
-                    ILibraryManagerService libManagerService =
-                            (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
-                                    ILibraryManagerService.class);
-                    libManagerService.saveCustomMavenURIMap();
-                }
+//                if (updateCustomMavenUri) {
+//                    ILibraryManagerService libManagerService =
+//                            (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
+//                                    ILibraryManagerService.class);
+//                    libManagerService.saveCustomMavenURIMap();
+//                }
             }
         } else if (name.equals("DB_VERSION")) { //$NON-NLS-1$
             String jdbcName = (String) value;
