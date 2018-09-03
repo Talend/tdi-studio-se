@@ -422,8 +422,17 @@ public class JavaProcessUtil {
                                                     for (String jar2 : jars) {
                                                         String jar = jar2;
                                                         jar = jar.substring(jar.lastIndexOf("\\") + 1); //$NON-NLS-1$
-                                                        ModuleNeeded module = new ModuleNeeded(null,
-                                                                TalendTextUtils.removeQuotes(jar), null, true);
+                                                        ModuleNeeded module = null;
+                                                        String jarName = TalendTextUtils.removeQuotes(jar);
+                                                        if (!jarName.toLowerCase().endsWith(".jar")) {
+                                                            module = ModulesNeededProvider
+                                                                    .getModuleNeededById(jarName);
+                                                            if (module == null) {
+                                                                module = new ModuleNeeded(null, jarName, null, true);
+                                                            }
+                                                        } else {
+                                                            module = new ModuleNeeded(null, jarName, null, true);
+                                                        }
                                                         modulesNeeded.add(module);
                                                     }
                                                 } else if (curParam.getName().equals("connection.driverTable") //$NON-NLS-1$
@@ -448,7 +457,15 @@ public class JavaProcessUtil {
                                     }
 
                                 } else {
-                                    ModuleNeeded mn = getModuleValue(process, moduleName);
+                                    ModuleNeeded mn = null;
+                                    if (!moduleName.toLowerCase().endsWith(".jar")) {
+                                        mn = ModulesNeededProvider.getModuleNeededById(moduleName);
+                                        if (mn == null) {
+                                            mn = getModuleValue(process, moduleName);
+                                        }
+                                    } else {
+                                        mn = getModuleValue(process, moduleName);
+                                    }
 
                                     if (line.get("JAR_NEXUS_VERSION") != null) {
                                         String a = moduleName.replaceFirst("[.][^.]+$", "");
@@ -528,8 +545,15 @@ public class JavaProcessUtil {
                                                         + "/" + (String) map.get("JAR_NEXUS_VERSION") + "/jar");
 
                                     } else {
-                                        module = new ModuleNeeded(null, TalendTextUtils.removeQuotes(driverName), null,
-                                                true);
+                                        String moduleName = TalendTextUtils.removeQuotes(driverName);
+                                        if (!moduleName.toLowerCase().endsWith(".jar")) {
+                                            module = ModulesNeededProvider.getModuleNeededById(moduleName);
+                                            if (module == null) {
+                                                module = new ModuleNeeded(null, moduleName, null, true);
+                                            }
+                                        } else {
+                                            module = new ModuleNeeded(null, moduleName, null, true);
+                                        }
                                     }
                                     modulesNeeded.add(module);
                                 }
