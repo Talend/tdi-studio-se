@@ -15,10 +15,29 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.*;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_HEALTHCHECK;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_NAME;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_PARAMETERS;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_UPDATABLE_STRATEGY;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_UPDATABLE_TARGET;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_NAME;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_PARAMETERS;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_EVALUTIONSTRATEGY;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_NEGATE;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_TARGET;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_VALUE;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_NAME;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_TYPE;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.MAIN_FORM;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ORDER_SEPARATOR;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.PARAMETER_INDEX;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_PREFIX;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_SUFFIX;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_OPTIONS_ORDER;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.VALUE_SEPARATOR;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,13 +52,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
+
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
 import org.talend.sdk.component.studio.model.parameter.resolver.AbsolutePathResolver;
-
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
 
 /**
  * Extends functionality of {@link SimplePropertyDefinition}
