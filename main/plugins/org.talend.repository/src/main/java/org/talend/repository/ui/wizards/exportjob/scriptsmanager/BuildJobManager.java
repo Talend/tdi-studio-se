@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -487,7 +488,8 @@ public class BuildJobManager {
         return "";
     }
 
-    private String getLogErrorMsg(IFile file) throws IOException {
+    private String getLogErrorMsg(IFile file) throws IOException, CoreException {
+        file.refreshLocal(IResource.DEPTH_ZERO, null);
         if (!file.exists()) {
             return ""; //$NON-NLS-1$
         }

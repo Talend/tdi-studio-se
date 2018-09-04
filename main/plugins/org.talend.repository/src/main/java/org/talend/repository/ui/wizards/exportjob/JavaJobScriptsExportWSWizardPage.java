@@ -195,13 +195,9 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
     private Button destinationBrowseButton;
 
-    private Button remoteRadio;
+    private Button localRadio, remoteRadio;
 
-    private Text hostText;
-
-    private Text imageText;
-
-    private Text tagText;
+    private Text hostText, imageText, tagText;
 
     public JavaJobScriptsExportWSWizardPage(IStructuredSelection selection, String exportType) {
         super(selection);
@@ -953,6 +949,12 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 log4jLevelCombo.select(2);
             }
         }
+        String remoteHost = settings.get(STORE_DOCKER_REMOTE_HOST);
+        hostText.setText(remoteHost);
+        boolean isRemote = settings.getBoolean(STORE_DOCKER_IS_REMOTE_HOST);
+        localRadio.setSelection(!isRemote);
+        remoteRadio.setSelection(isRemote);
+        hostText.setEnabled(isRemote);
     }
 
     @Override
@@ -982,6 +984,10 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 return;
             }
             if (getCurrentExportType1().equals(JobExportType.IMAGE)) {
+                settings.put(STORE_DOCKER_IS_REMOTE_HOST, remoteRadio.getSelection());
+                if (remoteRadio.getSelection() && StringUtils.isNotBlank(hostText.getText())) {
+                    settings.put(STORE_DOCKER_REMOTE_HOST, hostText.getText());
+                }
                 return;
             }
             if (contextButton != null) {
@@ -1350,13 +1356,11 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         Composite hostComposite = new Composite(dockeOptionsComposite, SWT.NONE);
         hostComposite.setLayout(new GridLayout(2, false));
 
-        Button localRadio = new Button(hostComposite, SWT.RADIO);
+        localRadio = new Button(hostComposite, SWT.RADIO);
         localRadio.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.DOCKER.localHost")); //$NON-NLS-1$
-        localRadio.setSelection(true);
         remoteRadio = new Button(hostComposite, SWT.RADIO);
         remoteRadio.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.DOCKER.remoteHost")); //$NON-NLS-1$
         hostText = new Text(dockeOptionsComposite, SWT.BORDER);
-        hostText.setEnabled(false);
         GridData hostData = new GridData(GridData.FILL_HORIZONTAL);
         hostText.setLayoutData(hostData);
 
