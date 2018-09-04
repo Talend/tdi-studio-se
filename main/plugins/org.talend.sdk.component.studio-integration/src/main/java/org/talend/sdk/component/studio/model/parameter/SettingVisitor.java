@@ -41,6 +41,9 @@ import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResol
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
+import org.talend.sdk.component.studio.model.parameter.update.IdentityStrategy;
+import org.talend.sdk.component.studio.model.parameter.update.UpdateListener;
+import org.talend.sdk.component.studio.model.parameter.update.UpdateResolver;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
@@ -157,6 +160,7 @@ public class SettingVisitor implements PropertyVisitor {
         }
 
         buildActivationCondition(node.getParent(), origin);
+
     }
 
     /**
@@ -513,6 +517,16 @@ public class SettingVisitor implements PropertyVisitor {
         }
 
         buildActivationCondition(node, node);
+        buildUpdateListener((TaCoKitElementParameter) parameter, node);
+    }
+
+    private void buildUpdateListener(TaCoKitElementParameter updatableParameter, PropertyNode node) {
+        node.getProperty().getUpdatable().ifPresent(updatable -> {
+            final UpdateListener listener = new UpdateListener(updatableParameter, new IdentityStrategy());
+            updatableParameter.setRedrawParameter(redrawParameter);
+            UpdateResolver resolver = new UpdateResolver(listener, node);
+            actionResolvers.add(resolver);
+        });
     }
 
     /**
