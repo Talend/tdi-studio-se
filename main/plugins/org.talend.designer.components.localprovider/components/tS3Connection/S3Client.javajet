@@ -20,6 +20,8 @@
 	boolean setStsEndpoint = "true".equals(ElementParameterParser.getValue(node,"__SET_STS_ENDPOINT__"));
 	String stsEndpoint = ElementParameterParser.getValue(node,"__STS_ENDPOINT__");
 	
+	boolean enableAccelerateMode = "true".equals(ElementParameterParser.getValue(node,"__ENABLE_ACCELERATE__"));
+	
 	String sessionDuration = ElementParameterParser.getValue(node,"__SESSION_DURATION__");
 	if(sessionDuration == null || sessionDuration.isEmpty()) {
 		sessionDuration = "15";
@@ -244,34 +246,68 @@
 		}
 			if(encrypt) {
 			%>
-				com.amazonaws.services.s3.AmazonS3Client conn_<%=cid%> = new com.amazonaws.services.s3.AmazonS3EncryptionClient(
-					credentialsProvider_<%=cid%>,
-					encryptionMaterialsProvider_<%=cid%>, 
-					cc_<%=cid%>,
-					new com.amazonaws.services.s3.model.CryptoConfiguration()
-						<%if("KMS_CMK".equals(key_type) && set_region) {%>
-						.withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>))
-						<%}%>
-				);
+				com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
+					<%if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()){%>
+			        
+			            <%if(!set_region){%>
+			            .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,null))
+			            .withForceGlobalBucketAccessEnabled(true)
+			            <%}else{%>
+			            .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,<%=region%>))
+			            <%}%>
+			        
+		            <%}else{%>
+		            
+		            	<%if(!set_region){%>
+				        .withRegion("us-east-1") // The first region to try your request against
+                        .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
+                        <%}else{%>
+                        .withRegion(<%=region%>)
+                        <%}%>
+		            
+		            <%}%>
+                    <%if(enableAccelerateMode){%>
+                    .withAccelerateModeEnabled(true)
+                    <%}%>
+                    .withCredentials(credentialsProvider_<%=cid%>)
+                    .withClientConfiguration(cc_<%=cid%>)
+                    .withEncryptionMaterials(encryptionMaterialsProvider_<%=cid%>)
+                    <%if("KMS_CMK".equals(key_type) && set_region) {%>
+                    .withCryptoConfiguration(new com.amazonaws.services.s3.model.CryptoConfiguration().withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>)))
+					<%}%>
+                    .build();
 			<%
 			} else {
 			%>
-				com.amazonaws.services.s3.AmazonS3Client conn_<%=cid%> = new com.amazonaws.services.s3.AmazonS3Client(
-					credentialsProvider_<%=cid%>,
-					cc_<%=cid%>
-				);
+				com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3ClientBuilder.standard()
+					<%if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()){%>
+			        
+			            <%if(!set_region){%>
+			            .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,null))
+			            .withForceGlobalBucketAccessEnabled(true)
+			            <%}else{%>
+			            .withEndpointConfiguration(new com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration(<%=regionEndpoint%>,<%=region%>))
+			            <%}%>
+			        
+		            <%}else{%>
+		            
+		            	<%if(!set_region){%>
+				        .withRegion("us-east-1") // The first region to try your request against
+                        .withForceGlobalBucketAccessEnabled(true) // If a bucket is in a different region, try again in the correct region
+                        <%}else{%>
+                        .withRegion(<%=region%>)
+                        <%}%>
+		            
+		            <%}%>
+
+                    <%if(enableAccelerateMode){%>
+                    .withAccelerateModeEnabled(true)
+                    <%}%>
+                    .withCredentials(credentialsProvider_<%=cid%>)
+                    .withClientConfiguration(cc_<%=cid%>)
+                    .build();
 			<%
 			}
-		if(set_region){
-		%>
-			conn_<%=cid%>.setRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>));
-		<%
-		}
-		if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()){
-		%>
-			conn_<%=cid%>.setEndpoint(<%=regionEndpoint%>);
-		<%
-		}
 		if(isLog4jEnabled){
 		%>	
 			log.info("<%=cid%> - Creating new connection successfully.");

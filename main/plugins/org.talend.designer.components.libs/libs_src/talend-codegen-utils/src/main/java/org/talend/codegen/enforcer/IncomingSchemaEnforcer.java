@@ -15,6 +15,12 @@ package org.talend.codegen.enforcer;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -383,8 +389,10 @@ public class IncomingSchemaEnforcer {
 
         if (LogicalTypeUtils.isLogicalDate(fieldSchema)) {
             // (igonchar): diValue MUST be of java.util.Date
+            // (dchmyga): we need to count days according to OUR date, and not timestamp in UTC.
             Date diDate = (Date) diValue;
-            int avroDays = (int) (diDate.getTime() / ONE_DAY);
+            OffsetDateTime odt = LocalDateTime.ofInstant(diDate.toInstant(), ZoneId.systemDefault()).atOffset(ZoneOffset.UTC);
+            int avroDays = (int) ChronoUnit.DAYS.between(Instant.EPOCH, odt);
             currentRecord.put(index, avroDays);
             return;
         }

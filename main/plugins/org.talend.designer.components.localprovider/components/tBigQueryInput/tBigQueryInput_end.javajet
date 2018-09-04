@@ -2,6 +2,7 @@
 imports="
         org.talend.core.model.process.INode 
         org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.process.ElementParameterParser 
 " 
 %>
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/Log4jFileUtil.javajet"%>
@@ -9,14 +10,23 @@ imports="
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
+	String authMode = ElementParameterParser.getValue(node,"__AUTH_MODE__");
+	if (authMode.equals("OAUTH")) {
 	%>
+			}
+		pageToken_<%=cid%> = dataList_<%=cid %>.getPageToken();
+		if (null == pageToken_<%=cid%>) {
+			break;
+		}
 	}
-	pageToken_<%=cid%> = dataList_<%=cid %>.getPageToken();
-	if (null == pageToken_<%=cid%>) {
-		break;
-	}
-  }
-  bigQueryUtil_<%=cid%>.cleanup();
+	bigQueryUtil_<%=cid%>.cleanup();
   	<%
+  	} else if (authMode.equals("SERVICEACCOUNT")) {
+  	%>
+  		}
+  	<%
+  	} else {
+		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
+  	}
 	log4jFileUtil.retrievedDataNumberInfo(node);
 	%>

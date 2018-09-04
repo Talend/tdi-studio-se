@@ -52,6 +52,8 @@ import java.util.stream.Stream;
 
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
+import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
+import org.talend.sdk.component.studio.model.parameter.resolver.AbsolutePathResolver;
 
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
@@ -61,6 +63,7 @@ import javax.json.bind.annotation.JsonbProperty;
  * It doesn't allow to change <code>delegate</code> state
  */
 public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
+    private static final AbsolutePathResolver PATH_RESOLVER = new AbsolutePathResolver();
 
     /**
      * Separator in property path
@@ -361,8 +364,8 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         return delegate.getMetadata().get(buildGridLayoutKey(form));
     }
 
-    List<Condition> getCondition() {
-        return delegate.getMetadata()
+    ConditionGroup getConditions() {
+        return new ConditionGroup(delegate.getMetadata()
                 .entrySet()
                 .stream()
                 .filter(meta -> meta.getKey().startsWith(CONDITION_IF_TARGET))
@@ -372,12 +375,13 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                     final String valueKey = CONDITION_IF_VALUE + index;
                     final String negateKey = CONDITION_IF_NEGATE + index;
                     final String evaluationStrategyKey = CONDITION_IF_EVALUTIONSTRATEGY + index;
-                    return new Condition(meta.getValue(),
+                    final String absoluteTargetPath = PATH_RESOLVER.resolvePath(delegate.getPath(), meta.getValue());
+                    return new Condition(
                             delegate.getMetadata().getOrDefault(valueKey, "true").split(VALUE_SEPARATOR),
-                            delegate.getPath(),
+                            absoluteTargetPath,
                             Boolean.parseBoolean(delegate.getMetadata().getOrDefault(negateKey, "false")),
                             delegate.getMetadata().getOrDefault(evaluationStrategyKey, "DEFAULT"));
-                }).collect(toList());
+                }).collect(toList()), "AND".equalsIgnoreCase(delegate.getMetadata().getOrDefault("condition::ifs::operator", "AND")));
     }
 
     /**
@@ -600,44 +604,34 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
     public static class Condition {
 
-        private final String target;
+        /**
+         * Path to property to be evaluated (corresponds to ActiveIf.target())
+         */
+        private final String targetPath;
 
-        private String targetPath;
+        private final boolean negation;
 
-        private String sourcePath;
-
-        private boolean negation;
-
-        private String evaluationStrategy;
+        private final String evaluationStrategy;
 
         private final String[] values;
 
-        public Condition(final String target, final String[] values, final String sourcePath, final boolean negation, final String evaluationStrategy) {
-            this.target = target;
-            this.sourcePath = sourcePath;
+        private final int hash;
+
+        public Condition(final String[] values, final String targetPath,
+                         final boolean negation, final String evaluationStrategy) {
+            this.targetPath = targetPath;
             this.values = values;
             this.negation = negation;
             this.evaluationStrategy = evaluationStrategy == null || evaluationStrategy.isEmpty() ? "DEFAULT" : evaluationStrategy;
-        }
-
-        public String getTarget() {
-            return this.target;
+            this.hash = 31 * Objects.hash(targetPath, negation, evaluationStrategy) + Arrays.hashCode(values);
         }
 
         public String[] getValues() {
             return this.values;
         }
 
-        public void setTargetPath(final String targetPath) {
-            this.targetPath = targetPath;
-        }
-
         public String getTargetPath() {
             return targetPath;
-        }
-
-        public String getSourcePath() {
-            return sourcePath;
         }
 
         public boolean isNegation() {
@@ -650,7 +644,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
         @Override
         public String toString() {
-            return "PropertyDefinitionDecorator.Condition(target=" + this.getTarget() + ", values="
+            return "PropertyDefinitionDecorator.Condition(target=" + this.getTargetPath() + ", values="
                     + Arrays.deepToString(this.getValues()) + ")";
         }
 
@@ -661,17 +655,13 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             if (o == null || getClass() != o.getClass())
                 return false;
             final Condition condition = (Condition) o;
-            return Objects.equals(target, condition.target) &&
-                    Arrays.equals(values, condition.values) &&
-                    Objects.equals(targetPath, condition.targetPath) &&
-                    Objects.equals(sourcePath, condition.sourcePath);
+            return Objects.equals(targetPath, condition.targetPath) &&
+                    Arrays.equals(values, condition.values);
         }
 
         @Override
         public int hashCode() {
-            int result = Objects.hash(target, targetPath, sourcePath, negation, evaluationStrategy);
-            result = 31 * result + Arrays.hashCode(values);
-            return result;
+            return hash;
         }
     }
 

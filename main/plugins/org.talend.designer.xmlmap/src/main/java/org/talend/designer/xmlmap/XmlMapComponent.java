@@ -170,8 +170,12 @@ public class XmlMapComponent extends MapperExternalNode implements IHashableInpu
 
     @Override
     public IComponentDocumentation getComponentDocumentation(String componentName, String tempFolderPath) {
-        // TODO Auto-generated method stub
-        return null;
+        MapperComponentDocumentation componentDocumentation = new MapperComponentDocumentation();
+        componentDocumentation.setComponentName(componentName);
+        componentDocumentation.setTempFolderPath(tempFolderPath);
+        componentDocumentation.setExternalData((XmlMapData) this.emfMapData);
+        componentDocumentation.setExternalNode(getExternalNode());
+        return componentDocumentation;
     }
 
     @Override

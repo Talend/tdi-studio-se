@@ -301,6 +301,14 @@
     >   	
     <DEFAULT>true</DEFAULT>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="ENABLE_ACCELERATE"
+      FIELD="CHECK"
+      NUM_ROW="50"
+    >   	
+    <DEFAULT>false</DEFAULT>
+    </PARAMETER>
 
     </ADVANCED_PARAMETERS>
 

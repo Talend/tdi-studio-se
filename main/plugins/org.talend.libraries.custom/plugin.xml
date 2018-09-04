@@ -6,7 +6,7 @@
               context="plugin:org.talend.libraries.custom"
               language="java"
               message="Library for components API"
-              name="talend-codegen-utils.jar" mvn_uri="mvn:org.talend.libraries/talend-codegen-utils/0.20.2" 
+              name="talend-codegen-utils.jar" mvn_uri="mvn:org.talend.libraries/talend-codegen-utils/0.25.1" 
               required="true">
       </libraryNeeded>
    </extension>

@@ -15,26 +15,6 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
-import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
@@ -53,16 +33,35 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
+import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
 import org.talend.sdk.component.studio.model.parameter.listener.ActiveIfListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory;
-import org.talend.sdk.component.studio.model.parameter.resolver.AbsolutePathResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
 
 /**
  * Creates properties from leafs
@@ -107,12 +106,19 @@ public class SettingVisitor implements PropertyVisitor {
 
     private final Collection<ActionReference> actions;
 
-    private final Map<String, Map<Integer, List<PropertyDefinitionDecorator.Condition>>> activations =
+    /**
+     * A cache of ConditionGroups, which is used to collect them and create ActiveIfListeners
+     * after all ElementParameters are created.
+     * A key is a path of controlled ElementParameter (i.e. ElementParameter which shown/hidden according ActiveIf logic).
+     * Value is a List of ConditionGroups.
+     * Each ConditionGroup corresponds to one ActiveIfs annotation.
+     * ElementProperty may have several ConditionGroups because its visibility is controlled not only by its own
+     * ActiveIfs annotation, but also by its parents' ActiveIfs annotations
+     */
+    private final Map<String, List<ConditionGroup>> activations =
             new LinkedHashMap<>();
 
     private final List<ParameterResolver> actionResolvers = new ArrayList<>();
-    
-    private final AbsolutePathResolver pathResolver = new AbsolutePathResolver();
 
     public SettingVisitor(final IElement iNode,
             final ElementParameter redrawParameter, final ConfigTypeNode config) {
@@ -139,6 +145,20 @@ public class SettingVisitor implements PropertyVisitor {
         return this;
     }
 
+    private void buildActivationCondition(final PropertyNode node, final PropertyNode origin) {
+        if (node == null) {
+            return;
+        }
+
+        final ConditionGroup group = node.getProperty().getConditions();
+        if (!group.getConditions().isEmpty()) {
+            activations.computeIfAbsent(origin.getProperty().getPath(), key -> new ArrayList<>())
+                       .add(group);
+        }
+
+        buildActivationCondition(node.getParent(), origin);
+    }
+
     /**
      * Registers created Listeners in {@link TaCoKitElementParameter} and returns list of created parameters.
      * Also setup initial visibility according initial value of target parameters
@@ -146,29 +166,26 @@ public class SettingVisitor implements PropertyVisitor {
      * @return created parameters
      */
     public List<IElementParameter> getSettings() {
-        activations.forEach((path, conditions) -> {
-            settings.keySet().stream()
-                    .filter(key -> key.equals(path))
-                    .filter(p -> TaCoKitElementParameter.class.isInstance(settings.get(p)))
-                    .map(setting -> TaCoKitElementParameter.class.cast(settings.get(setting)))
-                    .forEach(param -> {
-                        param.setRedrawParameter(redrawParameter);
-                        final Map<String, TaCoKitElementParameter> targetParams =
-                                conditions.values().stream().flatMap(Collection::stream)
-                                        .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
-                                        .collect(toMap(ElementParameter::getName, identity()));
+        activations.forEach((path, conditionGroups) -> {
+            final TaCoKitElementParameter param = (TaCoKitElementParameter) settings.get(path);
+            if (param == null) {
+                throw new RuntimeException("ElementParameter not found. Path: " + path);
+            }
+            param.setRedrawParameter(redrawParameter);
 
-                        final ActiveIfListener activationListener =
-                                new ActiveIfListener(conditions, param, targetParams);
+            final Map<String, TaCoKitElementParameter> targetParams = conditionGroups.stream()
+                    .flatMap(it -> it.getConditions().stream())
+                    .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
+                    .collect(toMap(ElementParameter::getName, identity()));
 
-                        targetParams.forEach((name, p) -> {
-                            p.setRedrawParameter(redrawParameter);
-                            p.registerListener("value", activationListener);
-                            //Sends initial event to listener to set initial visibility
-                            activationListener.propertyChange(
-                                    new PropertyChangeEvent(p, "value", p.getValue(), p.getValue()));
-                        });
-                    });
+            final ActiveIfListener activationListener = new ActiveIfListener(conditionGroups, param, targetParams);
+
+            targetParams.forEach((name, p) -> {
+                p.registerListener("value", activationListener);
+                //Sends initial event to listener to set initial visibility
+                activationListener.propertyChange(
+                        new PropertyChangeEvent(p, "value", p.getValue(), p.getValue()));
+            });
         });
 
         actionResolvers.forEach(resolver -> resolver.resolveParameters(Collections.unmodifiableMap(settings)));
@@ -495,24 +512,7 @@ public class SettingVisitor implements PropertyVisitor {
             createValidationLabel(node, (TaCoKitElementParameter) parameter);
         }
 
-        buildActivationCondition(node, node, 0);
-    }
-
-    private void buildActivationCondition(final PropertyNode node, final PropertyNode origin, final int level) {
-        if (node == null) {
-            return;
-        }
-
-        node.getProperty().getCondition()
-                .forEach(c -> {
-                    c.setTargetPath(pathResolver.resolvePath(node.getProperty().getPath(), c.getTarget()));
-                    activations.computeIfAbsent(origin.getProperty().getPath(), (key) -> new HashMap<>());
-                    activations.get(origin.getProperty().getPath()).computeIfAbsent(level, (k) -> new ArrayList<>());
-                    activations.get(origin.getProperty().getPath()).get(level).add(c);
-                });
-
-        final int l = level + 1;
-        buildActivationCondition(node.getParent(), origin, l);
+        buildActivationCondition(node, node);
     }
 
     /**

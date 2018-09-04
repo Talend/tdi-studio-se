@@ -330,6 +330,15 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="ENABLE_ACCELERATE"
+      FIELD="CHECK"
+      NUM_ROW="50"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
+    >   	
+    <DEFAULT>false</DEFAULT>
+    </PARAMETER>
 
     </ADVANCED_PARAMETERS>
 
