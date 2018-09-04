@@ -32,15 +32,15 @@ class TableActionParameter extends AbstractActionParameter {
 
     @Override
     public Collection<Pair<String, String>> parameters() {
-        final List<Map<String, String>> value = (List<Map<String, String>>) elementParameter.getValue();
+        final List<Map<String, Object>> value = (List<Map<String, Object>>) elementParameter.getValue();
         final List<Pair<String, String>> parameters = new ArrayList<>();
         if (value != null) {
             for (int i=0; i<value.size(); i++) {
-                final Map<String, String> row = value.get(i);
-                for(Map.Entry<String, String> entry : row.entrySet()) {
+                final Map<String, Object> row = value.get(i);
+                for(Map.Entry<String, Object> entry : row.entrySet()) {
                     final String key = entry.getKey().replace("[]", "[" + i + "]")
                             .replace(elementParameter.getName(), getParameter());
-                    final String paramValue = Strings.removeQuotes(entry.getValue());
+                    final String paramValue = Strings.removeQuotes(String.valueOf(entry.getValue()));
                     final Pair parameter = new Pair(key, paramValue);
                     parameters.add(parameter);
                 }
