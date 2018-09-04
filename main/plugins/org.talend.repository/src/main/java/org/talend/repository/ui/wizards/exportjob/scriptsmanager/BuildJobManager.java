@@ -290,10 +290,10 @@ public class BuildJobManager {
                 }
                 throw new PersistenceException(cause);
             }
-            String mvnLogFilePath = talendJavaProject.getProject().getFile("lastGenerated.log").getLocation() //$NON-NLS-1$
-                    .toPortableString();
+            IFile mvnLogFile = talendJavaProject.getProject().getFile("lastGenerated.log"); //$NON-NLS-1$
+            String mvnLogFilePath = mvnLogFile.getLocation().toPortableString();
             String causeMsg = Messages.getString("BuildJobManager.mavenErrorMessage", mvnLogFilePath); //$NON-NLS-1$
-            String logMsg = getLogErrorMsg(mvnLogFilePath); // $NON-NLS-1$
+            String logMsg = getLogErrorMsg(mvnLogFile);
 
             if (jobExportType != JobExportType.IMAGE) {
                 File targetFile = buildJobHandler.getJobTargetFile().getLocation().toFile();
@@ -487,11 +487,14 @@ public class BuildJobManager {
         return "";
     }
 
-    private String getLogErrorMsg(String filepath) throws IOException{
+    private String getLogErrorMsg(IFile file) throws IOException {
+        if (!file.exists()) {
+            return ""; //$NON-NLS-1$
+        }
     	BufferedReader reader = null;
     	StringBuffer errorbuffer = new StringBuffer();
     	try {
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath)));
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file.getLocation().toFile())));
 			String line;
 			while ((line = reader.readLine()) != null) { //$NON-NLS-1$
 				if (line.startsWith("[ERROR]")) { //$NON-NLS-1$
