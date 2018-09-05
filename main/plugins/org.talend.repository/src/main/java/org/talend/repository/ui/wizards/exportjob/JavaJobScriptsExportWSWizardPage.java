@@ -199,6 +199,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
     private Text hostText, imageText, tagText;
 
+    private Label hostLabel, imageLabel, tagLabel;
+
     public JavaJobScriptsExportWSWizardPage(IStructuredSelection selection, String exportType) {
         super(selection);
         // there assign the manager again
@@ -950,7 +952,9 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             }
         }
         String remoteHost = settings.get(STORE_DOCKER_REMOTE_HOST);
-        hostText.setText(remoteHost);
+        if (StringUtils.isNotBlank(remoteHost)) {
+            hostText.setText(remoteHost);
+        }
         boolean isRemote = settings.getBoolean(STORE_DOCKER_IS_REMOTE_HOST);
         localRadio.setSelection(!isRemote);
         remoteRadio.setSelection(isRemote);
@@ -1170,6 +1174,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             createOptionForDockerImage(left, font);
             createDockerOptions();
             restoreWidgetValuesForImage();
+            addDockerOptionsListener();
             break;
         default:
             createOptionsForWS(left, font);
@@ -1351,7 +1356,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         dockerOptionsLayout.marginWidth = 0;
         dockeOptionsComposite.setLayout(dockerOptionsLayout);
 
-        Label hostLabel = new Label(dockeOptionsComposite, SWT.NONE);
+        hostLabel = new Label(dockeOptionsComposite, SWT.NONE);
         hostLabel.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.DOCKER.dockerHost")); //$NON-NLS-1$
         Composite hostComposite = new Composite(dockeOptionsComposite, SWT.NONE);
         hostComposite.setLayout(new GridLayout(2, false));
@@ -1364,13 +1369,13 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         GridData hostData = new GridData(GridData.FILL_HORIZONTAL);
         hostText.setLayoutData(hostData);
 
-        Label imageLabel = new Label(dockeOptionsComposite, SWT.NONE);
+        imageLabel = new Label(dockeOptionsComposite, SWT.NONE);
         imageLabel.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.DOCKER.imageLabel")); //$NON-NLS-1$
         imageText = new Text(dockeOptionsComposite, SWT.BORDER);
         // imageText.setText("${talend.project.name.lowercase}/${talend.job.folder}%a"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(imageText);
 
-        Label tagLabel = new Label(dockeOptionsComposite, SWT.NONE);
+        tagLabel = new Label(dockeOptionsComposite, SWT.NONE);
         tagLabel.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.DOCKER.tagLabel")); //$NON-NLS-1$
         tagText = new Text(dockeOptionsComposite, SWT.BORDER);
         // tagText.setText("${talend.job.version}"); //$NON-NLS-1$
@@ -1378,6 +1383,16 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         updateOptionBySelection();
 
+        // Label additionalLabel = new Label(dockeOptionsComposite, SWT.NONE);
+        // additionalLabel.setText("Additional properties");
+        // Text additionalText = new Text(dockeOptionsComposite, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+        // GridData data = new GridData(GridData.FILL_HORIZONTAL);
+        // data.heightHint = 60;
+        // additionalText.setLayoutData(data);
+
+    }
+
+    private void addDockerOptionsListener() {
         ModifyListener optionListener = new ModifyListener() {
 
             @Override
@@ -1415,14 +1430,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             }
 
         });
-
-        // Label additionalLabel = new Label(dockeOptionsComposite, SWT.NONE);
-        // additionalLabel.setText("Additional properties");
-        // Text additionalText = new Text(dockeOptionsComposite, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-        // GridData data = new GridData(GridData.FILL_HORIZONTAL);
-        // data.heightHint = 60;
-        // additionalText.setLayoutData(data);
-
     }
 
     private String getDefaultImageName(ProcessItem procesItem) {
