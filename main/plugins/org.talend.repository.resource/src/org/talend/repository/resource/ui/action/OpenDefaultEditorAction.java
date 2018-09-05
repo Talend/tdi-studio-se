@@ -1,3 +1,15 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.repository.resource.ui.action;
 
 import org.eclipse.core.runtime.Assert;
@@ -5,9 +17,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IWorkbenchPage;
-import org.talend.camel.core.model.camelProperties.RouteResourceItem;
-import org.talend.camel.model.CamelRepositoryNodeType;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.repository.model.BinRepositoryNode;
@@ -53,7 +65,7 @@ public class OpenDefaultEditorAction extends AContextualAction {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Class getClassForDoubleClick() {
-		return RouteResourceItem.class;
+        return ResourceItem.class;
 	}
 
 //	private ISelection getSelectedObject() {
@@ -88,7 +100,7 @@ public class OpenDefaultEditorAction extends AContextualAction {
 			RepositoryNode node = (RepositoryNode) o;
 			switch (node.getType()) {
 			case REPOSITORY_ELEMENT:
-				if (node.getObjectType() != CamelRepositoryNodeType.repositoryRouteResourceType) {
+                if (node.getObjectType() != ERepositoryObjectType.RESOURCES) {
 					canWork = false;
 				} else {
 					IRepositoryService service = DesignerPlugin.getDefault()
@@ -134,11 +146,11 @@ public class OpenDefaultEditorAction extends AContextualAction {
 	private void opendTextEditor(RepositoryNode node) {
 
 		Property property = (Property) node.getObject().getProperty();
-		RouteResourceItem item = null;
+        ResourceItem item = null;
 		if (property != null) {
 
-			Assert.isTrue(property.getItem() instanceof RouteResourceItem);
-			item = (RouteResourceItem) property.getItem();
+            Assert.isTrue(property.getItem() instanceof ResourceItem);
+            item = (ResourceItem) property.getItem();
 			IWorkbenchPage page = getActivePage();
 			RouteResourceEditorUtil.openDefaultEditor(page, node, item);
 		}

@@ -22,7 +22,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
-import org.talend.camel.core.model.camelProperties.RouteResourceItem;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
@@ -34,6 +33,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
+import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.expressionbuilder.ExpressionPersistance;
 import org.talend.repository.ProjectManager;
@@ -199,9 +199,9 @@ public class OpenAnotherVersionResrouceWizard extends Wizard {
 			Item item = node.getObject().getProperty().getItem();
 			IWorkbenchPage page = getActivePage();
 
-			if (item instanceof RouteResourceItem) {
+            if (item instanceof ResourceItem) {
 				RouteResourceEditorUtil.openEditor(page, node,
-						(RouteResourceItem) item);
+                        (ResourceItem) item);
 			}
 		}
 	}

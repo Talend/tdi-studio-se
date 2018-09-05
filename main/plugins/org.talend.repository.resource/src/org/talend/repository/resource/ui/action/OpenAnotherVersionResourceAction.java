@@ -22,10 +22,10 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
-import org.talend.camel.core.model.camelProperties.RouteResourceItem;
-import org.talend.camel.model.CamelRepositoryNodeType;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.RepositoryObject;
+import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.services.IUIRefresher;
 import org.talend.repository.ProjectManager;
@@ -59,7 +59,7 @@ public class OpenAnotherVersionResourceAction extends EditPropertiesAction {
             if (o instanceof IRepositoryNode) {
                 final IRepositoryNode node = (IRepositoryNode) o;
                 canWork = node.getType() == ENodeType.REPOSITORY_ELEMENT
-                    && node.getObjectType() == CamelRepositoryNodeType.repositoryRouteResourceType
+                        && node.getObjectType() == ERepositoryObjectType.RESOURCES
                     && node.getObject().getRepositoryStatus() != ERepositoryStatus.DELETED
                     && ProjectManager.getInstance().isInCurrentMainProject(node)
                     && isLastVersion(node);
@@ -99,7 +99,7 @@ public class OpenAnotherVersionResourceAction extends EditPropertiesAction {
 
 	@Override
 	public Class<?> getClassForDoubleClick() {
-		return RouteResourceItem.class;
+        return ResourceItem.class;
 	}
 
 	protected IEditorPart getCorrespondingEditor(RepositoryNode node) {
