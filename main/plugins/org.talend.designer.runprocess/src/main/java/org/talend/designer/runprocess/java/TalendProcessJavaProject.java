@@ -352,8 +352,9 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
                     mavenLauncher.execute(monitor);
                 }
             } finally {
-                // only for package and install
-                if (TalendMavenConstants.GOAL_PACKAGE.equals(goals) || TalendMavenConstants.GOAL_INSTALL.equals(goals)) {
+                // package, install and deploy
+                if (TalendMavenConstants.GOAL_PACKAGE.equals(goals) || TalendMavenConstants.GOAL_INSTALL.equals(goals)
+                        || TalendMavenConstants.GOAL_DEPLOY.equals(goals)) {
                     PomUtil.restorePomFile(this);
                 }
             }
