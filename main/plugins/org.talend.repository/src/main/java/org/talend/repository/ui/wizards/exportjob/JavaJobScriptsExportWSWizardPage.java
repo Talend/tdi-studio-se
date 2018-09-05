@@ -64,6 +64,7 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManagerFactory;
 import org.talend.repository.ui.wizards.exportjob.util.ExportJobUtil;
+import org.talend.repository.utils.EmfModelUtils;
 
 /**
  * DOC x class global comment. Detailled comment <br/>
@@ -776,8 +777,13 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 setDefaultDestination();
             }
             shellLauncherButton.setSelection(settings.getBoolean(STORE_SHELL_LAUNCHER_ID));
-            jobItemButton.setSelection(settings.getBoolean(STORE_JOB_ID));
-
+            // TDQ-15391: when have tDqReportRun, must always export items.
+            if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+                jobItemButton.setSelection(true);
+            } else {
+                jobItemButton.setSelection(settings.getBoolean(STORE_JOB_ID));
+            }
+            // TDQ-15391~
             jobScriptButton.setSelection(settings.getBoolean(STORE_SOURCE_ID));
             contextButton.setSelection(settings.getBoolean(STORE_CONTEXT_ID));
             applyToChildrenButton.setSelection(settings.getBoolean(APPLY_TO_CHILDREN_ID));

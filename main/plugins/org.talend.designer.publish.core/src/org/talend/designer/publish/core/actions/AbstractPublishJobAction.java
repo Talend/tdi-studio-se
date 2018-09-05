@@ -166,6 +166,12 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             exportChoiceMap.put(ExportChoice.addStatistics, true);
 
             ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
+            // TDQ-15391: when have tDqReportRun, must always export items.
+            if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+                exportChoiceMap.put(ExportChoice.needJobItem, true);
+                exportChoiceMap.put(ExportChoice.needDependencies, true);
+            }
+
             String contextName = (String) exportChoiceMap.get(ExportChoice.contextName);
             if (contextName == null) {
                 contextName = processItem.getProcess().getDefaultContext();
