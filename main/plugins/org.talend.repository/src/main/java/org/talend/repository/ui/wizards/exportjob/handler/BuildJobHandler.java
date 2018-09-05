@@ -38,7 +38,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQItemService;
@@ -366,7 +368,11 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 try {
                     buildDelegate(monitor);
                 } catch (Exception e) {
-                    ExceptionHandler.process(e);
+                    if (isOptionChoosed(ExportChoice.pushImage)) {
+                        MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                    } else {
+                        ExceptionHandler.process(e);
+                    }
                 }
             }
         };
@@ -382,7 +388,11 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
 
     protected void buildDelegate(IProgressMonitor monitor) throws Exception {
         final Map<String, Object> argumentsMap = new HashMap<String, Object>();
-        argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_PACKAGE);
+        String goal = TalendMavenConstants.GOAL_PACKAGE;
+        if (isOptionChoosed(ExportChoice.pushImage)) {
+            goal = TalendMavenConstants.GOAL_INSTALL;
+        }
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, goal);
         argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, getProgramArgs());
 
         talendProcessJavaProject.buildModules(monitor, null, argumentsMap);

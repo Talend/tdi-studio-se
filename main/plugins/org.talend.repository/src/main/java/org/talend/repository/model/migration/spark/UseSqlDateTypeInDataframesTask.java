@@ -79,7 +79,7 @@ public class UseSqlDateTypeInDataframesTask extends AbstractJobMigrationTask {
 
             if (ComponentUtilities.getNodeProperty(node, name) == null) {
                 ComponentUtilities.addNodeProperty(node, name, field);
-                ComponentUtilities.setNodeValue(node, name, "false");
+                ComponentUtilities.setNodeValue(node, name, "true");
             }
 
         }

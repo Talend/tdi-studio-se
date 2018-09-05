@@ -47,5 +47,13 @@
     "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tSAPHanaBulkExec",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
 }
 ]

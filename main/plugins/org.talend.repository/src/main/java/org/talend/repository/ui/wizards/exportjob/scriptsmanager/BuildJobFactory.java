@@ -12,7 +12,10 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,11 +40,14 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
 public class BuildJobFactory {
 
     public static final Map<JobExportType, String> oldBuildTypeMap = new HashMap<JobExportType, String>();
+    private static final List<String> esbComponents;
     static {
         // from the extension point
         oldBuildTypeMap.put(JobExportType.POJO, "STANDALONE");
         oldBuildTypeMap.put(JobExportType.OSGI, "OSGI");
         oldBuildTypeMap.put(JobExportType.MSESB, "REST_MS");
+        esbComponents = Collections.unmodifiableList(Arrays.asList("tRESTClient", "tRESTRequest", "tRESTResponse", "tESBConsumer",
+                "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse", "tRouteInput", "tREST"));
     }
 
     /**
@@ -101,9 +107,7 @@ public class BuildJobFactory {
                 for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
                     if (o instanceof NodeType) {
                         NodeType currentNode = (NodeType) o;
-                        if ("tRESTRequest".equals(currentNode.getComponentName())
-                                || "tESBConsumer".equals(currentNode.getComponentName())
-                                || "tRESTClient".equals(currentNode.getComponentName())) {
+                        if(esbComponents.contains(currentNode.getComponentName())) {
                             esb = true;
                             break;
                         }

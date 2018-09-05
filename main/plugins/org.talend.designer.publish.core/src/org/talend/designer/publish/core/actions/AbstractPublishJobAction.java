@@ -93,6 +93,9 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
         case OSGI:
             exportJobForOSGI(monitor);
             break;
+        case IMAGE:
+            exportJobForImage(monitor);
+            break;
         default:
             exportJobForOSGI(monitor);
             break;
@@ -191,6 +194,37 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             if (tmpJob != null && tmpJob.exists()) {
                 tmpJob.delete();
             }
+        }
+    }
+
+    private void exportJobForImage(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+        try {
+            exportChoiceMap.put(ExportChoice.buildImage, true);
+            exportChoiceMap.put(ExportChoice.pushImage, true);
+            exportChoiceMap.put(ExportChoice.needAssembly, false);
+            exportChoiceMap.put(ExportChoice.binaries, true);
+            exportChoiceMap.put(ExportChoice.includeLibs, true);
+            exportChoiceMap.put(ExportChoice.addStatistics, true);
+
+            ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
+            String contextName = (String) exportChoiceMap.get(ExportChoice.contextName);
+            if (contextName == null) {
+                contextName = processItem.getProcess().getDefaultContext();
+            }
+            BuildJobManager.getInstance().buildJob(null, processItem, jobVersion, contextName,
+                    exportChoiceMap, exportType, monitor);
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
+                        .getService(IRunProcessService.class);
+                boolean hasError = service.checkExportProcess(new StructuredSelection(node), true);
+                if (hasError) {
+                    return;
+                }
+            }
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new InvocationTargetException(e);
         }
     }
 

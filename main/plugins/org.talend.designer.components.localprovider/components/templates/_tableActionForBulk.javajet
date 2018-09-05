@@ -50,7 +50,7 @@ if (!isParallelize) {
 				tableNameCaseSensitive=true;
 			}
 		
-			if (ORACLE.equalsIgnoreCase(dbmsId)) {
+			if (ORACLE.equalsIgnoreCase(dbmsId) || SAPHANA.equalsIgnoreCase(dbmsId)) {
 			%>   
 				<%=manager.generateCode4TabelExist()%>
 				java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();

@@ -188,7 +188,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
 
     protected IStructuredSelection selection;
 
-    private ExportTreeViewer treeViewer;
+    protected ExportTreeViewer treeViewer;
 
     Collection<RepositoryNode> repositoryNodes = new ArrayList<RepositoryNode>();
 
@@ -361,6 +361,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
         @Override
         public void checkStateChanged(CheckStateChangedEvent event) {
             checkExport();
+            updateOptionBySelection();
         }
 
     };
@@ -379,6 +380,10 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             this.setErrorMessage(Messages.getString("JobScriptsExportWizardPage.chooseResource"));
         }
         return canExport;
+    }
+
+    protected void updateOptionBySelection() {
+
     }
 
     protected SashForm createExportTree(Composite parent) {
@@ -548,6 +553,53 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
         launcherGD.horizontalSpan = 2;
         launcherCombo.setLayoutData(launcherGD);
 
+        createContextOptions(font, optionsComposite);
+
+        new Label(optionsComposite, SWT.NONE);
+        new Label(optionsComposite, SWT.NONE);
+
+        createLog4jOption(font, optionsComposite);
+
+        jobItemButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
+        jobItemButton.setText(Messages.getString("JobScriptsExportWizardPage.jobItems")); //$NON-NLS-1$
+        jobItemButton.setFont(font);
+        GridData jobItemGD = new GridData();
+        jobItemGD.horizontalSpan = 3;
+        jobItemButton.setLayoutData(jobItemGD);
+
+        executeTestsButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
+        executeTestsButton.setText(Messages.getString("JobScriptsExportWizardPage.executeTests")); //$NON-NLS-1$
+        executeTestsButton.setFont(font);
+        GridData executeTestsGD = new GridData();
+        executeTestsGD.horizontalSpan = 3;
+        executeTestsButton.setLayoutData(executeTestsGD);
+
+        addTestSourcesButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
+        addTestSourcesButton.setText(Messages.getString("JobScriptsExportWizardPage.addTestSources")); //$NON-NLS-1$
+        addTestSourcesButton.setFont(font);
+        GridData addTestSourcesGD = new GridData();
+        addTestSourcesGD.horizontalSpan = 3;
+        addTestSourcesButton.setLayoutData(addTestSourcesGD);
+        addTestSourcesButton.setSelection(true);
+
+        includeLibsButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
+        includeLibsButton.setText(Messages.getString("JobScriptsExportWizardPage.includeLibs")); //$NON-NLS-1$
+        includeLibsButton.setFont(font);
+        GridData includeLibsGD = new GridData();
+        includeLibsGD.horizontalSpan = 3;
+        includeLibsButton.setLayoutData(includeLibsGD);
+
+        jobScriptButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
+        jobScriptButton.setText(Messages.getString("JobScriptsExportWizardPage.jobJavaSources")); //$NON-NLS-1$
+        jobScriptButton.setFont(font);
+        GridData jobScriptGD = new GridData();
+        jobScriptGD.horizontalSpan = 3;
+        jobScriptButton.setLayoutData(jobScriptGD);
+
+        updateOptionStates();
+    }
+
+    protected void createContextOptions(Font font, Composite optionsComposite) {
         contextButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
         contextButton.setText(Messages.getString("JobScriptsExportWizardPage.contextPerlScripts")); //$NON-NLS-1$
         contextButton.setSelection(true);
@@ -609,10 +661,9 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                 }
             }
         });
+    }
 
-        new Label(optionsComposite, SWT.NONE);
-        new Label(optionsComposite, SWT.NONE);
-
+    protected void createLog4jOption(Font font, Composite optionsComposite) {
         if (isEnterprise) {
             log4jButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
             log4jButton.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.LOG4jLEVEL")); //$NON-NLS-1$
@@ -635,44 +686,6 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             log4jLevelCombo.setLayoutData(log4jLevelGD);
             log4jLevelCombo.setEnabled(false);
         }
-
-        jobItemButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
-        jobItemButton.setText(Messages.getString("JobScriptsExportWizardPage.jobItems")); //$NON-NLS-1$
-        jobItemButton.setFont(font);
-        GridData jobItemGD = new GridData();
-        jobItemGD.horizontalSpan = 3;
-        jobItemButton.setLayoutData(jobItemGD);
-
-        executeTestsButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
-        executeTestsButton.setText(Messages.getString("JobScriptsExportWizardPage.executeTests")); //$NON-NLS-1$
-        executeTestsButton.setFont(font);
-        GridData executeTestsGD = new GridData();
-        executeTestsGD.horizontalSpan = 3;
-        executeTestsButton.setLayoutData(executeTestsGD);
-
-        addTestSourcesButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
-        addTestSourcesButton.setText(Messages.getString("JobScriptsExportWizardPage.addTestSources")); //$NON-NLS-1$
-        addTestSourcesButton.setFont(font);
-        GridData addTestSourcesGD = new GridData();
-        addTestSourcesGD.horizontalSpan = 3;
-        addTestSourcesButton.setLayoutData(addTestSourcesGD);
-        addTestSourcesButton.setSelection(true);
-
-        includeLibsButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
-        includeLibsButton.setText(Messages.getString("JobScriptsExportWizardPage.includeLibs")); //$NON-NLS-1$
-        includeLibsButton.setFont(font);
-        GridData includeLibsGD = new GridData();
-        includeLibsGD.horizontalSpan = 3;
-        includeLibsButton.setLayoutData(includeLibsGD);
-
-        jobScriptButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
-        jobScriptButton.setText(Messages.getString("JobScriptsExportWizardPage.jobJavaSources")); //$NON-NLS-1$
-        jobScriptButton.setFont(font);
-        GridData jobScriptGD = new GridData();
-        jobScriptGD.horizontalSpan = 3;
-        jobScriptButton.setLayoutData(jobScriptGD);
-
-        updateOptionStates();
     }
 
     private void updateOptionStates() {
@@ -1364,7 +1377,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
 
         JobExportType jobExportType = getCurrentExportType1();
         if (JobExportType.POJO.equals(jobExportType) || JobExportType.MSESB.equals(jobExportType)
-                || JobExportType.OSGI.equals(jobExportType)) {
+                || JobExportType.OSGI.equals(jobExportType) || JobExportType.IMAGE.equals(jobExportType)) {
             IRunnableWithProgress worker = new IRunnableWithProgress() {
 
                 @Override
