@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +15,18 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Represents Table parameter. Table parameter is ElementParameter, which EParameterFieldType is TABLE
@@ -58,7 +62,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
      * A Map instance in the List represents Table row. Rows are separated by ", " (comma with a whitespace).
      * Entries in the Map are also should be separated by ", ".
      * Generally, string argument should be equal to the result of a call to List.toString().
-     *
+     * <p>
      * If incoming argument is of type List, then sets it without conversion.
      * Else it throws exception.
      *
@@ -70,10 +74,31 @@ public class TableElementParameter extends TaCoKitElementParameter {
             final List<Map<String, Object>> tableValue = ValueConverter.toTable((String) newValue);
             super.setValue(fromRepository(tableValue));
         } else if (newValue instanceof List) {
-            super.setValue(newValue);
+            super.setValue(fixClosedListColumn((List<Map<String, Object>>) newValue));
         } else {
             throw new IllegalArgumentException("wrong type on new value: " + newValue.getClass().getName());
         }
+    }
+
+    /*
+        Provides quickfix for Closed List column. For some reason, when new row is added Studio sets index of possible
+        value instead of String value. This fix converts index back to String value
+     */
+    private List<Map<String, Object>> fixClosedListColumn(final List<Map<String, Object>> value) {
+        if (value == null || value.size() == 0 || getListItemsValue() == null) {
+            return value;
+        }
+        final Map<String, Object> lastRow = value.get(value.size() - 1);
+        Arrays.stream(getListItemsValue())
+                .map(o -> IElementParameter.class.cast(o))
+                .filter(p -> p.getFieldType().equals(EParameterFieldType.CLOSED_LIST))
+                .forEach(p -> {
+                    if (lastRow.get(p.getName()) instanceof Integer) {
+                        Object newValue = p.getListItemsValue()[(Integer) lastRow.get(p.getName())];
+                        lastRow.put(p.getName(), newValue);
+                    }
+                });
+        return value;
     }
 
     /**
