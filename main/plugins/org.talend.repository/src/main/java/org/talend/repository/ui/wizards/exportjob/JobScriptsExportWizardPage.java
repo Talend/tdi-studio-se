@@ -103,6 +103,7 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BuildJobManager
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.util.ExportJobUtil;
+import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.JobVersionUtils;
 
 /**
@@ -715,6 +716,13 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                 hideControl(includeLibsButton, false);
                 jobItemButton.setSelection(false);
             }
+
+            // TDQ-15391: when have tDqReportRun, must always export items.
+            if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+                jobItemButton.setSelection(true);
+                jobItemButton.setEnabled(false);
+            }
+            // TDQ-15391~
         } else {
             hideControl(optionTypeCombo, true);
             hideControl(executeTestsButton, true);
