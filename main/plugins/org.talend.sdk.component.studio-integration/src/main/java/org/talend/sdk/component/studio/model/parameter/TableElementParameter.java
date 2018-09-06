@@ -91,7 +91,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
         final Map<String, Object> lastRow = value.get(value.size() - 1);
         Arrays.stream(getListItemsValue())
                 .map(o -> IElementParameter.class.cast(o))
-                .filter(p -> p.getFieldType().equals(EParameterFieldType.CLOSED_LIST))
+                .filter(p -> EParameterFieldType.CLOSED_LIST.equals(p.getFieldType()))
                 .forEach(p -> {
                     if (lastRow.get(p.getName()) instanceof Integer) {
                         Object newValue = p.getListItemsValue()[(Integer) lastRow.get(p.getName())];

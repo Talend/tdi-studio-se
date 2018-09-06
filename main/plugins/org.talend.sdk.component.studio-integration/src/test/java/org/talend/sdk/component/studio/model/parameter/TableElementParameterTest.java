@@ -15,6 +15,7 @@ package org.talend.sdk.component.studio.model.parameter;
 import org.eclipse.jface.action.IAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 
@@ -82,4 +83,39 @@ public class TableElementParameterTest {
         Collection<Pair<String, String>> parameters = actionParameter.parameters();
         Assertions.assertEquals(expected, parameters);
     }
+
+    @Test
+    public void testSetValueFixClosedList() {
+        List<Map<String, Object>> expectedValue = new ArrayList<>();
+        Map<String, Object> expectedRow1 = new LinkedHashMap<>();
+        expectedRow1.put("conf.table[].check", "false");
+        expectedRow1.put("conf.table[].enum", "GREATER");
+        expectedValue.add(expectedRow1);
+
+        CheckElementParameter col1 = new CheckElementParameter(null);
+        col1.setName("conf.table[].check");
+        col1.setFieldType(EParameterFieldType.CHECK);
+
+        TaCoKitElementParameter col2 = new TaCoKitElementParameter(null);
+        Object[] col2PossibleValues = new String[]{"GREATER", "LESS", "EQUALS"};
+        col2.setName("conf.table[].enum");
+        col2.setListItemsValue(col2PossibleValues);
+        col2.setFieldType(EParameterFieldType.CLOSED_LIST);
+
+        TableElementParameter table = new TableElementParameter(null);
+        Object[] tableColumns = new Object[]{col1, col2};
+        table.setListItemsValue(tableColumns);
+        table.setName("conf.table");
+
+        List<Map<String, Object>> newValue = new ArrayList<>();
+        Map<String, Object> newRow1 = new LinkedHashMap<>();
+        newRow1.put("conf.table[].check", "false");
+        newRow1.put("conf.table[].enum", 0);
+        newValue.add(newRow1);
+
+        table.setValue(newValue);
+
+        Assertions.assertEquals(expectedValue, table.getValue());
+    }
+
 }
