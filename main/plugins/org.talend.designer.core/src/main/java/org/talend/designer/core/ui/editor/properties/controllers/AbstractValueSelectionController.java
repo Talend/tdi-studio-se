@@ -55,8 +55,22 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
      */
     private static int DECORATION_OFFSET = -7;
     
+    /**
+     * Specify whether Text controll should be editable. It is false by default
+     */
+    private boolean editableText = false;
+    
     public AbstractValueSelectionController(IDynamicProperty dp) {
         super(dp);
+    }
+    
+    /**
+     * Allows to configure whether Text should be editable
+     * 
+     * @param editable true if Text control should be editable
+     */
+    public void setEditableText(final boolean editable) {
+        this.editableText = editable;
     }
 
     /**
@@ -232,7 +246,7 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
     
     private void setupText(final Text text, final IElementParameter param) {
         text.setData(PARAMETER_NAME, param.getName());
-        text.setEditable(false);
+        text.setEditable(editableText);
         addDragAndDropTarget(text);
         if (elem instanceof Node) {
             text.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
