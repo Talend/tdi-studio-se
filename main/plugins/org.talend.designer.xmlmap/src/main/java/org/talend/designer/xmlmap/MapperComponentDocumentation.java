@@ -27,10 +27,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.core.language.ECodeLanguage;
+import org.talend.core.language.LanguageManager;
 import org.talend.core.model.genhtml.HTMLDocUtils;
 import org.talend.core.model.genhtml.HTMLHandler;
 import org.talend.core.model.genhtml.IHTMLDocConstants;
 import org.talend.core.model.genhtml.XMLHandler;
+import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IComponentDocumentation;
@@ -274,11 +277,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
         Element entryElement = metadataTableEntriesElement.addElement("entry"); //$NON-NLS-1$
         entryElement.addAttribute("name", HTMLDocUtils.checkString(entry.getName())); //$NON-NLS-1$
         String type = HTMLDocUtils.checkString(entry.getType());
-        // if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.JAVA) && type != "") { //$NON-NLS-1$
-        // type = JavaTypesManager.getTypeToGenerate(type, entry.isNullable());
-        // }
 
-        entryElement.addAttribute("type", type); //$NON-NLS-1$
         String expression = HTMLDocUtils.checkString(entry.getExpression());
         entryElement.addAttribute("expression", handleLongPathForPDF(expression)); //$NON-NLS-1$
         boolean isNullable = false;
@@ -288,6 +287,11 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
             isNullable = ((VarNode) entry).isNullable();
         }
         entryElement.addAttribute("isNullable", String.valueOf(isNullable)); //$NON-NLS-1$
+
+        if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.JAVA) && type != "") { //$NON-NLS-1$
+            type = JavaTypesManager.getTypeToGenerate(type, isNullable);
+        }
+        entryElement.addAttribute("type", type); //$NON-NLS-1$
 
         if (entry instanceof TreeNode) {
             TreeNode treeNode = (TreeNode) entry;
@@ -309,6 +313,8 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
                 newText = newText + split[i] + "/" + "\n";
             }
             newText = newText + split[split.length - 1];
+        } else {
+            return text;
         }
         return newText;
     }
