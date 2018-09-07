@@ -15,14 +15,17 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_HEALTHCHECK;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_PARAMETERS;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_UPDATABLE_STRATEGY;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_UPDATABLE_TARGET;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_UPDATABLE_AFTER;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_UPDATABLE_PARAMETERS;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_UPDATABLE_VALUE;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_PARAMETERS;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_EVALUTIONSTRATEGY;
@@ -463,6 +466,12 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         return Arrays.asList(parametersValue.split(VALUE_SEPARATOR));
     }
 
+    // TODO: all these trigger specific methods are quit duplicating the same code,
+    // we should try to align it since all trigger use the same kind of API
+    public List<String> getParameters(final String actionType) {
+        return Arrays.asList(delegate.getMetadata().get("action::" + actionType + "::parameters").split(VALUE_SEPARATOR));
+    }
+
     boolean isCheckable() {
         return delegate.getMetadata().containsKey(ACTION_HEALTHCHECK);
     }
@@ -589,10 +598,14 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     }
 
     public Optional<Updatable> getUpdatable() {
-        final String strategy = delegate.getMetadata().get(ACTION_UPDATABLE_STRATEGY);
-        final String target = delegate.getMetadata().get(ACTION_UPDATABLE_TARGET);
-        if (target != null && strategy != null) {
-            return Optional.of(new Updatable(strategy, target));
+        final String name = delegate.getMetadata().get(ACTION_UPDATABLE_VALUE);
+        final String parameters = delegate.getMetadata().get(ACTION_UPDATABLE_PARAMETERS);
+        final String after = delegate.getMetadata().get(ACTION_UPDATABLE_AFTER);
+        if (name != null) {
+            return Optional.of(new Updatable(
+                    name, parameters != null && !parameters.trim().isEmpty() ?
+                        asList(parameters.split(VALUE_SEPARATOR)): emptyList(),
+                    after));
         } else {
             return Optional.empty();
         }
@@ -678,28 +691,26 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     }
 
     public static class Updatable {
+        private final String actionName;
+        private final Collection<String> parameters;
+        private final String previousProperty;
 
-        /**
-         * Strategy defines, how resulting value is computed
-         */
-        private final String strategy;
-
-        /**
-         * Path to property, which triggers other property update on change.
-         */
-        private final String target;
-
-        public Updatable(final String strategy, final String target) {
-            this.strategy = strategy;
-            this.target = target;
+        private Updatable(final String actionName, final Collection<String> parameters, final String previousProperty) {
+            this.actionName = actionName;
+            this.parameters = parameters;
+            this.previousProperty = previousProperty;
         }
 
-        public String getTarget() {
-            return target;
+        public Collection<String> getParameters() {
+            return parameters;
         }
 
-        public String getStrategy() {
-            return strategy;
+        public String getPreviousProperty() {
+            return previousProperty;
+        }
+
+        public String getActionName() {
+            return actionName;
         }
     }
 

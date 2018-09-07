@@ -24,7 +24,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class ValidationListener extends Action implements PropertyChangeListener {
+public class ValidationListener extends Action<String> implements PropertyChangeListener {
 
     private final ValidationLabel label;
 

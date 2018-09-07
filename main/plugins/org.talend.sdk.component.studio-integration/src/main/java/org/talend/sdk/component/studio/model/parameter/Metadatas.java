@@ -36,15 +36,11 @@ public final class Metadatas {
 
     public static final String ACTION_VALIDATION_PARAMETERS = "action::validation::parameters";
 
-    /*
-        TODO likely to be changed after API release
-     */
-    public static final String ACTION_UPDATABLE_STRATEGY = "action::update::strategy";
+    public static final String ACTION_UPDATABLE_VALUE = "action::update";
 
-    /*
-        TODO likely to be changed after API release
-     */
-    public static final String ACTION_UPDATABLE_TARGET = "action::update::target";
+    public static final String ACTION_UPDATABLE_PARAMETERS = "action::update::parameters";
+
+    public static final String ACTION_UPDATABLE_AFTER = "action::update::after";
 
     public static final String CONDITION_IF_VALUE = "condition::if::value";
 

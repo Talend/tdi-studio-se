@@ -33,6 +33,7 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
+import org.talend.sdk.component.studio.model.action.UpdateAction;
 import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
 import org.talend.sdk.component.studio.model.parameter.listener.ActiveIfListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
@@ -40,10 +41,8 @@ import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory
 import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
+import org.talend.sdk.component.studio.model.parameter.resolver.UpdateResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
-import org.talend.sdk.component.studio.model.parameter.update.IdentityStrategy;
-import org.talend.sdk.component.studio.model.parameter.update.UpdateListener;
-import org.talend.sdk.component.studio.model.parameter.update.UpdateResolver;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
@@ -506,27 +505,25 @@ public class SettingVisitor implements PropertyVisitor {
             defaultValue = node.getProperty().getMetadata().get("ui::defaultvalue::value");
         }
 
+        parameter.setRequired(node.getProperty().isRequired());
         if (TaCoKitElementParameter.class.isInstance(parameter)) {
-            TaCoKitElementParameter.class.cast(parameter).updateValueOnly(defaultValue);
+            final TaCoKitElementParameter taCoKitElementParameter = TaCoKitElementParameter.class.cast(parameter);
+            taCoKitElementParameter.updateValueOnly(defaultValue);
+            if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
+                createValidationLabel(node, taCoKitElementParameter);
+            }
+            buildActivationCondition(node, node);
+            buildUpdateListener(node, );
         } else {
             parameter.setValue(defaultValue);
         }
-        parameter.setRequired(node.getProperty().isRequired());
-        if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
-            createValidationLabel(node, (TaCoKitElementParameter) parameter);
-        }
-
-        buildActivationCondition(node, node);
-        buildUpdateListener((TaCoKitElementParameter) parameter, node);
     }
 
-    private void buildUpdateListener(TaCoKitElementParameter updatableParameter, PropertyNode node) {
-        node.getProperty().getUpdatable().ifPresent(updatable -> {
-            final UpdateListener listener = new UpdateListener(updatableParameter, new IdentityStrategy());
-            updatableParameter.setRedrawParameter(redrawParameter);
-            UpdateResolver resolver = new UpdateResolver(listener, node);
-            actionResolvers.add(resolver);
-        });
+    private void buildUpdateListener(final PropertyNode node, final Layout layout) {
+        node.getProperty().getUpdatable().ifPresent(updatable -> new UpdateResolver(
+                element, category, layout.getChildLayout(layout.getPath() + PropertyNode.UPDATE_BUTTON).getPosition(),
+                new UpdateAction(updatable.getActionName(), family, Action.Type.UPDATE), node, actions)
+                    .resolveParameters(settings));
     }
 
     /**

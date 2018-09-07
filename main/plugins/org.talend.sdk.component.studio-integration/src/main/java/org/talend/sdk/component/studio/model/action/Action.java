@@ -24,7 +24,7 @@ import java.util.Objects;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
 
-public class Action {
+public class Action<T> {
 
     public static final String STATUS = "status";
 
@@ -70,7 +70,7 @@ public class Action {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, String> callback() {
+    public Map<String, T> callback() {
         return actionClient().execute(Map.class, family, type, actionName, payload());
     }
 
@@ -100,8 +100,9 @@ public class Action {
     public enum Type {
         HEALTHCHECK,
         SUGGESTIONS,
-        VALIDATION;
-        
+        VALIDATION,
+        UPDATE;
+
         @Override
         public String toString() {
             return super.toString().toLowerCase();
