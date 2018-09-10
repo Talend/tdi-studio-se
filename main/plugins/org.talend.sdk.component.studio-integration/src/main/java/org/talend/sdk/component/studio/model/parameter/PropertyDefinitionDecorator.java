@@ -468,6 +468,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
     // TODO: all these trigger specific methods are quit duplicating the same code,
     // we should try to align it since all trigger use the same kind of API
+    // TODO: avoid NPE here as not every property has action
     public List<String> getParameters(final String actionType) {
         return Arrays.asList(delegate.getMetadata().get("action::" + actionType + "::parameters").split(VALUE_SEPARATOR));
     }

@@ -513,17 +513,19 @@ public class SettingVisitor implements PropertyVisitor {
                 createValidationLabel(node, taCoKitElementParameter);
             }
             buildActivationCondition(node, node);
-            buildUpdateListener(node, );
+            buildUpdateListener(node, node.getLayout(form));
         } else {
             parameter.setValue(defaultValue);
         }
     }
 
     private void buildUpdateListener(final PropertyNode node, final Layout layout) {
-        node.getProperty().getUpdatable().ifPresent(updatable -> new UpdateResolver(
-                element, category, layout.getChildLayout(layout.getPath() + PropertyNode.UPDATE_BUTTON).getPosition(),
-                new UpdateAction(updatable.getActionName(), family, Action.Type.UPDATE), node, actions)
-                    .resolveParameters(settings));
+        node.getProperty().getUpdatable().ifPresent(updatable -> {
+                    final int buttonPosition = layout.getChildLayout(layout.getPath() + PropertyNode.UPDATE_BUTTON).getPosition();
+                    final UpdateAction action = new UpdateAction(updatable.getActionName(), family, Action.Type.UPDATE);
+                    new UpdateResolver(element, category, buttonPosition, action, node, actions)
+                            .resolveParameters(settings);
+        });
     }
 
     /**
