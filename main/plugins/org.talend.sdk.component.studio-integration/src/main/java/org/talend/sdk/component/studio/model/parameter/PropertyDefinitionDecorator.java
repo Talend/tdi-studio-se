@@ -606,7 +606,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             return Optional.of(new Updatable(
                     name, parameters != null && !parameters.trim().isEmpty() ?
                         asList(parameters.split(VALUE_SEPARATOR)): emptyList(),
-                    after));
+                    after != null ? after : ""));
         } else {
             return Optional.empty();
         }

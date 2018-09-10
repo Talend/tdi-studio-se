@@ -277,7 +277,7 @@ public class PropertyNode {
                 if (current.getProperty().isCheckable()) {
                     addButton(layout, CONNECTION_BUTTON);
                 }
-                if (current.getProperty().getUpdatable().map(v -> v.getPreviousProperty() == null).orElse(false)) {
+                if (current.getProperty().getUpdatable().map(v -> v.getPreviousProperty().isEmpty()).orElse(false)) {
                     addButton(layout, UPDATE_BUTTON);
                 }
             }
