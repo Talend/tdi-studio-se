@@ -63,6 +63,7 @@ public class Action<T> {
         Objects.requireNonNull(parameter, "parameter should not be null");
         final String elementParameter = parameter.getName();
         List<IActionParameter> list = parameters.computeIfAbsent(elementParameter, k -> new ArrayList<>());
+
         if (list.contains(parameter)) {
             throw new IllegalArgumentException("action already contains parameter " + parameter); 
         }

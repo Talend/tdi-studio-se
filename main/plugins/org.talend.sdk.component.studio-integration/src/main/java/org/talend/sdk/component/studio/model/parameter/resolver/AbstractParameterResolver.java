@@ -89,6 +89,10 @@ abstract class AbstractParameterResolver implements ParameterResolver {
         });
     }
 
+    protected final Action getAction() {
+        return this.action;
+    }
+
     protected final List<String> getRelativePaths() {
         return actionOwner.getProperty().getParameters(actionRef.getType().toLowerCase(ROOT));
     }

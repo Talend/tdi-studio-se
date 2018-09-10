@@ -65,8 +65,8 @@ public class UpdateResolver extends AbstractParameterResolver {
         button.setName(actionOwner.getProperty().getPath() + PropertyNode.UPDATE_BUTTON);
         button.setNumRow(rowNumber);
         button.setShow(true);
-        button.setCommand(new BaseAsyncAction<Object>(new Action<>(actionRef.getName(), actionRef.getFamily(),
-                Action.Type.valueOf(actionRef.getType().toUpperCase(ROOT)))) {
+        UpdateAction action = (UpdateAction) getAction();
+        button.setCommand(new BaseAsyncAction<Object>(action) {
 
             @Override
             protected void onResult(final Map<String, Object> result) {
@@ -74,10 +74,11 @@ public class UpdateResolver extends AbstractParameterResolver {
                            .map(settings::get).filter(Objects::nonNull)
                            .map(TaCoKitElementParameter.class::cast)
                            .forEach(elt -> {
+                               elt.setValue("Hello");
                                // todo: update each element recursively since an object can contain an object
                            });
             }
         });
         settings.put(button.getName(), button);
-    }
+   }
 }
