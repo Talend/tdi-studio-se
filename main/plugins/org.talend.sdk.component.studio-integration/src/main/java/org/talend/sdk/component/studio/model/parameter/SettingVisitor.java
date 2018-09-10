@@ -236,7 +236,29 @@ public class SettingVisitor implements PropertyVisitor {
 
                 break;
             }
-        } else if (node.getProperty().isCheckable() && !node.getChildren(form).isEmpty()) {
+        } else {
+            buildHealthCheck(node);
+            buildUpdate(node);
+        }
+    }
+
+    /**
+     * Checks whether HealthCheck button should be added
+     *
+     * @param node current PropertyNode
+     * @return true if HealthCheck button should be added
+     */
+    private boolean hasHealthCheck(final PropertyNode node) {
+        return node.getProperty().isCheckable() && !node.getChildren(form).isEmpty();
+    }
+
+    /**
+     * Builds HealthCheck button
+     *
+     * @param node current PropertyNode
+     */
+    private void buildHealthCheck(final PropertyNode node) {
+        if (hasHealthCheck(node)) {
             final ActionReference action = actions
                     .stream()
                     .filter(a -> Action.Type.HEALTHCHECK.toString().equals(a.getType()))
@@ -249,6 +271,22 @@ public class SettingVisitor implements PropertyVisitor {
             new HealthCheckResolver(element, family, node, action, category, buttonLayout.getPosition())
                     .resolveParameters(settings);
         }
+    }
+
+    /**
+     * Builds Update button, which triggers call to Update component action
+     *
+     * @param node current PropertyNode
+     */
+    private void buildUpdate(final PropertyNode node) {
+        node.getProperty().getUpdatable().ifPresent(updatable -> {
+            final Layout formLayout = node.getLayout(form);
+            final Layout buttonLayout = formLayout.getChildLayout(formLayout.getPath() + PropertyNode.UPDATE_BUTTON);
+            final int buttonPosition = buttonLayout.getPosition();
+            final UpdateAction action = new UpdateAction(updatable.getActionName(), family, Action.Type.UPDATE);
+            new UpdateResolver(element, category, buttonPosition, action, node, actions)
+                    .resolveParameters(settings);
+        });
     }
 
     IElement getNode() {
@@ -513,19 +551,9 @@ public class SettingVisitor implements PropertyVisitor {
                 createValidationLabel(node, taCoKitElementParameter);
             }
             buildActivationCondition(node, node);
-            buildUpdateListener(node, node.getLayout(form));
         } else {
             parameter.setValue(defaultValue);
         }
-    }
-
-    private void buildUpdateListener(final PropertyNode node, final Layout layout) {
-        node.getProperty().getUpdatable().ifPresent(updatable -> {
-                    final int buttonPosition = layout.getChildLayout(layout.getPath() + PropertyNode.UPDATE_BUTTON).getPosition();
-                    final UpdateAction action = new UpdateAction(updatable.getActionName(), family, Action.Type.UPDATE);
-                    new UpdateResolver(element, category, buttonPosition, action, node, actions)
-                            .resolveParameters(settings);
-        });
     }
 
     /**
