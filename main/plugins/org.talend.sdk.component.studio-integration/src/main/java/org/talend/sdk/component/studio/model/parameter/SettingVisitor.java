@@ -284,7 +284,8 @@ public class SettingVisitor implements PropertyVisitor {
             final Layout buttonLayout = formLayout.getChildLayout(formLayout.getPath() + PropertyNode.UPDATE_BUTTON);
             final int buttonPosition = buttonLayout.getPosition();
             final UpdateAction action = new UpdateAction(updatable.getActionName(), family, Action.Type.UPDATE);
-            UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node, actions, redrawParameter);
+            UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node,
+                    actions, redrawParameter, settings);
             parameterResolvers.add(resolver);
         });
     }

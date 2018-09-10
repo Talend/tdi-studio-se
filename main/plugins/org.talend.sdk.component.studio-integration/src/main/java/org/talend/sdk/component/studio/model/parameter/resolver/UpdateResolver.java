@@ -41,41 +41,30 @@ import org.talend.sdk.component.studio.model.parameter.command.BaseAsyncAction;
 
 public class UpdateResolver extends AbstractParameterResolver {
 
-    private final IElement element;
-
-    private final EComponentCategory category;
-
-    private final int rowNumber;
-
-    /**
-     * Redraw parameter is special Studio parameter, which stores boolean value, which denotes
-     * whether layout should be redrawn
-     */
-    private final ElementParameter redrawParameter;
+    private final ButtonParameter button;
 
     public UpdateResolver(final IElement element, final EComponentCategory category, final int rowNumber,
-            final UpdateAction action, final PropertyNode actionOwner, final Collection<ActionReference> actions, final ElementParameter redrawParameter) {
+            final UpdateAction action, final PropertyNode actionOwner, final Collection<ActionReference> actions,
+                          final ElementParameter redrawParameter, final Map<String, IElementParameter> settings) {
         super(action, actionOwner,
                 getActionRef(actions,
                         actionOwner.getProperty().getUpdatable().orElseThrow(IllegalStateException::new).getActionName(),
                         Action.Type.UPDATE));
-        this.element = element;
-        this.category = category;
-        this.rowNumber = rowNumber;
-        this.redrawParameter = redrawParameter;
-    }
 
-    @Override
-    public void resolveParameters(final Map<String, IElementParameter> settings) {
-        super.resolveParameters(settings);
-
-        final ButtonParameter button = new ButtonParameter(element);
+        this.button = new ButtonParameter(element);
         button.setCategory(category);
         button.setDisplayName(actionRef.getDisplayName());
         button.setName(actionOwner.getProperty().getPath() + PropertyNode.UPDATE_BUTTON);
         button.setNumRow(rowNumber);
         button.setShow(true);
         button.setRedrawParameter(redrawParameter);
+        settings.put(button.getName(), button);
+    }
+
+    @Override
+    public void resolveParameters(final Map<String, IElementParameter> settings) {
+        super.resolveParameters(settings);
+
         final UpdateAction action = (UpdateAction) getAction();
         final List<TaCoKitElementParameter> parameters = actionOwner.accept(new PathCollector()).getPaths().stream()
                 .map(settings::get)
@@ -83,6 +72,5 @@ public class UpdateResolver extends AbstractParameterResolver {
                 .map(TaCoKitElementParameter.class::cast)
                 .collect(Collectors.toList());
         button.setCommand(new UpdateCommand(action, actionOwner.getId(), parameters, button));
-        settings.put(button.getName(), button);
    }
 }
