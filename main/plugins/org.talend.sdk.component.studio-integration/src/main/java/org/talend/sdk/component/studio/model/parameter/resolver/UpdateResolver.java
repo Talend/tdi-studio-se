@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
@@ -46,8 +47,14 @@ public class UpdateResolver extends AbstractParameterResolver {
 
     private final int rowNumber;
 
+    /**
+     * Redraw parameter is special Studio parameter, which stores boolean value, which denotes
+     * whether layout should be redrawn
+     */
+    private final ElementParameter redrawParameter;
+
     public UpdateResolver(final IElement element, final EComponentCategory category, final int rowNumber,
-            final UpdateAction action, final PropertyNode actionOwner, final Collection<ActionReference> actions) {
+            final UpdateAction action, final PropertyNode actionOwner, final Collection<ActionReference> actions, final ElementParameter redrawParameter) {
         super(action, actionOwner,
                 getActionRef(actions,
                         actionOwner.getProperty().getUpdatable().orElseThrow(IllegalStateException::new).getActionName(),
@@ -55,6 +62,7 @@ public class UpdateResolver extends AbstractParameterResolver {
         this.element = element;
         this.category = category;
         this.rowNumber = rowNumber;
+        this.redrawParameter = redrawParameter;
     }
 
     @Override
@@ -67,13 +75,14 @@ public class UpdateResolver extends AbstractParameterResolver {
         button.setName(actionOwner.getProperty().getPath() + PropertyNode.UPDATE_BUTTON);
         button.setNumRow(rowNumber);
         button.setShow(true);
+        button.setRedrawParameter(redrawParameter);
         final UpdateAction action = (UpdateAction) getAction();
         final List<TaCoKitElementParameter> parameters = actionOwner.accept(new PathCollector()).getPaths().stream()
                 .map(settings::get)
                 .filter(Objects::nonNull)
                 .map(TaCoKitElementParameter.class::cast)
                 .collect(Collectors.toList());
-        button.setCommand(new UpdateCommand(action, actionOwner.getId(), parameters));
+        button.setCommand(new UpdateCommand(action, actionOwner.getId(), parameters, button));
         settings.put(button.getName(), button);
    }
 }

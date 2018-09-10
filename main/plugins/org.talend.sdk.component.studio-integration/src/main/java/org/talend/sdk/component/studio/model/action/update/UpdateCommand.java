@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.studio.model.action.Action;
+import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.command.BaseAsyncAction;
 
@@ -37,12 +38,17 @@ public class UpdateCommand extends BaseAsyncAction<Object> {
      */
     private final List<TaCoKitElementParameter> parameters;
 
+    /**
+     * ButtonParameter is used here to trigger layout refresh
+     */
+    private final ButtonParameter button;
 
     public UpdateCommand(final Action<Object> action, final String basePath,
-                         final List<TaCoKitElementParameter> parameters) {
+                         final List<TaCoKitElementParameter> parameters, final ButtonParameter button) {
         super(action);
         this.basePath = basePath;
         this.parameters = Collections.unmodifiableList(parameters);
+        this.button = button;
     }
 
     /**
@@ -63,5 +69,6 @@ public class UpdateCommand extends BaseAsyncAction<Object> {
                 }
             }
         });
+        button.firePropertyChange("show", null, true);
     }
 }
