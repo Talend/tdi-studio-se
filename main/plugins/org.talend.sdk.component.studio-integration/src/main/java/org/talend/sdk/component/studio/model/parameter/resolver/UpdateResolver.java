@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.IElement;
@@ -29,6 +30,7 @@ import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
 import org.talend.sdk.component.studio.model.action.UpdateAction;
+import org.talend.sdk.component.studio.model.action.update.UpdateCommand;
 import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.PathCollector;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
@@ -65,20 +67,13 @@ public class UpdateResolver extends AbstractParameterResolver {
         button.setName(actionOwner.getProperty().getPath() + PropertyNode.UPDATE_BUTTON);
         button.setNumRow(rowNumber);
         button.setShow(true);
-        UpdateAction action = (UpdateAction) getAction();
-        button.setCommand(new BaseAsyncAction<Object>(action) {
-
-            @Override
-            protected void onResult(final Map<String, Object> result) {
-                actionOwner.accept(new PathCollector()).getPaths().stream()
-                           .map(settings::get).filter(Objects::nonNull)
-                           .map(TaCoKitElementParameter.class::cast)
-                           .forEach(elt -> {
-                               elt.setValue("Hello");
-                               // todo: update each element recursively since an object can contain an object
-                           });
-            }
-        });
+        final UpdateAction action = (UpdateAction) getAction();
+        final List<TaCoKitElementParameter> parameters = actionOwner.accept(new PathCollector()).getPaths().stream()
+                .map(settings::get)
+                .filter(Objects::nonNull)
+                .map(TaCoKitElementParameter.class::cast)
+                .collect(Collectors.toList());
+        button.setCommand(new UpdateCommand(action, actionOwner.getId(), parameters));
         settings.put(button.getName(), button);
    }
 }
