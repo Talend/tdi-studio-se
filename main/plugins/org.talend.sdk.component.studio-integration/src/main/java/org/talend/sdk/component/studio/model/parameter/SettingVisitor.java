@@ -120,7 +120,7 @@ public class SettingVisitor implements PropertyVisitor {
     private final Map<String, List<ConditionGroup>> activations =
             new LinkedHashMap<>();
 
-    private final List<ParameterResolver> actionResolvers = new ArrayList<>();
+    private final List<ParameterResolver> parameterResolvers = new ArrayList<>();
 
     public SettingVisitor(final IElement iNode,
             final ElementParameter redrawParameter, final ConfigTypeNode config) {
@@ -191,7 +191,7 @@ public class SettingVisitor implements PropertyVisitor {
             });
         });
 
-        actionResolvers.forEach(resolver -> resolver.resolveParameters(Collections.unmodifiableMap(settings)));
+        parameterResolvers.forEach(resolver -> resolver.resolveParameters(Collections.unmodifiableMap(settings)));
         return unmodifiableList(new ArrayList<>(settings.values()));
     }
 
@@ -284,8 +284,8 @@ public class SettingVisitor implements PropertyVisitor {
             final Layout buttonLayout = formLayout.getChildLayout(formLayout.getPath() + PropertyNode.UPDATE_BUTTON);
             final int buttonPosition = buttonLayout.getPosition();
             final UpdateAction action = new UpdateAction(updatable.getActionName(), family, Action.Type.UPDATE);
-            new UpdateResolver(element, category, buttonPosition, action, node, actions, redrawParameter)
-                    .resolveParameters(settings);
+            UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node, actions, redrawParameter);
+            parameterResolvers.add(resolver);
         });
     }
 
@@ -418,7 +418,7 @@ public class SettingVisitor implements PropertyVisitor {
     private SuggestionsAction createSuggestionsAction(final PropertyNode node) {
         final SuggestionsAction action = new SuggestionsAction(node.getProperty().getSuggestions().getName(), family);
         final SuggestionsResolver resolver = new SuggestionsResolver(action, node, actions);
-        actionResolvers.add(resolver);
+        parameterResolvers.add(resolver);
         return action;
     }
     
@@ -615,7 +615,7 @@ public class SettingVisitor implements PropertyVisitor {
                     new ValidationListener(label, family, node.getProperty().getValidationName());
             target.registerListener("value", listener);
             final ValidationResolver resolver = new ValidationResolver(node, actions, listener, redrawParameter);
-            actionResolvers.add(resolver);
+            parameterResolvers.add(resolver);
         }
     }
 
