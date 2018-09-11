@@ -27,9 +27,13 @@ imports="
 %>
             StringBuilder sbuilder_<%=cid%> = new StringBuilder();
             sbuilder_<%=cid%>.append("jdbc:redshift:");
-            <%if ("SSO".equals(jdbcUrl)){%>
+<%
+            if ("SSO".equals(jdbcUrl)){
+%>
                 sbuilder_<%=cid%>.append("iam:");
-            <%}%>
+<%
+}
+%>
             sbuilder_<%=cid%>.append("//")
                              .append(<%=dbhost%>)
                              .append(":")
@@ -39,13 +43,13 @@ imports="
                              .append("?loglevel=")
                              .append(<%=logLevel%>);
 <%
-			if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
+            if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
 %>
-				sbuilder_<%=cid%>.append("&").append(<%=dbproperties%>);
+                sbuilder_<%=cid%>.append("&").append(<%=dbproperties%>);
 <%
-			}
+            }
 %>
-			String url_<%=cid%> = sbuilder_<%=cid%>.toString();
+            String url_<%=cid%> = sbuilder_<%=cid%>.toString();
 <%
 		}
 		
