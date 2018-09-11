@@ -287,11 +287,19 @@ public class ManageResourcePanel extends Composite {
     protected void deleteData() {
         JobResourceDependencyModel item = getSelectedItem();
         if (item != null) {
+            String contextVar = item.getContextVar();
+            String contextSource = item.getContextSource();
             getInput().remove(item);
             resourcesTV.refresh();
             fireDependenciesChangedListener();
             Property property = process.getProperty();
             ResourceDependenciesUtil.deleteFromResourceFolder(item, property.getId(), property.getVersion());
+            if (StringUtils.isNotBlank(contextVar) && StringUtils.isNotBlank(contextSource)) {
+                if (ResourceDependenciesUtil.checkIfResourceContextCanRemove(process, contextVar, contextSource)) {
+                    ResourceContextHelper helper = new ResourceContextHelper(process, commandStack);
+                    helper.removeContextParameterForResource(contextVar, contextSource);
+                }
+            }
             /**
              * if after want to set repository context value to default while deleting resource dependency, uncomment
              * follow

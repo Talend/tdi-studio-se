@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.dependencies.util;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,6 +53,7 @@ import org.talend.core.ui.context.model.table.ContextTableTabChildModel;
 import org.talend.core.ui.context.model.table.ContextTableTabParentModel;
 import org.talend.core.ui.context.nattableTree.ContextNatTableUtils;
 import org.talend.core.ui.editor.command.ContextAddParameterCommand;
+import org.talend.core.ui.editor.command.ContextRemoveParameterCommand;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.ui.editor.dependencies.model.JobContextTreeNode;
@@ -90,15 +92,10 @@ public class ResourceContextHelper {
     }
 
     public boolean checkIfContextVarIsInUse(String contextVar, String contextSource, String resStatePath) {
-        List<IContext> listContext = process.getContextManager().getListContext();
-        for (IContext context : listContext) {
-            IContextParameter contextParameter = context.getContextParameter(contextSource, contextVar);
-            if (contextParameter == null) {
-                continue;
-            }
-            if (StringUtils.isNotBlank(contextParameter.getValue()) && !resStatePath.equals(contextParameter.getValue())) {
-                return true;
-            }
+        IContext defaultContext = process.getContextManager().getDefaultContext();
+        IContextParameter contextParameter = defaultContext.getContextParameter(contextSource, contextVar);
+        if (contextParameter != null && StringUtils.isNotBlank(contextParameter.getValue())) {
+            return true;
         }
         return false;
     }
@@ -121,6 +118,16 @@ public class ResourceContextHelper {
         }
     }
 
+    public void removeContextParameterForResource(String paramNames, String paramSourceId) {
+        IContextManager contextManager = process.getContextManager();
+        if (contextManager != null && contextManager instanceof JobContextManager) {
+            JobContextManager manager = (JobContextManager) contextManager;
+            // record the modified operation.
+            manager.setModified(true);
+        }
+        commandStack.execute(new ContextRemoveParameterCommand(contextManager, paramNames, paramSourceId, true));
+    }
+
 
     public JobContextTreeNode createRootJobContextTreeNode() {
         JobContextTreeNode rootNode = new JobContextTreeNode(0, null, null, "root");
@@ -136,7 +143,7 @@ public class ResourceContextHelper {
     public List<JobContextTreeNode> constructJobContextTreeNodes() {
         IContextManager manager = process.getContextManager();
         List<JobContextTreeNode> treeNodes = new LinkedList<JobContextTreeNode>();
-        List<IContextParameter> contextDatas = ContextTemplateComposite.computeContextTemplate(manager.getListContext());
+        List<IContextParameter> contextDatas = computeContextTemplate(manager.getDefaultContext());
         List<ContextTableTabParentModel> listofData = ContextNatTableUtils.constructContextDatas(contextDatas);
 
         for (ContextTableTabParentModel contextModel : listofData) {
@@ -171,6 +178,18 @@ public class ResourceContextHelper {
 
         }
         return datum;
+    }
+
+    private List<IContextParameter> computeContextTemplate(IContext context) {
+        List<IContextParameter> contextTemplate = new ArrayList<IContextParameter>();
+        if (context != null) {
+            List<IContextParameter> paras = context.getContextParameterList();
+            for (IContextParameter contextParameter : paras) {
+                contextTemplate.add(contextParameter.clone());
+            }
+
+        }
+        return contextTemplate;
     }
 
     public static final String NEW_PARAM_NAME = "new"; //$NON-NLS-1$
