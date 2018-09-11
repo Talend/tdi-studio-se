@@ -54,7 +54,7 @@ public class UseSqlDateTypeInDataframesTask extends AbstractJobMigrationTask {
 
         List<String> impactedComponents =
                 Arrays.asList("tFileOutputParquet", "tHiveOutput", "tRedshiftOutput", "tSqlRow", "tMatchPairing",
-                        "tMatchPredict");
+                        "tMatchPredict", "tMatchModel");
 
         IComponentConversion addUseTimestampForDateType = new AddUseTimestampForDateType();
 
