@@ -1,4 +1,4 @@
-<!-- $Id: tWriteJSONField.xml 1549 2011-10-10 11:34:23 +0000 (星期一,10 十月 2011) jjzhou $ -->
+<!-- $Id: tWriteJSONField.xml 1549 2011-10-10 11:34:23 +0000 (ÃÅ ÃÂÃÂÃÅ ÃÂÃÂÃâ¬ÃÅžÃÂ,10 ÃÂ¥ÃÂÃÂÃÅ ÃÂÃÂ 2011) jjzhou $ -->
 <COMPONENT>
 	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="0.102" STATUS="ALPHA"
 		COMPATIBILITY="ALL" AUTHOR="Talend" RELEASE_DATE="20111010A"
@@ -63,9 +63,9 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT NAME="xom" MODULE="xom-1.2.7.jar" MVN="mvn:org.talend.libraries/xom-1.2.7/6.0.0"  REQUIRED="true" />
-			<IMPORT NAME="commons_beanutils" MODULE="commons-beanutils-1.8.3.jar" MVN="mvn:org.talend.libraries/commons-beanutils-1.8.3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-beanutils-1.8.3.jar" REQUIRED="true" />
-			<IMPORT NAME="commons_collections" MODULE="commons-collections-3.2.2.jar" MVN="mvn:org.talend.libraries/commons-collections-3.2.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.2.jar" REQUIRED="true" />
-			<IMPORT NAME="commons_lang" MODULE="commons-lang-2.6.jar" MVN="mvn:org.talend.libraries/commons-lang-2.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.6.jar" REQUIRED="true" />
+			<IMPORT NAME="commons_beanutils" MODULE="commons-beanutils-1.8.3.jar" MVN="mvn:commons-beanutils/commons-beanutils/1.8.3"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-beanutils-1.8.3.jar" REQUIRED="true" />
+			<IMPORT NAME="commons_collections" MODULE="commons-collections-3.2.2.jar" MVN="mvn:commons-collections/commons-collections/3.2.2"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.2.jar" REQUIRED="true" />
+			<IMPORT NAME="commons_lang" MODULE="commons-lang-2.6.jar" MVN="mvn:commons-lang/commons-lang/2.6"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.6.jar" REQUIRED="true" />
 			<IMPORT NAME="commons_logging" MODULE="commons-logging-1.1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0"  UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar" REQUIRED="true" />
 			<IMPORT NAME="ezmorph" MODULE="ezmorph-1.0.6.jar" MVN="mvn:org.talend.libraries/ezmorph-1.0.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/ezmorph-1.0.6.jar" REQUIRED="true" />
 			<IMPORT NAME="json-lib" MODULE="json-lib-2.4.1-talend.jar" MVN="mvn:net.sf.json-lib/json-lib/2.4.1-talend" REQUIRED="true" />
