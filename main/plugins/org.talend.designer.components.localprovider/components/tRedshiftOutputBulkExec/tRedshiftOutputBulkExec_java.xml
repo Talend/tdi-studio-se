@@ -417,7 +417,7 @@
         <PARAMETER
             NAME="JDBC_URL"
             FIELD="CLOSED_LIST"
-            NUM_ROW="20"
+            NUM_ROW="90"
             REPOSITORY_VALUE="JDBC_URL"
         >
             <ITEMS DEFAULT="STANDART">
