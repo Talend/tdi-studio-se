@@ -32,13 +32,11 @@ imports="
                              .append(":")
                              .append(<%=dbport%>)
                              .append("/")
-                             .append(<%=dbname%>)
-                             .append("?loglevel=")
-                             .append(<%=logLevel%>);
+                             .append(<%=dbname%>);
 <%
             if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
 %>
-                sbuilder_<%=cid%>.append("&").append(<%=dbproperties%>);
+                sbuilder_<%=cid%>.append("?").append(<%=dbproperties%>);
 <%
             }
 %>
