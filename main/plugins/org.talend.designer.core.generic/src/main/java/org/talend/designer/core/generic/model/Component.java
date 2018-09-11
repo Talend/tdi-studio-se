@@ -1262,7 +1262,7 @@ public class Component extends AbstractBasicComponent {
         }
         ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
         componentImportNeedsList.add(moduleNeeded);
-        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.25.1");
+        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.25.2");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
     }
