@@ -413,6 +413,18 @@
 				<ITEM NAME="VALUE" />
 			</ITEMS>
 		</PARAMETER>
+
+        <PARAMETER
+            NAME="JDBC_URL"
+            FIELD="CLOSED_LIST"
+            NUM_ROW="20"
+            REPOSITORY_VALUE="JDBC_URL"
+        >
+            <ITEMS DEFAULT="STANDART">
+                <ITEM NAME="STANDART" VALUE="STANDART" />
+                <ITEM NAME="SSO" VALUE="SSO" />
+            </ITEMS>
+        </PARAMETER>
 	</ADVANCED_PARAMETERS>
 
 	<CODEGENERATION>
@@ -494,11 +506,11 @@
 
 			<TEMPLATE_PARAM SOURCE="self.APPEND" TARGET="tROB.APPEND" />
 			<TEMPLATE_PARAM SOURCE="self.CREATE" TARGET="tROB.CREATE" />
+			<TEMPLATE_PARAM SOURCE="self.JDBC_URL" TARGET="tRBE.JDBC_URL" />
 		</TEMPLATES>
 
 		<IMPORTS>
-			<IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.10.1009.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.2.10.1009/6.0.0"  REQUIRED="true" />
-			
+			<IMPORT NAME="Driver-Redshift-SSO" MODULE="RedshiftJDBC41-1.2.14.1022.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc41/1.2.14.1022"  REQUIRED="true" />
 			<IMPORT NAME="aws-java-sdk-1.11.269.jar" MODULE="aws-java-sdk-1.11.269.jar"
 				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.269"
 				REQUIRED="true" />

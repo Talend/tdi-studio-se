@@ -26,6 +26,7 @@ imports="
 	String table = ElementParameterParser.getValue(node, "__TABLE__");
 	String userName = ElementParameterParser.getValue(node, "__USER__");
 	String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
+	String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
 	
 	String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
 	dbquery = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(dbquery);
@@ -44,16 +45,30 @@ imports="
 %>
 		String driverClass_<%=cid%> = "com.amazon.redshift.jdbc41.Driver";
 		Class.forName(driverClass_<%=cid%>).newInstance();
+        StringBuilder sbuilder_<%=cid%> = new StringBuilder();
+        sbuilder_<%=cid%>.append("jdbc:redshift:");
+<%
+        if ("SSO".equals(jdbcUrl)){
+%>
+            sbuilder_<%=cid%>.append("iam:");
+<%
+}
+%>
+        sbuilder_<%=cid%>.append("//")
+                         .append(<%=host%>)
+                         .append(":")
+                         .append(<%=port%>)
+                         .append("/")
+                         .append(<%=dbName%>);
+<%
+        if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
+%>
+        sbuilder_<%=cid%>.append("?").append(<%=dbproperties%>);
+<%
+        }
+%>
+        String url_<%=cid%> = sbuilder_<%=cid%>.toString();
 		<%
-		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
-		%>
-			String url_<%=cid%> = "jdbc:redshift://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>;
-		<%
-		} else {
-		%>
-			String url_<%=cid%> = "jdbc:redshift://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%> + "?" + <%=dbproperties%>;
-		<%
-		}
 		String passwordFieldName = "__PASS__";
 		%>
 		<%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 

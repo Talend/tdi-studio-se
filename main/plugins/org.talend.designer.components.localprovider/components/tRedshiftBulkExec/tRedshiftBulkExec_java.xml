@@ -376,18 +376,17 @@
 			</ITEMS>
 		</PARAMETER>
 		
-		<PARAMETER
-			NAME="JDBC_URL"
-			FIELD="CLOSED_LIST"
-			NUM_ROW="60"
-			REPOSITORY_VALUE="JDBC_URL"
-		>
-			<ITEMS DEFAULT="STANDART">
-				<ITEM NAME="STANDART" VALUE="STANDART" />
-				<ITEM NAME="SSO" VALUE="SSO" />
-			</ITEMS>
-		</PARAMETER>
-		
+        <PARAMETER
+            NAME="JDBC_URL"
+            FIELD="CLOSED_LIST"
+            NUM_ROW="60"
+            REPOSITORY_VALUE="JDBC_URL"
+        >
+            <ITEMS DEFAULT="STANDART">
+                <ITEM NAME="STANDART" VALUE="STANDART" />
+                <ITEM NAME="SSO" VALUE="SSO" />
+            </ITEMS>
+        </PARAMETER>
 	</ADVANCED_PARAMETERS>
 
 	<CODEGENERATION>

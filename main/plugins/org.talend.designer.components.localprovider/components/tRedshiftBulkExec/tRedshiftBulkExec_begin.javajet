@@ -89,7 +89,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
         }
 %>
-		String url_<%=cid%> = sbuilder_<%=cid%>.toString();
+        String url_<%=cid%> = sbuilder_<%=cid%>.toString();
 		<%
 		String passwordFieldName = "__PASS__";
 		%>

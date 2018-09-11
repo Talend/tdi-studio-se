@@ -173,22 +173,22 @@
 			<DEFAULT>false</DEFAULT>
     	</PARAMETER>
 		
-		<PARAMETER
-			NAME="JDBC_URL"
-			FIELD="CLOSED_LIST"
-			NUM_ROW="20"
-			REPOSITORY_VALUE="JDBC_URL"
-		>
-			<ITEMS DEFAULT="STANDART">
-				<ITEM NAME="STANDART" VALUE="STANDART" />
-				<ITEM NAME="SSO" VALUE="SSO" />
-			</ITEMS>
-		</PARAMETER>
+        <PARAMETER
+            NAME="JDBC_URL"
+            FIELD="CLOSED_LIST"
+            NUM_ROW="20"
+            REPOSITORY_VALUE="JDBC_URL"
+        >
+            <ITEMS DEFAULT="STANDART">
+                <ITEM NAME="STANDART" VALUE="STANDART" />
+                <ITEM NAME="SSO" VALUE="SSO" />
+            </ITEMS>
+        </PARAMETER>
 	</ADVANCED_PARAMETERS>
 
    <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="Driver-Redshift-SSO" MODULE="RedshiftJDBC41-1.2.14.1022.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc41/1.2.14.1022"  REQUIRED="true" />
+        <IMPORT NAME="Driver-Redshift-SSO" MODULE="RedshiftJDBC41-1.2.14.1022.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc41/1.2.14.1022" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
 
