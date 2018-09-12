@@ -350,7 +350,11 @@ public class CodeGenerator implements ICodeGenerator {
                             IContextParameter contextPar = iContextParameter.clone();
                             IResourcesDependenciesService resourceService = (IResourcesDependenciesService) GlobalServiceRegister
                                     .getDefault().getService(IResourcesDependenciesService.class);
-                            contextPar.setValue(resourceService.getResourcePathForContext(process, contextPar.getValue()));
+                            String resourcePathForContext = resourceService.getResourcePathForContext(process,
+                                    contextPar.getValue());
+                            if (resourcePathForContext != null) {
+                                contextPar.setValue(resourcePathForContext);
+                            }
                             listParametersCopy.add(contextPar);
                         } else {
                             listParametersCopy.add(iContextParameter);
