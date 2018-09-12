@@ -894,7 +894,13 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         if (comboType.equals(JobExportType.OSGI)) {
             exportChoiceMap.put(ExportChoice.needMetaInfo, true);
             exportChoiceMap.put(ExportChoice.needContext, true);
-            exportChoiceMap.put(ExportChoice.needJobItem, false);
+            // TDQ-15391: when have tDqReportRun, must always export items.
+            if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+                exportChoiceMap.put(ExportChoice.needJobItem, Boolean.TRUE);
+            } else {
+                exportChoiceMap.put(ExportChoice.needJobItem, Boolean.FALSE);
+            }
+            // TDQ-15391~
             exportChoiceMap.put(ExportChoice.needSourceCode, false);
             exportChoiceMap.put(ExportChoice.binaries, true);
             if (addBSButton != null) {
