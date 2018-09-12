@@ -10,7 +10,7 @@
         <relativePath>@ProjectRelativePath@</relativePath>
     </parent>
 	<groupId>@JobGroupId@</groupId>
-	<artifactId>@JobArtifactId@-bundle</artifactId>
+	<artifactId>@JobArtifactId@</artifactId>
 	<version>@JobVersion@</version>
 	<packaging>bundle</packaging>
     <name>@ProjectName@ @JobName@-@JobVersion@ (@TalendJobVersion@,@JobType@)</name>
