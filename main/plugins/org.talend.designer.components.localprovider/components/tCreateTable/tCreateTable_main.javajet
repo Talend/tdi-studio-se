@@ -2423,9 +2423,10 @@ if(columnList != null && columnList.size() > 0) {
 	            }     
             <%
             } else if("MYSQL".equalsIgnoreCase(dbType)) {
+                String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
             %>
                 java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
-                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbName%>, null, null, new String[]{"TABLE"});
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
                 while(rsTable_<%=cid%>.next()) {
                     String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
                     if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=tableName%>)) {
