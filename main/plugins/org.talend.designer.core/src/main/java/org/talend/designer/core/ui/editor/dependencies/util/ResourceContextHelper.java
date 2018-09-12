@@ -53,7 +53,6 @@ import org.talend.core.ui.context.model.table.ContextTableTabChildModel;
 import org.talend.core.ui.context.model.table.ContextTableTabParentModel;
 import org.talend.core.ui.context.nattableTree.ContextNatTableUtils;
 import org.talend.core.ui.editor.command.ContextAddParameterCommand;
-import org.talend.core.ui.editor.command.ContextRemoveParameterCommand;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.ui.editor.dependencies.model.JobContextTreeNode;
@@ -116,16 +115,6 @@ public class ResourceContextHelper {
                 jobManger.addNewParameters(parameter.getName());
             }
         }
-    }
-
-    public void removeContextParameterForResource(String paramNames, String paramSourceId) {
-        IContextManager contextManager = process.getContextManager();
-        if (contextManager != null && contextManager instanceof JobContextManager) {
-            JobContextManager manager = (JobContextManager) contextManager;
-            // record the modified operation.
-            manager.setModified(true);
-        }
-        commandStack.execute(new ContextRemoveParameterCommand(contextManager, paramNames, paramSourceId, true));
     }
 
 

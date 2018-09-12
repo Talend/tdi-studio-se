@@ -135,19 +135,6 @@ public class ResourceDependenciesUtil {
         return null;
     }
 
-    public static boolean checkIfResourceContextCanRemove(IProcess2 process, String paramName, String paramSourceId) {
-        List<IContext> listContext = process.getContextManager().getListContext();
-        boolean existValue = true;
-        for (IContext context : listContext) {
-            IContextParameter contextParameter = context.getContextParameter(paramSourceId, paramName);
-            if (contextParameter != null && StringUtils.isNotBlank(contextParameter.getValue())) {
-                existValue = false;
-                break;
-            }
-        }
-        return existValue;
-    }
-
     public static void saveResourceDependency(Map<Object, Object> map, Collection<JobResourceDependencyModel> models) {
         final StringBuilder sb = new StringBuilder();
         for (JobResourceDependencyModel item : models) {
@@ -194,6 +181,20 @@ public class ResourceDependenciesUtil {
                 if (contextPar.getType().equals(JavaTypesManager.RESOURCE.getId())
                         && StringUtils.isNotBlank(contextPar.getValue())
                         && IContextParameter.BUILT_IN.equals(contextPar.getSource())) {
+                    contextPar.setValue("");
+                }
+            }
+        }
+    }
+
+    public static void cleanContextFromAllEnvir(IProcess2 process, String resourceId) {
+        List<IContext> listContext = process.getContextManager().getListContext();
+        for (IContext context : listContext) {
+            for (IContextParameter contextPar : context.getContextParameterList()) {
+                if (contextPar.getType().equals(JavaTypesManager.RESOURCE.getId())
+                        && StringUtils.isNotBlank(contextPar.getValue())
+                        && IContextParameter.BUILT_IN.equals(contextPar.getSource())
+                        && resourceId.equals(contextPar.getValue().split(REPACE_SLASH_TAG)[0])) {
                     contextPar.setValue("");
                 }
             }
