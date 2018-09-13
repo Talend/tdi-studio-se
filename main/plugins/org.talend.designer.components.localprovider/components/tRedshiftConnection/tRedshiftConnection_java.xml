@@ -179,8 +179,8 @@
             NUM_ROW="20"
             REPOSITORY_VALUE="JDBC_URL"
         >
-            <ITEMS DEFAULT="STANDART">
-                <ITEM NAME="STANDART" VALUE="STANDART" />
+            <ITEMS DEFAULT="STANDARD">
+                <ITEM NAME="STANDARD" VALUE="STANDARD" />
                 <ITEM NAME="SSO" VALUE="SSO" />
             </ITEMS>
         </PARAMETER>
