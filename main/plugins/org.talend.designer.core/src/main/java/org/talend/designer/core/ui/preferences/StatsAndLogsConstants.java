@@ -144,12 +144,12 @@ public class StatsAndLogsConstants {
 
     public static final String[] AS400_VERSION_DRIVER = new String[] { "jt400_V6R1.jar", "jt400_V5R3.jar", "jt400_V5R2.jar" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-    public static final String[] PSQL_VERSION_DISPLAY = new String[] { "Prior to v9", "v9 +" }; //$NON-NLS-1$ //$NON-NLS-2$
+    public static final String[] PSQL_VERSION_DISPLAY = new String[] { "Prior to v9", "v9","v10" }; //$NON-NLS-1$ //$NON-NLS-2$
 
     public static final String[] PSQL_VERSION_CODE = new String[] { "PRIOR_TO_V9", "V9_X" }; //$NON-NLS-1$ //$NON-NLS-2$ 
 
     public static final String[] PSQL_VERSION_DRIVER = new String[] {
-            "postgresql-8.3-603.jdbc3.jar", "postgresql-9.4-1201.jdbc41.jar" }; //$NON-NLS-1$ //$NON-NLS-2$ 
+            "postgresql-8.3-603.jdbc3.jar", "postgresql-9.4-1201.jdbc41.jar","postgresql-42.2.5.jar" }; //$NON-NLS-1$ //$NON-NLS-2$ 
 
     public static final String[][] DISPLAY_DBNAMES = new String[][] { PERL_DISPLAY_DBNAMES, JAVA_DISPLAY_DBNAMES };
 
