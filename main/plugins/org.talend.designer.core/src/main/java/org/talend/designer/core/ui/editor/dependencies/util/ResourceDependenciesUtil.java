@@ -93,27 +93,28 @@ public class ResourceDependenciesUtil {
     public static JobResourceDependencyModel createDependency(String id, String version, String jobLabel,
             IProcess2 process) {
         try {
+            String realVersion = version;
+            IContextParameter contextPar = getContextOfResouceByProcess(process, id);
+            if (contextPar != null && StringUtils.isNotBlank(contextPar.getValue())
+                    && contextPar.getValue().split(REPACE_SLASH_TAG).length > 1) {
+                realVersion = contextPar.getValue().split(REPACE_SLASH_TAG)[1];
+            }
+
             final IRepositoryViewObject rvo;
-            if (JobResourceDependencyModel.LATEST_VERSION.equals(version)) {
+            if (JobResourceDependencyModel.LATEST_VERSION.equals(realVersion)) {
                 rvo = ProxyRepositoryFactory.getInstance().getLastVersion(id);
             } else {
-                rvo = ProxyRepositoryFactory.getInstance().getSpecificVersion(id, version, true);
+                rvo = ProxyRepositoryFactory.getInstance().getSpecificVersion(id, realVersion, true);
             }
             if (rvo != null) {
                 final JobResourceDependencyModel model = new JobResourceDependencyModel(
                         (ResourceItem) rvo.getProperty().getItem());
                 
-                IContextParameter contextPar = getContextOfResouceByProcess(process, rvo.getId());
                 if (contextPar != null) {
                     model.setContextVar(contextPar.getName());
                     model.setContextSource(contextPar.getSource());
                 }
-                if (contextPar != null && StringUtils.isNotBlank(contextPar.getValue())
-                        && contextPar.getValue().split(REPACE_SLASH_TAG).length > 1) {
-                    model.setSelectedVersion(contextPar.getValue().split(REPACE_SLASH_TAG)[1]);
-                } else {
-                    model.setSelectedVersion(version);
-                }
+                model.setSelectedVersion(realVersion);
                 model.setResourceDepPath(ResourceDependenciesUtil.getResourcePath(model, jobLabel, model.getSelectedVersion()));
                 return model;
             }
