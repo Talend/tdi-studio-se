@@ -381,6 +381,7 @@
             FIELD="CLOSED_LIST"
             NUM_ROW="60"
             REPOSITORY_VALUE="JDBC_URL"
+            SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
         >
             <ITEMS DEFAULT="STANDARD">
                 <ITEM NAME="STANDARD" VALUE="STANDARD" />
