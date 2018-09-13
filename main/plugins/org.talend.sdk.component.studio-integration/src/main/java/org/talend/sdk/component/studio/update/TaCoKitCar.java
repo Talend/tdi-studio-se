@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.lang.StringUtils;
@@ -82,14 +83,22 @@ public class TaCoKitCar implements Comparable<Object> {
     }
 
     public static boolean isCar(File file) throws Exception {
+        if (file == null) {
+            return false;
+        }
         boolean isCar = false;
 
-        Properties props = loadTalendInfProperties(file);
-        if (props != null) {
-            String componentCoordinates = props.getProperty(PROPERTY_COMPONENT_COORDINATES);
-            if (StringUtils.isNotBlank(componentCoordinates)) {
-                isCar = true;
+        try {
+            Properties props = loadTalendInfProperties(file);
+            if (props != null) {
+                String componentCoordinates = props.getProperty(PROPERTY_COMPONENT_COORDINATES);
+                if (StringUtils.isNotBlank(componentCoordinates)) {
+                    isCar = true;
+                }
             }
+        } catch (ZipException e) {
+            // ignore, means it's not a zip file
+            ExceptionHandler.log(file.getName() + " is not a zip file."); //$NON-NLS-1$
         }
 
         return isCar;
