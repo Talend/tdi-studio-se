@@ -120,7 +120,7 @@
       NUM_ROW="5"
       REPOSITORY_VALUE="USERNAME"
       REQUIRED="true"
-      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      NOT_SHOW_IF="(USE_EXISTING_CONNECTION == 'true') OR (JDBC_URL=='SSO')"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -131,7 +131,7 @@
       NUM_ROW="5"
       REPOSITORY_VALUE="PASSWORD"
       REQUIRED="true"
-      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      NOT_SHOW_IF="(USE_EXISTING_CONNECTION == 'true') OR (JDBC_URL=='SSO')"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
