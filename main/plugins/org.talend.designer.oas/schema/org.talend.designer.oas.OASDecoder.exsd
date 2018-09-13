@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.talend.designer.esb.components.ws.tools.extensions" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.talend.designer.oas" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.talend.designer.esb.components.ws.tools.extensions" id="org.talend.designer.esb.components.ws.tools.extensions.OASDecoder" name="OAS/Swaggers 2.0 Decoder"/>
+         <meta.schema plugin="org.talend.designer.oas" id="OASDecoder" name="OAS/Swaggers 2.0 Decoder"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
