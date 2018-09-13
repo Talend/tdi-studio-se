@@ -19460,7 +19460,7 @@
                 <IMPORT NAME="woden-impl-dom-1.0M9" MODULE="woden-impl-dom-1.0M9.jar" MVN="mvn:org.talend.libraries/woden-impl-dom-1.0M9/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/woden-impl-dom-1.0M9.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <!-- httpclient 4.2.1 -->
                 <IMPORT NAME="commons-codec-1.9" MODULE="commons-codec-1.9.jar" MVN="mvn:org.talend.libraries/commons-codec-1.9/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.9.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
-                <IMPORT NAME="commons-logging" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.1.3"  UrlPath="platform:/base/plugins/org.apache.commons.logging_1.2.0.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')"/>
+                <IMPORT NAME="commons-logging" MODULE="commons-logging-1.2.jar" MVN="mvn:commons-logging/commons-logging/1.2"  UrlPath="platform:/base/plugins/org.apache.commons.logging_1.2.0.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')"/>
                 <IMPORT NAME="httpcore-4.4.4" MODULE="httpcore-4.4.4.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.4" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="httpclient-4.5.2" MODULE="httpclient-4.5.2.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.2" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <!-- log4j -->
@@ -19717,7 +19717,7 @@
 			<IMPORT
 				NAME="commons-logging"
 				MODULE="commons-logging-1.2.jar"
-				MVN="mvn:commons-logging/commons-logging/1.1.3"
+				MVN="mvn:commons-logging/commons-logging/1.2"
 				UrlPath="platform:/base/plugins/org.apache.commons.logging_1.2.0.jar"
 				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
