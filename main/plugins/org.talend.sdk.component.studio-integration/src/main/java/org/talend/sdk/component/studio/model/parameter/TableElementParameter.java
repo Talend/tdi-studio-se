@@ -112,7 +112,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
      * @param table table value retrieved from action response
      * @return correct value, which can be used in TableElementParameter
      */
-    public List<Map<String, Object>> fromAction(final List<Object> table) {
+    public void setValueFromAction(final List<Object> table) {
         final List<Map<String, Object>> converted = new ArrayList<>();
         for (final Object row : table) {
             final Map<String, Object> convertedRow = new LinkedHashMap<>();
@@ -132,7 +132,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
             }
             converted.add(convertedRow);
         }
-        return converted;
+        super.setValue(converted);
     }
 
     private List<TaCoKitElementParameter> getColumnParameters() {

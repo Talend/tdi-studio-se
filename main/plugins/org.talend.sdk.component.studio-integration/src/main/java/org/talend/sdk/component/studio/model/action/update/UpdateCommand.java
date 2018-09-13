@@ -65,7 +65,7 @@ public class UpdateCommand extends BaseAsyncAction<Object> {
             if (value != null) {
                 if (EParameterFieldType.TABLE.equals(p.getFieldType())) {
                     TableElementParameter t = (TableElementParameter) p;
-                    t.setValue(t.fromAction((List<Object>) value));
+                    t.setValueFromAction((List<Object>) value);
                 } else {
                     p.setValue(value);
                 }
