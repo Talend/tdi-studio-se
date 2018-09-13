@@ -35,9 +35,18 @@
 	            rsTable_<%=cid%>.close();
 	            
 <%
-			} else if (MYSQL.equalsIgnoreCase(dbType)) {
-				String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
-			%>
+            } else if (MYSQL.equalsIgnoreCase(dbType)) {
+                List< ? extends INode> nodes =  process.getNodesOfType("tMysqlConnection");
+                String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
+                if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL)) {
+                    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+                    for (INode ne : nodes) {
+                        if (connection.equals(ne.getUniqueName())) {
+                            dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
+                        }
+                    }
+                }
+%>
                 java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
                 boolean whetherExist_<%=cid%> = false;
                 while(rsTable_<%=cid%>.next()) {

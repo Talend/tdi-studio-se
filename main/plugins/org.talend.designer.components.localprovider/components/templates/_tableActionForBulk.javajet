@@ -156,7 +156,16 @@ if (!isParallelize) {
                 rsTable_<%=cid%>.close();
             <%
             } else if(MYSQL.equalsIgnoreCase(dbmsId)){
+                List< ? extends INode> nodes =  process.getNodesOfType("tMysqlConnection");
                 String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
+                if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL)) {
+                    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+                    for (INode ne : nodes) {
+                        if (connection.equals(ne.getUniqueName())) {
+                            dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
+                        }
+                    }
+                }
             %>
                 java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
                 java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
