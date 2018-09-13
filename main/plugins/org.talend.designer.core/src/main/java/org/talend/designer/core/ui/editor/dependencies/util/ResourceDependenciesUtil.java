@@ -102,14 +102,19 @@ public class ResourceDependenciesUtil {
             if (rvo != null) {
                 final JobResourceDependencyModel model = new JobResourceDependencyModel(
                         (ResourceItem) rvo.getProperty().getItem());
-                model.setSelectedVersion(version);
-                model.setResourceDepPath(ResourceDependenciesUtil.getResourcePath(model, jobLabel, version));
                 
-                IContextParameter contextPar = getContextOfResouceByProcess(process, rvo.getId(), version);
+                IContextParameter contextPar = getContextOfResouceByProcess(process, rvo.getId());
                 if (contextPar != null) {
                     model.setContextVar(contextPar.getName());
                     model.setContextSource(contextPar.getSource());
                 }
+                if (contextPar != null && StringUtils.isNotBlank(contextPar.getValue())
+                        && contextPar.getValue().split(REPACE_SLASH_TAG).length > 1) {
+                    model.setSelectedVersion(contextPar.getValue().split(REPACE_SLASH_TAG)[1]);
+                } else {
+                    model.setSelectedVersion(version);
+                }
+                model.setResourceDepPath(ResourceDependenciesUtil.getResourcePath(model, jobLabel, model.getSelectedVersion()));
                 return model;
             }
         } catch (PersistenceException e) {
@@ -118,7 +123,7 @@ public class ResourceDependenciesUtil {
         return null;
     }
 
-    public static IContextParameter getContextOfResouceByProcess(IProcess2 process, String resourceId, String resourceVersion) {
+    public static IContextParameter getContextOfResouceByProcess(IProcess2 process, String resourceId) {
         List<IContextParameter> contextParameterList = process.getContextManager().getDefaultContext().getContextParameterList();
         for (IContextParameter contextPar : contextParameterList) {
             if (JavaTypesManager.RESOURCE.getId().equals(contextPar.getType())
@@ -126,7 +131,7 @@ public class ResourceDependenciesUtil {
                 String resource = contextPar.getValue();
                 if (StringUtils.isNotBlank(resource) && resource.contains(SLASH_TAG)) {
                     String[] part = resource.split(REPACE_SLASH_TAG);
-                    if (part[0].equals(resourceId) && part[1].equals(resourceVersion)) {
+                    if (part[0].equals(resourceId)) {
                         return contextPar;
                     }
                 }
