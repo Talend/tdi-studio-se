@@ -67,7 +67,7 @@ imports="
 				    ((com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper)stmt_<%=cid %>).enableStreamingResults();
 				}
 <%
-			} else {
+			} else if (("true").equals(enableStream) && ("MYSQL_8".equals(dbVersion))){
 %>
 				if(stmt_<%=cid %> instanceof com.mysql.cj.jdbc.StatementImpl){
 				    ((com.mysql.cj.jdbc.StatementImpl)stmt_<%=cid %>).enableStreamingResults();
