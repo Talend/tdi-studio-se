@@ -15,6 +15,8 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
@@ -56,6 +58,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import static java.util.Collections.emptyMap;
@@ -69,6 +72,8 @@ import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementPara
  * Creates properties from leafs
  */
 public class SettingVisitor implements PropertyVisitor {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(SettingVisitor.class.getName());
 
     /**
      * Specifies row number, on which schema properties (schema widget and guess schema button) should be displayed
@@ -266,10 +271,14 @@ public class SettingVisitor implements PropertyVisitor {
                     .findFirst()
                     .get();
             final Layout checkableLayout = node.getLayout(form);
-            final Layout buttonLayout =
+            final Optional<Layout> buttonLayout =
                     checkableLayout.getChildLayout(checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON);
-            new HealthCheckResolver(element, family, node, action, category, buttonLayout.getPosition())
-                    .resolveParameters(settings);
+            if (buttonLayout.isPresent()) {
+                new HealthCheckResolver(element, family, node, action, category, buttonLayout.get().getPosition())
+                        .resolveParameters(settings);
+            } else {
+                LOGGER.debug("Button layout {} not found for form {}", checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON, form);
+            }
         }
     }
 
@@ -281,12 +290,16 @@ public class SettingVisitor implements PropertyVisitor {
     private void buildUpdate(final PropertyNode node) {
         node.getProperty().getUpdatable().ifPresent(updatable -> {
             final Layout formLayout = node.getLayout(form);
-            final Layout buttonLayout = formLayout.getChildLayout(formLayout.getPath() + PropertyNode.UPDATE_BUTTON);
-            final int buttonPosition = buttonLayout.getPosition();
-            final UpdateAction action = new UpdateAction(updatable.getActionName(), family, Action.Type.UPDATE);
-            UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node,
-                    actions, redrawParameter, settings);
-            parameterResolvers.add(resolver);
+            final Optional<Layout> buttonLayout = formLayout.getChildLayout(formLayout.getPath() + PropertyNode.UPDATE_BUTTON);
+            if (buttonLayout.isPresent()) {
+                final int buttonPosition = buttonLayout.get().getPosition();
+                final UpdateAction action = new UpdateAction(updatable.getActionName(), family, Action.Type.UPDATE);
+                UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node,
+                        actions, redrawParameter, settings);
+                parameterResolvers.add(resolver);
+            } else {
+                LOGGER.debug("Button layout {} not found for form {}", formLayout.getPath() + PropertyNode.UPDATE_BUTTON, form);
+            }
         });
     }
 
