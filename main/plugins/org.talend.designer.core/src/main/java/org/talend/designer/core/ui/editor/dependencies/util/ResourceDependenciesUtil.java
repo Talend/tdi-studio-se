@@ -20,17 +20,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Path;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.io.FilesUtils;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -51,7 +53,7 @@ public class ResourceDependenciesUtil {
 
     private static final String RESOURCES_PROP = "RESOURCES_PROP";
 
-    private static final String RESOURCES_FOLDER = "resources";
+    private static final String RESOURCES_FOLDER = ERepositoryObjectType.RESOURCES.getFolder();
 
     private static final String SRC_RESOURCES_FOLDER = "resources";
 
@@ -279,10 +281,18 @@ public class ResourceDependenciesUtil {
             version = newVersion;
         }
         String fileSuffix = "_" + version + "." + item.getBindingExtension();
-        String projectWorkspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString() + SEG_TAG
-                + currentProject.getTechnicalLabel();
+        IProject project = null;
+        try {
+            project = ResourceUtils.getProject(currentProject.getTechnicalLabel());
+        } catch (PersistenceException e1) {
+            ExceptionHandler.process(e1);
+        }
+        if (project == null) {
+            return;
+        }
+
         String itemResPath = model.getPathUrl() + fileSuffix;
-        File resourceFile = new File(projectWorkspace + SEG_TAG + RESOURCES_FOLDER + SEG_TAG + itemResPath);
+        File resourceFile = project.getFile(new Path(RESOURCES_FOLDER + SEG_TAG + itemResPath)).getLocation().toFile();
         if (resourceFile.exists()) {
             String processJobLabel = joblabel.toString();
             if (StringUtils.isNotBlank(rootJobLabel)) {
@@ -290,7 +300,7 @@ public class ResourceDependenciesUtil {
             }
             String extResPath = getProcessFolder(jobObject) + processJobLabel + SRC_EXTRESOURCE_FOLDER;
             String newFilePath = getResourcePath(model, joblabel.toString(), newVersion);
-            File targetFile = new File(projectWorkspace + SEG_TAG + extResPath + SEG_TAG + newFilePath);
+            File targetFile = project.getFile(new Path(extResPath + SEG_TAG + newFilePath)).getLocation().toFile();
             if (!targetFile.exists()) {
                 try {
                     FilesUtils.copyFile(resourceFile, targetFile);
@@ -323,8 +333,16 @@ public class ResourceDependenciesUtil {
         Path p = new Path(item.getProperty().getLabel());
         String itenName = p.removeFileExtension().lastSegment();
         Project currentProject = ProjectManager.getInstance().getCurrentProject();
-        String projectWorkspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString() + SEG_TAG
-                + currentProject.getTechnicalLabel();
+        IProject project = null;
+        try {
+            project = ResourceUtils.getProject(currentProject.getTechnicalLabel());
+        } catch (PersistenceException e1) {
+            ExceptionHandler.process(e1);
+        }
+        if (project == null) {
+            return;
+        }
+
         String statePath = "";
         if (!"".equals(item.getState().getPath())) {
             statePath = item.getState().getPath() + SEG_TAG;
@@ -338,7 +356,7 @@ public class ResourceDependenciesUtil {
         String newFilePath = currentProject.getLabel().toLowerCase() + SEG_TAG + jobLabel + SEG_TAG + SRC_RESOURCES_FOLDER
                 + SEG_TAG
                 + statePath;
-        File targetFolder = new File(projectWorkspace + SEG_TAG + extResPath + SEG_TAG + newFilePath);
+        File targetFolder = project.getFile(new Path(extResPath + SEG_TAG + newFilePath)).getLocation().toFile();
         if (targetFolder.exists() && targetFolder.isDirectory()) {
             for (File file : targetFolder.listFiles()) {
                 if (file.isDirectory()) {
