@@ -26,6 +26,7 @@ public enum SupportDBVersions {
     JTDS(SupportDBUrlType.MSSQLDEFAULTURL, "Open source JTDS", "JTDS"), //$NON-NLS-1$ //$NON-NLS-2$
     MSSQL_PROP(SupportDBUrlType.MSSQLDEFAULTURL, "Microsoft", "MSSQL_PROP"), //$NON-NLS-1$ //$NON-NLS-2$
     MARIADB(SupportDBUrlType.MARIADBDEFAULTURL, "MariaDB", "MARIADB"), //$NON-NLS-1$ //$NON-NLS-2$
+    MYSQL_8(SupportDBUrlType.MYSQLDEFAULTURL, "MySQL 8", "MYSQL_8"), //$NON-NLS-1$ //$NON-NLS-2$
     MYSQL_5(SupportDBUrlType.MYSQLDEFAULTURL, "MySQL 5", "MYSQL_5"), //$NON-NLS-1$ //$NON-NLS-2$
     MYSQL_4(SupportDBUrlType.MYSQLDEFAULTURL, "MySQL 4", "MYSQL_4"), //$NON-NLS-1$ //$NON-NLS-2$
     ORACLE_12(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 12", "ORACLE_12"), //$NON-NLS-1$ //$NON-NLS-2$
