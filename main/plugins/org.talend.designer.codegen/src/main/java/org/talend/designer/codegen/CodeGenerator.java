@@ -34,6 +34,7 @@ import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentFileNaming;
 import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.process.IConnection;
@@ -46,6 +47,7 @@ import org.talend.core.model.process.IProcess;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.temp.ETypeGen;
 import org.talend.core.model.utils.NodeUtil;
+import org.talend.core.service.IResourcesDependenciesService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.codegen.config.CloseBlocksCodeArgument;
@@ -340,6 +342,18 @@ public class CodeGenerator implements ICodeGenerator {
                             }
                         }
                         listParametersCopy.add(icp);
+                    } else if (JavaTypesManager.RESOURCE.getId().equals(iContextParameter.getType())
+                            || JavaTypesManager.RESOURCE.getLabel().equals(iContextParameter.getType())) {
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IResourcesDependenciesService.class)) {
+                            IContextParameter contextPar = iContextParameter.clone();
+                            IResourcesDependenciesService resourceService = (IResourcesDependenciesService) GlobalServiceRegister
+                                    .getDefault().getService(IResourcesDependenciesService.class);
+                            contextPar.setValue(resourceService.getResourcePathForContext(process, contextPar.getName()));
+                            listParametersCopy.add(contextPar);
+                        } else {
+                            listParametersCopy.add(iContextParameter);
+                        }
+
                     } else {
                         listParametersCopy.add(iContextParameter);
                     }
