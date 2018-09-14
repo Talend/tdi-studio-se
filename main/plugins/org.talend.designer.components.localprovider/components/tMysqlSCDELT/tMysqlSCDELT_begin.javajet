@@ -110,7 +110,7 @@ if(columnList != null && columnList.size() > 0) {
         } else if(("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
                 List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
                 String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
-                if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL)) {
+                if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL) || "".equals(dbnameMySQL)) {
                     String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
                     for (INode ne : nodes) {
                         if (connectionMySQL.equals(ne.getUniqueName())) {
