@@ -264,7 +264,7 @@ if (!isParallelize) {
                             
                             <%
                             } else if(MYSQL.equalsIgnoreCase(dbmsId)) {
-                                List< ? extends INode> nodes =  process.getNodesOfType("tMysqlConnection");
+                                List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
                                 String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                                 if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL)) {
                                     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");

@@ -36,7 +36,7 @@
 	            
 <%
             } else if (MYSQL.equalsIgnoreCase(dbType)) {
-                List< ? extends INode> nodes =  process.getNodesOfType("tMysqlConnection");
+                List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
                 String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                 if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL)) {
                     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
