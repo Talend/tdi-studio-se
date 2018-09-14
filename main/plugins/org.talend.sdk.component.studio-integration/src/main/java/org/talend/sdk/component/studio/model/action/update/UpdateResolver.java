@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.talend.sdk.component.studio.model.parameter.resolver;
-
-import static java.util.Locale.ROOT;
+package org.talend.sdk.component.studio.model.action.update;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,15 +27,13 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
-import org.talend.sdk.component.studio.model.action.UpdateAction;
+import org.talend.sdk.component.studio.model.action.update.UpdateAction;
 import org.talend.sdk.component.studio.model.action.update.UpdateCommand;
 import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.PathCollector;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
-import org.talend.sdk.component.studio.model.parameter.command.AsyncAction;
-import org.talend.sdk.component.studio.model.parameter.command.BaseAsyncAction;
+import org.talend.sdk.component.studio.model.parameter.resolver.AbstractParameterResolver;
 
 public class UpdateResolver extends AbstractParameterResolver {
 

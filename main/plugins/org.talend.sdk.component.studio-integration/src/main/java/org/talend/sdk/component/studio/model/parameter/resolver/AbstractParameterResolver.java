@@ -23,7 +23,7 @@ import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 /**
  * Common super class for ParameterResolvers. It contains common state and functionality
  */
-abstract class AbstractParameterResolver implements ParameterResolver {
+public abstract class AbstractParameterResolver implements ParameterResolver {
     
     protected final AbsolutePathResolver pathResolver = new AbsolutePathResolver();
     
@@ -38,11 +38,11 @@ abstract class AbstractParameterResolver implements ParameterResolver {
 
     private final ElementParameter redrawParameter;
 
-    AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef) {
+    public AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef) {
         this(action, actionOwner, actionRef,null);
     }
-    
-    AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final ElementParameter redrawParameter) {
+
+    public AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final ElementParameter redrawParameter) {
         this.action = action;
         this.actionOwner = actionOwner;
         this.actionRef = actionRef;
