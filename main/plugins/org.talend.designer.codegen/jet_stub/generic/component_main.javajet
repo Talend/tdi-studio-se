@@ -79,15 +79,28 @@ if(hasInput){
     if (hasValidInput && haveValidNodeMetadata) {
         List<IMetadataColumn> input_columnList = inputConn.getMetadataTable().getListColumns();
         
-        Set<String> currentComponentColumnLabels = new HashSet<String>();
-        List<IMetadataColumn> columnList = metadata.getListColumns();
-        if(columnList!=null) {
-            for(IMetadataColumn componentColumn : columnList) {
-            	currentComponentColumnLabels.add(componentColumn.getLabel());
-            }
-        }
-        
         if (input_columnList!=null && !input_columnList.isEmpty()) {
+            // add incoming (not present) columns to enforcer for this comps
+            if (cid.contains("tDataStewardship") || cid.contains("tMarkLogic")){
+                %>
+                boolean shouldCreateRuntimeSchemaForIncomingNode = false;
+                <%
+                for (int i = 0; i < input_columnList.size(); i++) {
+                    if(!input_columnList.get(i).getTalendType().equals("id_Dynamic")) {
+                    %>
+                        if (incomingEnforcer_<%=cid%>.getDesignSchema().getField("<%=input_columnList.get(i)%>") == null){
+                            incomingEnforcer_<%=cid%>.addIncomingNodeField("<%=input_columnList.get(i)%>", <%=inputConn.getName()%>.<%=input_columnList.get(i)%>.getClass().getCanonicalName());
+                            shouldCreateRuntimeSchemaForIncomingNode = true;
+                        }
+                    <%
+                    }
+                }
+                %>
+                if (shouldCreateRuntimeSchemaForIncomingNode){
+                    incomingEnforcer_<%=cid%>.createRuntimeSchema();
+                }
+                <%
+            }
             // If there are dynamic columns in the schema, they need to be
             // initialized into the runtime schema of the actual IndexedRecord
             // provided to the component.
@@ -124,12 +137,11 @@ if(hasInput){
             for (int i = 0; i < input_columnList.size(); i++) { // column
                 IMetadataColumn column = input_columnList.get(i);
                 if (dynamicPos != i) {
-                	//skip the put action if the input column doesn't appear in component metadata
-                	if(!currentComponentColumnLabels.contains(column.getLabel())) {
-                		continue;
-                	}
                     %>
-                    incomingEnforcer_<%=cid%>.put("<%=column.getLabel()%>", <%=inputConn.getName()%>.<%=column.getLabel()%>);
+                    //skip the put action if the input column doesn't appear in component runtime schema
+                    if (incomingEnforcer_<%=cid%>.getRuntimeSchema().getField("<%=input_columnList.get(i)%>") != null){
+                        incomingEnforcer_<%=cid%>.put("<%=column.getLabel()%>", <%=inputConn.getName()%>.<%=column.getLabel()%>);
+                    }
                     <%
                 } else {
                     %>
