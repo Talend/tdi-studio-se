@@ -47,6 +47,7 @@ import org.talend.core.runtime.repository.build.IBuildResourceParametes;
 import org.talend.core.runtime.repository.build.IBuildResourcesProvider;
 import org.talend.core.runtime.util.ParametersUtil;
 import org.talend.core.services.ICoreTisService;
+import org.talend.daikon.security.CryptoHelper;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -302,6 +303,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         File licenseFile = getLicenseFile();
         if (PluginChecker.isTIS() && getLicenseFile() != null) {
             otherArgsBuffer.append(" " + TalendMavenConstants.ARG_LICENSE_PATH + "=" + licenseFile.getAbsolutePath());
+            otherArgsBuffer.append(" " + TalendMavenConstants.ARG_SESSION_ID + "=" + getSessionId());
         }
         otherArgsBuffer.append(" -Dmaven.main.skip=true"); //$NON-NLS-1$
 
@@ -324,6 +326,13 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
 
     protected void addArg(StringBuffer commandBuffer, boolean include, String arg) {
         addArg(commandBuffer, false, include, arg);
+    }
+    
+    private String getSessionId() {
+        CryptoHelper cryptoHelper = new CryptoHelper(CryptoHelper.PASSPHRASE);
+        int prefixValue = (int)((Math.random()*9+1)*100000);
+        String value = String.valueOf(prefixValue)+ String.valueOf(System.currentTimeMillis());
+        return cryptoHelper.encrypt(value);
     }
 
 
