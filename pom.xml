@@ -88,6 +88,7 @@
 		<module>main/plugins/org.talend.designer.mapper</module>
 		<module>main/plugins/org.talend.designer.mapper.advanced</module>
 		<module>main/plugins/org.talend.designer.maven.job</module>
+		<module>main/plugins/org.talend.designer.oas</module>
 		<module>main/plugins/org.talend.designer.publish.core</module>
 		<module>main/plugins/org.talend.designer.rowgenerator</module>
 		<module>main/plugins/org.talend.designer.runprocess</module>

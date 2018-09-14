@@ -188,7 +188,7 @@
   </PARAMETERS>
  <CODEGENERATION>
     <IMPORTS>
-       <IMPORT NAME="Java-DOM4J" MODULE="dom4j-1.6.1.jar" MVN="mvn:org.talend.libraries/dom4j-1.6.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/dom4j-1.6.1.jar" REQUIRED="true" BundleID="" />
+       <IMPORT NAME="Java-DOM4J" MODULE="dom4j-1.6.1.jar" MVN="mvn:dom4j/dom4j/1.6.1"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/dom4j-1.6.1.jar" REQUIRED="true" BundleID="" />
         <IMPORT NAME="Java-JAXEN" MODULE="jaxen-1.1.1.jar" MVN="mvn:org.talend.libraries/jaxen-1.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/jaxen-1.1.1.jar" REQUIRED="true" BundleID="" />
      </IMPORTS>
   </CODEGENERATION>

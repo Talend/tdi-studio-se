@@ -90,7 +90,7 @@
               bundleID="org.apache.servicemix.bundles.wsdl4j"
               context="plugin:org.talend.libraries.apache.cxf"
               id="wsdl4j-1.6.3.jar"
-              mvn_uri="mvn:org.talend.libraries/wsdl4j-1.6.3/6.0.0"
+              mvn_uri="mvn:wsdl4j/wsdl4j/1.6.3"
               name="wsdl4j-1.6.3.jar"
               uripath="platform:/plugin/org.talend.libraries.apache.cxf/lib/wsdl4j-1.6.3.jar">
         </libraryNeeded>
@@ -526,35 +526,35 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.hdp.2.3"
             id="commons-codec-1.9.jar"
-            name="commons-codec-1.9.jar" mvn_uri="mvn:org.talend.libraries/commons-codec-1.9/6.1.0"
+            name="commons-codec-1.9.jar" mvn_uri="mvn:org.talend.libraries/commons-codec-1.9/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/commons-codec-1.9.jar">
         </libraryNeeded>
 
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.hdp.2.3"
             id="commons-logging-1.2.jar"
-            name="commons-logging-1.2.jar" mvn_uri="mvn:org.talend.libraries/commons-logging-1.2/6.1.0"
+            name="commons-logging-1.2.jar" mvn_uri="mvn:commons-logging/commons-logging/1.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/commons-logging-1.2.jar">
         </libraryNeeded>
 
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.hdp.2.3"
             id="curator-client-2.7.1.jar"
-            name="curator-client-2.7.1.jar" mvn_uri="mvn:org.talend.libraries/curator-client-2.7.1/6.1.0"
+            name="curator-client-2.7.1.jar" mvn_uri="mvn:org.apache.curator/curator-client/2.7.1"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/curator-client-2.7.1.jar">
         </libraryNeeded>
 
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.hdp.2.3"
             id="curator-framework-2.7.1.jar"
-            name="curator-framework-2.7.1.jar" mvn_uri="mvn:org.talend.libraries/curator-framework-2.7.1/6.1.0"
+            name="curator-framework-2.7.1.jar" mvn_uri="mvn:org.apache.curator/curator-framework/2.7.1"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/curator-framework-2.7.1.jar">
         </libraryNeeded>
 
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.hdp.2.3"
             id="curator-recipes-2.7.1.jar"
-            name="curator-recipes-2.7.1.jar" mvn_uri="mvn:org.talend.libraries/curator-recipes-2.7.1/6.1.0"
+            name="curator-recipes-2.7.1.jar" mvn_uri="mvn:org.talend.libraries/curator-recipes-2.7.1/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/curator-recipes-2.7.1.jar">
         </libraryNeeded>
 
@@ -750,14 +750,14 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.hdp.2.3"
             id="httpclient-4.4.jar"
-            name="httpclient-4.4.jar" mvn_uri="mvn:org.talend.libraries/httpclient-4.4/6.1.0"
+            name="httpclient-4.4.jar" mvn_uri="mvn:org.talend.libraries/httpclient-4.4/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/httpclient-4.4.jar">
         </libraryNeeded>
 
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.hdp.2.3"
             id="httpcore-4.4.jar"
-            name="httpcore-4.4.jar" mvn_uri="mvn:org.talend.libraries/httpcore-4.4/6.1.0"
+            name="httpcore-4.4.jar" mvn_uri="mvn:org.talend.libraries/httpcore-4.4/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/httpcore-4.4.jar">
         </libraryNeeded>
 
@@ -771,14 +771,14 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.hdp.2.3"
             id="netty-all-4.0.23.Final.jar"
-            name="netty-all-4.0.23.Final.jar" mvn_uri="mvn:org.talend.libraries/netty-all-4.0.23.Final/6.1.0"
+            name="netty-all-4.0.23.Final.jar" mvn_uri="mvn:org.talend.libraries/netty-all-4.0.23.Final/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/netty-all-4.0.23.Final.jar">
         </libraryNeeded>
 
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop"
             id="parquet-hadoop-bundle-1.6.0.jar"
-            name="parquet-hadoop-bundle-1.6.0.jar" mvn_uri="mvn:org.talend.libraries/parquet-hadoop-bundle-1.6.0/6.1.0"
+            name="parquet-hadoop-bundle-1.6.0.jar" mvn_uri="mvn:com.twitter/parquet-hadoop-bundle/1.6.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop/lib/parquet-hadoop-bundle-1.6.0.jar">
         </libraryNeeded>
 
@@ -799,14 +799,14 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.slf4j"
             id="slf4j-api-1.7.10.jar"
-            name="slf4j-api-1.7.10.jar" mvn_uri="mvn:org.talend.libraries/slf4j-api-1.7.10/6.1.0"
+            name="slf4j-api-1.7.10.jar" mvn_uri="mvn:org.talend.libraries/slf4j-api-1.7.10/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-api-1.7.10.jar">
         </libraryNeeded>
 
         <libraryNeeded
             context="plugin:org.talend.libraries.slf4j"
             id="slf4j-log4j12-1.7.10.jar"
-            name="slf4j-log4j12-1.7.10.jar" mvn_uri="mvn:org.talend.libraries/slf4j-log4j12-1.7.10/6.1.0"
+            name="slf4j-log4j12-1.7.10.jar" mvn_uri="mvn:org.talend.libraries/slf4j-log4j12-1.7.10/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-log4j12-1.7.10.jar">
         </libraryNeeded>
 
@@ -827,7 +827,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.hdp.2.3"
             id="stax-api-1.0-2.jar"
-            name="stax-api-1.0-2.jar" mvn_uri="mvn:org.talend.libraries/stax-api-1.0-2/6.1.0"
+            name="stax-api-1.0-2.jar" mvn_uri="mvn:javax.xml.stream/stax-api/1.0-2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.3/lib/stax-api-1.0-2.jar">
         </libraryNeeded>
 
@@ -914,7 +914,7 @@
             context="plugin:org.talend.libraries.s3"
             id="aws-java-sdk-1.7.4"
             name="aws-java-sdk-1.7.4.jar"
-            mvn_uri="mvn:org.talend.libraries/aws-java-sdk-1.7.4/6.1.0"
+            mvn_uri="mvn:org.talend.libraries/aws-java-sdk-1.7.4/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.s3/lib/aws-java-sdk-1.7.4.jar">
         </libraryNeeded>
         
@@ -1783,21 +1783,21 @@
 	   	<libraryNeeded
 	   		context="plugin:org.talend.libraries.apache.common"
         	id="commons-configuration-1.6.jar"
-         	name="commons-configuration-1.6.jar" mvn_uri="mvn:org.talend.libraries/commons-configuration-1.6/6.0.0"
+         	name="commons-configuration-1.6.jar" mvn_uri="mvn:commons-configuration/commons-configuration/1.6"
          	uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-configuration-1.6.jar">
     	</libraryNeeded>
 
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.common"
             id="commons-lang-2.6.jar"
-            name="commons-lang-2.6.jar" mvn_uri="mvn:org.talend.libraries/commons-lang-2.6/6.0.0"
+            name="commons-lang-2.6.jar" mvn_uri="mvn:commons-lang/commons-lang/2.6"
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.6.jar"
             bundleID="" />
 
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.common"
             id="commons-logging-1.1.3.jar"
-            name="commons-logging-1.1.3.jar" mvn_uri="mvn:org.talend.libraries/commons-logging-1.1.3/6.0.0"
+            name="commons-logging-1.1.3.jar" mvn_uri="mvn:commons-logging/commons-logging/1.1.3"
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar"
             bundleID="" />
 
@@ -1811,14 +1811,14 @@
 	   	<libraryNeeded
 	   		context="plugin:org.talend.libraries.apache.common"
         	id="commons-cli-1.2.jar"
-         	name="commons-cli-1.2.jar" mvn_uri="mvn:org.talend.libraries/commons-cli-1.2/6.0.0"
+         	name="commons-cli-1.2.jar" mvn_uri="mvn:commons-cli/commons-cli/1.2"
          	uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-cli-1.2.jar">
     	</libraryNeeded>
 
 	   	<libraryNeeded
 	   		context="plugin:org.talend.libraries.apache.common"
         	id="commons-codec-1.4.jar"
-         	name="commons-codec-1.4.jar" mvn_uri="mvn:org.talend.libraries/commons-codec-1.4/6.0.0"
+         	name="commons-codec-1.4.jar" mvn_uri="mvn:commons-codec/commons-codec/1.4"
          	uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.4.jar">
     	</libraryNeeded>
 
@@ -1846,7 +1846,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.apache.common"
             id="commons-collections-3.2.2.jar"
-            name="commons-collections-3.2.2.jar" mvn_uri="mvn:org.talend.libraries/commons-collections-3.2.2/6.0.0"
+            name="commons-collections-3.2.2.jar" mvn_uri="mvn:commons-collections/commons-collections/3.2.2"
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.2.jar"
             bundleID="" />            
 
@@ -1867,7 +1867,7 @@
 	   	<libraryNeeded
 	   		context="plugin:org.talend.libraries.hadoop.hdp.2.0"
         	id="protobuf-java-2.5.0.jar"
-         	name="protobuf-java-2.5.0.jar" mvn_uri="mvn:org.talend.libraries/protobuf-java-2.5.0/6.0.0"
+         	name="protobuf-java-2.5.0.jar" mvn_uri="mvn:com.google.protobuf/protobuf-java/2.5.0"
          	uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.0/lib/protobuf-java-2.5.0.jar">
     	</libraryNeeded>
 
@@ -1888,7 +1888,7 @@
 	   	<libraryNeeded
            context="plugin:org.talend.libraries.hadoop.cloudera.cdh5.1"
            id="jersey-core-1.9.jar"
-           mvn_uri="mvn:org.talend.libraries/jersey-core-1.9/6.0.0"
+           mvn_uri="mvn:com.sun.jersey/jersey-core/1.9"
            name="jersey-core-1.9.jar"
            required="true">
     	</libraryNeeded>
@@ -1917,7 +1917,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.jackson"
         	id="jackson-mapper-asl-1.9.13.jar"
-         	name="jackson-mapper-asl-1.9.13.jar" mvn_uri="mvn:org.talend.libraries/jackson-mapper-asl-1.9.13/6.0.0"
+         	name="jackson-mapper-asl-1.9.13.jar" mvn_uri="mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.13"
          	uripath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-mapper-asl-1.9.13.jar">
     	</libraryNeeded>
 
@@ -1931,7 +1931,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.jackson"
         	id="jackson-core-asl-1.9.13.jar"
-         	name="jackson-core-asl-1.9.13.jar" mvn_uri="mvn:org.talend.libraries/jackson-core-asl-1.9.13/6.0.0"
+         	name="jackson-core-asl-1.9.13.jar" mvn_uri="mvn:org.codehaus.jackson/jackson-core-asl/1.9.13"
          	uripath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-asl-1.9.13.jar">
     	</libraryNeeded>
 
@@ -1953,7 +1953,7 @@
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             id="htrace-core-3.0.4.jar"
             name="htrace-core-3.0.4.jar"
-            mvn_uri="mvn:org.talend.libraries/htrace-core-3.0.4/6.0.0"
+            mvn_uri="mvn:org.htrace/htrace-core/3.0.4"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/htrace-core-3.0.4.jar">
         </libraryNeeded>
 
@@ -2020,14 +2020,14 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.hadoop.hdp.2.0"
         	id="jdo-api-3.0.1.jar"
-         	name="jdo-api-3.0.1.jar" mvn_uri="mvn:org.talend.libraries/jdo-api-3.0.1/6.0.0"
+         	name="jdo-api-3.0.1.jar" mvn_uri="mvn:javax.jdo/jdo-api/3.0.1"
          	uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.0/lib/jdo-api-3.0.1.jar">
     	</libraryNeeded>
 
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.apache.common"
         	id="commons-io-2.4.jar"
-         	name="commons-io-2.4.jar" mvn_uri="mvn:org.talend.libraries/commons-io-2.4/6.0.0"
+         	name="commons-io-2.4.jar" mvn_uri="mvn:commons-io/commons-io/2.4"
          	uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar">
     	</libraryNeeded>
 
@@ -2055,14 +2055,14 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.apache.axis2"
         	id="antlr-runtime-3.4.jar"
-         	name="antlr-runtime-3.4.jar" mvn_uri="mvn:org.talend.libraries/antlr-runtime-3.4/6.0.0"
+         	name="antlr-runtime-3.4.jar" mvn_uri="mvn:org.antlr/antlr-runtime/3.4"
          	uripath="platform:/plugin/org.talend.libraries.apache.axis2/lib/antlr-runtime-3.4.jar">
     	</libraryNeeded>
 
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.apache.http"
         	id="commons-httpclient-3.0.1.jar"
-         	name="commons-httpclient-3.0.1.jar" mvn_uri="mvn:org.talend.libraries/commons-httpclient-3.0.1/6.0.0"
+         	name="commons-httpclient-3.0.1.jar" mvn_uri="mvn:commons-httpclient/commons-httpclient/3.0.1"
          	uripath="platform:/plugin/org.talend.libraries.apache.http/lib/commons-httpclient-3.0.1.jar">
     	</libraryNeeded>
 
@@ -2097,21 +2097,21 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.hadoop.hdp.2.1"
         	id="datanucleus-api-jdo-3.2.6.jar"
-         	name="datanucleus-api-jdo-3.2.6.jar" mvn_uri="mvn:org.talend.libraries/datanucleus-api-jdo-3.2.6/6.0.0"
+         	name="datanucleus-api-jdo-3.2.6.jar" mvn_uri="mvn:org.datanucleus/datanucleus-api-jdo/3.2.6"
          	uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.1/lib/datanucleus-api-jdo-3.2.6.jar">
     	</libraryNeeded>
 
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.hadoop.hdp.2.1"
         	id="datanucleus-core-3.2.10.jar"
-         	name="datanucleus-core-3.2.10.jar" mvn_uri="mvn:org.talend.libraries/datanucleus-core-3.2.10/6.0.0"
+         	name="datanucleus-core-3.2.10.jar" mvn_uri="mvn:org.datanucleus/datanucleus-core/3.2.10"
          	uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.1/lib/datanucleus-core-3.2.10.jar">
     	</libraryNeeded>
 
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.hadoop.hdp.2.1"
         	id="datanucleus-rdbms-3.2.9.jar"
-         	name="datanucleus-rdbms-3.2.9.jar" mvn_uri="mvn:org.talend.libraries/datanucleus-rdbms-3.2.9/6.0.0"
+         	name="datanucleus-rdbms-3.2.9.jar" mvn_uri="mvn:org.datanucleus/datanucleus-rdbms/3.2.9"
          	uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.1/lib/datanucleus-rdbms-3.2.9.jar">
     	</libraryNeeded>
 
@@ -2139,7 +2139,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.servlet"
         	id="servlet-api-2.5-20081211.jar"
-         	name="servlet-api-2.5-20081211.jar" mvn_uri="mvn:org.talend.libraries/servlet-api-2.5-20081211/6.0.0"
+         	name="servlet-api-2.5-20081211.jar" mvn_uri="mvn:org.mortbay.jetty/servlet-api/2.5-20081211"
          	uripath="platform:/plugin/org.talend.libraries.servlet/lib/servlet-api-2.5-20081211.jar">
     	</libraryNeeded>
 
@@ -2195,14 +2195,14 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.apache.kafka"
         	id="curator-framework-2.6.0.jar"
-         	name="curator-framework-2.6.0.jar" mvn_uri="mvn:org.talend.libraries/curator-framework-2.6.0/6.0.0"
+         	name="curator-framework-2.6.0.jar" mvn_uri="mvn:org.apache.curator/curator-framework/2.6.0"
          	uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/curator-framework-2.6.0.jar">
     	</libraryNeeded>
 
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.apache.kafka"
         	id="curator-client-2.6.0.jar"
-         	name="curator-client-2.6.0.jar" mvn_uri="mvn:org.talend.libraries/curator-client-2.6.0/6.0.0"
+         	name="curator-client-2.6.0.jar" mvn_uri="mvn:org.apache.curator/curator-client/2.6.0"
          	uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/curator-client-2.6.0.jar">
     	</libraryNeeded>
 
@@ -2210,7 +2210,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.hdp.2.1"
             id="guice-3.0.jar"
-            name="guice-3.0.jar" mvn_uri="mvn:org.talend.libraries/guice-3.0/6.0.0"
+            name="guice-3.0.jar" mvn_uri="mvn:com.google.inject/guice/3.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.1/lib/guice-3.0.jar">
         </libraryNeeded>
         <libraryNeeded
@@ -2290,7 +2290,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.mapr.4.0.1"
             id="guice-3.0.jar"
-            name="guice-3.0.jar" mvn_uri="mvn:org.talend.libraries/guice-3.0/6.0.0"
+            name="guice-3.0.jar" mvn_uri="mvn:com.google.inject/guice/3.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.mapr.4.0.1/lib/guice-3.0.jar">
         </libraryNeeded>
         <libraryNeeded
@@ -2476,13 +2476,13 @@
         </libraryNeeded>
         <libraryNeeded
             id="commons-cli-1.2.jar"
-            name="commons-cli-1.2.jar" mvn_uri="mvn:org.talend.libraries/commons-cli-1.2/6.0.0"
+            name="commons-cli-1.2.jar" mvn_uri="mvn:commons-cli/commons-cli/1.2"
             context="plugin:org.talend.libraries.apache.common"
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-cli-1.2.jar">
         </libraryNeeded>
         <libraryNeeded
             id="commons-codec-1.4.jar"
-            name="commons-codec-1.4.jar" mvn_uri="mvn:org.talend.libraries/commons-codec-1.4/6.0.0"
+            name="commons-codec-1.4.jar" mvn_uri="mvn:commons-codec/commons-codec/1.4"
             context="plugin:org.talend.libraries.apache.common"
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.4.jar">
         </libraryNeeded>
@@ -2500,19 +2500,19 @@
         </libraryNeeded>
         <libraryNeeded
             id="commons-io-2.4.jar"
-            name="commons-io-2.4.jar" mvn_uri="mvn:org.talend.libraries/commons-io-2.4/6.0.0"
+            name="commons-io-2.4.jar" mvn_uri="mvn:commons-io/commons-io/2.4"
             context="plugin:org.talend.libraries.apache.common"
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar">
         </libraryNeeded>
         <libraryNeeded
             id="commons-lang-2.6.jar"
-            name="commons-lang-2.6.jar" mvn_uri="mvn:org.talend.libraries/commons-lang-2.6/6.0.0"
+            name="commons-lang-2.6.jar" mvn_uri="mvn:commons-lang/commons-lang/2.6"
             context="plugin:org.talend.libraries.apache.common"
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.6.jar">
         </libraryNeeded>
         <libraryNeeded
             id="commons-logging-1.1.3.jar"
-            name="commons-logging-1.1.3.jar" mvn_uri="mvn:org.talend.libraries/commons-logging-1.1.3/6.0.0"
+            name="commons-logging-1.1.3.jar" mvn_uri="mvn:commons-logging/commons-logging/1.1.3"
             context="plugin:org.talend.libraries.apache.common"
             uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar">
         </libraryNeeded>
@@ -2561,7 +2561,7 @@
         </libraryNeeded>
         <libraryNeeded
             id="protobuf-java-2.5.0.jar"
-            name="protobuf-java-2.5.0.jar" mvn_uri="mvn:org.talend.libraries/protobuf-java-2.5.0/6.0.0"
+            name="protobuf-java-2.5.0.jar" mvn_uri="mvn:com.google.protobuf/protobuf-java/2.5.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.0/lib/protobuf-java-2.5.0.jar">
         </libraryNeeded>
@@ -2569,31 +2569,31 @@
         <!-- jars for HDP220 tez server-->
         <libraryNeeded
             id="aopalliance-1.0.jar"
-            name="aopalliance-1.0.jar" mvn_uri="mvn:org.talend.libraries/aopalliance-1.0/6.0.0"
+            name="aopalliance-1.0.jar" mvn_uri="mvn:aopalliance/aopalliance/1.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/aopalliance-1.0.jar">
         </libraryNeeded>
         <libraryNeeded
             id="apacheds-i18n-2.0.0-M15.jar"
-            name="apacheds-i18n-2.0.0-M15.jar" mvn_uri="mvn:org.talend.libraries/apacheds-i18n-2.0.0-M15/6.0.0"
+            name="apacheds-i18n-2.0.0-M15.jar" mvn_uri="mvn:org.apache.directory.server/apacheds-i18n/2.0.0-M15"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/apacheds-i18n-2.0.0-M15.jar">
         </libraryNeeded>
         <libraryNeeded
             id="apacheds-kerberos-codec-2.0.0-M15.jar"
-            name="apacheds-kerberos-codec-2.0.0-M15.jar" mvn_uri="mvn:org.talend.libraries/apacheds-kerberos-codec-2.0.0-M15/6.0.0"
+            name="apacheds-kerberos-codec-2.0.0-M15.jar" mvn_uri="mvn:org.apache.directory.server/apacheds-kerberos-codec/2.0.0-M15"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/apacheds-kerberos-codec-2.0.0-M15.jar">
         </libraryNeeded>
         <libraryNeeded
             id="api-asn1-api-1.0.0-M20.jar"
-            name="api-asn1-api-1.0.0-M20.jar" mvn_uri="mvn:org.talend.libraries/api-asn1-api-1.0.0-M20/6.0.0"
+            name="api-asn1-api-1.0.0-M20.jar" mvn_uri="mvn:org.apache.directory.api/api-asn1-api/1.0.0-M20"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/api-asn1-api-1.0.0-M20.jar">
         </libraryNeeded>
         <libraryNeeded
             id="api-util-1.0.0-M20.jar"
-            name="api-util-1.0.0-M20.jar" mvn_uri="mvn:org.talend.libraries/api-util-1.0.0-M20/6.0.0"
+            name="api-util-1.0.0-M20.jar" mvn_uri="mvn:org.apache.directory.api/api-util/1.0.0-M20"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/api-util-1.0.0-M20.jar">
         </libraryNeeded>
@@ -2605,73 +2605,73 @@
         </libraryNeeded>
         <libraryNeeded
             id="commons-beanutils-1.7.0.jar"
-            name="commons-beanutils-1.7.0.jar" mvn_uri="mvn:org.talend.libraries/commons-beanutils-1.7.0/6.0.0"
+            name="commons-beanutils-1.7.0.jar" mvn_uri="mvn:commons-beanutils/commons-beanutils/1.7.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/commons-beanutils-1.7.0.jar">
         </libraryNeeded>
         <libraryNeeded
             id="commons-beanutils-core-1.8.0.jar"
-            name="commons-beanutils-core-1.8.0.jar" mvn_uri="mvn:org.talend.libraries/commons-beanutils-core-1.8.0/6.0.0"
+            name="commons-beanutils-core-1.8.0.jar" mvn_uri="mvn:commons-beanutils/commons-beanutils-core/1.8.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/commons-beanutils-core-1.8.0.jar">
         </libraryNeeded>
         <libraryNeeded
             id="commons-compress-1.4.1.jar"
-            name="commons-compress-1.4.1.jar" mvn_uri="mvn:org.talend.libraries/commons-compress-1.4.1/6.0.0"
+            name="commons-compress-1.4.1.jar" mvn_uri="mvn:org.apache.commons/commons-compress/1.4.1"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/commons-compress-1.4.1.jar">
         </libraryNeeded>
         <libraryNeeded
             id="commons-configuration-1.6.jar"
-            name="commons-configuration-1.6.jar" mvn_uri="mvn:org.talend.libraries/commons-configuration-1.6/6.0.0"
+            name="commons-configuration-1.6.jar" mvn_uri="mvn:commons-configuration/commons-configuration/1.6"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/commons-configuration-1.6.jar">
         </libraryNeeded>
         <libraryNeeded
             id="commons-digester-1.8.jar"
-            name="commons-digester-1.8.jar" mvn_uri="mvn:org.talend.libraries/commons-digester-1.8/6.0.0"
+            name="commons-digester-1.8.jar" mvn_uri="mvn:commons-digester/commons-digester/1.8"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/commons-digester-1.8.jar">
         </libraryNeeded>
         <libraryNeeded
             id="commons-net-3.1.jar"
-            name="commons-net-3.1.jar" mvn_uri="mvn:org.talend.libraries/commons-net-3.1/6.0.0"
+            name="commons-net-3.1.jar" mvn_uri="mvn:commons-net/commons-net/3.1"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/commons-net-3.1.jar">
         </libraryNeeded>
         <libraryNeeded
             id="curator-client-2.6.0.jar"
-            name="curator-client-2.6.0.jar" mvn_uri="mvn:org.talend.libraries/curator-client-2.6.0/6.0.0"
+            name="curator-client-2.6.0.jar" mvn_uri="mvn:org.apache.curator/curator-client/2.6.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/curator-client-2.6.0.jar">
         </libraryNeeded>
         <libraryNeeded
             id="curator-framework-2.6.0.jar"
-            name="curator-framework-2.6.0.jar" mvn_uri="mvn:org.talend.libraries/curator-framework-2.6.0/6.0.0"
+            name="curator-framework-2.6.0.jar" mvn_uri="mvn:org.apache.curator/curator-framework/2.6.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/curator-framework-2.6.0.jar">
         </libraryNeeded>
         <libraryNeeded
             id="curator-recipes-2.6.0.jar"
-            name="curator-recipes-2.6.0.jar" mvn_uri="mvn:org.talend.libraries/curator-recipes-2.6.0/6.0.0"
+            name="curator-recipes-2.6.0.jar" mvn_uri="mvn:org.apache.curator/curator-recipes/2.6.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/curator-recipes-2.6.0.jar">
         </libraryNeeded>
         <libraryNeeded
             id="gson-2.2.4.jar"
-            name="gson-2.2.4.jar" mvn_uri="mvn:org.talend.libraries/gson-2.2.4/6.0.0"
+            name="gson-2.2.4.jar" mvn_uri="mvn:com.google.code.gson/gson/2.2.4"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/gson-2.2.4.jar">
         </libraryNeeded>
         <libraryNeeded
             id="guice-3.0.jar"
-            name="guice-3.0.jar" mvn_uri="mvn:org.talend.libraries/guice-3.0/6.0.0"
+            name="guice-3.0.jar" mvn_uri="mvn:com.google.inject/guice/3.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/guice-3.0.jar">
         </libraryNeeded>
         <libraryNeeded
             id="guice-servlet-3.0.jar"
-            name="guice-servlet-3.0.jar" mvn_uri="mvn:org.talend.libraries/guice-servlet-3.0/6.0.0"
+            name="guice-servlet-3.0.jar" mvn_uri="mvn:com.google.inject.extensions/guice-servlet/3.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/guice-servlet-3.0.jar">
         </libraryNeeded>
@@ -2713,7 +2713,7 @@
         </libraryNeeded>
         <libraryNeeded
             id="htrace-core-3.0.4.jar"
-            name="htrace-core-3.0.4.jar" mvn_uri="mvn:org.talend.libraries/htrace-core-3.0.4/6.0.0"
+            name="htrace-core-3.0.4.jar" mvn_uri="mvn:org.htrace/htrace-core/3.0.4"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/htrace-core-3.0.4.jar">
         </libraryNeeded>
@@ -2737,31 +2737,31 @@
         </libraryNeeded>
         <libraryNeeded
             id="jackson-core-asl-1.9.13.jar"
-            name="jackson-core-asl-1.9.13.jar" mvn_uri="mvn:org.talend.libraries/jackson-core-asl-1.9.13/6.0.0"
+            name="jackson-core-asl-1.9.13.jar" mvn_uri="mvn:org.codehaus.jackson/jackson-core-asl/1.9.13"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jackson-core-asl-1.9.13.jar">
         </libraryNeeded>
         <libraryNeeded
             id="jackson-jaxrs-1.9.13.jar"
-            name="jackson-jaxrs-1.9.13.jar" mvn_uri="mvn:org.talend.libraries/jackson-jaxrs-1.9.13/6.0.0"
+            name="jackson-jaxrs-1.9.13.jar" mvn_uri="mvn:org.codehaus.jackson/jackson-jaxrs/1.9.13"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jackson-jaxrs-1.9.13.jar">
         </libraryNeeded>
         <libraryNeeded
             id="jackson-mapper-asl-1.9.13.jar"
-            name="jackson-mapper-asl-1.9.13.jar" mvn_uri="mvn:org.talend.libraries/jackson-mapper-asl-1.9.13/6.0.0"
+            name="jackson-mapper-asl-1.9.13.jar" mvn_uri="mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.13"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jackson-mapper-asl-1.9.13.jar">
         </libraryNeeded>
         <libraryNeeded
             id="jackson-xc-1.9.13.jar"
-            name="jackson-xc-1.9.13.jar" mvn_uri="mvn:org.talend.libraries/jackson-xc-1.9.13/6.0.0"
+            name="jackson-xc-1.9.13.jar" mvn_uri="mvn:org.codehaus.jackson/jackson-xc/1.9.13"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jackson-xc-1.9.13.jar">
         </libraryNeeded>
         <libraryNeeded
             id="javax.inject-1.jar"
-            name="javax.inject-1.jar" mvn_uri="mvn:org.talend.libraries/javax.inject-1/6.0.0"
+            name="javax.inject-1.jar" mvn_uri="mvn:javax.inject/javax.inject/1"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/javax.inject-1.jar">
         </libraryNeeded>
@@ -2776,7 +2776,7 @@
         <libraryNeeded
               context="plugin:org.talend.libraries.hadoop.hdp.2.2"
               id="jersey-client-1.9.jar"
-              mvn_uri="mvn:org.talend.libraries/jersey-client-1.9/6.0.0"
+              mvn_uri="mvn:com.sun.jersey/jersey-client/1.9"
               name="jersey-client-1.9.jar"
               required="true"
               uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-client-1.9.jar">
@@ -2784,7 +2784,7 @@
         <libraryNeeded
               context="plugin:org.talend.libraries.hadoop.hdp.2.2"
               id="jersey-core-1.9.jar"
-              mvn_uri="mvn:org.talend.libraries/jersey-core-1.9/6.0.0"
+              mvn_uri="mvn:com.sun.jersey/jersey-core/1.9"
               name="jersey-core-1.9.jar"
               required="true"
               uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/jersey-core-1.9.jar">
@@ -2863,31 +2863,31 @@
         </libraryNeeded>
         <libraryNeeded
             id="xercesImpl-2.9.1.jar"
-            name="xercesImpl-2.9.1.jar" mvn_uri="mvn:org.talend.libraries/xercesImpl-2.9.1/6.0.0"
+            name="xercesImpl-2.9.1.jar" mvn_uri="mvn:xerces/xercesImpl/2.9.1"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/xercesImpl-2.9.1.jar">
         </libraryNeeded>
         <libraryNeeded
             id="xml-apis-1.3.04.jar"
-            name="xml-apis-1.3.04.jar" mvn_uri="mvn:org.talend.libraries/xml-apis-1.3.04/6.0.0"
+            name="xml-apis-1.3.04.jar" mvn_uri="mvn:xml-apis/xml-apis/1.3.04"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/xml-apis-1.3.04.jar">
         </libraryNeeded>
         <libraryNeeded
             id="xmlenc-0.52.jar"
-            name="xmlenc-0.52.jar" mvn_uri="mvn:org.talend.libraries/xmlenc-0.52/6.0.0"
+            name="xmlenc-0.52.jar" mvn_uri="mvn:xmlenc/xmlenc/0.52"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/xmlenc-0.52.jar">
         </libraryNeeded>
         <libraryNeeded
             id="xz-1.0.jar"
-            name="xz-1.0.jar" mvn_uri="mvn:org.talend.libraries/xz-1.0/6.0.0"
+            name="xz-1.0.jar" mvn_uri="mvn:org.tukaani/xz/1.0"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/xz-1.0.jar">
         </libraryNeeded>
         <libraryNeeded
             id="zookeeper-3.4.6.jar"
-            name="zookeeper-3.4.6.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.6/6.0.0"
+            name="zookeeper-3.4.6.jar" mvn_uri="mvn:org.apache.zookeeper/zookeeper/3.4.6"
             context="plugin:org.talend.libraries.hadoop.hdp.2.2"
             uripath="platform:/plugin/org.talend.libraries.hadoop.hdp.2.2/lib/tezServer/zookeeper-3.4.6.jar">
         </libraryNeeded>
@@ -2925,7 +2925,7 @@
         </libraryNeeded>
         <libraryNeeded
             id="metrics-core-2.2.0.jar"
-            name="metrics-core-2.2.0.jar" mvn_uri="mvn:org.talend.libraries/metrics-core-2.2.0/6.0.0"
+            name="metrics-core-2.2.0.jar" mvn_uri="mvn:com.yammer.metrics/metrics-core/2.2.0"
             context="plugin:org.talend.libraries.apache.kafka"
             uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/metrics-core-2.2.0.jar">
         </libraryNeeded>
@@ -8179,7 +8179,7 @@
         <libraryNeeded
               context="plugin:"
               id="javax.annotation-api-1.2.jar"
-              mvn_uri="mvn:org.talend.libraries/javax.annotation-api-1.2/6.1.0"
+              mvn_uri="mvn:javax.annotation/javax.annotation-api/1.2"
               name="javax.annotation-api-1.2.jar"
               required="true">
         </libraryNeeded>
