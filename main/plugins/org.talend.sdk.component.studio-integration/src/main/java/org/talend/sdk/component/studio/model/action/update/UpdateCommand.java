@@ -27,7 +27,7 @@ import org.talend.sdk.component.studio.model.parameter.command.BaseAsyncAction;
  * This TacokitCommand is executed when update button is clicked.
  * This command executes UpdateAction, gets the result and sets result to corresponding ElemenParameters
  */
-public class UpdateCommand extends BaseAsyncAction<Object> {
+class UpdateCommand extends BaseAsyncAction<Object> {
 
     /**
      * Base path of property annotated with Updatable annotation. This property represents result returned by the action
@@ -44,7 +44,7 @@ public class UpdateCommand extends BaseAsyncAction<Object> {
      */
     private final ButtonParameter button;
 
-    public UpdateCommand(final Action<Object> action, final String basePath,
+    UpdateCommand(final Action<Object> action, final String basePath,
                          final List<TaCoKitElementParameter> parameters, final ButtonParameter button) {
         super(action);
         this.basePath = basePath + ".";
