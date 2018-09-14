@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.TableElementParameter;
@@ -30,12 +29,15 @@ import org.talend.sdk.component.studio.model.parameter.command.BaseAsyncAction;
 class UpdateCommand extends BaseAsyncAction<Object> {
 
     /**
-     * Base path of property annotated with Updatable annotation. This property represents result returned by the action
+     * Base path prefix which is used to map {@link TaCoKitElementParameter} with keys in UpdateAction result.
+     * Prefix is constructed as base path + "."
+     * Base path is absolute path of configuration option annotated with Updatable annotation.
+     * This configuration option represents a type of result returned by the action.
      */
-    private final String basePath;
+    private final String basePrefix;
 
     /**
-     * Children parameters to update
+     * Child parameters to update. This parameters are updated with values returned by UpdateAction
      */
     private final List<TaCoKitElementParameter> parameters;
 
@@ -44,10 +46,18 @@ class UpdateCommand extends BaseAsyncAction<Object> {
      */
     private final ButtonParameter button;
 
-    UpdateCommand(final Action<Object> action, final String basePath,
+    /**
+     * Constructor
+     *
+     * @param action UpdateAction which will be called during running this Command
+     * @param basePath Absolute path of property annotated with Updatable annotation
+     * @param parameters Child properties of property annotated with Updatable annotation
+     * @param button Button Parameter which is used to trigger layout refresh
+     */
+    UpdateCommand(final UpdateAction action, final String basePath,
                          final List<TaCoKitElementParameter> parameters, final ButtonParameter button) {
         super(action);
-        this.basePath = basePath + ".";
+        this.basePrefix = basePath + ".";
         this.parameters = Collections.unmodifiableList(parameters);
         this.button = button;
     }
@@ -55,12 +65,12 @@ class UpdateCommand extends BaseAsyncAction<Object> {
     /**
      * Updates children parameters value based on action result
      *
-     * @param result
+     * @param result UpdateAction call result
      */
     @Override
     protected void onResult(Map<String, Object> result) {
         parameters.forEach(p -> {
-            final String key = p.getName().replaceFirst(basePath, "");
+            final String key = p.getName().replaceFirst(basePrefix, "");
             final Object value = result.get(key);
             if (value != null) {
                 if (EParameterFieldType.TABLE.equals(p.getFieldType())) {
