@@ -216,7 +216,7 @@
                 REQUIRED_IF="(USE_EXISTING_CONNECTION=='false') AND (DISTRIBUTION=='MICROSOFT_HD_INSIGHT') AND (DISTRIB[DISTRIBUTION, HIVE_VERSION].doSupportOldImportMode[])" />
             <IMPORT NAME="javax.ws.rs-api-2.0-m10" MODULE="javax.ws.rs-api-2.0-m10.jar" MVN="mvn:org.talend.libraries/javax.ws.rs-api-2.0-m10/6.0.0" 
                 REQUIRED_IF="(USE_EXISTING_CONNECTION=='false') AND (DISTRIBUTION=='MICROSOFT_HD_INSIGHT') AND (DISTRIB[DISTRIBUTION, HIVE_VERSION].doSupportOldImportMode[])" />
-            <IMPORT NAME="WSDL4J-1_6_3" MODULE="wsdl4j-1.6.3.jar" MVN="mvn:org.talend.libraries/wsdl4j-1.6.3/6.0.0" 
+            <IMPORT NAME="WSDL4J-1_6_3" MODULE="wsdl4j-1.6.3.jar" MVN="mvn:wsdl4j/wsdl4j/1.6.3" 
                 BundleID="org.apache.servicemix.bundles.wsdl4j" REQUIRED="false"
                 REQUIRED_IF="(USE_EXISTING_CONNECTION=='false') AND (DISTRIBUTION=='MICROSOFT_HD_INSIGHT') AND (DISTRIB[DISTRIBUTION, HIVE_VERSION].doSupportOldImportMode[])" />
             <IMPORT NAME="azure-storage-1.2.0" MODULE="azure-storage-1.2.0.jar" MVN="mvn:org.talend.libraries/azure-storage-1.2.0/6.0.0" 

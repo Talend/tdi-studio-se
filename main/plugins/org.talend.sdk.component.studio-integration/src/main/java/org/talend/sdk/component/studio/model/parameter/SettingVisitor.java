@@ -15,6 +15,8 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
@@ -33,6 +35,7 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
+import org.talend.sdk.component.studio.model.action.UpdateAction;
 import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
 import org.talend.sdk.component.studio.model.parameter.listener.ActiveIfListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
@@ -40,6 +43,7 @@ import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory
 import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
+import org.talend.sdk.component.studio.model.parameter.resolver.UpdateResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
@@ -54,6 +58,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import static java.util.Collections.emptyMap;
@@ -67,6 +72,8 @@ import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementPara
  * Creates properties from leafs
  */
 public class SettingVisitor implements PropertyVisitor {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(SettingVisitor.class.getName());
 
     /**
      * Specifies row number, on which schema properties (schema widget and guess schema button) should be displayed
@@ -118,7 +125,7 @@ public class SettingVisitor implements PropertyVisitor {
     private final Map<String, List<ConditionGroup>> activations =
             new LinkedHashMap<>();
 
-    private final List<ParameterResolver> actionResolvers = new ArrayList<>();
+    private final List<ParameterResolver> parameterResolvers = new ArrayList<>();
 
     public SettingVisitor(final IElement iNode,
             final ElementParameter redrawParameter, final ConfigTypeNode config) {
@@ -157,6 +164,7 @@ public class SettingVisitor implements PropertyVisitor {
         }
 
         buildActivationCondition(node.getParent(), origin);
+
     }
 
     /**
@@ -188,7 +196,7 @@ public class SettingVisitor implements PropertyVisitor {
             });
         });
 
-        actionResolvers.forEach(resolver -> resolver.resolveParameters(Collections.unmodifiableMap(settings)));
+        parameterResolvers.forEach(resolver -> resolver.resolveParameters(Collections.unmodifiableMap(settings)));
         return unmodifiableList(new ArrayList<>(settings.values()));
     }
 
@@ -233,7 +241,29 @@ public class SettingVisitor implements PropertyVisitor {
 
                 break;
             }
-        } else if (node.getProperty().isCheckable() && !node.getChildren(form).isEmpty()) {
+        } else {
+            buildHealthCheck(node);
+            buildUpdate(node);
+        }
+    }
+
+    /**
+     * Checks whether HealthCheck button should be added
+     *
+     * @param node current PropertyNode
+     * @return true if HealthCheck button should be added
+     */
+    private boolean hasHealthCheck(final PropertyNode node) {
+        return node.getProperty().isCheckable() && !node.getChildren(form).isEmpty();
+    }
+
+    /**
+     * Builds HealthCheck button
+     *
+     * @param node current PropertyNode
+     */
+    private void buildHealthCheck(final PropertyNode node) {
+        if (hasHealthCheck(node)) {
             final ActionReference action = actions
                     .stream()
                     .filter(a -> Action.Type.HEALTHCHECK.toString().equals(a.getType()))
@@ -241,11 +271,36 @@ public class SettingVisitor implements PropertyVisitor {
                     .findFirst()
                     .get();
             final Layout checkableLayout = node.getLayout(form);
-            final Layout buttonLayout =
+            final Optional<Layout> buttonLayout =
                     checkableLayout.getChildLayout(checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON);
-            new HealthCheckResolver(element, family, node, action, category, buttonLayout.getPosition())
-                    .resolveParameters(settings);
+            if (buttonLayout.isPresent()) {
+                new HealthCheckResolver(element, family, node, action, category, buttonLayout.get().getPosition())
+                        .resolveParameters(settings);
+            } else {
+                LOGGER.debug("Button layout {} not found for form {}", checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON, form);
+            }
         }
+    }
+
+    /**
+     * Builds Update button, which triggers call to Update component action
+     *
+     * @param node current PropertyNode
+     */
+    private void buildUpdate(final PropertyNode node) {
+        node.getProperty().getUpdatable().ifPresent(updatable -> {
+            final Layout formLayout = node.getLayout(form);
+            final Optional<Layout> buttonLayout = formLayout.getChildLayout(formLayout.getPath() + PropertyNode.UPDATE_BUTTON);
+            if (buttonLayout.isPresent()) {
+                final int buttonPosition = buttonLayout.get().getPosition();
+                final UpdateAction action = new UpdateAction(updatable.getActionName(), family, Action.Type.UPDATE);
+                UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node,
+                        actions, redrawParameter, settings);
+                parameterResolvers.add(resolver);
+            } else {
+                LOGGER.debug("Button layout {} not found for form {}", formLayout.getPath() + PropertyNode.UPDATE_BUTTON, form);
+            }
+        });
     }
 
     IElement getNode() {
@@ -377,7 +432,7 @@ public class SettingVisitor implements PropertyVisitor {
     private SuggestionsAction createSuggestionsAction(final PropertyNode node) {
         final SuggestionsAction action = new SuggestionsAction(node.getProperty().getSuggestions().getName(), family);
         final SuggestionsResolver resolver = new SuggestionsResolver(action, node, actions);
-        actionResolvers.add(resolver);
+        parameterResolvers.add(resolver);
         return action;
     }
     
@@ -502,17 +557,17 @@ public class SettingVisitor implements PropertyVisitor {
             defaultValue = node.getProperty().getMetadata().get("ui::defaultvalue::value");
         }
 
+        parameter.setRequired(node.getProperty().isRequired());
         if (TaCoKitElementParameter.class.isInstance(parameter)) {
-            TaCoKitElementParameter.class.cast(parameter).updateValueOnly(defaultValue);
+            final TaCoKitElementParameter taCoKitElementParameter = TaCoKitElementParameter.class.cast(parameter);
+            taCoKitElementParameter.updateValueOnly(defaultValue);
+            if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
+                createValidationLabel(node, taCoKitElementParameter);
+            }
+            buildActivationCondition(node, node);
         } else {
             parameter.setValue(defaultValue);
         }
-        parameter.setRequired(node.getProperty().isRequired());
-        if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
-            createValidationLabel(node, (TaCoKitElementParameter) parameter);
-        }
-
-        buildActivationCondition(node, node);
     }
 
     /**
@@ -574,7 +629,7 @@ public class SettingVisitor implements PropertyVisitor {
                     new ValidationListener(label, family, node.getProperty().getValidationName());
             target.registerListener("value", listener);
             final ValidationResolver resolver = new ValidationResolver(node, actions, listener, redrawParameter);
-            actionResolvers.add(resolver);
+            parameterResolvers.add(resolver);
         }
     }
 

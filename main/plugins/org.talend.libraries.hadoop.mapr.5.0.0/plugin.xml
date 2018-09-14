@@ -14,7 +14,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.mapr.5.0.0"
             id="maprfs-5.0.X-lastest"       
-            name="maprfs-5.0.0-mapr.jar" mvn_uri="mvn:org.talend.libraries/maprfs-5.0.0-mapr/6.1.0" >
+            name="maprfs-5.0.0-mapr.jar" mvn_uri="mvn:org.talend.libraries/maprfs-5.0.0-mapr/6.0.0" >
         </libraryNeeded>
         
         <libraryNeeded
@@ -117,7 +117,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.mapr.5.0.0"
             id="pig-withouthadoop-mapr-5.0.X-lastest"       
-            name="pig-core-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-core-h2/6.1.0">
+            name="pig-core-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-core-h2/6.0.0">
         </libraryNeeded>
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.mapr.5.0.0"

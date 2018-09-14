@@ -18,6 +18,7 @@ package org.talend.sdk.component.studio.model.parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Layout {
 
@@ -40,16 +41,12 @@ public class Layout {
     /**
      * Returns child Layout
      *
-     * 
-     * 
      * @param path child Layout path
-     * 
      * @return child Layout
      */
-    Layout getChildLayout(final String path) {
+    Optional<Layout> getChildLayout(final String path) {
         Objects.requireNonNull(path);
-        return levels.stream().flatMap(l -> l.getColumns().stream()).filter(c -> path.equals(c.getPath())).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("no Layout for path " + path));
+        return levels.stream().flatMap(l -> l.getColumns().stream()).filter(c -> path.equals(c.getPath())).findFirst();
     }
 
     public String getPath() {

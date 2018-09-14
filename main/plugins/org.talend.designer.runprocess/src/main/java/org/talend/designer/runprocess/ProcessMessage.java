@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.designer.runprocess.i18n.Messages;
 
 /**
@@ -26,16 +26,16 @@ public class ProcessMessage implements IProcessMessage {
 
     /** Type of the message. */
     public enum MsgType implements IMsgType {
-        STD_OUT,
-        STD_ERR,
-        LOG4J_TRACE,
-        LOG4J_INFO,
-        LOG4J_WARN,
-        LOG4J_DEBUG,
-        LOG4J_ERROR,
-        LOG4J_FATAL,
-        CORE_OUT,
-        CORE_ERR
+    STD_OUT,
+    STD_ERR,
+    LOG4J_TRACE,
+    LOG4J_INFO,
+    LOG4J_WARN,
+    LOG4J_DEBUG,
+    LOG4J_ERROR,
+    LOG4J_FATAL,
+    CORE_OUT,
+    CORE_ERR
     }
 
     /** Type of the message. */
@@ -66,6 +66,7 @@ public class ProcessMessage implements IProcessMessage {
      * 
      * @return the content
      */
+    @Override
     public String getContent() {
         return this.content;
     }
@@ -75,6 +76,7 @@ public class ProcessMessage implements IProcessMessage {
      * 
      * @return the type
      */
+    @Override
     public IMsgType getType() {
         return this.type;
     }

@@ -132,7 +132,7 @@
 
 	<CODEGENERATION>
 	  <IMPORTS>
-        <IMPORT NAME="commons-lang-2.6.jar" MODULE="commons-lang-2.6.jar" MVN="mvn:org.talend.libraries/commons-lang-2.6/6.0.0"  UrlPath="platform:/base/plugins/org.apache.commons.lang_2.6.0.v201404270220.jar" REQUIRED="true" />
+        <IMPORT NAME="commons-lang-2.6.jar" MODULE="commons-lang-2.6.jar" MVN="mvn:commons-lang/commons-lang/2.6"  UrlPath="platform:/base/plugins/org.apache.commons.lang_2.6.0.v201404270220.jar" REQUIRED="true" />
 	  </IMPORTS>
     </CODEGENERATION>
 
