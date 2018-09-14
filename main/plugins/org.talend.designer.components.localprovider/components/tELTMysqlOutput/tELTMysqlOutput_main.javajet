@@ -93,7 +93,6 @@ imports="
 		} else if ("MYSQL_8".equals(dbVersion)) {
 			drverClass = "com.mysql.cj.jdbc.Driver";
 		}
-	}
 %>
     String driverClass_<%=cid%> = "<%=drverClass%>";
     java.lang.Class.forName(driverClass_<%=cid%>);
