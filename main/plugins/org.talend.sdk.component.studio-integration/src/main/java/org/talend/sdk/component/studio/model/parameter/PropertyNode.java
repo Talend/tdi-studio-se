@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,9 @@ import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
 
 public class PropertyNode {
-	
+
+    public static final String UPDATE_BUTTON = ".update";
+
     static final String CONNECTION_BUTTON = ".testConnection";
 
     static final String VALIDATION = "Validation";
@@ -101,9 +104,10 @@ public class PropertyNode {
      * 
      * @param visitor the property visitor to use to traverse the nodes.
      */
-    public void accept(final PropertyVisitor visitor) {
+    public <T extends PropertyVisitor> T accept(final T visitor) {
         children.forEach(child -> child.accept(visitor));
         visitor.visit(this);
+        return visitor;
     }
 
     /**
@@ -258,7 +262,7 @@ public class PropertyNode {
         }
 
         private void createLayout() {
-            Layout layout = null;
+            final Layout layout;
             if (current.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
                 layout = new Layout(current.getProperty().getSchemaName());
             } else {
@@ -266,18 +270,21 @@ public class PropertyNode {
             }
             if (!current.isLeaf()) {
                 if (current.getProperty().hasGridLayout(form)) {
-                    fillGridLayout(layout);
+                    fillGridLayout(layout, current.getProperty().getUpdatable());
                 } else {
-                    fillSimpleLayout(layout);
+                    fillSimpleLayout(layout, current.getProperty().getUpdatable());
                 }
                 if (current.getProperty().isCheckable()) {
-                    addButton(layout);
+                    addButton(layout, CONNECTION_BUTTON);
+                }
+                if (current.getProperty().getUpdatable().map(v -> v.getPreviousProperty().isEmpty()).orElse(false)) {
+                    addButton(layout, UPDATE_BUTTON);
                 }
             }
             current.addLayout(form, layout);
         }
 
-        private void fillGridLayout(final Layout layout) {
+        private void fillGridLayout(final Layout layout, final Optional<PropertyDefinitionDecorator.Updatable> updatable) {
             final String gridLayout = current.getProperty().getGridLayout(form);
             final String[] rows = gridLayout.split("\\|");
             // create Level for each row
@@ -289,12 +296,15 @@ public class PropertyNode {
                     if (child.getProperty().hasConstraint() || child.getProperty().hasValidation()) {
                         addValidationLevel(child, layout);
                     }
+                    if (matches(updatable, column)) {
+                        addButton(layout, UPDATE_BUTTON);
+                    }
                     level.getColumns().add(child.getLayout(form));
                 }
             }
         }
 
-        private void fillSimpleLayout(final Layout layout) {
+        private void fillSimpleLayout(final Layout layout, final Optional<PropertyDefinitionDecorator.Updatable> updatable) {
             final List<PropertyNode> children = current.sortChildren(current.getChildren(form), form);
             children.forEach(child -> {
                 final Level level = new Level();
@@ -304,7 +314,14 @@ public class PropertyNode {
                 if (child.getProperty().hasConstraint() || child.getProperty().hasValidation()) {
                     addValidationLevel(child, layout);
                 }
+                if (matches(updatable, child.getProperty().getName())) {
+                    addButton(layout, UPDATE_BUTTON);
+                }
             });
+        }
+
+        private boolean matches(final Optional<PropertyDefinitionDecorator.Updatable> updatable, final String name) {
+            return updatable.map(v -> name.equals(v.getPreviousProperty())).orElse(false);
         }
 
         private void addValidationLevel(final PropertyNode node, final Layout layout) {
@@ -319,8 +336,8 @@ public class PropertyNode {
          *
          * @param layout parent node layout
          */
-        private void addButton(final Layout layout) {
-            final Layout buttonLayout = new Layout(layout.getPath() + CONNECTION_BUTTON);
+        private void addButton(final Layout layout, final String buttonName) {
+            final Layout buttonLayout = new Layout(layout.getPath() + buttonName);
             buttonLayout.setHeight(1);
             final Level level = new Level();
             level.getColumns().add(buttonLayout);

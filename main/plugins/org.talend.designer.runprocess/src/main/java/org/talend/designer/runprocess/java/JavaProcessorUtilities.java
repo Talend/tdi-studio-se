@@ -430,7 +430,7 @@ public class JavaProcessorUtilities {
         }
         if (!foundLog4jJar) {
             ModuleNeeded log4j = new ModuleNeeded("log4j", "log4j-1.2.17.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-            log4j.setMavenUri("mvn:org.talend.libraries/log4j-1.2.17/6.0.0");
+            log4j.setMavenUri("mvn:log4j/log4j/1.2.17");
             jarList.add(log4j);
             added = true;
         }

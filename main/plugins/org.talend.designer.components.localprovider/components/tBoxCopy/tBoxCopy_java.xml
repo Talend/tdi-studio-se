@@ -152,11 +152,11 @@
                     UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.1.jar"
                		REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" BundleID="" />
                <IMPORT NAME="apache-commons-lang"
-                    MODULE="commons-lang-2.6.jar" MVN="mvn:org.talend.libraries/commons-lang-2.6/6.0.0" 
+                    MODULE="commons-lang-2.6.jar" MVN="mvn:commons-lang/commons-lang/2.6" 
                     UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.6.jar"
                		REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" BundleID="" />
                <IMPORT NAME="apache-commons-io"
-                    MODULE="commons-io-2.4.jar" MVN="mvn:org.talend.libraries/commons-io-2.4/6.0.0" 
+                    MODULE="commons-io-2.4.jar" MVN="mvn:commons-io/commons-io/2.4" 
                     UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar"
                		REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		</IMPORTS>
