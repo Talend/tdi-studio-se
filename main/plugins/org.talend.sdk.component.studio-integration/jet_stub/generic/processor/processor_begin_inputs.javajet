@@ -45,7 +45,7 @@
     final boolean useLookup = component.useLookup();
 %>
 
-    final org.talend.sdk.component.runtime.di.InputsHandler inputsHandler_<%=cid%> = new org.talend.sdk.component.runtime.di.InputsHandler(jsonb_<%=cid%>);
+    final org.talend.sdk.component.runtime.di.InputsHandler inputsHandler_<%=cid%> = new org.talend.sdk.component.runtime.di.InputsHandler(jsonb_<%=cid%>, servicesMapper_<%=cid%>);
 <%
     if (useLookup) {
 %>
