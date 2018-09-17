@@ -13,6 +13,7 @@
 package org.talend.sdk.component.studio.model.action.update;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ class UpdateCommand extends BaseAsyncAction<Object> {
     /**
      * Child parameters to update. This parameters are updated with values returned by UpdateAction
      */
-    private final List<TaCoKitElementParameter> parameters;
+    private final Map<String, TaCoKitElementParameter> parameters;
 
     /**
      * ButtonParameter is used here to trigger layout refresh
@@ -49,38 +50,56 @@ class UpdateCommand extends BaseAsyncAction<Object> {
     /**
      * Constructor
      *
-     * @param action UpdateAction which will be called during running this Command
-     * @param basePath Absolute path of property annotated with Updatable annotation
+     * @param action     UpdateAction which will be called during running this Command
+     * @param basePath   Absolute path of property annotated with Updatable annotation
      * @param parameters Child properties of property annotated with Updatable annotation
-     * @param button Button Parameter which is used to trigger layout refresh
+     * @param button     Button Parameter which is used to trigger layout refresh
      */
     UpdateCommand(final UpdateAction action, final String basePath,
-                         final List<TaCoKitElementParameter> parameters, final ButtonParameter button) {
+                  final Map<String, TaCoKitElementParameter> parameters, final ButtonParameter button) {
         super(action);
         this.basePrefix = basePath + ".";
-        this.parameters = Collections.unmodifiableList(parameters);
+        this.parameters = Collections.unmodifiableMap(new HashMap<>(parameters));
         this.button = button;
     }
 
     /**
-     * Updates children parameters value based on action result
+     * Updates child parameters value based on action result
      *
      * @param result UpdateAction call result
      */
     @Override
-    protected void onResult(Map<String, Object> result) {
-        parameters.forEach(p -> {
-            final String key = p.getName().replaceFirst(basePrefix, "");
-            final Object value = result.get(key);
+    protected void onResult(final Map<String, Object> result) {
+        onResult(basePrefix, result);
+        button.firePropertyChange("show", null, true);
+    }
+
+    /**
+     * Recursively traverse result tree and updates Component parameters according value from Update action result
+     *
+     * @param basePath  base path prefix
+     * @param subResult sub tree of result returned by Update action
+     */
+    private void onResult(final String basePath, final Map<String, Object> subResult) {
+        subResult.entrySet().forEach(entry -> {
+            final Object value = entry.getValue();
+            final String key = basePath + entry.getKey();
             if (value != null) {
-                if (EParameterFieldType.TABLE.equals(p.getFieldType())) {
-                    TableElementParameter t = (TableElementParameter) p;
-                    t.setValueFromAction((List<Object>) value);
+                if (value instanceof Map) {
+                    onResult(key + ".", (Map<String, Object>) value);
                 } else {
-                    p.setValue(value);
+                    final TaCoKitElementParameter param = parameters.get(key);
+                    // TODO: throw exception here after fixing schema case
+                    if (param != null) {
+                        if (EParameterFieldType.TABLE.equals(param.getFieldType())) {
+                            TableElementParameter table = (TableElementParameter) param;
+                            table.setValueFromAction((List<Object>) value);
+                        } else {
+                            param.setValue(value);
+                        }
+                    }
                 }
             }
         });
-        button.firePropertyChange("show", null, true);
     }
 }

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.EParameterFieldType;
@@ -30,21 +29,13 @@ import org.talend.sdk.component.studio.model.parameter.CheckElementParameter;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.TableElementParameter;
 import org.talend.sdk.component.studio.model.parameter.TextElementParameter;
-import org.talend.sdk.component.studio.test.TestComponent;
 
 public class UpdateCommandTest {
-
-//    private static TestComponent component;
-//
-//    @BeforeAll
-//    public static void init() throws Exception {
-//        component = TestComponent.load("suggestions.json");
-//    }
 
     @Test
     public void testOnResultFireCalled() {
         final ButtonParameterMock buttonMock = new ButtonParameterMock(null);
-        final UpdateCommand command = new UpdateCommand(null, "conf", new ArrayList<>(), buttonMock);
+        final UpdateCommand command = new UpdateCommand(null, "conf", Collections.emptyMap(), buttonMock);
         command.onResult(new HashMap<>());
         Assertions.assertTrue(buttonMock.firePropertyChangeCalled());
     }
@@ -84,7 +75,7 @@ public class UpdateCommandTest {
         column4.setName("conf.updatableConfig.table[].strColumn");
         table.setListItemsValue(new Object[] {column1, column2, column3, column4});
 
-        final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig", Collections.singletonList(table), button);
+        final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig", Collections.singletonMap(table.getName(), table), button);
 
         final Map<String, Object> actionResult = new HashMap<>();
         final List<Map<String, Object>> tableValue = new ArrayList<>();
@@ -116,7 +107,8 @@ public class UpdateCommandTest {
         text.setName("conf.updatableConfig.number");
         text.setFieldType(EParameterFieldType.TEXT);
 
-        final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig", Collections.singletonList(text), button);
+        final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig",
+                Collections.singletonMap(text.getName(), text), button);
 
         final Map<String, Object> actionResult = new HashMap<>();
         actionResult.put("number", 42);
@@ -135,7 +127,8 @@ public class UpdateCommandTest {
         text.setName("conf.updatableConfig.str");
         text.setFieldType(EParameterFieldType.TEXT);
 
-        final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig", Collections.singletonList(text), button);
+        final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig",
+                Collections.singletonMap(text.getName(), text), button);
 
         final Map<String, Object> actionResult = new HashMap<>();
         actionResult.put("str", "value");
@@ -154,7 +147,8 @@ public class UpdateCommandTest {
         check.setName("conf.updatableConfig.check");
         check.setFieldType(EParameterFieldType.TEXT);
 
-        final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig", Collections.singletonList(check), button);
+        final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig",
+                Collections.singletonMap(check.getName(), check), button);
 
         final Map<String, Object> actionResult = new HashMap<>();
         actionResult.put("check", false);
@@ -175,7 +169,8 @@ public class UpdateCommandTest {
         schema.setName("IN$$conf.updatableConfig.schema");
         schema.setFieldType(EParameterFieldType.SCHEMA_TYPE);
 
-        final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig", Collections.singletonList(schema), button);
+        final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig",
+                Collections.singletonMap(schema.getName(), schema), button);
 
         final Map<String, Object> actionResult = new HashMap<>();
         final List<String> schemaValue = Arrays.asList("col1", "col2", "col3");

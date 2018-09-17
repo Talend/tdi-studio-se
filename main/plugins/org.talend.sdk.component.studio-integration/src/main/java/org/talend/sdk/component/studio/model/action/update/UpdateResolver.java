@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.talend.core.model.process.EComponentCategory;
@@ -62,11 +63,11 @@ public class UpdateResolver extends AbstractParameterResolver {
         super.resolveParameters(settings);
 
         final UpdateAction action = (UpdateAction) getAction();
-        final List<TaCoKitElementParameter> parameters = actionOwner.accept(new PathCollector()).getPaths().stream()
+        final Map<String, TaCoKitElementParameter> parameters = actionOwner.accept(new PathCollector()).getPaths().stream()
                 .map(settings::get)
                 .filter(Objects::nonNull)
                 .map(TaCoKitElementParameter.class::cast)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(TaCoKitElementParameter::getName, Function.identity()));
         button.setCommand(new UpdateCommand(action, actionOwner.getId(), parameters, button));
    }
 }
