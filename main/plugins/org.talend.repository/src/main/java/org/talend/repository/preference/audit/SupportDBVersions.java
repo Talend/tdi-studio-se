@@ -28,6 +28,7 @@ public enum SupportDBVersions {
     MARIADB(SupportDBUrlType.MARIADBDEFAULTURL, "MariaDB", "MARIADB"), //$NON-NLS-1$ //$NON-NLS-2$
     MYSQL_5(SupportDBUrlType.MYSQLDEFAULTURL, "MySQL 5", "MYSQL_5"), //$NON-NLS-1$ //$NON-NLS-2$
     MYSQL_4(SupportDBUrlType.MYSQLDEFAULTURL, "MySQL 4", "MYSQL_4"), //$NON-NLS-1$ //$NON-NLS-2$
+    ORACLE_18C(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 18c", "ORACLE_18C"),
     ORACLE_12(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 12", "ORACLE_12"), //$NON-NLS-1$ //$NON-NLS-2$
     ORACLE_11(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 11", "ORACLE_11"), //$NON-NLS-1$ //$NON-NLS-2$
     ORACLE_10(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 10", "ORACLE_10"), //$NON-NLS-1$ //$NON-NLS-2$
