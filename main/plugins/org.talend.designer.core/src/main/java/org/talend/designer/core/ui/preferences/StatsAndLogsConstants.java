@@ -124,13 +124,13 @@ public class StatsAndLogsConstants {
             "jtds-1.3.1-patch.jar", "mssql-jdbc.jar"};//$NON-NLS-1$  //$NON-NLS-2$
 
     public static final String[] DB_VERSION_DISPLAY = new String[] { "Oracle 12", "Oracle 11", "Oracle 10", "Oracle 9",
-            "Oracle 8", "MySQL 5", "MySQL 4", "MariaDB","Open source JTDS", "Microsoft", "Access 2003", "Access 2007", "Prior to v9", "v9 +" };
+            "Oracle 8", "MySQL 5", "MySQL 4", "MariaDB","Open source JTDS", "Microsoft", "Access 2003", "Access 2007", "Prior to v9", "v9 +", "Sybase 16 (SQL Anywhere)","Sybase 16","Sybase 12/15" };
 
     public static final String[] DB_VERSION_CODE = new String[] { "ORACLE_12", "ORACLE_11", "ORACLE_10", "ORACLE_9", "ORACLE_8",
-            "MYSQL_5", "MYSQL_4", "MariaDB", "JTDS", "MSSQL_PROP","ACCESS_2003", "ACCESS_2007", "PRIOR_TO_V9", "V9_X" };
+            "MYSQL_5", "MYSQL_4", "MariaDB", "JTDS", "MSSQL_PROP","ACCESS_2003", "ACCESS_2007", "PRIOR_TO_V9", "V9_X","SYBSEIQ_16_SA", "SYBSEIQ_16","SYBSEIQ_12_15" };
 
     public static final String[] DB_VERSION_DRIVER = new String[] { "ORACLE_12", "ORACLE_11", "ORACLE_10", "ORACLE_9",
-            "ORACLE_8", "MYSQL_5", "MYSQL_4", "MARIADB", "JTDS", "MSSQL_PROP","ACCESS_2003", "ACCESS_2007", "PRIOR_TO_V9", "V9_X" };
+            "ORACLE_8", "MYSQL_5", "MYSQL_4", "MARIADB", "JTDS", "MSSQL_PROP","ACCESS_2003", "ACCESS_2007", "PRIOR_TO_V9", "V9_X","SYBSEIQ_16_SA", "SYBSEIQ_16","SYBSEIQ_12_15" };
 
     public static final String[] ACCESS_VERSION_DISPLAY = new String[] { "Access 2003", "Access 2007" }; //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -144,12 +144,14 @@ public class StatsAndLogsConstants {
 
     public static final String[] AS400_VERSION_DRIVER = new String[] { "jt400_V6R1.jar", "jt400_V5R3.jar", "jt400_V5R2.jar" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-    public static final String[] PSQL_VERSION_DISPLAY = new String[] { "Prior to v9", "v9 +" }; //$NON-NLS-1$ //$NON-NLS-2$
+    public static final String[] PSQL_VERSION_DISPLAY = new String[] { "Prior to v9", "v9","v10" }; //$NON-NLS-1$ //$NON-NLS-2$
 
-    public static final String[] PSQL_VERSION_CODE = new String[] { "PRIOR_TO_V9", "V9_X" }; //$NON-NLS-1$ //$NON-NLS-2$ 
-
+    public static final String[] PSQL_VERSION_CODE = new String[] { "PRIOR_TO_V9", "V9","V10" }; //$NON-NLS-1$ //$NON-NLS-2$ 
+    
+    public static final String[] SYBASE_VERSION_DISPLAY = new String[] {"Sybase 16 (SQL Anywhere)", "Sybase 16", "Sybase 12/15" }; //$NON-NLS-1$ //$NON-NLS-2$
+    public static final String[] SYBASE_VERSION_CODE = new String[] {"SYBSEIQ_16_SA", "SYBSEIQ_16", "SYBSEIQ_12_15" };
     public static final String[] PSQL_VERSION_DRIVER = new String[] {
-            "postgresql-8.3-603.jdbc3.jar", "postgresql-9.4-1201.jdbc41.jar" }; //$NON-NLS-1$ //$NON-NLS-2$ 
+            "postgresql-8.3-603.jdbc3.jar", "postgresql-9.4-1201.jdbc41.jar","postgresql-42.2.5.jar" }; //$NON-NLS-1$ //$NON-NLS-2$ 
 
     public static final String[][] DISPLAY_DBNAMES = new String[][] { PERL_DISPLAY_DBNAMES, JAVA_DISPLAY_DBNAMES };
 
