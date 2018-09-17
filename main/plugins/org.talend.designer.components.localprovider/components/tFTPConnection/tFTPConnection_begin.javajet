@@ -32,6 +32,7 @@ String sEncoding = ElementParameterParser.getValue(node, "__ENCODING__");
 String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
 String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
+boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 String passwordFieldName = "";
 
@@ -213,7 +214,7 @@ if (!sftp && !ftps) { // *** ftp *** //
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
 		<%}%>
-
+		ftp_<%=cid %>.setRemoteVerificationEnabled(<%=useRemoteVerification %>);
 		<%
 		passwordFieldName = "__PASS__";
 		%>
