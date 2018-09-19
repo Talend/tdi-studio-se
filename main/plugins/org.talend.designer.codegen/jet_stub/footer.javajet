@@ -575,6 +575,8 @@
 
             }catch(ParseException e)
             {
+                System.err.println("Can't parse context value to Date: " + e.getMessage());
+                System.err.println("Null value will be used for context parameter <%=ctxParam.getName() %>");
                 context.<%=ctxParam.getName()%>=null;
             }
               <%
