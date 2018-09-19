@@ -77,6 +77,14 @@ public class AbsolutePathResolver {
             return nodePath;
         }
         if (parameterReference.startsWith("..")) {
+            if(nodePath.lastIndexOf('.') < 0){ // handle same level options
+                String path = parameterReference.substring("..".length());
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
+                }
+                return path;
+            }
+
             String current = nodePath;
             String ref = parameterReference;
             while (ref.startsWith("..")) {

@@ -15,6 +15,26 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.TreeMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.core.model.process.EComponentCategory;
@@ -36,6 +56,7 @@ import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.action.update.UpdateAction;
+import org.talend.sdk.component.studio.model.action.update.UpdateResolver;
 import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
 import org.talend.sdk.component.studio.model.parameter.listener.ActiveIfListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
@@ -43,30 +64,9 @@ import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory
 import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
-import org.talend.sdk.component.studio.model.action.update.UpdateResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.TreeMap;
-
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
-import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
 
 /**
  * Creates properties from leafs
@@ -158,9 +158,12 @@ public class SettingVisitor implements PropertyVisitor {
         }
 
         final ConditionGroup group = node.getProperty().getConditions();
-        if (!group.getConditions().isEmpty()) {
-            activations.computeIfAbsent(origin.getProperty().getPath(), key -> new ArrayList<>())
-                       .add(group);
+        if (!group.getConditions().isEmpty() && group.getConditions().stream()
+                .allMatch(c -> c.getTargetPath().contains(node.getProperty().getPath())
+                        || (node.getParent() != null && c.getTargetPath().contains(node.getParent().getProperty().getPath())))) {
+
+            activations.computeIfAbsent(origin.getProperty().getPath(), key -> new ArrayList<>()).add(group);
+            //check if the condition target exist in the properties graph
         }
 
         buildActivationCondition(node.getParent(), origin);
@@ -421,7 +424,7 @@ public class SettingVisitor implements PropertyVisitor {
 
         return createSchemaParameter(connectionName, schemaName, discoverSchemaAction, true);
     }
-    
+
     private ValueSelectionParameter visitValueSelection(final PropertyNode node) {
         final SuggestionsAction action = createSuggestionsAction(node);
         final ValueSelectionParameter parameter = new ValueSelectionParameter(element, action);
@@ -435,7 +438,7 @@ public class SettingVisitor implements PropertyVisitor {
         parameterResolvers.add(resolver);
         return action;
     }
-    
+
     // TODO i18n it
     private String schemaDisplayName(final String connectionName, final String schemaName) {
         final String connectorName = connectionName.equalsIgnoreCase(EConnectionType.FLOW_MAIN.getName())
