@@ -15,33 +15,16 @@
  */
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
+import java.util.Collection;
+
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 
-import java.util.Collection;
-import java.util.List;
-
 public class SuggestionsResolver extends AbstractParameterResolver {
 
     public SuggestionsResolver(final SuggestionsAction action, final PropertyNode actionOwner, final Collection<ActionReference> actions) {
-        super(action, actionOwner, getActionRef(actionOwner, actions));
+        super(action, actionOwner, getActionRef(actions, actionOwner.getProperty().getSuggestions().getName(), Action.Type.SUGGESTIONS));
     }
-    
-    private static ActionReference getActionRef(final PropertyNode actionOwner, final Collection<ActionReference> actions) {
-        final String actionName = actionOwner.getProperty().getSuggestions().getName();
-        return actions
-                .stream()
-                .filter(a -> Action.Type.SUGGESTIONS.toString().equals(a.getType()))
-                .filter(a -> a.getName().equals(actionName))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Action with name " + actionName + " wasn't found"));
-    }
-
-    @Override
-    protected final List<String> getRelativePaths() {
-        return actionOwner.getProperty().getSuggestions().getParameters();
-    }
-
 }

@@ -15,44 +15,30 @@
  */
 package org.talend.sdk.component.studio.model.parameter.command;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import static org.talend.sdk.component.studio.model.action.Action.MESSAGE;
+import static org.talend.sdk.component.studio.model.action.Action.OK;
+import static org.talend.sdk.component.studio.model.action.Action.STATUS;
+
+import java.util.Map;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.IActionParameter;
-
-import java.util.Map;
-
-import static org.talend.sdk.component.studio.model.action.Action.MESSAGE;
-import static org.talend.sdk.component.studio.model.action.Action.OK;
-import static org.talend.sdk.component.studio.model.action.Action.STATUS;
 
 /**
  * Asynchronous Action
  */
-public class AsyncAction extends Job implements TacokitCommand {
+public class AsyncAction extends BaseAsyncAction<String> {
 
-    private final Action action;
-
-    public AsyncAction(final Action action) {
-        super(Messages.getString("action.execution.progress"));
-        this.action = action;
-        setUser(true);
+    public AsyncAction(final Action<String> action) {
+        super(action);
     }
+
 
     @Override
-    protected IStatus run(final IProgressMonitor iProgressMonitor) {
-        final Map<String, String> result = action.callback();
-        refreshUi(result);
-        return Status.OK_STATUS;
-    }
-
-    private void refreshUi(final Map<String, String> result) {
+    protected void onResult(final Map<String, String> result) {
         Display.getDefault().asyncExec(() -> {
             final String dialogTitle = Messages.getString("action.result.title");
             if (OK.equals(result.get(STATUS))) {
@@ -61,16 +47,5 @@ public class AsyncAction extends Job implements TacokitCommand {
                 MessageDialog.openError(DisplayUtils.getDefaultShell(), dialogTitle, result.get(MESSAGE));
             }
         });
-
-    }
-
-    @Override
-    public void exec() {
-        this.schedule();
-    }
-
-    @Override
-    public void addParameter(final IActionParameter parameter) {
-        action.addParameter(parameter);
     }
 }

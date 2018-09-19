@@ -260,14 +260,15 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
             } else if (category == EComponentCategory.SQL_PATTERN) {
                 dc = new SQLPatternComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, element);
             } else if (category == EComponentCategory.ADVANCED) {
-                dc = new MissingSettingsMultiThreadDynamicComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
-                        element, true);
                 // Generic
                 if (generic && wizardService != null) {
                     Composite composite = wizardService.creatDynamicComposite(parent, element, EComponentCategory.ADVANCED, true);
                     if (composite instanceof MultipleThreadDynamicComposite) {
                         dc = (MultipleThreadDynamicComposite) composite;
                     }
+                } else {
+                    dc = new MissingSettingsMultiThreadDynamicComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
+                            element, true);
                 }
             } else {
                 dc = new MultipleThreadDynamicComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category, element,

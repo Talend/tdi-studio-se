@@ -15,12 +15,17 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_HEALTHCHECK;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_PARAMETERS;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_UPDATABLE_AFTER;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_UPDATABLE_PARAMETERS;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_UPDATABLE_VALUE;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_PARAMETERS;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_EVALUTIONSTRATEGY;
@@ -50,13 +55,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
+
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
 import org.talend.sdk.component.studio.model.parameter.resolver.AbsolutePathResolver;
-
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
 
 /**
  * Extends functionality of {@link SimplePropertyDefinition}
@@ -461,6 +466,13 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         return Arrays.asList(parametersValue.split(VALUE_SEPARATOR));
     }
 
+    // TODO: all these trigger specific methods are quit duplicating the same code,
+    // we should try to align it since all trigger use the same kind of API
+    // TODO: avoid NPE here as not every property has action
+    public List<String> getParameters(final String actionType) {
+        return Arrays.asList(delegate.getMetadata().get("action::" + actionType + "::parameters").split(VALUE_SEPARATOR));
+    }
+
     boolean isCheckable() {
         return delegate.getMetadata().containsKey(ACTION_HEALTHCHECK);
     }
@@ -585,6 +597,20 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         final List<String> parameters = Arrays.asList(parametersValue.split(VALUE_SEPARATOR));
         return new Suggestions(name, parameters);
     }
+
+    public Optional<Updatable> getUpdatable() {
+        final String name = delegate.getMetadata().get(ACTION_UPDATABLE_VALUE);
+        final String parameters = delegate.getMetadata().get(ACTION_UPDATABLE_PARAMETERS);
+        final String after = delegate.getMetadata().get(ACTION_UPDATABLE_AFTER);
+        if (name != null) {
+            return Optional.of(new Updatable(
+                    name, parameters != null && !parameters.trim().isEmpty() ?
+                        asList(parameters.split(VALUE_SEPARATOR)): emptyList(),
+                    after != null ? after : ""));
+        } else {
+            return Optional.empty();
+        }
+    }
     
     public Parameter getParameter() {
         return ofNullable(delegate.getMetadata().get(PARAMETER_INDEX))
@@ -662,6 +688,30 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         @Override
         public int hashCode() {
             return hash;
+        }
+    }
+
+    public static class Updatable {
+        private final String actionName;
+        private final Collection<String> parameters;
+        private final String previousProperty;
+
+        private Updatable(final String actionName, final Collection<String> parameters, final String previousProperty) {
+            this.actionName = actionName;
+            this.parameters = parameters;
+            this.previousProperty = previousProperty;
+        }
+
+        public Collection<String> getParameters() {
+            return parameters;
+        }
+
+        public String getPreviousProperty() {
+            return previousProperty;
+        }
+
+        public String getActionName() {
+            return actionName;
         }
     }
 

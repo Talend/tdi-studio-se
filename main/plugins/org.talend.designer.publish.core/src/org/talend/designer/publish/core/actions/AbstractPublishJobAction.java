@@ -114,6 +114,8 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             exportChoiceMap.put(ExportChoice.includeLibs, true);
 
             ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
+            exportItemForDQComponent(processItem);
+
             String contextName = (String) exportChoiceMap.get(ExportChoice.contextName);
             if (contextName == null) {
                 contextName = processItem.getProcess().getDefaultContext();
@@ -143,6 +145,17 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
         }
     }
 
+    /**
+     * TDQ-15391: when have tDqReportRun, must always export items.
+     * 
+     * @param processItem
+     */
+    private void exportItemForDQComponent(ProcessItem processItem) {
+        if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+            exportChoiceMap.put(ExportChoice.needJobItem, true);
+        }
+    }
+
     private void exportJobForPOJO(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         File tmpJob = null;
         try {
@@ -162,11 +175,7 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             exportChoiceMap.put(ExportChoice.addStatistics, true);
 
             ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
-            // TDQ-15391: when have tDqReportRun, must always export items.
-            if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
-                exportChoiceMap.put(ExportChoice.needJobItem, true);
-                exportChoiceMap.put(ExportChoice.needDependencies, true);
-            }
+            exportItemForDQComponent(processItem);
 
             String contextName = (String) exportChoiceMap.get(ExportChoice.contextName);
             if (contextName == null) {
@@ -207,6 +216,8 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             exportChoiceMap.put(ExportChoice.addStatistics, true);
 
             ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
+            exportItemForDQComponent(processItem);
+
             String contextName = (String) exportChoiceMap.get(ExportChoice.contextName);
             if (contextName == null) {
                 contextName = processItem.getProcess().getDefaultContext();
