@@ -131,8 +131,7 @@ public class PropertyNode {
      * @param form Name of form
      */
     public void accept(final PropertyVisitor visitor, final String form) {
-        final List<PropertyNode> children = sortChildren(getChildren(form), form);
-        children.forEach(child -> child.accept(visitor, form));
+        sortChildren(getChildren(form), form).forEach(child -> child.accept(visitor, form));
         visitor.visit(this);
     }
 

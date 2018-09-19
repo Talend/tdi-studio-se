@@ -19,6 +19,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
 
@@ -81,6 +82,8 @@ public class SettingVisitor implements PropertyVisitor {
      */
     private static final int SCHEMA_ROW_NUMBER = 2;
 
+    private ConfigTypeNode rootConfigNode;
+
     /**
      * Stores created component parameters.
      * Key is parameter name (which is also its path)
@@ -130,6 +133,7 @@ public class SettingVisitor implements PropertyVisitor {
     public SettingVisitor(final IElement iNode,
             final ElementParameter redrawParameter, final ConfigTypeNode config) {
         this(iNode, redrawParameter, config.getActions());
+        this.rootConfigNode = config;
     }
 
     public SettingVisitor(final IElement iNode,
@@ -141,7 +145,6 @@ public class SettingVisitor implements PropertyVisitor {
             final ElementParameter redrawParameter, final Collection<ActionReference> actions) {
         this.element = iNode;
         this.redrawParameter = redrawParameter;
-
         this.actions = ofNullable(actions).orElseGet(Collections::emptyList);
         this.actions.stream().findFirst().ifPresent(a -> this.family = a.getFamily());
     }
@@ -158,12 +161,19 @@ public class SettingVisitor implements PropertyVisitor {
         }
 
         final ConditionGroup group = node.getProperty().getConditions();
-        if (!group.getConditions().isEmpty() && group.getConditions().stream()
-                .allMatch(c -> c.getTargetPath().contains(node.getProperty().getPath())
-                        || (node.getParent() != null && c.getTargetPath().contains(node.getParent().getProperty().getPath())))) {
-
-            activations.computeIfAbsent(origin.getProperty().getPath(), key -> new ArrayList<>()).add(group);
-            //check if the condition target exist in the properties graph
+        if (!group.getConditions().isEmpty()) {
+            if (rootConfigNode != null) { // wizard context. filter condition to keep only valid ones
+                rootConfigNode.getProperties().stream()
+                        .filter(p -> p.getPath().equals(p.getName()))
+                        .findFirst()
+                        .map(root -> group.getConditions().stream().filter(c -> c.getTargetPath().startsWith(root.getPath())))
+                        .map(c -> c.collect(toList()))
+                        .filter(conditions -> !conditions.isEmpty())
+                        .ifPresent(validConditions -> activations.computeIfAbsent(origin.getProperty().getPath(), key -> new ArrayList<>())
+                                .add(new ConditionGroup(validConditions, group.getAggregator())));
+            } else {
+                activations.computeIfAbsent(origin.getProperty().getPath(), key -> new ArrayList<>()).add(group);
+            }
         }
 
         buildActivationCondition(node.getParent(), origin);
