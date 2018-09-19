@@ -593,6 +593,8 @@
              try{
                  context.<%=ctxParam.getName()%>=routines.system.ParserUtils.parseTo_<%=typeToGenerate%> (context.getProperty("<%=ctxParam.getName()%>"));
              }catch(NumberFormatException e){
+                 System.err.println("Can't parse context value to <%=typeToGenerate %>: " + e.getMessage());
+                 System.err.println("Null value will be used for context parameter <%=ctxParam.getName() %>");
                  context.<%=ctxParam.getName()%>=null;
               }
              <%
