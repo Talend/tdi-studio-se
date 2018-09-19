@@ -35,10 +35,7 @@ public interface IOASDecoder {
     public String getDocumentationComment();
 
     public Map<String, RestAPIMapping> getMappings();
-<<<<<<< HEAD
- 
+    
     public byte[] getAsOASSwagger20();
     
-=======
->>>>>>> branch 'master' of git@github.com:Talend/tdi-studio-se.git
 }
