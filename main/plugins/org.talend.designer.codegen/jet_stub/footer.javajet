@@ -575,8 +575,19 @@
 
             }catch(ParseException e)
             {
-                System.err.println("Can't parse context value to Date: " + e.getMessage());
-                System.err.println("Null value will be used for context parameter <%=ctxParam.getName() %>");
+<%
+                if (isLog4jEnabled) {
+%>
+                    log.warn("Can't parse context value to Date: " + e.getMessage());
+                    log.warn("Null value will be used for context parameter <%=ctxParam.getName() %>\n");
+<%
+                } else {
+%>
+                    System.err.println("Can't parse context value to Date: " + e.getMessage());
+                    System.err.println("Null value will be used for context parameter <%=ctxParam.getName() %>\n");
+<%
+                }
+%>
                 context.<%=ctxParam.getName()%>=null;
             }
               <%
@@ -595,8 +606,19 @@
              try{
                  context.<%=ctxParam.getName()%>=routines.system.ParserUtils.parseTo_<%=typeToGenerate%> (context.getProperty("<%=ctxParam.getName()%>"));
              }catch(NumberFormatException e){
-                 System.err.println("Can't parse context value to <%=typeToGenerate %>: " + e.getMessage());
-                 System.err.println("Null value will be used for context parameter <%=ctxParam.getName() %>");
+<%
+                if (isLog4jEnabled) {
+%>
+                    log.warn("Can't parse context value to <%=typeToGenerate %>: " + e.getMessage());
+                    log.warn("Null value will be used for context parameter <%=ctxParam.getName() %>\n");
+<%
+                } else {
+%>
+                    System.err.println("Can't parse context value to <%=typeToGenerate %>: " + e.getMessage());
+                    System.err.println("Null value will be used for context parameter <%=ctxParam.getName() %>\n");
+<%
+                }
+%>
                  context.<%=ctxParam.getName()%>=null;
               }
              <%
