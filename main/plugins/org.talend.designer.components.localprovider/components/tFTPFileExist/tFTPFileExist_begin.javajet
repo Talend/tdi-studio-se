@@ -37,6 +37,7 @@ String connectMode = ElementParameterParser.getValue(node, "__CONNECT_MODE__");
 String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 String conn= "conn_" + connection;
 String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
+boolean moveToCurrentDir = ("true").equals(ElementParameterParser.getValue(node, "__MOVE_TO_THE_CURRENT_DIRECTORY__"));
 boolean sftp = false;
 boolean ftps = false;
 
@@ -51,6 +52,7 @@ if (("true").equals(useExistingConn)) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
       ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+      break;
     }
   }
 } else {
@@ -178,20 +180,22 @@ if (sftp) { // *** sftp *** //
     	<%if(use_encoding) {%>
     		c_<%=cid%>.setFilenameEncoding(<%=encoding%>);
     	<%}%>
-  <%
-  	} else {
-  %>    
-	    com.jcraft.jsch.ChannelSftp c_<%=cid%> = (com.jcraft.jsch.ChannelSftp)globalMap.get("<%=conn %>");
-		<%if(isLog4jEnabled){%>
-			if(c_<%=cid%>!=null && c_<%=cid%>.getSession()!=null) {
-				log.info("<%=cid%> - Use an existing connection.  Connection username: " + c_<%=cid%>.getSession().getUserName() + ", Connection hostname: " + c_<%=cid%>.getSession().getHost() + ", Connection port: " + c_<%=cid%>.getSession().getPort() + "."); 
-			}
-		<%}%>
-	    if(c_<%=cid%>.getHome()!=null && !c_<%=cid%>.getHome().equals(c_<%=cid%>.pwd())){
-	  		c_<%=cid%>.cd(c_<%=cid%>.getHome());
-	  	}
 <%
-	}
+    } else {
+%>    
+        com.jcraft.jsch.ChannelSftp c_<%=cid%> = (com.jcraft.jsch.ChannelSftp)globalMap.get("<%=conn %>");
+        <%if(isLog4jEnabled){%>
+            if(c_<%=cid%>!=null && c_<%=cid%>.getSession()!=null) {
+                log.info("<%=cid%> - Use an existing connection.  Connection username: " + c_<%=cid%>.getSession().getUserName() + ", Connection hostname: " + c_<%=cid%>.getSession().getHost() + ", Connection port: " + c_<%=cid%>.getSession().getPort() + "."); 
+            }
+        <%}%>
+<%
+        if (!moveToCurrentDir) {
+%>
+            String rootDir_<%=cid %> = c_<%=cid%>.pwd();
+<%
+        }
+    }
 } else if (ftps) { // *** ftps *** //
 	if (("false").equals(useExistingConn)) {
 		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");

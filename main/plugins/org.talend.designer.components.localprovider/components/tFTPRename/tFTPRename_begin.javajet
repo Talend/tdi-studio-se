@@ -51,6 +51,7 @@ if (("true").equals(useExistingConn)) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
       ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+      break;
     }
   }
 } else {
@@ -186,13 +187,16 @@ if (sftp) {  // *** sftp *** //
 			if(c_<%=cid%>!=null && c_<%=cid%>.getSession()!=null) {
 				log.info("<%=cid%> - Use an existing connection.Connection username: " + c_<%=cid%>.getSession().getUserName() + ", Connection hostname: " + c_<%=cid%>.getSession().getHost() + ", Connection port: " + c_<%=cid%>.getSession().getPort() + "."); 
 			}
-		<%}%>
-	    if(c_<%=cid%>.getHome()!=null && !c_<%=cid%>.getHome().equals(c_<%=cid%>.pwd())){
-	  		c_<%=cid%>.cd(c_<%=cid%>.getHome());
-	  	}
-  <%
-	}
-  %>
+<%
+        }
+        if (!moveToCurrentDir) {
+%>
+            String rootDir_<%=cid %> = c_<%=cid %>.pwd();
+<%
+        }
+    }
+%>
+    c_<%=cid %>.cd(<%=remotedir%>);
 	java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
   
 	<%
@@ -201,7 +205,7 @@ if (sftp) {  // *** sftp *** //
 	%>    
 	    java.util.Map<String,String> map<%=cid %><%=i %> = new java.util.HashMap<String,String>();  
 	    map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>,<%= line.get("NEWNAME") %>);
-	    list<%=cid %>.add(map<%=cid %><%=i %>);       
+	    list<%=cid %>.add(map<%=cid %><%=i %>);
 <%
 	}
 %>
