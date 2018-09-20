@@ -1596,6 +1596,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 realTableName = metadataTable.getTableName();
             }
         }
+        connParameters.setDbType(type); 
+        connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(type)); 
         connParameters.setSchemaName(QueryUtil.getTableName(elem, connParameters.getMetadataTable(),
                 TalendTextUtils.removeQuotes(schema), type, realTableName));
     }
@@ -1698,8 +1700,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
                     driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
                 }
             }
-            connParameters.setDriverClass(driverClass);
-
+            connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(connParameters.getDbType())); 
             connParameters.setDriverJar(TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.DRIVER_JAR.getName(), context, basePropertyParameter)));
         }
