@@ -69,7 +69,7 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
     }
 
     @Override
-    public ICarInstallationResult installCars(Collection<File> files, IProgressMonitor monitor) throws Exception {
+    public ICarInstallationResult installCars(Collection<File> files, boolean share, IProgressMonitor monitor) throws Exception {
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
@@ -87,6 +87,7 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
                 ITaCoKitCarFeature carFeature = null;
                 try {
                     carFeature = generateExtraFeature(carFile, monitor);
+                    carFeature.setShareEnable(share);
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }

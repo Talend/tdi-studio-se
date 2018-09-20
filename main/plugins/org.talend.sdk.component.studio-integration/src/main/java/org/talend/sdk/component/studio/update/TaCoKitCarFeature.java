@@ -34,6 +34,8 @@ import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.equinox.p2.metadata.Version;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.service.ITaCoKitService;
+import org.talend.commons.utils.resource.FileExtensions;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
@@ -62,6 +64,8 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
 
     private Object carLock = new Object();
 
+    private boolean share = true;
+
     public TaCoKitCarFeature(ComponentIndexBean indexBean) {
         super(indexBean.getBundleId(), indexBean.getName(), indexBean.getVersion(), indexBean.getDescription(),
                 indexBean.getMvnURI(), indexBean.getImageMvnURI(), indexBean.getProduct(), indexBean.getCompatibleStudioVersion(),
@@ -70,7 +74,7 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
     }
 
     public TaCoKitCarFeature(TaCoKitCar car) throws Exception {
-        super(car.toString(), car.getName(), car.getCarVersion(), car.getDescription(), null, null, null, null, null,
+        super(car.getId(), car.getName(), car.getCarVersion(), car.getDescription(), null, null, null, null, null,
                 new LinkedList<>(Arrays.asList(Type.TCOMP_V1)),
                 new LinkedList<>(Arrays.asList(Category.ALL)), false, false, false);
         this.car = car;
@@ -335,6 +339,17 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
     }
 
     @Override
+    public String getMvnUri() {
+        String mvnUri = super.getMvnUri();
+        if (mvnUri == null) {
+            GAV gav = car.getComponents().get(0);
+            mvnUri = MavenUrlHelper.generateMvnUrl(gav.getGroupId(), gav.getArtifactId(), gav.getVersion(),
+                    FileExtensions.ZIP_EXTENSION, null);
+        }
+        return mvnUri;
+    }
+
+    @Override
     public boolean isAutoReloadAfterInstalled() {
         return this.autoReloadAfterInstalled;
     }
@@ -342,6 +357,16 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
     @Override
     public void setAutoReloadAfterInstalled(boolean autoReload) {
         this.autoReloadAfterInstalled = autoReload;
+    }
+
+    @Override
+    public boolean isShareEnable() {
+        return share;
+    }
+
+    @Override
+    public void setShareEnable(boolean share) {
+        this.share = share;
     }
 
     @Override

@@ -3200,6 +3200,9 @@
       <initializer
             class="org.talend.repository.preference.initializer.MavenVersionManagementProjectSettingPageInitializer">
       </initializer>
+      <initializer
+            class="org.talend.repository.preference.initializer.ArtifactRepositoryShareSettingPageInitializer">
+      </initializer>
    </extension>
    <extension
          point="org.talend.repository.projectsetting_page">
@@ -3321,6 +3324,11 @@
          <tester
                class="org.talend.repository.preference.MavenDeploymentConfigurationProjectSettingPageTester">
          </tester>
+      </page>
+      <page
+            class="org.talend.repository.preference.ArtifactRepositoryShareSettingPage"
+            id="projectsetting.RepositoryShare"
+            title="%projectsetting.RepositoryShare">
       </page>
    </extension>
    <extension

@@ -49,6 +49,8 @@ public class TaCoKitCar implements Comparable<Object> {
 
     private String carVersion;
 
+    private String id;
+
     private String name;
 
     private String description;
@@ -73,6 +75,7 @@ public class TaCoKitCar implements Comparable<Object> {
         setDateString(props.getProperty(PROPERTY_DATE));
         if (0 < components.size()) {
             GAV gav = components.get(0);
+            id = gav.getGroupId() + "." + gav.getArtifactId();
             name = gav.getArtifactId();
             description = gav.getGroupId() + ":" + gav.getArtifactId() + ":" + gav.getVersion() + ":" + gav.getClassifier() + ":" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     + gav.getType();
@@ -189,6 +192,14 @@ public class TaCoKitCar implements Comparable<Object> {
 
     public void setCarVersion(String carVersion) {
         this.carVersion = carVersion;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
