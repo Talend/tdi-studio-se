@@ -45,6 +45,7 @@ import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.temp.ETypeGen;
 import org.talend.core.model.utils.NodeUtil;
@@ -350,8 +351,14 @@ public class CodeGenerator implements ICodeGenerator {
                             IContextParameter contextPar = iContextParameter.clone();
                             IResourcesDependenciesService resourceService = (IResourcesDependenciesService) GlobalServiceRegister
                                     .getDefault().getService(IResourcesDependenciesService.class);
-                            String resourcePathForContext = resourceService.getResourcePathForContext(process,
-                                    contextPar.getValue());
+                            String resourcePathForContext = null;
+                            if (process instanceof IProcess2) {
+                                resourcePathForContext = resourceService.getResourcePathForContext(process,
+                                        contextPar.getValue());
+                            } else {
+                                // for PreviewFileInputContentDataProcess run
+                                resourcePathForContext = resourceService.getResourceItemFilePath(contextPar.getValue());
+                            }
                             if (resourcePathForContext != null) {
                                 contextPar.setValue(resourcePathForContext);
                             }

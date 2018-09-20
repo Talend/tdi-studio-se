@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.dependencies.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
@@ -20,10 +21,14 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -31,6 +36,7 @@ import org.talend.core.service.IResourcesDependenciesService;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.dependencies.model.JobResourceDependencyModel;
 import org.talend.designer.core.ui.editor.dependencies.util.ResourceDependenciesUtil;
+import org.talend.repository.ProjectManager;
 
 public class ResourcesDependenciesService implements IResourcesDependenciesService {
 
@@ -79,6 +85,38 @@ public class ResourcesDependenciesService implements IResourcesDependenciesServi
             }
         }
         return resPath;
+    }
+
+    @Override
+    public String getResourceItemFilePath(String resourceContextValue) {
+        String[] resParts = resourceContextValue.split("\\|");
+        if (resParts.length > 1) {
+            IRepositoryViewObject object = null;
+            try {
+                if (RelationshipItemBuilder.LATEST_VERSION.equals(resParts[1])) {
+                    object = ProxyRepositoryFactory.getInstance().getLastVersion(resParts[0]);
+                } else {
+                    object = ProxyRepositoryFactory.getInstance().getSpecificVersion(resParts[0], resParts[1], true);
+                }
+                if (object != null) {
+                    Item item = object.getProperty().getItem();
+                    if (item instanceof ResourceItem) {
+                        ResourceItem resItem = (ResourceItem) item;
+                        String fileName = resItem.getProperty().getDisplayName() + "_" + item.getProperty().getVersion() + "."
+                                + resItem.getBindingExtension();
+                        Project currentProject = ProjectManager.getInstance().getCurrentProject();
+                        String itemFilePath = ResourceUtils.getProject(currentProject.getTechnicalLabel())
+                                .getFile(new Path(ERepositoryObjectType.RESOURCES.getFolder() + "/" + fileName)).getLocation()
+                                .toOSString();
+                        return itemFilePath;
+                    }
+                }
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+
+        }
+        return null;
     }
 
     @Override
