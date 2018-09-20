@@ -47,7 +47,6 @@ import org.talend.core.runtime.repository.build.IBuildResourceParametes;
 import org.talend.core.runtime.repository.build.IBuildResourcesProvider;
 import org.talend.core.runtime.util.ParametersUtil;
 import org.talend.core.services.ICoreTisService;
-import org.talend.daikon.security.CryptoHelper;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -255,12 +254,13 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
             ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
                     .getService(ICoreTisService.class);
             File licenseFile = coreTisService.getLicenseFile();
-            if (licenseFile.exists()) {
+            if (licenseFile.exists() && !coreTisService.isLicenseExpired()) {
                 return licenseFile;
             }
         }
         return null;
     }
+
     protected StringBuffer getOtherArgs() {
         StringBuffer otherArgsBuffer = new StringBuffer();
 
@@ -327,14 +327,15 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
     protected void addArg(StringBuffer commandBuffer, boolean include, String arg) {
         addArg(commandBuffer, false, include, arg);
     }
-    
-    private String getSessionId() {
-        CryptoHelper cryptoHelper = new CryptoHelper(CryptoHelper.PASSPHRASE);
-        int prefixValue = (int)((Math.random()*9+1)*100000);
-        String value = String.valueOf(prefixValue)+ String.valueOf(System.currentTimeMillis());
-        return cryptoHelper.encrypt(value);
-    }
 
+    private String getSessionId() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+                    .getService(ICoreTisService.class);
+            return coreTisService.generateSignerSessionId();
+        }
+        return null;
+    }
 
     @Override
     public IFolder getTargetFolder() {
@@ -384,8 +385,8 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
 
         //
         List<Item> dependenciesItems = new ArrayList<Item>();
-        Collection<IRepositoryViewObject> allProcessDependencies = ProcessUtils.getAllProcessDependencies(Arrays
-                .asList(processItem));
+        Collection<IRepositoryViewObject> allProcessDependencies = ProcessUtils
+                .getAllProcessDependencies(Arrays.asList(processItem));
         if (!allProcessDependencies.isEmpty()) {
             for (IRepositoryViewObject repositoryObject : allProcessDependencies) {
                 dependenciesItems.add(repositoryObject.getProperty().getItem());
