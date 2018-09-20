@@ -238,7 +238,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         // always disable ci-builder from studio/commandline
         addArg(profileBuffer, false, TalendMavenConstants.PROFILE_CI_BUILDER);
 
-        if (PluginChecker.isTIS() && getLicenseFile() != null) {
+        if (canSignJob()) {
             addArg(profileBuffer, true, TalendMavenConstants.PROFILE_SIGNATURE);
         }
 
@@ -247,18 +247,6 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         }
 
         return profileBuffer;
-    }
-
-    protected File getLicenseFile() {
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
-            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
-                    .getService(ICoreTisService.class);
-            File licenseFile = coreTisService.getLicenseFile();
-            if (licenseFile.exists() && !coreTisService.isLicenseExpired()) {
-                return licenseFile;
-            }
-        }
-        return null;
     }
 
     protected StringBuffer getOtherArgs() {
@@ -300,9 +288,8 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         } else {
             otherArgsBuffer.append(TalendMavenConstants.ARG_TEST_FAILURE_IGNORE);
         }
-        File licenseFile = getLicenseFile();
-        if (PluginChecker.isTIS() && getLicenseFile() != null) {
-            otherArgsBuffer.append(" " + TalendMavenConstants.ARG_LICENSE_PATH + "=" + licenseFile.getAbsolutePath());
+        if (canSignJob()) {
+            otherArgsBuffer.append(" " + TalendMavenConstants.ARG_LICENSE_PATH + "=" + getLicenseFile().getAbsolutePath());
             otherArgsBuffer.append(" " + TalendMavenConstants.ARG_SESSION_ID + "=" + getSessionId());
         }
         otherArgsBuffer.append(" -Dmaven.main.skip=true"); //$NON-NLS-1$
@@ -326,6 +313,25 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
 
     protected void addArg(StringBuffer commandBuffer, boolean include, String arg) {
         addArg(commandBuffer, false, include, arg);
+    }
+    
+    public boolean canSignJob() {
+        if (PluginChecker.isTIS() && getLicenseFile() != null) {
+            return true;
+        }
+        return false;
+    }
+
+    protected File getLicenseFile() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+                    .getService(ICoreTisService.class);
+            File licenseFile = coreTisService.getLicenseFile();
+            if (licenseFile.exists() && !coreTisService.isLicenseExpired()) {
+                return licenseFile;
+            }
+        }
+        return null;
     }
 
     private String getSessionId() {
