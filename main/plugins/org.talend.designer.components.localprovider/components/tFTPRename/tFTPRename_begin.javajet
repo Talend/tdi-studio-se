@@ -64,7 +64,7 @@ String passwordFieldName = "";
 
 //The following part support the socks proxy for FTP and SFTP (Socks V4 or V5, they are all OK). 
 //And it can not work with the FTP proxy directly, only support the socks proxy.
-if (useProxy) {
+if (useProxy && !("true").equals(useExistingConn)) {
 %>
 	java.util.Properties props_<%=cid%> = System.getProperties();
 	props_<%=cid%>.put("socksProxyPort", <%=proxyPort %>);

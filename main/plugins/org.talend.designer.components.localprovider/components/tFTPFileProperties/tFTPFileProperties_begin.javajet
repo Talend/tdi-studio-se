@@ -66,7 +66,7 @@ if (("true").equals(useExistingConn)) {
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 String passwordFieldName = "";
 
-if (useProxy) {
+if (useProxy && !("true").equals(useExistingConn)) {
 %>
   java.util.Properties props_<%=cid%> = System.getProperties();
   props_<%=cid%>.put("socksProxyPort", <%=proxyPort %>);
