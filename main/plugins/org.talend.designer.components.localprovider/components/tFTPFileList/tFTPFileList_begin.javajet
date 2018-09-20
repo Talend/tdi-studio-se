@@ -50,6 +50,7 @@ if (("true").equals(useExistingConn)) {
 	if (n.getUniqueName().equals(connection)) {
 	  sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
 	  ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+	  break;
 	}
   }
 } else {
@@ -205,14 +206,17 @@ if (sftp) {// *** sftp *** //
 				log.info("<%=cid%> - Use an existing connection. Connection username: " + c_<%=cid%>.getSession().getUserName() + ", Connection hostname: " + c_<%=cid%>.getSession().getHost() + ", Connection port: " + c_<%=cid%>.getSession().getPort() + "."); 
 			}
 		<%}%>
-		if(c_<%=cid%>.getHome()!=null && !c_<%=cid%>.getHome().equals(c_<%=cid%>.pwd())){
-	  		c_<%=cid%>.cd(c_<%=cid%>.getHome());
-	  	}
-  <%
+<%
+		if (!moveToCurrentDir) {
+%>
+			String rootDir_<%=cid %> = c_<%=cid%>.pwd();
+<%
+		}
 	}
-  %>
-	String remotedir_<%=cid %> = <%=remotedir %>.replaceAll("\\\\", "/");
-	java.util.Vector<com.jcraft.jsch.ChannelSftp.LsEntry> vector_<%=cid %> = c_<%=cid%>.ls(remotedir_<%=cid %>);
+%>
+	String remotedir_<%=cid %> = (<%=remotedir %>).replaceAll("\\\\", "/");
+	c_<%=cid %>.cd(remotedir_<%=cid %>);
+	java.util.Vector<com.jcraft.jsch.ChannelSftp.LsEntry> vector_<%=cid %> = c_<%=cid%>.ls(".");
 	com.jcraft.jsch.ChannelSftp.LsEntry[] sftpFiles_<%=cid %> = vector_<%=cid %>.toArray(new com.jcraft.jsch.ChannelSftp.LsEntry[0]);
 	int nb_file_<%=cid%> = 0;  
 	List<String> fileListTemp_<%=cid %> = new java.util.ArrayList<String>();

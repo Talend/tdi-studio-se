@@ -1,7 +1,18 @@
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
+import static java.util.Comparator.comparing;
+import static java.util.Locale.ROOT;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.sdk.component.form.internal.converter.impl.widget.path.AbsolutePathResolver;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
@@ -10,18 +21,10 @@ import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorat
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.Comparator.comparing;
-
 /**
  * Common super class for ParameterResolvers. It contains common state and functionality
  */
-abstract class AbstractParameterResolver implements ParameterResolver {
+public abstract class AbstractParameterResolver implements ParameterResolver {
     
     protected final AbsolutePathResolver pathResolver = new AbsolutePathResolver();
     
@@ -36,15 +39,24 @@ abstract class AbstractParameterResolver implements ParameterResolver {
 
     private final ElementParameter redrawParameter;
 
-    AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef) {
+    public AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef) {
         this(action, actionOwner, actionRef,null);
     }
-    
-    AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final ElementParameter redrawParameter) {
+
+    public AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final ElementParameter redrawParameter) {
         this.action = action;
         this.actionOwner = actionOwner;
         this.actionRef = actionRef;
         this.redrawParameter = redrawParameter;
+    }
+
+    protected static ActionReference getActionRef(final Collection<ActionReference> actions, final String name, final Action.Type type) {
+        return actions
+                .stream()
+                .filter(a -> type.toString().equals(a.getType()))
+                .filter(a -> a.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Action with name " + name + " wasn't found"));
     }
 
     /**
@@ -64,10 +76,9 @@ abstract class AbstractParameterResolver implements ParameterResolver {
 
         relativePaths.forEach(relativePath -> {
             if (expectedParameters.hasNext()) {
-                final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePath);
-                final List<TaCoKitElementParameter> parameters = findParameters(absolutePath, settings);
+                final String absolutePath = pathResolver.resolveProperty(getOwnerPath(), relativePath);
                 final SimplePropertyDefinition parameterRoot = expectedParameters.next();
-                parameters.forEach(parameter -> {
+                findParameters(absolutePath, settings).forEach(parameter -> {
                     if (redrawParameter != null) {
                         parameter.setRedrawParameter(redrawParameter);
                     }
@@ -79,7 +90,13 @@ abstract class AbstractParameterResolver implements ParameterResolver {
         });
     }
 
-    protected abstract List<String> getRelativePaths();
+    protected final Action getAction() {
+        return this.action;
+    }
+
+    protected final List<String> getRelativePaths() {
+        return actionOwner.getProperty().getParameters(actionRef.getType().toLowerCase(ROOT));
+    }
     
     /**
      * Finds and returns all child ElementParameters of node with {@code absolutePath}. {@code absolutePath} may point at "leaf" Configuration option and 

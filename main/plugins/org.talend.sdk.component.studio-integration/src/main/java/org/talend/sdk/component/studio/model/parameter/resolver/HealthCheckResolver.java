@@ -98,5 +98,4 @@ public class HealthCheckResolver {
         final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper()).createPropertyTree(properties);
         return root.getProperty().getPath();
     }
-
 }

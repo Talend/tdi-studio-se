@@ -25,6 +25,7 @@ if (("true").equals(useExistingConn)) {
     if(n.getUniqueName().equals(connection)){
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
       ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+      break;
     }
   }
 } else {
@@ -35,25 +36,34 @@ if (("true").equals(useExistingConn)) {
 }
 nb_file_<%=cid%> = getter_<%=cid %>.count;
 
-<%if (sftp) {%>
-	msg_<%=cid%>.add(getter_<%=cid%>.count + " files have been downloaded.");
-	StringBuffer sb_<%=cid %> = new StringBuffer();
+<%
+if (sftp) {
+%>
+    msg_<%=cid%>.add(getter_<%=cid%>.count + " files have been downloaded.");
+    StringBuffer sb_<%=cid %> = new StringBuffer();
 
-	for (String item_<%=cid %> : msg_<%=cid %>) {
-		sb_<%=cid %>.append(item_<%=cid %>).append("\n");
-	}
-	globalMap.put("<%=cid%>_TRANSFER_MESSAGES", sb_<%=cid %>.toString());
+    for (String item_<%=cid %> : msg_<%=cid %>) {
+        sb_<%=cid %>.append(item_<%=cid %>).append("\n");
+    }
+    globalMap.put("<%=cid%>_TRANSFER_MESSAGES", sb_<%=cid %>.toString());
 
-	<%if (!("true").equals(useExistingConn)) {%>
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Closing the connection to the server.");
-		<%}%>
-		session_<%=cid%>.disconnect(); 
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Connection to the server closed.");
-		<%}%>
-	<%}%>    
-<%} else if (!ftps) {%>
+<%
+    if (!("true").equals(useExistingConn)) {
+%>
+        <%if(isLog4jEnabled){%>
+            log.info("<%=cid%> - Closing the connection to the server.");
+        <%}%>
+        session_<%=cid%>.disconnect();
+        <%if(isLog4jEnabled){%>
+            log.info("<%=cid%> - Connection to the server closed.");
+        <%}%>
+<%
+    } else if (!moveToCurrentDir) {
+%>
+        c_<%=cid %>.cd(rootDir_<%=cid %>);
+<%
+    }
+} else if (!ftps) {%>
 	msg_<%=cid%>.add(ftp_<%=cid%>.getDownloadCount() + " files have been downloaded.");
 	String[] msgAll_<%=cid %> = msg_<%=cid%>.getAll();
 	StringBuffer sb_<%=cid %> = new StringBuffer();

@@ -33,7 +33,7 @@
   <CODEGENERATION>
     <IMPORTS>
       <IMPORT MODULE="commons-codec-1.6.jar" NAME="commons-codec" MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar" REQUIRED="true"/>
-      <IMPORT MODULE="commons-logging-1.1.3.jar" NAME="commons-logging" MVN="mvn:org.talend.libraries/commons-logging-1.1.3/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar" REQUIRED="true"/>
+      <IMPORT MODULE="commons-logging-1.1.3.jar" NAME="commons-logging" MVN="mvn:commons-logging/commons-logging/1.1.3" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar" REQUIRED="true"/>
       <IMPORT MODULE="httpclient-4.3.1.jar" NAME="httpclient" MVN="mvn:org.talend.libraries/httpclient-4.3.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-4.3.1.jar" REQUIRED="true"/>
       <IMPORT MODULE="httpclient-cache-4.3.1.jar" NAME="httpclient-cache" MVN="mvn:org.talend.libraries/httpclient-cache-4.3.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-cache-4.3.1.jar" REQUIRED="true"/>
       <IMPORT MODULE="httpcore-4.3.1.jar" NAME="httpcore" MVN="mvn:org.talend.libraries/httpcore-4.3.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.3.1.jar" REQUIRED="true"/>

@@ -60,6 +60,16 @@
       <groupId>org.talend.sdk.component</groupId>
       <artifactId>component-server-model</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.talend.sdk.component</groupId>
+      <artifactId>component-form-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.talend.sdk.component</groupId>
+          <artifactId>component-form-model</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.commons</groupId>
