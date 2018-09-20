@@ -261,6 +261,88 @@
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/out.csv"</DEFAULT>
     </PARAMETER>
     
+    
+    
+    <PARAMETER
+      NAME="DIE_ON_ERROR"
+      FIELD="CHECK"
+      NUM_ROW="140"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+   </PARAMETERS>
+
+    <ADVANCED_PARAMETERS>
+    <PARAMETER
+      NAME="CONFIG_CLIENT"
+      FIELD="CHECK"
+      NUM_ROW="10"
+      NB_LINES="5"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      GROUP="CLIENT_CONFIG"
+    >
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="CLIENT_CONFIGURATION"
+      FIELD="TABLE"
+      NUM_ROW="30"
+      NB_LINES="5"
+      REQUIRED="true"
+      GROUP="CLIENT_CONFIG"
+      SHOW_IF="(CONFIG_CLIENT =='true') AND (USE_EXISTING_CONNECTION == 'false')"
+    >
+      <ITEMS>
+        <ITEM NAME="CLIENT_PARAMETER" FIELD="CLOSED_LIST">
+            <ITEMS DEFAULT="CONNECTIONTIMEOUT">
+                <ITEM NAME="CONNECTIONTIMEOUT" VALUE="ConnectionTimeout"/>
+                <ITEM NAME="MAXCONNECTIONS" VALUE="MaxConnections"/>
+                <ITEM NAME="MAXERRORRETRY" VALUE="MaxErrorRetry"/>
+                <ITEM NAME="PROTOCOL" VALUE="Protocol"/>
+                <ITEM NAME="PROXYDOMAIN" VALUE="ProxyDomain"/>
+                <ITEM NAME="PROXYHOST" VALUE="ProxyHost"/>
+                <ITEM NAME="PROXYPASSWORD" VALUE="ProxyPassword"/>
+                <ITEM NAME="PROXYPORT" VALUE="ProxyPort"/>
+                <ITEM NAME="PROXYUSERNAME" VALUE="ProxyUsername"/>
+                <ITEM NAME="PROXYWORKSTATION" VALUE="ProxyWorkstation"/>
+                <ITEM NAME="SOCKETTIMEOUT" VALUE="SocketTimeout"/>
+                <ITEM NAME="USERAGENT" VALUE="UserAgent"/>
+                <ITEM NAME="SOCKETRECEIVEBUFFERSIZEHINT" VALUE="SocketReceiveBufferSizeHints"/>
+                <ITEM NAME="SOCKETSENDBUFFERSIZEHINT" VALUE="SocketSendBufferSizeHints"/>
+                <ITEM NAME="SIGNEROVERRIDE" VALUE="SignerOverride"/>
+            </ITEMS>
+        </ITEM>
+        <ITEM NAME="VALUE" />
+      </ITEMS>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="SET_STS_ENDPOINT"
+      FIELD="CHECK"
+      NUM_ROW="35"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+    </PARAMETER>
+	<PARAMETER
+      NAME="STS_ENDPOINT"
+      FIELD="TEXT"
+      NUM_ROW="35"
+      REQUIRED="true"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="ENABLE_ACCELERATE"
+      FIELD="CHECK"
+      NUM_ROW="50"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
+    >   	
+    <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
     <PARAMETER
       NAME="USE_SELECT"
       FIELD="CHECK"
@@ -408,86 +490,6 @@
 		GROUP="SELECT_GROUP">
 		<DEFAULT>","</DEFAULT>
 	</PARAMETER>
-    
-    <PARAMETER
-      NAME="DIE_ON_ERROR"
-      FIELD="CHECK"
-      NUM_ROW="140"
-    >
-      <DEFAULT>false</DEFAULT>
-    </PARAMETER>
-    
-   </PARAMETERS>
-
-    <ADVANCED_PARAMETERS>
-    <PARAMETER
-      NAME="CONFIG_CLIENT"
-      FIELD="CHECK"
-      NUM_ROW="10"
-      NB_LINES="5"
-      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
-      GROUP="CLIENT_CONFIG"
-    >
-    </PARAMETER>
-
-    <PARAMETER
-      NAME="CLIENT_CONFIGURATION"
-      FIELD="TABLE"
-      NUM_ROW="30"
-      NB_LINES="5"
-      REQUIRED="true"
-      GROUP="CLIENT_CONFIG"
-      SHOW_IF="(CONFIG_CLIENT =='true') AND (USE_EXISTING_CONNECTION == 'false')"
-    >
-      <ITEMS>
-        <ITEM NAME="CLIENT_PARAMETER" FIELD="CLOSED_LIST">
-            <ITEMS DEFAULT="CONNECTIONTIMEOUT">
-                <ITEM NAME="CONNECTIONTIMEOUT" VALUE="ConnectionTimeout"/>
-                <ITEM NAME="MAXCONNECTIONS" VALUE="MaxConnections"/>
-                <ITEM NAME="MAXERRORRETRY" VALUE="MaxErrorRetry"/>
-                <ITEM NAME="PROTOCOL" VALUE="Protocol"/>
-                <ITEM NAME="PROXYDOMAIN" VALUE="ProxyDomain"/>
-                <ITEM NAME="PROXYHOST" VALUE="ProxyHost"/>
-                <ITEM NAME="PROXYPASSWORD" VALUE="ProxyPassword"/>
-                <ITEM NAME="PROXYPORT" VALUE="ProxyPort"/>
-                <ITEM NAME="PROXYUSERNAME" VALUE="ProxyUsername"/>
-                <ITEM NAME="PROXYWORKSTATION" VALUE="ProxyWorkstation"/>
-                <ITEM NAME="SOCKETTIMEOUT" VALUE="SocketTimeout"/>
-                <ITEM NAME="USERAGENT" VALUE="UserAgent"/>
-                <ITEM NAME="SOCKETRECEIVEBUFFERSIZEHINT" VALUE="SocketReceiveBufferSizeHints"/>
-                <ITEM NAME="SOCKETSENDBUFFERSIZEHINT" VALUE="SocketSendBufferSizeHints"/>
-                <ITEM NAME="SIGNEROVERRIDE" VALUE="SignerOverride"/>
-            </ITEMS>
-        </ITEM>
-        <ITEM NAME="VALUE" />
-      </ITEMS>
-    </PARAMETER>
-    
-    <PARAMETER
-      NAME="SET_STS_ENDPOINT"
-      FIELD="CHECK"
-      NUM_ROW="35"
-      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
-    >
-    </PARAMETER>
-	<PARAMETER
-      NAME="STS_ENDPOINT"
-      FIELD="TEXT"
-      NUM_ROW="35"
-      REQUIRED="true"
-      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
-    >
-      <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-    
-    <PARAMETER
-      NAME="ENABLE_ACCELERATE"
-      FIELD="CHECK"
-      NUM_ROW="50"
-      SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
-    >   	
-    <DEFAULT>false</DEFAULT>
-    </PARAMETER>
 
     </ADVANCED_PARAMETERS>
 
