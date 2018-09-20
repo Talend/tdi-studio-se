@@ -120,7 +120,7 @@ public class ManageResourcePanel extends Composite {
         table.setHeaderVisible(true);
 
         TableViewerColumn tableViewerColumn = new TableViewerColumn(resourcesTV, SWT.NONE, COL_NAME);
-        tableViewerColumn.getColumn().setText(Messages.getString("ManageResourcePanel.reourceCol")); //$NON-NLS-1$
+        tableViewerColumn.getColumn().setText(Messages.getString("ManageResourcePanel.reourceNameCol")); //$NON-NLS-1$
         tableViewerColumn.getColumn().setWidth(200);
 
         tableViewerColumn = new TableViewerColumn(resourcesTV, SWT.NONE, COL_VERSION);
