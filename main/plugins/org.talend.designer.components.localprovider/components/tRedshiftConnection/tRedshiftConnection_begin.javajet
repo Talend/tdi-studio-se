@@ -32,7 +32,7 @@ imports="
 %>
                 sbuilder_<%=cid%>.append("iam:");
 <%
-}
+            }
 %>
             sbuilder_<%=cid%>.append("//")
                              .append(<%=dbhost%>)

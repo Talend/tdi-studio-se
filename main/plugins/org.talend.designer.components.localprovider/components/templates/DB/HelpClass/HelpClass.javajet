@@ -60,11 +60,17 @@ imports="
 		}
 		
 		public void createConnection(INode node) {
-%>
-		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
-<%
+			this.createConnection(node, true);
 		}
-		
+
+		public void createConnection(INode node, boolean needUserAndPassword) {%>
+<%			if(needUserAndPassword){%>
+				conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
+<%			} else {%>
+				conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>);
+<%			}
+		}
+
 		public void setAutoCommit(INode node) {
 			boolean setAutoCommit = "true".equals(ElementParameterParser.getValue(node, "__AUTO_COMMIT__"));
 			if(isLog4jEnabled){
