@@ -64,20 +64,7 @@ imports="
 		}
 
 		public void useExistConnection(INode node){
-			beforeComponentProcess(node);
-			if(isLog4jEnabled) {
-			%>
-				if(conn_<%=cid%> != null) {
-					if(conn_<%=cid%>.getMetaData() != null) {
-						<%if (cid.contains("tImpala") || cid.contains("tHive")) {%>
-						log.debug("<%=cid%> - Uses an existing connection <%=connection %>.");
-						<%} else {%>
-						log.debug("<%=cid%> - Uses an existing connection with username '" + conn_<%=cid%>.getMetaData().getUserName() + "'. Connection URL: " + conn_<%=cid%>.getMetaData().getURL() + ".");
-						<%}%>
-					}
-				}
-			<%
-			}
+			useExistConnection(node, true);
 		}
 
 		public void useExistConnection(INode node, boolean needUserAndPassword){
@@ -86,7 +73,13 @@ imports="
 			%>
 				if(conn_<%=cid%> != null) {
 					if(conn_<%=cid%>.getMetaData() != null) {
-						log.debug("<%=cid%> - Uses an existing connection. Connection URL: " + conn_<%=cid%>.getMetaData().getURL() + ".");
+						<%if (cid.contains("tImpala") || cid.contains("tHive")) {%>
+						log.debug("<%=cid%> - Uses an existing connection <%=connection %>.");
+						<%} else if (!needUserAndPassword){%>
+							log.debug("<%=cid%> - Uses an existing connection. Connection URL: " + conn_<%=cid%>.getMetaData().getURL() + ".");
+						<%} else {%>
+							log.debug("<%=cid%> - Uses an existing connection with username '" + conn_<%=cid%>.getMetaData().getUserName() + "'. Connection URL: " + conn_<%=cid%>.getMetaData().getURL() + ".");
+						<%}%>
 					}
 				}
 			<%
@@ -95,13 +88,25 @@ imports="
 
 		public void connect(INode node){
 			beforeComponentProcess(node);
-			connect();
+			if ("SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__"))){
+				connectWithSSO();
+			} else {
+				connect();
+			}
 		}
 
 		public void connect(){
 			connect_begin();
 			%>
 			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>, dbUser_<%=cid%>, dbPwd_<%=cid%>);
+			<%
+			connect_end();
+		}
+		
+		public void connectWithSSO(){
+			connect_begin_noUser();
+			%>
+			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>);
 			<%
 			connect_end();
 		}

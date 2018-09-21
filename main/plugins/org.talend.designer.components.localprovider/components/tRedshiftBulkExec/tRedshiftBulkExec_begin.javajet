@@ -60,9 +60,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 	if(useExistingConnection) {
 		String conn = "conn_" + ElementParameterParser.getValue(node,"__CONNECTION__");
 %>
-	 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
+		conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 <%
-		log4jCodeGenerateUtil.useExistConnection(node);
+		boolean needUserAndPassword = !"SSO".equals(jdbcUrl);
+		log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
 	} else {
 %>
 		String driverClass_<%=cid%> = "com.amazon.redshift.jdbc41.Driver";
@@ -90,17 +91,18 @@ skeleton="../templates/db_output_bulk.skeleton"
         }
 %>
         String url_<%=cid%> = sbuilder_<%=cid%>.toString();
-		<%
-		String passwordFieldName = "__PASS__";
-		%>
-		<%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
-		final String decryptedPass_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
-		<%} else {%>
-		final String decryptedPass_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
-		<%}%>
-		String dbUser_<%=cid %> = <%=userName%>;
-		String dbPwd_<%=cid %> = decryptedPass_<%=cid%>;
-		<%
+<%      if (!"SSO".equals(jdbcUrl)){
+			String passwordFieldName = "__PASS__";
+			
+			if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+			final String decryptedPass_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+			<%} else {%>
+			final String decryptedPass_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+			<%}%>
+			String dbUser_<%=cid %> = <%=userName%>;
+			String dbPwd_<%=cid %> = decryptedPass_<%=cid%>;
+<%      }
+
 		log4jCodeGenerateUtil.connect(node);
 	}
 	
