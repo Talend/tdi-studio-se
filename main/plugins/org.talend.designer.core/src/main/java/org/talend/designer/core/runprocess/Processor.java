@@ -18,10 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
@@ -40,7 +38,6 @@ import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ITargetExecutionConfig;
-import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.runprocess.IEclipseProcessor;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
@@ -387,22 +384,8 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
         if (!(process instanceof IProcess2)) {
             return null;
         }
-        IProcess2 runprocess = (IProcess2) process;
-        boolean flag = false;
-        if (StringUtils.isNotBlank((String) ((IProcess2) process).getAdditionalProperties().get("RESOURCES_PROP"))) {
-            flag = true;
-        } else {
-            Set<JobInfo> childrenJobInfo = ProcessorUtilities.getChildrenJobInfo(runprocess.getProperty().getItem(), false);
-            for (JobInfo jobInfo : childrenJobInfo) {
-                if (StringUtils.isNotBlank(
-                        (String) jobInfo.getProcessItem().getProperty().getAdditionalProperties().get("RESOURCES_PROP"))) {
-                    flag = true;
-                    break;
-                }
-            }
-        }
         File workingDir = project.getFile(MavenSystemFolders.EXT_RESOURCES.getPath()).getLocation().toFile();
-        if (workingDir.exists() && flag) {
+        if (workingDir.exists()) {
             return workingDir;
         }
         return null;
