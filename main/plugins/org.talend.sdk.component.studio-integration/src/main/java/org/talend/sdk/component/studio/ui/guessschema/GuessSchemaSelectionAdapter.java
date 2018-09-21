@@ -14,13 +14,16 @@ package org.talend.sdk.component.studio.ui.guessschema;
 
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
+
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -30,7 +33,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.ExceptionMessageDialog;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQRuleService;
@@ -133,7 +135,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         }
 
         final Node node = Node.class.cast(elementParameter.getElement());
-        IMetadataTable newMeta = buildMetadata(schema, node);
+        IMetadataTable newMeta = buildMetadata(schema);
         if (newMeta == null) {
             ExceptionMessageDialog.openError(composite.getShell(), Messages.getString("guessSchema.dialog.error.title"),
                     //$NON-NLS-1$
@@ -175,60 +177,51 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         }
     }
 
-    private IMetadataTable buildMetadata(final String schema, final Node inputNode) {
-        final String[] lines = schema.split("\n");
-        List<String[]> schemaContent = Stream.of(lines)
-                .filter(Objects::nonNull)
-                .filter(l -> !l.contains(" ") && !l.contains("\t"))
-                .filter(l -> !l.trim().isEmpty())
-                .filter(l -> l.contains(";"))
-                .map(l -> l.split(";"))
-                .collect(toList());
-
-        if (schemaContent == null || schemaContent.isEmpty()) {
+    private IMetadataTable buildMetadata(final String schema) {
+        if (schema.trim().isEmpty()) {
             return null;
         }
-        List<String> columnLabels = new ArrayList<>();
-        List<IMetadataColumn> columns = new ArrayList<>();
 
-        int i = -1;
-        for (String[] row : schemaContent) {
-            i++;
-            IMetadataColumn oneColum = new MetadataColumn();
-            String labelName = row[0];
-            String name = labelName;
-            String sub = ""; //$NON-NLS-1$
-            String sub2 = ""; //$NON-NLS-1$
-            if (labelName != null && labelName.length() > 0 && labelName.startsWith("_")) { //$NON-NLS-1$
-                sub = labelName.substring(1);
-                if (sub.length() > 0) {
-                    sub2 = sub.substring(1);
+        final Collection<MetadataColumn> jsonColumns;
+        try (final Jsonb jsonb = JsonbBuilder.create()) {
+            jsonColumns = jsonb.fromJson(schema, new ParameterizedType() {
+
+                @Override
+                public Type[] getActualTypeArguments() {
+                    return new Type[] { MetadataColumn.class };
                 }
-            }
-            if (KeywordsValidator.isKeyword(labelName) || KeywordsValidator.isKeyword(sub)
-                    || KeywordsValidator.isKeyword(sub2)) {
-                labelName = "_" + labelName; //$NON-NLS-1$
-            }
-            oneColum.setLabel(MetadataToolHelper.validateColumnName(labelName, i, columnLabels));
-            oneColum.setOriginalDbColumnName(name);
-            oneColum.setPrecision(0);
-            oneColum.setLength(0);
-            try {
-                oneColum.setTalendType(row[1]);
 
-            } catch (Exception e) {
-                /*
-                 * the table have no data at all ,to do nothing
-                 */
-                ExceptionHandler.process(e);
-            }
-            // get if a column is nullable from the temp file genenrated by GuessSchemaProcess.java
-            oneColum.setNullable(true);
-            columns.add(oneColum);
-            columnLabels.add(oneColum.getLabel());
+                @Override
+                public Type getRawType() {
+                    return Collection.class;
+                }
+
+                @Override
+                public Type getOwnerType() {
+                    return null;
+                }
+            });
+        } catch (final Exception e) {
+            throw new IllegalStateException(e);
+        }
+        if (jsonColumns.isEmpty()) {
+            return null;
         }
 
-        if (columns.size() > 0) {
+        final List<String> columnLabels = new ArrayList<>();
+        final List<IMetadataColumn> columns = new ArrayList<>();
+        int i = -1;
+        for (final IMetadataColumn oneColumn : jsonColumns) {
+            i++;
+            oneColumn.setLabel(getLabel(columnLabels, i, oneColumn));
+            oneColumn.setOriginalDbColumnName(oneColumn.getLabel());
+            oneColumn.setPrecision(0);
+            oneColumn.setLength(0);
+            columns.add(oneColumn);
+            columnLabels.add(oneColumn.getLabel());
+        }
+
+        if (!columns.isEmpty()) {
             IElementParameter dqRule = elem.getElementParameter("DQRULES_LIST");
             if (dqRule != null) {
                 ITDQRuleService ruleService = null;
@@ -249,6 +242,23 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         metadataTable.setTableName(elementParameter.getContext());
         metadataTable.setListColumns(columns);
         return metadataTable;
+    }
+
+    private String getLabel(final List<String> columnLabels, final int i, final IMetadataColumn oneColumn) {
+        String labelName = oneColumn.getLabel();
+        String sub = ""; //$NON-NLS-1$
+        String sub2 = ""; //$NON-NLS-1$
+        if (labelName != null && labelName.length() > 0 && labelName.startsWith("_")) { //$NON-NLS-1$
+            sub = labelName.substring(1);
+            if (sub.length() > 0) {
+                sub2 = sub.substring(1);
+            }
+        }
+        if (KeywordsValidator.isKeyword(labelName) || KeywordsValidator.isKeyword(sub)
+                || KeywordsValidator.isKeyword(sub2)) {
+            labelName = "_" + labelName; //$NON-NLS-1$
+        }
+        return MetadataToolHelper.validateColumnName(labelName, i, columnLabels);
     }
 
 }

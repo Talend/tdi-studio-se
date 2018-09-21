@@ -20,15 +20,16 @@
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	if(("true").equals(useExistingConn)){
 		List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
-		for(INode n : nodeList){
-			if(n.getUniqueName().equals(connection)){
-				sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
-				ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__")); 
-			}
-		}
+        for(INode n : nodeList){
+            if(n.getUniqueName().equals(connection)){
+                sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+                ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+                break;
+            }
+        }
 	}else{
 		sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
-		ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__")); 
+		ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 	}
 if(sftp){ // *** sftp *** //
 %>
@@ -44,10 +45,14 @@ if(sftp){ // *** sftp *** //
 			log.info("<%=cid%> - Connection to the server closed.");
 		<%}%>
 <%
-	}
+	} else if (!moveToCurrentDir) {
+%>
+        c_<%=cid%>.cd(rootDir_<%=cid %>);
+<%
+    }
 %>
     msg_<%=cid%>.add(nb_file_<%=cid%> + " files have been uploaded.");  
-    	
+
 	StringBuffer sb_<%=cid %> = new StringBuffer();
     for (String item_<%=cid %> : msg_<%=cid %>) {
         sb_<%=cid %>.append(item_<%=cid %>).append("\n");

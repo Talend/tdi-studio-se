@@ -50,11 +50,13 @@ if(columnList != null && columnList.size() > 0) {
 
         String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
         String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
-		String drverClass= "org.gjt.mm.mysql.Driver";
+		String drverClass= "com.mysql.jdbc.Driver";
 		String jdbcURL = "jdbc:mysql";
 		if("MARIADB".equals(dbVersion)){
 			drverClass = "org.mariadb.jdbc.Driver";
 			jdbcURL = "jdbc:mariadb";
+		} else if ("MYSQL_8".equals(dbVersion)){
+			drverClass= "com.mysql.cj.jdbc.Driver";
 		}
         %>
         java.lang.Class.forName("<%=drverClass%>");
@@ -106,9 +108,19 @@ if(columnList != null && columnList.size() > 0) {
             stmtCreate_<%=cid%>.close();
             <%
         } else if(("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
+                List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
+                String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
+                if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL) || "".equals(dbnameMySQL)) {
+                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
+                    for (INode ne : nodes) {
+                        if (connectionMySQL.equals(ne.getUniqueName())) {
+                            dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
+                        }
+                    }
+                }
             %>
             java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
-            java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
+            java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
             boolean whetherExist_<%=cid%> = false;
             while(rsTable_<%=cid%>.next()) {
                 String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");

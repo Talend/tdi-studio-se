@@ -370,7 +370,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	        }
 	    }
 <%
-		} else if ("MYSQL_5".equals(dbVersion) ||"MARIADB".equals(dbVersion)) {
+		} else if ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) {
   			//////////batch execute by batch size///////
     		if(!("").equals(numPerInsert ) && !("0").equals(numPerInsert)) {
     		%>
@@ -452,7 +452,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
     } else {
         %>
-	<%if ((rejectConnName==null && ("MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) && useBatchSize) && (("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction))) {
+	<%if ((rejectConnName==null && ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) && useBatchSize) && (("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction))) {
     %>
     try {
     	if(pstmt_<%=cid %> != null){

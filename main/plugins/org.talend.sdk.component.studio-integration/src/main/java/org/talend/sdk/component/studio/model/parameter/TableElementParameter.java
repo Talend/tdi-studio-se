@@ -15,18 +15,20 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Represents Table parameter. Table parameter is ElementParameter, which EParameterFieldType is TABLE
@@ -99,6 +101,44 @@ public class TableElementParameter extends TaCoKitElementParameter {
                     }
                 });
         return value;
+    }
+
+    /**
+     * Converts incoming {@code table} value retrieved from Action response to correct
+     * parameter value. Following corrections are done:
+     * 1. key is fixed - full path of Table child ElementParameter is used instead of Configuration class field name
+     * 2. Integer are replaced with Strings (as Integer in TableElementParameter means index of possible value
+     *
+     * @param table table value retrieved from action response
+     * @return correct value, which can be used in TableElementParameter
+     */
+    public void setValueFromAction(final List<Object> table) {
+        final List<Map<String, Object>> converted = new ArrayList<>();
+        for (final Object row : table) {
+            final Map<String, Object> convertedRow = new LinkedHashMap<>();
+            final List<TaCoKitElementParameter> columnParams = getColumnParameters();
+            for (TaCoKitElementParameter columnParam : columnParams) {
+                Object columnValue = null;
+                if (row instanceof Map) {
+                    final String key = columnParam.getName().replaceFirst(Pattern.quote(getName() + "[]."), "");
+                    columnValue = ((Map<String, Object>) row).get(key);
+                } else {  // boxed primitive value or String
+                    columnValue = row;
+                }
+                if (columnValue instanceof Integer) {
+                    columnValue = String.valueOf(columnValue);
+                }
+                convertedRow.put(columnParam.getName(), columnValue);
+            }
+            converted.add(convertedRow);
+        }
+        super.setValue(converted);
+    }
+
+    private List<TaCoKitElementParameter> getColumnParameters() {
+        return Arrays.stream(getListItemsValue())
+                .map(TaCoKitElementParameter.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**

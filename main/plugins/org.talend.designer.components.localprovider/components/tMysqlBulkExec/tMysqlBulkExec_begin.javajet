@@ -72,6 +72,8 @@ java.sql.Connection conn_<%=cid%> = null;
 		if("MARIADB".equals(dbVersion)){
 			drverClass = "org.mariadb.jdbc.Driver";
 			jdbcURL = "jdbc:mariadb";
+		} else if ("MYSQL_8".equals(dbVersion)){
+			drverClass = "com.mysql.cj.jdbc.Driver";
 		}
 		%>
 		String driverClass_<%=cid%> = "<%=drverClass%>";

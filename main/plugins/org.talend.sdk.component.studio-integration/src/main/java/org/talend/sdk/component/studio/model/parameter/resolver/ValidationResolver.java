@@ -15,36 +15,18 @@
  */
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
+import java.util.Collection;
+
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 
-import java.util.Collection;
-import java.util.List;
-
 public class ValidationResolver extends AbstractParameterResolver {
 
     public ValidationResolver(final PropertyNode actionOwner, final Collection<ActionReference> actions,
             final ValidationListener listener, final ElementParameter redrawParameter) {
-        super(listener, actionOwner, getActionRef(actionOwner, actions), redrawParameter);
-    }
-    
-    private static ActionReference getActionRef(final PropertyNode actionOwner, final Collection<ActionReference> actions) {
-        if (!actionOwner.getProperty().hasValidation()) {
-            throw new IllegalArgumentException("property has no validation");
-        }
-        final String actionName = actionOwner.getProperty().getValidationName();
-        return actions
-                .stream()
-                .filter(a -> Action.Type.VALIDATION.toString().equals(a.getType()))
-                .filter(a -> a.getName().equals(actionName))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Action with name " + actionName + " wasn't found"));
-    }
-
-    protected final List<String> getRelativePaths() {
-        return actionOwner.getProperty().getValidationParameters();
+        super(listener, actionOwner, getActionRef(actions, actionOwner.getProperty().getValidationName(), Action.Type.VALIDATION), redrawParameter);
     }
 }

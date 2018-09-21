@@ -326,6 +326,10 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 }
             }
             Map<Object, Object> contextMap = new HashMap<Object, Object>();
+            if (elem instanceof INode) {
+                contextMap.put("NODE", (INode) elem);
+            }
+            
             for (IElementParameter param : elementParameters) {
                 String repositoryValue = param.getRepositoryValue();
                 if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
@@ -410,6 +414,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     } else {
                         IMetadataTable metaTable = table;
                         if (metaTable == null && elem instanceof Node) {
+                            contextMap.put("NODE", elem);
                             INodeConnector conn = ((Node) elem).getConnectorFromType(EConnectionType.FLOW_MAIN);
                             if (conn != null && conn.getMaxLinkOutput() == 1) {
                                 metaTable = ((Node) elem).getMetadataFromConnector(conn.getName());
