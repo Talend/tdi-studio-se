@@ -205,34 +205,60 @@ if (sftp) {// *** sftp *** //
 	com.jcraft.jsch.ChannelSftp.LsEntry[] sftpFiles_<%=cid %> = vector_<%=cid %>.toArray(new com.jcraft.jsch.ChannelSftp.LsEntry[0]);
 	int nb_file_<%=cid%> = 0;  
 	List<String> fileListTemp_<%=cid %> = new java.util.ArrayList<String>();
+<%
+	if (dirFull) {
+%>
+		List<String> fullFileInfoList_<%=cid %> = new java.util.ArrayList<String>();
+<%
+	}
+%>
 
 	for (String filemask_<%=cid %> : maskList_<%=cid %>) {
 		java.util.regex.Pattern fileNamePattern_<%=cid %> = java.util.regex.Pattern.compile(filemask_<%=cid %>.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
     
 		for (com.jcraft.jsch.ChannelSftp.LsEntry filemaskTemp_<%=cid %> : sftpFiles_<%=cid %>) {
-			if (fileNamePattern_<%=cid %>.matcher(filemaskTemp_<%=cid %>.getFilename()).matches()) {
-				fileListTemp_<%=cid %>.add(filemaskTemp_<%=cid %>.getFilename());
-      		}
-    	}
-  	}    
+			String fileName_<%=cid %> = filemaskTemp_<%=cid %>.getFilename();
+			if ((".").equals(fileName_<%=cid %>) || ("..").equals(fileName_<%=cid %>)) {
+				continue;
+			}
+			if (fileNamePattern_<%=cid %>.matcher(fileName_<%=cid %>).matches()) {
+<%
+				if (dirFull) {
+%>
+					fullFileInfoList_<%=cid %>.add(filemaskTemp_<%=cid %>.getLongname());
+<%
+				}
+%>
+				fileListTemp_<%=cid %>.add(fileName_<%=cid %>);
+			}
+		}
+	}
 
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Listing files from server.");
 	<%}%>
-	for (String sftpFile_<%=cid %> : fileListTemp_<%=cid %>) {
-
-    if ((".").equals(sftpFile_<%=cid %>) || ("..").equals(sftpFile_<%=cid %>)) {
-      continue;
-    }
-    String currentFileName_<%=cid%> = sftpFile_<%=cid %>; 
-    String currentFilePath_<%=cid%> = remotedir_<%=cid %> + "/" + sftpFile_<%=cid %>;
-	<%if(isLog4jEnabled){%>
-		log.debug("<%=cid%> - List file : '" + currentFilePath_<%=cid%> + "' .");
-	<%}%> 
-    globalMap.put("<%=cid %>_CURRENT_FILE", currentFileName_<%=cid%>);
-    globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%>);
-    nb_file_<%=cid%>++;
-
+	for (int counter_<%=cid %> = 0; counter_<%=cid %> < fileListTemp_<%=cid %>.size(); counter_<%=cid %>++) {
+		String currentFileName_<%=cid%> = fileListTemp_<%=cid %>.get(counter_<%=cid %>);
+		String currentFilePath_<%=cid%> = remotedir_<%=cid %>;
+		if(!remotedir_<%=cid%>.endsWith("/")&&!remotedir_<%=cid%>.endsWith("\\")){
+			currentFilePath_<%=cid%> += "/";
+		}
+		currentFilePath_<%=cid%> += currentFileName_<%=cid%>;
+		<%if(isLog4jEnabled){%>
+			log.debug("<%=cid%> - List file : '" + currentFilePath_<%=cid%> + "' .");
+		<%}
+		if (dirFull) {
+%>
+			globalMap.put("<%=cid %>_CURRENT_FILE", fullFileInfoList_<%=cid %>.get(counter_<%=cid %>));
+<%
+		} else {
+%>
+			globalMap.put("<%=cid %>_CURRENT_FILE", currentFileName_<%=cid%>);
+<%
+		}
+%>
+		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%>);
+		nb_file_<%=cid%>++;
 <%
 } else {// *** ftp *** //
 %>
