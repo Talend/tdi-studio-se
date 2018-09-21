@@ -102,7 +102,14 @@ public class ResourcesDependenciesService implements IResourcesDependenciesServi
                     Item item = object.getProperty().getItem();
                     if (item instanceof ResourceItem) {
                         ResourceItem resItem = (ResourceItem) item;
-                        String fileName = resItem.getProperty().getDisplayName() + "_" + item.getProperty().getVersion() + "."
+                        String resouceClasspath = item.getState().getPath();
+                        if (resouceClasspath != null && !resouceClasspath.isEmpty()) {
+                            resouceClasspath += '/';
+                        } else {
+                            resouceClasspath = ""; //$NON-NLS-1$
+                        }
+                        String fileName = resouceClasspath + resItem.getProperty().getDisplayName() + "_"
+                                + item.getProperty().getVersion() + "."
                                 + resItem.getBindingExtension();
                         Project currentProject = ProjectManager.getInstance().getCurrentProject();
                         String itemFilePath = ResourceUtils.getProject(currentProject.getTechnicalLabel())
