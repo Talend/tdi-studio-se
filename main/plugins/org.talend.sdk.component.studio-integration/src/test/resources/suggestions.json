@@ -234,7 +234,8 @@
             "type": "STRING"
         }
       },
-      "root": false
+      "root": false,
+      "children": []
     },
     {
       "fieldType": "TEXT",
@@ -252,7 +253,8 @@
           "type": "STRING"
         }
       },
-      "root": false
+      "root": false,
+      "children": []
     },
     {
       "fieldType": "TEXT",
@@ -268,7 +270,8 @@
           "type": "STRING"
         }
       },
-      "root": false
+      "root": false,
+      "children": []
     }
   ],
   "properties": [

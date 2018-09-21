@@ -1,0 +1,7 @@
+{
+  "str" : "1st level str value",
+  "nestedConfig" : {
+    "str1" : "2nd level str1 value",
+    "str2" : "2nd level str2 value"
+  }
+}

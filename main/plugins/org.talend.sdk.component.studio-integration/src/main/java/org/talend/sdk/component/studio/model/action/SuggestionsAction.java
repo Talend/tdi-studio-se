@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * It should be Thread-safe as it is used in a Job launched by {@link TaCoKitValueSelectionController}
  */
-public class SuggestionsAction extends Action {
+public class SuggestionsAction extends Action<String> {
 
     /**
      * Cached previously used payload and corresponding response

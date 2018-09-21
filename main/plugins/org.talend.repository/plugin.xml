@@ -3102,6 +3102,15 @@
               name="UseSqlDateTypeInDataframesTask"
               version="7.1.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.UncheckMoveToRemoteDirSFTP"
+              description="Uncheck Move to current dir property when use sftp connection component"
+              id="org.talend.repository.model.migration.UncheckMoveToRemoteDirSFTP"
+              name="UncheckMoveToRemoteDirSFTP"
+              version="7.1.1">
+        </projecttask>
    </extension>
 
    <extension

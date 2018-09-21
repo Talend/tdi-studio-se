@@ -118,4 +118,55 @@ public class TableElementParameterTest {
         Assertions.assertEquals(expectedValue, table.getValue());
     }
 
+    @Test
+    public void testSetValueFromAction() {
+        final List<Map<String, Object>> expectedValue = new ArrayList<Map<String, Object>>();
+        final Map<String, Object> row1 = new HashMap<>();
+        row1.put("conf.updatableConfig.table[].check", true);
+        row1.put("conf.updatableConfig.table[].number", "1");
+        row1.put("conf.updatableConfig.table[].operator", "GREATER");
+        row1.put("conf.updatableConfig.table[].strColumn", "Talend");
+        expectedValue.add(row1);
+        final Map<String, Object> row2 = new HashMap<>();
+        row2.put("conf.updatableConfig.table[].check", false);
+        row2.put("conf.updatableConfig.table[].number", "2");
+        row2.put("conf.updatableConfig.table[].operator", "LESS");
+        row2.put("conf.updatableConfig.table[].strColumn", "The best");
+        expectedValue.add(row2);
+
+        final TableElementParameter table = new TableElementParameter(null);
+        table.setName("conf.updatableConfig.table");
+        table.setFieldType(EParameterFieldType.TABLE);
+        final TaCoKitElementParameter column1 = new TaCoKitElementParameter(null);
+        column1.setFieldType(EParameterFieldType.CHECK);
+        column1.setName("conf.updatableConfig.table[].check");
+        final TaCoKitElementParameter column2 = new TaCoKitElementParameter(null);
+        column2.setFieldType(EParameterFieldType.TEXT);
+        column2.setName("conf.updatableConfig.table[].number");
+        final TaCoKitElementParameter column3 = new TaCoKitElementParameter(null);
+        column3.setFieldType(EParameterFieldType.CLOSED_LIST);
+        column3.setName("conf.updatableConfig.table[].operator");
+        final TaCoKitElementParameter column4 = new TaCoKitElementParameter(null);
+        column4.setFieldType(EParameterFieldType.TEXT);
+        column4.setName("conf.updatableConfig.table[].strColumn");
+        table.setListItemsValue(new Object[] {column1, column2, column3, column4});
+
+        final List<Object> tableValue = new ArrayList<>();
+        final Map<String, Object> tableRow1 = new HashMap<>();
+        tableRow1.put("check", true);
+        tableRow1.put("number", 1);
+        tableRow1.put("operator", "GREATER");
+        tableRow1.put("strColumn", "Talend");
+        tableValue.add(tableRow1);
+        final Map<String, Object> tableRow2 = new HashMap<>();
+        tableRow2.put("check", false);
+        tableRow2.put("number", 2);
+        tableRow2.put("operator", "LESS");
+        tableRow2.put("strColumn", "The best");
+        tableValue.add(tableRow2);
+
+        table.setValueFromAction(tableValue);
+        Assertions.assertEquals(expectedValue, table.getValue());
+    }
+
 }
