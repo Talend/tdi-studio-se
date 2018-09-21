@@ -77,7 +77,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     }
 
     String rejectConnName = null;
-    List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
+    List< ? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
 
     IMetadataTable metadataTable = null;
     if(rejectConns != null && rejectConns.size() > 0) {
@@ -298,7 +298,7 @@ if(columnList != null && columnList.size() > 0) {
                 int rowCount<%=cid%> = 0;
 <%
             }
-        } else if ("MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) {
+        } else if ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) {
                 List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
                 if(conns_dynamic!=null && conns_dynamic.size()>0){
                     IConnection conn = conns_dynamic.get(0);
@@ -628,7 +628,7 @@ if(columnList != null && columnList.size() > 0) {
 <%
             }
         }
-        if ("MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) {
+        if ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) {
             if ((extendedInsert&&"INSERT".equals(dataAction)) || (useBatchSize&&("UPDATE".equals(dataAction)||"DELETE".equals(dataAction)))) {
                 if((!("").equals(numPerInsert)&&!("0").equals(numPerInsert))
                     ||(!("").equals(batchSize)&&!("0").equals(batchSize))) {
@@ -737,7 +737,7 @@ if(columnList != null && columnList.size() > 0) {
                         counter<%=cid%>=1;
                     }
 <%
-                } else if ("MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) {
+                } else if ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) {
                     int counter = 1;
                     for(Column column : colStruct) {
                         if(column.isInsertable()) {
@@ -994,7 +994,7 @@ if(columnList != null && columnList.size() > 0) {
             }
             %>
 
-            <%if (rejectConnName == null && useBatchSize && ("MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion))) { // whether use batch
+            <%if (rejectConnName == null && useBatchSize && ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion))) { // whether use batch
             %>
             pstmt_<%=cid %>.addBatch();
             nb_line_<%=cid%>++;
@@ -1498,7 +1498,7 @@ if(columnList != null && columnList.size() > 0) {
                 <%
             }
             %>
-            <%if (rejectConnName == null && useBatchSize && ("MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion))) { // whether use batch
+            <%if (rejectConnName == null && useBatchSize && ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion))) { // whether use batch
             %>
             pstmt_<%=cid %>.addBatch();
             nb_line_<%=cid%>++;
@@ -1806,7 +1806,7 @@ if(columnList != null && columnList.size() > 0) {
             <%
         }
             //////////batch execute by batch size///////
-        if (extendedInsert && ("MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) && ("INSERT").equals(dataAction)) {
+        if (extendedInsert && ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) && ("INSERT").equals(dataAction)) {
             if(!("").equals(numPerInsert ) && !("0").equals(numPerInsert )) {
             %>
                 if ( batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>) {
@@ -1856,7 +1856,7 @@ if(columnList != null && columnList.size() > 0) {
             }
 
         }
-        if (useBatchSize && ("MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) &&(rejectConnName==null)&& (("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction))) {
+        if (useBatchSize && ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) &&(rejectConnName==null)&& (("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction))) {
             if(!("").equals(batchSize) && !("0").equals(batchSize)) {
             %>
                 if ( batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>) {
@@ -1919,7 +1919,7 @@ if(columnList != null && columnList.size() > 0) {
 
                 if(commitEvery_<%=cid%> <= commitCounter_<%=cid%>) {
 
-                <%if ((rejectConnName==null && useBatchSize && ("MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion))) && (("INSERT").equals(dataAction) || ("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)) ) {
+                <%if ((rejectConnName==null && useBatchSize && ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion))) && (("INSERT").equals(dataAction) || ("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)) ) {
                 %>
                 try {
                         int countSum_<%=cid%> = 0;

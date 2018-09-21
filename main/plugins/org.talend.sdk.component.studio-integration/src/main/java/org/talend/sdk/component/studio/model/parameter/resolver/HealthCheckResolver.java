@@ -15,6 +15,8 @@
  */
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
+import static java.util.Optional.ofNullable;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -65,7 +67,9 @@ public class HealthCheckResolver {
     public void resolveParameters(final Map<String, IElementParameter> settings) {
         final ButtonParameter button = new ButtonParameter(element);
         button.setCategory(category);
-        button.setDisplayName(Messages.getString("healthCheck.button"));
+        button.setDisplayName(ofNullable(node.getProperty().getDisplayName())
+                .filter(it -> !node.getProperty().getName().equals(it))
+                .orElseGet(() -> Messages.getString("healthCheck.button")));
         button.setName(node.getProperty().getPath() + ".testConnection");
         button.setNumRow(rowNumber);
         button.setShow(true);

@@ -60,7 +60,7 @@ if (!isParallelize) {
             <%dbLog.table().createTry(dbLog.var("tableName"));%>
             <%
                 if(isDynamic) {
-                List<? extends IConnection> conns_dynamic = node.getIncomingConnections();
+                List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
                     if(conns_dynamic!=null && conns_dynamic.size()>0){
                         String query=manager.getCreateTableSQL(stmtStructure);
                     %>
@@ -89,7 +89,7 @@ if (!isParallelize) {
             <%dbLog.table().createTry(dbLog.var("tableName"));%>
             <%
             if(isDynamic) {
-                List<? extends IConnection> conns_dynamic = node.getIncomingConnections();
+                List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
                 if(conns_dynamic!=null && conns_dynamic.size()>0){
                     String query=manager.getCreateTableSQL(stmtStructure);
                     %>
@@ -255,6 +255,32 @@ if (!isParallelize) {
                                 try (java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, schemaForSearch_<%=cid%>, null, new String[]{"TABLE"})) {
                                     while(rsTable_<%=cid%>.next()) {
                                         if(rsTable_<%=cid%>.getString("TABLE_NAME").equalsIgnoreCase(tableForSearch_<%=cid%>)) {
+                                            whetherExist_<%=cid%> = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            
+                            
+                            <%
+                            } else if(MYSQL.equalsIgnoreCase(dbmsId)) {
+                                List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
+                                String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
+                                if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL) || "".equals(dbnameMySQL)) {
+                                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
+                                    for (INode ne : nodes) {
+                                        if (connectionMySQL.equals(ne.getUniqueName())) {
+                                            dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
+                                        }
+                                    }
+                                }
+                            %>
+                                java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                                boolean whetherExist_<%=cid%> = false;
+                                try (java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"})) {
+                                    while(rsTable_<%=cid%>.next()) {
+                                        String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
+                                        if(table_<%=cid%>.equalsIgnoreCase(<%=table%>)) {
                                             whetherExist_<%=cid%> = true;
                                             break;
                                         }
