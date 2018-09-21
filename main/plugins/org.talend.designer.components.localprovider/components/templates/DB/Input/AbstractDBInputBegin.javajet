@@ -62,7 +62,13 @@ imports="
             }
 %>
 		        conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
-				<%log4jCodeGenerateUtil.useExistConnection(node);%>
+<%
+				if ("SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__"))){
+					log4jCodeGenerateUtil.useExistConnection(node, false);
+				} else {
+					log4jCodeGenerateUtil.useExistConnection(node);
+				}
+%>
 <%
 				dbInputBeginUtil.afterUseExistConnection(node);
 		    } else {
@@ -311,7 +317,7 @@ imports="
 					    					<% if("JTDS".equals(driver)) { %>
 						 					if ("NTEXT".equals(rsmd_<%=cid%>.getColumnTypeName(i_<%=cid %> ).toUpperCase())) {
 												net.sourceforge.jtds.jdbc.ClobImpl clob_<%=cid %> = (net.sourceforge.jtds.jdbc.ClobImpl) rs_<%=cid%>.getClob(i_<%=cid %>);
-												if(clob_<%=cid %>!=null){
+												if(clob_<%=cid %> !=null){
 													net.sourceforge.jtds.jdbc.TalendNTextImpl tNTextImpl_<%=cid %> = new net.sourceforge.jtds.jdbc.TalendNTextImpl(clob_<%=cid %>);
 							  						list_<%=cid %>.add(tNTextImpl_<%=cid %>.getValue());
 												}else{

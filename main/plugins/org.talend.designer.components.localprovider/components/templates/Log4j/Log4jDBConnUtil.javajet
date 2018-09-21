@@ -80,6 +80,19 @@ imports="
 			}
 		}
 
+		public void useExistConnection(INode node, boolean needUserAndPassword){
+			beforeComponentProcess(node);
+			if(isLog4jEnabled) {
+			%>
+				if(conn_<%=cid%> != null) {
+					if(conn_<%=cid%>.getMetaData() != null) {
+						log.debug("<%=cid%> - Uses an existing connection. Connection URL: " + conn_<%=cid%>.getMetaData().getURL() + ".");
+					}
+				}
+			<%
+			}
+		}
+
 		public void connect(INode node){
 			beforeComponentProcess(node);
 			connect();
