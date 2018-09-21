@@ -22,13 +22,21 @@ import java.util.stream.Stream;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 
 public class ConditionGroup {
+
     private final Collection<PropertyDefinitionDecorator.Condition> conditions;
+
     private final Function<Stream<Boolean>, Boolean> aggregator;
 
     public ConditionGroup(final Collection<PropertyDefinitionDecorator.Condition> conditions,
-                          final boolean and) {
+            final boolean and) {
         this.conditions = conditions;
         this.aggregator = and ? stream -> stream.allMatch(i -> i) : stream -> stream.anyMatch(i -> i);
+    }
+
+    public ConditionGroup(final Collection<PropertyDefinitionDecorator.Condition> conditions,
+            final Function<Stream<Boolean>, Boolean> aggregator) {
+        this.conditions = conditions;
+        this.aggregator = aggregator;
     }
 
     public Collection<PropertyDefinitionDecorator.Condition> getConditions() {

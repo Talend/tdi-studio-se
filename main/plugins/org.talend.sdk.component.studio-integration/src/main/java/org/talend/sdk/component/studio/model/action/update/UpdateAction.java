@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.talend.sdk.component.studio.model.action;
+package org.talend.sdk.component.studio.model.action.update;
+
+import org.talend.sdk.component.studio.model.action.Action;
 
 public class UpdateAction extends Action<Object> {
-    public UpdateAction(final String actionName, final String family, final Type type) {
-        super(actionName, family, type);
+    public UpdateAction(final String actionName, final String family) {
+        super(actionName, family, Type.UPDATE);
     }
 }

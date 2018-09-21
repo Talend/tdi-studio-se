@@ -1,0 +1,137 @@
+{
+  "actions": [
+    {
+      "family": "qa",
+      "name": "updatableConfig",
+      "properties": [
+        {
+          "displayName": "c",
+          "metadata": {
+            "definition::parameter::index": "0"
+          },
+          "name": "c",
+          "path": "c",
+          "placeholder": "c",
+          "type": "ENUM"
+        },
+        {
+          "displayName": "s",
+          "metadata": {
+            "definition::parameter::index": "1"
+          },
+          "name": "s",
+          "path": "s",
+          "placeholder": "s",
+          "type": "STRING"
+        }
+      ],
+      "type": "update"
+    }
+  ],
+
+  "name": "update",
+
+  "nodes": [
+    {
+      "fieldType": "TEXT",
+      "property": {
+        "delegate": {
+          "displayName": "updatableConfig",
+          "metadata": {
+            "action::update": "updatableConfig",
+            "action::update::after": "",
+            "action::update::parameters": "constant,str"
+          },
+          "name": "updatableConfig",
+          "path": "conf.updatableConfig",
+          "type": "OBJECT"
+        }
+      },
+      "root": false,
+      "children": [
+        {
+          "fieldType": "TEXT",
+          "property": {
+            "delegate": {
+              "displayName": "nestedConfig",
+              "metadata": {},
+              "name": "nestedConfig",
+              "path": "conf.updatableConfig.nestedConfig",
+              "type": "OBJECT"
+            }
+          },
+          "root": false,
+          "children": [
+            {
+              "fieldType": "TEXT",
+              "property": {
+                "delegate": {
+                  "displayName": "str1",
+                  "metadata": {},
+                  "name": "str1",
+                  "path": "conf.updatableConfig.nestedConfig.str1",
+                  "type": "STRING"
+                }
+              },
+              "root": false,
+              "children": []
+            },
+            {
+              "fieldType": "TEXT",
+              "property": {
+                "delegate": {
+                  "displayName": "str2",
+                  "metadata": {},
+                  "name": "str2",
+                  "path": "conf.updatableConfig.nestedConfig.str2",
+                  "type": "STRING"
+                }
+              },
+              "root": false,
+              "children": []
+            }
+          ]
+        },
+        {
+          "fieldType": "TEXT",
+          "property": {
+            "delegate": {
+              "displayName": "str",
+              "metadata": {},
+              "name": "str",
+              "path": "conf.updatableConfig.str",
+              "type": "STRING"
+            }
+          },
+          "root": false,
+          "children": []
+        }
+      ]
+    }
+  ],
+  "properties": [
+
+  ],
+  "settings": [
+    {
+      "name": "conf.constant",
+      "value": "LESS"
+    },
+    {
+      "name": "conf.str",
+      "value": "Hello world!"
+    },
+    {
+      "name": "conf.updatableConfig.str",
+      "value": ""
+    },
+    {
+      "name": "conf.updatableConfig.nestedConfig.str1",
+      "value": ""
+    },
+    {
+      "name": "conf.updatableConfig.nestedConfig.str2",
+      "value": ""
+    }
+  ]
+}
