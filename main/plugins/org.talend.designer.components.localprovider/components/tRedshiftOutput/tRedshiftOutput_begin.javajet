@@ -211,7 +211,14 @@ if(("true").equals(useExistingConn)) {
 	String conn = "conn_" + connection;
 	%>
 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
-	<%dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");%>
+	
+<%
+	if ("SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__"))){
+		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", null);
+	} else {
+		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");
+	}
+%>
 	<%
 } else {
 	%>

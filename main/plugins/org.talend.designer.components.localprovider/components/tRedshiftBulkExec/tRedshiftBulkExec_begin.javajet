@@ -62,8 +62,16 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 		conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 <%
-		boolean needUserAndPassword = !"SSO".equals(jdbcUrl);
-		log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
+        //Retrieve connection node and check if SSO was used for correct logging
+        List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
+        String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
+        for (INode ne : nodes) {
+            if (connectionRedShift.equals(ne.getUniqueName())) {
+                jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
+            }
+        }
+        boolean needUserAndPassword = !"SSO".equals(jdbcUrl);
+        log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
 	} else {
 %>
 		String driverClass_<%=cid%> = "com.amazon.redshift.jdbc41.Driver";
