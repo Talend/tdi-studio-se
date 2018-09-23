@@ -353,7 +353,7 @@
         <IMPORT
             NAME="commons-io-2.4.jar"
             MODULE="commons-io-2.4.jar"
-            MVN="mvn:org.talend.libraries/commons-io-2.4/6.0.0"
+            MVN="mvn:commons-io/commons-io/2.4"
             UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar"
             REQUIRED="true"
         />
