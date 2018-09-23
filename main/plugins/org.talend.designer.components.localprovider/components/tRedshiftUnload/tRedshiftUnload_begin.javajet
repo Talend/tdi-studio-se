@@ -40,7 +40,16 @@ imports="
 %>
 	 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 <%
-		log4jCodeGenerateUtil.useExistConnection(node);
+        //Retrieve connection node and check if SSO was used for correct logging
+        List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
+        String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
+        for (INode ne : nodes) {
+            if (connectionRedShift.equals(ne.getUniqueName())) {
+                jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
+            }
+        }
+        boolean needUserAndPassword = !"SSO".equals(jdbcUrl);
+        log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
 	} else {
 %>
 		String driverClass_<%=cid%> = "com.amazon.redshift.jdbc41.Driver";
@@ -68,17 +77,18 @@ imports="
         }
 %>
         String url_<%=cid%> = sbuilder_<%=cid%>.toString();
-		<%
-		String passwordFieldName = "__PASS__";
-		%>
-		<%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
-		final String decryptedPass_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
-		<%} else {%>
-		final String decryptedPass_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
-		<%}%>
-		String dbUser_<%=cid %> = <%=userName%>;
-		String dbPwd_<%=cid %> = decryptedPass_<%=cid%>;
-		<%
+<%
+        if (!"SSO".equals(jdbcUrl)){
+            String passwordFieldName = "__PASS__";
+            %>
+            <%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+            final String decryptedPass_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+            <%} else {%>
+            final String decryptedPass_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+            <%}%>
+            String dbUser_<%=cid %> = <%=userName%>;
+            String dbPwd_<%=cid %> = decryptedPass_<%=cid%>;
+<%      }
 		log4jCodeGenerateUtil.connect(node);
 	}
 	

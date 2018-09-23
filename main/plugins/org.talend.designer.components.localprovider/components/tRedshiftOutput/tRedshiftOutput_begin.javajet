@@ -213,7 +213,15 @@ if(("true").equals(useExistingConn)) {
 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 	
 <%
-	if ("SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__"))){
+	//Retrieve connection node and check if SSO was used for correct logging
+	List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
+	String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
+	for (INode ne : nodes) {
+		if (connectionRedShift.equals(ne.getUniqueName())) {
+			jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
+		}
+	}
+	if ("SSO".equals(jdbcUrl)){
 		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", null);
 	} else {
 		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");
