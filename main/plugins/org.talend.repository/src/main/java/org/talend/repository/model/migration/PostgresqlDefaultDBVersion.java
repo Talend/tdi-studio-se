@@ -18,13 +18,9 @@ import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.migration.IMigrationTask.ExecutionResult;
 
 
 public class PostgresqlDefaultDBVersion extends AbstractJobMigrationTask{
-	
-	private static final String DB_VERSION_PROPERTY = "DB_VERSION";
-	private static final String DB_VERSION_VALUE = "PRIOR_TO_V9";
 
 	@Override
 	public Date getOrder() {
@@ -64,20 +60,25 @@ public class PostgresqlDefaultDBVersion extends AbstractJobMigrationTask{
         IComponentConversion setDefaultDBVersion = new IComponentConversion() {
 
 			@Override
-			public void transform(NodeType node) {
-				if ("tCreateTable".equals(node.getComponentName()) && !isCreateTableMatchMigrationTask(node)) {
-					return;
+			public void transform(NodeType node) {		
+				boolean useExistConnection = "true".equals(ComponentUtilities.getNodePropertyValue(node, "USE_EXISTING_CONNECTION"));
+				if (useExistConnection) return;
+				
+				String componentName = node.getComponentName();
+				String dbVersion = "";
+				
+				if ("tCreateTable".equals(componentName)) {
+					String dbType = ComponentUtilities.getNodePropertyValue(node, "DBTYPE");
+					if (!"POSTGRE".equals(dbType) || !"POSTGREPLUS".equals(dbType)) return;
+					dbVersion = ComponentUtilities.getNodePropertyValue(node, "DB_POSTGRE_VERSION");
+				} else {
+					dbVersion = ComponentUtilities.getNodePropertyValue(node, "DB_VERSION");
 				}
-				String dbVersion = ComponentUtilities.getNodePropertyValue(node, DB_VERSION_PROPERTY);
-				if (dbVersion == null || dbVersion.isEmpty()) {
-					ComponentUtilities.setNodeValue(node, DB_VERSION_PROPERTY, DB_VERSION_VALUE);
+
+				if (dbVersion==null) {
+					ComponentUtilities.addNodeProperty(node, "DB_VERSION", "CLOSED_LIST");
+					ComponentUtilities.setNodeValue(node, "DB_VERSION", "PRIOR_TO_V9");
 				}
-			}
-			
-			private boolean isCreateTableMatchMigrationTask(NodeType node) {
-				String dbType = ComponentUtilities.getNodePropertyValue(node, "DBTYPE");
-				boolean useExistingConnection = "true".equals(ComponentUtilities.getNodePropertyValue(node, "USE_EXISTING_CONNECTION"));
-				return "POSTGRE".equals(dbType) && !useExistingConnection;
 			}
         };
         
