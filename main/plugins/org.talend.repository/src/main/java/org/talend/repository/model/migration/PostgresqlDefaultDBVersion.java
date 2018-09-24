@@ -22,16 +22,16 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 public class PostgresqlDefaultDBVersion extends AbstractJobMigrationTask{
 
-	@Override
-	public Date getOrder() {
+    @Override
+    public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2018, 9, 24, 14, 0, 0);
         return gc.getTime();
-	}
+    }
 
-	@Override
-	public ExecutionResult execute(Item item) {
-		ProcessType processType = getProcessType(item);
-		if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
+    @Override
+    public ExecutionResult execute(Item item) {
+        ProcessType processType = getProcessType(item);
+        if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
             return ExecutionResult.NOTHING_TO_DO;
         }
         List<String> componentsNameToAffect = new ArrayList<>();
@@ -59,39 +59,39 @@ public class PostgresqlDefaultDBVersion extends AbstractJobMigrationTask{
 
         IComponentConversion setDefaultDBVersion = new IComponentConversion() {
 
-			@Override
-			public void transform(NodeType node) {		
-				boolean useExistConnection = "true".equals(ComponentUtilities.getNodePropertyValue(node, "USE_EXISTING_CONNECTION"));
-				if (useExistConnection) return;
-				
-				String componentName = node.getComponentName();
-				String dbVersion = "";
-				
-				if ("tCreateTable".equals(componentName)) {
-					String dbType = ComponentUtilities.getNodePropertyValue(node, "DBTYPE");
-					if (!"POSTGRE".equals(dbType) || !"POSTGREPLUS".equals(dbType)) return;
-					dbVersion = ComponentUtilities.getNodePropertyValue(node, "DB_POSTGRE_VERSION");
-				} else {
-					dbVersion = ComponentUtilities.getNodePropertyValue(node, "DB_VERSION");
-				}
+            @Override
+            public void transform(NodeType node) {        
+                boolean useExistConnection = "true".equals(ComponentUtilities.getNodePropertyValue(node, "USE_EXISTING_CONNECTION"));
+                if (useExistConnection) return;
+                
+                String componentName = node.getComponentName();
+                String dbVersion = "";
+                
+                if ("tCreateTable".equals(componentName)) {
+                    String dbType = ComponentUtilities.getNodePropertyValue(node, "DBTYPE");
+                    if (!"POSTGRE".equals(dbType) || !"POSTGREPLUS".equals(dbType)) return;
+                    dbVersion = ComponentUtilities.getNodePropertyValue(node, "DB_POSTGRE_VERSION");
+                } else {
+                    dbVersion = ComponentUtilities.getNodePropertyValue(node, "DB_VERSION");
+                }
 
-				if (dbVersion==null) {
-					ComponentUtilities.addNodeProperty(node, "DB_VERSION", "CLOSED_LIST");
-					ComponentUtilities.setNodeValue(node, "DB_VERSION", "PRIOR_TO_V9");
-				}
-			}
+                if (dbVersion==null) {
+                    ComponentUtilities.addNodeProperty(node, "DB_VERSION", "CLOSED_LIST");
+                    ComponentUtilities.setNodeValue(node, "DB_VERSION", "PRIOR_TO_V9");
+                }
+            }
         };
         
         for (String componentName : componentsNameToAffect) {
             IComponentFilter componentFilter = new NameComponentFilter(componentName);
             try {
-            	ModifyComponentsAction.searchAndModify(item, processType, componentFilter,
+                ModifyComponentsAction.searchAndModify(item, processType, componentFilter,
                     Arrays.<IComponentConversion> asList(setDefaultDBVersion));
             } catch (PersistenceException e) {
                 ExceptionHandler.process(e);
                 return ExecutionResult.FAILURE;
             }
         }
-		return ExecutionResult.SUCCESS_NO_ALERT;
-	}
+        return ExecutionResult.SUCCESS_NO_ALERT;
+    }
 }
