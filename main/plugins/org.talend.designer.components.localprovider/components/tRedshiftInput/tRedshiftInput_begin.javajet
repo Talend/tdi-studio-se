@@ -17,7 +17,7 @@ imports="
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
 
-        private static boolean needUserAndPassword = true;
+        private boolean needUserAndPassword = true;
 
 		public void setURL(INode node) {
 			

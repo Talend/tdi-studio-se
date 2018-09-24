@@ -190,7 +190,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-        <IMPORT NAME="Driver-Redshift-SSO" MODULE="RedshiftJDBC41-1.2.16.1027.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc41/1.2.16.1027" REQUIRED="true" />
+        <IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.16.1027.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc41/1.2.16.1027" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
 
