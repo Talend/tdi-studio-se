@@ -1,10 +1,20 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.repository.model.migration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.Collections;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
@@ -18,7 +28,6 @@ import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-
 
 public class PostgresqlDefaultDBVersion extends AbstractJobMigrationTask{
 
@@ -34,30 +43,29 @@ public class PostgresqlDefaultDBVersion extends AbstractJobMigrationTask{
         if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
             return ExecutionResult.NOTHING_TO_DO;
         }
-        List<String> componentsNameToAffect = new ArrayList<>();
-        componentsNameToAffect.add("tCreateTable");
-        componentsNameToAffect.add("tPostgresqlCDC");
-        
-        componentsNameToAffect.add("tPostgresPlusBulkExec");
-        componentsNameToAffect.add("tPostgresPlusConnection");
-        componentsNameToAffect.add("tPostgresPlusInput");
-        componentsNameToAffect.add("tPostgresPlusOutput");
-        componentsNameToAffect.add("tPostgresPlusOutputBulkExec");
-        componentsNameToAffect.add("tPostgresPlusRow");
-        componentsNameToAffect.add("tPostgresPlusSCD");
-        componentsNameToAffect.add("tPostgresPlusSCDELT");
-        
-        componentsNameToAffect.add("tPostgresqlBulkExec");
-        componentsNameToAffect.add("tPostgresqlConnection");
-        componentsNameToAffect.add("tPostgresqlInput");
-        componentsNameToAffect.add("tPostgresqlOutput");
-        componentsNameToAffect.add("tPostgresqlOutputBulkExec");
-        componentsNameToAffect.add("tPostgresqlRow");
-        componentsNameToAffect.add("tPostgresqlSCD");
-        componentsNameToAffect.add("tPostgresqlSCDELT");
 
+        String [] componentsNameToAffect = new String [] {
+                "tCreateTable",
+                "tPostgresqlCDC",
+                "tPostgresPlusBulkExec",
+                "tPostgresPlusConnection",
+                "tPostgresPlusInput",
+                "tPostgresPlusOutput",
+                "tPostgresPlusOutputBulkExec",
+                "tPostgresPlusRow",
+                "tPostgresPlusSCD",
+                "tPostgresPlusSCDELT",
+                "tPostgresqlBulkExec",
+                "tPostgresqlConnection",
+                "tPostgresqlInput",
+                "tPostgresqlOutput",
+                "tPostgresqlOutputBulkExec",
+                "tPostgresqlRow",
+                "tPostgresqlSCD",
+                "tPostgresqlSCDELT"
+        };
 
-        IComponentConversion setDefaultDBVersion = new IComponentConversion() {
+        IComponentConversion defaultDBVersion = new IComponentConversion() {
 
             @Override
             public void transform(NodeType node) {        
@@ -85,8 +93,7 @@ public class PostgresqlDefaultDBVersion extends AbstractJobMigrationTask{
         for (String componentName : componentsNameToAffect) {
             IComponentFilter componentFilter = new NameComponentFilter(componentName);
             try {
-                ModifyComponentsAction.searchAndModify(item, processType, componentFilter,
-                    Arrays.<IComponentConversion> asList(setDefaultDBVersion));
+                ModifyComponentsAction.searchAndModify(item, processType, componentFilter, Collections.singletonList(defaultDBVersion));
             } catch (PersistenceException e) {
                 ExceptionHandler.process(e);
                 return ExecutionResult.FAILURE;
