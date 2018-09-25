@@ -33,8 +33,7 @@ public enum SupportDBVersions {
     ORACLE_10(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 10", "ORACLE_10"), //$NON-NLS-1$ //$NON-NLS-2$
     ORACLE_9(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 9", "ORACLE_9"), //$NON-NLS-1$ //$NON-NLS-2$
     ORACLE_8(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 8", "ORACLE_8"), //$NON-NLS-1$ //$NON-NLS-2$
-    PSQL_V10(SupportDBUrlType.POSTGRESQLEFAULTURL, "v10", "V10"),
-    PSQL_V9_X(SupportDBUrlType.POSTGRESQLEFAULTURL, "v9.X", "V9_X"),
+    PSQL_V9_X(SupportDBUrlType.POSTGRESQLEFAULTURL, "v9 and later", "V9_X"),
     PSQL_PRIOR_TO_V9(SupportDBUrlType.POSTGRESQLEFAULTURL, "Prior to v9", "PRIOR_TO_V9"); //$NON-NLS-1$ //$NON-NLS-2$
     //$NON-NLS-1$ //$NON-NLS-2$
 	
