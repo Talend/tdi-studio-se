@@ -3115,7 +3115,7 @@
               beforeLogon="false"
               breaks="7.1.0"
               class="org.talend.repository.model.migration.PostgresqlDefaultDBVersion"
-              description="If job don't have DB version, it will be setted to priot v9"
+              description="If job doesn't have DB version, it will be set to prior v9"
               id="org.talend.repository.model.migration.PostgresqlDefaultDBVersion"
               name="PostgresqlDefaultDBVersion"
               version="7.1.0">
