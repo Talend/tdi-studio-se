@@ -119,7 +119,9 @@ imports="
         <%}else{//APACHE_PARQUET%>
             inputSerialization_<%=cid%>.setParquet(new com.amazonaws.services.s3.model.ParquetInput());
         <%}%>
-        
+        <%if(file_compressed){%>
+        inputSerialization_<%=cid%>.setCompressionType(com.amazonaws.services.s3.model.CompressionType.<%=compressed_type%>);
+        <%}%>
         request_<%=cid%>.setInputSerialization(inputSerialization_<%=cid%>);
         com.amazonaws.services.s3.model.OutputSerialization outputSerialization_<%=cid%> = new com.amazonaws.services.s3.model.OutputSerialization();
         <%if(config_output){%>
