@@ -36,6 +36,7 @@ import org.talend.updates.runtime.model.InstallationStatus.Status;
 import org.talend.updates.runtime.model.interfaces.ITaCoKitCarFeature;
 import org.talend.updates.runtime.nexus.component.ComponentIndexBean;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService;
+import org.talend.updates.runtime.storage.AbstractFeatureStorage;
 
 
 /**
@@ -46,7 +47,20 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
     @Override
     public ITaCoKitCarFeature generateExtraFeature(File file, IProgressMonitor monitor) throws Exception {
         TaCoKitCar car = new TaCoKitCar(file);
-        return new TaCoKitCarFeature(car);
+        TaCoKitCarFeature taCoKitCarFeature = new TaCoKitCarFeature(car);
+        taCoKitCarFeature.setStorage(new AbstractFeatureStorage() {
+
+            @Override
+            protected File downloadImageFile(IProgressMonitor monitor) throws Exception {
+                return null;
+            }
+
+            @Override
+            protected File downloadFeatureFile(IProgressMonitor monitor) throws Exception {
+                return file;
+            }
+        });
+        return taCoKitCarFeature;
     }
 
     @Override
