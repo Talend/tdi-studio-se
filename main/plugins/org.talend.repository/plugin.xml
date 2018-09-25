@@ -3077,15 +3077,6 @@
               version="7.0.2">
         </projecttask>
         <projecttask
-               beforeLogon="false"
-               breaks="7.1.0"
-               class="org.talend.repository.model.migration.MySQLDefaultDBVersion"
-               description="If job doesn't have DB version, it will be set to v5"
-               id="org.talend.repository.model.migration.MySQLDefaultDBVersion"
-               name="MySQLDefaultDBVersion"
-               version="7.1.0">
-        </projecttask>
-        <projecttask
               beforeLogon="false"
               breaks="7.1.0"
               class="org.talend.repository.model.migration.AddDbMappingTTeradataFastLoadMigrationTask"
@@ -3119,6 +3110,15 @@
               id="org.talend.repository.model.migration.UncheckMoveToRemoteDirSFTP"
               name="UncheckMoveToRemoteDirSFTP"
               version="7.1.1">
+        </projecttask>
+        <projecttask
+               beforeLogon="false"
+               breaks="7.1.0"
+               class="org.talend.repository.model.migration.MySQLDefaultDBVersion"
+               description="If job doesn't have DB version, it will be set to v5"
+               id="org.talend.repository.model.migration.MySQLDefaultDBVersion"
+               name="MySQLDefaultDBVersion"
+               version="7.1.0">
         </projecttask>
    </extension>
 

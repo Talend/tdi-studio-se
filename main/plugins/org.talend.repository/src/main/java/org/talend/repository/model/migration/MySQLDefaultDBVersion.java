@@ -33,7 +33,7 @@ public class MySQLDefaultDBVersion extends AbstractJobMigrationTask{
 
  @Override
  public Date getOrder() {
-     GregorianCalendar gc = new GregorianCalendar(2018, 9, 25, 12, 0, 0);
+     GregorianCalendar gc = new GregorianCalendar(2018, 9, 25, 10, 0, 0);
      return gc.getTime();
  }
 
