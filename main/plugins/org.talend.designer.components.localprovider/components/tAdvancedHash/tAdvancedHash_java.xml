@@ -54,7 +54,7 @@
       />
       <IMPORT
         NAME="ApacheCommonsCollection32"
-        MODULE="commons-collections-3.2.2.jar" MVN="mvn:org.talend.libraries/commons-collections-3.2.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.2.jar"
+        MODULE="commons-collections-3.2.2.jar" MVN="mvn:commons-collections/commons-collections/3.2.2"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.2.jar"
         REQUIRED="true"
         BundleID=""
       />
