@@ -103,12 +103,11 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
     /**
      * Overrides parent method as Property Type widget should not be shown in wizard pages
      *
-     * @param parent parent Composite
      * @return last Composite added
      */
     @Override
-    protected Composite addCommonWidgets(final Composite parent) {
-        return addSchemas(parent, null);
+    protected Composite addCommonWidgets() {
+        return addSchemas(composite, null);
     }
 
     private class ConfigurationModelUpdater implements IValueChangedListener {

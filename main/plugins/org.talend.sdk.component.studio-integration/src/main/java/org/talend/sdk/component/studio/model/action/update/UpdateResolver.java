@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.talend.sdk.component.studio.model.parameter.resolver;
-
-import static java.util.Locale.ROOT;
+package org.talend.sdk.component.studio.model.action.update;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.talend.core.model.process.EComponentCategory;
@@ -29,15 +28,13 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
-import org.talend.sdk.component.studio.model.action.UpdateAction;
+import org.talend.sdk.component.studio.model.action.update.UpdateAction;
 import org.talend.sdk.component.studio.model.action.update.UpdateCommand;
 import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.PathCollector;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
-import org.talend.sdk.component.studio.model.parameter.command.AsyncAction;
-import org.talend.sdk.component.studio.model.parameter.command.BaseAsyncAction;
+import org.talend.sdk.component.studio.model.parameter.resolver.AbstractParameterResolver;
 
 public class UpdateResolver extends AbstractParameterResolver {
 
@@ -66,11 +63,11 @@ public class UpdateResolver extends AbstractParameterResolver {
         super.resolveParameters(settings);
 
         final UpdateAction action = (UpdateAction) getAction();
-        final List<TaCoKitElementParameter> parameters = actionOwner.accept(new PathCollector()).getPaths().stream()
+        final Map<String, TaCoKitElementParameter> parameters = actionOwner.accept(new PathCollector()).getPaths().stream()
                 .map(settings::get)
                 .filter(Objects::nonNull)
                 .map(TaCoKitElementParameter.class::cast)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(TaCoKitElementParameter::getName, Function.identity()));
         button.setCommand(new UpdateCommand(action, actionOwner.getId(), parameters, button));
    }
 }

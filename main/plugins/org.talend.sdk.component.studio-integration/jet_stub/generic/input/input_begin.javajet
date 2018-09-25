@@ -83,16 +83,26 @@ final String output = connections.iterator().next().getName();
 final javax.json.bind.Jsonb jsonb_<%=cid%> = (javax.json.bind.Jsonb)mgr_<%=cid%>.findPlugin(mapper_<%=cid%>.plugin()).get()
                                                      .get(org.talend.sdk.component.runtime.manager.ComponentManager.AllServices.class)
                                                      .getServices().get(javax.json.bind.Jsonb.class);
+
+final java.util.Map<Class<?>, Object> servicesMapper_<%=cid%> = mgr_<%=cid%>.findPlugin(mapper_<%=cid%>.plugin()).get().get(org.talend.sdk.component.runtime.manager.ComponentManager.AllServices.class).getServices();
+final javax.json.spi.JsonProvider jsonProvider_<%=cid%> = javax.json.spi.JsonProvider.class.cast(servicesMapper_<%=cid%>.get(javax.json.spi.JsonProvider.class));
+final javax.json.JsonBuilderFactory jsonBuilderFactory_<%=cid%> = javax.json.JsonBuilderFactory.class.cast(servicesMapper_<%=cid%>.get(javax.json.JsonBuilderFactory.class));
+final org.talend.sdk.component.api.service.record.RecordBuilderFactory recordBuilderMapper_<%=cid%> = org.talend.sdk.component.api.service.record.RecordBuilderFactory.class.cast(servicesMapper_<%=cid%>
+                                                                                                                        .get(org.talend.sdk.component.api.service.record.RecordBuilderFactory.class));
+final org.talend.sdk.component.runtime.record.RecordConverters converters_<%=cid%> = new org.talend.sdk.component.runtime.record.RecordConverters();
 final Class outputType_<%=cid%> = <%=output%>.getClass();
 
 Object data_<%=cid%>;
 while ((data_<%=cid%> = input_<%=cid%>.next()) != null) {
     nbLineInput_<%=cid%>++;
     globalMap.put("<%=cid %>_NB_LINE", nbLineInput_<%=cid%>);
-
-    final String jsonValue_<%=cid%> =
-            javax.json.JsonValue.class.isInstance(data_<%=cid%>) ?
-            javax.json.JsonValue.class.cast(data_<%=cid%>).toString() :
-            jsonb_<%=cid%>.toJson(data_<%=cid%>);
-    <%//this looks saner than using outputType_cid, as we won't have possibility to cast the value to required class%>
-    <%=output%> = jsonb_<%=cid%>.fromJson(jsonValue_<%=cid%>, <%=output%>.getClass());
+    final String jsonValueMapper_<%=cid%>;
+    if (javax.json.JsonValue.class.isInstance(data_<%=cid%>)) {
+        jsonValueMapper_<%=cid%> = javax.json.JsonValue.class.cast(data_<%=cid%>).toString();
+    } else if (org.talend.sdk.component.api.record.Record.class.isInstance(data_<%=cid%>)) {
+        jsonValueMapper_<%=cid%> = converters_<%=cid%>.toType(converters_<%=cid%>.toRecord(data_<%=cid%>, () -> jsonb_<%=cid%>, () -> recordBuilderMapper_<%=cid%>),
+                                  javax.json.JsonObject.class, () -> jsonBuilderFactory_<%=cid%>, () -> jsonProvider_<%=cid%>, () -> jsonb_<%=cid%>).toString();
+    } else {
+        jsonValueMapper_<%=cid%> = jsonb_<%=cid%>.toJson(data_<%=cid%>);
+    }
+    <%=output%> = jsonb_<%=cid%>.fromJson(jsonValueMapper_<%=cid%>, <%=output%>.getClass());

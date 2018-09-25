@@ -44,7 +44,7 @@
     final IComponent component = node.getComponent();
     final boolean useLookup = component.useLookup();
 %>
-    final org.talend.sdk.component.runtime.di.OutputsHandler outputHandler_<%=cid%> = new org.talend.sdk.component.runtime.di.OutputsHandler(jsonb_<%=cid%>);
+    final org.talend.sdk.component.runtime.di.OutputsHandler outputHandler_<%=cid%> = new org.talend.sdk.component.runtime.di.OutputsHandler(jsonb_<%=cid%>, servicesMapper_<%=cid%>);
 <%
     for (final IConnection connection : node.getOutgoingSortedConnections()) {
         if (connection.getLineStyle() != EConnectionType.FLOW_MAIN) {

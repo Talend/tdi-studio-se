@@ -58,10 +58,10 @@ import java.util.stream.Stream;
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
 
+import org.talend.sdk.component.form.internal.converter.impl.widget.path.AbsolutePathResolver;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
-import org.talend.sdk.component.studio.model.parameter.resolver.AbsolutePathResolver;
 
 /**
  * Extends functionality of {@link SimplePropertyDefinition}
@@ -380,7 +380,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                     final String valueKey = CONDITION_IF_VALUE + index;
                     final String negateKey = CONDITION_IF_NEGATE + index;
                     final String evaluationStrategyKey = CONDITION_IF_EVALUTIONSTRATEGY + index;
-                    final String absoluteTargetPath = PATH_RESOLVER.resolvePath(delegate.getPath(), meta.getValue());
+                    final String absoluteTargetPath = PATH_RESOLVER.resolveProperty(delegate.getPath(), meta.getValue());
                     return new Condition(
                             delegate.getMetadata().getOrDefault(valueKey, "true").split(VALUE_SEPARATOR),
                             absoluteTargetPath,

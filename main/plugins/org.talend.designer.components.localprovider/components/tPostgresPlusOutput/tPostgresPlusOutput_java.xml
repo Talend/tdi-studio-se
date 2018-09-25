@@ -69,7 +69,7 @@
 			NUM_ROW="5"
 			REPOSITORY_VALUE="DB_VERSION"
 			SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
-			<ITEMS DEFAULT="PRIOR_TO_V9">
+			<ITEMS DEFAULT="V9_X">
 				<ITEM NAME="PRIOR_TO_V9" VALUE="PRIOR_TO_V9" />
 				<ITEM NAME="V9_X" VALUE="V9_X" />
 			</ITEMS>
@@ -334,7 +334,7 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-9.4-1201.jdbc41.jar" MVN="mvn:org.talend.libraries/postgresql-9.4-1201.jdbc41/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.postgresql/lib/postgresql-9.4-1201.jdbc41.jar" REQUIRED_IF="(DB_VERSION =='V9_X') AND (USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.5.jar" MVN="mvn:org.postgresql/postgresql/42.2.5" REQUIRED_IF="(DB_VERSION =='V9_X') AND (USE_EXISTING_CONNECTION == 'false')" />
 			<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED_IF="(DB_VERSION =='PRIOR_TO_V9') AND (USE_EXISTING_CONNECTION == 'false')" />
 		</IMPORTS>
 	</CODEGENERATION>

@@ -56,8 +56,11 @@
     final javax.json.bind.Jsonb jsonb_<%=cid%> = (javax.json.bind.Jsonb)mgr_<%=cid%>.findPlugin(processorImpl_<%=cid%>.plugin()).get()
                      .get(org.talend.sdk.component.runtime.manager.ComponentManager.AllServices.class)
                      .getServices().get(javax.json.bind.Jsonb.class);
-    final org.talend.sdk.component.runtime.di.AutoChunkProcessor processor_<%=cid%> = new org.talend.sdk.component.runtime.di.AutoChunkProcessor(chunkSize_<%=cid%>, processorImpl_<%=cid%>);
 
+    final java.util.Map<Class<?>, Object> servicesMapper_<%=cid%> = mgr_<%=cid%>.findPlugin(processorImpl_<%=cid%>.plugin())
+                                                                                .get().get(org.talend.sdk.component.runtime.manager.ComponentManager.AllServices.class).getServices();
+
+    final org.talend.sdk.component.runtime.di.AutoChunkProcessor processor_<%=cid%> = new org.talend.sdk.component.runtime.di.AutoChunkProcessor(chunkSize_<%=cid%>, processorImpl_<%=cid%>);
     org.talend.sdk.component.runtime.di.JobStateAware.init(processorImpl_<%=cid%>, globalMap);
     processor_<%=cid%>.start();
     globalMap.put("processor_<%=cid%>", processor_<%=cid%>);

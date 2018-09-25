@@ -43,7 +43,7 @@ public class PropertyNode {
 
     private PropertyNode parent;
 
-    private final List<PropertyNode> children = new ArrayList<>();
+    private final List<PropertyNode> children;
 
     private final Map<String, Layout> layouts = new HashMap<>();
 
@@ -56,13 +56,27 @@ public class PropertyNode {
      */
     private final boolean root;
 
-    @JsonbCreator
-    public PropertyNode(@JsonbProperty("property") final PropertyDefinitionDecorator property,
-                        @JsonbProperty("fieldType") final EParameterFieldType fieldType,
-                        @JsonbProperty("root") final boolean root) {
+    public PropertyNode(final PropertyDefinitionDecorator property,
+                        final EParameterFieldType fieldType,
+                        final boolean root) {
         this.property = property;
         this.fieldType = fieldType;
         this.root = root;
+        this.children = new ArrayList<>();
+    }
+
+    /*
+        Constructor for tests
+     */
+    @JsonbCreator
+    public PropertyNode(@JsonbProperty("property") final PropertyDefinitionDecorator property,
+                        @JsonbProperty("fieldType") final EParameterFieldType fieldType,
+                        @JsonbProperty("root") final boolean root,
+                        @JsonbProperty("children") List<PropertyNode> children) {
+        this.property = property;
+        this.fieldType = fieldType;
+        this.root = root;
+        this.children = new ArrayList<>(children);
     }
 
     public void addChild(final PropertyNode child) {
@@ -117,8 +131,7 @@ public class PropertyNode {
      * @param form Name of form
      */
     public void accept(final PropertyVisitor visitor, final String form) {
-        final List<PropertyNode> children = sortChildren(getChildren(form), form);
-        children.forEach(child -> child.accept(visitor, form));
+        sortChildren(getChildren(form), form).forEach(child -> child.accept(visitor, form));
         visitor.visit(this);
     }
 

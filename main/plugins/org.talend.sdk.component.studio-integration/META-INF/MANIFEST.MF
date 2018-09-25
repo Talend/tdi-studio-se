@@ -42,6 +42,7 @@ Export-Package: org.talend.sdk.component.studio.metadata.provider,
   org.talend.sdk.component.studio.toolbar
 Bundle-ClassPath: .,
   lib/component-server-model.jar,
+  lib/component-form-core.jar,
   lib/tomcat-api.jar,
   lib/tomcat-juli.jar,
   lib/tomcat-util.jar,

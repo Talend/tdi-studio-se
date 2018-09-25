@@ -36,11 +36,13 @@ if(useExistingConn) {
 } else {
 	boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));
 	String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
-	String drverClass= "org.gjt.mm.mysql.Driver";
+	String drverClass= "com.mysql.jdbc.Driver";
 	String jdbcURL = "jdbc:mysql";
 	if("MARIADB".equals(dbVersion)){
 		drverClass = "org.mariadb.jdbc.Driver";
 		jdbcURL = "jdbc:mariadb";
+	} else if ("MYSQL_8".equals(dbVersion)){
+		drverClass = "com.mysql.cj.jdbc.Driver";
 	}
 	if(specify_alias){
 		String alias = ElementParameterParser.getValue(node, "__DATASOURCE_ALIAS__");

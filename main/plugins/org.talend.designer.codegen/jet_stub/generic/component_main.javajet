@@ -89,7 +89,7 @@ if(hasInput){
                     if(!input_columnList.get(i).getTalendType().equals("id_Dynamic")) {
                     %>
                         if (incomingEnforcer_<%=cid%>.getDesignSchema().getField("<%=input_columnList.get(i)%>") == null){
-                            incomingEnforcer_<%=cid%>.addIncomingNodeField("<%=input_columnList.get(i)%>", <%=inputConn.getName()%>.<%=input_columnList.get(i)%>.getClass().getCanonicalName());
+                            incomingEnforcer_<%=cid%>.addIncomingNodeField("<%=input_columnList.get(i)%>", ((Object) <%=inputConn.getName()%>.<%=input_columnList.get(i)%>).getClass().getCanonicalName());
                             shouldCreateRuntimeSchemaForIncomingNode = true;
                         }
                     <%

@@ -526,7 +526,9 @@
 
 				}
             }
-            <% for (IContextParameter ctxParam :params)
+            <%
+            String warningMessageFormat = "Null value will be used for context parameter %s: %s";
+            for (IContextParameter ctxParam :params)
             {
 				%>
 				    context.setContextType("<%=ctxParam.getName()%>", "<%=ctxParam.getType()%>");
@@ -575,6 +577,17 @@
 
             }catch(ParseException e)
             {
+<%
+                if (isLog4jEnabled) {
+%>
+                    log.warn(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+<%
+                } else {
+%>
+                    System.err.println(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+<%
+                }
+%>
                 context.<%=ctxParam.getName()%>=null;
             }
               <%
@@ -593,6 +606,17 @@
              try{
                  context.<%=ctxParam.getName()%>=routines.system.ParserUtils.parseTo_<%=typeToGenerate%> (context.getProperty("<%=ctxParam.getName()%>"));
              }catch(NumberFormatException e){
+<%
+                if (isLog4jEnabled) {
+%>
+                    log.warn(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+<%
+                } else {
+%>
+                    System.err.println(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+<%
+                }
+%>
                  context.<%=ctxParam.getName()%>=null;
               }
              <%
