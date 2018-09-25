@@ -923,10 +923,12 @@ class MysqlManager extends Manager {
     }
     protected String getDriver() {
         if("MARIADB".equals(dbVersion)){
-			return "org.mariadb.jdbc.Driver";
-		}else{
-			return "org.gjt.mm.mysql.Driver";
-		}
+            return "org.mariadb.jdbc.Driver";
+        } else if ("MYSQL_8".equals(dbVersion)){
+            return "com.mysql.cj.jdbc.Driver";
+        } else {
+            return "com.mysql.jdbc.Driver";
+        }
     }
     public String getConnectionURL() {
     	String jdbcURL = "\"jdbc:mysql\"";
@@ -2420,8 +2422,30 @@ if(columnList != null && columnList.size() > 0) {
 	                whetherExist_<%=cid%> = true;
 	            }     
             <%
+            } else if("MYSQL".equalsIgnoreCase(dbType)) {
+                List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
+                String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
+                if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL) || "".equals(dbnameMySQL)) {
+                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
+                        for (INode ne : nodes) {
+                            if (connectionMySQL.equals(ne.getUniqueName())) {
+                                dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
+                            }
+                        }
+                    }
+            %>
+                java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
+                while(rsTable_<%=cid%>.next()) {
+                    String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
+                    if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=tableName%>)) {
+                        whetherExist_<%=cid%> = true;
+                        break;
+                    }
+                }  
+            <%
             } else {
-%>
+            %>
 	            java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
 	            java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
 	            while(rsTable_<%=cid%>.next()) {

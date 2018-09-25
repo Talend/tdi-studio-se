@@ -42,8 +42,10 @@ imports="
 			String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 			if("MARIADB".equals(dbVersion)){
 				return "org.mariadb.jdbc.Driver";
-			}else{
-				return "org.gjt.mm.mysql.Driver";
+			} else if ("MYSQL_8".equals(dbVersion)){
+				return "com.mysql.cj.jdbc.Driver";
+			} else {
+				return "com.mysql.jdbc.Driver";
 			}
 		}
 	}//end class

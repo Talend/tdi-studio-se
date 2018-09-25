@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.sdk.component.form.internal.converter.impl.widget.path.AbsolutePathResolver;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
@@ -23,7 +24,7 @@ import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 /**
  * Common super class for ParameterResolvers. It contains common state and functionality
  */
-abstract class AbstractParameterResolver implements ParameterResolver {
+public abstract class AbstractParameterResolver implements ParameterResolver {
     
     protected final AbsolutePathResolver pathResolver = new AbsolutePathResolver();
     
@@ -38,11 +39,11 @@ abstract class AbstractParameterResolver implements ParameterResolver {
 
     private final ElementParameter redrawParameter;
 
-    AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef) {
+    public AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef) {
         this(action, actionOwner, actionRef,null);
     }
-    
-    AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final ElementParameter redrawParameter) {
+
+    public AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final ElementParameter redrawParameter) {
         this.action = action;
         this.actionOwner = actionOwner;
         this.actionRef = actionRef;
@@ -75,7 +76,7 @@ abstract class AbstractParameterResolver implements ParameterResolver {
 
         relativePaths.forEach(relativePath -> {
             if (expectedParameters.hasNext()) {
-                final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePath);
+                final String absolutePath = pathResolver.resolveProperty(getOwnerPath(), relativePath);
                 final SimplePropertyDefinition parameterRoot = expectedParameters.next();
                 findParameters(absolutePath, settings).forEach(parameter -> {
                     if (redrawParameter != null) {

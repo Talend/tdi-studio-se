@@ -48,8 +48,10 @@ imports="
 			String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 			if("MARIADB".equals(dbVersion)){
 				return "org.mariadb.jdbc.Driver";
-			}else{
-				return "org.gjt.mm.mysql.Driver";
+			} else if ("MYSQL_8".equals(dbVersion)){
+				return "com.mysql.cj.jdbc.Driver";
+			} else {
+				return "com.mysql.jdbc.Driver";
 			}
 		}
 		
@@ -57,12 +59,20 @@ imports="
 			super.createStatement(node);
 			String enableStream = ElementParameterParser.getValue(node, "__ENABLE_STREAM__");
 			String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
-		    if(("true").equals(enableStream)&&(!"MARIADB".equals(dbVersion))) {
+		    if(("true").equals(enableStream)&&(!"MARIADB".equals(dbVersion))&&(!"MYSQL_8".equals(dbVersion))) {
 %>
 		        if(stmt_<%=cid %> instanceof com.mysql.jdbc.Statement){
 				    ((com.mysql.jdbc.Statement)stmt_<%=cid %>).enableStreamingResults();
 				}else if(stmt_<%=cid %> instanceof com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper){
 				    ((com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper)stmt_<%=cid %>).enableStreamingResults();
+				}
+<%
+			} else if (("true").equals(enableStream) && ("MYSQL_8".equals(dbVersion))){
+%>
+				if(stmt_<%=cid %> instanceof com.mysql.cj.jdbc.StatementImpl){
+				    ((com.mysql.cj.jdbc.StatementImpl)stmt_<%=cid %>).enableStreamingResults();
+				}else if(stmt_<%=cid %> instanceof com.mysql.cj.jdbc.StatementWrapper){
+				    ((com.mysql.cj.jdbc.StatementWrapper)stmt_<%=cid %>).enableStreamingResults();
 				}
 <%
 			}

@@ -137,7 +137,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
     protected synchronized void placeComponents(final boolean forceRedraw, final boolean reInitialize,
             final int height) {
         // achen modifed to fix feature 0005991 if composite.isDisposed return
-        if (elem == null || composite.isDisposed()) {
+       if (elem == null || composite.isDisposed()) {
             return;
         }
         if (!forceRedraw) {
@@ -154,7 +154,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         hashCurControls = new DualHashBidiMap();
         parameters = elem.getElementParametersWithChildrens();
         generator.initController(this);
-        final Composite previousComposite = addCommonWidgets(composite);
+        final Composite previousComposite = addCommonWidgets();
         final Optional<Layout> layout = getFormLayout();
         layout.ifPresent(l -> fillComposite(composite, l, previousComposite));
         resizeScrolledComposite();
@@ -165,10 +165,9 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
      * These widgets will shown in the top of parent Composite.
      * The method may be overridden.
      *
-     * @param parent parent Composite
      * @return last Composite added
      */
-    protected Composite addCommonWidgets(final Composite parent) {
+    protected Composite addCommonWidgets() {
         final Composite propertyComposite = addPropertyType(composite);
         final Composite lastSchemaComposite = addSchemas(composite, propertyComposite);
         return lastSchemaComposite;
@@ -180,7 +179,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         propertyComposite.setLayout(new FormLayout());
         propertyComposite.setLayoutData(levelLayoutData(null));
         final IElementParameter propertyType = elem.getElementParameter("PROPERTY");
-        addWidgetIfActive(propertyComposite, propertyType, null);
+        addWidgetIfActive(propertyComposite, propertyType);
         return propertyComposite;
     }
 
@@ -206,10 +205,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
             schemaComposite.setLayout(new FormLayout());
             schemaComposite.setLayoutData(levelLayoutData(previousComposite));
             previousComposite = schemaComposite;
-            final Control schemaControl = addWidgetIfActive(schemaComposite, schema, null);
-            final String schemaName = schema.getName();
-            final IElementParameter guessSchema = elem.getElementParameter(guessButtonName(schemaName));
-            addWidgetIfActive(schemaComposite, guessSchema, schemaControl);
+            addSchemaWidget(schemaComposite, schema);
         }
         return previousComposite;
     }
@@ -249,7 +245,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         if (layout.isLeaf()) {
             final String path = layout.getPath();
             final IElementParameter current = elem.getElementParameter(path);
-            addWidgetIfActive(composite, current, null);
+            addWidgetIfActive(composite, current);
         } else {
             Composite previousLevel = previous;
             for (final Level level : layout.getLevels()) {
@@ -289,18 +285,36 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
      *
      * @param parent    Composite on which widget will be added
      * @param parameter ElementParameter(Model) associated with widget
-     * @param previous  (optional) previous Control, which was created in the same row
-     * @return created Control
      */
-    private Control addWidgetIfActive(final Composite parent, final IElementParameter parameter,
-            final Control previous) {
-        Control control = null;
+    private void addWidgetIfActive(final Composite parent, final IElementParameter parameter) {
         if (doShow(parameter)) {
-            final AbstractElementPropertySectionController controller =
-                    generator.getController(parameter.getFieldType(), this);
-            control = controller.createControl(parent, parameter, 1, 1, 0, previous);
+            if (EParameterFieldType.SCHEMA_TYPE.equals(parameter.getFieldType())) {
+                addSchemaWidget(parent, parameter);
+            } else {
+                addWidget(parent, parameter, null);
+            }
         }
-        return control;
+    }
+
+    private Control addWidget(final Composite parent, final IElementParameter parameter, final Control previous) {
+        final AbstractElementPropertySectionController controller =
+                generator.getController(parameter.getFieldType(), this);
+        return controller.createControl(parent, parameter, 1, 1, 0, previous);
+    }
+
+    /**
+     * Creates schema and guess schema button widgets
+     *
+     * @param schemaComposite parent Composite
+     * @param schema Schema ElementParameter
+     */
+    private void addSchemaWidget(final Composite schemaComposite, final IElementParameter schema) {
+        final Control schemaControl = addWidget(schemaComposite, schema, null);
+        final String schemaName = schema.getName();
+        final IElementParameter guessSchema = elem.getElementParameter(guessButtonName(schemaName));
+        if (guessSchema != null) {
+            addWidget(schemaComposite, guessSchema, schemaControl);
+        }
     }
 
     private FormData levelLayoutData(final Composite previousLevel) {

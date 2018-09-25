@@ -21,12 +21,13 @@
 	boolean useGlob = ("true").equals(ElementParameterParser.getValue(node, "__PERL5_REGEX__"));
 	if(("true").equals(useExistingConn)){
 		List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
-		for(INode n : nodeList){
-			if(n.getUniqueName().equals(connection)){
-				sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
-				ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
-			}
-		}
+        for(INode n : nodeList){
+            if(n.getUniqueName().equals(connection)){
+                sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+                ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+                break;
+            }
+        }
 	}else{
 		sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
 		ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
@@ -35,7 +36,7 @@
 %>
 		globalMap.put("<%=cid %>_CURRENT_STATUS", "No file truncated.");
 		java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet(); 
-		for (String key<%=cid %> : keySet<%=cid %>) {     
+		for (String key<%=cid %> : keySet<%=cid %>) {
     		String filemask<%=cid %> = key<%=cid %>; 
 	    	String dir<%=cid %> = null;
     	    <%if(!useGlob) {//perl5 mode not support windows(\) path separator at the mask string%>
@@ -54,12 +55,12 @@
     	    <%if(!useGlob) {%>
         	    mask<%=cid %> = org.apache.oro.text.GlobCompiler.globToPerl5(mask<%=cid %>.toCharArray(), org.apache.oro.text.GlobCompiler.DEFAULT_MASK);
 	        <%}%>
-			java.util.Vector listings<%=cid %> = c_<%=cid %>.ls(<%=remotedir %>);
+			java.util.Vector listings<%=cid %> = c_<%=cid %>.ls(".");
 			for (int m<%=cid %> = 0; m<%=cid %> < listings<%=cid %>.size(); m<%=cid %>++) { 
 				String filePath<%=cid%> =  ((com.jcraft.jsch.ChannelSftp.LsEntry) listings<%=cid %>.elementAt(m<%=cid %>)).getFilename() ;
 				if ( filePath<%=cid%>.matches(mask<%=cid %>)) {
 					try {
-						c_<%=cid%>.put(new java.io.ByteArrayInputStream(new byte[]{}), <%=remotedir %>+"/"+filePath<%=cid%>);
+						c_<%=cid%>.put(new java.io.ByteArrayInputStream(new byte[]{}), filePath<%=cid%>);
 						globalMap.put("<%=cid %>_CURRENT_STATUS", "File truncate OK.");
 						<%if(isLog4jEnabled){%>
 							log.debug("<%=cid%> - '" + filePath<%=cid%>  + "' truncate ok.");
@@ -70,8 +71,8 @@
 					}
 					nb_file_<%=cid%>++;
 				}
-			}	     
-   		}  
+			}
+   		}
 <%
 	} else if (ftps) {  /* ftps */ 
 %>
