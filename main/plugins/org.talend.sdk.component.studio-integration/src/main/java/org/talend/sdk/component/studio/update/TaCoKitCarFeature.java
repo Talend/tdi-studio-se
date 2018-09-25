@@ -17,8 +17,10 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -66,19 +68,9 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
 
     public TaCoKitCarFeature(TaCoKitCar car) throws Exception {
         super(car.toString(), car.getName(), car.getCarVersion(), car.getDescription(), null, null, null, null, null,
-                PathUtils.convert2Types(Type.TCOMP.getKeyWord() + "," + Type.TCOMP_V1.getKeyWord()),
-                PathUtils.convert2Categories(Category.ALL.getKeyWord()), false, false, false);
+                new LinkedList<>(Arrays.asList(Type.TCOMP_V1)),
+                new LinkedList<>(Arrays.asList(Category.ALL)), false, false, false);
         this.car = car;
-    }
-
-    @Override
-    public boolean canBeInstalled(IProgressMonitor progress) throws ExtraFeatureException {
-        try {
-            InstallationStatus installationStatus = getInstallationStatus(progress);
-            return installationStatus.canBeInstalled();
-        } catch (Exception e) {
-            throw new ExtraFeatureException(e);
-        }
     }
 
     @Override
@@ -362,6 +354,16 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
             this.car = new TaCoKitCar(getStorage().getFeatureFile(progress));
         }
         return this.car;
+    }
+
+    @Override
+    public boolean canBeInstalled(IProgressMonitor progress) throws ExtraFeatureException {
+        try {
+            InstallationStatus installationStatus = getInstallationStatus(progress);
+            return installationStatus.canBeInstalled();
+        } catch (Exception e) {
+            throw new ExtraFeatureException(e);
+        }
     }
 
     @Override
