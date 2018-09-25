@@ -20,7 +20,9 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
@@ -29,6 +31,8 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.AbstractCheckDeleteItemReference;
 import org.talend.core.repository.model.ItemReferenceBean;
 import org.talend.core.repository.ui.actions.DeleteActionCache;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
@@ -36,11 +40,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
  */
 public class CheckJobResourceDeleteReference extends AbstractCheckDeleteItemReference {
 
-    private static final String COMMA_TAG = ",";
-
     private static final String REPACE_SLASH_TAG = "\\|";
-
-    private static final String RESOURCES_PROP = "RESOURCES_PROP";
 
     /* (non-Javadoc)
      * @see org.talend.core.repository.model.AbstractCheckDeleteItemReference#checkItemReferenceBeans(org.talend.repository.model.IProxyRepositoryFactory, org.talend.core.repository.ui.actions.DeleteActionCache, org.talend.core.model.repository.IRepositoryViewObject)
@@ -91,15 +91,36 @@ public class CheckJobResourceDeleteReference extends AbstractCheckDeleteItemRefe
     }
 
     private String getResourceRelatedVersion(String resourceId, IRepositoryViewObject relatedObj) {
-        String resources = (String) relatedObj.getProperty().getAdditionalProperties().get(RESOURCES_PROP);
-        if (StringUtils.isNotBlank(resources)) {
-            String[] split = resources.split(COMMA_TAG);
-            for (String res : split) {
-                String[] resInfo = res.split(REPACE_SLASH_TAG);
-                if (resInfo.length > 1) {
-                    if (resourceId.equals(resInfo[0])) {
-                        return resInfo[1];
-                    }
+        Item item = relatedObj.getProperty().getItem();
+        ProcessItem processItem = null;
+        if (item instanceof ProcessItem) {
+            processItem = (ProcessItem) item;
+        } else {
+            return null;
+        }
+
+        Set<String> resourceList = new HashSet<String>();
+        List<ContextType> contexts = processItem.getProcess().getContext();
+        for (ContextType context : contexts) {
+            List<ContextParameterType> contextParameter = context.getContextParameter();
+            for (ContextParameterType contextParameterType : contextParameter) {
+                if (JavaTypesManager.RESOURCE.getId().equals(contextParameterType.getType())
+                        || JavaTypesManager.RESOURCE.getLabel().equals(contextParameterType.getType())) {
+                    resourceList.add(contextParameterType.getValue());
+                }
+            }
+        }
+        if (resourceList.isEmpty()) {
+            return null;
+        }
+        for (String res : resourceList) {
+            if (StringUtils.isBlank(res)) {
+                continue;
+            }
+            String[] resInfo = res.split(REPACE_SLASH_TAG);
+            if (resInfo.length > 1) {
+                if (resourceId.equals(resInfo[0])) {
+                    return resInfo[1];
                 }
             }
         }
