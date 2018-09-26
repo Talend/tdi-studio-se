@@ -99,7 +99,7 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
                 monitor.worked(1);
             }
 
-            ICarInstallationResult instResult = installCarFeatures(carFeatures, monitor);
+            ICarInstallationResult instResult = installCarFeatures(carFeatures, share, monitor);
             if (instResult.needRestart()) {
                 result.setNeedRestart(instResult.needRestart());
             }
@@ -112,7 +112,8 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
     }
 
     @Override
-    public ICarInstallationResult installCarFeatures(Collection<ITaCoKitCarFeature> features, IProgressMonitor monitor)
+    public ICarInstallationResult installCarFeatures(Collection<ITaCoKitCarFeature> features, boolean share,
+            IProgressMonitor monitor)
             throws Exception {
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -136,6 +137,11 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
                                 carFeature.getName()));
                         carFeature.setAutoReloadAfterInstalled(false);
                         IStatus installStatus = carFeature.install(monitor, Collections.EMPTY_LIST);
+                        if (share) {
+                            // won't share here, just copy file to installed folder
+                            carFeature.setShareEnable(false);
+                            carFeature.syncComponentsToInstalledFolder(monitor, carFeature.getStorage().getFeatureFile(monitor));
+                        }
                         result.getInstalledStatus().put(carFeature.getCarFile(monitor), installStatus);
                         if (carFeature.needRestart()) {
                             result.setNeedRestart(true);
