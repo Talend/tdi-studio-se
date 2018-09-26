@@ -73,13 +73,16 @@ public class MySQLDefaultDBVersion extends AbstractJobMigrationTask{
                  String dbType = ComponentUtilities.getNodePropertyValue(node, "DBTYPE");
                  if (!"MYSQL".equals(dbType)) return;
                  dbVersion = ComponentUtilities.getNodePropertyValue(node, "DB_MYSQL_VERSION");
+                 if (dbVersion==null) {
+                     ComponentUtilities.addNodeProperty(node, "DB_MYSQL_VERSION", "CLOSED_LIST");
+                     ComponentUtilities.setNodeValue(node, "DB_MYSQL_VERSION", "MYSQL_5");
+                 }
              } else {
                  dbVersion = ComponentUtilities.getNodePropertyValue(node, "DB_VERSION");
-             }
-
-             if (dbVersion==null) {
-                 ComponentUtilities.addNodeProperty(node, "DB_VERSION", "CLOSED_LIST");
-                 ComponentUtilities.setNodeValue(node, "DB_VERSION", "MYSQL_5");
+                 if (dbVersion==null) {
+                     ComponentUtilities.addNodeProperty(node, "DB_VERSION", "CLOSED_LIST");
+                     ComponentUtilities.setNodeValue(node, "DB_VERSION", "MYSQL_5");
+                 }
              }
          }
      };
