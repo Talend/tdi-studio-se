@@ -3338,6 +3338,9 @@
             class="org.talend.repository.preference.ArtifactRepositoryShareSettingPage"
             id="projectsetting.RepositoryShare"
             title="%projectsetting.RepositoryShare">
+         <tester
+               class="org.talend.repository.preference.ArtifactRepositoryShareSettingPageTester">
+         </tester>
       </page>
    </extension>
    <extension

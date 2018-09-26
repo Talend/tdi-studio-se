@@ -89,8 +89,11 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
     }
 
     private void initFields() {
-        enableShareCheckbox.setSelection(getPreferenceStore().getBoolean(PREF_KEY_SHARE_ENABLE));
+        boolean enableShare = getPreferenceStore().getBoolean(PREF_KEY_SHARE_ENABLE);
+        enableShareCheckbox.setSelection(enableShare);
         repositoryIdText.setText(getPreferenceStore().getString(PREF_KEY_SHARE_REPOSITORY_ID));
+        updateFields(enableShare);
+        setValid(false);
     }
 
     private void addListeners() {
@@ -99,10 +102,8 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
             @Override
             public void widgetSelected(SelectionEvent e) {
                 boolean select = enableShareCheckbox.getSelection();
-                repositoryIdText.setEnabled(select);
-                checkButton.setEnabled(select);
+                updateFields(select);
                 setValid(!select);
-                statusLabel.setImage(IMG_UNKNOWN);
             }
             
         });
@@ -162,6 +163,12 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
             }
         }
         return super.performOk();
+    }
+
+    private void updateFields(boolean select) {
+        repositoryIdText.setEnabled(select);
+        checkButton.setEnabled(select);
+        statusLabel.setImage(IMG_UNKNOWN);
     }
 
 }
