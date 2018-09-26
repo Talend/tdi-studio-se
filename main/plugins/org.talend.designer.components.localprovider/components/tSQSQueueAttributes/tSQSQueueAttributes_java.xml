@@ -169,8 +169,8 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-            <IMPORT NAME="aws-java-sdk-1.11.269.jar" MODULE="aws-java-sdk-1.11.269.jar"
-			    MVN="mvn:com.amazonaws/aws-java-sdk/1.11.269"
+            <IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
+			    MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406"
 			    REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT NAME="Driver-Commons-Logging-1.1.1" MODULE="commons-logging-1.1.1.jar"
 				MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0"
