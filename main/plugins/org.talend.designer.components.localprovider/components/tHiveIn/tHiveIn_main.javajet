@@ -33,6 +33,8 @@ imports="
 
     String theDistribution = ElementParameterParser.getValue(node, "__DISTRIBUTION__");
     String theVersion = ElementParameterParser.getValue(node, "__HIVE_VERSION__");
+    
+	final String studioVersion = org.talend.commons.utils.VersionUtils.getDisplayVersion();
 
 	String quboleClusterLabel = null;
 	String quboleEndpoint = null;
@@ -380,34 +382,23 @@ imports="
         		for (String command : connectionCommandList_<%=cid%>) {
         			queries_<%=cid%> += command;
         			<% if (isLog4jEnabled) { %>
-        				log.info("<%=cid%> - query added: " + command);
+        				log.info("<%=cid%> - configuration properties set: " + command);
         			<% } %>
         		}
         	}
         	
         	String query_<%=cid %> = <%=dbquery%>;
-        <%
-			if (isLog4jEnabled) {
-%>
-				log.info("<%=cid%> - query added: " + query_<%=cid %>.replaceAll("\n", " ").replaceAll(" +", " ") + ";");
-				log.info("<%=cid%> - queries sent to cluster, waiting for execution result ...");
-<%
-			}
-            if (quboleClusterLabel != null) {
-%>
-           		String execution_result_<%=cid%> = instance_<%=cid%>.execute(queries_<%=cid%> + query_<%=cid %> + ";", <%=quboleClusterLabel%>).getResults();
-            <%
-            } else {
-%>
-				String execution_result_<%=cid%> = instance_<%=cid%>.execute(queries_<%=cid%> + query_<%=cid %> + ";").getResults();
-<%
-			}
-			if (isLog4jEnabled) {
-			%>
-				log.info("<%=cid%> - execution finished.");
-			<%
-			}
-			%>
+        	queries_<%=cid%> = queries_<%=cid%> + query_<%=cid %>;
+
+		    org.talend.bigdata.launcher.qubole.QuboleHiveClient.Job job_<%=cid%> =
+		    	new org.talend.bigdata.launcher.qubole.QuboleHiveClient.Job(queries_<%=cid%>);
+			job_<%=cid%>.setJobName("<%=cid%>");
+			job_<%=cid%>.setUserAgent(routines.system.Constant.getUserAgent("<%=studioVersion%>"));
+        	<% if (quboleClusterLabel != null) { %>
+			job_<%=cid%>.setClusterLabel(<%=quboleClusterLabel%>);
+			<% } %>
+			String execution_result_<%=cid%> = instance_<%=cid%>.execute(job_<%=cid%>);
+
 			java.io.InputStream <%=ElementParameterParser.getValue(node, "__INPUT_STREAM_NAME__")%> = new java.io.ByteArrayInputStream(execution_result_<%=cid%>.getBytes());
 			<%
     }
