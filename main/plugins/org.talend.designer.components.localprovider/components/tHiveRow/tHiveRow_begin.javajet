@@ -151,8 +151,7 @@ imports="
 <%
 	}
 
-	// Register jars to handle the parquet format.
-	// TODO: add jar possible on qubole ?
+	// Register jars to handle parquet format.
 
 	java.util.List<String> jarsToRegister = null;
 	java.util.List<String> jars = null;
@@ -221,7 +220,7 @@ imports="
 <%
                             } else if (hiveDistrib.isQuboleDistribution()) {
 %>
-                                // Qubole hive 1.2 supports parquet by default.
+                                // Qubole hive 2.1 supports parquet by default.
 <%
                             } else { // dataproc
                                 if(isLog4jEnabled) {

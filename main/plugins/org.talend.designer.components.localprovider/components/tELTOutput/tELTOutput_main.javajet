@@ -92,7 +92,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         String conn = "conn_" + connection;
         String username = "username_" + connection;
         String connectionKey=null;
-        if(connNode.getComponent().getName().indexOf("tJDBCConnection")<0){
+        if("tSnowflakeConnection".equals(connNode.getComponent().getName())){
            connectionKey=connection+"_Connection";
         }else{
         	  connectionKey=conn;
