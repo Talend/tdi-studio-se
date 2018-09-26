@@ -64,8 +64,6 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
 
     private Object carLock = new Object();
 
-    private boolean share = true;
-
     public TaCoKitCarFeature(ComponentIndexBean indexBean) {
         super(indexBean.getBundleId(), indexBean.getName(), indexBean.getVersion(), indexBean.getDescription(),
                 indexBean.getMvnURI(), indexBean.getImageMvnURI(), indexBean.getProduct(), indexBean.getCompatibleStudioVersion(),
