@@ -46,7 +46,10 @@ import org.talend.updates.runtime.model.InstallationStatus;
 import org.talend.updates.runtime.model.UpdateSiteLocationType;
 import org.talend.updates.runtime.model.interfaces.ITaCoKitCarFeature;
 import org.talend.updates.runtime.nexus.component.ComponentIndexBean;
+import org.talend.updates.runtime.storage.AbstractFeatureStorage;
+import org.talend.updates.runtime.storage.IFeatureStorage;
 import org.talend.updates.runtime.utils.PathUtils;
+import org.talend.utils.io.FilesUtils;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
@@ -435,5 +438,16 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
         InstallationStatus status = new InstallationStatus(InstallationStatus.Status.INSTALLABLE);
         status.setRequiredStudioVersion(getCompatibleStudioVersion());
         return status;
+    }
+
+    @Override
+    public void setStorage(IFeatureStorage storage) {
+        super.setStorage(storage);
+        final File workFolder = PathUtils.getComponentsDownloadedFolder();
+        FilesUtils.deleteFolder(workFolder, false); // empty the folder
+        if (!workFolder.exists()) {
+            workFolder.mkdirs();
+        }
+        ((AbstractFeatureStorage) getStorage()).setFeatDownloadFolder(workFolder);
     }
 }
