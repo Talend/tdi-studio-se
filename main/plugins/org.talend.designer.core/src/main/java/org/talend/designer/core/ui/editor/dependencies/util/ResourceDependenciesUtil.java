@@ -301,12 +301,10 @@ public class ResourceDependenciesUtil {
             String extResPath = getProcessFolder(jobObject) + processJobLabel + SRC_EXTRESOURCE_FOLDER;
             String newFilePath = getResourcePath(model, joblabel.toString(), newVersion);
             File targetFile = project.getFile(new Path(extResPath + SEG_TAG + newFilePath)).getLocation().toFile();
-            if (!targetFile.exists()) {
-                try {
-                    FilesUtils.copyFile(resourceFile, targetFile);
-                } catch (IOException e) {
-                    ExceptionHandler.process(e);
-                }
+            try {
+                FilesUtils.copyFile(resourceFile, targetFile);
+            } catch (IOException e) {
+                ExceptionHandler.process(e);
             }
         }
     }

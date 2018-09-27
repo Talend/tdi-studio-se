@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -46,7 +45,6 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.general.Project;
-import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.ProcessUtils;
@@ -54,7 +52,6 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -64,9 +61,6 @@ import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.core.IDesignerCoreService;
-import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
-import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
-import org.talend.designer.core.ui.editor.dependencies.util.ResourceDependenciesUtil;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
@@ -257,8 +251,6 @@ public class TalendJavaProjectManager {
                     // MavenProjectUtils.disableMavenNature(monitor, talendJobJavaProject.getProject());
                 }
             }
-            // Synchronize resource that job dependencies (copy to src/main/ext-resources)
-            synchronizeResourceFile(property);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -551,48 +543,4 @@ public class TalendJavaProjectManager {
                 item.getProperty());
     }
 
-    private static void synchronizeResourceFile(Property property) throws Exception {
-        Item item = property.getItem();
-        ProcessItem processItem = null;
-        if (item instanceof ProcessItem) {
-            processItem = (ProcessItem) item;
-        } else {
-            return;
-        }
-
-        Set<String> resourceList = new HashSet<String>();
-        List<ContextType> contexts = processItem.getProcess().getContext();
-        for (ContextType context : contexts) {
-            List<ContextParameterType> contextParameter = context.getContextParameter();
-            for (ContextParameterType contextParameterType : contextParameter) {
-                if (JavaTypesManager.RESOURCE.getId().equals(contextParameterType.getType())
-                        || JavaTypesManager.RESOURCE.getLabel().equals(contextParameterType.getType())) {
-                    resourceList.add(contextParameterType.getValue());
-                }
-            }
-        }
-        if (resourceList.isEmpty()) {
-            return;
-        }
-
-        for (String res : resourceList) {
-            if (StringUtils.isBlank(res)) {
-                continue;
-            }
-            String[] parts = res.split("\\|");
-            if (parts.length > 1) {
-                IRepositoryViewObject repoObject = null;
-                if (RelationshipItemBuilder.LATEST_VERSION.equals(parts[1])) {
-                    repoObject = ProxyRepositoryFactory.getInstance().getLastVersion(parts[0]);
-                } else {
-                    repoObject = ProxyRepositoryFactory.getInstance().getSpecificVersion(parts[0], parts[1], true);
-                }
-                if (repoObject != null) {
-                    ResourceDependenciesUtil.copyToExtResourceFolder(repoObject, property.getId(), property.getVersion(),
-                            parts[1], null);
-                }
-            }
-        }
-
-    }
 }

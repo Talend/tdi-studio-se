@@ -14,10 +14,8 @@ package org.talend.repository.resource.ui.wizards;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
-import org.talend.core.service.IResourcesDependenciesService;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizard;
 import org.talend.repository.resource.i18n.Messages;
@@ -56,14 +54,7 @@ public class EditRouteResourcePropertiesWizard extends PropertiesWizard{
         if (designerCoreService != null) {
             designerCoreService.switchToCurContextsView();
         }
-        // to refresh resource dependency table view
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IResourcesDependenciesService.class)) {
-            IResourcesDependenciesService resourceService = (IResourcesDependenciesService) GlobalServiceRegister.getDefault()
-                    .getService(IResourcesDependenciesService.class);
-            if (resourceService != null) {
-                resourceService.refreshDependencyViewer();
-            }
-        }
+        
         return performFinish;
     }
 

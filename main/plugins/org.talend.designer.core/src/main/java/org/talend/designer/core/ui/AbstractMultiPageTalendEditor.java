@@ -909,11 +909,6 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         createPage0();
         createPage1();
         createPage2();
-        
-        // only ee products can show "Dependencies" page
-        if (PluginChecker.isTIS()) {
-            createPage3();
-        }
 
         if (getPageCount() == 1) {
             Composite container = getContainer();

@@ -14,6 +14,9 @@ package org.talend.designer.core.ui.editor.dependencies.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
@@ -22,6 +25,7 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
+import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
@@ -34,11 +38,25 @@ import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.service.IResourcesDependenciesService;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
+import org.talend.designer.core.ui.editor.dependencies.dialog.DependenciesResourceSelectionDialog;
 import org.talend.designer.core.ui.editor.dependencies.model.JobResourceDependencyModel;
 import org.talend.designer.core.ui.editor.dependencies.util.ResourceDependenciesUtil;
 import org.talend.repository.ProjectManager;
 
 public class ResourcesDependenciesService implements IResourcesDependenciesService {
+
+    @Override
+    public String openResourcesDialogForContext(Shell parentShell) {
+        DependenciesResourceSelectionDialog dialog = new DependenciesResourceSelectionDialog(parentShell);
+        if (Dialog.OK == dialog.open()) {
+            Item item = dialog.getResult().getObject().getProperty().getItem();
+            if (item instanceof ResourceItem) {
+                String value = item.getProperty().getId() + "|" + RelationshipItemBuilder.LATEST_VERSION;
+                return value;
+            }
+        }
+        return "";
+    }
 
     @Override
     public void copyToExtResourceFolder(IRepositoryViewObject repoObject, String jobId, String jobVersion, String version,
@@ -139,6 +157,36 @@ public class ResourcesDependenciesService implements IResourcesDependenciesServi
                     ((AbstractMultiPageTalendEditor) part).getDependenciesEditor().setFocus();
                 }
             }
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.service.IResourcesDependenciesService#setDesignerEditorDirtyManually()
+     */
+    @Override
+    public void setContextParameterChangeDirtyManually() {
+        IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        IWorkbenchPage activePage = activeWorkbenchWindow.getActivePage();
+        IEditorPart activeEditor = activePage.getActiveEditor();
+        if (activeEditor instanceof AbstractMultiPageTalendEditor) {
+            boolean dirty = ((AbstractMultiPageTalendEditor) activeEditor).getDesignerEditor().isDirty();
+            //if already dirty, no need 
+            if (dirty) {
+                return;
+            }
+            JobContextManager contextManager = (JobContextManager) ((AbstractMultiPageTalendEditor) activeEditor)
+                    .getDesignerEditor().getProcess().getContextManager();
+            ((AbstractMultiPageTalendEditor) activeEditor).getDesignerEditor().getCommandStack().execute(new Command() {
+
+                @Override
+                public void execute() {
+                    contextManager.setModified(true);
+                    contextManager.fireContextsChangedEvent();
+                }
+            });
+
         }
     }
 
