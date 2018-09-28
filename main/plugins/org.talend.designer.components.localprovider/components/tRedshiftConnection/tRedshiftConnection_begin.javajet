@@ -54,7 +54,7 @@ imports="
 		}
 		
 		public String getDirverClassName(INode node){
-			return "com.amazon.redshift.jdbc41.Driver";
+			return "com.amazon.redshift.jdbc42.Driver";
 		}
 		
 	}//end class
