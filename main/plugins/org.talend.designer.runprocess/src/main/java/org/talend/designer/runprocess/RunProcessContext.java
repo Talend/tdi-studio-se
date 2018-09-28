@@ -1937,7 +1937,8 @@ public class RunProcessContext {
                     endpoint = TalendTextUtils.removeQuotes(endpoint);
                     if (endpoint.startsWith("/"))
                         endpoint = endpoint.substring(1);
-                    url = defaultRestUri + endpoint;
+                    String fullURL = defaultRestUri + endpoint;
+                    url = fullURL.replaceAll("(?<!(http:|https:))//", "/");
                 }
                 if (url != null)
                     addMessage(new ProcessMessage(MsgType.CORE_OUT, "Endpoint deployed at: " + url));
