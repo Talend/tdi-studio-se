@@ -53,6 +53,8 @@ import org.talend.sdk.component.studio.ui.wizard.TaCoKitConfigurationRuntimeData
  */
 public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
 
+    private final boolean isNew;
+
     private Element element;
 
     private TaCoKitWizardComposite tacokitComposite;
@@ -65,8 +67,10 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
 
     private final EComponentCategory category;
 
-    public TaCoKitConfigurationWizardPage(final TaCoKitConfigurationRuntimeData runtimeData, final String form) {
+    public TaCoKitConfigurationWizardPage(final TaCoKitConfigurationRuntimeData runtimeData, final String form,
+            final boolean isNew) {
         super(Messages.getString("WizardPage.TaCoKitConfiguration"), runtimeData); //$NON-NLS-1$
+        this.isNew = isNew;
         final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
         setTitle(Messages.getString("TaCoKitConfiguration.wizard.title", configTypeNode.getConfigurationType(), // $NON-NLS-1$
                 configTypeNode.getDisplayName()));
@@ -127,7 +131,7 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
                     .forEach(p -> configurationModel.setValue(p));
             element.setElementParameters(parameters);
             tacokitComposite = new TaCoKitWizardComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
-                    element, configurationModel, true, container.getBackground());
+                    element, configurationModel, true, container.getBackground(), isNew);
             tacokitComposite.setLayoutData(createMainFormData(runtimeData.isAddContextFields()));
 
         } catch (Exception e) {
