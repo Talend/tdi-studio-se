@@ -16,7 +16,6 @@ imports="
     String file = ElementParameterParser.getValue(node,"__FILE__");
     boolean dieOnError = "true".equals(ElementParameterParser.getValue(node,"__DIE_ON_ERROR__"));
     boolean use_select = "true".equals(ElementParameterParser.getValue(node,"__USE_SELECT__"));
-    boolean file_compressed = "true".equals(ElementParameterParser.getValue(node,"__FILE_COMPRESSED__"));
     String header_type = ElementParameterParser.getValue(node,"__HEADER_TYPE__");
     boolean advance_csv = "true".equals(ElementParameterParser.getValue(node,"__ADVANCE_CSV__"));
     boolean globalmap_inputstream = "true".equals(ElementParameterParser.getValue(node,"__GLOBALMAP_INPUTSTREAM__"));
@@ -119,9 +118,7 @@ imports="
         <%}else{//APACHE_PARQUET%>
             inputSerialization_<%=cid%>.setParquet(new com.amazonaws.services.s3.model.ParquetInput());
         <%}%>
-        <%if(file_compressed){%>
         inputSerialization_<%=cid%>.setCompressionType(com.amazonaws.services.s3.model.CompressionType.<%=compressed_type%>);
-        <%}%>
         request_<%=cid%>.setInputSerialization(inputSerialization_<%=cid%>);
         com.amazonaws.services.s3.model.OutputSerialization outputSerialization_<%=cid%> = new com.amazonaws.services.s3.model.OutputSerialization();
         <%if(config_output){%>
