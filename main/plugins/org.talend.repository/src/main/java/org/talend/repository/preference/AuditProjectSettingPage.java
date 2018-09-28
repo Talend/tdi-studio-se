@@ -47,6 +47,9 @@ import org.talend.commons.ui.swt.formtools.LabelledCombo;
 import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.database.EDatabase4DriverClassName;
+import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.ICommandLineService;
@@ -262,15 +265,37 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             public void modifyText(final ModifyEvent e) {
                 String selectedItem = ((Combo) e.getSource()).getText();
                 String dbType = SupportDBUrlStore.getInstance().getDBType(selectedItem);
-                driverText.setText(SupportDBUrlStore.getInstance().getDBUrlType(dbType).getDbDriver());
                 urlText.setText(SupportDBUrlStore.getInstance().getDefaultDBUrl(dbType));
                 dbVersionCombo.getCombo().setItems(SupportDBVersions.getDisplayedVersions(dbType));
                 if (dbVersionCombo.getCombo().getItemCount() > 0) {
                     dbVersionCombo.getCombo().select(0);
                 }
+                String driverClassName = SupportDBUrlStore.getInstance().getDBUrlType(dbType).getDbDriver();
+                if (EDatabaseTypeName.MYSQL.getDisplayName().equalsIgnoreCase(dbType)) {
+                    if (EDatabaseVersion4Drivers.MYSQL_8.getVersionValue().equals(getCurrentDBVersion())) {
+                        driverClassName = EDatabase4DriverClassName.MYSQL8.getDriverClass();
+                    }
+                }
+                driverText.setText(driverClassName);
                 //
                 usernameText.setText("");//$NON-NLS-1$
                 passwordText.setText("");//$NON-NLS-1$
+            }
+        });
+
+        dbVersionCombo.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(final ModifyEvent e) {
+                String selectedItem = dbTypeCombo.getCombo().getText();
+                String dbType = SupportDBUrlStore.getInstance().getDBType(selectedItem);
+                String driverClassName = SupportDBUrlStore.getInstance().getDBUrlType(dbType).getDbDriver();
+                if (EDatabaseTypeName.MYSQL.getDisplayName().equalsIgnoreCase(dbType)) {
+                    if (EDatabaseVersion4Drivers.MYSQL_8.getVersionValue().equals(getCurrentDBVersion())) {
+                        driverClassName = EDatabase4DriverClassName.MYSQL8.getDriverClass();
+                    }
+                }
+                driverText.setText(driverClassName);
             }
         });
 

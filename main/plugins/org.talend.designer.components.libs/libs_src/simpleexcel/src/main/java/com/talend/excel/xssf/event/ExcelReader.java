@@ -56,6 +56,8 @@ public class ExcelReader implements Callable {
 
     DefaultTalendSheetContentsHandler sheetContentsHandler = null;
 
+    private boolean includePhoneticRuns;
+
     public ExcelReader() {
         cache = DataBufferCache.getInstance();
         futureTask = new FutureTask(this);
@@ -98,6 +100,14 @@ public class ExcelReader implements Callable {
         sheetContentsHandler.stop();
     }
 
+    public boolean isIncludePhoneticRuns() {
+        return includePhoneticRuns;
+    }
+
+    public void setIncludePhoneticRuns(boolean includePhoneticRuns) {
+        this.includePhoneticRuns = includePhoneticRuns;
+    }
+
     /**
      * handle the exception in task. FutureTask.get() is a block method waiting for the Task over and it can throw the
      * exception in Task(Callable,Thread,Runnable)
@@ -119,7 +129,7 @@ public class ExcelReader implements Callable {
             XSSFReader r = new XSSFReader(pkg);
 
             StylesTable styles = r.getStylesTable();
-            ReadOnlySharedStringsTable strings = new ReadOnlySharedStringsTable(pkg);
+            ReadOnlySharedStringsTable strings = new ReadOnlySharedStringsTable(pkg, includePhoneticRuns);
             sheetContentsHandler = new DefaultTalendSheetContentsHandler(cache);
             DataFormatter formatter = new DataFormatter();
             boolean formulasNotResults = false;
@@ -132,15 +142,15 @@ public class ExcelReader implements Callable {
             XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) r.getSheetsData();
             // List<InputStream> iss = new ArrayList<InputStream>();
             LinkedHashMap<String, InputStream> issmap = new LinkedHashMap<String, InputStream>();
-            List<String> allSheetNames= new ArrayList<String>();
+            List<String> allSheetNames = new ArrayList<String>();
             int sheetPosition = 0;
             while (sheets.hasNext()) {
                 InputStream sheet = sheets.next();
                 String sheetName = sheets.getSheetName();
-                if(allSheetNames.contains(sheetName)){
+                if (allSheetNames.contains(sheetName)) {
                     sheet.close();
                     continue;
-                }else{
+                } else {
                     allSheetNames.add(sheetName);
                 }
                 boolean match = false;

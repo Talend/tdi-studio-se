@@ -83,6 +83,30 @@
 			</build>
 		</profile>
 		<profile>
+			<id>signature</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.talend.ci</groupId>
+						<artifactId>signer-maven-plugin</artifactId>
+						<version>${talend.version}</version>
+						<executions>
+							<execution>
+								<id>sign</id>
+								<phase>package</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>default-settings</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>

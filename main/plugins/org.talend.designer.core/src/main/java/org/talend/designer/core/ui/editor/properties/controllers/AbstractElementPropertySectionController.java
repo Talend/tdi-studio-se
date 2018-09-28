@@ -1596,7 +1596,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 realTableName = metadataTable.getTableName();
             }
         }
-        connParameters.setDbType(type);
+        connParameters.setDbType(type); 
         connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(type));
         connParameters.setSchemaName(QueryUtil.getTableName(elem, connParameters.getMetadataTable(),
                 TalendTextUtils.removeQuotes(schema), type, realTableName));
