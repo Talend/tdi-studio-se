@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
@@ -245,9 +246,15 @@ public class DbInfo {
             } else {
                 driverClassName = EDatabase4DriverClassName.HIVE.getDriverClass();
             }
-        } else if (EDatabaseTypeName.MYSQL.getDisplayName().equals(dbType)
-                && EDatabaseVersion4Drivers.MARIADB.getVersionValue().equals(dbVersion)) {
-            driverClassName = EDatabase4DriverClassName.MARIADB.getDriverClass();
+        } else if (EDatabaseTypeName.MYSQL.getDisplayName().equals(dbType)) {
+            if (EDatabaseVersion4Drivers.MYSQL_8.getVersionValue().equals(dbVersion)) {
+                driverClassName = EDatabase4DriverClassName.MYSQL8.getDriverClass();
+            } else if (EDatabaseVersion4Drivers.MARIADB.getVersionValue().equals(dbVersion)) {
+                driverClassName = EDatabase4DriverClassName.MARIADB.getDriverClass();
+            }
+            if (StringUtils.isEmpty(driverClassName)) {
+                driverClassName = EDatabase4DriverClassName.MYSQL.getDriverClass();
+            }
         } else if (dbType.equals(EDatabaseTypeName.VERTICA.getXmlName())) {
             if (EDatabaseVersion4Drivers.VERTICA_6.getVersionValue().equals(dbVersion)
                     || EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersion)

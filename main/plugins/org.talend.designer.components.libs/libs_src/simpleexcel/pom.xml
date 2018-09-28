@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.talend.libraries</groupId>
-  <artifactId>simpleexcel-1.2-20171120</artifactId>
+  <artifactId>simpleexcel-2.0-20180927</artifactId>
   <version>6.0.0</version>
   <packaging>jar</packaging>
 

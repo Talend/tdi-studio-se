@@ -274,6 +274,7 @@ if (!isParallelize) {
                                         }
                                     }
                                 }
+                                if (dbnameMySQL == null || dbnameMySQL.isEmpty()) dbnameMySQL = "\"\"";
                             %>
                                 java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
                                 boolean whetherExist_<%=cid%> = false;

@@ -1201,12 +1201,14 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 %>
 <%
 		} else {//version judgement /***excel 2007 xlsx and event mode*****/
+		    boolean includePhoneticRuns = "true".equals(ElementParameterParser.getValue(node,"__INCLUDE_PHONETICRUNS__"));
 %>
 		Object source_<%=cid %> = <%=fileName%>;
 		com.talend.excel.xssf.event.ExcelReader excelReader_<%=cid%> = null;
 
 		if(source_<%=cid %> instanceof java.io.InputStream || source_<%=cid %> instanceof String){
 			excelReader_<%=cid%> = new com.talend.excel.xssf.event.ExcelReader();
+			excelReader_<%=cid%>.setIncludePhoneticRuns(<%=includePhoneticRuns%>);
 		}else{
 			throw new java.lang.Exception("The data source should be specified as Inputstream or File Path!");
 		}
