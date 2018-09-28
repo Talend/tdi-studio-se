@@ -14,7 +14,6 @@ package org.talend.sdk.component.studio.metadata.model;
 
 import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_ID;
 import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_PARENT_ID;
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_VERSION;
 import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_PARENT_ITEM_ID;
 
 import java.util.Arrays;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,9 +59,6 @@ public class TaCoKitConfigurationModel {
         this.configType = configType;
         setConfigurationId(configType.getId());
         setParentConfigurationId(configType.getParentId());
-        if (!isVersionSet()) {
-            setVersion(getConfigurationVersion());
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -83,18 +80,12 @@ public class TaCoKitConfigurationModel {
         return !StringUtils.isEmpty(getConfigId(connection));
     }
 
-    private boolean isVersionSet() {
-        return getAllProperties().containsKey(TACOKIT_CONFIG_VERSION);
-    }
-
     public int getVersion() {
-        final String version = (String) getAllProperties().get(TACOKIT_CONFIG_VERSION);
+        final String version = Optional.ofNullable(getProperties().get(configType.getProperties().stream()
+                .filter(p -> p.getName().equals(p.getPath()))
+                .findFirst().map(SimplePropertyDefinition::getPath).orElse("configuration") + ".__version"))
+                .orElse("-1");
         return Integer.parseInt(version);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void setVersion(final int version) {
-        getAllProperties().put(TACOKIT_CONFIG_VERSION, Integer.toString(version));
     }
 
     public int getConfigurationVersion() {
@@ -240,7 +231,6 @@ public class TaCoKitConfigurationModel {
     public void migrate(final Map<String, String> migratedProperties) {
         clear();
         getAllProperties().putAll(migratedProperties);
-        setVersion(getConfigurationVersion());
     }
 
     /**
@@ -299,13 +289,11 @@ public class TaCoKitConfigurationModel {
 
         static final String TACOKIT_CONFIG_ID = "__TACOKIT_CONFIG_ID"; //$NON-NLS-1$
 
-        static final String TACOKIT_CONFIG_VERSION = "__TACOKIT_CONFIG_VERSION"; //$NON-NLS-1$
-
         static final String TACOKIT_CONFIG_PARENT_ID = "__TACOKIT_CONFIG_PARENT_ID"; //$NON-NLS-1$
 
         static final String TACOKIT_PARENT_ITEM_ID = "__TACOKIT_PARENT_ITEM_ID"; //$NON-NLS-1$
 
-        private static final Set<String> keys = new HashSet<>(Arrays.asList(TACOKIT_CONFIG_ID, TACOKIT_CONFIG_VERSION,
+        private static final Set<String> keys = new HashSet<>(Arrays.asList(TACOKIT_CONFIG_ID,
                 TACOKIT_CONFIG_PARENT_ID, TACOKIT_PARENT_ITEM_ID));
 
         static boolean isBuiltIn(final String key) {
