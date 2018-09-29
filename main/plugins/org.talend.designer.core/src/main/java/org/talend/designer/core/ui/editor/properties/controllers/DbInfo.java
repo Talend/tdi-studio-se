@@ -268,6 +268,8 @@ public class DbInfo {
                 driverClassName = EDatabase4DriverClassName.SYBASEIQ_16.getDriverClass();
             } else if (EDatabaseVersion4Drivers.SYBASEASE.getVersionValue().equals(dbVersion)) {
                 driverClassName = EDatabase4DriverClassName.SYBASEIQ.getDriverClass();
+            }else if(EDatabaseVersion4Drivers.SYBASEIQ_16_SA.getVersionValue().equals(dbVersion)) {
+            	driverClassName = EDatabase4DriverClassName.SYBASEIQ_16_SA.getDriverClass();
             }
         } else if (EDatabaseTypeName.MSSQL.getDisplayName().equals(dbType)
                 && EDatabaseVersion4Drivers.MSSQL_PROP.getVersionValue().equals(dbVersion)) {

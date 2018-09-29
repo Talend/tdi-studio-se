@@ -34,11 +34,14 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
 
     private final IValueChangedListener configurationUpdater;
 
+    private final boolean isNew;
+
     public TaCoKitWizardComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
             final Element element, final TaCoKitConfigurationModel model, final boolean isCompactView,
-            final Color backgroundColor) {
+            final Color backgroundColor, final boolean isNew) {
         super(parentComposite, styles, section, element, isCompactView, backgroundColor);
         this.configurationModel = model;
+        this.isNew = isNew;
         configurationUpdater = new ConfigurationModelUpdater();
         init();
     }
@@ -72,6 +75,10 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
                 .filter(TaCoKitElementParameter::isPersisted)
                 .forEach(parameter -> {
                     parameter.addValueChangeListener(configurationUpdater);
+                    if (isNew) {
+                        parameter.setValue(parameter.getValue());
+                        return;
+                    }
                     try {
                         ValueModel valueModel = configurationModel.getValue(parameter.getName());
                         if (valueModel != null) {

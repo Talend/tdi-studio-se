@@ -20,10 +20,9 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
-import org.talend.camel.core.model.camelProperties.RouteResourceItem;
-import org.talend.camel.model.CamelRepositoryNodeType;
 import org.talend.commons.ui.swt.actions.ITreeContextualAction;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.repository.ProjectManager;
@@ -73,7 +72,7 @@ public class CreateRouteResourceAction extends AContextualAction implements ITre
         WizardDialog dlg = new WizardDialog(Display.getCurrent().getActiveShell(), wizard);
         int open = dlg.open();
         if (open == Window.OK) {
-            RouteResourceItem item = wizard.getItem();
+            ResourceItem item = wizard.getItem();
             IWorkbenchPage page = getActivePage();
             RouteResourceEditorUtil.openEditor(page, null, item);
         }
@@ -93,7 +92,7 @@ public class CreateRouteResourceAction extends AContextualAction implements ITre
             case SIMPLE_FOLDER:
             case SYSTEM_FOLDER:
                 ERepositoryObjectType nodeType = (ERepositoryObjectType) node.getProperties(EProperties.CONTENT_TYPE);
-                if (nodeType != CamelRepositoryNodeType.repositoryRouteResourceType) {
+                if (nodeType != ERepositoryObjectType.RESOURCES) {
                     canWork = false;
                 }
                 if (node.getObject() != null && node.getObject().isDeleted()) {
