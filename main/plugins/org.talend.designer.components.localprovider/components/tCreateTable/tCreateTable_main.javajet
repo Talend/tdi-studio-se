@@ -2426,13 +2426,14 @@ if(columnList != null && columnList.size() > 0) {
                 List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
                 String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                 if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL) || "".equals(dbnameMySQL)) {
-                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
-                        for (INode ne : nodes) {
-                            if (connectionMySQL.equals(ne.getUniqueName())) {
-                                dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
-                            }
+                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION_MYSQL__");
+                    for (INode ne : nodes) {
+                        if (connectionMySQL.equals(ne.getUniqueName())) {
+                            dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
                         }
                     }
+                }
+                if (dbnameMySQL == null || dbnameMySQL.isEmpty()) dbnameMySQL = "\"\"";
             %>
                 java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
                 java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
