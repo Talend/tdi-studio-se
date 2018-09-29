@@ -26,6 +26,9 @@ public class ArtifactRepositoryShareSettingPageInitializer extends AbstractPrefe
         preferenceStore.setDefault(ArtifactRepositoryShareSettingPage.PREF_KEY_SHARE_ENABLE, true);
         preferenceStore.setDefault(ArtifactRepositoryShareSettingPage.PREF_KEY_SHARE_REPOSITORY_ID,
                 ArtifactRepositoryShareSettingPage.DEFAULT_REPOSITORY_ID);
+        preferenceStore.setDefault(ArtifactRepositoryShareSettingPage.PREF_KEY_CHECK_UPDATE_PER_DAYS, 2);
+        preferenceStore.setDefault(ArtifactRepositoryShareSettingPage.PREF_KEY_AUTO_CHECK_UPDATE, true);
+        preferenceStore.setDefault(ArtifactRepositoryShareSettingPage.PREF_KEY_SHOW_WARN_DIALOG_WHEN_INSTALLING_FEATURES, true);
 
     }
 
