@@ -42,6 +42,17 @@ public class UpdateUrlForRedShiftMigrationTask extends AbstractItemMigrationTask
                             }
                         }
                     }
+                    if (EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equals(dbConn.getDatabaseType())) {
+                        String oldUrl = dbConn.getURL(); // old url: //jdbc:[postgresql|paraccel]://localhost:5439/test
+                        if (oldUrl != null) {
+                            String newUrl = oldUrl.replaceFirst("jdbc:\\w+:", "jdbc:redshift:iam:"); //$NON-NLS-1$ //$NON-NLS-2$
+                            if (!oldUrl.equals(newUrl)) {
+                                dbConn.setURL(newUrl);
+                                ProxyRepositoryFactory.getInstance().save(item, true);
+                                return ExecutionResult.SUCCESS_NO_ALERT;
+                            }
+                        }
+                    }
                 } catch (PersistenceException e) {
                     ExceptionHandler.process(e);
                     return ExecutionResult.FAILURE;
