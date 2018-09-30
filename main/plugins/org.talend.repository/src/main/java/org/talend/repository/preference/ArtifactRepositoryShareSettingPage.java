@@ -55,7 +55,10 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     public static final String PREF_KEY_SHOW_WARN_DIALOG_WHEN_INSTALLING_FEATURES = "showWarnDialogWhenInstallingFeatures"; //$NON-NLS-1$
 
-    private static final int CHECK_UPDATE_PER_DAYS_MIN = 1;
+    /**
+     * If 0, then means will check update for each startup
+     */
+    private static final int CHECK_UPDATE_PER_DAYS_MIN = 0;
 
     private static final int CHECK_UPDATE_PER_DAYS_MAX = 365000;
 

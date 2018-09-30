@@ -226,49 +226,6 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
         return strBuffer.toString();
     }
 
-    @Override
-    public int compareTo(Object o) {
-        if (o == null) {
-            return 1;
-        }
-        if (o instanceof TaCoKitCarFeature) {
-            if (((TaCoKitCarFeature) o).car == null) {
-                TaCoKitCarFeature oFeature = (TaCoKitCarFeature) o;
-                String iName = getId() + "." + getVersion(); //$NON-NLS-1$
-                String oName = oFeature.getId() + "." + oFeature.getVersion(); //$NON-NLS-1$
-                return iName.compareTo(oName);
-            }
-        }
-        TaCoKitCar sTckCar = null;
-        try {
-            sTckCar = getCar(new NullProgressMonitor());
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-        TaCoKitCar oTckCar = null;
-        if (o instanceof TaCoKitCarFeature) {
-            try {
-                oTckCar = ((TaCoKitCarFeature) o).getCar(new NullProgressMonitor());
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-            }
-        } else if (o instanceof TaCoKitCar) {
-            oTckCar = (TaCoKitCar) o;
-        } else {
-            return -1;
-        }
-        if (oTckCar == null || sTckCar == null) {
-            if (oTckCar != null) {
-                return -1;
-            } else if (sTckCar != null) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-        return sTckCar.compareTo(oTckCar);
-    }
-
     @SuppressWarnings("nls")
     @Override
     public String toString() {
