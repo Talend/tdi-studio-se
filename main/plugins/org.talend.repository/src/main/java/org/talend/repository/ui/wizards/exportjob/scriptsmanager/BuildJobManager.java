@@ -72,6 +72,7 @@ import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.ui.utils.ZipToFile;
 import org.talend.repository.ui.wizards.exportjob.JavaJobExportReArchieveCreator;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
+import org.talend.repository.ui.wizards.exportjob.handler.AbstractBuildJobHandler;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.util.ExportJobUtil;
 import org.talend.utils.io.FilesUtils;
@@ -238,6 +239,11 @@ public class BuildJobManager {
                     .getTalendJobJavaProject(processItem.getProperty());
             final IBuildJobHandler buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context, version,
                     exportChoiceMap, jobExportType);
+            boolean isSignJob = false;
+            if (buildJobHandler instanceof AbstractBuildJobHandler) {
+                AbstractBuildJobHandler absBuildJobHandler = (AbstractBuildJobHandler)buildJobHandler;
+                isSignJob = absBuildJobHandler.canSignJob();
+            }
             final IWorkspaceRunnable op = new IWorkspaceRunnable() {
 
                 @Override
@@ -343,6 +349,16 @@ public class BuildJobManager {
                     }
                     FilesUtils.copyFile(jobZipFile, jobFileTarget);
                     TimeMeasure.step(timeMeasureId, "Copy packaged file to target");
+                    if (isSignJob) {
+                        for (String line : logMsg.split("\n")) { //$NON-NLS-1$
+                            if (line.startsWith("[ERROR]") && line.indexOf(TalendMavenConstants.SIGNER_MAVEN_PLUGIN_NAME) > 0) { //$NON-NLS-1$
+                                causeMsg += ". Sign archive failed."; //$NON-NLS-1$
+                                throw new Exception(
+                                        Messages.getString("BuildJobManager.mavenErrorMessage", mvnLogFilePath) + "\n" + logMsg, //$NON-NLS-1$
+                                        new Throwable(causeMsg));
+                            }
+                        }
+                    }
                 } else {
                     for (String line : logMsg.split("\n")) { //$NON-NLS-1$
                         if (line.startsWith("[ERROR] Tests run")) { //$NON-NLS-1$

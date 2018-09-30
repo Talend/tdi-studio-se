@@ -46,6 +46,7 @@
                         }
                     }
                 }
+                if (dbnameMySQL == null || dbnameMySQL.isEmpty()) dbnameMySQL = "\"\"";
 %>
                 java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"});
                 boolean whetherExist_<%=cid%> = false;
