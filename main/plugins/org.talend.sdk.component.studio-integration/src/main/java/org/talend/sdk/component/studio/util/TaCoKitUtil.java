@@ -89,8 +89,7 @@ public class TaCoKitUtil {
             if (parentTypeNode == null) {
                 throw new NullPointerException("Can't find parent node: " + parentId);
             }
-            IPath parentPath = getTaCoKitBaseFolder(parentTypeNode);
-            baseFolderPath = parentPath;
+            baseFolderPath = getTaCoKitBaseFolder(parentTypeNode);
         }
         // better to use lowercase, since different OS support different path name
         String configName = getTaCoKitFolderName(configNode);

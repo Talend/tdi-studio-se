@@ -142,6 +142,14 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 argumentsMap.put(TalendProcessArgumentConstant.ARG_LOG4J_LEVEL, this.exportChoice.get(ExportChoice.log4jLevel));
             }
         }
+        
+        //launcher
+        boolean needLauncher = isOptionChoosed(ExportChoice.needLauncher);
+        if(needLauncher){
+        	argumentsMap.put(TalendProcessArgumentConstant.ARG_NEED_LAUNCHER, needLauncher);
+        	Object launcher = this.exportChoice.get(ExportChoice.launcherName);
+            argumentsMap.put(TalendProcessArgumentConstant.ARG_LAUNCHER_NAME, launcher);
+        }
 
         // generation option
         int generationOption = (isOptionChoosed(ExportChoice.includeTestSource) || isOptionChoosed(ExportChoice.executeTests)) ? ProcessorUtilities.GENERATE_ALL_CHILDS

@@ -2,9 +2,81 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            activeByDefault="true"
+            contentProvider="org.talend.repository.resource.view.content.ResourcesContentProvider"
+            id="org.talend.repository.view.route.route_resource"
+            labelProvider="org.talend.repository.viewer.label.RepositoryViewLabelProvider"
+            name="Resources" >
+         <triggerPoints>
+            <or>
+               <adapt
+                     type="org.talend.core.repository.model.ProjectRepositoryNode">
+               </adapt>
+               <instanceof
+                     value="org.talend.core.repository.model.ProjectRepositoryNode">
+               </instanceof>
+               <and>
+                  <instanceof
+                        value="org.talend.repository.model.RepositoryNode">
+                  </instanceof>
+                  <test
+                        forcePluginActivation="true"
+                        property="org.talend.repository.node.resources.isRouteResourceNode">
+                  </test>
+               </and>
+            </or>
+         </triggerPoints>
+         <possibleChildren>
+            <and>
+               <instanceof
+                     value="org.talend.repository.model.RepositoryNode">
+               </instanceof>
+               <test
+                     forcePluginActivation="true"
+                     property="org.talend.repository.node.resources.isRouteResourceNode">
+               </test>
+            </and>
+         </possibleChildren>
+         <actionProvider
+               class="org.talend.repository.viewer.action.RepoNodeActionProvider"
+               id="org.talend.repository.route.resources.action.provider.id">
+            <enablement>
+               <and>
+                  <instanceof
+                        value="org.talend.repository.model.RepositoryNode">
+                  </instanceof>
+                  <test
+                        forcePluginActivation="true"
+                        property="org.talend.repository.node.resources.isRouteResourceNode">
+                  </test>
+                  <not>
+                     <test
+                           forcePluginActivation="true"
+                           property="org.talend.repository.node.isDeleted">
+                     </test>
+                  </not>
+               </and>
+            </enablement>
+         </actionProvider>
+      </navigatorContent>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.talend.repository.resource.view.tester.ResourceNodeTester"
+            id="org.talend.repository.node.resources.tester"
+            namespace="org.talend.repository.node.resources"
+            properties="isRouteResourceNode"
+            type="org.talend.repository.model.RepositoryNode">
+      </propertyTester>
+   </extension>
+   
+   <extension
          point="org.talend.core.repository.repository_node_provider">
       <repositoryNode
-            folder="route_resources"
+            folder="resources"
             isAllowMultiName="true"
             isAllowPlainFolder="true"
             isResouce="true"
@@ -13,9 +85,30 @@
             name_pattern="\w+([\.-]\w+)*"
             ordinal="45"
             products="DI"
-            type="ROUTE_RESOURCES">
+            type="RESOURCES">
       </repositoryNode>
    </extension>
+   
+   <extension
+         point="org.talend.repository.items.importexport.handler">
+      <importItemsProvider
+            id="org.talend.repository.resource.handler.ResourceImportHandler"
+            name="Resources importer"
+            priority="NORMAL">
+         <importItemsHandler
+               class="org.talend.repository.resource.handler.RouteResourceImportHandler">
+            <parameter
+                  name="type"
+                  value="RESOURCES">
+            </parameter>
+         </importItemsHandler>
+      </importItemsProvider>
+   </extension>
+   
+       <extension point="org.talend.core.repository.repository_content">
+        <RepositoryContent class="org.talend.repository.resource.handler.ResourcesRepositoryContentHandler" />
+    </extension>
+
    <extension
          point="org.talend.core.repositoryContextualsActions">
       <Action
@@ -63,6 +156,7 @@
             id="org.talend.repository.resource.editors.RouteResourceEditor">
       </editor>
    </extension>
+
    <extension
          point="org.talend.repository.items.importexport.handler">
       <importItemsProvider
@@ -77,6 +171,33 @@
             </parameter>
          </importItemsHandler>
       </importItemsProvider>
+   </extension>
+   <extension
+         point="org.talend.core.runtime.itemRelationship">
+      <itemHandler
+            class="org.talend.repository.resource.handler.JobResourceItemRelationshipHandler"
+            id="org.talend.repository.resource.itemHandler.JobResources"
+            name="Job Resources">
+      </itemHandler>
+   </extension>
+   <extension
+         point="org.talend.core.repository.checkDeleteItemReference">
+      <check
+            class="org.talend.repository.resource.delete.CheckJobResourceDeleteReference"
+            priority="normal">
+      </check>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="org.talend.repository.cnf.view">
+         <includes>
+            <contentExtension
+                  pattern="org.talend.repository.view.route.route_resource">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
    </extension>
 
 </plugin>

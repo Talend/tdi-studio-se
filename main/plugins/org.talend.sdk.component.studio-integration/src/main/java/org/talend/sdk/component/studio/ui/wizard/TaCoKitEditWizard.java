@@ -31,6 +31,10 @@ import org.talend.sdk.component.studio.i18n.Messages;
  */
 public class TaCoKitEditWizard extends TaCoKitConfigurationWizard {
 
+    @Override protected boolean isNew() {
+        return false;
+    }
+
     public TaCoKitEditWizard(final IWorkbench workbench, final TaCoKitConfigurationRuntimeData runtimeData) {
         super(workbench, runtimeData);
     }
@@ -55,15 +59,11 @@ public class TaCoKitEditWizard extends TaCoKitConfigurationWizard {
      */
     @Override
     protected IWorkspaceRunnable createFinishOperation() {
-        return new IWorkspaceRunnable() {
-
-            @Override
-            public void run(final IProgressMonitor monitor) throws CoreException {
-                try {
-                    updateConfigurationItem();
-                } catch (Exception e) {
-                    throw new CoreException(new Status(IStatus.ERROR, GAV.INSTANCE.getArtifactId(), e.getMessage(), e));
-                }
+        return monitor -> {
+            try {
+                updateConfigurationItem();
+            } catch (Exception e) {
+                throw new CoreException(new Status(IStatus.ERROR, GAV.INSTANCE.getArtifactId(), e.getMessage(), e));
             }
         };
     }

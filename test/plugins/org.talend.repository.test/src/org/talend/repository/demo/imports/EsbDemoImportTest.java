@@ -43,7 +43,7 @@ public class EsbDemoImportTest extends DemosImportTest {
 
 	String BEANS = "BEANS"; //$NON-NLS-1$
 
-	String ROUTE_RESOURCES = "ROUTE_RESOURCES"; //$NON-NLS-1$
+    String ROUTE_RESOURCES = "RESOURCES"; //$NON-NLS-1$
 
 	String SERVICES = "SERVICES"; //$NON-NLS-1$
 	private String rootPath = null;
@@ -95,7 +95,7 @@ public class EsbDemoImportTest extends DemosImportTest {
 
 		// test the route_resources items under ESB_Demo.zip
 		int currentRouteResourcesSize = ProxyRepositoryFactory.getInstance()
-				.getAll(ERepositoryObjectType.valueOf(ERepositoryObjectType.class, ROUTE_RESOURCES)).size();
+                .getAll(ERepositoryObjectType.valueOf(ERepositoryObjectType.class, ROUTE_RESOURCES)).size();
 		Assert.assertTrue(currentRouteResourcesSize > 0);
 		List<File> demoRouteResourceFiles = getDemoItemFileList(rootPath + File.separator + routeResourcePath);
 		Assert.assertTrue(demoRouteResourceFiles.size() > 0);

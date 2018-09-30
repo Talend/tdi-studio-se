@@ -16,10 +16,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.talend.camel.core.model.camelProperties.RouteResourceItem;
-import org.talend.camel.model.CamelRepositoryNodeType;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IRepositoryNode;
@@ -57,7 +57,7 @@ public class EditRouteResourceAction extends AContextualAction {
 
 	@Override
 	public Class<?> getClassForDoubleClick() {
-		return RouteResourceItem.class;
+        return ResourceItem.class;
 	}
 
     @Override
@@ -66,7 +66,7 @@ public class EditRouteResourceAction extends AContextualAction {
             && !ProxyRepositoryFactory.getInstance().isUserReadOnlyOnCurrentProject();
         if (canWork) {
             final IRepositoryNode node = (IRepositoryNode) selection.getFirstElement();
-            canWork = node.getObjectType() == CamelRepositoryNodeType.repositoryRouteResourceType
+            canWork = node.getObjectType() == ERepositoryObjectType.RESOURCES
                 && node.getObject() != null
                 && ProxyRepositoryFactory.getInstance().getStatus(node.getObject()) != ERepositoryStatus.DELETED
                 && ProjectManager.getInstance().isInCurrentMainProject(node)
@@ -83,8 +83,8 @@ public class EditRouteResourceAction extends AContextualAction {
 	private void openOrBindEditor(IRepositoryNode node) {
 		final Property property = node.getObject().getProperty();
 		if (property != null) {
-			Assert.isTrue(property.getItem() instanceof RouteResourceItem);
-			final RouteResourceItem item = (RouteResourceItem) property.getItem();
+            Assert.isTrue(property.getItem() instanceof ResourceItem);
+            final ResourceItem item = (ResourceItem) property.getItem();
 			RouteResourceEditorUtil.openEditor(getActivePage(), node, item);
 		}
 
