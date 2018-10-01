@@ -14,12 +14,6 @@ package org.talend.designer.core.ui.wizards;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -50,7 +44,6 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
-import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -70,7 +63,6 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.editor.RepositoryEditorInput;
-import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.services.IOpenJobScriptActionService;
 import org.talend.designer.codegen.ICodeGeneratorService;
 import org.talend.designer.codegen.ISQLPatternSynchronizer;
@@ -253,33 +245,10 @@ public class OpenExistVersionProcessWizard extends Wizard {
                 processObject.getProperty().setVersion(newVersion);
             }
         }
-        if(lastVersion){
+        if (lastVersion) {
             getProperty().setVersion(mainPage.getNewVersion());
         }
-        
-        List<ProcessItem> testcaseList = new ArrayList<ProcessItem>();
-        if(GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-        	ITestContainerProviderService testContainer = (ITestContainerProviderService) GlobalServiceRegister.getDefault().getService(ITestContainerProviderService.class);
-        	List<ProcessItem> allTestCase = testContainer.getAllTestContainers((ProcessItem) processObject.getProperty().getItem());
-        	Map<String,List<ProcessItem>> testcaseMap = new HashMap<String, List<ProcessItem>>();
-    		for (ProcessItem testCaseItem : allTestCase) {
-    			String testId = testCaseItem.getProperty().getId();
-    			if(testcaseMap.get(testId)==null) {
-    				testcaseMap.put(testId, new ArrayList<ProcessItem>());
-    			}
-    			testcaseMap.get(testId).add(testCaseItem);
-    		}
-    		for (String id : testcaseMap.keySet()) {
-    			ProcessItem maxVersionTest = Collections.max(testcaseMap.get(id), new Comparator<ProcessItem>() {
-    				
-    				public int compare(ProcessItem o1, ProcessItem o2) {
-    					return VersionUtils.compareTo(o1.getProperty().getVersion(), o2.getProperty().getVersion());
-    				}
-    			});
-    			testcaseList.add(maxVersionTest);
-    		}
-        }
-        
+
         IProxyRepositoryFactory repositoryFactory = CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
         try {
             repositoryFactory.save(getProperty(), this.originaleObjectLabel, this.originalVersion);
@@ -307,9 +276,10 @@ public class OpenExistVersionProcessWizard extends Wizard {
                         } else if (item instanceof BusinessProcessItem) {
                             CorePlugin.getDefault().getDiagramModelService().openBusinessDiagramEditor(page, fileEditorInput);
                         } else {
-                            ECodeLanguage lang = ((RepositoryContext) CorePlugin.getContext().getProperty(
-                                    Context.REPOSITORY_CONTEXT_KEY)).getProject().getLanguage();
-                            String talendEditorID = "org.talend.designer.core.ui.editor.StandAloneTalend" + lang.getCaseName() + "Editor"; //$NON-NLS-1$ //$NON-NLS-2$
+                            ECodeLanguage lang = ((RepositoryContext) CorePlugin.getContext()
+                                    .getProperty(Context.REPOSITORY_CONTEXT_KEY)).getProject().getLanguage();
+                            String talendEditorID = "org.talend.designer.core.ui.editor.StandAloneTalend" + lang.getCaseName() //$NON-NLS-1$
+                                    + "Editor"; //$NON-NLS-1$
                             page.openEditor(fileEditorInput, talendEditorID);
                         }
                     } else {
@@ -331,24 +301,24 @@ public class OpenExistVersionProcessWizard extends Wizard {
     }
 
     protected RepositoryEditorInput getEditorInput(final Item item, final boolean readonly, final IWorkbenchPage page)
-        throws SystemException {
+            throws SystemException {
         if (item instanceof ProcessItem) {
             ProcessItem processItem = (ProcessItem) item;
             return new ProcessEditorInput(processItem, true, false, readonly);
         } else if (item instanceof BusinessProcessItem) {
             BusinessProcessItem businessProcessItem = (BusinessProcessItem) item;
-            IFile file = CorePlugin.getDefault().getDiagramModelService()
-                .getDiagramFileAndUpdateResource(page, businessProcessItem);
+            IFile file = CorePlugin.getDefault().getDiagramModelService().getDiagramFileAndUpdateResource(page,
+                    businessProcessItem);
             return new RepositoryEditorInput(file, businessProcessItem);
         } else if (item instanceof RoutineItem) {
             final RoutineItem routineItem = (RoutineItem) item;
             final ICodeGeneratorService codeGenService = (ICodeGeneratorService) GlobalServiceRegister.getDefault()
-                .getService(ICodeGeneratorService.class);
+                    .getService(ICodeGeneratorService.class);
             ITalendSynchronizer routineSynchronizer = codeGenService.createRoutineSynchronizer();
             ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
             String lastVersion = factory.getLastVersion(routineItem.getProperty().getId()).getVersion();
             String curVersion = routineItem.getProperty().getVersion();
-            routineSynchronizer.syncRoutine(routineItem, true, true);
+            // routineSynchronizer.syncRoutine(routineItem, true, true);
             final IFile file;
             if (curVersion != null && curVersion.equals(lastVersion)) {
                 file = routineSynchronizer.getFile(routineItem);
@@ -361,7 +331,7 @@ public class OpenExistVersionProcessWizard extends Wizard {
         } else if (item instanceof SQLPatternItem) {
             SQLPatternItem patternItem = (SQLPatternItem) item;
             final ICodeGeneratorService codeGenService = (ICodeGeneratorService) GlobalServiceRegister.getDefault()
-                .getService(ICodeGeneratorService.class);
+                    .getService(ICodeGeneratorService.class);
             ISQLPatternSynchronizer SQLPatternSynchronizer = codeGenService.getSQLPatternSynchronizer();
             SQLPatternSynchronizer.syncSQLPattern(patternItem, true);
             IFile file = SQLPatternSynchronizer.getSQLPatternFile(patternItem);
@@ -387,15 +357,14 @@ public class OpenExistVersionProcessWizard extends Wizard {
                 IOpenJobScriptActionService openJobScriptActionService = (IOpenJobScriptActionService) GlobalServiceRegister
                         .getDefault().getService(IOpenJobScriptActionService.class);
                 if (openJobScriptActionService != null) {
-                    linkedFile = openJobScriptActionService.createWorkspaceLink(fsProject, repositoryNode.getObject()
-                            .getProperty().getItem());
+                    linkedFile = openJobScriptActionService.createWorkspaceLink(fsProject,
+                            repositoryNode.getObject().getProperty().getItem());
                 } else {
-                    linkedFile = createWorkspaceLink(
-                            fsProject,
+                    linkedFile = createWorkspaceLink(fsProject,
                             fsProject.getFolder(ERepositoryObjectType.getFolderName(ERepositoryObjectType.JOB_SCRIPT))
                                     .getFolder(repositoryNode.getParent().getRepositoryPath())
-                                    .getFile(repositoryNode.getObject().getProperty().getLabel()).getLocation(), repositoryNode
-                                    .getObject().getProperty().getVersion());
+                                    .getFile(repositoryNode.getObject().getProperty().getLabel()).getLocation(),
+                            repositoryNode.getObject().getProperty().getVersion());
                 }
 
                 IWorkbenchPage page = getActivePage();
@@ -413,10 +382,8 @@ public class OpenExistVersionProcessWizard extends Wizard {
 
             } else {
                 JobScriptItem jobScriptItem = (JobScriptItem) repositoryNode.getObject().getProperty().getItem();
-                IFile file = ResourcesPlugin
-                        .getWorkspace()
-                        .getRoot()
-                        .getFile(new Path(jobScriptItem.eResource().getURI().path()).removeFirstSegments(1).removeFileExtension());
+                IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(
+                        new Path(jobScriptItem.eResource().getURI().path()).removeFirstSegments(1).removeFileExtension());
                 IFile linkedFile = createWorkspaceLink(fsProject, file.getLocation(), "");
                 IWorkbenchPage page = getActivePage();
                 IEditorPart editor = IDE.openEditor(page, linkedFile);

@@ -56,6 +56,7 @@ boolean is_rejected_max = ("true").equals(ElementParameterParser.getValue(node, 
 String rejected_max_value = ElementParameterParser.getValue(node, "__REJECTMAX_VALUE__");
 boolean is_abort_on_error = ("true").equals(ElementParameterParser.getValue(node, "__ON_ERROR_ABORT_OPTION__"));
 boolean is_no_commit = ("true").equals(ElementParameterParser.getValue(node, "__NO_COMMIT_OPTION__"));
+boolean useSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_SCHEMA_FOR_COPY__"));
 
 List<IMetadataColumn> columnList = getColumnList(node);
 String db_version = ElementParameterParser.getValue(node, "__DB_VERSION__");
@@ -66,14 +67,15 @@ if(useExistingConnection) {
         db_version = ElementParameterParser.getValue(con_node,"__DB_VERSION__");
     }
 }
-
-String copySchema = " (";
-for(int i = 0; i < columnList.size() - 1; i++){
-	copySchema += columnList.get(i).getOriginalDbColumnName() + ", ";
+String copySchema = null;
+if (useSchema && columnList != null && !columnList.isEmpty()) {
+    StringBuilder copySchemaBuilder = new StringBuilder(" (");
+    for(int i = 0; i < columnList.size() - 1; i++){
+        copySchemaBuilder.append(columnList.get(i).getOriginalDbColumnName()).append(", ");
+    }
+    copySchemaBuilder.append(columnList.get(columnList.size() - 1).getOriginalDbColumnName()).append(")");
+    copySchema = copySchemaBuilder.toString();
 }
-copySchema += columnList.get(columnList.size() - 1).getOriginalDbColumnName();
-copySchema += ")";
-
 boolean is_old_version = "vertica_3.0_jdk_5.jar".equals(db_version) || "vertica_3.5_jdk_5.jar".equals(db_version) || "vertica_4.0_jdk_5.jar".equals(db_version) || "vertica_4.1.7_jdk_5.jar".equals(db_version) || "vertica_4.1.14_jdk_5.jar".equals(db_version);
 boolean is_version_ge_6 = "VERTICA_6_0".equals(db_version) || "VERTICA_6_1_X".equals(db_version) || "VERTICA_7_0_X".equals(db_version) || "VERTICA_7_1_X".equals(db_version) || "VERTICA_9_0".equals(db_version);
 
@@ -186,7 +188,6 @@ if(("UPDATE").equals(dataAction)) {
 if(("INSERT").equals(dataAction) || columnList != null && columnList.size() > 0) {
 		String rejectedDataFile = ElementParameterParser.getValue(node, "__REJECTED_DATA_FILE__");
 		String exceptionFile = ElementParameterParser.getValue(node, "__EXCEPTION_FILE__");
-		boolean useSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_SCHEMA_FOR_COPY__"));
 %>
 		Character OUT_DELIM_<%=cid %> = <%=field_separator%>.charAt(0);
 		<%if(is_escape_char){%>
@@ -195,9 +196,19 @@ if(("INSERT").equals(dataAction) || columnList != null && columnList.size() > 0)
 			escapechar_<%=cid %> = "" + escapechar_<%=cid %>.charAt(0);
 		}
 		<%}%>
+<%
+		if (useSchema) {
+%>
+			String copySchema_<%=cid %> = "<%=copySchema%>";
+			if ("null".equals(copySchema_<%=cid %>)) {
+				throw new RuntimeException("Schema is not defined");
+			}
+<%
+		}
+%>
 		String sql_<%=cid %> = "COPY " + tableName_<%=cid%> 
 		<%if(useSchema) {%>
-			+ "<%=copySchema %>"
+			+ copySchema_<%=cid %>
 		<%}%>		
 		+ " FROM STDIN <%=compression%> <%=stream_name%> DELIMITER '" + OUT_DELIM_<%=cid %> + "'"
 		<%if(is_version_ge_6 && is_trailing_null){%>

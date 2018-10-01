@@ -26,7 +26,6 @@ import java.util.concurrent.ScheduledFuture;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 
 public class DebounceManager implements AutoCloseable {
-
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(
             new BasicThreadFactory.Builder().namingPattern(getClass().getName() + "-%d").build());
 

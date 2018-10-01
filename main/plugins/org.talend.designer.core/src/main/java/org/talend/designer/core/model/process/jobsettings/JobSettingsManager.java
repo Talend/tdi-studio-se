@@ -481,7 +481,7 @@ public class JobSettingsManager {
             param.setRepositoryValue("DB_VERSION"); //$NON-NLS-1$
             param.setRequired(true);
             param.setShowIf(dbCondition
-                    + " and (" + dbTypeName + " == 'OCLE' or " + dbTypeName + " == 'OCLE_OCI' or " + dbTypeName + " =='ACCESS' or " + dbTypeName + " =='MSSQL' or " + dbTypeName + " =='MYSQL') "); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$
+                    + " and (" + dbTypeName + " == 'OCLE' or " + dbTypeName + " == 'SYBASE' or "+ dbTypeName + " == 'OCLE_OCI' or " + dbTypeName + " =='ACCESS' or " + dbTypeName + " =='MSSQL' or " + dbTypeName + " =='POSTGRESQL' or "+dbTypeName + " =='MYSQL') "); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$
             param.setGroup(IMPLICIT_GROUP);
             paramList.add(param);
         }
@@ -850,6 +850,9 @@ public class JobSettingsManager {
      */
     public static boolean isImplicittContextLoadActived(IProcess process) {
         String paramName = EParameterName.IMPLICIT_TCONTEXTLOAD.getName();
+        if (process.getElementParameter(paramName) == null) {
+            return false;
+        }
         boolean useContextLoad = ((Boolean) process.getElementParameter(paramName).getValue())
                 && process.getElementParameter(paramName).isShow(process.getElementParameters());
         if (!useContextLoad) {

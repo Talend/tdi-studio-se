@@ -118,9 +118,6 @@
   </ADVANCED_PARAMETERS>
 
   <CODEGENERATION>
-      <IMPORTS>
-    	<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.3-603.jdbc3.jar" MVN="mvn:org.talend.libraries/postgresql-8.3-603.jdbc3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.postgresql/lib/postgresql-8.3-603.jdbc3.jar" REQUIRED="true" />
-    </IMPORTS>
   </CODEGENERATION>
 
   <RETURNS>

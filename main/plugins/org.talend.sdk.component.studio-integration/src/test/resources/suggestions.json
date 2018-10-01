@@ -1,0 +1,318 @@
+{
+  "actions": [
+    {
+      "family": "qa",
+      "name": "basedOnTwoPrimitives",
+      "properties": [
+        {
+          "displayName": "a",
+          "metadata": {
+            "definition::parameter::index": "1"
+          },
+          "name": "a",
+          "path": "a",
+          "placeholder": "a",
+          "type": "STRING"
+        },
+        {
+          "displayName": "p",
+          "metadata": {
+            "definition::parameter::index": "0"
+          },
+          "name": "p",
+          "path": "p",
+          "placeholder": "p",
+          "type": "STRING"
+        }
+      ],
+      "type": "suggestions"
+    },
+    {
+      "family": "qa",
+      "name": "basedOnComplex",
+      "properties": [
+        {
+          "displayName": "ds",
+          "metadata": {
+            "definition::parameter::index": "0"
+          },
+          "name": "ds",
+          "path": "ds",
+          "placeholder": "ds",
+          "type": "OBJECT"
+        },
+        {
+          "displayName": "url",
+          "metadata": {},
+          "name": "url",
+          "path": "ds.url",
+          "placeholder": "url",
+          "type": "STRING"
+        },
+        {
+          "displayName": "port",
+          "metadata": {},
+          "name": "port",
+          "path": "ds.port",
+          "placeholder": "port",
+          "type": "NUMBER"
+        },
+        {
+          "displayName": "c",
+          "metadata": {
+            "definition::parameter::index": "1"
+          },
+          "name": "c",
+          "path": "c",
+          "placeholder": "c",
+          "type": "OBJECT"
+        },
+        {
+          "displayName": "complexString",
+          "metadata": {},
+          "name": "complexString",
+          "path": "c.complexString",
+          "placeholder": "complexString",
+          "type": "STRING"
+        },
+        {
+          "displayName": "complexInt",
+          "metadata": {},
+          "name": "complexInt",
+          "path": "c.complexInt",
+          "placeholder": "complexInt",
+          "type": "NUMBER"
+        }
+      ],
+      "type": "suggestions"
+    },
+    {
+      "family": "qa",
+      "name": "checkComplex",
+      "properties": [
+        {
+          "displayName": "s",
+          "metadata": {
+            "definition::parameter::index": "0"
+          },
+          "name": "s",
+          "path": "s",
+          "placeholder": "s",
+          "type": "STRING"
+        },
+        {
+          "displayName": "d",
+          "metadata": {
+            "definition::parameter::index": "1"
+          },
+          "name": "d",
+          "path": "d",
+          "placeholder": "d",
+          "type": "OBJECT"
+        },
+        {
+          "displayName": "url",
+          "metadata": {},
+          "name": "url",
+          "path": "d.url",
+          "placeholder": "url",
+          "type": "STRING"
+        },
+        {
+          "displayName": "port",
+          "metadata": {},
+          "name": "port",
+          "path": "d.port",
+          "placeholder": "port",
+          "type": "NUMBER"
+        }
+      ],
+      "type": "validation"
+    },
+    {
+      "family": "qa",
+      "name": "checkSeveral",
+      "properties": [
+        {
+          "displayName": "z",
+          "metadata": {
+            "definition::parameter::index": "0"
+          },
+          "name": "z",
+          "path": "z",
+          "placeholder": "z",
+          "type": "STRING"
+        },
+        {
+          "displayName": "yUrl",
+          "metadata": {
+            "definition::parameter::index": "1"
+          },
+          "name": "yUrl",
+          "path": "yUrl",
+          "placeholder": "yUrl",
+          "type": "STRING"
+        },
+        {
+          "displayName": "xPort",
+          "metadata": {
+            "definition::parameter::index": "2"
+          },
+          "name": "xPort",
+          "path": "xPort",
+          "placeholder": "xPort",
+          "type": "STRING"
+        }
+      ],
+      "type": "validation"
+    },
+    {
+      "family": "qa",
+      "name": "basedOnTable",
+      "properties": [
+        {
+          "displayName": "table",
+          "metadata": {
+            "definition::parameter::index": "0"
+          },
+          "name": "table",
+          "path": "table",
+          "placeholder": "table",
+          "type": "ARRAY"
+        },
+        {
+          "displayName": "check",
+          "metadata": {},
+          "name": "check",
+          "path": "table[].check",
+          "placeholder": "check",
+          "type": "BOOLEAN"
+        },
+        {
+          "displayName": "number",
+          "metadata": {},
+          "name": "table[].number",
+          "path": "number",
+          "placeholder": "number",
+          "type": "NUMBER"
+        },
+        {
+          "displayName": "operator",
+          "metadata": {},
+          "name": "table[].operator",
+          "path": "operator",
+          "placeholder": "operator",
+          "type": "ENUM"
+        },
+        {
+          "displayName": "strColumn",
+          "metadata": {},
+          "name": "table[].strColumn",
+          "path": "strColumn",
+          "placeholder": "strColumn",
+          "type": "STRING"
+        }
+      ],
+      "type": "suggestions"
+    }
+  ],
+  "name": "suggestion",
+  "nodes": [
+    {
+      "fieldType": "TEXT",
+      "property": {
+        "delegate": {
+            "displayName": "basedOnTwoPrimitives",
+            "metadata": {
+              "action::suggestions": "basedOnTwoPrimitives",
+              "action::suggestions::parameters": "primitive,another",
+              "action::validation": "checkSeveral",
+              "action::validation::parameters": ".,datastore/url,datastore/port"
+            },
+            "name": "basedOnTwoPrimitives",
+            "path": "conf.basedOnTwoPrimitives",
+            "type": "STRING"
+        }
+      },
+      "root": false,
+      "children": []
+    },
+    {
+      "fieldType": "TEXT",
+      "property": {
+        "delegate": {
+          "displayName": "basedOnComplex",
+          "metadata": {
+            "action::suggestions": "basedOnComplex",
+            "action::suggestions::parameters": "datastore,complex",
+            "action::validation": "checkComplex",
+            "action::validation::parameters": ".,datastore"
+          },
+          "name": "basedOnComplex",
+          "path": "conf.basedOnComplex",
+          "type": "STRING"
+        }
+      },
+      "root": false,
+      "children": []
+    },
+    {
+      "fieldType": "TEXT",
+      "property": {
+        "delegate": {
+          "displayName": "basedOnTable",
+          "metadata": {
+            "action::suggestions": "basedOnTable",
+            "action::suggestions::parameters": "table"
+          },
+          "name": "basedOnTable",
+          "path": "conf.basedOnTable",
+          "type": "STRING"
+        }
+      },
+      "root": false,
+      "children": []
+    }
+  ],
+  "properties": [
+
+  ],
+  "settings": [
+    {
+      "name": "conf.primitive",
+      "value": "primitive value"
+    },
+    {
+      "name": "conf.another",
+      "value": "another value"
+    },
+    {
+      "name": "conf.basedOnTable",
+      "value": "based on table"
+    },
+    {
+      "name": "conf.basedOnTwoPrimitives",
+      "value": "based on 2 primitives"
+    },
+    {
+      "name": "conf.basedOnComplex",
+      "value": "based on complex"
+    },
+    {
+      "name": "conf.complex.complexString",
+      "value": "complex string"
+    },
+    {
+      "name": "conf.complex.complexInt",
+      "value": "-1"
+    },
+    {
+      "name": "conf.datastore.url",
+      "value": "http://initial.url"
+    },
+    {
+      "name": "conf.datastore.port",
+      "value": "8080"
+    }
+  ]
+}

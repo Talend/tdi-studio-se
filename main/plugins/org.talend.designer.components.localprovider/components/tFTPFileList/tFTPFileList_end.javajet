@@ -14,6 +14,7 @@ String cid = node.getUniqueName();
 String ignoreFailureAtQuit= ElementParameterParser.getValue(node,"__IGNORE_FAILURE_AT_QUIT__");
 String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
+boolean moveToCurrentDir = ("true").equals(ElementParameterParser.getValue(node, "__MOVE_TO_THE_CURRENT_DIRECTORY__"));
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 boolean sftp = false;
 boolean ftps = false;
@@ -24,7 +25,8 @@ if (("true").equals(useExistingConn)) {
   for (INode n : nodeList) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
-	  ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+      ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+      break;
     }
   }
 } else {
@@ -32,17 +34,25 @@ if (("true").equals(useExistingConn)) {
   ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 }
 
-if (sftp && !("true").equals(useExistingConn)) {// *** sftp *** //
+if (sftp) {// *** sftp *** //
+    if (("true").equals(useExistingConn)) {
+        if (!moveToCurrentDir) {
 %>
-	<%if(isLog4jEnabled){%>
-		log.info("<%=cid%> - Closing the connection to the server.");
-	<%}%>
-	session_<%=cid%>.disconnect(); 
-	<%if(isLog4jEnabled){%>
-		log.info("<%=cid%> - Connection to the server closed.");
-	<%}%>  
+            c_<%=cid %>.cd(rootDir_<%=cid %>);
 <%
-} else if (ftps && !("true").equals(useExistingConn)) {
+        }
+    } else {
+%>
+		<%if(isLog4jEnabled){%>
+			log.info("<%=cid%> - Closing the connection to the server.");
+		<%}%>
+		session_<%=cid%>.disconnect(); 
+		<%if(isLog4jEnabled){%>
+			log.info("<%=cid%> - Connection to the server closed.");
+		<%}%>  
+<%
+	}
+} else if (ftps && !("true").equals(useExistingConn)) { // *** ftps *** //
 	if(isLog4jEnabled) {
 %>
 		log.info("<%=cid%> - Closing the connection to the server.");

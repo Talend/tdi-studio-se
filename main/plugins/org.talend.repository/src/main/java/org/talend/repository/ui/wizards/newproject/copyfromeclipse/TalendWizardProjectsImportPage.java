@@ -313,7 +313,10 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                 if (oldToNewSource.containsKey(sourcePath)) {
                     finalSource = oldToNewSource.get(sourcePath);
                 } else {
-                    finalSource = items2Projects(sourcePath);
+                    Button copyCheckbox = getCopyCheckbox();
+                    if (copyCheckbox != null && copyCheckbox.getSelection()) {
+                        finalSource = items2Projects(sourcePath);
+                    }
                     oldToNewSource.put(sourcePath, finalSource);
                 }
                 this.sourcePath = finalSource;
@@ -361,7 +364,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                 Node node = document.getChildNodes().item(0).getChildNodes().item(1);
                 NamedNodeMap map = node.getAttributes();
                 for (int i = 0; i < map.getLength(); i++) {
-                    if ("label".equals(map.item(i).getNodeName())) {
+                    if ("technicalLabel".equals(map.item(i).getNodeName())) {
                         projectName = map.item(i).getNodeValue();
                     }
                 }

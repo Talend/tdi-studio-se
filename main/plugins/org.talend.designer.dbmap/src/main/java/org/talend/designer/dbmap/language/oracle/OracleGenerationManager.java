@@ -61,12 +61,14 @@ public class OracleGenerationManager extends DbGenerationManager {
      * @return
      */
     @Override
-    public String buildSqlSelect(DbMapComponent component, String outputTableName, String tabString) {
+    public String buildSqlSelect(DbMapComponent dbMapComponent, String outputTableName, String tabString) {
         queryColumnsName = "\""; //$NON-NLS-1$
         aliasAlreadyDeclared.clear();
         queryColumnsSegments.clear();
         querySegments.clear();
         this.tabSpaceString = tabString;
+
+        DbMapComponent component = getDbMapComponent(dbMapComponent);
 
         List<IConnection> outputConnections = (List<IConnection>) component.getOutgoingConnections();
 
@@ -75,7 +77,7 @@ public class OracleGenerationManager extends DbGenerationManager {
             nameToOutputConnection.put(connection.getUniqueName(), connection);
         }
 
-        ExternalDbMapData data = (ExternalDbMapData) component.getExternalData();
+        ExternalDbMapData data = component.getExternalData();
 
         StringBuilder sb = new StringBuilder();
 

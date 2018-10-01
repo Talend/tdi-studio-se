@@ -18,21 +18,29 @@ package org.talend.sdk.component.studio.model.connector;
 import static org.talend.core.model.process.EConnectionType.FLOW_MAIN;
 import static org.talend.core.model.process.EConnectionType.REJECT;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.INode;
+import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.designer.core.model.components.NodeConnector;
 import org.talend.sdk.component.studio.lang.Strings;
-
 
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public class TaCoKitNodeConnector extends NodeConnector {
+public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalInfo {
     
     static final String DEFAULT = "__default__";
+    
+    private static final String TYPE = "CONNECTOR_TYPE";
+    
+    private static final String TACOKIT_TYPE = "tacokit";
+    
+    private final Map<String, Object> info = new HashMap<>();
 
     private boolean hasInput = false;
     
@@ -77,6 +85,7 @@ public class TaCoKitNodeConnector extends NodeConnector {
         setDefaultConnectionType(defaultConnectionType);
         addConnectionProperty(CorePlugin.getDefault() == null ? null : type, type.getRGB(),
                 type.getDefaultLineStyle());
+        putInfo(TYPE, TACOKIT_TYPE);
     }
     
     /**
@@ -91,7 +100,7 @@ public class TaCoKitNodeConnector extends NodeConnector {
     static TaCoKitNodeConnector newFlow(final INode node, final String name) {
         Objects.requireNonNull(name);
         Strings.requireNonEmpty(name);
-        TaCoKitNodeConnector tacokitConnector = null;
+        TaCoKitNodeConnector tacokitConnector;
         if (DEFAULT.equals(name)) {
             tacokitConnector = new TaCoKitNodeConnector(node, FLOW_MAIN.getName(), FLOW_MAIN.getDefaultLinkName(),
                     FLOW_MAIN.getDefaultMenuName(), FLOW_MAIN, FLOW_MAIN);
@@ -144,4 +153,28 @@ public class TaCoKitNodeConnector extends NodeConnector {
     void setHasOutput(final boolean output) {
         hasOutput = output;
     }
+
+    @Override
+    public Object getInfo(String key) {
+        Objects.requireNonNull(key);
+        return info.get(key);
+    }
+
+    @Override
+    public void putInfo(String key, Object value) {
+        Objects.requireNonNull(key);
+        info.put(key, value);
+    }
+
+    @Override
+    public void onEvent(String event, Object... parameters) {
+        throw new UnsupportedOperationException();        
+    }
+
+    @Override
+    public void cloneAddionalInfoTo(IAdditionalInfo target) {
+        Objects.requireNonNull(target);
+        info.entrySet().stream().forEach(e -> target.putInfo(e.getKey(), e.getValue()));
+    }
+    
 }

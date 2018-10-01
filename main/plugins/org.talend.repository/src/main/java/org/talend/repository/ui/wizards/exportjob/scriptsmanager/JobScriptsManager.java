@@ -188,6 +188,7 @@ public abstract class JobScriptsManager {
         needWSDD,
         needWSDL,
         needLauncher,
+        launcherName,
         needSystemRoutine,
         needUserRoutine,
         needPigudf,
@@ -220,7 +221,15 @@ public abstract class JobScriptsManager {
         esbCategory,
         esbExportType,
         properties,
-        needAssembly
+        needAssembly,
+        buildImage,
+        pushImage,
+        dockerHost,
+        imageName,
+        imageTag,
+        pushRegistry,
+        registryUsername,
+        registryPassword
     }
 
     /**

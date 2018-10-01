@@ -35,11 +35,15 @@ public class RepositoryProjectDateMigrationTask extends AbstractProjectMigration
 
     @Override
     public ExecutionResult execute(Project project) {
-        ProjectPreferenceManager projectPrefManager = new ProjectPreferenceManager(project, RepositoryPlugin.PLUGIN_ID, false);
-        final String key = "repository.project.id"; //$NON-NLS-1$
-        final String value = projectPrefManager.getValue(key);
+        ProjectPreferenceManager projectPrefManager =
+                new ProjectPreferenceManager(project, RepositoryPlugin.PLUGIN_ID, false);
+        final String prjKey = "repository.project.id"; //$NON-NLS-1$
+        final String prodKey = "product.date.id"; //$NON-NLS-1$
+        final String value = projectPrefManager.getValue(prjKey);
         if (StringUtils.isBlank(value)) {
-            projectPrefManager.setValue(key, CryptoHelper.getDefault().encrypt(String.valueOf(System.currentTimeMillis())));
+            // re-use product date, else will be current
+            String v = System.getProperty(prodKey, String.valueOf(System.currentTimeMillis()));
+            projectPrefManager.setValue(prjKey, CryptoHelper.getDefault().encrypt(v));
             projectPrefManager.save();
             return ExecutionResult.SUCCESS_NO_ALERT;
         }

@@ -418,8 +418,8 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, Project project) {
-        return delegateService.getTalendCodeJavaProject(type, project);
+    public ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, String projectTechName) {
+        return delegateService.getTalendCodeJavaProject(type, projectTechName);
     }
 
     @Override
@@ -458,8 +458,8 @@ public class RunProcessService implements IRunProcessService {
      * @see org.talend.designer.runprocess.IRunProcessService#initializeRootPoms()
      */
     @Override
-    public void initializeRootPoms() {
-        delegateService.initializeRootPoms();
+    public void initializeRootPoms(IProgressMonitor monitor) {
+        delegateService.initializeRootPoms(monitor);
     }
 
     @Override

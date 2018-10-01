@@ -33,6 +33,8 @@ import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -40,27 +42,33 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.VersionList;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.ProcessTypeImpl;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
+import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.exception.UserCancelledException;
 import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Component;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1ConfigurationType;
+import org.talend.sdk.studio.process.TaCoKitNode;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
 public class TaCoKitMigrationManager {
 
-    private V1ConfigurationType configurationType;
+    private V1ConfigurationType configurationClient;
+
+    private final V1Component componentClient = Lookups.client().v1().component();
 
     public TaCoKitMigrationManager() {
-        configurationType = Lookups.client().v1().configurationType();
+        configurationClient = Lookups.client().v1().configurationType();
     }
 
     public void checkMigration(final IProgressMonitor progressMonitor) throws Exception {
@@ -85,9 +93,75 @@ public class TaCoKitMigrationManager {
                 }
             }
         }
+        checkJobsMigration(progressMonitor);
     }
 
-    public void checkMigration(final ConfigTypeNode configTypeNode, final IProgressMonitor progressMonitor) throws Exception {
+    private void checkJobsMigration(final IProgressMonitor monitor) throws UserCancelledException {
+        monitor.subTask(Messages.getString("migration.check.process.checking")); //$NON-NLS-1$
+        final ProxyRepositoryFactory repositoryFactory = ProxyRepositoryFactory.getInstance();
+        for (final Project project : getAllProjects()) {
+            checkMonitor(monitor);
+            monitor.subTask(Messages.getString("migration.check.process.project", project.getLabel()));
+            try {
+                List<IRepositoryViewObject> processeViewObjects = repositoryFactory.getAll(project, ERepositoryObjectType.PROCESS, true, true);
+                for (final IRepositoryViewObject processViewObject : processeViewObjects) {
+                    final Item item = processViewObject.getProperty().getItem();
+                    if (item instanceof ProcessItem) {
+                        checkProcessItemMigration((ProcessItem) item, monitor);
+                    }
+                }
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+    }
+
+    public void checkProcessItemMigration(final ProcessItem processItem, final IProgressMonitor progressMonitor) throws UserCancelledException {
+        IProgressMonitor monitor = progressMonitor;
+        if (monitor == null) {
+            monitor = new NullProgressMonitor();
+        }
+        checkMonitor(monitor);
+        String label = "";
+        try {
+            label = processItem.getProperty().getLabel();
+        } catch (Exception e) {
+            // ignore exception as it happens only during label retrieval and is not critical
+        }
+        monitor.subTask(Messages.getString("migration.check.process.item", label));
+        final ProcessTypeImpl process = (ProcessTypeImpl) processItem.getProcess();
+        boolean migrated = false;
+        for (final Object elem : process.getNode()) {
+            NodeTypeImpl node = (NodeTypeImpl) elem;
+            if (TaCoKitNode.isTacokit(node)) {
+                final TaCoKitNode tacokitNode = new TaCoKitNode(node);
+                if (tacokitNode.needsMigration()) {
+                    tacokitNode.migrate(componentClient.migrate(tacokitNode.getId(), tacokitNode.getPersistedVersion(),
+                            tacokitNode.getPropertiesToMigrate()));
+                    migrated = true;
+                }
+            }
+        }
+        if (migrated) {
+            final IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+            try {
+                factory.save(processItem);
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+    }
+
+    private List<Project> getAllProjects() {
+        final List<Project> allProjects = new ArrayList<>();
+        final Project currentProject = ProjectManager.getInstance().getCurrentProject();
+        allProjects.add(currentProject);
+        final List<Project> referencedProjects = ProjectManager.getInstance().getAllReferencedProjects();
+        allProjects.addAll(referencedProjects);
+        return allProjects;
+    }
+
+    private void checkMigration(final ConfigTypeNode configTypeNode, final IProgressMonitor progressMonitor) throws Exception {
         IProgressMonitor monitor = progressMonitor;
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -96,15 +170,8 @@ public class TaCoKitMigrationManager {
         monitor.subTask(Messages.getString("migration.check.progress.currentConfiguration", configTypeNode.getDisplayName())); //$NON-NLS-1$
         ERepositoryObjectType repoObjType = TaCoKitUtil.getOrCreateERepositoryObjectType(configTypeNode);
         ProxyRepositoryFactory repoFactory = ProxyRepositoryFactory.getInstance();
-        ProjectManager projManager = ProjectManager.getInstance();
-        List<Project> allReferencedProjects = projManager.getAllReferencedProjects();
-        Project curProject = ProjectManager.getInstance().getCurrentProject();
-        List<Project> projects = new ArrayList<>();
-        if (allReferencedProjects != null && !allReferencedProjects.isEmpty()) {
-            projects.addAll(allReferencedProjects);
-        }
-        projects.add(curProject);
-        for (Project project : projects) {
+
+        for (final Project project : getAllProjects()) {
             checkMonitor(monitor);
             monitor.subTask(Messages.getString("migration.check.progress.listItems", configTypeNode.getDisplayName(), //$NON-NLS-1$
                     project.getLabel()));
@@ -142,7 +209,7 @@ public class TaCoKitMigrationManager {
 
     }
 
-    public boolean checkMigration(final ConnectionItem item, final IProgressMonitor progressMonitor) throws Exception {
+    private boolean checkMigration(final ConnectionItem item, final IProgressMonitor progressMonitor) throws Exception {
         IProgressMonitor monitor = progressMonitor;
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -158,16 +225,15 @@ public class TaCoKitMigrationManager {
             // ignore
         }
         monitor.subTask(Messages.getString("migration.check.progress.start", itemLabel, version)); //$NON-NLS-1$
-        TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel(item, false);
-        TaCoKitConfigurationModel configModel = itemModel.getConfigurationModel();
-        if (isNeedMigration(configModel)) {
+        TaCoKitConfigurationModel configModel = new TaCoKitConfigurationModel(item.getConnection());
+        if (configModel.needsMigration()) {
             migrate(configModel, progressMonitor);
             return true;
         }
         return false;
     }
 
-    private void checkMonitor(final IProgressMonitor monitor) throws Exception {
+    private void checkMonitor(final IProgressMonitor monitor) throws UserCancelledException {
         if (monitor != null && monitor.isCanceled()) {
             throw new UserCancelledException(Messages.getString("migration.check.cancel")); //$NON-NLS-1$
         }
@@ -178,40 +244,15 @@ public class TaCoKitMigrationManager {
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
-
         checkMonitor(monitor);
-        String label = ""; //$NON-NLS-1$
-        String storedVersion = ""; //$NON-NLS-1$
-        String newVersion = ""; //$NON-NLS-1$
-        try {
-            label = configModel.getConnection().getLabel();
-        } catch (Exception e) {
-            // ignore
-        }
-        try {
-            storedVersion = configModel.getStoredVersion();
-        } catch (Exception e) {
-            // ignore
-        }
-        try {
-            newVersion = String.valueOf(configModel.getConfigTypeNodeVersion());
-        } catch (Exception e) {
-            // ignore
-        }
+        String label = configModel.getConnection().getLabel();
+        final int storedVersion = configModel.getVersion();
+        final int newVersion = configModel.getConfigurationVersion();
         monitor.subTask(Messages.getString("migration.check.progress.execute", label, storedVersion, newVersion)); //$NON-NLS-1$
 
-        Map migrationResult = configurationType.migrate(configModel.getConfigurationId(),
-                Integer.valueOf(configModel.getStoredVersion()), configModel.getPropertiesWithoutBuiltIn());
-        configModel.storeVersion(String.valueOf(configModel.getConfigTypeNodeVersion()));
-        configModel.clearProperties(false);
-        configModel.getProperties().putAll(migrationResult);
-
-        configModel.storeVersion(String.valueOf(configModel.getConfigTypeNodeVersion()));
-    }
-
-    public boolean isNeedMigration(final TaCoKitConfigurationModel configModel) throws Exception {
-        int configVersion = configModel.getConfigTypeNodeVersion();
-        return !TaCoKitUtil.equals(configModel.getStoredVersion(), String.valueOf(configVersion));
+        Map<String, String> migratedProperties = configurationClient.migrate(configModel.getConfigurationId(),
+                configModel.getVersion(), configModel.getProperties());
+        configModel.migrate(migratedProperties);
     }
 
     public void runMigrationJob() throws Exception {
@@ -226,25 +267,18 @@ public class TaCoKitMigrationManager {
                 ISchedulingRule refreshRule = ruleFactory
                         .refreshRule(projectManager.getResourceProject(projectManager.getCurrentProject().getEmfProject()));
                 try {
-                    workspace.run(new IWorkspaceRunnable() {
-
-                        @Override
-                        public void run(final IProgressMonitor workspaceMonitor) throws CoreException {
-                            ProxyRepositoryFactory.getInstance()
-                                    .executeRepositoryWorkUnit(new RepositoryWorkUnit(title) {
+                    workspace.run(workspaceMonitor -> ProxyRepositoryFactory.getInstance()
+                            .executeRepositoryWorkUnit(new RepositoryWorkUnit(title) {
 
                                 @Override
-                                protected void run() throws LoginException, PersistenceException {
+                                protected void run() {
                                     try {
                                         checkMigration(workspaceMonitor);
                                     } catch (Exception e) {
                                         ExceptionHandler.process(e);
                                     }
                                 }
-                            });
-
-                        }
-                    }, refreshRule, IWorkspace.AVOID_UPDATE, jobMonitor);
+                            }), refreshRule, IWorkspace.AVOID_UPDATE, jobMonitor);
                 } catch (CoreException e) {
                     ExceptionHandler.process(e);
                 }
@@ -256,8 +290,7 @@ public class TaCoKitMigrationManager {
         migrationJob.join();
     }
 
-    private void updatedRelatedItems(final ConnectionItem item, final String version, final IProgressMonitor progressMonitor)
-            throws Exception {
+    public void updatedRelatedItems(final ConnectionItem item, final String version, final IProgressMonitor progressMonitor) {
         IProgressMonitor monitor = progressMonitor;
         if (monitor == null) {
             monitor = new NullProgressMonitor();

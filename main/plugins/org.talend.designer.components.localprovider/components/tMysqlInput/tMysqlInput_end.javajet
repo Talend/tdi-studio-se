@@ -14,10 +14,12 @@ imports="
 %>
 	}
 }finally{
-	if(rs_<%=cid%> !=null){
-		rs_<%=cid %>.close();
+	if (rs_<%=cid%> != null) {
+		rs_<%=cid%>.close();
 	}
-	stmt_<%=cid %>.close();
+	if (stmt_<%=cid%> != null) {
+		stmt_<%=cid%>.close();
+	}
 <%
 	if(!("true").equals(useExistingConn))
 	{
@@ -30,8 +32,9 @@ imports="
 %>
 }
 
-<% 
-	if(cid.matches("^.*?tAmazonAuroraInput_\\d+_in$")){
+<%
+	boolean isAmazonAurora = node.isVirtualGenerateNode() && (cid.matches("^.*?tAmazonAuroraInput_\\d+_in$") || cid.matches("^.*?tDBInput_\\d+_in$"));
+	if(isAmazonAurora){
 		// why 3: ==> "_in".length()
 		%>
 		   globalMap.put("<%= cid.substring(0,cid.length() - 3) %>_NB_LINE",nb_line_<%=cid%>);

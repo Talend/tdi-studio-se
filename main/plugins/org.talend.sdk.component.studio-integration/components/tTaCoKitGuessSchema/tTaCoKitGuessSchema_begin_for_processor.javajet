@@ -78,7 +78,7 @@
         // 2. generate outputs part for processor begin
 %>
 
-        final org.talend.sdk.component.runtime.di.OutputsHandler outputHandler_<%=processorBeginCid%> = new org.talend.sdk.component.runtime.di.OutputsHandler(jsonb_<%=processorBeginCid%>);
+        final org.talend.sdk.component.runtime.di.OutputsHandler outputHandler_<%=processorBeginCid%> = new org.talend.sdk.component.runtime.di.OutputsHandler(jsonb_<%=processorBeginCid%>, servicesMapper_<%=processorBeginCid%>);
         outputHandler_<%=processorBeginCid%>.addConnection("<%= processorBeginOutputConnectionName %>", Object.class);
         final org.talend.sdk.component.runtime.output.OutputFactory outputs_<%=processorBeginCid%> = outputHandler_<%=processorBeginCid%>.asOutputFactory();
 <%

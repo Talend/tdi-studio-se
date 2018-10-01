@@ -33,6 +33,7 @@ import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -45,6 +46,8 @@ import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.core.runtime.repository.build.IBuildPomCreatorParameters;
 import org.talend.core.runtime.repository.build.IMavenPomCreator;
 import org.talend.core.utils.BitwiseOptionUtils;
+import org.talend.designer.core.model.process.IGeneratingProcess;
+import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
@@ -55,8 +58,6 @@ import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessor;
 import org.talend.repository.i18n.Messages;
-import org.talend.designer.core.model.process.IGeneratingProcess;
-import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * created by ggu on 2 Feb 2015 Detailled comment
@@ -280,11 +281,19 @@ public class MavenJavaProcessor extends JavaProcessor {
         final Property itemProperty = this.getProperty();
         String buildTypeName = null;
         // FIXME, better use the arguments directly for run/export/build/..., and remove this flag later.
-        if (ProcessorUtilities.isExportConfig()) {
-            // final Object exportType = itemProperty.getAdditionalProperties().get(MavenConstants.NAME_EXPORT_TYPE);
-            final Object exportType = getArguments().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
-            buildTypeName = exportType != null ? exportType.toString() : null;
-        } // else { //if run job, will be null (use Standalone by default)
+        // if (ProcessorUtilities.isExportConfig()) {
+        // // final Object exportType = itemProperty.getAdditionalProperties().get(MavenConstants.NAME_EXPORT_TYPE);
+        // final Object exportType = getArguments().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+        // buildTypeName = exportType != null ? exportType.toString() : null;
+        // } // else { //if run job, will be null (use Standalone by default)
+
+        Object exportType = getArguments() == null ? null : getArguments().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+
+        if (exportType == null && !ERepositoryObjectType.getType(itemProperty).equals(ERepositoryObjectType.PROCESS) ) {
+            exportType = itemProperty.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+        }
+
+        buildTypeName = exportType != null ? exportType.toString() : null;
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(IBuildParametes.ITEM, itemProperty.getItem());
@@ -352,7 +361,7 @@ public class MavenJavaProcessor extends JavaProcessor {
             argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
             argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, "-T 1C -f " // $NON-NLS-1$
                     + BuildCacheManager.BUILD_AGGREGATOR_POM_NAME + " -P " + (packagingAndAssembly() ? "" : "!")
-                    + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY); // $NON-NLS-1$
+                    + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY + ",!" + TalendMavenConstants.PROFILE_SIGNATURE); // $NON-NLS-1$  //$NON-NLS-2$
             // install all subjobs
             buildCacheManager.build(monitor, argumentsMap);
 

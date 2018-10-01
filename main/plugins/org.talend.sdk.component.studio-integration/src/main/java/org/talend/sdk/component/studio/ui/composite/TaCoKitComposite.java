@@ -15,14 +15,17 @@
  */
 package org.talend.sdk.component.studio.ui.composite;
 
+import static java.util.stream.Stream.of;
 import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
@@ -49,75 +52,67 @@ import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
  */
 public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite {
 
-    /**
-     * Refresher {@link PropertyChangeListener}. It is created and registered during {@link this#init()}.
-     * It is unregistered during {@link this#dispose()}
-     */
-    private PropertyChangeListener refresher;
-
     private List<? extends IElementParameter> parameters;
+
+    private PropertyChangeListener redrawListener = evt -> {
+        if (!"show".equals(evt.getPropertyName())) {
+            return;
+        }
+        refresh();
+    };
 
     public TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
             final Element element, final boolean isCompactView) {
         super(parentComposite, styles, section, element, isCompactView);
-        init();
+        postInit();
     }
 
-    public TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
+    TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
             final Element element, final boolean isCompactView, final Color backgroundColor) {
         super(parentComposite, styles, section, element, isCompactView, backgroundColor);
-        init();
+        postInit();
     }
 
-    /**
-     * For each {@link TaCoKitElementParameter} registers PropertyChangeListener, which calls
-     * {@link this#refresh()} on each {@link TaCoKitElementParameter} value change event
-     * 
-     * Note, component has special parameter UPDATE_COMPONENTS, which is checked to know whether it is required to
-     * refresh layout.
-     * So, it should be true to force refresh
-     */
-    private void init() {
-        createRefresherListener();
-        registerRefresherListener();
-    }
-
-    /**
-     * Creates {@link PropertyChangeListener}, which refreshes Composite each time {@link TaCoKitElementParameter} is
-     * changed
-     */
-    private void createRefresherListener() {
-        refresher = event -> refresh();
-    }
-
-    private void registerRefresherListener() {
-        elem
-                .getElementParameters()
-                .stream()
-                .filter(p -> p instanceof TaCoKitElementParameter)
-                .map(p -> (TaCoKitElementParameter) p)
+    protected void postInit() {
+        elem.getElementParameters().stream()
+                .filter(Objects::nonNull)
+                .filter(TaCoKitElementParameter.class::isInstance)
+                .map(TaCoKitElementParameter.class::cast)
                 .filter(TaCoKitElementParameter::isRedrawable)
-                .forEach(p -> p.registerListener(p.getName(), refresher));
+                .forEach(p -> p.registerListener("show", redrawListener));
+    }
+
+    protected void preDispose() {
+        elem.getElementParameters().stream()
+                .filter(Objects::nonNull)
+                .filter(TaCoKitElementParameter.class::isInstance)
+                .map(TaCoKitElementParameter.class::cast)
+                .filter(TaCoKitElementParameter::isRedrawable)
+                .forEach(p -> p.unregisterListener("show", redrawListener));
+    }
+
+    @Override
+    public synchronized void dispose() {
+        preDispose();
+        super.dispose();
     }
 
     @Override
     public void refresh() {
         if (elem instanceof FakeElement) { // sync exec
-            DisplayUtils.getDisplay().syncExec(new Runnable() {
-
-                @Override
-                public void run() {
-                    operationInThread();
-                }
-            });
+            DisplayUtils.getDisplay().syncExec(this::operationInThread);
         } else { // async exec
             super.refresh();
         }
     }
 
+    public PropertyChangeListener getRedrawListener() {
+        return redrawListener;
+    }
+
     /**
      * Specifies minimal height of current UI element
-     * 
+     *
      * @return minimal height
      */
     @Override
@@ -131,34 +126,18 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
     }
 
     /**
-     * Unregisters Refresher {@link PropertyChangeListener} from every {@link TaCoKitElementParameter}, where it was
-     * registered
-     */
-    @Override
-    public synchronized void dispose() {
-        elem
-                .getElementParameters()
-                .stream()
-                .filter(p -> p instanceof TaCoKitElementParameter)
-                .map(p -> (TaCoKitElementParameter) p)
-                .filter(TaCoKitElementParameter::isRedrawable)
-                .forEach(p -> p.unregisterListener(p.getName(), refresher));
-        super.dispose();
-    }
-
-    /**
      * Initialize all components for the defined section for this node.
      * Note, the method was copied from MultipleThreadDynamicComposite
      *
-     * @param forceRedraw defines whether to force redraw or not
+     * @param forceRedraw  defines whether to force redraw or not
      * @param reInitialize defines whether Composite is re-initialized. If yes, then children are disposed
-     * @param height not used, but it is here, because the method is overridden
+     * @param height       not used, but it is here, because the method is overridden
      */
     @Override
     protected synchronized void placeComponents(final boolean forceRedraw, final boolean reInitialize,
             final int height) {
         // achen modifed to fix feature 0005991 if composite.isDisposed return
-        if (elem == null || composite.isDisposed()) {
+       if (elem == null || composite.isDisposed()) {
             return;
         }
         if (!forceRedraw) {
@@ -172,9 +151,10 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
                 disposeChildren();
             }
         }
+        hashCurControls = new DualHashBidiMap();
         parameters = elem.getElementParametersWithChildrens();
         generator.initController(this);
-        final Composite previousComposite = addCommonWidgets(composite);
+        final Composite previousComposite = addCommonWidgets();
         final Optional<Layout> layout = getFormLayout();
         layout.ifPresent(l -> fillComposite(composite, l, previousComposite));
         resizeScrolledComposite();
@@ -184,11 +164,10 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
      * Adds common widgets on specified {@code parent} Composite.
      * These widgets will shown in the top of parent Composite.
      * The method may be overridden.
-     * 
-     * @param parent parent Composite
+     *
      * @return last Composite added
      */
-    protected Composite addCommonWidgets(final Composite parent) {
+    protected Composite addCommonWidgets() {
         final Composite propertyComposite = addPropertyType(composite);
         final Composite lastSchemaComposite = addSchemas(composite, propertyComposite);
         return lastSchemaComposite;
@@ -200,16 +179,16 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         propertyComposite.setLayout(new FormLayout());
         propertyComposite.setLayoutData(levelLayoutData(null));
         final IElementParameter propertyType = elem.getElementParameter("PROPERTY");
-        addWidgetIfActive(propertyComposite, propertyType, null);
+        addWidgetIfActive(propertyComposite, propertyType);
         return propertyComposite;
     }
 
     /**
      * Adds activated schemas (show = true), which are not present on layout
-     * 
-     * @param parent Composite on which schema will be located
+     *
+     * @param parent   Composite on which schema will be located
      * @param previous Composite which is located above this schema. Schema will be attached to the bottom of prev
-     * Composite
+     *                 Composite
      * @return Schema Composite
      */
     protected Composite addSchemas(final Composite parent, final Composite previous) {
@@ -226,10 +205,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
             schemaComposite.setLayout(new FormLayout());
             schemaComposite.setLayoutData(levelLayoutData(previousComposite));
             previousComposite = schemaComposite;
-            final Control schemaControl = addWidgetIfActive(schemaComposite, schema, null);
-            final String schemaName = schema.getName();
-            final IElementParameter guessSchema = elem.getElementParameter(guessButtonName(schemaName));
-            addWidgetIfActive(schemaComposite, guessSchema, schemaControl);
+            addSchemaWidget(schemaComposite, schema);
         }
         return previousComposite;
     }
@@ -245,7 +221,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
     }
 
     private Stream<Layout> toStream(final Layout layout) {
-        return Stream.concat(Stream.of(layout),
+        return Stream.concat(of(layout),
                 layout.getLevels().stream().flatMap(l -> l.getColumns().stream()).flatMap(this::toStream));
     }
 
@@ -261,15 +237,15 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
 
     /**
      * Fills composite according specified layout
-     * 
+     *
      * @param composite composite to fill
-     * @param layout composite layout
+     * @param layout    composite layout
      */
     private void fillComposite(final Composite composite, final Layout layout, final Composite previous) {
         if (layout.isLeaf()) {
             final String path = layout.getPath();
             final IElementParameter current = elem.getElementParameter(path);
-            addWidgetIfActive(composite, current, null);
+            addWidgetIfActive(composite, current);
         } else {
             Composite previousLevel = previous;
             for (final Level level : layout.getLevels()) {
@@ -306,20 +282,39 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
      * <li>it is not TECHNICAL parameter</li>
      * <li>its field show=true</li>
      * </ol>
-     * 
-     * @param parent Composite on which widget will be added
+     *
+     * @param parent    Composite on which widget will be added
      * @param parameter ElementParameter(Model) associated with widget
-     * @param previous (optional) previous Control, which was created in the same row
-     * @return created Control
      */
-    private Control addWidgetIfActive(final Composite parent, final IElementParameter parameter,
-            final Control previous) {
+    private void addWidgetIfActive(final Composite parent, final IElementParameter parameter) {
         if (doShow(parameter)) {
-            final AbstractElementPropertySectionController controller =
-                    generator.getController(parameter.getFieldType(), this);
-            return controller.createControl(parent, parameter, 1, 1, 0, previous);
+            if (EParameterFieldType.SCHEMA_TYPE.equals(parameter.getFieldType())) {
+                addSchemaWidget(parent, parameter);
+            } else {
+                addWidget(parent, parameter, null);
+            }
         }
-        return null;
+    }
+
+    private Control addWidget(final Composite parent, final IElementParameter parameter, final Control previous) {
+        final AbstractElementPropertySectionController controller =
+                generator.getController(parameter.getFieldType(), this);
+        return controller.createControl(parent, parameter, 1, 1, 0, previous);
+    }
+
+    /**
+     * Creates schema and guess schema button widgets
+     *
+     * @param schemaComposite parent Composite
+     * @param schema Schema ElementParameter
+     */
+    private void addSchemaWidget(final Composite schemaComposite, final IElementParameter schema) {
+        final Control schemaControl = addWidget(schemaComposite, schema, null);
+        final String schemaName = schema.getName();
+        final IElementParameter guessSchema = elem.getElementParameter(guessButtonName(schemaName));
+        if (guessSchema != null) {
+            addWidget(schemaComposite, guessSchema, schemaControl);
+        }
     }
 
     private FormData levelLayoutData(final Composite previousLevel) {
@@ -338,5 +333,4 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         return parameter != null && parameter.getCategory() == section
                 && parameter.getFieldType() != EParameterFieldType.TECHNICAL && parameter.isShow(parameters);
     }
-
 }

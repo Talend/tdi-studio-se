@@ -13,25 +13,33 @@ String cid = node.getUniqueName();
 log = new LogUtil(node);
 String timeout=ElementParameterParser.getValue(node, "__TIMEOUT__");
 String maxMsg=ElementParameterParser.getValue(node, "__MAX_MSG__");
+
+final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 %>
 if(resourceMap.containsKey("consumer_<%=cid %>")) try {
 	((javax.jms.MessageConsumer)resourceMap.get("consumer_<%=cid %>")).close();
 } catch (Exception e_<%=cid%>){
+	<%if(isLog4jEnabled) {%>
     log.error(currentComponent + " " + e_<%=cid%>.getMessage(), e_<%=cid%>);
+    <%}%>
 } finally {
     resourceMap.remove("consumer_<%=cid %>");
 }
 if(resourceMap.containsKey("session_<%=cid %>")) try {
 	((javax.jms.Session)resourceMap.get("session_<%=cid %>")).close();
 } catch (Exception e_<%=cid%>){
+	<%if(isLog4jEnabled) {%>
     log.error(currentComponent + " " + e_<%=cid%>.getMessage(), e_<%=cid%>);
+    <%}%>
 } finally {
     resourceMap.remove("session_<%=cid %>");
 }
 if(resourceMap.containsKey("connection_<%=cid %>")) try {
 	((javax.jms.Connection)resourceMap.get("connection_<%=cid %>")).close();
 } catch (Exception e_<%=cid%>){
+	<%if(isLog4jEnabled) {%>
     log.error(currentComponent + " " + e_<%=cid%>.getMessage(), e_<%=cid%>);
+    <%}%>
 } finally {
     resourceMap.remove("connection_<%=cid %>");
 }

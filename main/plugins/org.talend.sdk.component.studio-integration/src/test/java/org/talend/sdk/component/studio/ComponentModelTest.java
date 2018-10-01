@@ -21,13 +21,11 @@ import static org.apache.ziplock.JarLocation.jarLocation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.osgi.container.Module;
@@ -63,6 +61,7 @@ import org.talend.sdk.component.studio.service.ComponentService;
 /**
  * Unit-tests for {@link ComponentModel}
  */
+@Disabled
 class ComponentModelTest {
 
     private static Runnable stop;

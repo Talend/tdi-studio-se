@@ -15,11 +15,17 @@
  */
 package org.talend.sdk.component.studio.lang;
 
+import java.util.regex.Pattern;
+
 /**
  * Utility class which provides operations with String objects
  */
 public final class Strings {
-    
+
+    private static final Pattern QUOTES_PATTERN = Pattern.compile("^\"|\"$");
+
+    private static final Pattern QUOTED_STRING_PATTERN = Pattern.compile("^\".*\"$");
+
     // Suppress default constructor for noninstantiability
     private Strings() {
         throw new AssertionError();
@@ -30,6 +36,15 @@ public final class Strings {
             throw new IllegalArgumentException("String arg should not be empty");
         }
         return str;
+    }
+
+    public static String removeQuotes(final String str) {
+        if (QUOTED_STRING_PATTERN.matcher(str).matches()) {
+            return QUOTES_PATTERN.matcher(str).replaceAll("");
+        } else {
+            return str;
+        }
+
     }
 
 }

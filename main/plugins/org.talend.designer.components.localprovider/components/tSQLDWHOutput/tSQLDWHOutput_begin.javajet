@@ -189,10 +189,6 @@ if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || (
 java.sql.Connection conn_<%=cid%> = null;
 <%
 boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-boolean isEnableDatasource = false;
-if(cid.indexOf("tMSSqlOutput")>-1 || cid.indexOf("tMSSqlSP")>-1 ){
-	isEnableDatasource = true;
-}
 %>
 String dbUser_<%=cid %> = null;
 <%
@@ -208,7 +204,7 @@ if(useExistingConnection) {
 } else {
 	boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));   
 	String driver = ElementParameterParser.getValue(node, "__DRIVER__");
-	if(isEnableDatasource && specify_alias){
+	if(specify_alias){
 		String alias = ElementParameterParser.getValue(node, "__DATASOURCE_ALIAS__");
 		%>
 		java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES);
@@ -279,7 +275,7 @@ if(useExistingConnection) {
     conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
     <%dbLog.conn().connDone(dbLog.var("url"));%>
 	<%
-	if(isEnableDatasource && specify_alias){
+	if(specify_alias){
 	%>
 		}
 	<%
@@ -343,6 +339,7 @@ if(!isDynamic) {
 //to fixed: bug8422
 if(!usingStatsLogs){%>
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%}%>
 
 <%
@@ -352,38 +349,48 @@ if(usingStatsLogs){ %>
 		java.sql.PreparedStatement pstmt_<%=cid %> = null;
 		String keyPsmt_<%=cid %> = conn_<%=cid%> + "[psmt]" + "[" + <%=table%> + "]";
                         pstmt_<%=cid %> = SharedDBPreparedStatement.getSharedPreparedStatement(conn_<%=cid%>,insert_<%=cid%>,keyPsmt_<%=cid%>);
+                        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%}%>
         <%
     } else if (("UPDATE").equals(dataAction)) {
         %>
         String update_<%=cid%> = "UPDATE [" + tableName_<%=cid%> + "] SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
         <%
     } else if (("INSERT_OR_UPDATE").equals(dataAction)) {
         %>
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM [" + tableName_<%=cid%> + "] WHERE <%=updateWhereStmt.toString()%>");
+        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
         String insert_<%=cid%> = "INSERT INTO [" + tableName_<%=cid%> + "] (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
         java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+        resourceMap.put("insert_<%=cid %>", insert_<%=cid %>);
         String update_<%=cid%> = "UPDATE [" + tableName_<%=cid%> + "] SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
         java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+        resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
         <%
     } else if (("UPDATE_OR_INSERT").equals(dataAction)) {
         %>
         String update_<%=cid%> = "UPDATE [" + tableName_<%=cid%> + "] SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
         java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+        resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
         String insert_<%=cid%> = "INSERT INTO [" + tableName_<%=cid%> + "] (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
         java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+        resourceMap.put("insert_<%=cid %>", insert_<%=cid %>);
         <%
     } else if (("DELETE").equals(dataAction)) {
         %>
         String delete_<%=cid%> = "DELETE FROM [" + tableName_<%=cid%> + "] WHERE <%=deleteWhereStmt.toString()%>";
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(delete_<%=cid%>);
+        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
         <%
     } else if (("INSERT_IF_NOT_EXIST").equals(dataAction)) {
-    	%>
+        %>
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM [" + tableName_<%=cid%> + "] WHERE <%=updateWhereStmt.toString()%>");
+        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
         String insert_<%=cid%> = "INSERT INTO [" + tableName_<%=cid%> + "] (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
         java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+        resourceMap.put("insert_<%=cid %>", insert_<%=cid %>);
     <%
     }else if("SINGLE_INSERT".equals(dataAction)){
     %>
@@ -452,6 +459,7 @@ if(usingStatsLogs){ %>
 	String insert_<%=cid%> = "INSERT INTO "+<%=table%>+" (<%=insertColName.toString()%>) VALUES " + extendInsertValueStmt_<%=cid%>.toString();
 
 	java.sql.PreparedStatement pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+	resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 
     String insertColName<%=cid%> = "<%=insertColName.toString()%>";
     String insertColValue<%=cid%> =  "<%=insertValueStmt.toString()%>";
@@ -476,16 +484,16 @@ if(usingStatsLogs){ %>
         java.sql.Statement stmt_<%=cid %> = conn_<%=cid%>.createStatement();
         <%
         if (useExistingConnection) {
-        	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+            String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
         %>
-	        if ( !isShareIdentity_<%=cid%> ) {
-	        	stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
-	        }
+            if ( !isShareIdentity_<%=cid%> ) {
+                stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
+            }
         <%
         } else {
-     	%>
-     		stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
-     	<%
+    %>
+            stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
+    <%
         }
     }
 }

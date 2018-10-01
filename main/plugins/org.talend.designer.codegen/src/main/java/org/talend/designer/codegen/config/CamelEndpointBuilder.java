@@ -51,6 +51,8 @@ public class CamelEndpointBuilder {
 
     private boolean useDoubleSlash = true;
 
+    private boolean useComponentColon = true;
+
     /** The params map. k-v both are Expression. */
     private final Map<String, String> paramsMap;
 
@@ -274,7 +276,13 @@ public class CamelEndpointBuilder {
 
     public String build() {
         StringBuilder sb = new StringBuilder();
-        sb.append('\"').append(component).append(":");
+
+        sb.append('\"').append(component);
+
+        if (useComponentColon) {
+            sb.append(":");
+        }
+
         if (useDoubleSlash) {
             sb.append("//");
         }
@@ -434,6 +442,17 @@ public class CamelEndpointBuilder {
      */
     public CamelEndpointBuilder useDoubleSlash(boolean useDoubleSlash) {
         this.useDoubleSlash = useDoubleSlash;
+        return this;
+    }
+
+    /**
+     * 
+     * @param useComponentColon if set to {@code false} (default = true) result endpoint will start with
+     * {@code componentNameCategory[?options]} <br/>
+     * @return
+     */
+    public CamelEndpointBuilder useComponentColon(boolean useComponentColon) {
+        this.useComponentColon = useComponentColon;
         return this;
     }
 

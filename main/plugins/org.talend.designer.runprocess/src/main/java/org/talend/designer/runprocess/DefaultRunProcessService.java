@@ -46,6 +46,7 @@ import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.IESBService;
 import org.talend.core.ILibraryManagerService;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.ICodeProblemsChecker;
@@ -62,11 +63,12 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.relationship.Relation;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.runprocess.data.PerformanceData;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -76,7 +78,6 @@ import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.IESBMicroService;
 import org.talend.core.service.IESBRouteService;
 import org.talend.core.ui.ITestContainerProviderService;
-import org.talend.designer.maven.launch.MavenPomCommandLauncher;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
@@ -230,6 +231,8 @@ public class DefaultRunProcessService implements IRunProcessService {
 
         IESBRouteService routeService = null;
 
+        IESBService soapService = null;
+
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
             microService = (IESBMicroService) GlobalServiceRegister.getDefault().getService(IESBMicroService.class);
 
@@ -241,10 +244,27 @@ public class DefaultRunProcessService implements IRunProcessService {
                     }
                 }
             }
+            if (property != null && property.getAdditionalProperties() != null
+                    && "REST_MS".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+                if (microService != null) {
+                    IProcessor processor = microService.createJavaProcessor(process, property, filenameFromLabel, false);
+                    if (processor != null) {
+                        return processor;
+                    }
+                }
+            }
         }
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRouteService.class)) {
             routeService = (IESBRouteService) GlobalServiceRegister.getDefault().getService(IESBRouteService.class);
+        }
+
+        // Create maven processer for SOAP service, @see org.talend.designer.runprocess.java.TalendJavaProjectManager
+        if (process == null && GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+            soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            if (property.getItem() != null && soapService.isServiceItem(property.getItem().eClass().getClassifierID())) {
+                return (IProcessor) soapService.createJavaProcessor(process, property, filenameFromLabel);
+            }
         }
 
         if (ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(process.getComponentsType())) {
@@ -265,13 +285,7 @@ public class DefaultRunProcessService implements IRunProcessService {
                     }
                 }
             } else {
-                boolean isImportedRoute = false;
-                try {
-                    isImportedRoute = RepositorySeekerManager.getInstance().searchRepoViewNode(property.getId(), false) == null;
-                } catch (Exception e) {
-                    System.out.println("Could not find the RepoViewNode according to " + property.getId());
-                }
-                if (routeService != null && !isImportedRoute) {
+                if (routeService != null) {
                     return routeService.createJavaProcessor(process, property, filenameFromLabel, false);
                 }
             }
@@ -279,7 +293,32 @@ public class DefaultRunProcessService implements IRunProcessService {
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
             // If OSGI contains new processor, need to add built type in args map
-            return new MavenJavaProcessor(process, property, filenameFromLabel);
+
+            if (property != null) {
+                boolean servicePart = false;
+                List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
+                        property.getVersion(), RelationshipItemBuilder.JOB_RELATION);
+
+                for (Relation relation : relations) {
+                    if (RelationshipItemBuilder.SERVICES_RELATION.equals(relation.getType())) {
+                        servicePart = true;
+                        break;
+                    }
+                }
+                if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))
+                        || servicePart) {
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+                        soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                        return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
+                    }
+                }
+
+                return new MavenJavaProcessor(process, property, filenameFromLabel);
+
+            } else {
+                return new MavenJavaProcessor(process, property, filenameFromLabel);
+            }
+
         }
     }
 
@@ -671,8 +710,8 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, Project project) {
-        return TalendJavaProjectManager.getTalendCodeJavaProject(type, project);
+    public ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, String projectTechName) {
+        return TalendJavaProjectManager.getTalendCodeJavaProject(type, projectTechName);
     }
 
     @Override
@@ -727,59 +766,59 @@ public class DefaultRunProcessService implements IRunProcessService {
      * @see org.talend.designer.runprocess.IRunProcessService#initializeRootPoms()
      */
     @Override
-    public void initializeRootPoms() {
+    public void initializeRootPoms(IProgressMonitor monitor) {
         try {
             AggregatorPomsHelper helper = new AggregatorPomsHelper();
-            helper.installRootPom(true);
-
+            helper.installRootPom(false);
+            AggregatorPomsHelper.updateAllCodesProjectNeededModules(monitor);
             List<ProjectReference> references = ProjectManager.getInstance().getCurrentProject().getProjectReferenceList(true);
             for (ProjectReference ref : references) {
                 initRefPoms(new Project(ref.getReferencedProject()));
             }
-            AggregatorPomsHelper.updateRefProjectModules(references);
-            helper.updateCodeProjects(new NullProgressMonitor(), true);
+            helper.updateRefProjectModules(references);
+            helper.updateCodeProjects(monitor, true);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
     }
 
-    private void initRefPoms(Project project) throws Exception {
-        for (ProjectReference ref : project.getProjectReferenceList(true)) {
+    private void initRefPoms(Project refProject) throws Exception {
+        for (ProjectReference ref : refProject.getProjectReferenceList(true)) {
             initRefPoms(new Project(ref.getReferencedProject()));
         }
-        String refProjectTechName = project.getTechnicalLabel();
-        AggregatorPomsHelper refHelper = new AggregatorPomsHelper(refProjectTechName);
+        AggregatorPomsHelper refHelper = new AggregatorPomsHelper(refProject.getTechnicalLabel());
 
         // install ref project pom.
         refHelper.installRootPom(true);
 
         // install ref codes project.
-        Project refProject = ProjectManager.getInstance().getProjectFromProjectTechLabel(refProjectTechName);
-        Map<String, Object> argumentsMap = new HashMap<>();
-        argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
         IProgressMonitor monitor = new NullProgressMonitor();
-        installRefCodeProject(ERepositoryObjectType.ROUTINES, refProject, refHelper, argumentsMap, monitor);
+        installRefCodeProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
 
         if (ProcessUtils.isRequiredPigUDFs(null, refProject)) {
-            installRefCodeProject(ERepositoryObjectType.PIG_UDF, refProject, refHelper, argumentsMap, monitor);
+            installRefCodeProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
         }
 
         if (ProcessUtils.isRequiredBeans(null, refProject)) {
-            installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refProject, refHelper, argumentsMap, monitor); //$NON-NLS-1$
+            installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
         }
     }
 
-    private void installRefCodeProject(ERepositoryObjectType codeType, Project refProject, AggregatorPomsHelper refHelper,
-            Map<String, Object> argumentsMap, IProgressMonitor monitor) throws Exception, CoreException {
-        ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType, refProject);
+    private void installRefCodeProject(ERepositoryObjectType codeType, AggregatorPomsHelper refHelper, IProgressMonitor monitor)
+            throws Exception, CoreException {
+        if (!refHelper.getProjectRootPom().exists()) {
+            return;
+        }
+        String projectTechName = refHelper.getProjectTechName();
+        ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType, projectTechName);
         if (codeProject != null) {
+            codeProject.buildWholeCodeProject();
+            Map<String, Object> argumentsMap = new HashMap<>();
+            argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
+            argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, TalendMavenConstants.ARG_MAIN_SKIP);
             codeProject.buildModules(monitor, null, argumentsMap);
             codeProject.getProject().delete(false, true, monitor);
-            TalendJavaProjectManager.removeFromCodeJavaProjects(codeType, refProject);
-        } else {
-            IFile pomFile = refHelper.getCodeFolder(codeType).getFile(TalendMavenConstants.POM_FILE_NAME);
-            MavenPomCommandLauncher launcher = new MavenPomCommandLauncher(pomFile, TalendMavenConstants.GOAL_INSTALL);
-            launcher.execute(monitor);
+            TalendJavaProjectManager.removeFromCodeJavaProjects(codeType, projectTechName);
         }
     }
 

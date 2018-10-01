@@ -46,6 +46,7 @@ boolean ftps = false;
 
 String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
 String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
+boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 
 log4jFileUtil.componentStartInfo(node);
 
@@ -66,7 +67,7 @@ if (("true").equals(useExistingConn)) {
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 String passwordFieldName = "";
 
-if (useProxy) {
+if (useProxy && !("true").equals(useExistingConn)) {
 %>
   java.util.Properties props_<%=cid%> = System.getProperties();
   props_<%=cid%>.put("socksProxyPort", <%=proxyPort %>);
@@ -82,7 +83,12 @@ if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
   String decryptedProxyPassword_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
 <%}%>
 
-  props_<%=cid%>.put("java.net.socks.password", decryptedProxyPassword_<%=cid%>);    
+  props_<%=cid%>.put("java.net.socks.password", decryptedProxyPassword_<%=cid%>);
+  java.net.Authenticator.setDefault(new java.net.Authenticator() {
+        public java.net.PasswordAuthentication getPasswordAuthentication() {
+            return new java.net.PasswordAuthentication(<%=proxyUser %>, decryptedProxyPassword_<%=cid%>.toCharArray());
+        }
+  });
 <%
 }
 String outputConnName = null;
@@ -236,7 +242,7 @@ if (sftp) {  // *** sftp *** //
 		<%}%>
 	}  
 <%
-} else if (ftps) {
+} else if (ftps) {  // *** ftps *** //
 	if (("false").equals(useExistingConn)) {
 		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
 		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
@@ -264,6 +270,7 @@ if (sftp) {  // *** sftp *** //
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
 			<%}%>
+			ftp_<%=cid %>.setRemoteVerificationEnabled(<%=useRemoteVerification %>);
 <%
 			passwordFieldName = "__PASSWORD__";
 %>
@@ -308,7 +315,7 @@ if (sftp) {  // *** sftp *** //
 	org.apache.commons.net.ftp.FTPFile expectedFile_<%=cid %> = null;
 
 	for (org.apache.commons.net.ftp.FTPFile file_<%=cid %> : allFiles_<%=cid %>) {
-		if (<%=filename%>.equals(file_<%=cid %>.getName())) {
+		if ((<%=filename%>).equals(file_<%=cid %>.getName())) {
 			expectedFile_<%=cid %> = file_<%=cid %>;
 			break;
 		}

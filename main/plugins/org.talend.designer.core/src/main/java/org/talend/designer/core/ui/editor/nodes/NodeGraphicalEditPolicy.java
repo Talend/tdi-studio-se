@@ -20,6 +20,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.ui.editor.cmd.ConnectionCreateCommand;
 import org.talend.designer.core.ui.editor.cmd.ConnectionReconnectCommand;
@@ -47,7 +48,7 @@ public class NodeGraphicalEditPolicy extends GraphicalNodeEditPolicy {
     @SuppressWarnings("unchecked")
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         Node source = (Node) getHost().getModel();
-        if (source.isReadOnly()) {
+        if (checkConnectionStatus(source)) {
             return null;
         }
         String style = (String) request.getNewObjectType();
@@ -60,7 +61,7 @@ public class NodeGraphicalEditPolicy extends GraphicalNodeEditPolicy {
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
         Connection conn = (Connection) request.getConnectionEditPart().getModel();
         Node newSource = (Node) getHost().getModel();
-        if (newSource.isReadOnly()) {
+        if (checkConnectionStatus(newSource)) {
             return null;
         }
         ConnectionReconnectCommand cmd = new ConnectionReconnectCommand(conn);
@@ -72,7 +73,7 @@ public class NodeGraphicalEditPolicy extends GraphicalNodeEditPolicy {
     protected Command getReconnectTargetCommand(ReconnectRequest request) {
         Connection conn = (Connection) request.getConnectionEditPart().getModel();
         Node newTarget = (Node) getHost().getModel();
-        if (newTarget.isReadOnly()) {
+        if (checkConnectionStatus(newTarget)) {
             return null;
         }
 
@@ -108,5 +109,12 @@ public class NodeGraphicalEditPolicy extends GraphicalNodeEditPolicy {
             return new TalendBorderItemRectilinearRouter(request);
         }
         return super.getDummyConnectionRouter(request);
+    }
+
+    private boolean checkConnectionStatus(Node node) {
+        if (node.isReadOnly() && !ProcessUtils.isTestContainer(node.getProcess())) {
+            return true;
+        }
+        return false;
     }
 }

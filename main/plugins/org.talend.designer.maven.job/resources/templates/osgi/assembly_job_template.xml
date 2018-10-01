@@ -38,6 +38,15 @@
                 <include>**</include>
             </includes>
         </fileSet>
+        
+        <fileSet> <!-- add metadata -->
+            <directory>${basedir}/src/main/resources</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <includes>
+                <include>metadata/**</include>
+            </includes>
+        </fileSet>
+        
         <fileSet>
             <directory>${current.resources.dir}</directory>
             <outputDirectory>${file.separator}</outputDirectory>

@@ -60,6 +60,10 @@ public abstract class JavaJobScriptsExportWizardPage extends JobScriptsExportWiz
 
     public static final String EXTRACT_ZIP_FILE = "JavaJobScriptsExportWizardPage.EXTRACT_ZIP_FILE"; //$NON-NLS-1$
 
+    public static final String STORE_DOCKER_IS_REMOTE_HOST = "JavaJobScriptsExportWizardPage.STORE_DOCKER_IS_REMOTE_HOST"; //$NON-NLS-1$
+
+    public static final String STORE_DOCKER_REMOTE_HOST = "JavaJobScriptsExportWizardPage.STORE_DOCKER_REMOTE_HOST"; //$NON-NLS-1$
+
     /**
      * Create an instance of this class.
      * 

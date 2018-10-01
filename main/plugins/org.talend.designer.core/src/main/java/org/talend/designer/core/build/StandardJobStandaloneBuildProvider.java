@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -32,6 +33,7 @@ import org.talend.core.runtime.repository.build.IBuildExportHandler;
 import org.talend.core.runtime.repository.build.IMavenPomCreator;
 import org.talend.core.runtime.repository.build.RepositoryObjectTypeBuildProvider;
 import org.talend.core.service.IESBRouteService;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -66,9 +68,18 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
 
         ERepositoryObjectType type = null;
         Property property = null;
+        boolean isRestServiceProvider = false;
 
         Object object = parameters.get(PROCESS);
         if (object != null && object instanceof IProcess2) {
+
+            for (INode node : ((IProcess2) object).getGraphicalNodes()) {
+                if ("tRESTRequest".equals(node.getComponent().getName())) {
+                    isRestServiceProvider = true;
+                    break;
+                }
+            }
+
             property = ((IProcess2) object).getProperty();
             if (property != null) {
                 type = ERepositoryObjectType.getType(property);
@@ -82,6 +93,16 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
                 if (property != null) {
                     type = ERepositoryObjectType.getType(property);
                 }
+                if (object instanceof ProcessItem) {
+                    ProcessItem processItem = (ProcessItem) object;
+                    for (Object node : processItem.getProcess().getNode()) {
+                        NodeType nodeType = (NodeType) node;
+                        if ("tRESTRequest".equals(nodeType.getComponentName())) {
+                            isRestServiceProvider = true;
+                            break;
+                        }
+                    }
+                }
             }
         }
         if (type == null) {
@@ -93,7 +114,7 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
             }
         }
 
-        if (type != null && type.equals(getObjectType()) && !isServiceOperation(property)) {
+        if (type != null && type.equals(getObjectType()) && !isRestServiceProvider && !isServiceOperation(property)) {
             return true;
         }
 

@@ -1324,10 +1324,11 @@ public class SQLBuilderRepositoryNodeManager {
      */
     public static RepositoryNode getRoot(RepositoryNode repositoryNode) {
         Set<RepositoryNode> visited = new HashSet<RepositoryNode>();
-        return getRoot(visited, repositoryNode);
+        return getRoot(visited, repositoryNode, repositoryNode);
     }
 
-    private static RepositoryNode getRoot(Set<RepositoryNode> visited, RepositoryNode repositoryNode) {
+    private static RepositoryNode getRoot(final Set<RepositoryNode> visited, final RepositoryNode repositoryNode,
+            final RepositoryNode rootNode) {
         if (visited.contains(repositoryNode)) {
             return null;
         } else {
@@ -1338,20 +1339,23 @@ public class SQLBuilderRepositoryNodeManager {
                 if (getRepositoryType((RepositoryNode) node) == RepositoryNodeType.DATABASE) {
                     return (RepositoryNode) node;
                 } else {
-                    RepositoryNode repNode = getRoot(visited, (RepositoryNode) node);
+                    RepositoryNode repNode = getRoot(visited, (RepositoryNode) node, rootNode);
                     if (repNode != null) {
                         return repNode;
                     }
                 }
             }
             // return null;
-            throw new RuntimeException(Messages.getString("SQLBuilderRepositoryNodeManager.exceptionMessage")); //$NON-NLS-1$
+            if (repositoryNode == rootNode) {
+                throw new RuntimeException(Messages.getString("SQLBuilderRepositoryNodeManager.exceptionMessage")); //$NON-NLS-1$
+            }
         }
 
         if (getRepositoryType(repositoryNode) == RepositoryNodeType.DATABASE) {
             return repositoryNode;
         }
-        return getRoot(visited, repositoryNode.getParent());
+        RepositoryNode parent = repositoryNode.getParent();
+        return getRoot(visited, parent, parent);
     }
 
     public void synchronizeAllSqlEditors(SQLBuilderDialog builderDialog) {

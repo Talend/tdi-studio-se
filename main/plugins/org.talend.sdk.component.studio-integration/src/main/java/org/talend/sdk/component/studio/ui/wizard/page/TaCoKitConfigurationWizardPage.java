@@ -15,6 +15,7 @@ package org.talend.sdk.component.studio.ui.wizard.page;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.SWT;
@@ -34,15 +35,16 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.process.DataNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.model.parameter.Layout;
 import org.talend.sdk.component.studio.model.parameter.LayoutParameter;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.PropertyTreeCreator;
-import org.talend.sdk.component.studio.model.parameter.SettingsCreator;
+import org.talend.sdk.component.studio.model.parameter.SettingVisitor;
+import org.talend.sdk.component.studio.model.parameter.VersionParameter;
 import org.talend.sdk.component.studio.ui.composite.TaCoKitWizardComposite;
 import org.talend.sdk.component.studio.ui.wizard.TaCoKitConfigurationRuntimeData;
 
@@ -50,6 +52,8 @@ import org.talend.sdk.component.studio.ui.wizard.TaCoKitConfigurationRuntimeData
  * DOC cmeng class global comment. Detailled comment
  */
 public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
+
+    private final boolean isNew;
 
     private Element element;
 
@@ -63,19 +67,23 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
 
     private final EComponentCategory category;
 
-    public TaCoKitConfigurationWizardPage(final TaCoKitConfigurationRuntimeData runtimeData, final String form) {
+    public TaCoKitConfigurationWizardPage(final TaCoKitConfigurationRuntimeData runtimeData, final String form,
+            final boolean isNew) {
         super(Messages.getString("WizardPage.TaCoKitConfiguration"), runtimeData); //$NON-NLS-1$
+        this.isNew = isNew;
         final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
-        setTitle(Messages.getString("TaCoKitConfiguration.wizard.title", configTypeNode.getConfigurationType(), //$NON-NLS-1$
+        setTitle(Messages.getString("TaCoKitConfiguration.wizard.title", configTypeNode.getConfigurationType(), // $NON-NLS-1$
                 configTypeNode.getDisplayName()));
-        setDescription(Messages.getString("TaCoKitConfiguration.wizard.description.edit", configTypeNode.getConfigurationType(), //$NON-NLS-1$
+        setDescription(Messages.getString("TaCoKitConfiguration.wizard.description.edit",
+                configTypeNode.getConfigurationType(), // $NON-NLS-1$
                 configTypeNode.getDisplayName()));
         this.form = form;
         this.category = Metadatas.MAIN_FORM.equals(form) ? EComponentCategory.BASIC : EComponentCategory.ADVANCED;
         if (!runtimeData.isReadonly()) {
             try {
-                TaCoKitConfigurationModel configurationItemModel = getConfigurationItemModel();
-                configurationItemModel.storeVersion(String.valueOf(configurationItemModel.getConfigTypeNodeVersion()));
+                // do not remove. It initializes connection instance
+                TaCoKitConfigurationModel configurationItemModel = new TaCoKitConfigurationModel(
+                        runtimeData.getConnectionItem().getConnection(), runtimeData.getConfigTypeNode());
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
@@ -92,36 +100,40 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
 
             final TaCoKitConfigurationRuntimeData runtimeData = getTaCoKitConfigurationRuntimeData();
             configurationModel = getConfigurationItemModel();
-            final boolean addContextFields = runtimeData.isAddContextFields();
-
             final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
             final DummyComponent component = new DummyComponent(configTypeNode.getDisplayName());
             final DataNode node = new DataNode(component, component.getName());
-            final PropertyNode root = new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);
+            final PropertyNode root =
+                    new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);
             element = new FakeElement(runtimeData.getTaCoKitRepositoryNode().getConfigTypeNode().getDisplayName());
             element.setReadOnly(runtimeData.isReadonly());
             final ElementParameter updateParameter = createUpdateComponentsParameter(element);
             final List<IElementParameter> parameters = new ArrayList<>();
             parameters.add(updateParameter);
-            final SettingsCreator settingsCreator = new SettingsCreator(node, category, updateParameter, configTypeNode);
+            final SettingVisitor settingsCreator =
+                    new SettingVisitor(node, updateParameter, configTypeNode).withCategory(category);
             root.accept(settingsCreator, form);
             parameters.addAll(settingsCreator.getSettings());
             final ElementParameter layoutParameter = createLayoutParameter(root, form, category, element);
             parameters.add(layoutParameter);
+            //add version params
+            Map<String, ConfigTypeNode> nodes = Lookups.taCoKitCache().getConfigTypeNodeMap();
+            configTypeNode.getProperties()
+                    .stream()
+                    .filter(p -> p.getMetadata().containsKey("configurationtype::type") && p.getMetadata().containsKey("configurationtype::name"))
+                    .map(p -> new VersionParameter(node, p.getPath(),
+                            nodes.values().stream()
+                                    .filter(n -> n.getConfigurationType() != null)
+                                    .filter(n -> p.getMetadata().get("configurationtype::type").equals(n.getConfigurationType()))
+                                    .filter(n -> n.getName().equals(p.getMetadata().get("configurationtype::name")))
+                                    .findFirst()
+                                    .map(n -> String.valueOf(n.getVersion())).orElse("-1")))
+                    .forEach(p -> configurationModel.setValue(p));
             element.setElementParameters(parameters);
-
             tacokitComposite = new TaCoKitWizardComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
-                    element, configurationModel, true, container.getBackground());
-            tacokitComposite.setLayoutData(createMainFormData(addContextFields));
+                    element, configurationModel, true, container.getBackground(), isNew);
+            tacokitComposite.setLayoutData(createMainFormData(runtimeData.isAddContextFields()));
 
-            if (addContextFields) {
-                // Composite contextParentComp = new Composite(container, SWT.NONE);
-                // contextParentComp.setLayoutData(createFooterFormData(tacokitComposite));
-                // contextParentComp.setLayout(new GridLayout());
-                // ContextComposite contextComp = addContextFields(contextParentComp);
-                // contextComp.addPropertyChangeListener(tacokitComposite);
-                // contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-            }
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -131,9 +143,7 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
         if (this.configurationModel == null) {
             try {
                 final TaCoKitConfigurationRuntimeData runtimeData = getTaCoKitConfigurationRuntimeData();
-                final TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel(
-                        runtimeData.getConnectionItem());
-                configurationModel = itemModel.getConfigurationModel();
+                configurationModel = new TaCoKitConfigurationModel(runtimeData.getConnectionItem().getConnection());
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
@@ -182,7 +192,9 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
 
     @Override
     protected IStatus[] getStatuses() {
-        return Arrays.asList(super.getStatuses(), tacokitConfigStatus).toArray(new IStatus[0]);
+        List<IStatus> status = Arrays.asList(super.getStatuses());
+        status.add(tacokitConfigStatus);
+        return status.toArray(new IStatus[0]);
     }
 
 }

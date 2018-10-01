@@ -26,6 +26,7 @@ import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.cwm.helper.ConnectionHelper;
 
 /**
  * DOC zli class global comment. Detailled comment For
@@ -67,7 +68,7 @@ public class EncryptDbPasswordforItemFileMigrationTask extends AbstractItemMigra
     }
 
     public void encryptPassword(DatabaseConnection dbConn) throws Exception {
-        String password = PasswordEncryptUtil.encryptPassword(dbConn.getPassword());
+        String password = PasswordEncryptUtil.encryptPassword(ConnectionHelper.getCleanPassword(dbConn.getPassword()));
         dbConn.setPassword(password);
     }
 

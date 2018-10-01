@@ -15,7 +15,7 @@
             category="org.talend.designer.core.ui.preferences.ImportExportPreferencePage"
             class="org.talend.spagic.engines.client.ui.preferences.SpagicPreferencePage"
             id="org.talend.repository.prefs.spagic"
-            name="Spagic Server">
+            name="Spagic Server (Deprecated)">
       </page>
    </extension>
    <extension

@@ -28,17 +28,33 @@ public final class Metadatas {
 
     public static final String ACTION_HEALTHCHECK = "action::healthcheck";
 
+    public static final String ACTION_SUGGESTIONS_NAME = "action::suggestions";
+
+    public static final String ACTION_SUGGESTIONS_PARAMETERS = "action::suggestions::parameters";
+
     public static final String ACTION_VALIDATION_NAME = "action::validation";
 
     public static final String ACTION_VALIDATION_PARAMETERS = "action::validation::parameters";
+
+    public static final String ACTION_UPDATABLE_VALUE = "action::update";
+
+    public static final String ACTION_UPDATABLE_PARAMETERS = "action::update::parameters";
+
+    public static final String ACTION_UPDATABLE_AFTER = "action::update::after";
 
     public static final String CONDITION_IF_VALUE = "condition::if::value";
 
     public static final String CONDITION_IF_TARGET = "condition::if::target";
 
+    public static final String CONDITION_IF_NEGATE = "condition::if::negate";
+
+    public static final String CONDITION_IF_EVALUTIONSTRATEGY = "condition::if::evaluationStrategy";
+
     public static final String CONFIG_TYPE = "configurationtype::type";
 
     public static final String CONFIG_NAME = "configurationtype::name";
+    
+    public static final String PARAMETER_INDEX = "definition::parameter::index";
 
     public static final String UI_CODE = "ui::code::value";
 

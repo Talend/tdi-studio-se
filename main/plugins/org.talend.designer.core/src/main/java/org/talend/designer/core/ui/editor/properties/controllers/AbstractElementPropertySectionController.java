@@ -1596,6 +1596,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 realTableName = metadataTable.getTableName();
             }
         }
+        connParameters.setDbType(type); 
+        connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(type));
         connParameters.setSchemaName(QueryUtil.getTableName(elem, connParameters.getMetadataTable(),
                 TalendTextUtils.removeQuotes(schema), type, realTableName));
     }
@@ -1698,7 +1700,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
                     driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
                 }
             }
-            connParameters.setDriverClass(driverClass);
+            connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(connParameters.getDbType()));
 
             connParameters.setDriverJar(TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.DRIVER_JAR.getName(), context, basePropertyParameter)));
@@ -1896,6 +1898,16 @@ public abstract class AbstractElementPropertySectionController implements Proper
             connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_ADDITIONAL_JDBC_SETTINGS,
                     additionalJDBCSetting);
         }
+
+        String hiveEnableHa = getValueFromRepositoryName(elem, "ENABLE_HIVE_HA"); //$NON-NLS-1$
+        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_ENABLE_HA, hiveEnableHa);
+
+        String hiveMetastoreUris = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "HIVE_METASTORE_URIS")); //$NON-NLS-1$
+        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_METASTORE_URIS, hiveMetastoreUris);
+
+        String hiveThriftPort = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "THRIFTPORT")); //$NON-NLS-1$
+        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_THRIFTPORT, hiveThriftPort);
+
     }
     
     /**
@@ -2087,12 +2099,17 @@ public abstract class AbstractElementPropertySectionController implements Proper
         }
         connParameters = new ConnectionParameters();
         String type = getValueFromRepositoryName(elem, "TYPE", basePropertyParameter); //$NON-NLS-1$
+        Object isUseExistingConnection = elem.getPropertyValue("USE_EXISTING_CONNECTION"); //$NON-NLS-1$
+        boolean isUserExistionConnectionType = false;
         if (type.equals("Oracle") || type.contains("OCLE")) {
             IElementParameter ele = elem.getElementParameter("CONNECTION_TYPE");
             if (ele != null) {
                 type = (String) ele.getValue();
             } else {
                 type = "ORACLE_SID"; //$NON-NLS-1$
+            }
+            if ((isUseExistingConnection instanceof Boolean) && ((Boolean) isUseExistingConnection)) {
+                isUserExistionConnectionType = true;
             }
         } else if (EDatabaseTypeName.HIVE.getProduct().equalsIgnoreCase(type)) {
             // if (EDatabaseVersion4Drivers.HIVE_EMBEDDED.getVersionValue().equals(
@@ -2155,10 +2172,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         }
 
-        Object value = elem.getPropertyValue("USE_EXISTING_CONNECTION"); //$NON-NLS-1$
-
         IElementParameter compList = elem.getElementParameterFromField(EParameterFieldType.COMPONENT_LIST);
-        if (value != null && (value instanceof Boolean) && ((Boolean) value) && compList != null) {
+        if (isUseExistingConnection != null && (isUseExistingConnection instanceof Boolean) && ((Boolean) isUseExistingConnection) && compList != null) {
             Object compValue = compList.getValue();
 
             if (compValue != null && !compValue.equals("")) { //$NON-NLS-1$
@@ -2179,6 +2194,12 @@ public abstract class AbstractElementPropertySectionController implements Proper
                     }
                 }
                 if (connectionNode != null) {
+                    if (isUserExistionConnectionType) {
+                        IElementParameter ele = connectionNode.getElementParameter("CONNECTION_TYPE");
+                        if (ele != null) {
+                            type = (String) ele.getValue();
+                        }
+                    }
                     setAllConnectionParameters(type, connectionNode);
                 }
             }

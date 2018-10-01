@@ -15,6 +15,7 @@ package org.talend.repository.generic.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -49,7 +50,6 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.repository.generic.action.GenericAction;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
-import org.talend.repository.generic.model.genericMetadata.GenericMetadataPackage;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import org.talend.repository.generic.ui.DynamicComposite;
 import org.talend.repository.generic.util.GenericConnectionUtil;
@@ -146,8 +146,8 @@ public class GenericWizardService implements IGenericWizardService {
 
     @Override
     public boolean isGenericItem(Item item) {
-        if(item !=null && item instanceof ConnectionItem){
-            return ((ConnectionItem)item).getConnection().getCompProperties() != null;
+        if (item != null && item instanceof ConnectionItem) {
+            return ((ConnectionItem) item).getConnection().getCompProperties() != null;
         }
         return false;
     }
@@ -164,7 +164,7 @@ public class GenericWizardService implements IGenericWizardService {
         if (imageStream == null) {
             return null;
         }
-        // node image   ImageProvider.getImageDesc(ECoreImage.METADATA_TABLE_ICON)
+        // node image ImageProvider.getImageDesc(ECoreImage.METADATA_TABLE_ICON)
         ImageData id = new ImageData(imageStream);
         Image image = new Image(null, id);
         return image;
@@ -231,11 +231,13 @@ public class GenericWizardService implements IGenericWizardService {
     }
 
     @Override
-    public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel) {
+    public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel, boolean withEvaluator) {
         List<ComponentProperties> componentProperties = new ArrayList<>();
+        Set<ComponentProperties> componentPropertiesSet = new HashSet<>();
         if (isGenericConnection(connection)) {
             String compProperties = connection.getCompProperties();
-            ComponentProperties cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection, false);
+            ComponentProperties cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection,
+                    withEvaluator);
             if (cp != null) {
                 componentProperties.add(cp);
             }
@@ -252,16 +254,29 @@ public class GenericWizardService implements IGenericWizardService {
                 for (TaggedValue taggedValue : metadataTable.getTaggedValue()) {
                     if (IComponentConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
                         ComponentProperties compPros = ComponentsUtils
-                                .getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, false);
-                        if (compPros != null && !componentProperties.contains(compPros)) {
+                                .getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, withEvaluator);
+                        if (compPros != null && !componentPropertiesSet.contains(compPros)) {
                             compPros.updateNestedProperties(cp);
                             componentProperties.add(compPros);
+                            componentPropertiesSet.add(compPros);
                         }
                     }
                 }
             }
         }
         return componentProperties;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.talend.core.runtime.services.IGenericWizardService#getAllComponentProperties(org.talend.core.model.metadata.
+     * builder.connection.Connection, java.lang.String, boolean)
+     */
+    @Override
+    public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel) {
+        return getAllComponentProperties(connection, tableLabel, false);
     }
 
     @Override
@@ -284,17 +299,9 @@ public class GenericWizardService implements IGenericWizardService {
             return null;
         }
         ITreeContextualAction defaultAction = null;
-        List<ComponentWizard> wizards = GenericConnectionUtil.getAllWizards(node);
-        for (ComponentWizard wizard : wizards) {
-            ComponentWizardDefinition wizardDefinition = wizard.getDefinition();
-            if (wizardDefinition.isTopLevel()) {
-                continue;
-            }
-            String wizardName = wizardDefinition.getName();
-            if (wizardName.toLowerCase().contains("edit")) { //$NON-NLS-1$
-                defaultAction = new GenericAction(wizard);
-                break;
-            }
+        ComponentWizard editWizard = GenericConnectionUtil.getEditWizard(node);
+        if (editWizard != null) {
+            defaultAction = new GenericAction(editWizard);
         }
         return defaultAction;
     }

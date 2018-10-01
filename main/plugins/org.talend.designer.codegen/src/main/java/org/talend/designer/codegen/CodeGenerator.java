@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.codegen.jet.JETException;
@@ -34,6 +35,7 @@ import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentFileNaming;
 import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.process.IConnection;
@@ -43,9 +45,11 @@ import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.temp.ETypeGen;
 import org.talend.core.model.utils.NodeUtil;
+import org.talend.core.service.IResourcesDependenciesService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.codegen.config.CloseBlocksCodeArgument;
@@ -340,6 +344,29 @@ public class CodeGenerator implements ICodeGenerator {
                             }
                         }
                         listParametersCopy.add(icp);
+                    } else if ((JavaTypesManager.RESOURCE.getId().equals(iContextParameter.getType())
+                            || JavaTypesManager.RESOURCE.getLabel().equals(iContextParameter.getType()))
+                            && StringUtils.isNotBlank(iContextParameter.getValue())) {
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IResourcesDependenciesService.class)) {
+                            IContextParameter contextPar = iContextParameter.clone();
+                            IResourcesDependenciesService resourceService = (IResourcesDependenciesService) GlobalServiceRegister
+                                    .getDefault().getService(IResourcesDependenciesService.class);
+                            String resourcePathForContext = null;
+                            if (process instanceof IProcess2) {
+                                resourcePathForContext = resourceService.getResourcePathForContext(process,
+                                        contextPar.getValue());
+                            } else {
+                                // for PreviewFileInputContentDataProcess run
+                                resourcePathForContext = resourceService.getResourceItemFilePath(contextPar.getValue());
+                            }
+                            if (resourcePathForContext != null) {
+                                contextPar.setValue(resourcePathForContext);
+                            }
+                            listParametersCopy.add(contextPar);
+                        } else {
+                            listParametersCopy.add(iContextParameter);
+                        }
+
                     } else {
                         listParametersCopy.add(iContextParameter);
                     }
@@ -595,6 +622,13 @@ public class CodeGenerator implements ICodeGenerator {
                                     generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_END, incomingName, typeGen));
                         }
                     }
+
+                    if (isTacokitProcessor(node)) {
+                        codeComponent.append(generateComponentCode(subProcess, node, ECodePart.PROCESS_RECORDS_END, incomingName, typeGen));
+                        codeComponent.append(generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_BEGIN, incomingName, typeGen));
+                        codeComponent.append(generatesTreeCode(subProcess, node, ECodePart.MAIN, typeGen));
+                        codeComponent.append(generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_END, incomingName, typeGen));
+                    }
                     codeComponent.append(generatesTreeCode(subProcess, node, part, typeGen));
                     // if (isIterate) {
                     // codeComponent.append(generateComponentCode(node,
@@ -613,6 +647,11 @@ public class CodeGenerator implements ICodeGenerator {
         }
 
         return codeComponent;
+    }
+
+    private boolean isTacokitProcessor(final INode node) {
+        return "org.talend.sdk.component.studio.ComponentModel".equals(node.getComponent().getClass().getName())
+                && !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty(); //has input data
     }
 
     private StringBuffer generateSeperateEndCode(NodesSubTree subProcess, INode node, String incomingName, ETypeGen typeGen)

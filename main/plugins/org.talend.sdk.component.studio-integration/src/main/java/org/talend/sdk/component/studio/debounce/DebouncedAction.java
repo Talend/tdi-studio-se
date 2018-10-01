@@ -29,7 +29,7 @@ public class DebouncedAction implements Runnable {
 
     private volatile ScheduledFuture<?> scheduled;
 
-    DebouncedAction(final DebounceManager manager) {
+    public DebouncedAction(final DebounceManager manager) {
         this.manager = manager;
     }
 

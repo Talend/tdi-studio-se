@@ -33,16 +33,33 @@ imports="
 
     String theDistribution = ElementParameterParser.getValue(node, "__DISTRIBUTION__");
     String theVersion = ElementParameterParser.getValue(node, "__HIVE_VERSION__");
+    
+	final String studioVersion = org.talend.commons.utils.VersionUtils.getDisplayVersion();
 
-    if ("true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"))) {
+	String quboleClusterLabel = null;
+	String quboleEndpoint = null;
+	String encryptedToken = null;
+    if ("true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"))) { //with connection
         String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
         for (INode pNode : node.getProcess().getNodesOfType("tHiveConnection")) {
             if (connection!=null && connection.equals(pNode.getUniqueName())) {
                 theDistribution = ElementParameterParser.getValue(pNode, "__DISTRIBUTION__");
                 theVersion = ElementParameterParser.getValue(pNode, "__HIVE_VERSION__");
+               	if (ElementParameterParser.getBooleanValue(pNode, "__QUBOLE_CLUSTER__")) {
+					quboleClusterLabel = ElementParameterParser.getValue(pNode, "__QUBOLE_CLUSTER_LABEL__");
+				}
+                
             }
         }
-    }
+    } else { // without connection
+	    encryptedToken = ElementParameterParser.getEncryptedValue(node, "__QUBOLE_API_TOKEN__");
+		if (ElementParameterParser.getBooleanValue(node, "__QUBOLE_ENDPOINT__")) {
+			quboleEndpoint = ElementParameterParser.getValue(node, "__QUBOLE_ENDPOINT_URL__");
+		}
+		if (ElementParameterParser.getBooleanValue(node, "__QUBOLE_CLUSTER__")) {
+			quboleClusterLabel = ElementParameterParser.getValue(node, "__QUBOLE_CLUSTER_LABEL__");
+		}
+	}
 
     org.talend.hadoop.distribution.component.HiveComponent hiveDistrib = null;
     try {
@@ -86,11 +103,17 @@ imports="
             }
 <%
         }
-    } else if (hiveDistrib.isGoogleDataprocDistribution()) {
+    }
+    if (hiveDistrib.isGoogleDataprocDistribution()) {
 %>
         <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/GetDataprocConnection.javajet"%>
 <%
     }
+    if (hiveDistrib.isQuboleDistribution()) {
+%>
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/GetQuboleConnection.javajet"%>
+<%
+	}
 
 	// Register jars
 
@@ -132,6 +155,10 @@ imports="
                         bw_<%=cid%>.write("ADD JAR " + wasbPath_<%=cid%> + new java.io.File(getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>")).getName() + ";");
                         libjars_<%=cid%>.append(getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>") + ",");
 <%
+                    } else if (hiveDistrib.isQuboleDistribution()) {
+                    %>
+                    	// Qubole hive 1.2 supports parquet by default.
+                    <%
                     } else { // dataproc
                         if (isLog4jEnabled) {
 %>
@@ -147,8 +174,8 @@ imports="
             }
         }
     }
-
 	// End of parquet format handling.
+
 	if (hiveDistrib.isExecutedThroughWebHCat()) {
 %>
         bw_<%=cid%>.write(<%=dbquery%> + ";");
@@ -183,7 +210,9 @@ imports="
         }
         java.io.InputStream <%=ElementParameterParser.getValue(node, "__INPUT_STREAM_NAME__")%> = instance_<%=cid%>.getStdOut();
 <%
-    } else { // dataproc
+    }
+
+    if (hiveDistrib.isGoogleDataprocDistribution()) {
         if (isLog4jEnabled) {
 %>
             log.debug("Query for <%=cid%>: " + <%=dbquery%>.replace("';'", "'\\;'") + ";");
@@ -345,5 +374,32 @@ imports="
         java.io.InputStream <%=ElementParameterParser.getValue(node, "__INPUT_STREAM_NAME__")%> =
                 new java.io.SequenceInputStream(java.util.Collections.enumeration(inputStreamList_<%=cid%>));
 <%
+    }
+    if (hiveDistrib.isQuboleDistribution()) { // qubole execution
+        %>
+        	String queries_<%=cid%> = "";
+        	if (connectionCommandList_<%=cid%> != null) {
+        		for (String command : connectionCommandList_<%=cid%>) {
+        			queries_<%=cid%> += command;
+        			<% if (isLog4jEnabled) { %>
+        				log.info("<%=cid%> - configuration properties set: " + command);
+        			<% } %>
+        		}
+        	}
+        	
+        	String query_<%=cid %> = <%=dbquery%>;
+        	queries_<%=cid%> = queries_<%=cid%> + query_<%=cid %>;
+
+		    org.talend.bigdata.launcher.qubole.QuboleHiveClient.Job job_<%=cid%> =
+		    	new org.talend.bigdata.launcher.qubole.QuboleHiveClient.Job(queries_<%=cid%>);
+			job_<%=cid%>.setJobName("<%=cid%>");
+			job_<%=cid%>.setUserAgent(routines.system.Constant.getUserAgent("<%=studioVersion%>"));
+        	<% if (quboleClusterLabel != null) { %>
+			job_<%=cid%>.setClusterLabel(<%=quboleClusterLabel%>);
+			<% } %>
+			String execution_result_<%=cid%> = instance_<%=cid%>.execute(job_<%=cid%>);
+
+			java.io.InputStream <%=ElementParameterParser.getValue(node, "__INPUT_STREAM_NAME__")%> = new java.io.ByteArrayInputStream(execution_result_<%=cid%>.getBytes());
+			<%
     }
 %>

@@ -78,6 +78,23 @@ public class TaCoKitCache {
         }
         return findConfigTypeNode(familyConfigTypes.get(familyName), nodeName, configurationType);
     }
+    
+    /**
+     * Retrieves ConfigTypeNode from cache for specified {@code id}
+     * 
+     * @param id ConfigTypeNode id
+     * @return ConfigTypeNode for specified id
+     */
+    public ConfigTypeNode getConfigTypeNode(final String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id should not be null");
+        }
+        ConfigTypeNode configTypeNode = getConfigTypeNodeMap().get(id);
+        if (configTypeNode == null) {
+            throw new IllegalArgumentException("Config type not found for id: " + id);
+        }
+        return configTypeNode;
+    }
 
     /**
      * Finds only family ConfigTypeNode and puts them to {@link #familyConfigTypes}
@@ -148,6 +165,15 @@ public class TaCoKitCache {
         return this.migrationManager;
     }
 
+    public void reset() {
+        configTypeNodesCache = null;
+        migrationManager = null;
+        familyConfigTypes = null;
+        if (configTypeNodeMapCache != null) {
+            configTypeNodeMapCache.clear();
+        }
+    }
+
     public void clearCache() {
         configTypeNodesCache = null;
         if (configTypeNodeMapCache != null) {
@@ -155,7 +181,7 @@ public class TaCoKitCache {
         }
         try {
             getMigrationManager().runMigrationJob();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             ExceptionHandler.process(e);
         }
     }

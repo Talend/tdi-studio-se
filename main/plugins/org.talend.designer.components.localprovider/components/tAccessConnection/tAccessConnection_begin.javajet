@@ -28,6 +28,12 @@ imports="
 			} else {
 %>
 			String atnParams_<%=cid%> = <%=dbproperties%>;
+			if (dbUser_<%=cid%> == null) {
+				dbUser_<%=cid%> = "";
+			}
+			if (dbPwd_<%=cid%> == null) {
+				dbPwd_<%=cid%> = "";
+			}
 			atnParams_<%=cid%> = atnParams_<%=cid%>.replaceAll("&", "\n");
 			java.util.Properties atnParamsPrope_<%=cid%> = new java.util.Properties();
 			atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);

@@ -776,6 +776,11 @@ public class MapperManager extends AbstractMapperManager {
         uiManager.refreshSqlExpression();
     }
 
+    public void useDelimitedIdentifiers(boolean useDelimitedIdentifiers) {
+        getComponent().getGenerationManager().setUseDelimitedIdentifiers(useDelimitedIdentifiers);
+        uiManager.refreshSqlExpression();
+    }
+
     /**
      * Getter for problemsManager.
      * 

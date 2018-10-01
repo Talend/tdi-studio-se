@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionBuilderDialogController;
+import org.talend.commons.ui.runtime.swt.tableviewer.behavior.ColumnCellModifier;
 import org.talend.commons.ui.runtime.swt.tableviewer.celleditor.CellEditorDialogBehavior;
 import org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView;
 import org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView;
@@ -162,7 +163,17 @@ public class FunParaTableView2 extends AbstractDataTableEditorView<Parameter> {
             }
 
         });
+
+        final ColumnCellModifier columnCellModifier = new ColumnCellModifier(column) {
+
+            @Override
+            public boolean canModify(Object bean) {
+                return !rowGenTableEditor2.isReadOnly();
+            }
+
+        };
         column.setModifiable(true);
+        column.setColumnCellModifier(columnCellModifier);
         column.setWidth(115);
 
         dialog = ((IExpressionBuilderDialogService) expressionBuilderDialogService).getExpressionBuilderInstance(mainComposite,
@@ -202,7 +213,7 @@ public class FunParaTableView2 extends AbstractDataTableEditorView<Parameter> {
 
     private MetadataColumnExt ext;
 
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public void update(MetadataColumnExt ext) {
         this.ext = ext;
         Function function = ext.getFunction();

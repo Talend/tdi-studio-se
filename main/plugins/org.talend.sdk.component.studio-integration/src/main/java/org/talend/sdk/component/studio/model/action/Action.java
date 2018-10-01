@@ -15,11 +15,16 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
 
-public class Action {
+public class Action<T> {
 
     public static final String STATUS = "status";
 
@@ -29,48 +34,87 @@ public class Action {
 
     public static final String MESSAGE = "comment";
 
-    public static final String VALIDATION = "validation";
-
-    public static final String HEALTH_CHECK = "healthcheck";
+    private V1Action actionClient;
 
     private final String actionName;
 
     private final String family;
 
     private final String type;
-
-    protected final ActionParameters parameters = new ActionParameters();
-
-    public Action(final String actionName, final String family, final String type) {
+    
+    /**
+     * Action parameters map. Key is an ElementParameter path. Value is a list of action parameters associated with the ElementParameter 
+     */
+    private final Map<String, List<IActionParameter>> parameters = new HashMap<>();
+    
+    public Action(final String actionName, final String family, final Type type) {
         this.actionName = actionName;
         this.family = family;
-        this.type = type;
+        this.type = type.toString();
     }
 
-    public void addParameter(final ActionParameter parameter) {
-        parameters.add(parameter);
+    /**
+     * Adds specified {@code parameter} to this Action.
+     * ActionParameter passed should be unique action parameter.
+     * 
+     * @param parameter ActionParameter to be added
+     */
+    public void addParameter(final IActionParameter parameter) {
+        Objects.requireNonNull(parameter, "parameter should not be null");
+        final String elementParameter = parameter.getName();
+        List<IActionParameter> list = parameters.computeIfAbsent(elementParameter, k -> new ArrayList<>());
+
+        if (list.contains(parameter)) {
+            throw new IllegalArgumentException("action already contains parameter " + parameter); 
+        }
+        list.add(parameter);
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, String> callback() {
-        final V1Action action = Lookups.client().v1().action();
-        return action.execute(Map.class, family, type, actionName, parameters.payload());
+    public Map<String, T> callback() {
+        return actionClient().execute(Map.class, family, type, actionName, payload());
     }
 
-    public String getActionName() {
+    protected final String getActionName() {
         return this.actionName;
     }
 
-    public String getFamily() {
+    protected final String getFamily() {
         return this.family;
     }
 
-    public String getType() {
+    protected final String getType() {
         return this.type;
     }
+    
+    protected final Map<String, String> payload() {
+        final Map<String, String> payload = new HashMap<>();
+        parameters.values().stream()
+                .flatMap(List::stream)
+                .flatMap(actionParam -> actionParam.parameters().stream())
+                .forEach(param -> {
+                    payload.put(param.getFirst(), param.getSecond());
+                 });
+        return payload;
+    }
+    
+    public enum Type {
+        HEALTHCHECK,
+        SUGGESTIONS,
+        VALIDATION,
+        UPDATE;
 
-    public ActionParameters getParameters() {
-        return this.parameters;
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+    }
+
+    protected V1Action actionClient() {
+        if (actionClient == null) {
+            actionClient = Lookups.client().v1().action();
+        }
+        return actionClient;
     }
 
 }

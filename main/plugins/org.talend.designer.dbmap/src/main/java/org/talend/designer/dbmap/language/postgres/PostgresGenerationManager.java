@@ -63,7 +63,7 @@ public class PostgresGenerationManager extends DbGenerationManager {
         if (expression != null) {
             List<? extends IConnection> inputConnections = component.getIncomingConnections();
 
-            ExternalDbMapData data = (ExternalDbMapData) component.getExternalData();
+            ExternalDbMapData data = component.getExternalData();
 
             if (inputConnections == null) {
                 return expression;
@@ -170,6 +170,11 @@ public class PostgresGenerationManager extends DbGenerationManager {
             return "\\\"" + field + "\\\"";
         }
 
+    }
+
+    @Override
+    protected String getColumnName(IConnection conn, String name) {
+        return name;
     }
 
     @Override

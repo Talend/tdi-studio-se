@@ -66,7 +66,7 @@ import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 
 /**
- * created by ycbai on 2015年9月24日 Detailled comment
+ * created by ycbai on 2015/9/24 Detailled comment
  *
  */
 public class GenericElementParameter extends ElementParameter implements IGenericElementParameter {
@@ -134,13 +134,20 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
         if (!isFirstCall
                 || (widget.getContent() instanceof PropertiesImpl && !Widget.TABLE_WIDGET_TYPE.equals(widget.getWidgetType()))) {
             updateProperty(o);
-            boolean calledValidate = callValidate();
-            if (calledValidate) {
-                fireValidateStatusEvent();
-            }
-            boolean calledAfter = callAfter();
-            if (calledAfter) {
-                fireValueChangedEvent();
+            /*
+             * Prevent Salesforce and Snowflake from performing API calls to retrieve table metadata.
+             * Possible values is going to be a marker that shows that method was called from RepositoryChangeMetadataCommand.
+             * Otherwise method was called to perform "validate" and "after" operations. 
+             */
+            if ((!"table.tableName".equals(getName()) && !"module.moduleName".equals(getName())) || !possibleValues.isEmpty()) {
+	            boolean calledValidate = callValidate();
+	            if (calledValidate) {
+	                fireValidateStatusEvent();
+	            }
+	            boolean calledAfter = callAfter();
+	            if (calledAfter) {
+	                fireValueChangedEvent();
+	            }
             }
         }
         isFirstCall = false;
@@ -165,7 +172,7 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
             List<?> propertyPossibleValues = ((Property<?>) widgetProperty).getPossibleValues();
             if (propertyPossibleValues != null) {
                 for (Object possibleValue : propertyPossibleValues) {
-                    if (possibleValue.toString().equals(newValue)) {
+                    if (possibleValue != null && possibleValue.toString().equals(newValue)) {
                         value = possibleValue;
                         break;
                     }

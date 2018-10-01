@@ -128,7 +128,7 @@ imports="
       			String uploadId_<%=cid%> = initResponse_<%=cid%>.getUploadId();
       			int partNumber_<%=cid%> = 1;
       			boolean streamHasNext_<%=cid%> = true;
-      			byte[] TestAvailable_<%=cid%> = new byte[1];
+      			byte[] probeAvailability_<%=cid%> = new byte[1];
       			try {
   							while (streamHasNext_<%=cid%>) {
         						com.amazonaws.services.s3.model.UploadPartRequest uploadRequest_<%=cid%> = new com.amazonaws.services.s3.model.UploadPartRequest()
@@ -136,7 +136,7 @@ imports="
                     	.withKey(key_<%=cid%>).withUploadId(uploadId_<%=cid%>)
                     	.withPartNumber(partNumber_<%=cid%>).withPartSize(curPartSize_<%=cid%>);
             		    uploadRequest_<%=cid%>.setInputStream(uploadStream_<%=cid%>);
-            		    streamHasNext_<%=cid%> = sourceStream_<%=cid%>.read(TestAvailable_<%=cid%>) != -1;
+            		    streamHasNext_<%=cid%> = sourceStream_<%=cid%>.read(probeAvailability_<%=cid%>) != -1;
             		    if(!streamHasNext_<%=cid%>){
                     	    uploadRequest_<%=cid%>.setLastPart(true);
                     	}
@@ -147,8 +147,10 @@ imports="
           		     	if(uploadStream_<%=cid%>!=null){
       		         			uploadStream_<%=cid%>.close();
           		     	}
+          		     	buffer_<%=cid%> = new byte[partSizeInBytes_<%=cid%>];
           		     	sourceStream_<%=cid%>.read(buffer_<%=cid%>,1,partSizeInBytes_<%=cid%>-1);
-          		     	buffer_<%=cid%>[0] = TestAvailable_<%=cid%>[0];
+          		     	buffer_<%=cid%>[0] = probeAvailability_<%=cid%>[0];
+          		     	probeAvailability_<%=cid%> = new byte[1];
           		     	curPartSize_<%=cid%> = streamUtil_<%=cid%>.getLength(buffer_<%=cid%>);
           		     	uploadStream_<%=cid%> = new java.io.ByteArrayInputStream(buffer_<%=cid%>);
         				}

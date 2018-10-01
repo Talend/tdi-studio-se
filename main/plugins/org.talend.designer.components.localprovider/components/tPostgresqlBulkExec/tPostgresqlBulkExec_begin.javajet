@@ -21,9 +21,11 @@ String cid = node.getUniqueName();
 String table = ElementParameterParser.getValue(node, "__TABLE__");
 String dbSchema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
 String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
+String driverIfGreenplum = ElementParameterParser.getValue(node,"__DRIVER_IF_GREENPLUM__");
 boolean standardConformingString= ("true").equals(ElementParameterParser.getValue(node,"__STANDARD_CONFORMING_STRING__"));
 boolean convertToUppercase = false; // not active this function
 boolean useExistingConnection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+boolean isLocalFile = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__LOCAL_FILE__"));
 %>
 int deletedCount_<%=cid%>=0;
 String tableName_<%=cid%> = null;
@@ -86,7 +88,9 @@ if(notNullCols != null && notNullCols.size() > 0) {
 
 %>
 String bulkSQL_<%=cid%> = "COPY \"" + <%if(("UPDATE").equals(dataAction)) {%>tmpTableName_<%=cid%><% } else {%>tableName_<%=cid%> <%}%>
-+ "\"<%=copyColumns.toString()%>FROM '" + <%=file%> + "' WITH ";
++ "\"<%=copyColumns.toString()%>FROM " + 
+		<%if(!isLocalFile){%> "'" + <%=file%>.replaceAll("\"","") +"'" <%} else {%> "STDIN" <%}%>
+		+ " WITH ";
 <%
 String fileType = ElementParameterParser.getValue(node, "__FILETYPE__");
 String oids = (("true").equals(ElementParameterParser.getValue(node, "__OIDS__")) ? "OIDS" : "");
@@ -173,10 +177,17 @@ java.sql.Connection conn_<%=cid%> = null;
 	 	log4jCodeGenerateUtil.useExistConnection(node);
 	 } else {
 	 %>
-	 	String driverClass_<%=cid%> = "org.postgresql.Driver";
-		java.lang.Class.forName(driverClass_<%=cid%>).newInstance();
-		String url_<%=cid%> = "jdbc:postgresql://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>;
+
+		<%if(driverIfGreenplum.equals("GREENPLUM")){%>
+			String driverClass_<%=cid%> = "com.pivotal.jdbc.GreenplumDriver";
+			String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=host%>+":"+<%=port%>+";DatabaseName="+<%=dbName%>;
+		<%} else {%>
+			String driverClass_<%=cid%> = "org.postgresql.Driver";
+			String url_<%=cid%> = "jdbc:postgresql://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>;
+		<%}%>
+		
 		String dbUser_<%=cid%> = <%=userName%>;
+		java.lang.Class.forName(driverClass_<%=cid%>).newInstance();
 		<%
 		String passwordFieldName = "__PASS__";
 		%>
@@ -225,7 +236,7 @@ if(("UPDATE").equals(dataAction)) {
         }
         
         tmpTableName_<%=cid%> = tableName_<%=cid%>;
-        tableName_<%=cid%> = "tmp_<%=cid%>" + "_" + pid + Thread.currentThread().getId() ;        
+        tableName_<%=cid%> = "tmp_<%=cid%>" + "_" + pid + Thread.currentThread().getId();        
         java.sql.Statement stmtCreateTmp_<%=cid%> = conn_<%=cid%>.createStatement();
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Creating temp table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>." );
@@ -244,14 +255,22 @@ if(("UPDATE").equals(dataAction)) {
    		cs_<%=cid%>.close();
    		<%}%>        
         
-        java.sql.Statement stmtTmpBulk_<%=cid%> = conn_<%=cid%>.createStatement();
+		<%if(!isLocalFile){%>
+			java.sql.Statement stmtBulk_<%=cid%> = conn_<%=cid%>.createStatement();
+			//stmt.execute("SET client_encoding to 'UNICODE'");
+			stmtBulk_<%=cid %>.execute(bulkSQL_<%=cid%>);
+			stmtBulk_<%=cid %>.close(); 
+		<%}else{%>
+			try (java.io.FileReader fileReader = new java.io.FileReader(<%=file%>)){
+				org.postgresql.copy.CopyManager copyManager = new org.postgresql.copy.CopyManager((org.postgresql.core.BaseConnection) conn_<%=cid %>);
+				copyManager.copyIn(bulkSQL_<%=cid%>, fileReader );
+			} 			
+		<%}%>
 		<%if(isLog4jEnabled){%>
 			log.debug("<%=cid%> - Bulk SQL:"+bulkSQL_<%=cid%>+".");
 			log.info("<%=cid%> - Bulk inserting data into <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>." );
 		<%}%>
-        stmtTmpBulk_<%=cid%>.execute(bulkSQL_<%=cid%>);
-        stmtTmpBulk_<%=cid%>.close();
-        
+		
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Bulk insert data into <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has finished.");
 		<%}%>
@@ -287,14 +306,22 @@ if(("UPDATE").equals(dataAction)) {
    	cs_<%=cid%>.close();
    <%}%>
     
-    java.sql.Statement stmtBulk_<%=cid %> = conn_<%=cid %>.createStatement();
-    //stmt.execute("SET client_encoding to 'UNICODE'");
+	<%if(!isLocalFile){%>
+		java.sql.Statement stmtBulk_<%=cid %> = conn_<%=cid %>.createStatement();
+		//stmt.execute("SET client_encoding to 'UNICODE'");
+		stmtBulk_<%=cid %>.execute(bulkSQL_<%=cid%>);
+		stmtBulk_<%=cid %>.close(); 
+	<%}else{%>
+		try (java.io.FileReader fileReader = new java.io.FileReader(<%=file%>)){
+			org.postgresql.copy.CopyManager copyManager = new org.postgresql.copy.CopyManager((org.postgresql.core.BaseConnection) conn_<%=cid %>);
+			copyManager.copyIn(bulkSQL_<%=cid%>, fileReader );
+		}
+	<%}%>
 	<%if(isLog4jEnabled){%>
 		log.debug("<%=cid%> - Bulk SQL:"+bulkSQL_<%=cid%>+".");
 		log.info("<%=cid%> - Inserting records in table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>.");
 	<%}%>
-    stmtBulk_<%=cid %>.execute(bulkSQL_<%=cid%>);
-    stmtBulk_<%=cid %>.close();    
+	
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Insert records in table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has finished.");
 	<%

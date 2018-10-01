@@ -65,13 +65,9 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//1
 				org.json.JSONArray <%=cid%>_PayloadArray= new org.json.JSONArray();
 				org.json.JSONObject <%=cid%>_SysId = new org.json.JSONObject();
 				org.json.JSONObject <%=cid%>_ob = new org.json.JSONObject();
-				<%
-				for(IMetadataColumn column:columnList) {//5
-					%>
+		 <%	for(IMetadataColumn column:columnList) {//5	%>
 					if(<%=conn.getName() %>.<%=column.getLabel()%> != null) {//6
-						<%
-						if("id_Dynamic".equals(column.getTalendType())) {
-						%>
+						<%	if("id_Dynamic".equals(column.getTalendType())) { %>
 							routines.system.Dynamic dynamic_<%=cid%> = <%=conn.getName() %>.<%=column.getLabel()%>;
 							for (int j_<%=cid%> = 0; j_<%=cid%> < dynamic_<%=cid%>.getColumnCount(); j_<%=cid%>++) {
                                 if (dynamic_<%=cid%>.getColumnValue(j_<%=cid%>) != null) {
@@ -83,21 +79,17 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//1
                                     }
                                 }
                             }
-						<%
-						} else if ("sys_id".equals(column.getLabel())) {
-						%>
+						<%	} else if ("sys_id".equals(column.getLabel())) {	%>
 							<%=cid%>_SysId.put("<%=column%>", <%=firstConnName%>.<%=column.getLabel()%>);
-						<%
-						} else {
+						<%	} else if ("id_Date".equals(column.getTalendType())) {	
+									final String pattern = column.getPattern();
 						%>
+							<%=cid%>_ob.put("<%=column%>", TalendDate.formatDate(<%=pattern%>, <%=firstConnName%>.<%=column.getLabel()%>));
+						<%	} else {	%>
 							<%=cid%>_ob.put("<%=column%>", <%=firstConnName%>.<%=column.getLabel()%>);
-						<%
-						}
-						%>
-					}//6
-					<%
-				}//5
-				%>
+						<%	} %>
+						}//6
+			<%	}//5	%>
 				<%=cid%>_PayloadArray.put(<%=cid%>_ob);
 				<%=cid%>_Payload.put("data",<%=cid%>_PayloadArray);
 				<%

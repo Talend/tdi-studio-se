@@ -142,6 +142,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 					}
 %>
 	    			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+	    			resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 				} else {
 %>
@@ -177,7 +178,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
               }
 %>
-              	pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+                pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+                resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
             	}
 %>
@@ -198,7 +200,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 					}
 				}
 %>
-	   	 		pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+				pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+				resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 			} else if (("INSERT_OR_UPDATE").equals(dataAction)) {
 				List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -223,8 +226,11 @@ skeleton="../templates/db_output_bulk.skeleton"
 				}
 %>
 			    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM \"" + tableName_<%=cid%> + "\" WHERE <%=updateWhereStmt.toString()%>");
+			    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 			    pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+			    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 			    pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+			    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 <%
 			} else if (("UPDATE_OR_INSERT").equals(dataAction)) {
 				List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -250,12 +256,15 @@ skeleton="../templates/db_output_bulk.skeleton"
 				}
 %>
 			    pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+			    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 			    pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+			    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 <%
 			} else if (("DELETE").equals(dataAction)) {
 %>
 			    String delete_<%=cid%> = "DELETE FROM \"" + tableName_<%=cid%> + "\" WHERE <%=deleteWhereStmt.toString()%>";
 			    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(delete_<%=cid%>);
+			    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 			}
 		}
@@ -724,11 +733,11 @@ skeleton="../templates/db_output_bulk.skeleton"
                 }
             }
             %>
-
-            java.sql.ResultSet rs_<%=cid%> = pstmt_<%=cid %>.executeQuery();
             int checkCount_<%=cid%> = -1;
-            while(rs_<%=cid%>.next()) {
-                checkCount_<%=cid%> = rs_<%=cid%>.getInt(1);
+            try (java.sql.ResultSet rs_<%=cid%> = pstmt_<%=cid %>.executeQuery()) {
+                while(rs_<%=cid%>.next()) {
+                    checkCount_<%=cid%> = rs_<%=cid%>.getInt(1);
+                }
             }
             if(checkCount_<%=cid%> > 0) {
                 <%
@@ -1110,7 +1119,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         if (useBatch) {
             %>
                 if ((batchSize_<%=cid%> > 0) && (batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>)) {
-            		<%@ include file="./batchExecute.javajet"%>
+        						<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/batchExecute.javajet"%>
                 }
             <%
             }
@@ -1127,7 +1136,7 @@ skeleton="../templates/db_output_bulk.skeleton"
               	if(useBatch){//execute the batch before commit, if not that, the batch may not be executed at last and make the data lost
                 %>
                     if((batchSize_<%=cid%> > 0) && (batchSizeCounter_<%=cid%> > 0)){
-                    	<%@ include file="./batchExecute.javajet"%>
+                    		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/batchExecute.javajet"%>
                     }
                 <%
                 }

@@ -260,9 +260,9 @@ if(!isDynamic && columnList != null && columnList.size() > 0) {
 					}
 				}
 			%>
-				java.sql.Statement stmtCreateProjection_<%=cid%> = conn_<%=cid%>.createStatement();
-				stmtCreateProjection_<%=cid%>.execute("CREATE PROJECTION " + tableName_<%=cid%> + "_proj (<%=columnListStr.toString()%>) AS SELECT <%=columnListStr.toString()%> FROM " + tableName_<%=cid%>);
-				stmtCreateProjection_<%=cid%>.close();
+				try (java.sql.Statement stmtCreateProjection_<%=cid%> = conn_<%=cid%>.createStatement()) {
+					stmtCreateProjection_<%=cid%>.execute("CREATE PROJECTION " + tableName_<%=cid%> + "_proj (<%=columnListStr.toString()%>) AS SELECT <%=columnListStr.toString()%> FROM " + tableName_<%=cid%>);
+				}
 			<%
 			}
 		}
@@ -300,6 +300,7 @@ if(!isDynamic && columnList != null && columnList.size() > 0) {
         %>
         String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + " (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 		if(useBatch){
 		%>
@@ -310,26 +311,33 @@ if(!isDynamic && columnList != null && columnList.size() > 0) {
         %>
         String update_<%=cid%> = "UPDATE " + tableName_<%=cid%> + " SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
         <%
     } else if (("INSERT_OR_UPDATE").equals(dataAction)) {
         %>
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM " + tableName_<%=cid%> + " WHERE <%=updateWhereStmt.toString()%>");
+        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
         String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + " (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
         java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+        resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
         String update_<%=cid%> = "UPDATE " + tableName_<%=cid%> + " SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
         java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+        resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
         <%
     } else if (("UPDATE_OR_INSERT").equals(dataAction)) {
         %>
         String update_<%=cid%> = "UPDATE " + tableName_<%=cid%> + " SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
         java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+        resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
         String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + " (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
         java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+        resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
         <%
     } else if (("DELETE").equals(dataAction)) {
         %>
         String delete_<%=cid%> = "DELETE  FROM " + tableName_<%=cid%> + " WHERE <%=deleteWhereStmt.toString()%>";
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(delete_<%=cid%>);
+        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
         <%
     } else if (("COPY").equals(dataAction)) {
 		boolean abortOnError = "true".equals(ElementParameterParser.getValue(node,"__ABORT_ON_ERROR__"));
@@ -351,6 +359,7 @@ if(!isDynamic && columnList != null && columnList.size() > 0) {
 	    %>
 		StringBuilder stmtBuilder_<%=cid%> = new StringBuilder();
         java.sql.Statement stmt_<%=cid%> = conn_<%=cid%>.createStatement();
+        resourceMap.put("stmt_<%=cid %>", stmt_<%=cid %>);
         String template_<%=cid%> = "COPY " + tableName_<%=cid%> +" (<%=insertColName.toString()%>)"
 						          + " FROM STDIN UNCOMPRESSED WITH DELIMITER ';' RECORD TERMINATOR '\n' ENCLOSED BY '|' NULL AS '' <%=rejectMax%><%=exceptionString%><%=rejectString%><%=abort%>DIRECT<%=noComm%>";
 		<%

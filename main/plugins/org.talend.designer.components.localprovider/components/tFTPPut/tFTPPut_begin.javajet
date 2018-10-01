@@ -39,12 +39,14 @@ String proxyUser = ElementParameterParser.getValue(node, "__PROXY_USERNAME__");
 String connectMode = ElementParameterParser.getValue(node, "__CONNECT_MODE__");
 String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
+boolean createDirIfNotExist = ("true").equals(ElementParameterParser.getValue(node, "__CREATE_DIR_IF_NOT_EXIST__"));
 boolean moveToCurrentDir = ("true").equals(ElementParameterParser.getValue(node, "__MOVE_TO_THE_CURRENT_DIRECTORY__"));
 boolean sftp = false;
 boolean ftps = false; 
 
 String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
 String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
+boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 String passwordFieldName = "";
@@ -55,17 +57,18 @@ if (("true").equals(useExistingConn)) {
   for (INode n : nodeList) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
-      ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__")); 
+      ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+      break;
     }
   }
 } else {
   sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
-  ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__")); 
-}  
+  ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
+}
 
 //The following part support the socks proxy for FTP and SFTP (Socks V4 or V5, they are all OK). 
 //And it can not work with the FTP proxy directly, only support the socks proxy.
-if (useProxy) {
+if (useProxy && !("true").equals(useExistingConn)) {
 %>
   java.util.Properties props_<%=cid%> = System.getProperties();
   props_<%=cid%>.put("socksProxyPort", <%=proxyPort %>);
@@ -81,31 +84,38 @@ if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
   String decryptedProxyPassword_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
 <%}%>
 
-  props_<%=cid%>.put("java.net.socks.password",decryptedProxyPassword_<%=cid%>);        
+  props_<%=cid%>.put("java.net.socks.password",decryptedProxyPassword_<%=cid%>);
+  java.net.Authenticator.setDefault(new java.net.Authenticator() {
+        public java.net.PasswordAuthentication getPasswordAuthentication() {
+            return new java.net.PasswordAuthentication(<%=proxyUser %>, decryptedProxyPassword_<%=cid%>.toCharArray());
+        }
+  });
 <%}%>
 int nb_file_<%=cid%> = 0;
 
-<%if (sftp) {%>// *** sftp *** //
+<%
+if (sftp) { // *** sftp *** //
+%>
 
-	class MyProgressMonitor_<%=cid%> implements com.jcraft.jsch.SftpProgressMonitor {
-		public void init(int op, String src, String dest, long max) {}
-    	public boolean count(long count) { return true;}
-    	public void end() {}
-  	}
+    class MyProgressMonitor_<%=cid%> implements com.jcraft.jsch.SftpProgressMonitor {
+        public void init(int op, String src, String dest, long max) {}
+        public boolean count(long count) { return true;}
+        public void end() {}
+    }
 
-	<%if (("true").equals(useExistingConn)) {
-    	String conn= "conn_" + connection;
-    %>
-    	com.jcraft.jsch.ChannelSftp c_<%=cid%> = (com.jcraft.jsch.ChannelSftp)globalMap.get("<%=conn %>");
-		<%if(isLog4jEnabled){%>
-			if(c_<%=cid%>!=null && c_<%=cid%>.getSession()!=null) {
-				log.info("<%=cid%> - Uses an existing connection. Connection username " + c_<%=cid%>.getSession().getUserName() + ", Connection hostname: " + c_<%=cid%>.getSession().getHost() + ", Connection port: " + c_<%=cid%>.getSession().getPort() + "."); 
-			}
-		<%}%>
-    	if(c_<%=cid%>.getHome()!=null && !c_<%=cid%>.getHome().equals(c_<%=cid%>.pwd())){
-  			c_<%=cid%>.cd(c_<%=cid%>.getHome());
-  		}
-	<%} else {%>    
+<%
+    if (("true").equals(useExistingConn)) {
+        String conn= "conn_" + connection;
+%>
+        com.jcraft.jsch.ChannelSftp c_<%=cid%> = (com.jcraft.jsch.ChannelSftp)globalMap.get("<%=conn %>");
+        <%if(isLog4jEnabled){%>
+            if(c_<%=cid%>!=null && c_<%=cid%>.getSession()!=null) {
+                log.info("<%=cid%> - Uses an existing connection. Connection username " + c_<%=cid%>.getSession().getUserName() + ", Connection hostname: " + c_<%=cid%>.getSession().getHost() + ", Connection port: " + c_<%=cid%>.getSession().getPort() + "."); 
+            }
+<%
+        }
+    } else {
+%>
 		class MyUserInfo_<%=cid %> implements com.jcraft.jsch.UserInfo, com.jcraft.jsch.UIKeyboardInteractive {
 		
      	   <%
@@ -184,14 +194,45 @@ int nb_file_<%=cid%> = 0;
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Connect to '" + <%=host %> + " has succeeded." );
 		<%}%>
-    	com.jcraft.jsch.ChannelSftp c_<%=cid%>=(com.jcraft.jsch.ChannelSftp)channel_<%=cid%>;
-    	
-    	<%if(use_encoding) {%>
+		com.jcraft.jsch.ChannelSftp c_<%=cid%>=(com.jcraft.jsch.ChannelSftp)channel_<%=cid%>;
+
+		<%if(use_encoding) {%>
 			c_<%=cid%>.setFilenameEncoding(<%=encoding%>);
 		<%}%>
 		
 	<%}%>
-	// becasue there is not the same method in JSch class as FTPClient class, define a list here
+
+    String rootDir_<%=cid %> = c_<%=cid %>.pwd();
+
+<%
+	if (createDirIfNotExist) {
+%>
+		String remotedir_<%=cid %> = (<%=remotedir %>).replaceAll("\\\\", "/");
+		String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
+		for (String dir: dirsTree_<%=cid %>) {
+			if (dir.isEmpty()) continue;
+
+			try {
+				c_<%=cid %>.cd(dir);
+			} catch (com.jcraft.jsch.SftpException ignored) {
+<%
+				if (isLog4jEnabled) {
+%>
+					log.debug("Can't find directory " + dir + ". Component will create it");
+<%
+				}
+%>
+				c_<%=cid%>.mkdir(dir);
+				c_<%=cid %>.cd(dir);
+			}
+		}
+		//back to the root
+		c_<%=cid %>.cd(rootDir_<%=cid %>);
+
+<%
+	}
+%>
+	// because there is not the same method in JSch class as FTPClient class, define a list here
 	java.util.List<String> msg_<%=cid%> = new java.util.ArrayList<String>();
 	com.jcraft.jsch.SftpProgressMonitor monitor<%=cid%> = new MyProgressMonitor_<%=cid%>();
 	java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
@@ -201,8 +242,8 @@ int nb_file_<%=cid%> = 0;
     	Map<String, String> line = files.get(i);
     %>
 			java.util.Map<String,String> map<%=cid %><%=i %> = new java.util.HashMap<String,String>();
-		    map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>, <%= line.get("NEWNAME") %>);    
-		    list<%=cid %>.add(map<%=cid %><%=i %>);       
+		    map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>, <%= line.get("NEWNAME") %>);
+		    list<%=cid %>.add(map<%=cid %><%=i %>);
   <%
 	}
   %>  
@@ -210,6 +251,27 @@ int nb_file_<%=cid%> = 0;
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Putting file to the server.");
 	<%}%>
+	
+	class StatCheck_<%=cid%> {
+			
+			boolean statOK(com.jcraft.jsch.ChannelSftp client, String path) {
+					try {
+							return client.stat(path).getAtimeString() != null;
+					} catch (Exception e) {
+							<%if(isLog4jEnabled){%>
+							log.warn("<%=cid%> - Directory or file permission denied for checking the status of the path : " + path);
+							<%}%>
+					}
+					
+					return false;
+			}
+			
+	}
+	
+	StatCheck_<%=cid%> sc_<%=cid%> = new StatCheck_<%=cid%>();
+
+    c_<%=cid %>.cd(<%=remotedir%>);
+
 	for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
 
 <%} else if (!ftps) {%> // *** ftp *** //
@@ -220,9 +282,7 @@ int nb_file_<%=cid%> = 0;
 			String conn= "conn_" + connection;
     %>
 			ftp_<%=cid %> = (com.enterprisedt.net.ftp.FTPClient)globalMap.get("<%=conn %>");
-	  		<%if(!moveToCurrentDir){%>
-		  		String rootDir_<%=cid %> = ftp_<%=cid %>.pwd();
-	  		<%}%>
+
 			<%if(isLog4jEnabled){%>
 				if(ftp_<%=cid %>!=null) {
 					log.info("<%=cid%> - Uses an existing connection. Connection hostname: " + ftp_<%=cid %>.getRemoteHost() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
@@ -260,6 +320,7 @@ int nb_file_<%=cid%> = 0;
 			<%}%> 
 		<%}%>  
 
+		String rootDir_<%=cid %> = ftp_<%=cid %>.pwd();
 		// msg_<%=cid%> likes a String[] to save the message from transfer.  
 		com.enterprisedt.net.ftp.TransferCompleteStrings msg_<%=cid%> = ftp_<%=cid %>.getTransferCompleteMessages();
 		msg_<%=cid%>.clearAll();
@@ -271,11 +332,31 @@ int nb_file_<%=cid%> = 0;
     %>    
 			java.util.Map<String,String> map<%=cid %><%=i %> = new java.util.HashMap<String,String>();
 			map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>,<%= line.get("NEWNAME") %>);  
-			list<%=cid %>.add(map<%=cid %><%=i %>);       
+			list<%=cid %>.add(map<%=cid %><%=i %>);
   <%
 		}
   %>  
-		String remotedir<%=cid %> = <%=remotedir%>;
+		String remotedir<%=cid %> = (<%=remotedir%>).replaceAll("\\\\", "/");
+<%
+		if (createDirIfNotExist) {
+%>
+			boolean isDirectoryExist_<%=cid %> = ftp_<%=cid %>.existsDirectory(remotedir<%=cid %>);
+
+			if (!isDirectoryExist_<%=cid %>) {
+				String rootDir = null;
+				String[] dirsTree_<%=cid %> = remotedir<%=cid %>.split("/");
+				for (String dir: dirsTree_<%=cid %>) {
+					if (!ftp_<%=cid %>.existsDirectory(dir)) {
+						ftp_<%=cid %>.mkdir(dir);
+					}
+					ftp_<%=cid %>.chdir(dir);
+				}
+
+				ftp_<%=cid %>.chdir(rootDir_<%=cid %>);
+			}
+<%
+		}
+%>
 		ftp_<%=cid %>.chdir(remotedir<%=cid %>);
 
 		<%if ("binary".equalsIgnoreCase(ElementParameterParser.getValue(node, "__MODE__"))) {%>  
@@ -326,7 +407,7 @@ int nb_file_<%=cid%> = 0;
 				<%if(isLog4jEnabled){%>
 					log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
 				<%}%>
-
+				ftp_<%=cid %>.setRemoteVerificationEnabled(<%=useRemoteVerification %>);
 <%
 				passwordFieldName = "__PASSWORD__";
 %>
@@ -379,16 +460,25 @@ int nb_file_<%=cid%> = 0;
 				}
 			<%}%>
 			
-			<%
-				if(!moveToCurrentDir){
-%>
-					rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
+			rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
 <%
-				}
 		}
 %>
-		String remotedir_<%=cid%> = null;
-		remotedir_<%=cid%> = <%=remotedir%>; 
+		String remotedir_<%=cid%> = (<%=remotedir%>).replaceAll("\\\\", "/");
+
+<%
+		if(createDirIfNotExist) {
+%>
+			String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
+			for (String dir: dirsTree_<%=cid %>) {
+				ftp_<%=cid %>.makeDirectory(dir);
+				ftp_<%=cid %>.changeWorkingDirectory(dir);
+			}
+
+			ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+<%
+		}
+%>
 		boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
 
 		if (!cwdSuccess_<%=cid %>) {

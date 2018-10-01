@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.talend.studio</groupId>
     <artifactId>tdi-studio-se</artifactId>
-    <version>7.0.1-SNAPSHOT</version>
+    <version>7.1.1-SNAPSHOT</version>
     <relativePath>../../../</relativePath>
   </parent>
   <artifactId>org.talend.libraries.custom</artifactId>
@@ -29,7 +29,7 @@
                 <artifactItem>
                   <groupId>org.talend.libraries</groupId>
                   <artifactId>talend-codegen-utils</artifactId>
-                  <version>0.20.4</version>
+                  <version>0.25.3</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.talend.libraries</groupId>

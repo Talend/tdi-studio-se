@@ -26,6 +26,7 @@ import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
@@ -127,7 +128,8 @@ public class EncryptPasswordInJobSettingsMigrationTask extends AbstractItemMigra
         }
 
         if (!encrypted) {
-            param.setValue(PasswordEncryptUtil.encryptPassword(param.getValue()) + PasswordEncryptUtil.ENCRYPT_KEY);
+            param.setValue(PasswordEncryptUtil.encryptPassword(ConnectionHelper.getCleanPassword(param.getValue()))
+                    + PasswordEncryptUtil.ENCRYPT_KEY);
             modified = true;
         }
         return modified;

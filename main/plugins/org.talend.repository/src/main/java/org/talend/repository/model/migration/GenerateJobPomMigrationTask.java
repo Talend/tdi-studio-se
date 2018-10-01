@@ -19,7 +19,6 @@ import java.util.List;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.properties.Item;
-import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 
@@ -37,7 +36,7 @@ public class GenerateJobPomMigrationTask extends AbstractItemMigrationTask {
     @Override
     public ExecutionResult execute(Item item) {
         // only execute the migration task during logon, disable it for the import item (check of log finished)
-        if (item instanceof ProcessItem && !ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
+        if (!ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
             CorePlugin.getDefault().getRunProcessService().generatePom(item);
             return ExecutionResult.SUCCESS_NO_ALERT;
         }

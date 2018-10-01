@@ -16,6 +16,7 @@
 package org.talend.sdk.component.studio.model.parameter;
 
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.MAIN_FORM;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,11 +24,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.talend.core.model.process.EParameterFieldType;
 
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
+
 public class PropertyNode {
+
+    public static final String UPDATE_BUTTON = ".update";
 
     static final String CONNECTION_BUTTON = ".testConnection";
 
@@ -35,7 +43,7 @@ public class PropertyNode {
 
     private PropertyNode parent;
 
-    private final List<PropertyNode> children = new ArrayList<>();
+    private final List<PropertyNode> children;
 
     private final Map<String, Layout> layouts = new HashMap<>();
 
@@ -48,10 +56,27 @@ public class PropertyNode {
      */
     private final boolean root;
 
-    public PropertyNode(final PropertyDefinitionDecorator property, final EParameterFieldType fieldType, final boolean root) {
+    public PropertyNode(final PropertyDefinitionDecorator property,
+                        final EParameterFieldType fieldType,
+                        final boolean root) {
         this.property = property;
         this.fieldType = fieldType;
         this.root = root;
+        this.children = new ArrayList<>();
+    }
+
+    /*
+        Constructor for tests
+     */
+    @JsonbCreator
+    public PropertyNode(@JsonbProperty("property") final PropertyDefinitionDecorator property,
+                        @JsonbProperty("fieldType") final EParameterFieldType fieldType,
+                        @JsonbProperty("root") final boolean root,
+                        @JsonbProperty("children") List<PropertyNode> children) {
+        this.property = property;
+        this.fieldType = fieldType;
+        this.root = root;
+        this.children = new ArrayList<>(children);
     }
 
     public void addChild(final PropertyNode child) {
@@ -74,10 +99,7 @@ public class PropertyNode {
     /**
      * Checks whether it is column according ui::gridlayout for specified <code>form</code>
      *
-     * 
-     * 
      * @param form Name of form
-     * 
      * @return true, if it column; false - otherwise
      */
     public boolean isColumn(final String form) {
@@ -93,28 +115,23 @@ public class PropertyNode {
 
     /**
      * Traverses all nodes
-     *
-     * 
      * 
      * @param visitor the property visitor to use to traverse the nodes.
      */
-    public void accept(final PropertyVisitor visitor) {
+    public <T extends PropertyVisitor> T accept(final T visitor) {
         children.forEach(child -> child.accept(visitor));
         visitor.visit(this);
+        return visitor;
     }
 
     /**
      * Traverses nodes of specified <code>form</code> in sorted according metadata order
      *
-     * 
-     * 
      * @param visitor the property visitor to use to traverse the nodes.
-     * 
      * @param form Name of form
      */
     public void accept(final PropertyVisitor visitor, final String form) {
-        final List<PropertyNode> children = sortChildren(getChildren(form), form);
-        children.forEach(child -> child.accept(visitor, form));
+        sortChildren(getChildren(form), form).forEach(child -> child.accept(visitor, form));
         visitor.visit(this);
     }
 
@@ -125,17 +142,33 @@ public class PropertyNode {
     }
 
     /**
-     * Returns children, which belongs to specified <code>form</code>
+     * Returns children, which belongs to specified {@code form}
      *
-     * 
-     * 
      * @param form Name of form
-     * 
      * @return children of specified form
      */
     public List<PropertyNode> getChildren(final String form) {
         final Set<String> childrenNames = getChildrenNames(form);
         return children.stream().filter(node -> childrenNames.contains(node.property.getName())).collect(Collectors.toList());
+    }
+    
+    /**
+     * Checks whether subtree rooted by this node has leaves, which belongs to specified {@code form}
+     * 
+     * @param form Name of form
+     * @return true, if it has leaves
+     */
+    public boolean hasLeaves(final String form) {
+        final ArrayList<PropertyNode> subNodes = new ArrayList<>(getChildren(form));
+        for (int i = 0; i < subNodes.size(); i++) {
+            final PropertyNode current = subNodes.get(i);
+            if (current.isLeaf()) {
+                return true;
+            } else {
+                subNodes.addAll(current.getChildren(form));
+            }
+        }
+        return false;
     }
 
     private PropertyNode getChild(final String name, final String form) {
@@ -148,11 +181,9 @@ public class PropertyNode {
     /**
      * Sorts children according order specified in metadata or do nothing if order is not specified
      *
-     * 
-     * 
      * @param children children node, which belongs specified form
-     * 
      * @param form Name or form
+     * @return sorted list
      */
     private List<PropertyNode> sortChildren(final List<PropertyNode> children, final String form) {
         final HashMap<String, Integer> order = property.getChildrenOrder(form);
@@ -169,17 +200,11 @@ public class PropertyNode {
 
     /**
      * Returns children names for specified <code>form</code>.
-     * 
      * If <code>form</code> is Main form its children may be specified by ui::gridlayout or ui:optionsorder.
-     * 
      * If it has no both metadata, then all children are considered as Main children.
-     * 
      * For other <code>form</code> children may be specified only by ui::gridlayout.
      *
-     * 
-     * 
      * @param form Name of form
-     * 
      * @return children names of specified <code>form</code>
      */
     private Set<String> getChildrenNames(final String form) {
@@ -192,17 +217,11 @@ public class PropertyNode {
 
     /**
      * Returns children names for Main form
-     * 
      * If it has ui:gridlayout metadata value for Main form, then names are retrieved from there
-     * 
      * If it has ui:gridlayout for other forms, then it is considered that Main form is empty
-     * 
      * If it has ui:optionsorder (and has no any ui:gridlayout), then names are retrieved from there
-     * 
      * If it has no both metadatas, then all children belong to Main form
      *
-     * 
-     * 
      * @return children names for Main form
      */
     private Set<String> getMainChildrenNames() {
@@ -229,11 +248,8 @@ public class PropertyNode {
 
     /**
      * Creates layout for specified {@code form} and computes position for all children nodes.
-     * 
      * It traverse a tree in-depth. Children nodes are visited before parent
      *
-     * 
-     * 
      * @param form Layout form for which node position is computed
      */
     void computePosition(final String form) {
@@ -259,7 +275,7 @@ public class PropertyNode {
         }
 
         private void createLayout() {
-            Layout layout = null;
+            final Layout layout;
             if (current.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
                 layout = new Layout(current.getProperty().getSchemaName());
             } else {
@@ -267,18 +283,21 @@ public class PropertyNode {
             }
             if (!current.isLeaf()) {
                 if (current.getProperty().hasGridLayout(form)) {
-                    fillGridLayout(layout);
+                    fillGridLayout(layout, current.getProperty().getUpdatable());
                 } else {
-                    fillSimpleLayout(layout);
+                    fillSimpleLayout(layout, current.getProperty().getUpdatable());
                 }
                 if (current.getProperty().isCheckable()) {
-                    addButton(layout);
+                    addButton(layout, CONNECTION_BUTTON);
+                }
+                if (current.getProperty().getUpdatable().map(v -> v.getPreviousProperty().isEmpty()).orElse(false)) {
+                    addButton(layout, UPDATE_BUTTON);
                 }
             }
             current.addLayout(form, layout);
         }
 
-        private void fillGridLayout(final Layout layout) {
+        private void fillGridLayout(final Layout layout, final Optional<PropertyDefinitionDecorator.Updatable> updatable) {
             final String gridLayout = current.getProperty().getGridLayout(form);
             final String[] rows = gridLayout.split("\\|");
             // create Level for each row
@@ -290,12 +309,15 @@ public class PropertyNode {
                     if (child.getProperty().hasConstraint() || child.getProperty().hasValidation()) {
                         addValidationLevel(child, layout);
                     }
+                    if (matches(updatable, column)) {
+                        addButton(layout, UPDATE_BUTTON);
+                    }
                     level.getColumns().add(child.getLayout(form));
                 }
             }
         }
 
-        private void fillSimpleLayout(final Layout layout) {
+        private void fillSimpleLayout(final Layout layout, final Optional<PropertyDefinitionDecorator.Updatable> updatable) {
             final List<PropertyNode> children = current.sortChildren(current.getChildren(form), form);
             children.forEach(child -> {
                 final Level level = new Level();
@@ -305,7 +327,14 @@ public class PropertyNode {
                 if (child.getProperty().hasConstraint() || child.getProperty().hasValidation()) {
                     addValidationLevel(child, layout);
                 }
+                if (matches(updatable, child.getProperty().getName())) {
+                    addButton(layout, UPDATE_BUTTON);
+                }
             });
+        }
+
+        private boolean matches(final Optional<PropertyDefinitionDecorator.Updatable> updatable, final String name) {
+            return updatable.map(v -> name.equals(v.getPreviousProperty())).orElse(false);
         }
 
         private void addValidationLevel(final PropertyNode node, final Layout layout) {
@@ -318,12 +347,10 @@ public class PropertyNode {
         /**
          * Adds "Test Connection" button
          *
-         * 
-         * 
          * @param layout parent node layout
          */
-        private void addButton(final Layout layout) {
-            final Layout buttonLayout = new Layout(layout.getPath() + CONNECTION_BUTTON);
+        private void addButton(final Layout layout, final String buttonName) {
+            final Layout buttonLayout = new Layout(layout.getPath() + buttonName);
             buttonLayout.setHeight(1);
             final Level level = new Level();
             level.getColumns().add(buttonLayout);

@@ -22,6 +22,8 @@ import java.util.Map;
 import org.talend.core.model.process.IElement;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.sdk.component.studio.model.action.IActionParameter;
+import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -43,9 +45,13 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
 
     private Map<String, Object> additionalInfoMap = new HashMap<>();
 
+    public TaCoKitElementParameter() {
+        this(null);
+    }
+
     /**
      * Sets tagged value "org.talend.sdk.component.source", which is used in code generation to recognize component type
-     * 
+     *
      * @param element {@link IElement} to which this parameter belongs to
      */
     public TaCoKitElementParameter(final IElement element) {
@@ -81,17 +87,17 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         return valueChangeListeners.remove(listener);
     }
 
-    protected void firePropertyChange(final String name, final Object oldValue, final Object newValue) {
+    public void firePropertyChange(final String name, final Object oldValue, final Object newValue) {
         pcs.firePropertyChange(name, oldValue, newValue);
     }
 
-    protected void fireValueChange(final Object oldValue, final Object newValue) {
+    void fireValueChange(final Object oldValue, final Object newValue) {
         for (final IValueChangedListener listener : valueChangeListeners) {
             listener.onValueChanged(this, oldValue, newValue);
         }
     }
 
-    protected void redraw() {
+    public void redraw() {
         if (isRedrawable()) {
             redrawParameter.setValue(true);
         }
@@ -102,7 +108,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
      * super class fields
      * This overridden implementation fixes an error, when <code>item</code> wasn't found in both arrays.
      * It returns 0 in such case instead of -1. -1 causes ArrayIndexOutOfBoundsException, when new table column is added
-     * 
+     *
      * @param item default closed list value
      * @return default value index in possible values array
      */
@@ -118,7 +124,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     /**
      * Checks whether this {@link TaCoKitElementParameter} forces redraw after each value change
      * It forces redraw if {@link #redrawParameter} was set
-     * 
+     *
      * @return true, if it forces redraw; false - otherwise
      */
     public boolean isRedrawable() {
@@ -173,5 +179,47 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         for (Map.Entry<String, Object> entry : additionalInfoMap.entrySet()) {
             targetAdditionalInfo.putInfo(entry.getKey(), entry.getValue());
         }
+    }
+
+    /**
+     * Sets parameter value and fires parameter change event, which is handled by registered listeners.
+     * Note, parameter change event is fired with value converted to String by calling {@link #getStringValue()} method
+     * Subclasses should extend (override and call super.setValue()) this method to provide correct conversion, when
+     * they use other value type than String.
+     *
+     * @param newValue value to be set
+     */
+    @Override
+    public void setValue(final Object newValue) {
+        final Object oldValue = super.getValue();
+        super.setValue(newValue);
+        firePropertyChange("value", oldValue, getStringValue());
+        fireValueChange(oldValue, newValue);
+        redraw();
+    }
+
+    public void updateValueOnly(final Object newValue) {
+        super.setValue(newValue);
+    }
+
+    /**
+     * Denotes whether parameter should be persisted in the repository.
+     * Default (this) implementation returns {@code true}, however it can be overridden
+     *
+     * @return true
+     */
+    public boolean isPersisted() {
+        return true;
+    }
+
+    /**
+     * Creates IActionParameter
+     *
+     * @param actionParameter action parameter name
+     * @return IActionParameter
+     */
+    public IActionParameter createActionParameter(final String actionParameter) {
+        final IActionParameter parameter = new SettingsActionParameter(this, actionParameter);
+        return parameter;
     }
 }

@@ -15,7 +15,7 @@
  */
 package org.talend.sdk.component.studio.model.parameter.command;
 
-import org.talend.sdk.component.studio.model.action.ActionParameter;
+import org.talend.sdk.component.studio.model.action.IActionParameter;
 
 public interface TacokitCommand {
 
@@ -24,6 +24,6 @@ public interface TacokitCommand {
      */
     void exec();
 
-    void addParameter(final ActionParameter parameter);
+    void addParameter(final IActionParameter parameter);
 
 }

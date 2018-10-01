@@ -16,12 +16,18 @@
 package org.talend.sdk.component.studio.model.parameter;
 
 import static java.util.Comparator.comparing;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 
 /**
  * Provides methods for handling {@link PropertyNode} tree
@@ -177,6 +183,40 @@ public class PropertyTreeCreator {
             }
             return 0;
         });
+    }
+    
+    /**
+     * Finds all roots of specified {@code properties}
+     * 
+     * @param properties all properties
+     * @return root properties
+     */
+    public List<PropertyDefinitionDecorator> findRoots(final List<PropertyDefinitionDecorator> properties) {
+        final Map<String, PropertyDefinitionDecorator> nodes = properties.stream()
+                .collect(Collectors.toMap(SimplePropertyDefinition::getPath, Function.identity()));
+        return properties.stream().map(p -> getRoot(p, nodes)).distinct().collect(Collectors.toList());
+    }
+    
+    /**
+     * Returns root of {@code property} or {@code property} itself, if it is root
+     * 
+     * @param property property whose root will be return
+     * @param properties all properties to search for a root in
+     * @return root PropertyDefinitionDecorator
+     */
+    private PropertyDefinitionDecorator getRoot(final PropertyDefinitionDecorator property, final Map<String, PropertyDefinitionDecorator> properties) {
+        PropertyDefinitionDecorator current = property;
+        while (true) {
+            final String parentPath = current.getParentPath();
+            if (PropertyDefinitionDecorator.NO_PARENT_ID.equals(parentPath)) {
+                return current;
+            }
+            final PropertyDefinitionDecorator parent = properties.get(parentPath);
+            if (parent == null) {
+                return current;
+            }
+            current = parent;
+        }
     }
 
 }

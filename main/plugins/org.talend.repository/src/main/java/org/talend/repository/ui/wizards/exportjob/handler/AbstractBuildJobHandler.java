@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.handler;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,7 +32,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ITDQSurvivorshipService;
+import org.talend.core.PluginChecker;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -45,7 +46,7 @@ import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.core.runtime.repository.build.IBuildResourceParametes;
 import org.talend.core.runtime.repository.build.IBuildResourcesProvider;
 import org.talend.core.runtime.util.ParametersUtil;
-import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.core.services.ICoreTisService;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -162,25 +163,6 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         return LastGenerationInfo.getInstance().isUsePigUDFs(processItem.getProperty().getId(), this.version);
     }
 
-    protected boolean needDQSurvivorshipRules() {
-        // when needJobItem or itemDependencies is true, the survivorship rules will be included.so return false here.
-        if (isOptionChoosed(ExportChoice.needJobItem) || itemDependencies) {
-            return false;
-        }
-
-        Collection<NodeType> survivorshipNodes = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQSurvivorshipService.class)) {
-            ITDQSurvivorshipService tdqSurvShipService = (ITDQSurvivorshipService) GlobalServiceRegister.getDefault().getService(
-                    ITDQSurvivorshipService.class);
-            if (tdqSurvShipService != null) {
-                survivorshipNodes = tdqSurvShipService.getSurvivorshipNodesOfProcess(processItem);
-            }
-        }
-        if (survivorshipNodes != null && !survivorshipNodes.isEmpty()) {
-            return true;
-        }
-        return false;
-    }
 
     protected String getProgramArgs() {
         StringBuffer programArgs = new StringBuffer();
@@ -215,10 +197,6 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         // if not binaries, need add maven resources
         boolean isBinaries = isOptionChoosed(ExportChoice.binaries);
         addArg(profileBuffer, !isBinaries, TalendMavenConstants.PROFILE_INCLUDE_MAVEN_RESOURCES);
-        // DQ survivorship rules when items not exported.
-        if (needDQSurvivorshipRules()) {
-            addArg(profileBuffer, true, TalendMavenConstants.PROFILE_INCLUDE_SURVIVORSHIP_RULES);
-        }
         addArg(profileBuffer, isOptionChoosed(ExportChoice.needJobItem) || itemDependencies,
                 TalendMavenConstants.PROFILE_INCLUDE_ITEMS);
 
@@ -244,8 +222,8 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         addArg(profileBuffer, needXmlMappings() && isBinaries, TalendMavenConstants.PROFILE_INCLUDE_RUNNING_XMLMAPPINGS);
 
         // If the map doesn't contain the assembly key, then take the default value activation from the POM.
-        boolean isAssemblyNeeded = exportChoice.get(ExportChoice.needAssembly) == null
-                || isOptionChoosed(ExportChoice.needAssembly);
+        boolean isAssemblyNeeded = (exportChoice.get(ExportChoice.needAssembly) == null
+                || isOptionChoosed(ExportChoice.needAssembly)) && !isOptionChoosed(ExportChoice.buildImage);
         addArg(profileBuffer, isAssemblyNeeded, TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY);
 
         // rules
@@ -260,22 +238,65 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         // always disable ci-builder from studio/commandline
         addArg(profileBuffer, false, TalendMavenConstants.PROFILE_CI_BUILDER);
 
+        if (canSignJob()) {
+            addArg(profileBuffer, true, TalendMavenConstants.PROFILE_SIGNATURE);
+        }
+
+        if (isOptionChoosed(ExportChoice.buildImage)) {
+            addArg(profileBuffer, true, TalendMavenConstants.PROFILE_DOCKER);
+        }
+
         return profileBuffer;
     }
 
     protected StringBuffer getOtherArgs() {
         StringBuffer otherArgsBuffer = new StringBuffer();
 
+        if (isOptionChoosed(ExportChoice.buildImage)) {
+            String dockerHost = (String) exportChoice.get(ExportChoice.dockerHost);
+            if (dockerHost != null) {
+                otherArgsBuffer.append("-Ddocker.host=" + dockerHost + " "); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            String imageName = (String) exportChoice.get(ExportChoice.imageName);
+            if (imageName != null) {
+                otherArgsBuffer.append("-Dtalend.docker.name=" + imageName + " "); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            String imageTag = (String) exportChoice.get(ExportChoice.imageTag);
+            if (imageName != null) {
+                otherArgsBuffer.append("-Dtalend.docker.tag=" + imageTag + " "); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+        }
+
+        if (isOptionChoosed(ExportChoice.pushImage)) {
+            String registry = (String) exportChoice.get(ExportChoice.pushRegistry);
+            if (registry != null) {
+                otherArgsBuffer.append("-Ddocker.push.registry=" + registry + " "); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            String username = (String) exportChoice.get(ExportChoice.registryUsername);
+            if (username != null) {
+                otherArgsBuffer.append("-Ddocker.push.username=" + username + " "); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            String password = (String) exportChoice.get(ExportChoice.registryPassword);
+            if (password != null) {
+                otherArgsBuffer.append("-Ddocker.push.password=" + password + " "); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+        }
+
         if (!isOptionChoosed(ExportChoice.executeTests)) {
             otherArgsBuffer.append(TalendMavenConstants.ARG_SKIPTESTS);
         } else {
-            otherArgsBuffer.append("-fn");
+            otherArgsBuffer.append(TalendMavenConstants.ARG_TEST_FAILURE_IGNORE);
         }
-        otherArgsBuffer.append(" -Dmaven.main.skip=true");
+        if (canSignJob()) {
+            otherArgsBuffer.append(" " + TalendMavenConstants.ARG_LICENSE_PATH + "=" + getLicenseFile().getAbsolutePath());
+            otherArgsBuffer.append(" " + TalendMavenConstants.ARG_SESSION_ID + "=" + getSessionId());
+        }
+        otherArgsBuffer.append(" -Dmaven.main.skip=true"); //$NON-NLS-1$
 
         // if debug
         if (CommonsPlugin.isDebugMode()) {
-            otherArgsBuffer.append(" -X");
+            otherArgsBuffer.append(" -X"); //$NON-NLS-1$
         }
         return otherArgsBuffer;
     }
@@ -293,13 +314,46 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
     protected void addArg(StringBuffer commandBuffer, boolean include, String arg) {
         addArg(commandBuffer, false, include, arg);
     }
+    
+    public boolean canSignJob() {
+        if (PluginChecker.isTIS() && getLicenseFile() != null) {
+            return true;
+        }
+        return false;
+    }
+
+    protected File getLicenseFile() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+                    .getService(ICoreTisService.class);
+            File licenseFile = coreTisService.getLicenseFile();
+            if (licenseFile.exists() && !coreTisService.isLicenseExpired()) {
+                return licenseFile;
+            }
+        }
+        return null;
+    }
+
+    private String getSessionId() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+                    .getService(ICoreTisService.class);
+            return coreTisService.generateSignerSessionId();
+        }
+        return null;
+    }
 
     @Override
-    public IFile getJobTargetFile() {
+    public IFolder getTargetFolder() {
         if (talendProcessJavaProject == null) {
             return null;
         }
-        IFolder targetFolder = talendProcessJavaProject.getTargetFolder();
+        return talendProcessJavaProject.getTargetFolder();
+    }
+
+    @Override
+    public IFile getJobTargetFile() {
+        IFolder targetFolder = getTargetFolder();
         IFile jobFile = null;
         try {
             targetFolder.refreshLocal(IResource.DEPTH_ONE, null);
@@ -337,8 +391,8 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
 
         //
         List<Item> dependenciesItems = new ArrayList<Item>();
-        Collection<IRepositoryViewObject> allProcessDependencies = ProcessUtils.getAllProcessDependencies(Arrays
-                .asList(processItem));
+        Collection<IRepositoryViewObject> allProcessDependencies = ProcessUtils
+                .getAllProcessDependencies(Arrays.asList(processItem));
         if (!allProcessDependencies.isEmpty()) {
             for (IRepositoryViewObject repositoryObject : allProcessDependencies) {
                 dependenciesItems.add(repositoryObject.getProperty().getItem());

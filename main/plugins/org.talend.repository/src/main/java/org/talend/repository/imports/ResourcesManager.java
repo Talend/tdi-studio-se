@@ -21,12 +21,13 @@ import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.wizards.datatransfer.IImportStructureProvider;
+import org.talend.core.repository.utils.InputStreamProvider;
 
 /**
  * @deprecated have moved to /org.talend.repository.items.importexport, but still need for MDM, so keep it temp.
  */
 @Deprecated
-public abstract class ResourcesManager {
+public abstract class ResourcesManager implements InputStreamProvider{
 
     protected Map<IPath, Object> path2Object = new HashMap<IPath, Object>();
 

@@ -56,14 +56,15 @@
 <% if (!"input".equalsIgnoreCase(tacokitComponentType)) { %>
 
         <%@include file="../../jet_stub/generic/processor/processor_main.javajet"%>
-        Object rowObject_<%=guessSchemaCid%> = outputHandler_<%=guessSchemaCid%>.getValue("<%= outputConnectionName %>", Object.class);
-        if (Object.class == rowObject_<%=guessSchemaCid%>.getClass()) {
+
+        Object rowObject_<%=guessSchemaCid%> = outputHandler_<%=guessSchemaCid%>.getValue("<%= outputConnectionName %>");
+        if (rowObject_<%=guessSchemaCid%> != null && Object.class == rowObject_<%=guessSchemaCid%>.getClass()) {
             // means we will not find it through data
             // try by reflection
             tacokitGuessSchema.fromOutputEmitterPojo(processorImpl_<%=cid%>, "<%= outputConnectionName %>");
             return;
         }
-        if (tacokitGuessSchema.guessSchemaThroughResult(rowObject_<%=guessSchemaCid%>)) {
+        if (rowObject_<%=guessSchemaCid%> != null && tacokitGuessSchema.guessSchemaThroughResult(rowObject_<%=guessSchemaCid%>)) {
             return;
         }
 

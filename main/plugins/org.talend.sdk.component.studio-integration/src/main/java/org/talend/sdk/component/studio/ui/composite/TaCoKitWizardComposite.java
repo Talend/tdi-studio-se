@@ -12,6 +12,8 @@
  */
 package org.talend.sdk.component.studio.ui.composite;
 
+import java.util.Objects;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.exception.ExceptionHandler;
@@ -32,24 +34,51 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
 
     private final IValueChangedListener configurationUpdater;
 
+    private final boolean isNew;
+
     public TaCoKitWizardComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
             final Element element, final TaCoKitConfigurationModel model, final boolean isCompactView,
-            final Color backgroundColor) {
+            final Color backgroundColor, final boolean isNew) {
         super(parentComposite, styles, section, element, isCompactView, backgroundColor);
         this.configurationModel = model;
+        this.isNew = isNew;
         configurationUpdater = new ConfigurationModelUpdater();
         init();
     }
 
-    private void init() {
+    @Override
+    protected void postInit() {
+        elem.getElementParameters().stream()
+                .filter(Objects::nonNull)
+                .filter(TaCoKitElementParameter.class::isInstance)
+                .map(TaCoKitElementParameter.class::cast)
+                .filter(TaCoKitElementParameter::isRedrawable)
+                .forEach(p -> p.registerListener("show", getRedrawListener()));
+    }
 
+    @Override
+    protected void preDispose() {
+        elem.getElementParameters().stream()
+                .filter(Objects::nonNull)
+                .filter(TaCoKitElementParameter.class::isInstance)
+                .map(TaCoKitElementParameter.class::cast)
+                .filter(TaCoKitElementParameter::isRedrawable)
+                .forEach(p -> p.unregisterListener("show", getRedrawListener()));
+    }
+
+    private void init() {
         elem
                 .getElementParameters()
                 .stream()
                 .filter(p -> p instanceof TaCoKitElementParameter)
                 .map(p -> (TaCoKitElementParameter) p)
+                .filter(TaCoKitElementParameter::isPersisted)
                 .forEach(parameter -> {
                     parameter.addValueChangeListener(configurationUpdater);
+                    if (isNew) {
+                        parameter.setValue(parameter.getValue());
+                        return;
+                    }
                     try {
                         ValueModel valueModel = configurationModel.getValue(parameter.getName());
                         if (valueModel != null) {
@@ -80,23 +109,22 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
 
     /**
      * Overrides parent method as Property Type widget should not be shown in wizard pages
-     * 
-     * @param parent parent Composite
+     *
      * @return last Composite added
      */
     @Override
-    protected Composite addCommonWidgets(final Composite parent) {
-        return addSchemas(parent, null);
+    protected Composite addCommonWidgets() {
+        return addSchemas(composite, null);
     }
 
     private class ConfigurationModelUpdater implements IValueChangedListener {
 
         /**
          * Updates {@link TaCoKitConfigurationModel} each time some of {@link TaCoKitElementParameter} is changed
-         * 
+         *
          * @param elementParameter changed {@link TaCoKitElementParameter}
-         * @param oldValue parameter old value
-         * @param newValue parameter new value
+         * @param oldValue         parameter old value
+         * @param newValue         parameter new value
          */
         @Override
         public void onValueChanged(final TaCoKitElementParameter elementParameter, final Object oldValue,

@@ -19,15 +19,20 @@ import static java.lang.ClassLoader.getSystemClassLoader;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.emptyEnumeration;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -40,11 +45,16 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Stream;
+
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.sdk.component.studio.lang.LocalLock;
 import org.talend.sdk.component.studio.lang.StringPropertiesTokenizer;
 import org.talend.sdk.component.studio.logging.JULToOsgiHandler;
 import org.talend.sdk.component.studio.mvn.Mvn;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public class ProcessManager implements AutoCloseable {
 
@@ -93,16 +103,66 @@ public class ProcessManager implements AutoCloseable {
                 }
                 sleep(steps);
             } catch (final InterruptedException e) {
-                Thread.interrupted();
+                Thread.currentThread().interrupt();
                 break;
             } catch (final RuntimeException re) {
                 try {
                     sleep(500); // wait and retry, the healthcheck failed
                 } catch (final InterruptedException e) {
-                    Thread.interrupted();
+                    Thread.currentThread().interrupt();
                     break;
                 }
             }
+        }
+    }
+
+    synchronized public String reload() {
+        final Thread thread = Thread.currentThread();
+        final ClassLoader old = thread.getContextClassLoader();
+        thread.setContextClassLoader(loader);
+        try {
+            reloadProperties();
+            updateProperties();
+            final Class<?> containerClazz = loader.loadClass("org.talend.sdk.component.container.Container");
+            final Class<?> actionsClazz = loader.loadClass("org.talend.sdk.component.container.ContainerManager$Actions");
+            final Class<?> containerManagerClazz = loader.loadClass("org.talend.sdk.component.runtime.manager.ComponentManager");
+
+            final Object manager = containerManagerClazz.getMethod("instance").invoke(null);
+            final Field containerField = containerManagerClazz.getDeclaredField("container");
+            if (!containerField.isAccessible()) {
+                containerField.setAccessible(true);
+            }
+
+            final Object container = containerField.get(manager);
+            final Method findAll = container.getClass().getMethod("findAll");
+            final Method getData = containerClazz.getMethod("get", Class.class);
+
+            final Method reload = actionsClazz.getMethod("reload");
+            final Method getId = containerClazz.getMethod("getId");
+            final Collection<?> containers = new ArrayList<>(Collection.class.cast(findAll.invoke(container)));
+            return containers.stream().map(it -> {
+                try {
+                    final Object actions = getData.invoke(it, actionsClazz);
+                    if (actions != null) {
+                        reload.invoke(actions);
+                    }
+                    return String.valueOf(getId.invoke(it)) + ": OK";
+                } catch (final IllegalAccessException e) {
+                    throw new IllegalStateException(e);
+                } catch (final InvocationTargetException e) {
+                    try {
+                        return String.valueOf(getId.invoke(it)) + ": " + e.getMessage();
+                    } catch (final IllegalAccessException e1) {
+                        throw new IllegalStateException(e1);
+                    } catch (final InvocationTargetException e1) {
+                        throw new IllegalStateException(e1.getTargetException());
+                    }
+                }
+            }).collect(joining("\n"));
+        } catch (final Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            thread.setContextClassLoader(old);
         }
     }
 
@@ -112,6 +172,7 @@ public class ProcessManager implements AutoCloseable {
             try {
                 Runtime.getRuntime().removeShutdownHook(hook);
             } catch (final IllegalStateException itse) {
+                // no-op
             }
             // shutting down already
             hook = null;
@@ -120,6 +181,7 @@ public class ProcessManager implements AutoCloseable {
             try {
                 i.close();
             } catch (final Exception e) {
+                // no-op
             } finally {
                 // no-op
                 instance = null;
@@ -147,6 +209,7 @@ public class ProcessManager implements AutoCloseable {
                 try {
                     loader.close();
                 } catch (final IOException e) {
+                    // no-op
                 } finally {
                     // no-op: not important at that time
                     loader = null;
@@ -163,24 +226,7 @@ public class ProcessManager implements AutoCloseable {
             throw new IllegalArgumentException(e);
         }
         final List<String> arguments = new StringPropertiesTokenizer(System.getProperty("component.java.arguments", "")).tokens();
-        String m2Repo = System.getProperty("component.java.m2");
-        if (m2Repo == null) {
-            m2Repo = MavenPlugin.getMaven().getLocalRepositoryPath();
-        }
-        final String components = System.getProperty("component.java.coordinates");
-        final String registry = System.getProperty("component.java.registry");
-        if (m2Repo != null) {
-            System.setProperty("talend.component.server.maven.repository", m2Repo);
-        }
-        if (components != null) {
-            System.setProperty("talend.component.server.component.coordinates", components);
-        }
-        if (registry != null) {
-            System.setProperty("talend.component.server.component.registry", registry);
-        }
-        // local instance, no need of any security
-        System.setProperty("talend.component.server.security.connection.handler", "securityNoopHandler");
-        System.setProperty("talend.component.server.security.command.handler", "securityNoopHandler");
+        updateProperties();
         loader = new URLClassLoader(paths.toArray(new URL[paths.size()]), rootLoader()) {
 
             @Override
@@ -195,7 +241,7 @@ public class ProcessManager implements AutoCloseable {
             }
         };
         final Lock lock = new LocalLock(ofNullable(System.getProperty("component.lock.location")).map(File::new)
-                .orElseGet(() -> new File(System.getProperty("user.home"), ".talend/locks/" + GAV.ARTIFACT_ID + ".lock")), null);
+                .orElseGet(() -> new File(System.getProperty("user.home"), ".talend/locks/" + GAV.INSTANCE.getArtifactId() + ".lock")), null);
         lock.lock();
         port = newPort();
         if (!arguments.contains("--http")) {
@@ -293,6 +339,35 @@ public class ProcessManager implements AutoCloseable {
                 throw new IllegalStateException("Component server didn\'t start in 15mn!");
             }
         }.start();
+    }
+
+    private void reloadProperties() {
+        try {
+            System.setProperty(TaCoKitConst.PROP_COMPONENT, TaCoKitUtil.getInstalledComponentsString(new NullProgressMonitor()));
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    private void updateProperties() {
+        String m2Repo = System.getProperty("component.java.m2");
+        if (m2Repo == null) {
+            m2Repo = MavenPlugin.getMaven().getLocalRepositoryPath();
+        }
+        final String components = System.getProperty(TaCoKitConst.PROP_COMPONENT);
+        final String registry = System.getProperty(TaCoKitConst.PROP_REGISTRY);
+        if (m2Repo != null) {
+            System.setProperty("talend.component.server.maven.repository", m2Repo);
+        }
+        if (components != null) {
+            System.setProperty("talend.component.server.component.coordinates", components);
+        }
+        if (registry != null) {
+            System.setProperty("talend.component.server.component.registry", registry);
+        }
+        // local instance, no need of any security
+        System.setProperty("talend.component.server.security.connection.handler", "securityNoopHandler");
+        System.setProperty("talend.component.server.security.command.handler", "securityNoopHandler");
     }
 
     public int getPort() {
@@ -402,14 +477,14 @@ public class ProcessManager implements AutoCloseable {
     }
 
     private Collection<URL> createClasspath() throws IOException {
-        final File serverJar = mvnResolver.apply(groupId + ":component-server:jar:" + GAV.COMPONENT_RUNTIME_VERSION);
+        final File serverJar = mvnResolver.apply(groupId + ":component-server:jar:" + GAV.INSTANCE.getComponentRuntimeVersion());
         if (!serverJar.exists()) {
             throw new IllegalArgumentException(serverJar + " doesn\'t exist");
         }
         final Collection<URL> paths = new HashSet<>(32);
         // we use the Cli as main so we need it
-        paths.add(mvnResolver.apply("commons-cli:commons-cli:jar:" + GAV.CLI_VERSION).toURI().toURL());
-        paths.add(mvnResolver.apply("org.slf4j:slf4j-jdk14:jar:" + GAV.SLF4J_VERSION).toURI().toURL());
+        paths.add(mvnResolver.apply("commons-cli:commons-cli:jar:" + GAV.INSTANCE.getCliVersion()).toURI().toURL());
+        paths.add(mvnResolver.apply("org.slf4j:slf4j-jdk14:jar:" + GAV.INSTANCE.getSlf4jVersion()).toURI().toURL());
         // server
         paths.add(serverJar.toURI().toURL());
         Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
@@ -418,7 +493,7 @@ public class ProcessManager implements AutoCloseable {
         });
         // beam if needed
         if (Boolean.getBoolean("components.server.beam.active")) {
-            final File beamModule = mvnResolver.apply(groupId + ":component-runtime-beam:" + GAV.COMPONENT_RUNTIME_VERSION);
+            final File beamModule = mvnResolver.apply(groupId + ":component-runtime-beam:" + GAV.INSTANCE.getComponentRuntimeVersion());
             paths.add(beamModule.toURI().toURL());
             Mvn.withDependencies(beamModule, "TALEND-INF/beam.dependencies", true, deps -> {
                 aggregateDeps(paths, deps);

@@ -40,10 +40,12 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.sdk.studio.process.TaCoKitNode;
 
 /**
  * Creates {@link ComponentModel} {@link ElementParameter} list
@@ -100,20 +102,40 @@ public class ElementParameterCreator {
     private void addSettings() {
         if (!properties.isEmpty()) {
             final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper()).createPropertyTree(properties);
-            // add main parameters
-            final SettingsCreator mainSettingsCreator =
-                    new SettingsCreator(node, BASIC, updateComponentsParameter, detail);
-            root.accept(mainSettingsCreator, Metadatas.MAIN_FORM);
-            parameters.addAll(mainSettingsCreator.getSettings());
+            final SettingVisitor settingVisitor = new SettingVisitor(node, updateComponentsParameter, detail);
+            root.accept(settingVisitor.withCategory(BASIC), Metadatas.MAIN_FORM);
+            root.accept(settingVisitor.withCategory(ADVANCED), Metadatas.ADVANCED_FORM);
+            parameters.addAll(settingVisitor.getSettings());
             addLayoutParameter(root, Metadatas.MAIN_FORM);
-            // add advanced parameters
-            final SettingsCreator advancedCreator =
-                    new SettingsCreator(node, ADVANCED, updateComponentsParameter, detail);
-            root.accept(advancedCreator, Metadatas.ADVANCED_FORM);
-            parameters.addAll(advancedCreator.getSettings());
             addLayoutParameter(root, Metadatas.ADVANCED_FORM);
+            // create config type version param
+            properties.stream().filter(p -> p.getConfigurationType() != null && p.getConfigurationTypeName() != null)
+                    .forEach(p -> parameters.add(new VersionParameter(node, p.getPath(),
+                            String.valueOf(getConfigTypeVersion(p, component.getConfigTypeNodes(), component.getId().getFamilyId())))));
         }
-        checkSchemaProperties(new SettingsCreator(node, BASIC, updateComponentsParameter, detail));
+
+        checkSchemaProperties(new SettingVisitor(node, updateComponentsParameter, detail).withCategory(BASIC));
+    }
+
+    public static int getConfigTypeVersion(final PropertyDefinitionDecorator p, final ConfigTypeNodes configTypeNodes, final String familyId) {
+        final String type = p.getMetadata().get("configurationtype::type");
+        final String name = p.getMetadata().get("configurationtype::name");
+        return configTypeNodes.getNodes().values().stream()
+                .filter(c -> c.getConfigurationType() != null && c.getName() != null)
+                .filter(c -> c.getConfigurationType().equals(type) && c.getName().equals(name))
+                .filter(c -> familyId.equals(getPropertyFamilyId(c, configTypeNodes)))
+                .findFirst().map(ConfigTypeNode::getVersion).orElse(-1);
+    }
+
+    private static String getPropertyFamilyId(final ConfigTypeNode it, final ConfigTypeNodes nodes) {
+        if (it.getParentId() == null) {
+            return null;
+        }
+        String parent = it.getParentId();
+        while (nodes.getNodes().get(parent) != null && nodes.getNodes().get(parent).getParentId() != null) {
+            parent = nodes.getNodes().get(parent).getParentId();
+        }
+        return parent;
     }
 
     private void addLayoutParameter(final PropertyNode root, final String form) {
@@ -126,10 +148,10 @@ public class ElementParameterCreator {
     /**
      * Check whether all required schema settings are created and create ones we still need depending on connectors we
      * have.
-     * 
+     *
      * @param mainSettingsCreator SettingsCreator for Basic settings
      */
-    protected void checkSchemaProperties(final SettingsCreator mainSettingsCreator) {
+    protected void checkSchemaProperties(final SettingVisitor mainSettingsCreator) {
         // Get all schema parameters created for current component
         final Set<String> schemasPresent = parameters
                 .stream()
@@ -174,7 +196,7 @@ public class ElementParameterCreator {
         // Create schema parameter for each connector without schema parameter
         for (final INodeConnector connectorWithoutSchema : connectorNames) {
             parameters.add(mainSettingsCreator.createSchemaParameter(connectorWithoutSchema.getName(),
-                    "SCHEMA_" + connectorWithoutSchema.getName(), 
+                    "SCHEMA_" + connectorWithoutSchema.getName(),
                     "default",
                     showSchema(connectorWithoutSchema)));
         }
@@ -192,6 +214,7 @@ public class ElementParameterCreator {
     private void addCommonParameters() {
         addUniqueNameParameter();
         addComponentNameParameter();
+        addTacokitComponentIdParameter();
         addVersionParameter();
         addFamilyParameter();
         addStartParameter();
@@ -247,10 +270,10 @@ public class ElementParameterCreator {
             parameters.add(parameter);
         }
     }
-    
+
     /**
      * Checks whether this component is startable, i.e. whether this component is StandAlone or Input
-     * 
+     *
      * @return true if component is startable
      */
     private boolean isStartable() {
@@ -587,6 +610,24 @@ public class ElementParameterCreator {
         parameter.setDisplayName(EParameterName.COMPONENT_NAME.getDisplayName());
         parameter.setFieldType(EParameterFieldType.TEXT);
         parameter.setCategory(EComponentCategory.TECHNICAL);
+        parameter.setNumRow(1);
+        parameter.setReadOnly(true);
+        parameter.setShow(false);
+        parameters.add(parameter);
+    }
+
+    /**
+     * Creates and adds TACOKIT_COMPONENT_ID parameter.
+     * It is used in serialization/deserialization to know whether it is Tacokit component and
+     * to find ComponentDetail quickly
+     */
+    private void addTacokitComponentIdParameter() {
+        final ElementParameter parameter = new ElementParameter(node);
+        parameter.setName(TaCoKitNode.TACOKIT_COMPONENT_ID);
+        parameter.setValue(detail.getId().getId());
+        parameter.setDisplayName(TaCoKitNode.TACOKIT_COMPONENT_ID);
+        parameter.setFieldType(EParameterFieldType.TECHNICAL);
+        parameter.setCategory(EComponentCategory.BASIC);
         parameter.setNumRow(1);
         parameter.setReadOnly(true);
         parameter.setShow(false);

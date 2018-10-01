@@ -113,6 +113,7 @@ import org.talend.core.model.utils.MigrationUtil;
 import org.talend.core.repository.model.PropertiesProjectResourceImpl;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.actions.RestoreFolderUtil;
+import org.talend.core.repository.utils.ProjectDataJsonProvider;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -1705,11 +1706,13 @@ public class ImportItemUtil {
                 Resource resource = createResource(itemRecord, path, false);
                 resource.load(stream, null);
                 EmfHelper.loadResource(resource, stream, null);
-                projects.put(path,
-                        (Project) EcoreUtil.getObjectByType(resource.getContents(), PropertiesPackage.eINSTANCE.getProject()));
+                Project project = (Project) EcoreUtil.getObjectByType(resource.getContents(), PropertiesPackage.eINSTANCE.getProject());
+                IPath projectRootPath = path.removeLastSegments(1);
+                ProjectDataJsonProvider.loadProjectData(project, projectRootPath, manager);
+                projects.put(path, project);
             }
             return projects.get(path);
-        } catch (IOException e) {
+        } catch (IOException | PersistenceException e) {
             // ignore
         } finally {
             if (stream != null) {

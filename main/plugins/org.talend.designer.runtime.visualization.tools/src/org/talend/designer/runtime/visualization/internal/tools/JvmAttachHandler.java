@@ -97,7 +97,7 @@ public class JvmAttachHandler implements IJvmAttachHandler, IPropertyChangeListe
      * 
      * @throws JvmCoreException
      */
-    void updatesActiveJvms() throws JvmCoreException {
+    public void updatesActiveJvms() throws JvmCoreException {
 
         Object monitoredHost = Tools.getInstance().invokeGetMonitoredHost(IHost.LOCALHOST);
 

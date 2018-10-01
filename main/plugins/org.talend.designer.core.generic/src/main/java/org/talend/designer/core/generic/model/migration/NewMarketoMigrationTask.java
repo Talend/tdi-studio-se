@@ -46,8 +46,12 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
         // Parameter is unassigned, so "LEAD_SELECTOR" parameter isn't processed yet.
         if ("LEAD_SELECTOR_REST".equals(paramName) && paramType == null) {
             ElementParameterType leadSelector = ParameterUtilTool.findParameterType(node, "LEAD_SELECTOR");
-            Object selValue = ParameterUtilTool.convertParameterValue(leadSelector);
-            ParameterUtilTool.addParameterType(node, "CLOSED_LIST", "LEAD_SELECTOR_REST", String.valueOf(selValue));
+            String lksel = "LeadKeySelector";
+            if (leadSelector != null) {
+                Object selValue = ParameterUtilTool.convertParameterValue(leadSelector);
+                lksel = String.valueOf(selValue);
+            }
+            ParameterUtilTool.addParameterType(node, "CLOSED_LIST", "LEAD_SELECTOR_REST", lksel);
             paramType = ParameterUtilTool.findParameterType(node, paramName);
         }
         //

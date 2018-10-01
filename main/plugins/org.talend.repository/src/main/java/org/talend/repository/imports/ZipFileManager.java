@@ -35,7 +35,10 @@ public class ZipFileManager extends ResourcesManager {
 
     @Override
     public InputStream getStream(IPath path) throws IOException {
-        return zipFile.getInputStream((ZipEntry) path2Object.get(path));
+        if (path2Object.get(path) != null) {
+            return zipFile.getInputStream((ZipEntry) path2Object.get(path));
+        }
+        return null;
     }
 
     @Override

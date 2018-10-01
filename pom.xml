@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.talend.studio</groupId>
 		<artifactId>parent-pom</artifactId>
-		<version>7.0.1-SNAPSHOT</version>
+		<version>7.1.1-SNAPSHOT</version>
 		<relativePath />
 	</parent>
 	<artifactId>tdi-studio-se</artifactId>
@@ -66,6 +66,7 @@
 		<module>main/features/org.talend.repository.feature</module>
 		<module>main/features/org.talend.sbi.feature</module>
 		<module>main/features/org.talend.spagic.feature</module>
+		<module>main/features/org.talend.tos.core.feature</module>
 		<module>main/features/org.talend.tos.feature</module>
 		<module>main/features/org.talend.tos.components.feature</module>
 		<module>main/features/org.talend.tos.libraries.feature</module>
@@ -87,6 +88,7 @@
 		<module>main/plugins/org.talend.designer.mapper</module>
 		<module>main/plugins/org.talend.designer.mapper.advanced</module>
 		<module>main/plugins/org.talend.designer.maven.job</module>
+		<module>main/plugins/org.talend.designer.oas</module>
 		<module>main/plugins/org.talend.designer.publish.core</module>
 		<module>main/plugins/org.talend.designer.rowgenerator</module>
 		<module>main/plugins/org.talend.designer.runprocess</module>
@@ -127,7 +129,8 @@
 		<module>main/plugins/org.talend.presentation.onboarding.resource.tos</module>
 		<module>main/plugins/org.talend.rcp.branding.tos</module>
 		<module>main/plugins/org.talend.repository</module>
-		<module>main/plugins/org.talend.repository.ftp</module>		
+		<module>main/plugins/org.talend.repository.ftp</module>
+		<module>main/plugins/org.talend.repository.resource</module>		
 		<module>main/plugins/org.talend.libraries.json</module>
 		<module>main/plugins/org.talend.repository.json</module>
 		<module>main/plugins/org.talend.repository.view.di</module>

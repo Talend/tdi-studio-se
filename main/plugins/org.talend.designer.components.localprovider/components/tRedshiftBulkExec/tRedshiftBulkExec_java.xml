@@ -134,21 +134,44 @@
 		
 		<!-- S3 -->
 		<PARAMETER NAME="ACCESS_KEY" FIELD="TEXT" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG" SHOW_IF="DATA_SOURCE_TYPE == 'S3'">
+			REQUIRED="true" GROUP="S3_CONFIG" NOT_SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
 		<PARAMETER NAME="SECRET_KEY" FIELD="PASSWORD" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG" SHOW_IF="DATA_SOURCE_TYPE == 'S3'">
+			REQUIRED="true" GROUP="S3_CONFIG" NOT_SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
-
-		<PARAMETER NAME="BUCKET" FIELD="TEXT" NUM_ROW="60" REQUIRED="true"
+		
+        <PARAMETER
+          NAME="ASSUME_ROLE"
+          FIELD="CHECK"
+          NUM_ROW="60"
+          REQUIRED="true"
+          SHOW_IF="(DATA_SOURCE_TYPE == 'S3')"
+          GROUP="S3_CONFIG"
+        >
+          <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+        
+        <PARAMETER
+          NAME="ROLE_TABLE"
+          FIELD="TABLE"
+          NUM_ROW="65"
+          SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+          GROUP="S3_CONFIG"
+        >
+          <ITEMS>
+            <ITEM NAME="ROLE_ARN" VALUE=""/>
+          </ITEMS>
+        </PARAMETER>
+        
+		<PARAMETER NAME="BUCKET" FIELD="TEXT" NUM_ROW="90" REQUIRED="true"
 			GROUP="S3_CONFIG" SHOW_IF="DATA_SOURCE_TYPE == 'S3'">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="KEY" FIELD="TEXT" NUM_ROW="60" REQUIRED="false"
+		<PARAMETER NAME="KEY" FIELD="TEXT" NUM_ROW="90" REQUIRED="false"
 			GROUP="S3_CONFIG" SHOW_IF="DATA_SOURCE_TYPE == 'S3'">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
@@ -268,7 +291,7 @@
 			<DEFAULT>false</DEFAULT>
 		</PARAMETER>
 		
-		<PARAMETER NAME="ENCRYPTED_KEY" FIELD="TEXT" NUM_ROW="24"
+		<PARAMETER NAME="ENCRYPTED_KEY" FIELD="PASSWORD" NUM_ROW="24"
 			REQUIRED="true" GROUP="LOAD_DETAILS" SHOW_IF="isShow[ENCRYPT] AND (ENCRYPT=='true')">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
@@ -359,8 +382,8 @@
 		<IMPORTS>
 			<IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.10.1009.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.2.10.1009/6.0.0"  REQUIRED="true" />
 			
-			<IMPORT NAME="aws-java-sdk-1.11.269.jar" MODULE="aws-java-sdk-1.11.269.jar"
-				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.269"
+			<IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
+				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406"
 				REQUIRED="true" />
 			<IMPORT NAME="jackson-core-2.9.4.jar" MODULE="jackson-core-2.9.4.jar"
 				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.4"
@@ -371,17 +394,17 @@
 			<IMPORT NAME="jackson-annotations-2.9.4.jar" MODULE="jackson-annotations-2.9.4.jar"
 				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.4"
 				REQUIRED="true" />
-			<IMPORT NAME="httpcore-4.4.3.jar" MODULE="httpcore-4.4.3.jar"
-				MVN="mvn:org.talend.libraries/httpcore-4.4.3/6.3.0"
+			<IMPORT NAME="httpcore-4.4.9.jar" MODULE="httpcore-4.4.9.jar"
+				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"
 				REQUIRED="true" />
-			<IMPORT NAME="httpclient-4.5.1.jar" MODULE="httpclient-4.5.1.jar"
-				MVN="mvn:org.talend.libraries/httpclient-4.5.1/6.3.0"
+			<IMPORT NAME="httpclient-4.5.5.jar" MODULE="httpclient-4.5.5.jar"
+				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.5"
 				REQUIRED="true" />
 			<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
-				MVN="mvn:org.talend.libraries/joda-time-2.8.1/6.0.0"
+				MVN="mvn:joda-time/joda-time/2.8.1"
 				REQUIRED="true" />
 			<IMPORT NAME="commons-logging-1.1.3.jar" MODULE="commons-logging-1.1.3.jar"
-				MVN="mvn:org.talend.libraries/commons-logging-1.1.3/6.0.0"
+				MVN="mvn:commons-logging/commons-logging/1.1.3"
 				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar"
 				REQUIRED="true" />
 			<IMPORT NAME="commons-codec-1.6.jar" MODULE="commons-codec-1.6.jar"

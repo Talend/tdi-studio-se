@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.generic.context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avro.Schema;
@@ -61,8 +62,16 @@ public class ComponentContextPropertyValueEvaluator extends AbstractPropertyValu
         if (context != null && ContextParameterUtils.isContainContextParam(stringStoredValue)) {
             if (storedValue instanceof List) {
                 boolean isDrivers = property.getName() != null && property.getName().equals("drivers");
-                storedValue = ContextParameterUtils.parseScriptContextCodeList(storedValue, context, isDrivers);
-                return getTypedValue(property, storedValue);
+                List newList = new ArrayList<>();
+                for(Object v : (List)storedValue){
+                	String vString = String.valueOf(v);
+                    if (ContextParameterUtils.isContainContextParam(vString) && isDrivers) {
+                        newList.addAll(ContextParameterUtils.parseScriptContextCodeList(storedValue, context, isDrivers));
+                	}else{
+                		newList.add(v);
+                	}
+                }
+                return getTypedValue(property, newList);
             } else {
                 // the simple convert which only can process the simple case like : context.var or
                 // context.getProperty(context.getProperty("a")) or the link case : context.var1 = context.var2, context.var2 =

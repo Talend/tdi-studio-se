@@ -22,6 +22,7 @@
 		org.talend.core.model.utils.NodeUtil
 		org.talend.core.model.utils.JavaResourcesHelper
 		org.talend.core.model.process.ProcessUtils
+        org.talend.designer.runprocess.ProcessorUtilities
 	"
 	class="Header"
 %>
@@ -137,10 +138,8 @@ for (INode node : process.getNodesOfType("tRESTClient")) {
     }
 }
 
-boolean talendEsbJob = actAsProvider || actAsConsumer || !process.getNodesOfType("tRouteInput").isEmpty();
 boolean talendEsbJobFactory = actAsProvider || !process.getNodesOfType("tRouteInput").isEmpty();
-
-boolean talendStepTemplate = !process.getNodesOfType("tActionInput").isEmpty() || !process.getNodesOfType("tActionOutput").isEmpty() || !process.getNodesOfType("tJobReject").isEmpty();
+boolean talendEsbJob = talendEsbJobFactory || actAsConsumer || ProcessorUtilities.isEsbJob(process.getId(), process.getVersion());
 
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));
 
@@ -152,9 +151,6 @@ if (talendEsbJob) {
 }
 if (talendEsbJobFactory) {
 	talendJobInterfaces += ", TalendESBJobFactory"; // Talend ESB provider job
-}
-if (talendStepTemplate) {
-	talendJobInterfaces += ", TalendStepTemplateFactory"; // Talend Step Template
 }
 %>
 public class <%=className%> implements <%=talendJobInterfaces%> {
@@ -208,11 +204,6 @@ protected static void logIgnoredError(String message, Throwable cause) {
 		}
 		// fix for TESB-7714
 		talendESBJob.setEndpointRegistry(registry);
-
-		// TESB-15920 tRESTClient and SAM not working
-		<% if (hasSAM4RS) { %>
-		talendESBJob.setEventFeature(eventFeature);
-		<% } %>
 
 		return talendESBJob;
 	}

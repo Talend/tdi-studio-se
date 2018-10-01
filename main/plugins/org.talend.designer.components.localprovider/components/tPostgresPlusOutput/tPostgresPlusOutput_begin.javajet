@@ -207,100 +207,95 @@ if(columnList != null && columnList.size()>0) {
         Manager manager = getManager(dbmsId, cid);
         if(("DROP_CREATE").equals(tableAction)) {
             %>
-            java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
-            <%dbLog.table().dropTry(dbLog.var("tableName"));%>
-            stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>");
-            <%dbLog.table().dropDone(dbLog.var("tableName"));%>
-            stmtDrop_<%=cid%>.close();
-
-            java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
-            <%dbLog.table().createTry(dbLog.var("tableName"));%>
-            stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
-            <%dbLog.table().createDone(dbLog.var("tableName"));%>
-            stmtCreate_<%=cid%>.close();
+            try (java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
+                    java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement()) {
+                <%dbLog.table().dropTry(dbLog.var("tableName"));%>
+                stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>");
+                <%dbLog.table().dropDone(dbLog.var("tableName"));%>
+                <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+                <%dbLog.table().createDone(dbLog.var("tableName"));%>
+            }
             <%
         } else if(("CREATE").equals(tableAction)) {
             %>
-            java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
-            <%dbLog.table().createTry(dbLog.var("tableName"));%>
-            stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
-            <%dbLog.table().createDone(dbLog.var("tableName"));%>
-            stmtCreate_<%=cid%>.close();
+            try (java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement()) {
+                <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+                <%dbLog.table().createDone(dbLog.var("tableName"));%>
+            }
             <%
         } else if(("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
             %>
             java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
-            java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
             boolean whetherExist_<%=cid%> = false;
             String defaultSchema_<%=cid%> = "public";
-            if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
-            	java.sql.Statement stmtSchema_<%=cid%> = conn_<%=cid%>.createStatement();
-            	java.sql.ResultSet rsSchema_<%=cid%> = stmtSchema_<%=cid%>.executeQuery("select current_schema() ");
-            	while(rsSchema_<%=cid%>.next()){
-            		defaultSchema_<%=cid%> = rsSchema_<%=cid%>.getString("current_schema");
-            	}
-            	rsSchema_<%=cid%>.close();
-            	stmtSchema_<%=cid%>.close();
-            }
-            while(rsTable_<%=cid%>.next()) {
-                String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
-                String schema_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_SCHEM");
-                if(table_<%=cid%>.equals(<%=tableName%>)
-                	&& (schema_<%=cid%>.equals(dbschema_<%=cid%>) || ((dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() ==0) && defaultSchema_<%=cid%>.equals(schema_<%=cid%>)))) {
-                    whetherExist_<%=cid%> = true;
-                    break;
+            try (java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"})) {
+                if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
+                    try (java.sql.Statement stmtSchema_<%=cid%> = conn_<%=cid%>.createStatement();
+                            java.sql.ResultSet rsSchema_<%=cid%> = stmtSchema_<%=cid%>.executeQuery("select current_schema() ")) {
+                        while(rsSchema_<%=cid%>.next()){
+                            defaultSchema_<%=cid%> = rsSchema_<%=cid%>.getString("current_schema");
+                        }
+                    }
+                }
+                while(rsTable_<%=cid%>.next()) {
+                    String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
+                    String schema_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_SCHEM");
+                    if(table_<%=cid%>.equals(<%=tableName%>)
+                        && (schema_<%=cid%>.equals(dbschema_<%=cid%>) || ((dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() ==0) && defaultSchema_<%=cid%>.equals(schema_<%=cid%>)))) {
+                        whetherExist_<%=cid%> = true;
+                        break;
+                    }
                 }
             }
-            rsTable_<%=cid%>.close();
             <%
             if(("CREATE_IF_NOT_EXISTS").equals(tableAction)) {
                 %>
                 if(!whetherExist_<%=cid%>) {
-                    java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
-                    <%dbLog.table().createTry(dbLog.var("tableName"));%>
-                    stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
-                    <%dbLog.table().createDone(dbLog.var("tableName"));%>
-                    stmtCreate_<%=cid%>.close();
+                    try (java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement()) {
+                        <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                        stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+                        <%dbLog.table().createDone(dbLog.var("tableName"));%>
+                    }
                 }
                 <%
             } else {
                 %>
                 if(whetherExist_<%=cid%>) {
-                    java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
-                    <%dbLog.table().dropTry(dbLog.var("tableName"));%>
-                    stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>");
-                    <%dbLog.table().dropDone(dbLog.var("tableName"));%>
-                    stmtDrop_<%=cid%>.close();
+                    try (java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement()) {
+                        <%dbLog.table().dropTry(dbLog.var("tableName"));%>
+                        stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>");
+                        <%dbLog.table().dropDone(dbLog.var("tableName"));%>
+                    }
                 }
-                java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
-                <%dbLog.table().createTry(dbLog.var("tableName"));%>
-                stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
-                <%dbLog.table().createDone(dbLog.var("tableName"));%>
-                stmtCreate_<%=cid%>.close();
+                try (java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement()) {
+                    <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                    stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+                    <%dbLog.table().createDone(dbLog.var("tableName"));%>
+                }
                 <%
             }
         } else if(("CLEAR").equals(tableAction)) {
             %>
-            java.sql.Statement stmtClear_<%=cid%> = conn_<%=cid%>.createStatement();
-            <%dbLog.table().clearTry(dbLog.var("tableName"));%>
-            deletedCount_<%=cid%> = deletedCount_<%=cid%> + stmtClear_<%=cid%>.executeUpdate("<%=manager.getDeleteTableSQL()%>");
-            <%dbLog.table().clearDone(dbLog.var("tableName"));%>
-            stmtClear_<%=cid%>.close();
+            try (java.sql.Statement stmtClear_<%=cid%> = conn_<%=cid%>.createStatement()) {
+                <%dbLog.table().clearTry(dbLog.var("tableName"));%>
+                deletedCount_<%=cid%> = deletedCount_<%=cid%> + stmtClear_<%=cid%>.executeUpdate("<%=manager.getDeleteTableSQL()%>");
+                <%dbLog.table().clearDone(dbLog.var("tableName"));%>
+            }
             <%
         } else if(("TRUNCATE").equals(tableAction)) {
             %>
-            java.sql.Statement stmtTruncCount_<%=cid%> = conn_<%=cid%>.createStatement();
-            java.sql.ResultSet rsTruncCount_<%=cid%> = stmtTruncCount_<%=cid%>.executeQuery("<%=manager.getSelectionSQL()%>");
-            java.sql.Statement stmtTrunc_<%=cid%> = conn_<%=cid%>.createStatement();
-            <%dbLog.table().truncateTry(dbLog.var("tableName"));%>
-            stmtTrunc_<%=cid%>.executeUpdate("<%=manager.getTruncateTableSQL()%>");
-            <%dbLog.table().truncateDone(dbLog.var("tableName"));%>
-            while(rsTruncCount_<%=cid%>.next()) {
-                deletedCount_<%=cid%> += rsTruncCount_<%=cid%>.getInt(1);
+            try (java.sql.Statement stmtTruncCount_<%=cid%> = conn_<%=cid%>.createStatement();
+                    java.sql.ResultSet rsTruncCount_<%=cid%> = stmtTruncCount_<%=cid%>.executeQuery("<%=manager.getSelectionSQL()%>");
+                    java.sql.Statement stmtTrunc_<%=cid%> = conn_<%=cid%>.createStatement()) {
+                <%dbLog.table().truncateTry(dbLog.var("tableName"));%>
+                stmtTrunc_<%=cid%>.executeUpdate("<%=manager.getTruncateTableSQL()%>");
+                <%dbLog.table().truncateDone(dbLog.var("tableName"));%>
+                while(rsTruncCount_<%=cid%>.next()) {
+                    deletedCount_<%=cid%> += rsTruncCount_<%=cid%>.getInt(1);
+                }
             }
-            rsTruncCount_<%=cid%>.close();
-            stmtTruncCount_<%=cid%>.close();
-            stmtTrunc_<%=cid%>.close();
             <%
         }
     }
@@ -315,31 +310,39 @@ if(columnList != null && columnList.size()>0) {
 	    %>
 	    String insert_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
 	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	} else if (("UPDATE").equals(dataAction)) {
 	    %>
 	    String update_<%=cid%> = "UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
 	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	} else if (("INSERT_OR_UPDATE").equals(dataAction)) {
 	    %>
 	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM \"" + tableName_<%=cid%> + "\" WHERE <%=updateWhereStmt.toString()%>");
+	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    String insert_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
 	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+	    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 	    String update_<%=cid%> = "UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
 	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+	    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 	    <%
 	} else if (("UPDATE_OR_INSERT").equals(dataAction)) {
 	    %>
 	    String update_<%=cid%> = "UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
 	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+	    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 	    String insert_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
 	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+	    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 	    <%
 	} else if (("DELETE").equals(dataAction)) {
 	    %>
 	    String delete_<%=cid%> = "DELETE FROM \"" + tableName_<%=cid%> + "\" WHERE <%=deleteWhereStmt.toString()%>";
 	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(delete_<%=cid%>);
+	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	}
     if(isEnableDebug) {

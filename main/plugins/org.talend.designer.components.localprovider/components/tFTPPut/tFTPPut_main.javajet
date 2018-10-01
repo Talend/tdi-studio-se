@@ -30,6 +30,7 @@
             if(n.getUniqueName().equals(connection)){
                 sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
                 ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+                break;
             }
         }
     }else{
@@ -93,9 +94,11 @@ try{
                         <%}else if(("resume").equals(sftpoverwrite)){%>
                         int mode<%=cid%> = com.jcraft.jsch.ChannelSftp.RESUME;
                         <%}%>
-                        try{
-                            c_<%=cid%>.put(listings<%=cid %>[m<%=cid %>].getAbsolutePath(), <%=remotedir%>, monitor<%=cid%>, mode<%=cid%>);
+                        boolean putSuccess_<%=cid%> = false;
+                        String dest_<%=cid%> = listings<%=cid %>[m<%=cid %>].getName();
 
+                        try{
+                            c_<%=cid%>.put(listings<%=cid %>[m<%=cid %>].getAbsolutePath(), dest_<%=cid%>, monitor<%=cid%>, mode<%=cid%>);
                             // add info to list will return
                             msg_<%=cid%>.add("file: " + listings<%=cid %>[m<%=cid %>].getAbsolutePath() + ", size: "
                                 + listings<%=cid %>[m<%=cid %>].length() + " bytes upload successfully");
@@ -103,7 +106,10 @@ try{
                                 log.debug("<%=cid%> - Uploaded file '" + listings<%=cid %>[m<%=cid %>].getName() + "' successfully.");
                             <%}%>
                             globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
-                            if(c_<%=cid%>.stat(<%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName()).getAtimeString() != null){
+                            
+                            putSuccess_<%=cid%> = true;
+                            
+                            if(sc_<%=cid%>.statOK(c_<%=cid%>, dest_<%=cid%>)){
                                 globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS",true);
                             }
                         }catch(com.jcraft.jsch.SftpException e_<%=cid%>) {
@@ -111,8 +117,11 @@ try{
                                 log.error("<%=cid%> - File transfer fail."+e_<%= cid %>.getMessage());
                             <%}%>
                             globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer fail.");
-                            if(c_<%=cid%>.stat(<%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName()).getAtimeString() != null){
-                                globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS",true);
+                            
+                            if(!putSuccess_<%=cid%>) {
+                                if(sc_<%=cid%>.statOK(c_<%=cid%>, dest_<%=cid%>)){
+                                    globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS",true);
+                                }
                             }
                     <%
                         if(("true").equals(dieOnError)){
@@ -122,9 +131,9 @@ try{
                         }else{
                     %>
                             <%if(isLog4jEnabled){%>
-                                log.error("<%=cid%> - File permission denied: "+<%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName());
+                                log.error("<%=cid%> - File permission denied: "+dest_<%=cid%>);
                             <%}%>
-                            System.err.println("File permission denied: "+<%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName());
+                            System.err.println("File permission denied: "+dest_<%=cid%>);
                     <%
                         }
                     %>
@@ -147,19 +156,19 @@ try{
             }
 
             //do rename
-            if(map<%=cid %>.get(key<%=cid %>) != "" && key<%=cid %> != map<%=cid %>.get(key<%=cid %>)){
+            if (!((map<%=cid %>.get(key<%=cid %>) == null) || map<%=cid %>.get(key<%=cid %>).isEmpty() || key<%=cid %>.equals(map<%=cid %>.get(key<%=cid %>)))){
                 <%
                 if(("overwrite").equals(sftpoverwrite) || ("resume").equals(sftpoverwrite)){
                 %>
                     try{
-                        c_<%=cid%>.rm(<%=remotedir %>+"/"+map<%=cid %>.get(key<%=cid %>));
+                        c_<%=cid%>.rm(map<%=cid %>.get(key<%=cid %>));
                     }catch(com.jcraft.jsch.SftpException e_<%=cid%>){
                     }
                 <%
                 }
                 %>
                 try{
-                    c_<%=cid%>.rename(<%=remotedir %>+"/"+key<%=cid %>, <%=remotedir %>+"/"+map<%=cid %>.get(key<%=cid %>));
+                    c_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
                     globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
                 }catch(com.jcraft.jsch.SftpException e_<%=cid%>){
                     globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
@@ -385,7 +394,7 @@ try{
             }
 
             //do rename
-            if(map<%=cid %>.get(key<%=cid %>) != "" && key<%=cid %> != map<%=cid %>.get(key<%=cid %>)){
+            if (!((map<%=cid %>.get(key<%=cid %>) == null) || map<%=cid %>.get(key<%=cid %>).isEmpty() || key<%=cid %>.equals(map<%=cid %>.get(key<%=cid %>)))){
                 try{
                     if(needRename_<%=cid%>){
                         ftp_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));

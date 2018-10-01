@@ -295,7 +295,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
         ITaCoKitRepositoryNode parentTaCoKitNode = tacoNode;
         ConnectionItem item = (ConnectionItem) viewObject.getProperty().getItem();
         TaCoKitConfigurationItemModel itemModule = new TaCoKitConfigurationItemModel(item);
-        TaCoKitConfigurationModel module = itemModule.getConfigurationModel();
+        TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
         String parentItemId = module.getParentItemId();
         if (StringUtils.isNotEmpty(parentItemId)) {
             IRepositoryViewObject parentViewObj = repoViewObjMap.get(parentItemId);

@@ -2,7 +2,7 @@
 <feature
       id="org.talend.designer.feature"
       label="Designer Feature"
-      version="7.0.1.qualifier"
+      version="7.1.1.qualifier"
       provider-name=".Talend SA.">
 
    <description url="http://www.talend.com/online/featuresdescription.html#designer-feature">
@@ -181,6 +181,7 @@
          download-size="0"
          install-size="0"
          version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
    <plugin

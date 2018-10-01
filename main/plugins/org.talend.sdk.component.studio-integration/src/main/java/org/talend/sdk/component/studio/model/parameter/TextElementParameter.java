@@ -29,6 +29,11 @@ public class TextElementParameter extends DebouncedParameter implements IAdvance
     }
 
     @Override
+    public void setValue(final Object newValue) {
+        super.setValue(newValue == null ? null : String.valueOf(newValue));
+    }
+
+    @Override
     public String getMessage() {
         return placeholder;
     }

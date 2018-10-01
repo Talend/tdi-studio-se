@@ -3004,12 +3004,12 @@
         </projecttask>
         <projecttask
               beforeLogon="false"
-              breaks="6.4.2"
+              breaks="7.0.0"
               class="org.talend.repository.model.migration.AddSchemaDatePatternUseForImpalaTask"
               description="Change output Date pattern to 'yyyy-MM-dd'"
               id="org.talend.repository.model.migration.AddSchemaDatePatternUseForImpalaTask"
               name="AddSchemaDatePatternUseForImpalaTask"
-              version="6.4.2">
+              version="7.1.1">
         </projecttask>
         <projecttask
               beforeLogon="false"
@@ -3051,6 +3051,83 @@
               id="org.talend.repository.model.migration.FileInputPositionalByteLengthMigrationTask"
               name="FileInputPositionalByteLengthMigrationTask"
               version="7.0.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.KeepChangeRemoteDirFalseForFTPFileExist"
+              id="org.talend.repository.model.migration.KeepChangeRemoteDirFalseForFTPFileExist"
+              name="KeepChangeRemoteDirFalseForFTPFileExist"
+              version="7.1.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.EscapeQuoterForTNormalize"
+              id="org.talend.repository.model.migration.EscapeQuoterForTNormalize"
+              name="EscapeQuoterForTNormalize"
+              version="7.1.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.1"
+              class="org.talend.repository.model.migration.AddTypeNameInConnection"
+              id="org.talend.repository.model.migration.AddTypeNameInConnection"
+              name="AddTypeNameInConnection"
+              version="7.0.2">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.AddDbMappingTTeradataFastLoadMigrationTask"
+              id="org.talend.repository.model.migration.AddDbMappingTTeradataFastLoadMigrationTask"
+              name="AddDbMappingTTeradataFastLoadMigrationTask"
+              version="7.1.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.RenameELTJDBCComponentsMigrationTask"
+              description="Remove JDBC from ELTJDBC components"
+              id="org.talend.repository.model.migration.RenameELTJDBCComponentsMigrationTask"
+              name="RenameELTJDBCComponentsMigrationTask"
+              version="7.1.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.spark.UseSqlDateTypeInDataframesTask"
+              description="Keep Date type for component impacted by change from Date to Timestamp"
+              id="org.talend.repository.model.migration.spark.UseSqlDateTypeInDataframesTask"
+              name="UseSqlDateTypeInDataframesTask"
+              version="7.1.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.UncheckMoveToRemoteDirSFTP"
+              description="Uncheck Move to current dir property when use sftp connection component"
+              id="org.talend.repository.model.migration.UncheckMoveToRemoteDirSFTP"
+              name="UncheckMoveToRemoteDirSFTP"
+              version="7.1.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.MySQLDefaultDBVersion"
+              description="If job doesn't have DB version, it will be set to v5"
+              id="org.talend.repository.model.migration.MySQLDefaultDBVersion"
+              name="MySQLDefaultDBVersion"
+              version="7.1.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.PostgresqlDefaultDBVersion"
+              description="If job doesn't have DB version, it will be set to prior v9"
+              id="org.talend.repository.model.migration.PostgresqlDefaultDBVersion"
+              name="PostgresqlDefaultDBVersion"
+              version="7.1.0">
         </projecttask>
    </extension>
 
@@ -3141,9 +3218,20 @@
       <initializer
             class="org.talend.repository.preference.initializer.MavenVersionManagementProjectSettingPageInitializer">
       </initializer>
+      <initializer
+            class="org.talend.repository.preference.initializer.ArtifactRepositoryShareSettingPageInitializer">
+      </initializer>
    </extension>
    <extension
          point="org.talend.repository.projectsetting_page">
+      <page
+            class="org.talend.repository.preference.AuditProjectSettingPage"
+            id="org.talend.repository.auditPage"
+            title="%projectsetting.Audit">
+         <tester
+               class="org.talend.repository.preference.AuditProjectSettingPageTester">
+         </tester>
+      </page>
       <page
             class="org.talend.repository.preference.GeneralProjectSettingPage"
             id="general"
@@ -3242,6 +3330,9 @@
             class="org.talend.repository.preference.MavenGroupIdProjectSettingPage"
             id="org.talend.repository.preference.MavenGroupIdProjectSettingPage"
             title="%ProjectSetting.groupId">
+      <tester
+            class="org.talend.repository.preference.MavenGroupIdProjectSettingPageTester">
+      </tester>
       </page>
       <page
             category="projectsetting.Maven"
@@ -3250,6 +3341,14 @@
             title="%projectSetting.deploymentConfiguration">
          <tester
                class="org.talend.repository.preference.MavenDeploymentConfigurationProjectSettingPageTester">
+         </tester>
+      </page>
+      <page
+            class="org.talend.repository.preference.ArtifactRepositoryShareSettingPage"
+            id="projectsetting.RepositoryShare"
+            title="%projectsetting.RepositoryShare">
+         <tester
+               class="org.talend.repository.preference.ArtifactRepositoryShareSettingPageTester">
          </tester>
       </page>
    </extension>

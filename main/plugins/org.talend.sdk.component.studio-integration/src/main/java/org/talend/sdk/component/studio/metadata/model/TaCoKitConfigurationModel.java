@@ -12,125 +12,101 @@
  */
 package org.talend.sdk.component.studio.metadata.model;
 
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_ID;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_PARENT_ID;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_PARENT_ITEM_ID;
+
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
-import org.apache.log4j.Priority;
-import org.talend.commons.exception.ExceptionHandler;
+import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.metadata.builder.connection.Connection;
-import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
  * DOC cmeng class global comment. Detailled comment
- * 
+ *
  * Provides convenient API for updating {@link Connection} properties
  */
 public class TaCoKitConfigurationModel {
 
-    private static final String TACOKIT_CONFIG_ID = "__TACOKIT_CONFIG_ID"; //$NON-NLS-1$
-
-    private static final String TACOKIT_CONFIG_PARENT_ID = "__TACOKIT_CONFIG_PARENT_ID"; //$NON-NLS-1$
-
-    private static final String TACOKIT_PARENT_ITEM_ID = "__TACOKIT_PARENT_ITEM_ID"; //$NON-NLS-1$
-
     private final Connection connection;
 
-    private ConfigTypeNode configTypeNodeCache;
+    private final ConfigTypeNode configType;
 
-    private String configTypeNodeIdCache;
+    private TaCoKitConfigurationModel parentConfigurationModel;
 
-    private TaCoKitConfigurationModel parentConfigurationModelCache;
+    private String parentConfigurationModelItemId;
 
-    private String parentConfigurationModelItemIdCache;
-
-    public TaCoKitConfigurationModel(final Connection connection) throws Exception {
-        this(connection, true);
+    public TaCoKitConfigurationModel(final Connection connection) {
+        this(connection, Lookups.taCoKitCache().getConfigTypeNode(getConfigId(connection)));
     }
 
-    public TaCoKitConfigurationModel(final Connection connection, final boolean checkVersion) throws Exception {
+    public TaCoKitConfigurationModel(final Connection connection, final ConfigTypeNode configType) {
         this.connection = connection;
-        if (checkVersion) {
-            String configurationId = getConfigurationId();
-            if (!TaCoKitUtil.isBlank(configurationId)) {
-                try {
-                    if (!TaCoKitUtil.equals(getStoredVersion(), String.valueOf(getConfigTypeNodeVersion()))) {
-                        ExceptionHandler.process(new Exception(Messages.getString("migration.check.version.different", //$NON-NLS-1$
-                                configurationId, getStoredVersion(), getConfigTypeNodeVersion())), Priority.WARN);
-                    }
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
-                }
-                try {
-                    /**
-                     * In case TaCoKit metadata is used in jobs which are migrating during logon project, so just
-                     * migrate it first to provide latest information.
-                     */
-                    if (!ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
-                        TaCoKitMigrationManager migrationManager = Lookups.taCoKitCache().getMigrationManager();
-                        if (migrationManager.isNeedMigration(this)) {
-                            migrationManager.migrate(this, null);
-                        }
-                    }
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
-                }
-            }
-        }
+        this.configType = configType;
+        setConfigurationId(configType.getId());
+        setParentConfigurationId(configType.getParentId());
     }
 
-    public String getStoredVersion() {
-        return this.connection.getVersion();
+    @SuppressWarnings("unchecked")
+    private void setConfigurationId(final String id) {
+        getAllProperties().put(TACOKIT_CONFIG_ID, id);
     }
 
-    public void storeVersion(final String newVersion) {
-        this.connection.setVersion(newVersion);
+    @SuppressWarnings("unchecked")
+    private void setParentConfigurationId(final String parentId) {
+        getAllProperties().put(TACOKIT_CONFIG_PARENT_ID, parentId);
     }
 
-    public int getConfigTypeNodeVersion() throws Exception {
-        return getConfigTypeNode().getVersion();
+    @SuppressWarnings("deprecation")
+    private static String getConfigId(final Connection connection) {
+        return (String) connection.getProperties().get(TACOKIT_CONFIG_ID);
     }
 
-    public void initVersion() throws Exception {
-        storeVersion(String.valueOf(getConfigTypeNodeVersion()));
+    public static boolean isTacokit(final Connection connection) {
+        return !StringUtils.isEmpty(getConfigId(connection));
+    }
+
+    public int getVersion() {
+        final String version = Optional.ofNullable(getProperties().get(configType.getProperties().stream()
+                .filter(p -> p.getName().equals(p.getPath()))
+                .findFirst().map(SimplePropertyDefinition::getPath).orElse("configuration") + ".__version"))
+                .orElse("-1");
+        return Integer.parseInt(version);
+    }
+
+    public int getConfigurationVersion() {
+        return configType.getVersion();
     }
 
     public String getConfigurationId() {
-        return (String) getProperties().get(TACOKIT_CONFIG_ID);
-    }
-
-    @SuppressWarnings("unchecked")
-    public void setConfigurationId(final String id) {
-        getProperties().put(TACOKIT_CONFIG_ID, id);
+        return configType.getId();
     }
 
     public String getParentConfigurationId() {
-        return (String) getProperties().get(TACOKIT_CONFIG_PARENT_ID);
-    }
-
-    @SuppressWarnings("unchecked")
-    public void setParentConfigurationId(final String parentId) {
-        getProperties().put(TACOKIT_CONFIG_PARENT_ID, parentId);
+        return (String) getAllProperties().get(TACOKIT_CONFIG_PARENT_ID);
     }
 
     public String getParentItemId() {
-        return (String) getProperties().get(TACOKIT_PARENT_ITEM_ID);
+        return (String) getAllProperties().get(TACOKIT_PARENT_ITEM_ID);
     }
 
     @SuppressWarnings("unchecked")
     public void setParentItemId(final String parentItemId) {
-        getProperties().put(TACOKIT_PARENT_ITEM_ID, parentItemId);
+        getAllProperties().put(TACOKIT_PARENT_ITEM_ID, parentItemId);
     }
 
     public ValueModel getValue(final String key) throws Exception {
@@ -138,35 +114,28 @@ public class TaCoKitConfigurationModel {
         if (parentModel != null) {
             ValueModel modelValue = parentModel.getValue(key);
             if (modelValue == null) {
-                if (parentModel.containsKey(key)) {
-                    return new ValueModel(parentModel, null);
+                if (parentModel.contains(key)) {
+                    return new ValueModel(parentModel, null, getValueType(parentModel.getConfigTypeNode(), key));
                 }
             } else {
                 return modelValue;
             }
         }
         String value = getValueOfSelf(key);
-        if (value != null || containsKey(key)) {
-            return new ValueModel(this, value);
+        if (value != null || contains(key)) {
+            return new ValueModel(this, value, getValueType(getConfigTypeNode(), key));
         }
         return null;
     }
 
-    public ConfigTypeNode getFirstConfigTypeNodeContains(final String key) throws Exception {
-        ConfigTypeNode configTypeNode = null;
-        TaCoKitConfigurationModel parentModel = getParentConfigurationModel();
-        if (parentModel != null) {
-            configTypeNode = parentModel.getFirstConfigTypeNodeContains(key);
-        }
-        if (configTypeNode == null) {
-            if (containsKey(key)) {
-                configTypeNode = getConfigTypeNode();
-            }
-        }
-        return configTypeNode;
+    private String getValueType(final ConfigTypeNode typeNode, final String key) throws Exception {
+        return typeNode.getProperties().stream()
+                .filter(propertyDefinition -> TaCoKitUtil.equals(key, propertyDefinition.getPath()))
+                .map(SimplePropertyDefinition::getType).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("wrong key: " + key));
     }
 
-    public boolean containsKey(final String key) throws Exception {
+    private boolean contains(final String key) {
         List<SimplePropertyDefinition> properties = getConfigTypeNode().getProperties();
         if (key == null || key.isEmpty() || properties == null || properties.isEmpty()) {
             return false;
@@ -179,103 +148,122 @@ public class TaCoKitConfigurationModel {
         return false;
     }
 
-    public String getValueOfSelf(final String key) {
-        return (String) getProperties().get(key);
+    private String getValueOfSelf(final String key) {
+        return (String) getAllProperties().get(key);
     }
 
     @SuppressWarnings("unchecked")
     public void setValue(final TaCoKitElementParameter parameter) {
-        getProperties().put(parameter.getName(), parameter.getStringValue());
+        Objects.requireNonNull(parameter, "Parameter should not be null");
+        getAllProperties().put(parameter.getName(), parameter.getStringValue());
     }
 
-    public ConfigTypeNode getConfigTypeNode() throws Exception {
-        if (configTypeNodeCache == null || !TaCoKitUtil.equals(configTypeNodeIdCache, getConfigurationId())) {
-            configTypeNodeCache = null;
-            configTypeNodeIdCache = getConfigurationId();
-            if (!TaCoKitUtil.isEmpty(configTypeNodeIdCache)) {
-                configTypeNodeCache = Lookups.taCoKitCache().getConfigTypeNodeMap().get(configTypeNodeIdCache);
-            }
-        }
-        return configTypeNodeCache;
+    public ConfigTypeNode getConfigTypeNode() {
+        return configType;
     }
 
     public TaCoKitConfigurationModel getParentConfigurationModel() throws Exception {
-        if (parentConfigurationModelCache == null
-                || !TaCoKitUtil.equals(parentConfigurationModelItemIdCache, getParentItemId())) {
-            parentConfigurationModelCache = null;
-            parentConfigurationModelItemIdCache = getParentItemId();
-            if (!TaCoKitUtil.isEmpty(parentConfigurationModelItemIdCache)) {
-                parentConfigurationModelCache = TaCoKitUtil.getTaCoKitConfigurationModel(parentConfigurationModelItemIdCache);
+        if (parentConfigurationModel == null
+                || !TaCoKitUtil.equals(parentConfigurationModelItemId, getParentItemId())) {
+            parentConfigurationModel = null;
+            parentConfigurationModelItemId = getParentItemId();
+            if (!TaCoKitUtil.isEmpty(parentConfigurationModelItemId)) {
+                parentConfigurationModel = TaCoKitUtil.getTaCoKitConfigurationModel(parentConfigurationModelItemId);
             }
         }
-        return parentConfigurationModelCache;
+        return parentConfigurationModel;
     }
 
     /**
      * Retrieves {@link Connection} properties holder.
-     * 
      * Properties should contain only String values as they values are not converted further during serialization
      *
-     * 
-     * 
      * @return map of connection properties
      */
     @SuppressWarnings({ "deprecation", "rawtypes" })
-    public Map getProperties() {
+    private Map getAllProperties() {
         return connection.getProperties();
     }
 
-    public Map getPropertiesWithoutBuiltIn() {
-        Map propertiesWithoutBuiltin = new HashMap(connection.getProperties());
-
-        Iterator iterator = propertiesWithoutBuiltin.entrySet().iterator();
-        Set<String> builtinKeys = getBuiltinKeys();
-        while (iterator.hasNext()) {
-            Map.Entry entry = (Entry) iterator.next();
-            String key = (String) entry.getKey();
-            if (builtinKeys.contains(key)) {
-                iterator.remove();
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Map getBuiltInProperties() {
+        final Map builtIn = new HashMap();
+        for (final Object o : getAllProperties().entrySet()) {
+            final Entry entry = (Entry) o;
+            final String key = (String) entry.getKey();
+            if (BuiltInKeys.isBuiltIn(key)) {
+                builtIn.put(key, entry.getValue());
             }
         }
-
-        return propertiesWithoutBuiltin;
+        return builtIn;
     }
 
-    public Set<String> getBuiltinKeys() {
-        Set<String> builtinKeys = new HashSet<>();
-        builtinKeys.add(TACOKIT_CONFIG_ID);
-        builtinKeys.add(TACOKIT_CONFIG_PARENT_ID);
-        builtinKeys.add(TACOKIT_PARENT_ITEM_ID);
-        return builtinKeys;
-    }
-
-    public void clearProperties(final boolean isClearBuiltin) {
-        Iterator iterator = connection.getProperties().entrySet().iterator();
-        Set<String> builtinKeys = getBuiltinKeys();
-        while (iterator.hasNext()) {
-            Map.Entry entry = (Entry) iterator.next();
-            String key = (String) entry.getKey();
-            boolean isBuiltin = builtinKeys.contains(key);
-            if (isClearBuiltin == isBuiltin) {
-                iterator.remove();
+    /**
+     * Returns properties view, which doesn't include built-in (service) properties
+     *
+     * @return properties view
+     */
+    @SuppressWarnings("rawtypes")
+    public Map<String, String> getProperties() {
+        Map<String, String> properties = new HashMap<>();
+        for (final Object o : getAllProperties().entrySet()) {
+            final Entry entry = (Entry) o;
+            final String key = (String) entry.getKey();
+            if (!BuiltInKeys.isBuiltIn(key)) {
+                properties.put(key, (String) entry.getValue());
             }
         }
+        return Collections.unmodifiableMap(properties);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private void clear() {
+        final Map builtIn = getBuiltInProperties();
+        getAllProperties().clear();
+        getAllProperties().putAll(builtIn);
     }
 
     public Connection getConnection() {
         return connection;
     }
 
+    @SuppressWarnings("unchecked")
+    public void migrate(final Map<String, String> migratedProperties) {
+        clear();
+        getAllProperties().putAll(migratedProperties);
+    }
+
+    /**
+     * Checks whether Configuration requires migration. Configuration requires
+     * migration in case current Configuration version is greater than persisted
+     * version. In case versions are equal migration is not required. If persisted
+     * version is greater than current version, then IllegalStateException is thrown
+     *
+     * @return true, if migration is required
+     */
+    public boolean needsMigration() {
+        final int currentVersion = getConfigurationVersion();
+        final int persistedVersion = getVersion();
+        if (currentVersion < persistedVersion) {
+            throw new IllegalStateException(
+                    "current version: " + currentVersion + " persisted version: " + persistedVersion);
+        }
+        return currentVersion != persistedVersion;
+    }
+
     public static class ValueModel {
-        
-        public ValueModel(final TaCoKitConfigurationModel configurationModel, final String value) {
+
+        private final TaCoKitConfigurationModel configurationModel;
+
+        private final String value;
+
+        private final String type;
+
+        public ValueModel(final TaCoKitConfigurationModel configurationModel, final String value, final String type) {
             this.configurationModel = configurationModel;
             this.value = value;
+            this.type = type;
         }
-
-        private TaCoKitConfigurationModel configurationModel;
-
-        private String value;
 
         public TaCoKitConfigurationModel getConfigurationModel() {
             return this.configurationModel;
@@ -285,54 +273,31 @@ public class TaCoKitConfigurationModel {
             return this.value;
         }
 
-        public void setConfigurationModel(final TaCoKitConfigurationModel configurationModel) {
-            this.configurationModel = configurationModel;
-        }
-
-        public void setValue(final String value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (o == this)
-                return true;
-            if (!(o instanceof ValueModel))
-                return false;
-            final ValueModel other = (ValueModel) o;
-            if (!other.canEqual(this))
-                return false;
-            final Object this$configurationModel = this.getConfigurationModel();
-            final Object other$configurationModel = other.getConfigurationModel();
-            if (this$configurationModel == null ? other$configurationModel != null
-                    : !this$configurationModel.equals(other$configurationModel))
-                return false;
-            final Object this$value = this.getValue();
-            final Object other$value = other.getValue();
-            if (this$value == null ? other$value != null : !this$value.equals(other$value))
-                return false;
-            return true;
-        }
-
-        protected boolean canEqual(final Object other) {
-            return other instanceof ValueModel;
-        }
-
-        @Override
-        public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            final Object $configurationModel = this.getConfigurationModel();
-            result = result * PRIME + ($configurationModel == null ? 43 : $configurationModel.hashCode());
-            final Object $value = this.getValue();
-            result = result * PRIME + ($value == null ? 43 : $value.hashCode());
-            return result;
+        public String getType() {
+            return type;
         }
 
         @Override
         public String toString() {
             return "TaCoKitConfigurationModel.ValueModel(configurationModel=" + this.getConfigurationModel() + ", value="
-                    + this.getValue() + ")";
+                    + this.getValue() + ", type=" + this.getType() + ")";
+        }
+
+    }
+
+    public static class BuiltInKeys {
+
+        static final String TACOKIT_CONFIG_ID = "__TACOKIT_CONFIG_ID"; //$NON-NLS-1$
+
+        static final String TACOKIT_CONFIG_PARENT_ID = "__TACOKIT_CONFIG_PARENT_ID"; //$NON-NLS-1$
+
+        static final String TACOKIT_PARENT_ITEM_ID = "__TACOKIT_PARENT_ITEM_ID"; //$NON-NLS-1$
+
+        private static final Set<String> keys = new HashSet<>(Arrays.asList(TACOKIT_CONFIG_ID,
+                TACOKIT_CONFIG_PARENT_ID, TACOKIT_PARENT_ITEM_ID));
+
+        static boolean isBuiltIn(final String key) {
+            return keys.contains(key);
         }
 
     }

@@ -77,7 +77,6 @@ import org.talend.core.repository.model.ProjectRepositoryNode;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
-import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.ReferenceProjectProblemManager;
 import org.talend.repository.ReferenceProjectProvider;
@@ -301,10 +300,11 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         for (ProjectReference pr : list) {
             ProjectReferenceBean prb = new ProjectReferenceBean();
             prb.setReferenceProjectLabel(pr.getReferencedProject().getTechnicalLabel());
+            prb.setReferenceProject(pr.getReferencedProject());         
             prb.setReferenceBranch(pr.getReferencedBranch());
             result.add(prb);
         }
-        
+
         if (ReferenceProjectProblemManager.getInstance().getInvalidProjectReferenceSet().size() > 0) {
             for (String invalidLabel : ReferenceProjectProblemManager.getInstance().getInvalidProjectReferenceSet()) {
                 ProjectReferenceBean prb = new ProjectReferenceBean();
@@ -322,7 +322,6 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         projectCombo.setEnabled(false);
         projectCombo.setItems(new String[0]);
         String errorMessage = null;
-
         OverTimePopupDialogTask<Project[]> overTimePopupDialogTask = new OverTimePopupDialogTask<Project[]>() {
 
             @Override
@@ -501,6 +500,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
 
             ProjectReferenceBean referenceBean = new ProjectReferenceBean();
             referenceBean.setReferenceProjectLabel(p.getEmfProject().getTechnicalLabel());
+            referenceBean.setReferenceProject(p.getEmfProject());
             referenceBean.setReferenceBranch(branch);
             viewerInput.add(referenceBean);
             viewer.refresh();
@@ -536,7 +536,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     private ProjectReference getProjectReferenceInstance(ProjectReferenceBean bean) throws PersistenceException {
         ProjectReference pr = PropertiesFactory.eINSTANCE.createProjectReference();
         pr.setReferencedBranch(bean.getReferenceBranch());
-        pr.setReferencedProject(ProxyRepositoryFactory.getInstance().getEmfProjectContent(bean.getReferenceProjectLabel()));
+        pr.setReferencedProject(bean.getReferenceProject());
         return pr;
     }
 
@@ -561,6 +561,9 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     @Override
     @SuppressWarnings("rawtypes")
     public boolean performOk() {
+        if (!this.isControlCreated()) {
+            return true;
+        }
         if (!checkInvalidProject()) {
             return false;
         }
@@ -687,7 +690,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     private boolean validate() {
         this.setErrorMessage(null);
         Map<String, List<ProjectReference>> projectRefMap = new HashMap<String, List<ProjectReference>>();
-        AProgressMonitorDialogWithCancel<Boolean> dialog = new AProgressMonitorDialogWithCancel<Boolean>(this.getShell()) {
+        AProgressMonitorDialogWithCancel<Boolean> dialog = new AProgressMonitorDialogWithCancel<Boolean>(Display.getCurrent().getActiveShell()) {
 
             protected Boolean runWithCancel(IProgressMonitor monitor) throws Throwable {
                 return checkCycleReference(projectRefMap);
@@ -743,7 +746,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         for (ProjectReferenceBean bean : input) {
             ProjectReference pr = PropertiesFactory.eINSTANCE.createProjectReference();
             pr.setReferencedBranch(bean.getReferenceBranch());
-            pr.setReferencedProject(ProxyRepositoryFactory.getInstance().getEmfProjectContent(bean.getReferenceProjectLabel()));
+            pr.setReferencedProject(bean.getReferenceProject());
             output.add(pr);
         }
         return output;
@@ -882,7 +885,7 @@ class ProjectReferenceBean {
 
     private boolean isValid = true;
     private String referenceBranch;
-
+    private org.talend.core.model.properties.Project referenceProject;
     private String referenceProjectLabel;
 
     public String getReferenceBranch() {
@@ -907,5 +910,14 @@ class ProjectReferenceBean {
  
     public void setReferenceProjectLabel(String referenceProjectLabel) {
         this.referenceProjectLabel = referenceProjectLabel;
+    }
+  
+    public org.talend.core.model.properties.Project getReferenceProject() {
+        return referenceProject;
+    }
+  
+    public void setReferenceProject(org.talend.core.model.properties.Project referenceProject) {
+        this.referenceProject = referenceProject;
     } 
+      
 }

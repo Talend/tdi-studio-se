@@ -63,13 +63,13 @@ public class NodeQueryCheckUtilTest {
     }
 
     @Test
-    public void testCheckQueryOK1() {
+    public void testCheckQueryOKCase1() {
         String sqlTest = "select a1,a2,a3,a4 from t1";
         assertTrue(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
     }
 
     @Test
-    public void testCheckQueryOK2() {
+    public void testCheckQueryOKCase2() {
         String sqlTest = "\"select DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER, --AS מספר_מעסיק \r\n"
                 + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,-- AS משפחת_קופה, \r\n"
                 + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC, --AS סטטוס_עמית, \r\n"
@@ -90,11 +90,11 @@ public class NodeQueryCheckUtilTest {
                 + " DIM_GML_FUND.TYPE_ID = 3 AND\r\n" + " PROCESS_RUN_LOG_VAL.BANK_ID IN ( '10', '62', '42' )\r\n"
                 + "group by \r\n" + " DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER,\r\n" + " \r\n"
                 + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,\r\n" + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC\"";
-        assertTrue(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
+        assertFalse(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
     }
 
     @Test
-    public void testCheckQueryOK3() {
+    public void testCheckQueryOKCase3() {
         String sqlTest = "\"select DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER, --AS מספר_מעסיק \r\n"
                 + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,-- AS משפחת_קופה, \r\n"
                 + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC, --AS סטטוס_עמית, \r\n"
@@ -117,11 +117,11 @@ public class NodeQueryCheckUtilTest {
                 + " DIM_GML_FUND.TYPE_ID = 3 AND\r\n" + " PROCESS_RUN_LOG_VAL.BANK_ID IN ( '10', '62', '42' )\r\n"
                 + "group by \r\n" + " DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER,\r\n" + " \r\n"
                 + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,\r\n" + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC\"";
-        assertTrue(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
+        assertFalse(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
     }
 
     @Test
-    public void testCheckQueryOK4() {
+    public void testCheckQueryOKCase4() {
         String sqlTest = "\"select DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER, --AS מספר_מעסיק \r\n"
                 + " /*DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,-- AS משפחת_קופה, \r\n*/"
                 + " --AGREEMENT_STATUS_VW.AGMT_STATUS_DESC, --AS סטטוס_עמית, \r\n"
@@ -143,6 +143,178 @@ public class NodeQueryCheckUtilTest {
                 + "group by \r\n" + " DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER,\r\n" + " \r\n"
                 + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,\r\n" + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC\"";
         assertFalse(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
+    }
+
+    @Test
+    public void testMatchQueryCommentsCase1() {
+        String sqlTest = "\"select DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER, --AS מספר_מעסיק \r\n"
+                + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,-- AS משפחת_קופה, \r\n"
+                + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC, --AS סטטוס_עמית, \r\n"
+                + " count(distinct DIM_POLICYHOLDER_CUR.IDENTIFICATION_DOC_NUMBER) AS CountAmit \r\n" + " FROM\r\n"
+                + " ADW.F_GML_IND_AGMT_VW C01_F_GML_IND_AGMT\r\n" + " INNER JOIN ADW.AGREEMENT_STATUS_VW AGREEMENT_STATUS_VW\r\n"
+                + " ON C01_F_GML_IND_AGMT.INDIVIDUAL_AGMT_STATUS = AGREEMENT_STATUS_VW.AGMT_STATUS_ID\r\n"
+                + " INNER JOIN ADW.DIM_EMPLR_CUR DIM_EMPLR_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.EMPLR_ANC_ID = DIM_EMPLR_CUR.EMPLR_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_GML_FUND_CUR DIM_GML_FUND\r\n"
+                + " ON C01_F_GML_IND_AGMT.FUND_ANC_ID = DIM_GML_FUND.FUND_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_POLICYHOLDER_CUR DIM_POLICYHOLDER_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.POLICYHOLDER_ANC_ID = DIM_POLICYHOLDER_CUR.POLICYHOLDER_ANC_ID\r\n"
+                + " INNER JOIN ADW.PROCESS_RUN_LOG_VW PROCESS_RUN_LOG_VAL\r\n" + " ON \r\n"
+                + " C01_F_GML_IND_AGMT.VALIDITY_DATE = PROCESS_RUN_LOG_VAL.VALIDITY_END_DATE AND\r\n"
+                + " C01_F_GML_IND_AGMT.FUND_MANAGER_ANC_ID = PROCESS_RUN_LOG_VAL.FUND_MANAGER_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_FUND_FAMILY_VW DIM_FUND_FAMILY_VW\r\n"
+                + " ON DIM_GML_FUND.FUND_FAMILY_ID = DIM_FUND_FAMILY_VW.FUND_FAMILY_ID \r\n" + "WHERE \r\n"
+                + " DIM_GML_FUND.TYPE_ID = 3 AND\r\n" + " PROCESS_RUN_LOG_VAL.BANK_ID IN ( '10', '62', '42' )\r\n"
+                + "group by \r\n" + " DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER,\r\n" + " \r\n"
+                + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,\r\n" + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC\"";
+        assertFalse(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
+        String matchSql = NodeQueryCheckUtil.matchQueryComments(node, sqlTest);
+        assertTrue(NodeQueryCheckUtil.checkQueryOK(node, matchSql));
+    }
+
+    @Test
+    public void testMatchQueryCommentsCase2() {
+        String sqlTest = "\"select DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER, --AS מספר_מעסיק \r\n"
+                + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,-- AS משפחת_קופה, \r\n"
+                + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC, --AS סטטוס_עמית, \r\n"
+                + " --AGREEMENT_STATUS_VW.FUND_MANAGER_ANC_ID, --AS סטטוס_עמית, \r\n"
+                + " /*AGREEMENT_STATUS_VW.BANK_ID,*/ --AS סטטוס_עמית, \r\n"
+                + " DIM_POLICYHOLDER_CUR.IDENTIFICATION_DOC_NUMBER AS CountAmit \r\n" + " FROM\r\n"
+                + " ADW.F_GML_IND_AGMT_VW C01_F_GML_IND_AGMT\r\n" + " INNER JOIN ADW.AGREEMENT_STATUS_VW AGREEMENT_STATUS_VW\r\n"
+                + " ON C01_F_GML_IND_AGMT.INDIVIDUAL_AGMT_STATUS = AGREEMENT_STATUS_VW.AGMT_STATUS_ID\r\n"
+                + " INNER JOIN ADW.DIM_EMPLR_CUR DIM_EMPLR_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.EMPLR_ANC_ID = DIM_EMPLR_CUR.EMPLR_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_GML_FUND_CUR DIM_GML_FUND\r\n"
+                + " ON C01_F_GML_IND_AGMT.FUND_ANC_ID = DIM_GML_FUND.FUND_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_POLICYHOLDER_CUR DIM_POLICYHOLDER_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.POLICYHOLDER_ANC_ID = DIM_POLICYHOLDER_CUR.POLICYHOLDER_ANC_ID\r\n"
+                + " INNER JOIN ADW.PROCESS_RUN_LOG_VW PROCESS_RUN_LOG_VAL\r\n" + " ON \r\n"
+                + " C01_F_GML_IND_AGMT.VALIDITY_DATE = PROCESS_RUN_LOG_VAL.VALIDITY_END_DATE AND\r\n"
+                + " C01_F_GML_IND_AGMT.FUND_MANAGER_ANC_ID = PROCESS_RUN_LOG_VAL.FUND_MANAGER_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_FUND_FAMILY_VW DIM_FUND_FAMILY_VW\r\n"
+                + " ON DIM_GML_FUND.FUND_FAMILY_ID = DIM_FUND_FAMILY_VW.FUND_FAMILY_ID \r\n" + "WHERE \r\n"
+                + " DIM_GML_FUND.TYPE_ID = 3 AND\r\n" + " PROCESS_RUN_LOG_VAL.BANK_ID IN ( '10', '62', '42' )\r\n"
+                + "group by \r\n" + " DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER,\r\n" + " \r\n"
+                + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,\r\n" + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC\"";
+        assertFalse(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
+        String matchSql = NodeQueryCheckUtil.matchQueryComments(node, sqlTest);
+        assertTrue(NodeQueryCheckUtil.checkQueryOK(node, matchSql));
+    }
+
+    @Test
+    public void testMatchQueryCommentsCase3() {
+        String sqlTest = "\"select DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER, --AS מספר_מעסיק \r\n"
+                + " /*DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,-- AS משפחת_קופה, \r\n*/"
+                + " --AGREEMENT_STATUS_VW.AGMT_STATUS_DESC, --AS סטטוס_עמית, \r\n"
+                + " count(distinct DIM_POLICYHOLDER_CUR.IDENTIFICATION_DOC_NUMBER) AS CountAmit \r\n" + " FROM\r\n"
+                + " ADW.F_GML_IND_AGMT_VW C01_F_GML_IND_AGMT\r\n" + " INNER JOIN ADW.AGREEMENT_STATUS_VW AGREEMENT_STATUS_VW\r\n"
+                + " ON C01_F_GML_IND_AGMT.INDIVIDUAL_AGMT_STATUS = AGREEMENT_STATUS_VW.AGMT_STATUS_ID\r\n"
+                + " INNER JOIN ADW.DIM_EMPLR_CUR DIM_EMPLR_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.EMPLR_ANC_ID = DIM_EMPLR_CUR.EMPLR_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_GML_FUND_CUR DIM_GML_FUND\r\n"
+                + " ON C01_F_GML_IND_AGMT.FUND_ANC_ID = DIM_GML_FUND.FUND_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_POLICYHOLDER_CUR DIM_POLICYHOLDER_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.POLICYHOLDER_ANC_ID = DIM_POLICYHOLDER_CUR.POLICYHOLDER_ANC_ID\r\n"
+                + " INNER JOIN ADW.PROCESS_RUN_LOG_VW PROCESS_RUN_LOG_VAL\r\n" + " ON \r\n"
+                + " C01_F_GML_IND_AGMT.VALIDITY_DATE = PROCESS_RUN_LOG_VAL.VALIDITY_END_DATE AND\r\n"
+                + " C01_F_GML_IND_AGMT.FUND_MANAGER_ANC_ID = PROCESS_RUN_LOG_VAL.FUND_MANAGER_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_FUND_FAMILY_VW DIM_FUND_FAMILY_VW\r\n"
+                + " ON DIM_GML_FUND.FUND_FAMILY_ID = DIM_FUND_FAMILY_VW.FUND_FAMILY_ID \r\n" + "WHERE \r\n"
+                + " DIM_GML_FUND.TYPE_ID = 3 AND\r\n" + " PROCESS_RUN_LOG_VAL.BANK_ID IN ( '10', '62', '42' )\r\n"
+                + "group by \r\n" + " DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER,\r\n" + " \r\n"
+                + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,\r\n" + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC\"";
+        assertFalse(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
+        String matchSql = NodeQueryCheckUtil.matchQueryComments(node, sqlTest);
+        assertFalse(NodeQueryCheckUtil.checkQueryOK(node, matchSql));
+    }
+
+    @Test
+    public void testNeedMatchQueryCase1() {
+        String sqlTest = "\"select DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER, --AS מספר_מעסיק \r\n"
+                + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,-- AS משפחת_קופה, \r\n"
+                + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC, --AS סטטוס_עמית, \r\n"
+                + " count(distinct DIM_POLICYHOLDER_CUR.IDENTIFICATION_DOC_NUMBER) AS CountAmit \r\n" + " FROM\r\n"
+                + " ADW.F_GML_IND_AGMT_VW C01_F_GML_IND_AGMT\r\n" + " INNER JOIN ADW.AGREEMENT_STATUS_VW AGREEMENT_STATUS_VW\r\n"
+                + " ON C01_F_GML_IND_AGMT.INDIVIDUAL_AGMT_STATUS = AGREEMENT_STATUS_VW.AGMT_STATUS_ID\r\n"
+                + " INNER JOIN ADW.DIM_EMPLR_CUR DIM_EMPLR_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.EMPLR_ANC_ID = DIM_EMPLR_CUR.EMPLR_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_GML_FUND_CUR DIM_GML_FUND\r\n"
+                + " ON C01_F_GML_IND_AGMT.FUND_ANC_ID = DIM_GML_FUND.FUND_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_POLICYHOLDER_CUR DIM_POLICYHOLDER_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.POLICYHOLDER_ANC_ID = DIM_POLICYHOLDER_CUR.POLICYHOLDER_ANC_ID\r\n"
+                + " INNER JOIN ADW.PROCESS_RUN_LOG_VW PROCESS_RUN_LOG_VAL\r\n" + " ON \r\n"
+                + " C01_F_GML_IND_AGMT.VALIDITY_DATE = PROCESS_RUN_LOG_VAL.VALIDITY_END_DATE AND\r\n"
+                + " C01_F_GML_IND_AGMT.FUND_MANAGER_ANC_ID = PROCESS_RUN_LOG_VAL.FUND_MANAGER_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_FUND_FAMILY_VW DIM_FUND_FAMILY_VW\r\n"
+                + " ON DIM_GML_FUND.FUND_FAMILY_ID = DIM_FUND_FAMILY_VW.FUND_FAMILY_ID \r\n" + "WHERE \r\n"
+                + " DIM_GML_FUND.TYPE_ID = 3 AND\r\n" + " PROCESS_RUN_LOG_VAL.BANK_ID IN ( '10', '62', '42' )\r\n"
+                + "group by \r\n" + " DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER,\r\n" + " \r\n"
+                + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,\r\n" + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC\"";
+        assertFalse(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
+        assertTrue(NodeQueryCheckUtil.isNeedMatchQuery());
+        String matchSql = NodeQueryCheckUtil.matchQueryComments(node, sqlTest);
+        assertTrue(NodeQueryCheckUtil.checkQueryOK(node, matchSql));
+        assertFalse(NodeQueryCheckUtil.isNeedMatchQuery());
+    }
+
+    @Test
+    public void testNeedMatchQueryCase2() {
+        String sqlTest = "\"select DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER, --AS מספר_מעסיק \r\n"
+                + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,-- AS משפחת_קופה, \r\n"
+                + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC, --AS סטטוס_עמית, \r\n"
+                + " --AGREEMENT_STATUS_VW.FUND_MANAGER_ANC_ID, --AS סטטוס_עמית, \r\n"
+                + " /*AGREEMENT_STATUS_VW.BANK_ID,*/ --AS סטטוס_עמית, \r\n"
+                + " DIM_POLICYHOLDER_CUR.IDENTIFICATION_DOC_NUMBER AS CountAmit \r\n" + " FROM\r\n"
+                + " ADW.F_GML_IND_AGMT_VW C01_F_GML_IND_AGMT\r\n" + " INNER JOIN ADW.AGREEMENT_STATUS_VW AGREEMENT_STATUS_VW\r\n"
+                + " ON C01_F_GML_IND_AGMT.INDIVIDUAL_AGMT_STATUS = AGREEMENT_STATUS_VW.AGMT_STATUS_ID\r\n"
+                + " INNER JOIN ADW.DIM_EMPLR_CUR DIM_EMPLR_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.EMPLR_ANC_ID = DIM_EMPLR_CUR.EMPLR_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_GML_FUND_CUR DIM_GML_FUND\r\n"
+                + " ON C01_F_GML_IND_AGMT.FUND_ANC_ID = DIM_GML_FUND.FUND_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_POLICYHOLDER_CUR DIM_POLICYHOLDER_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.POLICYHOLDER_ANC_ID = DIM_POLICYHOLDER_CUR.POLICYHOLDER_ANC_ID\r\n"
+                + " INNER JOIN ADW.PROCESS_RUN_LOG_VW PROCESS_RUN_LOG_VAL\r\n" + " ON \r\n"
+                + " C01_F_GML_IND_AGMT.VALIDITY_DATE = PROCESS_RUN_LOG_VAL.VALIDITY_END_DATE AND\r\n"
+                + " C01_F_GML_IND_AGMT.FUND_MANAGER_ANC_ID = PROCESS_RUN_LOG_VAL.FUND_MANAGER_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_FUND_FAMILY_VW DIM_FUND_FAMILY_VW\r\n"
+                + " ON DIM_GML_FUND.FUND_FAMILY_ID = DIM_FUND_FAMILY_VW.FUND_FAMILY_ID \r\n" + "WHERE \r\n"
+                + " DIM_GML_FUND.TYPE_ID = 3 AND\r\n" + " PROCESS_RUN_LOG_VAL.BANK_ID IN ( '10', '62', '42' )\r\n"
+                + "group by \r\n" + " DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER,\r\n" + " \r\n"
+                + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,\r\n" + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC\"";
+        assertFalse(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
+        assertTrue(NodeQueryCheckUtil.isNeedMatchQuery());
+        String matchSql = NodeQueryCheckUtil.matchQueryComments(node, sqlTest);
+        assertTrue(NodeQueryCheckUtil.checkQueryOK(node, matchSql));
+        assertFalse(NodeQueryCheckUtil.isNeedMatchQuery());
+    }
+
+    @Test
+    public void testNeedMatchQueryCase3() {
+        String sqlTest = "\"select DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER, --AS מספר_מעסיק \r\n"
+                + " /*DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,-- AS משפחת_קופה, \r\n*/"
+                + " --AGREEMENT_STATUS_VW.AGMT_STATUS_DESC, --AS סטטוס_עמית, \r\n"
+                + " count(distinct DIM_POLICYHOLDER_CUR.IDENTIFICATION_DOC_NUMBER) AS CountAmit \r\n" + " FROM\r\n"
+                + " ADW.F_GML_IND_AGMT_VW C01_F_GML_IND_AGMT\r\n" + " INNER JOIN ADW.AGREEMENT_STATUS_VW AGREEMENT_STATUS_VW\r\n"
+                + " ON C01_F_GML_IND_AGMT.INDIVIDUAL_AGMT_STATUS = AGREEMENT_STATUS_VW.AGMT_STATUS_ID\r\n"
+                + " INNER JOIN ADW.DIM_EMPLR_CUR DIM_EMPLR_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.EMPLR_ANC_ID = DIM_EMPLR_CUR.EMPLR_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_GML_FUND_CUR DIM_GML_FUND\r\n"
+                + " ON C01_F_GML_IND_AGMT.FUND_ANC_ID = DIM_GML_FUND.FUND_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_POLICYHOLDER_CUR DIM_POLICYHOLDER_CUR\r\n"
+                + " ON C01_F_GML_IND_AGMT.POLICYHOLDER_ANC_ID = DIM_POLICYHOLDER_CUR.POLICYHOLDER_ANC_ID\r\n"
+                + " INNER JOIN ADW.PROCESS_RUN_LOG_VW PROCESS_RUN_LOG_VAL\r\n" + " ON \r\n"
+                + " C01_F_GML_IND_AGMT.VALIDITY_DATE = PROCESS_RUN_LOG_VAL.VALIDITY_END_DATE AND\r\n"
+                + " C01_F_GML_IND_AGMT.FUND_MANAGER_ANC_ID = PROCESS_RUN_LOG_VAL.FUND_MANAGER_ANC_ID\r\n"
+                + " INNER JOIN ADW.DIM_FUND_FAMILY_VW DIM_FUND_FAMILY_VW\r\n"
+                + " ON DIM_GML_FUND.FUND_FAMILY_ID = DIM_FUND_FAMILY_VW.FUND_FAMILY_ID \r\n" + "WHERE \r\n"
+                + " DIM_GML_FUND.TYPE_ID = 3 AND\r\n" + " PROCESS_RUN_LOG_VAL.BANK_ID IN ( '10', '62', '42' )\r\n"
+                + "group by \r\n" + " DIM_EMPLR_CUR.IDENTIFICATION_DOC_NUMBER,\r\n" + " \r\n"
+                + " DIM_FUND_FAMILY_VW.FUND_FAMILY_NAME,\r\n" + " AGREEMENT_STATUS_VW.AGMT_STATUS_DESC\"";
+        assertFalse(NodeQueryCheckUtil.checkQueryOK(node, sqlTest));
+        assertTrue(NodeQueryCheckUtil.isNeedMatchQuery());
+        String matchSql = NodeQueryCheckUtil.matchQueryComments(node, sqlTest);
+        assertFalse(NodeQueryCheckUtil.checkQueryOK(node, matchSql));
+        assertTrue(NodeQueryCheckUtil.isNeedMatchQuery());
     }
 
     private IMetadataTable createSimpleMetadata() {

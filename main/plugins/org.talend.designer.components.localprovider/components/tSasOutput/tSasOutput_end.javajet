@@ -24,48 +24,42 @@ if(rejectConns != null && rejectConns.size() > 0) {
 }
 
 // Close SQL statements
-if(dataAction.equals("INSERT_OR_UPDATE")) {
-    %>
-    if(pstmtUpdate_<%=cid%> != null){
-
-        pstmtUpdate_<%=cid %>.close();
-        
-    } 
-    if(pstmtInsert_<%=cid %> != null){
-
-        pstmtInsert_<%=cid %>.close();
-        
-    }
-    if(pstmt_<%=cid %> != null) {
-
-        pstmt_<%=cid %>.close();
-        
-    }        
-    <%
-} else if(dataAction.equals("UPDATE_OR_INSERT")) {
-    %>
-    if(pstmtUpdate_<%=cid%> != null){
-
-        pstmtUpdate_<%=cid %>.close();
-        
-    } 
-    if(pstmtInsert_<%=cid %> != null){
-
-        pstmtInsert_<%=cid %>.close();
-        
-    }        
-    <%
-} else {
-    %>
-    if(pstmt_<%=cid %> != null) {
-
-        pstmt_<%=cid %>.close();
-        
-    }        
-    <%
-}
+    if(("INSERT_OR_UPDATE").equals(dataAction)) {
 %>
-
+        if(pstmtUpdate_<%=cid%> != null){
+            pstmtUpdate_<%=cid %>.close();
+            resourceMap.remove("pstmtUpdate_<%=cid %>");
+        }
+        if(pstmtInsert_<%=cid %> != null){
+            pstmtInsert_<%=cid %>.close();
+            resourceMap.remove("pstmtInsert_<%=cid %>");
+        }
+        if(pstmt_<%=cid %> != null) {
+            pstmt_<%=cid %>.close();
+            resourceMap.remove("pstmt_<%=cid %>");
+        }
+<%
+    } else if(("UPDATE_OR_INSERT").equals(dataAction)) {
+%>
+        if(pstmtUpdate_<%=cid%> != null){
+            pstmtUpdate_<%=cid %>.close();
+            resourceMap.remove("pstmtUpdate_<%=cid %>");
+        }
+        if(pstmtInsert_<%=cid %> != null){
+            pstmtInsert_<%=cid %>.close();
+            resourceMap.remove("pstmtInsert_<%=cid %>");
+        }
+<%
+    } else {
+%>
+        if(pstmt_<%=cid %> != null) {
+            pstmt_<%=cid %>.close();
+            resourceMap.remove("pstmt_<%=cid %>");
+        }
+<%
+    }
+%>
+    resourceMap.put("statementClosed_<%=cid%>", true);
 <%
 String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 if(useExistingConn.equals("false")){

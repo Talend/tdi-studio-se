@@ -276,7 +276,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
         column.setId(ID_COLUMN_FUNCTION);
         column.setTitle(Messages.getString("RowGenTableEditor2.Fuctions.TitleText")); //$NON-NLS-1$
         column.setBeanPropertyAccessors(getFunctionAccessor(functComboBox));
-        column.setModifiable(true);
+        column.setModifiable(!readOnly);
         column.setWeight(10);
         column.setWidth(45);
     }

@@ -204,7 +204,10 @@ public class ExportItemWizardPage extends WizardPage {
      */
     private void createItemList(Composite workArea) {
         Composite itemComposite = new Composite(workArea, SWT.NONE);
-        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(itemComposite);
+        GridLayout gdlItemComposite = new GridLayout(2, false);
+        gdlItemComposite.marginWidth = 0;
+        itemComposite.setLayout(gdlItemComposite);
+        
         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).hint(500, 300).applyTo(itemComposite);
 
         Label label = new Label(itemComposite, SWT.NONE);
@@ -562,7 +565,11 @@ public class ExportItemWizardPage extends WizardPage {
      */
     private void createSelectionButton(Composite itemComposite) {
         Composite buttonComposite = new Composite(itemComposite, SWT.NONE);
-        GridLayoutFactory.swtDefaults().margins(0, 25).applyTo(buttonComposite);
+        GridLayout gdlButtonComposite = new GridLayout();
+        gdlButtonComposite.marginHeight = 0;
+        gdlButtonComposite.marginWidth = 0;
+        gdlButtonComposite.marginTop = 26;
+        buttonComposite.setLayout(gdlButtonComposite);
         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(buttonComposite);
 
         Button selectAll = new Button(buttonComposite, SWT.PUSH);

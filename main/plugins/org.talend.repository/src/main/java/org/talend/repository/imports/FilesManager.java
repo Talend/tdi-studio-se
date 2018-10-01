@@ -31,7 +31,10 @@ public class FilesManager extends ResourcesManager {
 
     @Override
     public InputStream getStream(IPath path) throws IOException {
-        return new BufferedInputStream(new FileInputStream((File) path2Object.get(path)));
+        if (path2Object.get(path) != null) {
+            return new BufferedInputStream(new FileInputStream((File) path2Object.get(path)));
+        }
+        return null;
     }
 
     @Override

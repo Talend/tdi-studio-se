@@ -82,30 +82,32 @@ imports="
        stmtCreateIndex_<%=cid%>.close();
 		<%
 	}
-
-
-
     if(("INSERT_OR_UPDATE").equals(dataAction)) {
-        %>
+%>
         if(pstmtUpdate_<%=cid%> != null){
             pstmtUpdate_<%=cid %>.close();
+            resourceMap.remove("pstmtUpdate_<%=cid %>");
         }
         if(pstmtInsert_<%=cid %> != null){
             pstmtInsert_<%=cid %>.close();
+            resourceMap.remove("pstmtInsert_<%=cid %>");
         }
         if(pstmt_<%=cid %> != null) {
             pstmt_<%=cid %>.close();
+            resourceMap.remove("pstmt_<%=cid %>");
         }
-        <%
+<%
     } else if(("UPDATE_OR_INSERT").equals(dataAction)) {
-        %>
+%>
         if(pstmtUpdate_<%=cid%> != null){
             pstmtUpdate_<%=cid %>.close();
+            resourceMap.remove("pstmtUpdate_<%=cid %>");
         }
         if(pstmtInsert_<%=cid %> != null){
             pstmtInsert_<%=cid %>.close();
+            resourceMap.remove("pstmtInsert_<%=cid %>");
         }
-        <%
+<%
     } else {
         if (useBatch) {
 	    %>
@@ -180,6 +182,7 @@ imports="
         		boolean usingStatsLogs = cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("talendMeter_DB");
         		if(!usingStatsLogs){%>
             pstmt_<%=cid %>.close();
+            resourceMap.remove("pstmt_<%=cid %>");
             <%} else {%>
             SharedDBPreparedStatement.releasePreparedStatement(keyPsmt_<%=cid%>);
             <%}%>
@@ -187,7 +190,7 @@ imports="
         <%
     }
     %>
-
+    resourceMap.put("statementClosed_<%=cid%>", true);
     <%
 	if(!("true").equals(useExistingConn))
 	{

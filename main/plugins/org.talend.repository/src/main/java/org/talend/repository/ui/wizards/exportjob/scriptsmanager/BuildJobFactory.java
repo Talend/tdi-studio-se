@@ -12,10 +12,14 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
@@ -24,9 +28,9 @@ import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.runtime.repository.build.IBuildExportHandler;
 import org.talend.core.runtime.repository.build.IBuildJobParameters;
 import org.talend.core.runtime.repository.build.IBuildParametes;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
-import org.talend.repository.ui.wizards.exportjob.handler.BuildOSGiBundleHandler;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 
 /**
@@ -36,11 +40,14 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
 public class BuildJobFactory {
 
     public static final Map<JobExportType, String> oldBuildTypeMap = new HashMap<JobExportType, String>();
+    private static final List<String> esbComponents;
     static {
         // from the extension point
         oldBuildTypeMap.put(JobExportType.POJO, "STANDALONE");
         oldBuildTypeMap.put(JobExportType.OSGI, "OSGI");
         oldBuildTypeMap.put(JobExportType.MSESB, "REST_MS");
+        esbComponents = Collections.unmodifiableList(Arrays.asList("tRESTClient", "tRESTRequest", "tRESTResponse", "tESBConsumer",
+                "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse", "tRouteInput", "tREST"));
     }
 
     /**
@@ -53,7 +60,7 @@ public class BuildJobFactory {
      * @param jobExportType
      * @return
      */
-    public static IBuildJobHandler createBuildJobHandler(ProcessItem processItem, String contextName, String version,
+    public static IBuildJobHandler createBuildJobHandler(Item processItem, String contextName, String version,
             Map<ExportChoice, Object> exportChoiceMap, JobExportType jobExportType) {
 
         if (jobExportType != null) {
@@ -80,22 +87,41 @@ public class BuildJobFactory {
         }
 
         IBuildJobHandler buildJobHandler = createBuildJobHandler(processItem, contextName, version, exportChoiceMap, buildType);
-        if (buildJobHandler == null) {
+        if (buildJobHandler == null && processItem instanceof ProcessItem) {
             // default
-            buildJobHandler = new BuildJobHandler(processItem, version, contextName, exportChoiceMap);
+            buildJobHandler = new BuildJobHandler((ProcessItem)processItem, version, contextName, exportChoiceMap);
         }
         return buildJobHandler;
     }
 
-    public static IBuildJobHandler createBuildJobHandler(ProcessItem processItem, String contextName, String version,
+    public static IBuildJobHandler createBuildJobHandler(Item processItem, String contextName, String version,
             Map<ExportChoice, Object> exportChoiceMap, String buildType) {
 
         // if null, will try to find the type from item for build type.
         if (StringUtils.isEmpty(buildType)) {
             final Object type = processItem.getProperty().getAdditionalProperties()
                     .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+            boolean esb = false;
+
+            if (processItem instanceof ProcessItem) {
+                for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
+                    if (o instanceof NodeType) {
+                        NodeType currentNode = (NodeType) o;
+                        if(esbComponents.contains(currentNode.getComponentName())) {
+                            esb = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (type != null) {
-                buildType = type.toString();
+                if (!esb) {
+                    buildType = null;
+                } else {
+                    buildType = type.toString();
+                }
+
             } // else{ // if didn't set, should use default provider to create it.
         }
 
@@ -120,7 +146,7 @@ public class BuildJobFactory {
         return null;
     }
 
-    public static IBuildJobHandler createBuildJobHandler(ProcessItem processItem, String contextName, String version,
+    public static IBuildJobHandler createBuildJobHandler(Item processItem, String contextName, String version,
             Map<ExportChoice, Object> exportChoiceMap) {
         // according to the export type from additional properties setting.
         return createBuildJobHandler(processItem, contextName, version, exportChoiceMap, (String) null);

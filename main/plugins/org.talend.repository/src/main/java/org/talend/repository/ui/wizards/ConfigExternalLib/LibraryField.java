@@ -21,8 +21,11 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
@@ -35,6 +38,8 @@ import org.talend.repository.i18n.Messages;
  * 
  */
 public class LibraryField extends TableField {
+
+    private boolean readOnly;
 
     /**
      * DOC tguiu StatusEditor constructor comment.
@@ -49,6 +54,7 @@ public class LibraryField extends TableField {
 
     public LibraryField(String name, Composite parent, boolean isReadOnly) {
         super(name, parent, isReadOnly);
+        this.readOnly = isReadOnly;
     }
 
     @Override
@@ -69,6 +75,23 @@ public class LibraryField extends TableField {
         descriptionColumn.setText(Messages.getString("LibraryField.descriptionColumn")); //$NON-NLS-1$
         descriptionColumn.setWidth(200);
 
+        contextTable.addListener(SWT.MouseUp, new Listener() {
+
+            @Override
+            public void handleEvent(Event event) {
+                if (!readOnly) {
+                    final Table contextTable = (Table) event.widget;
+                    final TableItem item = contextTable.getSelection()[0];
+                    if (item.getBounds(1).contains(event.x, event.y)) {
+                        IMPORTType it = (IMPORTType) getList().get(contextTable.getSelectionIndex());
+                        if ("BeanItem".equals(it.eContainer().eClass().getName())) {
+                            it.setREQUIRED(!it.isREQUIRED());
+                            setInput(getList());
+                        }
+                    }
+                }
+            }
+        });
         return contextTable;
     }
 

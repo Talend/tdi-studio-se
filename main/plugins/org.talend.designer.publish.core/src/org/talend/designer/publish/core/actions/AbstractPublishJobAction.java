@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -25,20 +24,14 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.properties.ProcessItem;
-import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.publish.core.models.BundleModel;
-import org.talend.designer.publish.core.models.FeatureModel;
 import org.talend.designer.publish.core.models.FeaturesModel;
-import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
-import org.talend.repository.ui.wizards.exportjob.action.JobExportAction;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BuildJobManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManagerFactory;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb.JobJavaScriptOSGIForESBManager;
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.JobContextUtils;
 
@@ -100,6 +93,9 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
         case OSGI:
             exportJobForOSGI(monitor);
             break;
+        case IMAGE:
+            exportJobForImage(monitor);
+            break;
         default:
             exportJobForOSGI(monitor);
             break;
@@ -118,6 +114,8 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             exportChoiceMap.put(ExportChoice.includeLibs, true);
 
             ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
+            exportItemForDQComponent(processItem);
+
             String contextName = (String) exportChoiceMap.get(ExportChoice.contextName);
             if (contextName == null) {
                 contextName = processItem.getProcess().getDefaultContext();
@@ -144,6 +142,17 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             if (tmpJob != null && tmpJob.exists()) {
                 tmpJob.delete();
             }
+        }
+    }
+
+    /**
+     * TDQ-15391: when have tDqReportRun, must always export items.
+     * 
+     * @param processItem
+     */
+    private void exportItemForDQComponent(ProcessItem processItem) {
+        if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+            exportChoiceMap.put(ExportChoice.needJobItem, true);
         }
     }
 
@@ -166,6 +175,8 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             exportChoiceMap.put(ExportChoice.addStatistics, true);
 
             ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
+            exportItemForDQComponent(processItem);
+
             String contextName = (String) exportChoiceMap.get(ExportChoice.contextName);
             if (contextName == null) {
                 contextName = processItem.getProcess().getDefaultContext();
@@ -192,6 +203,39 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             if (tmpJob != null && tmpJob.exists()) {
                 tmpJob.delete();
             }
+        }
+    }
+
+    private void exportJobForImage(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+        try {
+            exportChoiceMap.put(ExportChoice.buildImage, true);
+            exportChoiceMap.put(ExportChoice.pushImage, true);
+            exportChoiceMap.put(ExportChoice.needAssembly, false);
+            exportChoiceMap.put(ExportChoice.binaries, true);
+            exportChoiceMap.put(ExportChoice.includeLibs, true);
+            exportChoiceMap.put(ExportChoice.addStatistics, true);
+
+            ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
+            exportItemForDQComponent(processItem);
+
+            String contextName = (String) exportChoiceMap.get(ExportChoice.contextName);
+            if (contextName == null) {
+                contextName = processItem.getProcess().getDefaultContext();
+            }
+            BuildJobManager.getInstance().buildJob(null, processItem, jobVersion, contextName,
+                    exportChoiceMap, exportType, monitor);
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
+                        .getService(IRunProcessService.class);
+                boolean hasError = service.checkExportProcess(new StructuredSelection(node), true);
+                if (hasError) {
+                    return;
+                }
+            }
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new InvocationTargetException(e);
         }
     }
 

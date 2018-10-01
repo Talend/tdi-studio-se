@@ -57,27 +57,137 @@
 			<DEFAULT>false</DEFAULT>
 		</PARAMETER>
 		
-		<PARAMETER NAME="ENCRYPTED_KEY" FIELD="TEXT" NUM_ROW="45"
+		<PARAMETER NAME="ENCRYPTED_KEY" FIELD="PASSWORD" NUM_ROW="45"
 			REQUIRED="true" GROUP="DATA_FILE_CONFIG" SHOW_IF="ENCRYPT=='true'">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="ACCESS_KEY" FIELD="TEXT" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG">
-			<DEFAULT>""</DEFAULT>
-		</PARAMETER>
+	    <PARAMETER
+	      NAME="ACCESS_KEY"
+	      FIELD="TEXT"
+	      NUM_ROW="50"
+	      REQUIRED="true"
+	      SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+	
+	    <PARAMETER
+	      NAME="SECRET_KEY"
+	      FIELD="PASSWORD"
+	      NUM_ROW="50"
+	      REQUIRED="true"
+	      SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
 
-		<PARAMETER NAME="SECRET_KEY" FIELD="PASSWORD" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG">
-			<DEFAULT>""</DEFAULT>
-		</PARAMETER>
+	 <PARAMETER
+	      NAME="INHERIT_CREDENTIALS"
+	      FIELD="CHECK"
+	      NUM_ROW="55"
+	      REQUIRED="true"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>false</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="ASSUME_ROLE"
+	      FIELD="CHECK"
+	      NUM_ROW="60"
+	      REQUIRED="true"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>false</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="ARN"
+	      FIELD="TEXT"
+	      NUM_ROW="65"
+	      REQUIRED="true"
+	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="ROLE_SESSION_NAME"
+	      FIELD="TEXT"
+	      NUM_ROW="70"
+	      REQUIRED="true"
+	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="SESSION_DURATION"
+	      FIELD="TEXT"
+	      NUM_ROW="75"
+	      REQUIRED="true"
+	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>15</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER 
+	        NAME="REGION" 
+	        FIELD="OPENED_LIST" 
+	        RAW="true" 
+	        NUM_ROW="80" 
+	        REQUIRED="true"
+	        GROUP="S3_CONFIG">
+	        
+	        <ITEMS DEFAULT="DEFAULT">
+	            <ITEM NAME="DEFAULT" VALUE="DEFAULT" />
+	            <ITEM NAME="AP_SOUTH_1" VALUE="&quot;ap-south-1&quot;" />
+	            <ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
+	            <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />
+	            <ITEM NAME="AP_NORTHEAST_1" VALUE="&quot;ap-northeast-1&quot;" />
+	            <ITEM NAME="CN_NORTH_1" VALUE="&quot;cn-north-1&quot;" />
+	            <ITEM NAME="EU_WEST_1" VALUE="&quot;eu-west-1&quot;" />
+	            <ITEM NAME="EU_CENTRAL_1" VALUE="&quot;eu-central-1&quot;" />
+	            <ITEM NAME="GovCloud" VALUE="&quot;us-gov-west-1&quot;" />
+	            <ITEM NAME="SA_EAST_1" VALUE="&quot;sa-east-1&quot;" />
+	            <ITEM NAME="US_EAST_1" VALUE="&quot;us-east-1&quot;" />
+	            <ITEM NAME="US_WEST_1" VALUE="&quot;us-west-1&quot;" />
+	            <ITEM NAME="US_WEST_2" VALUE="&quot;us-west-2&quot;" />
+	        </ITEMS>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="SET_STS_ENDPOINT"
+	      FIELD="CHECK"
+	      NUM_ROW="85"
+	      NB_LINES="5"
+	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      GROUP="S3_CONFIG"
+	    >
+	    </PARAMETER>
+	    <PARAMETER
+	      NAME="STS_ENDPOINT"
+	      FIELD="TEXT"
+	      NUM_ROW="90"
+	      REQUIRED="true"
+	      SHOW_IF="(ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>   
 
-		<PARAMETER NAME="BUCKET" FIELD="TEXT" NUM_ROW="60" REQUIRED="true"
+		<PARAMETER NAME="BUCKET" FIELD="TEXT" NUM_ROW="100" REQUIRED="true"
 			GROUP="S3_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="KEY" FIELD="TEXT" NUM_ROW="60" REQUIRED="false"
+		<PARAMETER NAME="KEY" FIELD="TEXT" NUM_ROW="100" REQUIRED="false"
 			GROUP="S3_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
@@ -155,8 +265,8 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="aws-java-sdk-1.11.269.jar" MODULE="aws-java-sdk-1.11.269.jar"
-				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.269"
+			<IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
+				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406"
 				REQUIRED="true" />
 			<IMPORT NAME="jackson-core-2.9.4.jar" MODULE="jackson-core-2.9.4.jar"
 				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.4"
@@ -167,17 +277,17 @@
 			<IMPORT NAME="jackson-annotations-2.9.4.jar" MODULE="jackson-annotations-2.9.4.jar"
 				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.4"
 				REQUIRED="true" />
-			<IMPORT NAME="httpcore-4.4.3.jar" MODULE="httpcore-4.4.3.jar"
-				MVN="mvn:org.talend.libraries/httpcore-4.4.3/6.3.0"
+			<IMPORT NAME="httpcore-4.4.9.jar" MODULE="httpcore-4.4.9.jar"
+				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"
 				REQUIRED="true" />
-			<IMPORT NAME="httpclient-4.5.1.jar" MODULE="httpclient-4.5.1.jar"
-				MVN="mvn:org.talend.libraries/httpclient-4.5.1/6.3.0"
+			<IMPORT NAME="httpclient-4.5.5.jar" MODULE="httpclient-4.5.5.jar"
+				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.5"
 				REQUIRED="true" />
 			<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
-				MVN="mvn:org.talend.libraries/joda-time-2.8.1/6.0.0"
+				MVN="mvn:joda-time/joda-time/2.8.1"
 				REQUIRED="true" />
 			<IMPORT NAME="commons-logging-1.1.3.jar" MODULE="commons-logging-1.1.3.jar"
-				MVN="mvn:org.talend.libraries/commons-logging-1.1.3/6.0.0"
+				MVN="mvn:commons-logging/commons-logging/1.1.3"
 				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar"
 				REQUIRED="true" />
 			<IMPORT NAME="commons-codec-1.6.jar" MODULE="commons-codec-1.6.jar"

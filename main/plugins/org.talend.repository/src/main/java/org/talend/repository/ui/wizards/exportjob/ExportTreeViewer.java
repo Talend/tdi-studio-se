@@ -97,8 +97,10 @@ public class ExportTreeViewer {
 
         GridLayout layout = new GridLayout();
         sash.setLayout(layout);
+        
         // create tree
         createItemList(sash);
+        
         // create button
         Composite buttonComposite = new Composite(sash, SWT.ERROR);
         buttonComposite.setLayout(new GridLayout());
@@ -140,9 +142,12 @@ public class ExportTreeViewer {
      * @param workArea
      */
     public Composite createItemList(Composite workArea) {
-        Group itemComposite = new Group(workArea, 0);
-        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(itemComposite);
-        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).hint(400, 200).applyTo(itemComposite);
+        
+        Composite itemComposite = new Composite(workArea, SWT.BORDER);
+        GridLayout gdlItemComposite = new GridLayout(2, false);
+        itemComposite.setLayout(gdlItemComposite);
+        
+        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(itemComposite);
 
         Label label = new Label(itemComposite, SWT.NONE);
         label.setText(Messages.getString("ExportTreeViewer.selectItems")); //$NON-NLS-1$
@@ -224,6 +229,7 @@ public class ExportTreeViewer {
     }
 
     private void createTreeViewer(Composite itemComposite) {
+        
         filteredCheckboxTree = new FilteredCheckboxTree(itemComposite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI) {
 
             @Override
@@ -344,13 +350,18 @@ public class ExportTreeViewer {
      */
     private void createSelectionButton(Composite itemComposite) {
         Composite buttonComposite = new Composite(itemComposite, SWT.NONE);
-        GridLayoutFactory.swtDefaults().margins(0, 25).applyTo(buttonComposite);
-        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(buttonComposite);
-        buttonComposite.setLayout(new RowLayout(SWT.VERTICAL));
+        
+        GridLayout gdlButtonComposite = new GridLayout();
+        gdlButtonComposite.marginHeight = 0;
+        gdlButtonComposite.marginWidth = 0;
+        gdlButtonComposite.marginTop = 26;
+        buttonComposite.setLayout(gdlButtonComposite);
 
-        Button hide = new Button(buttonComposite, SWT.PUSH);
-        hide.setVisible(false);
+        GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(buttonComposite);
+
         Button selectAll = new Button(buttonComposite, SWT.PUSH);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(selectAll);
+        
         // selectAll.setText(DataTransferMessages.DataTransfer_selectAll);
         selectAll.setText(Messages.getString("DataTransferMessages.DataTransfer_selectAll")); //$NON-NLS-1$
         selectAll.addSelectionListener(new SelectionAdapter() {
@@ -363,6 +374,7 @@ public class ExportTreeViewer {
         });
 
         Button deselectAll = new Button(buttonComposite, SWT.PUSH);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(deselectAll);
         // deselectAll.setText(DataTransferMessages.DataTransfer_deselectAll);
         deselectAll.setText(Messages.getString("DataTransferMessages.DataTransfer_deselectAll")); //$NON-NLS-1$
         deselectAll.addSelectionListener(new SelectionAdapter() {
@@ -377,6 +389,7 @@ public class ExportTreeViewer {
         // setButtonLayoutData(deselectAll);
 
         Button expandBtn = new Button(buttonComposite, SWT.PUSH);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(expandBtn);
         expandBtn.setText("Expand All"); //$NON-NLS-1$
         expandBtn.addSelectionListener(new SelectionAdapter() {
 
@@ -388,6 +401,7 @@ public class ExportTreeViewer {
         // setButtonLayoutData(expandBtn);
 
         Button collapseBtn = new Button(buttonComposite, SWT.PUSH);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(collapseBtn);
         collapseBtn.setText("Collapse All"); //$NON-NLS-1$
         collapseBtn.addSelectionListener(new SelectionAdapter() {
 

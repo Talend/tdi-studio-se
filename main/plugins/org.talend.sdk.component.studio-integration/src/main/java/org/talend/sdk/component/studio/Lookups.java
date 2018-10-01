@@ -15,6 +15,8 @@
  */
 package org.talend.sdk.component.studio;
 
+import static java.util.Optional.ofNullable;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
@@ -32,11 +34,13 @@ import org.talend.core.model.process.Element;
 import org.talend.core.model.process.INode;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.sdk.component.studio.debounce.DebounceManager;
+import org.talend.sdk.component.studio.debounce.DebouncedAction;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.service.ComponentService;
 import org.talend.sdk.component.studio.service.Configuration;
 import org.talend.sdk.component.studio.service.UiActionsThreadPool;
 import org.talend.sdk.component.studio.ui.composite.TaCoKitComposite;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
 public final class Lookups {
@@ -75,7 +79,29 @@ public final class Lookups {
     }
 
     public static DebounceManager debouncer() {
-        return lookup(DebounceManager.class);
+        try {
+            return lookup(DebounceManager.class);
+        } catch (final Exception e) {
+            // for tests mainly
+            return new DebounceManager() {
+                @Override
+                public DebouncedAction createAction() {
+                    return new DebouncedAction(this) {
+                        private Runnable task;
+
+                        @Override
+                        public synchronized void debounce(final Runnable task, final int timeoutMillis) {
+                            this.task = task;
+                        }
+
+                        @Override
+                        public void run() {
+                            ofNullable(task).ifPresent(Runnable::run);
+                        }
+                    };
+                }
+            };
+        }
     }
 
     public static Configuration configuration() {
@@ -104,8 +130,12 @@ public final class Lookups {
         return lookup(TaCoKitCache.class);
     }
 
+    public static ProcessManager manager() {
+        return lookup(ProcessManager.class);
+    }
+
     private static <T> T lookup(final Class<T> type) {
-        final BundleContext context = Platform.getBundle("org.talend.sdk.component.studio-integration").getBundleContext();
+        final BundleContext context = Platform.getBundle(TaCoKitConst.BUNDLE_ID).getBundleContext();
         final ServiceReference<T> clientRef = context.getServiceReference(type);
         return context.getService(clientRef);
     }

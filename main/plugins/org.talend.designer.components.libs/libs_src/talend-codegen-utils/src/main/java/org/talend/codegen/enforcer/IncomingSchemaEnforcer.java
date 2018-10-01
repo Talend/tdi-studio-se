@@ -15,6 +15,12 @@ package org.talend.codegen.enforcer;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -83,6 +89,11 @@ public class IncomingSchemaEnforcer {
     private List<Schema.Field> dynamicFields = null;
 
     /**
+     * Collection of fields constructed from incoming node columns not in designSchema.
+     */
+    private List<Schema.Field> incomingFields = null;
+
+    /**
      * The values wrapped by this object - current {@link IndexedRecord}
      */
     private GenericData.Record currentRecord = null;
@@ -103,7 +114,7 @@ public class IncomingSchemaEnforcer {
      */
     public IncomingSchemaEnforcer(Schema incoming) {
         designSchema = incoming;
-
+        incomingFields = new ArrayList<>();
         // Find the dynamic column, if any.
         dynamicColumnPosition = AvroUtils.isIncludeAllFields(designSchema)
                 ? Integer.valueOf(designSchema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION)) : NO_DYNAMIC_COLUMN;
@@ -158,6 +169,49 @@ public class IncomingSchemaEnforcer {
             field.addProp(SchemaConstants.TALEND_COLUMN_PATTERN, fieldPattern);
         }
         dynamicFields.add(field);
+    }
+
+    public void addIncomingNodeField(String name, String className) {
+        String diType = "id_String";
+        switch (className) {
+        case "java.lang.String":
+            diType = "id_String";
+            break;
+        case "java.lang.Boolean":
+            diType = "id_Boolean";
+            break;
+        case "java.lang.Integer":
+            diType = "id_Integer";
+            break;
+        case "java.lang.Long":
+            diType = "id_Long";
+            break;
+        case "java.lang.Double":
+            diType = "id_Double";
+            break;
+        case "java.lang.Float":
+            diType = "id_Float";
+            break;
+        case "java.lang.Byte":
+            diType = "id_Byte";
+            break;
+        case "java.lang.Short":
+            diType = "id_Short";
+            break;
+        case "java.lang.Character":
+            diType = "id_Character";
+            break;
+        case "java.lang.BigDecimal":
+            diType = "id_BigDecimal";
+            break;
+        case "java.lang.Date":
+            diType = "id_Date";
+        default:
+            diType = "id_String";
+        }
+        Schema fieldSchema = diToAvro(diType, null);
+        Schema.Field field = new Schema.Field(name, fieldSchema, "", (Object) null);
+        incomingFields.add(field);
     }
 
     /**
@@ -221,7 +275,7 @@ public class IncomingSchemaEnforcer {
      * Also should be called before calling {@link this#put()} and {@link this#createIndexedRecord()} methods
      */
     public void createRuntimeSchema() {
-        if (areDynamicFieldsInitialized()) {
+        if (areDynamicFieldsInitialized() && incomingFields.size() == 0) {
             return;
         }
 
@@ -237,7 +291,11 @@ public class IncomingSchemaEnforcer {
             Schema.Field designFieldCopy = copyField(designField);
             fields.add(designFieldCopy);
         }
-        if (!dynamicFieldsAdded) {
+
+        // Copy fields from incoming node
+        fields.addAll(incomingFields);
+
+        if (!dynamicFieldsAdded && dynamicFields != null) {
             fields.addAll(dynamicFields);
         }
 
@@ -250,6 +308,8 @@ public class IncomingSchemaEnforcer {
             columnToFieldIndex.put(f.name(), f.pos());
         }
 
+        // reset incoming fields
+        incomingFields.clear();
         // And indicate that initialization is finished.
         dynamicFields = null;
     }
@@ -383,8 +443,10 @@ public class IncomingSchemaEnforcer {
 
         if (LogicalTypeUtils.isLogicalDate(fieldSchema)) {
             // (igonchar): diValue MUST be of java.util.Date
+            // (dchmyga): we need to count days according to OUR date, and not timestamp in UTC.
             Date diDate = (Date) diValue;
-            int avroDays = (int) (diDate.getTime() / ONE_DAY);
+            OffsetDateTime odt = LocalDateTime.ofInstant(diDate.toInstant(), ZoneId.systemDefault()).atOffset(ZoneOffset.UTC);
+            int avroDays = (int) ChronoUnit.DAYS.between(Instant.EPOCH, odt);
             currentRecord.put(index, avroDays);
             return;
         }

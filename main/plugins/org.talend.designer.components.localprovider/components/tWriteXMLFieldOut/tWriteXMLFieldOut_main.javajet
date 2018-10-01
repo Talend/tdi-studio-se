@@ -48,14 +48,29 @@ class XMLTool{
  	public String decimalSeparator =null;
 	public String connName = null;
 	public String cid = null;
+	public boolean istWriteJSONField = false;
 	
 	public void getValue(XMLNode node){
+		getValue(node, false);
+	}
+	
+	public void getValue(XMLNode node, boolean parseAsArray) {
+		if(!parseAsArray){
 %>
 		valueMap_<%=cid%>.get("<%=node.relatedColumn.getLabel()%>")
 <%
+		}else{
+%>
+		arraysValueMap_<%=cid%>.get("<%=node.relatedColumn.getLabel()%>")
+<%
+		}
 	}
 
 	public void getValue(IMetadataColumn column){
+		getValue(column, false);
+	}
+	
+	public void getValue(IMetadataColumn column, boolean parseAsArray){
 		JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
 		String defaultValue=column.getDefault();
 		boolean isNotSetDefault = false;
@@ -105,7 +120,11 @@ class XMLTool{
 %>
             new String(<%=connName%>.<%=column.getLabel()%>)
 <%
-        }else{
+		}else if (istWriteJSONField && javaType == JavaTypesManager.OBJECT && parseAsArray) {
+%>
+			nestXMLTool_<%=cid%>.objectToString(<%=connName%>.<%=column.getLabel()%>)
+<%
+		}else{
 %>
             <%=connName%>.<%=column.getLabel()%>.toString()
 <%
@@ -210,8 +229,25 @@ class GenerateToolByDom4j{
 			if(javaType == JavaTypesManager.OBJECT){
 %>
 		if(<%tool.getValue(node);%>!=null){
-			nestXMLTool_<%=cid%> .parseAndAdd(<%=currEleName%>_<%=cid%>,<%tool.getValue(node);%>);
-		}
+<%
+            if(istWriteJSONField){
+                boolean parseAsArray = false;
+                for (XMLNode attribute : node.attributes) {
+                    if ("class".equals(attribute.name) && "array".equals(attribute.defaultValue)) {
+                        parseAsArray = true;
+                        break;
+                    }
+                }
+%>
+            nestXMLTool_<%=cid%> .parseAndAdd(<%=currEleName%>_<%=cid%>,<%tool.getValue(node, parseAsArray);%>);
+<%
+            }else{
+%>
+            nestXMLTool_<%=cid%> .parseAndAdd(<%=currEleName%>_<%=cid%>,<%tool.getValue(node);%>);
+<%
+            }
+%>
+        }
 <%
 				if(outputAsXSD){
 %>
@@ -564,6 +600,7 @@ if (inConn != null) {
                 tool.thousandsSeparator=thousandsSeparator;
                 tool.decimalSeparator=decimalSeparator;
                 tool.cid=cid;
+                tool.istWriteJSONField = istWriteJSONField;
                 
                 // change tables to a tree 
 				Object[] treeObjs = getTree(rootTable, groupTable, loopTable, metadata.getListColumns());
@@ -596,10 +633,20 @@ if (inConn != null) {
 %>
 	valueMap_<%=cid%>.clear();
 <%
+	if (istWriteJSONField) {
+%>
+	arraysValueMap_<%=cid%>.clear();
+<%
+	}
 				for(IMetadataColumn column :inputColumns){
 %>
 	valueMap_<%=cid%>.put("<%=column.getLabel()%>",<%tool.getValue(column);%>);
 <%
+	if (istWriteJSONField) {
+%>
+	arraysValueMap_<%=cid%>.put("<%=column.getLabel()%>",<%tool.getValue(column, true);%>);
+<%
+	}
 				}
 %>
 <%if(storeFlow){%>

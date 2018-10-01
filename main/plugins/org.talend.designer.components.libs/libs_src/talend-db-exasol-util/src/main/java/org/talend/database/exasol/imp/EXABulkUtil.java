@@ -90,39 +90,43 @@ public class EXABulkUtil {
 			logger.setLevel(Level.INFO);
 		}
 	}
-	
-	private String createNumberFormat(Integer length, Integer precision) {
-		if (length != null && length.intValue() > 0) {
-			StringBuilder sb = new StringBuilder();
-			int numGroups = (length.intValue() / 3) + 1; 
-			for (int i = 0; i < numGroups; i++) {
-				if (i > 0) {
-					sb.append("G");
-				}
-				sb.append("999");
-			}
-			if (precision != null && precision.intValue() > 0) {
-				sb.append("D");
-				for (int i = 0; i < precision.intValue(); i++) {
-					sb.append("9");
-				}
-			}
-			return sb.toString();
-		} else {
-			return null;
-		}
-	}
-	
-	public void addCSVNumberColumn(String dbColumnName, Integer sourceIndex, Integer length, Integer precision, String format) {
-		if (sourceIndex == null) {
-			sourceIndex = targetColumns.size();
-		}
-		if (format == null || format.trim().isEmpty()) {
-			format = createNumberFormat(length, precision);
-		}
-		Column c = Column.getCSVColumn(dbColumnName, sourceIndex, format);
-		targetColumns.add(c);
-	}
+
+	private String createNumberFormat(Integer length, Integer precision, boolean hasGroups) {
+        if (length != null && length.intValue() > 0) {
+            StringBuilder sb = new StringBuilder();
+            int numGroups = (length.intValue() / 3) + 1;
+            for (int i = 0; i < numGroups; i++) {
+                if (i > 0 && hasGroups) {
+                    sb.append("G");
+                    }
+                sb.append("999");
+            }
+            if (precision != null && precision.intValue() > 0) {
+                sb.append("D");
+                for (int i = 0; i < precision.intValue(); i++) {
+                    sb.append("9");
+                }
+            }
+            return sb.toString();
+        } else {
+            return null;
+        }
+    }
+
+    public void addCSVNumberColumn(String dbColumnName, Integer sourceIndex, Integer length, Integer precision, String format) {
+        addCSVNumberColumn(dbColumnName, sourceIndex, length, precision, format, true);
+    }
+
+    public void addCSVNumberColumn(String dbColumnName, Integer sourceIndex, Integer length, Integer precision, String format, boolean hasGroups) {
+        if (sourceIndex == null) {
+            sourceIndex = targetColumns.size();
+        }
+        if (format == null || format.trim().isEmpty()) {
+            format = createNumberFormat(length, precision, hasGroups);
+        }
+        Column c = Column.getCSVColumn(dbColumnName, sourceIndex, format);
+        targetColumns.add(c);
+    }
 
 	public void addCSVDateColumn(String dbColumnName, Integer sourceIndex, String format) {
 		if (sourceIndex == null) {

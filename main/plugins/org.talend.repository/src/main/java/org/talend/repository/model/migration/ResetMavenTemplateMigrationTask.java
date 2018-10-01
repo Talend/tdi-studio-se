@@ -12,9 +12,13 @@
 // ============================================================================
 package org.talend.repository.model.migration;
 
-import static org.talend.core.PluginChecker.*;
+import static org.talend.core.PluginChecker.EXPORT_JOB_PLUGIN_ID;
+import static org.talend.core.PluginChecker.EXPORT_ROUTE_PLUGIN_ID;
+import static org.talend.core.PluginChecker.MAVEN_JOB_PLUGIN_ID;
+import static org.talend.core.PluginChecker.isPluginLoaded;
 import static org.talend.core.runtime.projectsetting.IProjectSettingPreferenceConstants.*;
 import static org.talend.core.runtime.projectsetting.IProjectSettingTemplateConstants.*;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -29,7 +33,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
-
+import org.talend.core.PluginChecker;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -75,9 +79,12 @@ public class ResetMavenTemplateMigrationTask extends AbstractProjectMigrationTas
             IProject fsProject = ResourceUtils.getProject(project);
 
             resetJobCustomTemplateFile(fsProject, ERepositoryObjectType.PROCESS);
-            resetJobCustomTemplateFile(fsProject, ERepositoryObjectType.PROCESS_MR);
-            resetJobCustomTemplateFile(fsProject, ERepositoryObjectType.PROCESS_STORM);
-
+            if (PluginChecker.isMapReducePluginLoader()) {
+                resetJobCustomTemplateFile(fsProject, ERepositoryObjectType.PROCESS_MR);
+            }
+            if (PluginChecker.isStormPluginLoader()) {
+                resetJobCustomTemplateFile(fsProject, ERepositoryObjectType.PROCESS_STORM);
+            }
             if (isPluginLoaded(EXPORT_ROUTE_PLUGIN_ID)) {
                 resetServiceCustomTemplateFile(fsProject);
             }

@@ -60,6 +60,7 @@
       NAME="CONTEXT_JOB"
       FIELD="TEXT"
       NUM_ROW="9"
+      REQUIRED="true"
       SHOW_IF="USE_DYNAMIC_JOB == 'true'"
     >
       <DEFAULT></DEFAULT>

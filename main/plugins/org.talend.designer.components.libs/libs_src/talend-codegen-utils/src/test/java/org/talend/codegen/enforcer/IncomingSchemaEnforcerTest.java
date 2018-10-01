@@ -18,12 +18,14 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.avro.Schema;
@@ -427,7 +429,7 @@ public class IncomingSchemaEnforcerTest {
     }
 
     @Test
-    public void testTypeConversion_toLogicalDate() {
+    public void testTypeConversion_toLogicalDate() throws ParseException {
         // The expected schema after enforcement.
         Schema designSchema = SchemaBuilder.builder().record("Record").fields() //
                 .name("field").type(AvroUtils._logicalDate()).noDefault() //
@@ -441,7 +443,12 @@ public class IncomingSchemaEnforcerTest {
         assertThat(enforcer.getRuntimeSchema(), is(designSchema));
 
         // Put values into the enforcer and get them as an IndexedRecord.
-        enforcer.put(0, new Date(1234567891011L));
+        // (dchmyga): test is incorrect. We need to test the conversion with a Date value,
+        // which will mean the same date in any time zone
+        // enforcer.put(0, new Date(1234567891011L));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date testDate = dateFormat.parse("2009-02-13");
+        enforcer.put(0, testDate);
         IndexedRecord adapted = enforcer.createIndexedRecord();
         assertThat(adapted.get(0), is((Object) 14288));
         assertThat(adapted.getSchema(), sameInstance(enforcer.getRuntimeSchema()));

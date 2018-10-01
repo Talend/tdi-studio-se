@@ -29,16 +29,21 @@ import org.talend.core.model.components.IODataComponentContainer;
 import org.talend.core.model.genhtml.HTMLDocUtils;
 import org.talend.core.model.metadata.ColumnNameChanged;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.process.EComponentCategory;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IComponentDocumentation;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalData;
 import org.talend.core.model.process.IExternalNode;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.process.Problem;
 import org.talend.core.model.process.node.IExternalMapEntry;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.designer.abstractmap.AbstractMapComponent;
 import org.talend.designer.codegen.ICodeGeneratorService;
+import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.dbmap.external.converter.ExternalNodeUtils;
@@ -106,7 +111,7 @@ public class DbMapComponent extends AbstractMapComponent {
      * @see org.talend.designer.core.model.components.IExternalComponent#getPersistentData()
      */
     @Override
-    public IExternalData getExternalData() {
+    public ExternalDbMapData getExternalData() {
         if (this.externalData == null) {
             this.externalData = new ExternalDbMapData();
         }
@@ -159,6 +164,23 @@ public class DbMapComponent extends AbstractMapComponent {
      */
     @Override
     public void restoreMapperModelFromInternalData() {
+        INode origNode = getOriginalNode();
+        if (origNode != null) {
+            IElementParameter activeDelimitedIdentifiersEP = origNode
+                    .getElementParameter(EParameterName.ACTIVE_DATABASE_DELIMITED_IDENTIFIERS.getName());
+            if (activeDelimitedIdentifiersEP == null) {
+                activeDelimitedIdentifiersEP = new ElementParameter(origNode);
+                activeDelimitedIdentifiersEP.setShow(false);
+                activeDelimitedIdentifiersEP.setFieldType(EParameterFieldType.TEXT);
+                activeDelimitedIdentifiersEP.setName(EParameterName.ACTIVE_DATABASE_DELIMITED_IDENTIFIERS.getName());
+                activeDelimitedIdentifiersEP.setCategory(EComponentCategory.TECHNICAL);
+                activeDelimitedIdentifiersEP.setNumRow(99);
+                activeDelimitedIdentifiersEP.setReadOnly(false);
+                List<IElementParameter> elemParams = (List<IElementParameter>) origNode.getElementParameters();
+                elemParams.add(activeDelimitedIdentifiersEP);
+            }
+            activeDelimitedIdentifiersEP.setValue(getGenerationManager().isUseDelimitedIdentifiers());
+        }
         mapperMain.loadModelFromInternalData();
         metadataListOut = mapperMain.getMetadataListOut();
         externalData = mapperMain.buildExternalData();
@@ -331,7 +353,7 @@ public class DbMapComponent extends AbstractMapComponent {
     }
 
     @Override
-    public AbstractExternalData getExternalEmfData() {
+    public DBMapData getExternalEmfData() {
         final DBMapData emfMapperData = DbmapFactory.eINSTANCE.createDBMapData();
         if (mapperMain == null) {
             initMapperMain(false);
@@ -355,7 +377,7 @@ public class DbMapComponent extends AbstractMapComponent {
     @Override
     public void removeInput(IConnection connection) {
         Connection conn = null;
-        DBMapData externalEmfData = (DBMapData) getExternalEmfData();
+        DBMapData externalEmfData = getExternalEmfData();
         InputTable toRemove = null;
         for (InputTable inputTable : externalEmfData.getInputTables()) {
             if (inputTable.getTableName() != null && inputTable.getTableName().equals(connection.getName())) {
@@ -572,9 +594,35 @@ public class DbMapComponent extends AbstractMapComponent {
             } else {
                 throw new IllegalArgumentException(Messages.getString("DbMapComponent.unknowValue") + value); //$NON-NLS-1$
             }
+            updateUseDelimitedIdentifiersStatus();
         }
 
         return generationManager;
+    }
+
+    @Override
+    public void setOriginalNode(INode originalNode) {
+        super.setOriginalNode(originalNode);
+        updateUseDelimitedIdentifiersStatus();
+    }
+
+    private void updateUseDelimitedIdentifiersStatus() {
+        if (generationManager == null) {
+            return;
+        }
+        INode oriNode = getOriginalNode();
+        if (oriNode != null) {
+            IElementParameter activeDelimitedIdentifiersEP = oriNode
+                    .getElementParameter(EParameterName.ACTIVE_DATABASE_DELIMITED_IDENTIFIERS.getName());
+            boolean activeDelimitedIdentifiers = false;
+            if (activeDelimitedIdentifiersEP != null) {
+                Object value = activeDelimitedIdentifiersEP.getValue();
+                if (value != null) {
+                    activeDelimitedIdentifiers = Boolean.valueOf(value.toString());
+                }
+            }
+            generationManager.setUseDelimitedIdentifiers(activeDelimitedIdentifiers);
+        }
     }
 
     /*
