@@ -283,10 +283,25 @@
 						typeToGenerate = "float";
 					} else if("id_Integer".equals(column.getTalendType())) {
 						typeToGenerate = "integer";
+					// SHU - added mappings
+					} else if("id_Long".equals(column.getTalendType())) {
+						typeToGenerate = "integer";
+					} else if("id_Short".equals(column.getTalendType())) {
+						typeToGenerate = "integer";
+					} else if("id_Double".equals(column.getTalendType())) {
+						typeToGenerate = "float";
+					} else if("id_Character".equals(column.getTalendType())) {
+						typeToGenerate = "string";
+					// SHU end mappings
 					} else if("id_Boolean".equals(column.getTalendType())) {
 						typeToGenerate = "boolean";
 					} else if("id_Date".equals(column.getTalendType())) {
+					// SHU add - based on date format choose timestamp or DATE as data type
 						typeToGenerate = "timestamp";
+						String pattern = column.getPattern();
+						 if (pattern!=null && !pattern.isEmpty() && pattern.indexOf("mm")==-1){
+							typeToGenerate = "date";
+						}
 					}
 					%>
 					com.google.api.services.bigquery.model.TableFieldSchema <%=columnName%>_<%=cid%> = new com.google.api.services.bigquery.model.TableFieldSchema();
@@ -471,6 +486,16 @@
 						String typeToGenerate = null;
 						if("id_String".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.STRING";
+						// SHU - added mappings
+						} else if("id_Long".equals(column.getTalendType())) {
+							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.INTEGER";
+						} else if("id_Short".equals(column.getTalendType())) {
+							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.INTEGER";
+						} else if("id_Double".equals(column.getTalendType())) {
+							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.FLOAT";
+						} else if("id_Character".equals(column.getTalendType())) {
+							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.STRING";
+						// SHU end mappings
 						} else if ("id_Float".equals(column.getTalendType()) || "id_Double".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.FLOAT";
 						} else if ("id_Short".equals(column.getTalendType()) || "id_Integer".equals(column.getTalendType()) || "id_Long".equals(column.getTalendType())) {
@@ -478,7 +503,12 @@
 						} else if ("id_Boolean".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.BOOLEAN";
 						} else if ("id_Date".equals(column.getTalendType())) {
+							// SHU add - based on date format choose timestamp or DATE as data type
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.TIMESTAMP";
+							String pattern = column.getPattern();
+							 if (pattern!=null && !pattern.isEmpty() && pattern.indexOf("mm")==-1){
+								typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.DATE";
+							}
 						} else {
 						%>
 							typeSupported = false;
