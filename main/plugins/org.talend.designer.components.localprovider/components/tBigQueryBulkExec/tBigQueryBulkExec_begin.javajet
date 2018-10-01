@@ -27,6 +27,7 @@
 
 	String actionOnData = ElementParameterParser.getValue(node, "__ACTION_ON_DATA__");
 	boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+	String fileType = ElementParameterParser.getValue(node,"__FILE_TYPE__");
 
     String tokenFile = ElementParameterParser.getValue(node,"__TOKEN_NAME__");
 	
@@ -320,10 +321,15 @@
 		%>
 		
 	
-		schema_<%=cid%>.setFields(fields_<%=cid%>);
-	
+
+	schema_<%=cid%>.setFields(fields_<%=cid%>);
+	<%if (!"AVRO".equals(fileType)){%>
 		queryLoad_<%=cid%>.setSchema(schema_<%=cid%>);
+	<%}
+	if (!"CSV".equals(fileType)){%>
+		queryLoad_<%=cid%>.setSourceFormat("<%=fileType%>");
 		<%
+	}
 		if("true".equals(ElementParameterParser.getValue(node, "__CREATE_TABLE_IF_NOT_EXIST__"))) {
 		%>
 			queryLoad_<%=cid%>.setCreateDisposition("CREATE_IF_NEEDED");
@@ -350,8 +356,9 @@
 	
 		queryLoad_<%=cid%>.setDestinationTable(destinationTable_<%=cid%>);
 		queryLoad_<%=cid%>.setSourceUris(java.util.Arrays.asList(<%=ElementParameterParser.getValue(node, "__GS_FILE__")%>));
+		<%if ("CSV".equals(fileType)){%>
 		queryLoad_<%=cid%>.setSkipLeadingRows(<%=ElementParameterParser.getValue(node, "__GS_FILE_HEADER__")%>);
-	
+	<% } %>
 		config_<%=cid%>.setLoad(queryLoad_<%=cid%>);
 		
 		job_<%=cid%>.setConfiguration(config_<%=cid%>);
@@ -528,13 +535,18 @@
 						}
 					}
 				}
-			}
-			%>
+			}		
 			com.google.cloud.bigquery.Schema schema_<%=cid%> = com.google.cloud.bigquery.Schema.of(fields_<%=cid%>);
 			com.google.cloud.bigquery.TableInfo tableInfo_<%=cid%> = com.google.cloud.bigquery.TableInfo.newBuilder(tableId_<%=cid%>, com.google.cloud.bigquery.StandardTableDefinition.of(schema_<%=cid%>)).build();
 			table_<%=cid%> = bigquery_<%=cid%>.create(tableInfo_<%=cid%>);
 		}
-		com.google.cloud.bigquery.Job job_<%=cid%> = table_<%=cid%>.load(com.google.cloud.bigquery.FormatOptions.csv(), <%=gsFile%>);
+		<%if ("AVRO".equals(fileType)){%>
+			com.google.cloud.bigquery.Job job_<%=cid%> = table_<%=cid%>.load(com.google.cloud.bigquery.FormatOptions.avro(), <%=gsFile%>);
+		<%} else if ("CSV".equals(fileType)){%>
+			com.google.cloud.bigquery.Job job_<%=cid%> = table_<%=cid%>.load(com.google.cloud.bigquery.FormatOptions.csv(), <%=gsFile%>);
+		<%} else {%>
+			com.google.cloud.bigquery.Job job_<%=cid%> = table_<%=cid%>.load(com.google.cloud.bigquery.FormatOptions.json(), <%=gsFile%>);
+		<% } %>
 		job_<%=cid%> = job_<%=cid%>.waitFor(com.google.cloud.RetryOption.initialRetryDelay(org.threeten.bp.Duration.ofSeconds(1)), com.google.cloud.RetryOption.totalTimeout(org.threeten.bp.Duration.ofSeconds(30)));
 		if (job_<%=cid%> != null && job_<%=cid%>.getStatus().getError() == null) {
 			<%
