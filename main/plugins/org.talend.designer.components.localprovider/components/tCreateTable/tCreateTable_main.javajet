@@ -1054,8 +1054,9 @@ class OracleManager extends Manager {
 		"LIKE","OR","SMALLINT","WHENEVER",
 		"LOCK","ORDER","START","WHERE","WITH"
     	};
+    private String dbVersion;
             
-    public OracleManager(String host, String port, String dbName, String tableName, String dbSchema, String useName, String connectionType, boolean useExistingConnection, String connection, String cid,String jdbcURL,String rac_url,String localServiceName) {
+    public OracleManager(String host, String port, String dbName, String tableName, String dbSchema, String useName, String connectionType, boolean useExistingConnection, String connection, String cid,String jdbcURL,String rac_url,String localServiceName, String dbVersion) {
         super(dbName, tableName, useName, cid);
         this.host = host;
         this.port = port;
@@ -1066,9 +1067,11 @@ class OracleManager extends Manager {
         this.jdbcURL = jdbcURL;
         this.rac_url = rac_url;
         this.localServiceName = localServiceName;
+        this.dbVersion = dbVersion;
     }
     protected String getDriver() {
-        return "oracle.jdbc.driver.OracleDriver";
+        return ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)) ?
+            "oracle.jdbc.OracleDriver" : "oracle.jdbc.driver.OracleDriver";
     }
     public String getConnectionURL() {
         String connectionURL = null;
@@ -2136,7 +2139,8 @@ class ManagerFactory {
              String jdbcURL = ElementParameterParser.getValue(node, "__JDBC_URL__");
             String localServiceName = ElementParameterParser.getValue(node, "__LOCAL_SERVICE_NAME__");
             String rac_url = ElementParameterParser.getValue(node, "__RAC_URL__");
-            manager = new OracleManager(host, port, dbName, tableName, dbSchema, userName, connectionType, useExistingConnection, connection,cid,jdbcURL,rac_url,localServiceName);
+            String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");;
+            manager = new OracleManager(host, port, dbName, tableName, dbSchema, userName, connectionType, useExistingConnection, connection,cid,jdbcURL,rac_url,localServiceName,dbVersion);
             } else if(("POSTGRE").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
