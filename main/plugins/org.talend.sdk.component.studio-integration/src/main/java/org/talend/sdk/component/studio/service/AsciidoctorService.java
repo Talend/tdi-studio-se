@@ -15,6 +15,7 @@
  */
 package org.talend.sdk.component.studio.service;
 
+import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 import java.util.concurrent.CountDownLatch;
@@ -23,6 +24,8 @@ import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.Options;
 import org.asciidoctor.OptionsBuilder;
+import org.jruby.RubyInstanceConfig;
+import org.jruby.javasupport.JavaEmbedUtils;
 
 public class AsciidoctorService {
 
@@ -53,13 +56,12 @@ public class AsciidoctorService {
 
         @Override
         public void run() {
-            final ClassLoader old = Thread.currentThread().getContextClassLoader();
-            final Thread thread = Thread.currentThread();
-            thread.setContextClassLoader(AsciidoctorService.class.getClassLoader());
+            final RubyInstanceConfig config = new RubyInstanceConfig();
+            config.setLoader(Thread.currentThread().getContextClassLoader());
+            JavaEmbedUtils.initialize(asList("META-INF/jruby.home/lib/ruby", "gems/asciidoctor-1.5.7.1/lib"), config);
             try {
                 instance = Asciidoctor.Factory.create();
             } finally {
-                thread.setContextClassLoader(old);
                 latch.countDown();
             }
         }
