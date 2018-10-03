@@ -277,4 +277,23 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+
+    <profile>
+      <!--
+           This profile makes the studio dependencies available
+           and let you build this plugin without rebuilding it's studio dependencies.
+           use : mvn clean install -P TalendP2
+       -->
+      <id>TalendP2</id>
+      <repositories>
+        <repository>
+          <id>tos-p2-repo</id>
+          <url>${tos-p2-repo.url}</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
 </project>
