@@ -18,7 +18,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.process.EComponentCategory;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.ValueModel;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
@@ -115,6 +117,20 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
     @Override
     protected Composite addCommonWidgets() {
         return addSchemas(composite, null);
+    }
+
+    /**
+     * Overrides implementation from parent class.
+     * This is a quickfix to skip schema in repository widget
+     *
+     * @param parent    Composite on which widget will be added
+     * @param parameter ElementParameter(Model) associated with widget
+     */
+    @Override
+    protected void addWidgetIfActive(final Composite parent, final IElementParameter parameter) {
+        if (doShow(parameter) && !EParameterFieldType.SCHEMA_TYPE.equals(parameter.getFieldType())) {
+            addWidget(parent, parameter, null);
+        }
     }
 
     private class ConfigurationModelUpdater implements IValueChangedListener {
