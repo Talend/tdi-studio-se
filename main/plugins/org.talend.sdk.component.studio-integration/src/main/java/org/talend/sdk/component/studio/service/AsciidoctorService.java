@@ -15,7 +15,7 @@
  */
 package org.talend.sdk.component.studio.service;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 import java.util.concurrent.CountDownLatch;
@@ -25,9 +25,12 @@ import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.Options;
 import org.asciidoctor.OptionsBuilder;
 import org.jruby.RubyInstanceConfig;
-import org.jruby.javasupport.JavaEmbedUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AsciidoctorService {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(AsciidoctorService.class.getName());
 
     private final Creator creator = new Creator();
 
@@ -58,9 +61,10 @@ public class AsciidoctorService {
         public void run() {
             final RubyInstanceConfig config = new RubyInstanceConfig();
             config.setLoader(Thread.currentThread().getContextClassLoader());
-            JavaEmbedUtils.initialize(asList("META-INF/jruby.home/lib/ruby", "gems/asciidoctor-1.5.7.1/lib"), config);
             try {
-                instance = Asciidoctor.Factory.create();
+                instance = Asciidoctor.Factory.create(singletonList("uri:classloader:/gems/asciidoctor-1.5.7.1/lib"));
+            } catch (final Throwable e) {
+                LOGGER.error("Can't load asciidoctor. Components documentation will not be available", e);
             } finally {
                 latch.countDown();
             }
