@@ -78,6 +78,10 @@ public class TaCoKitHelpContentProducer implements IHelpContentProducer {
 
     private String getHeader(final String componentName) {
         return "<head>\r\n" + "<meta charset=\"UTF-8\">\r\n" + "<title>" + componentName.toUpperCase() + "</title>\r\n"
+                + "<style>" +
+                "table.tableblock { border-collapse: collapse; }\n" +
+                "table.tableblock,th.tableblock,td.tableblock {border: 1px solid black;}" +
+                "</style>\r\n"
                 + "</head>\r\n<body>";
     }
 
