@@ -340,7 +340,7 @@
 		<%
 		}
 	
-		if("true".equals(ElementParameterParser.getValue(node, "__SET_FIELD_DELIMITER__"))) {
+		if("CSV".equals(fileType) && "true".equals(ElementParameterParser.getValue(node, "__SET_FIELD_DELIMITER__"))) {
 		%>
 			queryLoad_<%=cid%>.setFieldDelimiter(<%=ElementParameterParser.getValue(node, "__FIELD_DELIMITER__")%>);
 		<%
