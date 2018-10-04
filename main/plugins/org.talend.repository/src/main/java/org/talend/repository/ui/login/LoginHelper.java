@@ -242,16 +242,16 @@ public class LoginHelper {
     }
 
     /**
-     * if the connection is Cloud US/EU/Custom
+     * if the connection is Cloud US/EU/APAC/Custom
      * 
      * @param connectionBean
-     * @return true if connection is Cloud US or Cloud EU or Cloud Custom
+     * @return true if connection is Cloud US or Cloud EU or Cloud APAC or Cloud Custom
      */
     public static boolean isCloudConnection(ConnectionBean connectionBean) {
         if (connectionBean == null) {
             return false;
         }
-        return isCloudUSConnection(connectionBean) || isCloudEUConnection(connectionBean)
+        return isCloudUSConnection(connectionBean) || isCloudEUConnection(connectionBean) || isCloudAPACConnection(connectionBean)
                 || isCloudCustomConnection(connectionBean);
     }
 
@@ -269,6 +269,13 @@ public class LoginHelper {
         return RepositoryConstants.REPOSITORY_CLOUD_EU_ID.equals(connectionBean.getRepositoryId());
     }
 
+    public static boolean isCloudAPACConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return RepositoryConstants.REPOSITORY_CLOUD_APAC_ID.equals(connectionBean.getRepositoryId());
+    }
+
     public static boolean isCloudCustomConnection(ConnectionBean connectionBean) {
         if (connectionBean == null) {
             return false;
@@ -277,7 +284,8 @@ public class LoginHelper {
     }
 
     public static boolean isCloudRepository(String repositoryId) {
-        return isCloudUSRepository(repositoryId) || isCloudEURepository(repositoryId) || isCloudCustomRepository(repositoryId);
+        return isCloudUSRepository(repositoryId) || isCloudEURepository(repositoryId) || isCloudAPACRepository(repositoryId)
+                || isCloudCustomRepository(repositoryId);
     }
 
     public static boolean isCloudUSRepository(String repositoryId) {
@@ -286,6 +294,10 @@ public class LoginHelper {
 
     public static boolean isCloudEURepository(String repositoryId) {
         return RepositoryConstants.REPOSITORY_CLOUD_EU_ID.equals(repositoryId);
+    }
+
+    public static boolean isCloudAPACRepository(String repositoryId) {
+        return RepositoryConstants.REPOSITORY_CLOUD_APAC_ID.equals(repositoryId);
     }
 
     public static boolean isCloudCustomRepository(String repositoryId) {

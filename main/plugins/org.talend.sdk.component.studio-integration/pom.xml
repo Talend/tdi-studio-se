@@ -15,7 +15,7 @@
   <description>Studio integration of the Talend Component Kit framework.</description>
 
   <properties>
-    <component-runtime.version>1.0.5-SNAPSHOT</component-runtime.version>
+    <component-runtime.version>1.1.0-SNAPSHOT</component-runtime.version>
     <commons-lang3.version>3.6</commons-lang3.version>
     <oro.version>2.0.8</oro.version>
     <log4j.version>1.2.17</log4j.version>
@@ -59,6 +59,22 @@
     <dependency>
       <groupId>org.talend.sdk.component</groupId>
       <artifactId>component-server-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.talend.sdk.component</groupId>
+      <artifactId>component-form-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.talend.sdk.component</groupId>
+          <artifactId>component-form-model</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.asciidoctor</groupId>
+      <artifactId>asciidoctorj</artifactId>
+      <version>1.6.0-alpha.7</version>
     </dependency>
 
     <dependency>
@@ -261,4 +277,23 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+
+    <profile>
+      <!--
+           This profile makes the studio dependencies available
+           and let you build this plugin without rebuilding it's studio dependencies.
+           use : mvn clean install -P TalendP2
+       -->
+      <id>TalendP2</id>
+      <repositories>
+        <repository>
+          <id>tos-p2-repo</id>
+          <url>${tos-p2-repo.url}</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
 </project>

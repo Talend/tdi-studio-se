@@ -35,4 +35,7 @@ public interface IOASDecoder {
     public String getDocumentationComment();
 
     public Map<String, RestAPIMapping> getMappings();
+    
+    public byte[] getAsOASSwagger20();
+    
 }

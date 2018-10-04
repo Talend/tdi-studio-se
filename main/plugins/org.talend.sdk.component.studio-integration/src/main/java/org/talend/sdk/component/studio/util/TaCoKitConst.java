@@ -16,6 +16,8 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 
 public class TaCoKitConst {
 
+    public static final String BUNDLE_ID = "org.talend.sdk.component.studio-integration"; //$NON-NLS-1$
+
     public static final ERepositoryObjectType METADATA_TACOKIT = ERepositoryObjectType.valueOf("TACOKIT"); //$NON-NLS-1$
 
     public static final String METADATA_TACOKIT_PATH = METADATA_TACOKIT.getFolder();
@@ -58,5 +60,9 @@ public class TaCoKitConst {
     public static final String COMPONENT_NAME_SEPARATOR = "";
 
     public static final String ADDITIONAL_PARAM_METADATA_ELEMENT = "TACOKIT_ADDITIONAL_PARAM_METADATA_ELEMENT"; //$NON-NLS-1$
+
+    public static final String PROP_COMPONENT = "component.java.coordinates"; //$NON-NLS-1$
+
+    public static final String PROP_REGISTRY = "component.java.registry"; //$NON-NLS-1$
 
 }

@@ -36,6 +36,12 @@ public final class Metadatas {
 
     public static final String ACTION_VALIDATION_PARAMETERS = "action::validation::parameters";
 
+    public static final String ACTION_UPDATABLE_VALUE = "action::update";
+
+    public static final String ACTION_UPDATABLE_PARAMETERS = "action::update::parameters";
+
+    public static final String ACTION_UPDATABLE_AFTER = "action::update::after";
+
     public static final String CONDITION_IF_VALUE = "condition::if::value";
 
     public static final String CONDITION_IF_TARGET = "condition::if::target";

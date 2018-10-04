@@ -19,8 +19,6 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.wizard.Wizard;
-import org.talend.camel.core.model.camelProperties.CamelPropertiesFactory;
-import org.talend.camel.core.model.camelProperties.RouteResourceItem;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
@@ -36,6 +34,8 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.ReferenceFileItem;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
+import org.talend.core.model.resources.ResourceItem;
+import org.talend.core.model.resources.ResourcesFactory;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.repository.RepositoryWorkUnit;
@@ -54,7 +54,7 @@ public class NewRouteResourceWizard extends Wizard {
 
 	private NewRouteResourceWizardPage mainPage;
 
-	private RouteResourceItem item;
+    private ResourceItem item;
 
 	private Property property;
 
@@ -82,7 +82,7 @@ public class NewRouteResourceWizard extends Wizard {
 		this.property.setVersion(VersionUtils.DEFAULT_VERSION);
 		this.property.setStatusCode(""); //$NON-NLS-1$
 
-		item = CamelPropertiesFactory.eINSTANCE.createRouteResourceItem();
+        item = ResourcesFactory.eINSTANCE.createResourceItem();
 
 		item.setProperty(property);
 
@@ -117,7 +117,7 @@ public class NewRouteResourceWizard extends Wizard {
 	 * 
 	 * @return the project
 	 */
-	public RouteResourceItem getItem() {
+    public ResourceItem getItem() {
 		return this.item;
 	}
 
