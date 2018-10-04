@@ -613,6 +613,10 @@
             class="org.talend.designer.core.DesignerCoreUIService"
             serviceId="IDesignerCoreUIService">
       </Service>
+      <Service
+            class="org.talend.designer.core.ui.editor.dependencies.service.ResourcesDependenciesService"
+            serviceId="IResourcesDependenciesService">
+      </Service>
    </extension>
    
    <extension

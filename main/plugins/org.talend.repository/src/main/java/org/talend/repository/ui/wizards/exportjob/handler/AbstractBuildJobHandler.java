@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.handler;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +31,8 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.PluginChecker;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -43,6 +46,7 @@ import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.core.runtime.repository.build.IBuildResourceParametes;
 import org.talend.core.runtime.repository.build.IBuildResourcesProvider;
 import org.talend.core.runtime.util.ParametersUtil;
+import org.talend.core.services.ICoreTisService;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -233,6 +237,11 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         }
         // always disable ci-builder from studio/commandline
         addArg(profileBuffer, false, TalendMavenConstants.PROFILE_CI_BUILDER);
+
+        if (canSignJob()) {
+            addArg(profileBuffer, true, TalendMavenConstants.PROFILE_SIGNATURE);
+        }
+
         if (isOptionChoosed(ExportChoice.buildImage)) {
             addArg(profileBuffer, true, TalendMavenConstants.PROFILE_DOCKER);
         }
@@ -279,6 +288,10 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         } else {
             otherArgsBuffer.append(TalendMavenConstants.ARG_TEST_FAILURE_IGNORE);
         }
+        if (canSignJob()) {
+            otherArgsBuffer.append(" " + TalendMavenConstants.ARG_LICENSE_PATH + "=" + getLicenseFile().getAbsolutePath());
+            otherArgsBuffer.append(" " + TalendMavenConstants.ARG_SESSION_ID + "=" + getSessionId());
+        }
         otherArgsBuffer.append(" -Dmaven.main.skip=true"); //$NON-NLS-1$
 
         // if debug
@@ -301,7 +314,34 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
     protected void addArg(StringBuffer commandBuffer, boolean include, String arg) {
         addArg(commandBuffer, false, include, arg);
     }
+    
+    public boolean canSignJob() {
+        if (PluginChecker.isTIS() && getLicenseFile() != null) {
+            return true;
+        }
+        return false;
+    }
 
+    protected File getLicenseFile() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+                    .getService(ICoreTisService.class);
+            File licenseFile = coreTisService.getLicenseFile();
+            if (licenseFile.exists() && !coreTisService.isLicenseExpired()) {
+                return licenseFile;
+            }
+        }
+        return null;
+    }
+
+    private String getSessionId() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+            ICoreTisService coreTisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+                    .getService(ICoreTisService.class);
+            return coreTisService.generateSignerSessionId();
+        }
+        return null;
+    }
 
     @Override
     public IFolder getTargetFolder() {
@@ -351,8 +391,8 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
 
         //
         List<Item> dependenciesItems = new ArrayList<Item>();
-        Collection<IRepositoryViewObject> allProcessDependencies = ProcessUtils.getAllProcessDependencies(Arrays
-                .asList(processItem));
+        Collection<IRepositoryViewObject> allProcessDependencies = ProcessUtils
+                .getAllProcessDependencies(Arrays.asList(processItem));
         if (!allProcessDependencies.isEmpty()) {
             for (IRepositoryViewObject repositoryObject : allProcessDependencies) {
                 dependenciesItems.add(repositoryObject.getProperty().getItem());

@@ -25,7 +25,7 @@ List<IMetadataColumn> inputSchema = getInputSchema(node);
 List<IMetadataColumn> outputSchema = getOutputSchema(node);
 
 String incomingConnName = null;
-List<? extends IConnection> incomingConnections = node.getIncomingConnections();
+List< ? extends IConnection> incomingConnections = node.getIncomingConnections();
 if(incomingConnections != null && incomingConnections.size() > 0) {
     for(IConnection incomingConnection : incomingConnections) {
         if(incomingConnection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
@@ -72,11 +72,13 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
         <%        
     } else {
     	String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
-		String drverClass= "org.gjt.mm.mysql.Driver";
+		String drverClass= "com.mysql.jdbc.Driver";
 		String jdbcURL = "jdbc:mysql";
 		if("MARIADB".equals(dbVersion)){
 			drverClass = "org.mariadb.jdbc.Driver";
 			jdbcURL = "jdbc:mariadb";
+		} else if ("MYSQL_8".equals(dbVersion)){
+			drverClass= "com.mysql.cj.jdbc.Driver";
 		}
         %>
         java.lang.Class.forName("<%=drverClass%>");

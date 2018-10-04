@@ -117,7 +117,7 @@ public class ElementParameterCreator {
         checkSchemaProperties(new SettingVisitor(node, updateComponentsParameter, detail).withCategory(BASIC));
     }
 
-    private int getConfigTypeVersion(final PropertyDefinitionDecorator p, final ConfigTypeNodes configTypeNodes, final String familyId) {
+    public static int getConfigTypeVersion(final PropertyDefinitionDecorator p, final ConfigTypeNodes configTypeNodes, final String familyId) {
         final String type = p.getMetadata().get("configurationtype::type");
         final String name = p.getMetadata().get("configurationtype::name");
         return configTypeNodes.getNodes().values().stream()
@@ -127,7 +127,7 @@ public class ElementParameterCreator {
                 .findFirst().map(ConfigTypeNode::getVersion).orElse(-1);
     }
 
-    private String getPropertyFamilyId(final ConfigTypeNode it, final ConfigTypeNodes nodes) {
+    private static String getPropertyFamilyId(final ConfigTypeNode it, final ConfigTypeNodes nodes) {
         if (it.getParentId() == null) {
             return null;
         }

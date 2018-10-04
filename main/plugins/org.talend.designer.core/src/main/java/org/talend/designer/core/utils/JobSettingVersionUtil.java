@@ -81,6 +81,15 @@ public class JobSettingVersionUtil {
             elementParameter.setListItemsDisplayName(StatsAndLogsConstants.PSQL_VERSION_DISPLAY);
             elementParameter.setListItemsValue(StatsAndLogsConstants.PSQL_VERSION_CODE);
         }
+        else if (dbType.toUpperCase().indexOf("SYBASE") != -1) {//$NON-NLS-1$
+            if (withInitialValue) {
+                elementParameter.setValue(StatsAndLogsConstants.SYBASE_VERSION_CODE[0]);
+            } else {
+                elementParameter.setValue(dbVersion);
+            }
+            elementParameter.setListItemsDisplayName(StatsAndLogsConstants.SYBASE_VERSION_DISPLAY);
+            elementParameter.setListItemsValue(StatsAndLogsConstants.SYBASE_VERSION_CODE);
+        }
     }
 
 }

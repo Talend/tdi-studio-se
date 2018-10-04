@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.sdk.component.form.internal.converter.impl.widget.path.AbsolutePathResolver;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
@@ -75,7 +76,7 @@ public abstract class AbstractParameterResolver implements ParameterResolver {
 
         relativePaths.forEach(relativePath -> {
             if (expectedParameters.hasNext()) {
-                final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePath);
+                final String absolutePath = pathResolver.resolveProperty(getOwnerPath(), relativePath);
                 final SimplePropertyDefinition parameterRoot = expectedParameters.next();
                 findParameters(absolutePath, settings).forEach(parameter -> {
                     if (redrawParameter != null) {

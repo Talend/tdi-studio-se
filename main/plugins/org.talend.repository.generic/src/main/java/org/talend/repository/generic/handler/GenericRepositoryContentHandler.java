@@ -103,7 +103,9 @@ public class GenericRepositoryContentHandler extends AbstractRepositoryContentHa
     public Resource save(Item item) throws PersistenceException {
         Resource itemResource = null;
         if (isProcess(item)) {
-            GenericConnectionUtil.synNamePropertyWithItem((GenericConnectionItem) item);
+            if (ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
+                GenericConnectionUtil.synNamePropertyWithItem((GenericConnectionItem) item);
+            }
             itemResource = save((GenericConnectionItem) item);
         }
 

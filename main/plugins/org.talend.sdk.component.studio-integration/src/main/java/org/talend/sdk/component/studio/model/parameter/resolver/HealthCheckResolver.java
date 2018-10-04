@@ -15,6 +15,8 @@
  */
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
+import static java.util.Optional.ofNullable;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -25,6 +27,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
+import org.talend.sdk.component.studio.model.action.IActionParameter;
 import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
 import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.PathCollector;
@@ -65,7 +68,9 @@ public class HealthCheckResolver {
     public void resolveParameters(final Map<String, IElementParameter> settings) {
         final ButtonParameter button = new ButtonParameter(element);
         button.setCategory(category);
-        button.setDisplayName(Messages.getString("healthCheck.button"));
+        button.setDisplayName(ofNullable(action.getDisplayName())
+                .filter(it -> !action.getName().equals(it))
+                .orElseGet(() -> Messages.getString("healthCheck.button")));
         button.setName(node.getProperty().getPath() + ".testConnection");
         button.setNumRow(rowNumber);
         button.setShow(true);
@@ -77,7 +82,7 @@ public class HealthCheckResolver {
         collector.getPaths().stream().map(settings::get).filter(Objects::nonNull).map(p -> (TaCoKitElementParameter) p)
                 .forEach(p -> {
                     final String parameter = p.getName().replace(basePath, alias);
-                    final SettingsActionParameter actionParameter = new SettingsActionParameter(p, parameter);
+                    final IActionParameter actionParameter = p.createActionParameter(parameter);
                     command.addParameter(actionParameter);
                 });
         button.setCommand(command);

@@ -267,25 +267,18 @@ public class TaCoKitMigrationManager {
                 ISchedulingRule refreshRule = ruleFactory
                         .refreshRule(projectManager.getResourceProject(projectManager.getCurrentProject().getEmfProject()));
                 try {
-                    workspace.run(new IWorkspaceRunnable() {
+                    workspace.run(workspaceMonitor -> ProxyRepositoryFactory.getInstance()
+                            .executeRepositoryWorkUnit(new RepositoryWorkUnit(title) {
 
-                        @Override
-                        public void run(final IProgressMonitor workspaceMonitor) throws CoreException {
-                            ProxyRepositoryFactory.getInstance()
-                                    .executeRepositoryWorkUnit(new RepositoryWorkUnit(title) {
-
-                                        @Override
-                                        protected void run() throws LoginException, PersistenceException {
-                                            try {
-                                                checkMigration(workspaceMonitor);
-                                            } catch (Exception e) {
-                                                ExceptionHandler.process(e);
-                                            }
-                                        }
-                                    });
-
-                        }
-                    }, refreshRule, IWorkspace.AVOID_UPDATE, jobMonitor);
+                                @Override
+                                protected void run() {
+                                    try {
+                                        checkMigration(workspaceMonitor);
+                                    } catch (Exception e) {
+                                        ExceptionHandler.process(e);
+                                    }
+                                }
+                            }), refreshRule, IWorkspace.AVOID_UPDATE, jobMonitor);
                 } catch (CoreException e) {
                     ExceptionHandler.process(e);
                 }
@@ -297,8 +290,7 @@ public class TaCoKitMigrationManager {
         migrationJob.join();
     }
 
-    public void updatedRelatedItems(final ConnectionItem item, final String version, final IProgressMonitor progressMonitor)
-            throws Exception {
+    public void updatedRelatedItems(final ConnectionItem item, final String version, final IProgressMonitor progressMonitor) {
         IProgressMonitor monitor = progressMonitor;
         if (monitor == null) {
             monitor = new NullProgressMonitor();

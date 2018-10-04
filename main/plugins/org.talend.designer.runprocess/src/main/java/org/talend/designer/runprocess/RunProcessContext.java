@@ -1922,8 +1922,8 @@ public class RunProcessContext {
             else
                 endpoint = ComponentUtilities.getNodePropertyValue(restComponent, "REST_ENDPOINT");
             if (!StringUtils.isEmpty(endpoint)) {
-                if (endpoint.startsWith("http"))
-                    url = endpoint;
+                if (TalendTextUtils.removeQuotes(endpoint).startsWith("http"))
+                    url = TalendTextUtils.removeQuotes(endpoint);
                 else if (ContextParameterUtils.containContextVariables(endpoint)) {
                     String variable = ContextParameterUtils.getVariableFromCode(endpoint);
                     if (selectedContext != null) {
@@ -1937,7 +1937,8 @@ public class RunProcessContext {
                     endpoint = TalendTextUtils.removeQuotes(endpoint);
                     if (endpoint.startsWith("/"))
                         endpoint = endpoint.substring(1);
-                    url = defaultRestUri + endpoint;
+                    String fullURL = defaultRestUri + endpoint;
+                    url = fullURL.replaceAll("(?<!(http:|https:))//", "/");
                 }
                 if (url != null)
                     addMessage(new ProcessMessage(MsgType.CORE_OUT, "Endpoint deployed at: " + url));
