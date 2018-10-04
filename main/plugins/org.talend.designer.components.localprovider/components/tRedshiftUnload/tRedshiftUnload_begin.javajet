@@ -52,7 +52,7 @@ imports="
         log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
 	} else {
 %>
-		String driverClass_<%=cid%> = "com.amazon.redshift.jdbc41.Driver";
+		String driverClass_<%=cid%> = "com.amazon.redshift.jdbc42.Driver";
 		Class.forName(driverClass_<%=cid%>).newInstance();
         StringBuilder sbuilder_<%=cid%> = new StringBuilder();
         sbuilder_<%=cid%>.append("jdbc:redshift:");

@@ -230,8 +230,8 @@ if(("true").equals(useExistingConn)) {
 	<%
 } else {
 	%>
-    java.lang.Class.forName("com.amazon.redshift.jdbc41.Driver");
-    <%dbLog.conn().logJDBCDriver(dbLog.str("com.amazon.redshift.jdbc41.Driver"));%>
+    java.lang.Class.forName("com.amazon.redshift.jdbc42.Driver");
+    <%dbLog.conn().logJDBCDriver(dbLog.str("com.amazon.redshift.jdbc42.Driver"));%>
     StringBuilder sbuilder_<%=cid%> = new StringBuilder();
     sbuilder_<%=cid%>.append("jdbc:redshift:");
 <%
