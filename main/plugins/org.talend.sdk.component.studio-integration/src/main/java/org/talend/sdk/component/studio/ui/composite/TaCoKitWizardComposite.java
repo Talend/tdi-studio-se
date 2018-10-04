@@ -75,6 +75,7 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
                 .filter(p -> p instanceof TaCoKitElementParameter)
                 .map(p -> (TaCoKitElementParameter) p)
                 .filter(TaCoKitElementParameter::isPersisted)
+                .filter(p -> !EParameterFieldType.SCHEMA_TYPE.equals(p.getFieldType()))
                 .forEach(parameter -> {
                     parameter.addValueChangeListener(configurationUpdater);
                     if (isNew) {
