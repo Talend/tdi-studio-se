@@ -1140,12 +1140,20 @@ if (execStat) {
 			if(conn_<%=hbaseComponent.getUniqueName()%> != null )
 	        {
 			<%
-				if((isCustom && isHadoop2) || (!isCustom && hbaseDistrib.doSupportNewHBaseAPI())) {%>
-		        org.apache.hadoop.hbase.client.HConnection hConnection_<%=hbaseComponent.getUniqueName() %> = org.apache.hadoop.hbase.client.HConnectionManager.getConnection(conn_<%=hbaseComponent.getUniqueName() %>);
+				if((isCustom && isHadoop2) || (!isCustom && hbaseDistrib.doSupportNewHBaseAPI())) {
+				if (!hbaseDistrib.doSupportHBase2x()) {%>
+		        	org.apache.hadoop.hbase.client.HConnection hConnection_<%=hbaseComponent.getUniqueName() %> = org.apache.hadoop.hbase.client.HConnectionManager.getConnection(conn_<%=hbaseComponent.getUniqueName() %>);
+				<% 
+			    } else {
+				%>        
+        			org.apache.hadoop.hbase.client.Connection hConnection_<%=hbaseComponent.getUniqueName()%> = org.apache.hadoop.hbase.client.ConnectionFactory.createConnection(conn_<%=hbaseComponent.getUniqueName()%>);
+				<% 
+    			}
+				%>        
 		        if ((hConnection_<%=hbaseComponent.getUniqueName() %> != null) && (!hConnection_<%=hbaseComponent.getUniqueName() %>.isClosed())) {
 				    hConnection_<%=hbaseComponent.getUniqueName() %>.close();
 			}
-			<%} else {%>
+			<%} else if (!hbaseDistrib.doSupportHBase2x()) {%>
 				org.apache.hadoop.hbase.client.HConnectionManager.deleteConnection(conn_<%=hbaseComponent.getUniqueName() %>,true);
 			<%}%>
 			}
