@@ -316,7 +316,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
     }
     
     public boolean canSignJob() {
-        if (PluginChecker.isTIS() && getLicenseFile() != null) {
+        if (PluginChecker.isTIS() && getLicenseFile() != null && !isOptionChoosed(ExportChoice.buildImage)) {
             return true;
         }
         return false;
