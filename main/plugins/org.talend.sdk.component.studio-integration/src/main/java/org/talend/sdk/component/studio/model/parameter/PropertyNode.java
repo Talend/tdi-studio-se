@@ -28,10 +28,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.talend.core.model.process.EParameterFieldType;
-
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
+
+import org.talend.core.model.process.EParameterFieldType;
 
 public class PropertyNode {
 
@@ -185,7 +185,7 @@ public class PropertyNode {
      * @param form Name or form
      * @return sorted list
      */
-    private List<PropertyNode> sortChildren(final List<PropertyNode> children, final String form) {
+    protected List<PropertyNode> sortChildren(final List<PropertyNode> children, final String form) {
         final HashMap<String, Integer> order = property.getChildrenOrder(form);
         if (order != null) {
             children.sort((node1, node2) -> {
@@ -207,7 +207,7 @@ public class PropertyNode {
      * @param form Name of form
      * @return children names of specified <code>form</code>
      */
-    private Set<String> getChildrenNames(final String form) {
+    protected Set<String> getChildrenNames(final String form) {
         if (MAIN_FORM.equals(form)) {
             return getMainChildrenNames();
         } else {

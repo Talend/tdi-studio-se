@@ -43,6 +43,7 @@ boolean sftp = false;
 boolean ftps = false;
 String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
 String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
+boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 if (("true").equals(useExistingConn)) {
   List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
   for (INode n : nodeList) {
@@ -244,7 +245,7 @@ int nb_file_<%=cid%> = 0;
 				<%if(isLog4jEnabled){%>
 					log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
 				<%}%>
-					
+				ftp_<%=cid %>.setRemoteVerificationEnabled(<%=useRemoteVerification %>);
 <%
 				passwordFieldName = "__PASSWORD__";
 %>

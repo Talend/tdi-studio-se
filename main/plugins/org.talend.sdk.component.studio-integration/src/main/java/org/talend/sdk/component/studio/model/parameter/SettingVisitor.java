@@ -585,7 +585,7 @@ public class SettingVisitor implements PropertyVisitor {
      * @return list of table parameters
      */
     private List<IElementParameter> createTableParameters(final ListPropertyNode tableNode) {
-        final List<PropertyNode> columns = tableNode.getColumns();
+        final List<PropertyNode> columns = tableNode.getColumns(form);
         if (columns.size() == 1 && columns.get(0).getProperty().getDisplayName().endsWith("[${index}]")) {
             columns.iterator().next().getProperty().setDisplayName("Value");
         }

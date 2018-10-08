@@ -46,11 +46,15 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.sdk.component.studio.lang.LocalLock;
 import org.talend.sdk.component.studio.lang.StringPropertiesTokenizer;
 import org.talend.sdk.component.studio.logging.JULToOsgiHandler;
 import org.talend.sdk.component.studio.mvn.Mvn;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public class ProcessManager implements AutoCloseable {
 
@@ -112,11 +116,13 @@ public class ProcessManager implements AutoCloseable {
         }
     }
 
-    public String reload() {
+    synchronized public String reload() {
         final Thread thread = Thread.currentThread();
         final ClassLoader old = thread.getContextClassLoader();
         thread.setContextClassLoader(loader);
         try {
+            reloadProperties();
+            updateProperties();
             final Class<?> containerClazz = loader.loadClass("org.talend.sdk.component.container.Container");
             final Class<?> actionsClazz = loader.loadClass("org.talend.sdk.component.container.ContainerManager$Actions");
             final Class<?> containerManagerClazz = loader.loadClass("org.talend.sdk.component.runtime.manager.ComponentManager");
@@ -220,24 +226,7 @@ public class ProcessManager implements AutoCloseable {
             throw new IllegalArgumentException(e);
         }
         final List<String> arguments = new StringPropertiesTokenizer(System.getProperty("component.java.arguments", "")).tokens();
-        String m2Repo = System.getProperty("component.java.m2");
-        if (m2Repo == null) {
-            m2Repo = MavenPlugin.getMaven().getLocalRepositoryPath();
-        }
-        final String components = System.getProperty("component.java.coordinates");
-        final String registry = System.getProperty("component.java.registry");
-        if (m2Repo != null) {
-            System.setProperty("talend.component.server.maven.repository", m2Repo);
-        }
-        if (components != null) {
-            System.setProperty("talend.component.server.component.coordinates", components);
-        }
-        if (registry != null) {
-            System.setProperty("talend.component.server.component.registry", registry);
-        }
-        // local instance, no need of any security
-        System.setProperty("talend.component.server.security.connection.handler", "securityNoopHandler");
-        System.setProperty("talend.component.server.security.command.handler", "securityNoopHandler");
+        updateProperties();
         loader = new URLClassLoader(paths.toArray(new URL[paths.size()]), rootLoader()) {
 
             @Override
@@ -350,6 +339,35 @@ public class ProcessManager implements AutoCloseable {
                 throw new IllegalStateException("Component server didn\'t start in 15mn!");
             }
         }.start();
+    }
+
+    private void reloadProperties() {
+        try {
+            System.setProperty(TaCoKitConst.PROP_COMPONENT, TaCoKitUtil.getInstalledComponentsString(new NullProgressMonitor()));
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    private void updateProperties() {
+        String m2Repo = System.getProperty("component.java.m2");
+        if (m2Repo == null) {
+            m2Repo = MavenPlugin.getMaven().getLocalRepositoryPath();
+        }
+        final String components = System.getProperty(TaCoKitConst.PROP_COMPONENT);
+        final String registry = System.getProperty(TaCoKitConst.PROP_REGISTRY);
+        if (m2Repo != null) {
+            System.setProperty("talend.component.server.maven.repository", m2Repo);
+        }
+        if (components != null) {
+            System.setProperty("talend.component.server.component.coordinates", components);
+        }
+        if (registry != null) {
+            System.setProperty("talend.component.server.component.registry", registry);
+        }
+        // local instance, no need of any security
+        System.setProperty("talend.component.server.security.connection.handler", "securityNoopHandler");
+        System.setProperty("talend.component.server.security.command.handler", "securityNoopHandler");
     }
 
     public int getPort() {

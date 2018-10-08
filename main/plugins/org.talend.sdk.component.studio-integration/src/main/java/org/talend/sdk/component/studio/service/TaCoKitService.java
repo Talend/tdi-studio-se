@@ -12,16 +12,30 @@
  */
 package org.talend.sdk.component.studio.service;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.talend.core.runtime.services.ITaCoKitService;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.toolbar.ReloadAction;
+import org.talend.updates.runtime.service.ITaCoKitUpdateService;
 
 
 public class TaCoKitService implements ITaCoKitService {
 
     @Override
+    public String reload(IProgressMonitor monitor) throws Exception {
+        return new ReloadAction().reload(monitor);
+    }
+
+    @Override
     public void checkMigration(IProgressMonitor monitor) throws Exception {
         Lookups.taCoKitCache().getMigrationManager().checkMigration(monitor);
+    }
+
+    @Override
+    public boolean isTaCoKitCar(File file, IProgressMonitor monitor) throws Exception {
+        return ITaCoKitUpdateService.getInstance().isCar(file, monitor);
     }
 
 }

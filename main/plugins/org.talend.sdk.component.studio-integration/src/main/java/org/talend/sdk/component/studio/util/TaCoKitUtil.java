@@ -12,12 +12,16 @@
  */
 package org.talend.sdk.component.studio.util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ConnectionItem;
@@ -28,8 +32,8 @@ import org.talend.repository.ProjectManager;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.WizardRegistry;
-import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
+import org.talend.updates.runtime.utils.PathUtils;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -199,5 +203,157 @@ public class TaCoKitUtil {
             }
         }
         return filteredNodes;
+    }
+
+    public static String getInstalledComponentsString(IProgressMonitor progress) throws Exception {
+        File studioConfigFile = PathUtils.getStudioConfigFile();
+        Properties configProps = PathUtils.readProperties(studioConfigFile);
+        return configProps.getProperty(TaCoKitConst.PROP_COMPONENT);
+    }
+
+    public static List<GAV> getInstalledComponents(IProgressMonitor progress) throws Exception {
+        String tckCompConfString = getInstalledComponentsString(progress);
+        if (StringUtils.isNotBlank(tckCompConfString)) {
+            return TaCoKitUtil.convert2GAV(tckCompConfString);
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    public static List<GAV> convert2GAV(String gavString) {
+        List<GAV> gavs = new ArrayList<>();
+        String[] componentsStr = gavString.split(","); //$NON-NLS-1$
+        for (String componentStr : componentsStr) {
+            String[] component = componentStr.split(":"); //$NON-NLS-1$
+            GAV gav = new GAV();
+            gav.setGroupId(component[0]);
+            gav.setArtifactId(component[1]);
+            gav.setVersion(component[2]);
+            if (3 < component.length) {
+                gav.setClassifier(component[3]);
+            }
+            if (4 < component.length) {
+                gav.setType(component[4]);
+            }
+            gavs.add(gav);
+        }
+        return gavs;
+    }
+
+    public static void checkMonitor(IProgressMonitor monitor) throws Exception {
+        if (monitor != null) {
+            if (monitor.isCanceled()) {
+                throw new InterruptedException("progress.cancel"); //$NON-NLS-1$
+            }
+        }
+    }
+
+    public static class GAV {
+
+        private String groupId;
+
+        private String artifactId;
+
+        private String version = ""; //$NON-NLS-1$
+
+        private String classifier = ""; //$NON-NLS-1$
+
+        private String type = ""; //$NON-NLS-1$
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((this.artifactId == null) ? 0 : this.artifactId.hashCode());
+            result = prime * result + ((this.classifier == null) ? 0 : this.classifier.hashCode());
+            result = prime * result + ((this.groupId == null) ? 0 : this.groupId.hashCode());
+            result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
+            result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            GAV other = (GAV) obj;
+            if (this.artifactId == null) {
+                if (other.artifactId != null)
+                    return false;
+            } else if (!this.artifactId.equals(other.artifactId))
+                return false;
+            if (this.classifier == null) {
+                if (other.classifier != null)
+                    return false;
+            } else if (!this.classifier.equals(other.classifier))
+                return false;
+            if (this.groupId == null) {
+                if (other.groupId != null)
+                    return false;
+            } else if (!this.groupId.equals(other.groupId))
+                return false;
+            if (this.type == null) {
+                if (other.type != null)
+                    return false;
+            } else if (!this.type.equals(other.type))
+                return false;
+            if (this.version == null) {
+                if (other.version != null)
+                    return false;
+            } else if (!this.version.equals(other.version))
+                return false;
+            return true;
+        }
+
+        @SuppressWarnings("nls")
+        @Override
+        public String toString() {
+            return "GAV [groupId=" + this.groupId + ", artifactId=" + this.artifactId + ", version=" + this.version
+                    + ", classifier=" + this.classifier + ", type=" + this.type + "]";
+        }
+
+        public String getGroupId() {
+            return this.groupId;
+        }
+
+        public void setGroupId(String groupId) {
+            this.groupId = groupId;
+        }
+
+        public String getArtifactId() {
+            return this.artifactId;
+        }
+
+        public void setArtifactId(String artifactId) {
+            this.artifactId = artifactId;
+        }
+
+        public String getVersion() {
+            return this.version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
+        }
+
+        public String getClassifier() {
+            return this.classifier;
+        }
+
+        public void setClassifier(String classifier) {
+            this.classifier = classifier;
+        }
+
+        public String getType() {
+            return this.type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
     }
 }
