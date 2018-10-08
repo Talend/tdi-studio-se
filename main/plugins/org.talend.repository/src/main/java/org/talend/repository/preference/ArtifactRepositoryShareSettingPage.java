@@ -84,6 +84,8 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     private Label checkUpdatePerDaysTextLabel;
 
+    private boolean isCreated = false;
+
     public ArtifactRepositoryShareSettingPage() {
         super();
         noDefaultAndApplyButton();
@@ -96,6 +98,7 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     @Override
     protected void createFieldEditors() {
+        isCreated = true;
         Composite parent = getFieldEditorParent();
         parent.setLayout(new GridLayout(4, false));
         enableShareCheckbox = new Button(parent, SWT.CHECK);
@@ -259,6 +262,9 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
     }
 
     private void validate() {
+        if (!isCreated) {
+            return;
+        }
         setErrorMessage(null);
         setMessage(null);
         checkPerDays();
@@ -318,6 +324,9 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     @Override
     public boolean performOk() {
+        if (!isCreated) {
+            return true;
+        }
         if (!isValid()) {
             return false;
         }
@@ -342,6 +351,9 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     @Override
     public boolean isValid() {
+        if (!isCreated) {
+            return true;
+        }
         validate();
         return super.isValid();
     }
