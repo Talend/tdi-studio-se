@@ -719,6 +719,11 @@ public class DefaultRunProcessService implements IRunProcessService {
         TalendJavaProjectManager.generatePom(item, TalendProcessOptionConstants.GENERATE_NO_CODEGEN);
     }
 
+    @Override
+    public void generatePom(Item item, int option) {
+        TalendJavaProjectManager.generatePom(item, option);
+    }
+
     /*
      * (non-Javadoc)
      * 
