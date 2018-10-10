@@ -421,7 +421,7 @@ public abstract class DbGenerationManager {
                         appendSqlQuery(sb, DbMapSqlConstants.ON);
                         appendSqlQuery(sb, DbMapSqlConstants.LEFT_BRACKET);
                         appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                        if (!buildConditions(component, sb, inputTable, true, true)) {
+                        if (!buildConditions(component, sb, inputTable, true, true, true)) {
                             appendSqlQuery(sb, DbMapSqlConstants.LEFT_COMMENT);
                             appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                             appendSqlQuery(sb, Messages.getString("DbGenerationManager.conditionNotSet"));//$NON-NLS-1$
@@ -439,7 +439,7 @@ public abstract class DbGenerationManager {
             boolean isFirstClause = true;
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
-                if (buildConditions(component, sbWhere, inputTable, false, isFirstClause)) {
+                if (buildConditions(component, sbWhere, inputTable, false, isFirstClause, false)) {
                     isFirstClause = false;
                 }
             }
@@ -719,13 +719,27 @@ public abstract class DbGenerationManager {
      */
     protected boolean buildConditions(DbMapComponent component, StringBuilder sb, ExternalDbMapTable inputTable,
             boolean writeForJoin, boolean isFirstClause) {
+    	return buildConditions(component, sb, inputTable, writeForJoin, isFirstClause, false);
+    }
+    
+    /**
+     * DOC amaumont Comment method "buildConditions".
+     *
+     * @param sb
+     * @param inputTable
+     * @param writeForJoin TODO
+     * @param isFirstClause TODO
+     * @param isSqlQuert TODO
+     */
+    protected boolean buildConditions(DbMapComponent component, StringBuilder sb, ExternalDbMapTable inputTable,
+            boolean writeForJoin, boolean isFirstClause, boolean isSqlQuert) {
         List<ExternalDbMapEntry> inputEntries = inputTable.getMetadataTableEntries();
         int lstSizeEntries = inputEntries.size();
         boolean atLeastOneConditionWritten = false;
         for (int j = 0; j < lstSizeEntries; j++) {
             ExternalDbMapEntry dbMapEntry = inputEntries.get(j);
             if (writeForJoin == dbMapEntry.isJoin()) {
-                boolean conditionWritten = buildCondition(component, sb, inputTable, isFirstClause, dbMapEntry, !writeForJoin);
+                boolean conditionWritten = buildCondition(component, sb, inputTable, isFirstClause, dbMapEntry, !writeForJoin, isSqlQuert);
                 if (conditionWritten) {
                     atLeastOneConditionWritten = true;
                 }
@@ -748,6 +762,20 @@ public abstract class DbGenerationManager {
      */
     private boolean buildCondition(DbMapComponent component, StringBuilder sbWhere, ExternalDbMapTable table,
             boolean isFirstClause, ExternalDbMapEntry dbMapEntry, boolean writeCr) {
+        return buildCondition(component, sbWhere, table, isFirstClause, dbMapEntry, writeCr, false);
+    }
+    
+    /**
+     * DOC amaumont Comment method "buildCondition".
+     *
+     * @param sbWhere
+     * @param table
+     * @param isFirstClause
+     * @param dbMapEntry
+     * @param writeCr TODO
+     */
+    private boolean buildCondition(DbMapComponent component, StringBuilder sbWhere, ExternalDbMapTable table,
+            boolean isFirstClause, ExternalDbMapEntry dbMapEntry, boolean writeCr, boolean isSqlQuery) {
         String expression = dbMapEntry.getExpression();
         expression = initExpression(component, dbMapEntry);
         IDbOperator dbOperator = getOperatorsManager().getOperatorFromValue(dbMapEntry.getOperator());
@@ -759,14 +787,14 @@ public abstract class DbGenerationManager {
         if (operatorIsSet) {
 
             if (writeCr) {
-                appendSqlQuery(sbWhere, DbMapSqlConstants.NEW_LINE);
-                appendSqlQuery(sbWhere, tabSpaceString);
-                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.NEW_LINE, isSqlQuery);
+                appendSqlQuery(sbWhere, tabSpaceString, isSqlQuery);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
             }
             if (!isFirstClause) {
-                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
-                appendSqlQuery(sbWhere, DbMapSqlConstants.AND);
-                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.AND, isSqlQuery);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
             }
             String entryName = dbMapEntry.getName();
             String tableName = table.getName();
@@ -780,32 +808,32 @@ public abstract class DbGenerationManager {
                 entryName = getColumnName(null, entryName);
             }
             String locationInputEntry = language.getLocation(tableName, getHandledField(entryName));
-            appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
-            appendSqlQuery(sbWhere, locationInputEntry);
-            appendSqlQuery(sbWhere, getSpecialRightJoin(table));
+            appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
+            appendSqlQuery(sbWhere, locationInputEntry, isSqlQuery);
+            appendSqlQuery(sbWhere, getSpecialRightJoin(table), isSqlQuery);
 
-            appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+            appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
             if (operatorIsSet) {
-                appendSqlQuery(sbWhere, dbOperator.getOperator());
-                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, dbOperator.getOperator(), isSqlQuery);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
             } else if (!operatorIsSet && expressionIsSet) {
-                appendSqlQuery(sbWhere, DbMapSqlConstants.LEFT_COMMENT);
-                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
-                appendSqlQuery(sbWhere, Messages.getString("DbGenerationManager.InputOperationSetMessage", entryName));
-                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
-                appendSqlQuery(sbWhere, DbMapSqlConstants.RIGHT_COMMENT);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.LEFT_COMMENT, isSqlQuery);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
+                appendSqlQuery(sbWhere, Messages.getString("DbGenerationManager.InputOperationSetMessage", entryName), isSqlQuery);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.RIGHT_COMMENT, isSqlQuery);
             }
             if (operatorIsSet && !expressionIsSet && !dbOperator.isMonoOperand()) {
                 String str = table.getName() + DbMapSqlConstants.DOT + entryName;
-                appendSqlQuery(sbWhere, DbMapSqlConstants.LEFT_COMMENT);
-                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
-                appendSqlQuery(sbWhere, Messages.getString("DbGenerationManager.InputExpSetMessage", str));
-                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
-                appendSqlQuery(sbWhere, DbMapSqlConstants.RIGHT_COMMENT);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.LEFT_COMMENT, isSqlQuery);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
+                appendSqlQuery(sbWhere, Messages.getString("DbGenerationManager.InputExpSetMessage", str), isSqlQuery);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.RIGHT_COMMENT, isSqlQuery);
             } else if (expressionIsSet) {
                 String exp = replaceVariablesForExpression(component, expression);
-                appendSqlQuery(sbWhere, exp);
-                appendSqlQuery(sbWhere, getSpecialLeftJoin(table));
+                appendSqlQuery(sbWhere, exp, isSqlQuery);
+                appendSqlQuery(sbWhere, getSpecialLeftJoin(table), isSqlQuery);
             }
             conditionWritten = true;
 
