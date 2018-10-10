@@ -1,548 +1,554 @@
-<%@ jet 
-	imports="
-		java.util.ArrayList
-		java.util.List
-		java.util.Map
+<%@ jet
+    imports="
+        java.util.ArrayList
+        java.util.List
+        java.util.Map
 
-		org.talend.core.model.metadata.IMetadataColumn
-		org.talend.core.model.metadata.types.JavaType
-		org.talend.core.model.metadata.types.JavaTypesManager
-		org.talend.core.model.process.ElementParameterParser
-		org.talend.core.model.process.IConnection
-		org.talend.core.model.process.IConnectionCategory
-		org.talend.core.model.process.INode
-		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.utils.NodeUtil
-	"
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.metadata.types.JavaType
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.utils.NodeUtil
+    "
 %>
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	final INode node = (INode)codeGenArgument.getArgument();
-	String cid = node.getUniqueName();
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    final INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();
 
-	/*in shema:*/
-	List<? extends IConnection> listInConns = node.getIncomingConnections();
-	String sInConnName = null;
-	IConnection inConn = null;
-	List<IMetadataColumn> listInColumns = null;
+    /*in shema:*/
+    List<? extends IConnection> listInConns = node.getIncomingConnections();
+    String sInConnName = null;
+    IConnection inConn = null;
+    List<IMetadataColumn> listInColumns = null;
 
-	if (listInConns != null && listInConns.size() > 0) {
-		IConnection inConnTemp = listInConns.get(0);
-		sInConnName = inConnTemp.getName();
-		if(inConnTemp.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)){
-			inConn = inConnTemp;
-			listInColumns = inConnTemp.getMetadataTable().getListColumns();
-		}
-	}
+    if (listInConns != null && listInConns.size() > 0) {
+        IConnection inConnTemp = listInConns.get(0);
+        sInConnName = inConnTemp.getName();
+        if(inConnTemp.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)){
+            inConn = inConnTemp;
+            listInColumns = inConnTemp.getMetadataTable().getListColumns();
+        }
+    }
 
-	
-	/* get the schema of itself (maybe no output flow)*/
-	List<IMetadataColumn> listColumsToTest = node.getMetadataList().get(0).getListColumns();
 
-	String anotherChecked = ElementParameterParser.getValue(node, "__CHECK_ANOTHER__");
-	String checkAll = ElementParameterParser.getValue(node, "__CHECK_ALL__");
-	final boolean bIsTrim = "true".equals(ElementParameterParser.getValue(node, "__SUB_STRING__"));
-	final boolean useFasteDateChecker = "true".equals(ElementParameterParser.getValue(node, "__FAST_DATE_CHECK__"));
-	final boolean emptyIsNull = "true".equals(ElementParameterParser.getValue(node, "__EMPTY_IS_NULL__"));
-	final boolean allEmptyAreNull = "true".equals(ElementParameterParser.getValue(node, "__ALL_EMPTY_ARE_NULL__"));
-	
-	List<Map<String, String>> list = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__EMPTY_NULL_TABLE__");
-	final List<String> listEmptyAsNull = new ArrayList<String>();
-	for(Map<String, String> map : list){
-		if("true".equals(map.get("EMPTY_NULL"))){
-			listEmptyAsNull.add(map.get("SCHEMA_COLUMN"));
-		}
-	}
+    /* get the schema of itself (maybe no output flow)*/
+    List<IMetadataColumn> listColumsToTest = node.getMetadataList().get(0).getListColumns();
 
-	class SchemaChecker { //CLASS SCHEMACHECKER START
-		boolean anotherChecked = "true".equals(ElementParameterParser.getValue(node, "__CHECK_ANOTHER__"));
-		boolean ignoreTimeZone = "true".equals(ElementParameterParser.getValue(node, "__IGNORE_TIMEZONE__"));
+    String anotherChecked = ElementParameterParser.getValue(node, "__CHECK_ANOTHER__");
+    String checkAll = ElementParameterParser.getValue(node, "__CHECK_ALL__");
+    final boolean bIsTrim = "true".equals(ElementParameterParser.getValue(node, "__SUB_STRING__"));
+    final boolean useFasteDateChecker = "true".equals(ElementParameterParser.getValue(node, "__FAST_DATE_CHECK__"));
+    final boolean useStrictDateChecker = "true".equals(ElementParameterParser.getValue(node, "__STRICT_DATE_CHECK__"));
+    final boolean emptyIsNull = "true".equals(ElementParameterParser.getValue(node, "__EMPTY_IS_NULL__"));
+    final boolean allEmptyAreNull = "true".equals(ElementParameterParser.getValue(node, "__ALL_EMPTY_ARE_NULL__"));
 
-		public void  testDataType(boolean _bNullable, String _sInConnName, IMetadataColumn metadataColumn, String typeSelected, String cid) { //METHOD_TESTDATATYPE START
-			JavaType javaType = JavaTypesManager.getJavaTypeFromId(metadataColumn.getTalendType());
-			boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType( javaType, metadataColumn.isNullable());
-			String colName = metadataColumn.getLabel();
+    List<Map<String, String>> list = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__EMPTY_NULL_TABLE__");
+    final List<String> listEmptyAsNull = new ArrayList<String>();
+    for(Map<String, String> map : list){
+        if("true".equals(map.get("EMPTY_NULL"))){
+            listEmptyAsNull.add(map.get("SCHEMA_COLUMN"));
+        }
+    }
 
-			if (javaType == JavaTypesManager.OBJECT || javaType == JavaTypesManager.STRING) { //CONDITION_00100 START
-%>
-	try {
-		if(
-<%
-				if (_bNullable){ //CONDITION_00110 START
-%>
-		<%=_sInConnName%>.<%=colName%> != null
-<%
-					if(allEmptyAreNull || listEmptyAsNull.contains(metadataColumn.getLabel())) {
-%>
-		&& (!"".equals(<%=_sInConnName%>.<%=colName%>))
-<%
-					}
-				}else if(!isPrimitive){ //CONDITION_00110 ELSE IF
-%>
-		<%=_sInConnName%>.<%=colName%> != null
-<%
-				}else{ //CONDITION_00110 ELSE
-%>
-		true
-<%
-				} //CONDITION_00110 STOP
-%>
-		) {
-<%
-				if(typeSelected.equals("Boolean") ) { //CONDITION_00120 START
-%>
-			if(!("true".equals(<%=_sInConnName%>.<%=colName%>) || "false".equals(<%=_sInConnName%>.<%=colName%>))){
-				throw new java.lang.Exception("Wrong Boolean type!");
-			}
-<%
-				} else if(typeSelected.equals("Character")) { //CONDITION_00120 ELSE IF
-%>
-			if(<%=_sInConnName%>.<%=colName%>.toCharArray().length != 1){
-				throw new java.lang.Exception("Wrong Character type!");
-			}
-<%
-				} else if(typeSelected.equals("BigDecimal")) { //CONDITION_00120 ELSE IF
-%>
-			<%=typeSelected%> tester_<%=cid%> = new <%=typeSelected%>(<%=_sInConnName%>.<%=colName%>);
-<%
-				} else if(typeSelected.equals("Object")){ //CONDITION_00120 ELSE IF
-%>
-			<%=typeSelected%> tester_<%=cid%> = new <%=typeSelected%>();
-<%
-				} else { //CONDITION_00120 ELSE
-%>
-			<%=typeSelected%> tester_<%=cid%> = <%=typeSelected%>.valueOf(<%=_sInConnName%>.<%=colName%>);
-<%
-				} //CONDITION_00120 STOP
-%>
-		}
-	} catch(java.lang.Exception e) {
-		ifPassedThrough = false;
-		errorCodeThrough += 2;
-		errorMessageThrough += "|wrong type";
-	}
-<%
-			} //CONDITION_00100 STOP
-		} //METHOD_TESTDATATYPE STOP
+    class SchemaChecker { //CLASS SCHEMACHECKER START
+        boolean anotherChecked = "true".equals(ElementParameterParser.getValue(node, "__CHECK_ANOTHER__"));
+        boolean ignoreTimeZone = "true".equals(ElementParameterParser.getValue(node, "__IGNORE_TIMEZONE__"));
 
-		public void testPrecision(int _maxLength, int iPrecision, String _sInConnName, IMetadataColumn metadataColumn, String typeSelected, String cid) { //METHOD_TESTPRECISION START
-			JavaType javaType = JavaTypesManager.getJavaTypeFromId(metadataColumn.getTalendType());
-			String colName = metadataColumn.getLabel();
-			boolean needCheck = false;
-			if(anotherChecked) {
-				if("BigDecimal".equalsIgnoreCase(typeSelected)) {
-					needCheck = true;
-				}
-			} else if (javaType == JavaTypesManager.BIGDECIMAL) {
-				/* NULLable, in case input value is Null, do nothing... 
-				Non-NULLable, 
-					(1) in case input value is Non-null, go into...; 
-					(2) in case input value is Null, do nothing and warning by NULL-CHECKER.
-				*/
-				/*
-					if precision value is not empty or Null, checking "Precision" at first, if passed then checking "Length"
-				*/
-				needCheck = true;
-			}
-			if(needCheck) { //CONDITION_00130 START
-%>
-	if (<%=_sInConnName%>.<%=colName%> != null){
-<%
-				if(javaType == JavaTypesManager.BIGDECIMAL) { //CONDITION_00131 START
-%>
-		handleBigdecimalPrecision((<%=_sInConnName%>.<%=colName%>).toPlainString(), <%=iPrecision%>, <%=_maxLength%>);
-<%
-				} else {  //CONDITION_00131 ELSE
-%>
-		handleBigdecimalPrecision(String.valueOf(<%=_sInConnName%>.<%=colName%>), <%=iPrecision%>, <%=_maxLength%>);
-<%
-				}  //CONDITION_00131 STOP
-%>
-		ifPassedThrough = ifPassedThrough?ifPassed:false;
-		errorCodeThrough += errorCode;
-		errorMessageThrough += errorMessage;
-	}
-<%
-			} //CONDITION_00130 STOP
-		} //METHOD_TESTPRECISION STOP
+        public void  testDataType(boolean _bNullable, String _sInConnName, IMetadataColumn metadataColumn, String typeSelected, String cid) { //METHOD_TESTDATATYPE START
+            JavaType javaType = JavaTypesManager.getJavaTypeFromId(metadataColumn.getTalendType());
+            boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType( javaType, metadataColumn.isNullable());
+            String colName = metadataColumn.getLabel();
 
-		public void testDataLength(boolean _bNullable, String _sInConnName,IMetadataColumn inColumn, IMetadataColumn metadataColumn, int maxLength, String cid) { //METHOD_TESTDATALENGTH START
-			JavaType javaType = JavaTypesManager.getJavaTypeFromId(metadataColumn.getTalendType());
-			boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType(javaType, metadataColumn.isNullable());
-			boolean bIsStringType = (javaType == JavaTypesManager.STRING), bIsIntegerType = (javaType == JavaTypesManager.INTEGER);
-			String colName = inColumn.getLabel();
+            if (javaType == JavaTypesManager.OBJECT || javaType == JavaTypesManager.STRING) { //CONDITION_00100 START
+%>
+    try {
+        if(
+<%
+                if (_bNullable){ //CONDITION_00110 START
+%>
+        <%=_sInConnName%>.<%=colName%> != null
+<%
+                    if(allEmptyAreNull || listEmptyAsNull.contains(metadataColumn.getLabel())) {
+%>
+        && (!"".equals(<%=_sInConnName%>.<%=colName%>))
+<%
+                    }
+                }else if(!isPrimitive){ //CONDITION_00110 ELSE IF
+%>
+        <%=_sInConnName%>.<%=colName%> != null
+<%
+                }else{ //CONDITION_00110 ELSE
+%>
+        true
+<%
+                } //CONDITION_00110 STOP
+%>
+        ) {
+<%
+                if(typeSelected.equals("Boolean") ) { //CONDITION_00120 START
+%>
+            if(!("true".equals(<%=_sInConnName%>.<%=colName%>) || "false".equals(<%=_sInConnName%>.<%=colName%>))){
+                throw new java.lang.Exception("Wrong Boolean type!");
+            }
+<%
+                } else if(typeSelected.equals("Character")) { //CONDITION_00120 ELSE IF
+%>
+            if(<%=_sInConnName%>.<%=colName%>.toCharArray().length != 1){
+                throw new java.lang.Exception("Wrong Character type!");
+            }
+<%
+                } else if(typeSelected.equals("BigDecimal")) { //CONDITION_00120 ELSE IF
+%>
+            <%=typeSelected%> tester_<%=cid%> = new <%=typeSelected%>(<%=_sInConnName%>.<%=colName%>);
+<%
+                } else if(typeSelected.equals("Object")){ //CONDITION_00120 ELSE IF
+%>
+            <%=typeSelected%> tester_<%=cid%> = new <%=typeSelected%>();
+<%
+                } else { //CONDITION_00120 ELSE
+%>
+            <%=typeSelected%> tester_<%=cid%> = <%=typeSelected%>.valueOf(<%=_sInConnName%>.<%=colName%>);
+<%
+                } //CONDITION_00120 STOP
+%>
+        }
+    } catch(java.lang.Exception e) {
+        ifPassedThrough = false;
+        errorCodeThrough += 2;
+        errorMessageThrough += "|wrong type";
+    }
+<%
+            } //CONDITION_00100 STOP
+        } //METHOD_TESTDATATYPE STOP
 
-			if (maxLength > 0 && ( bIsStringType || bIsIntegerType )){ //CONDITION_00140 START
+        public void testPrecision(int _maxLength, int iPrecision, String _sInConnName, IMetadataColumn metadataColumn, String typeSelected, String cid) { //METHOD_TESTPRECISION START
+            JavaType javaType = JavaTypesManager.getJavaTypeFromId(metadataColumn.getTalendType());
+            String colName = metadataColumn.getLabel();
+            boolean needCheck = false;
+            if(anotherChecked) {
+                if("BigDecimal".equalsIgnoreCase(typeSelected)) {
+                    needCheck = true;
+                }
+            } else if (javaType == JavaTypesManager.BIGDECIMAL) {
+                /* NULLable, in case input value is Null, do nothing...
+                Non-NULLable,
+                    (1) in case input value is Non-null, go into...;
+                    (2) in case input value is Null, do nothing and warning by NULL-CHECKER.
+                */
+                /*
+                    if precision value is not empty or Null, checking "Precision" at first, if passed then checking "Length"
+                */
+                needCheck = true;
+            }
+            if(needCheck) { //CONDITION_00130 START
 %>
-	if (
+    if (<%=_sInConnName%>.<%=colName%> != null){
 <%
-				if (_bNullable){ //CONDITION_00141 START
+                if(javaType == JavaTypesManager.BIGDECIMAL) { //CONDITION_00131 START
 %>
-	<%=_sInConnName%>.<%=colName%> != null 
+        handleBigdecimalPrecision((<%=_sInConnName%>.<%=colName%>).toPlainString(), <%=iPrecision%>, <%=_maxLength%>);
 <%
-					if(allEmptyAreNull || listEmptyAsNull.contains(metadataColumn.getLabel())) {
+                } else {  //CONDITION_00131 ELSE
 %>
-	&& (!"".equals(<%=_sInConnName%>.<%=colName%>))					
+        handleBigdecimalPrecision(String.valueOf(<%=_sInConnName%>.<%=colName%>), <%=iPrecision%>, <%=_maxLength%>);
 <%
-					}
-				}else if (!isPrimitive){ //CONDITION_00141 ELSE IF
-%> 
-	<%=_sInConnName%>.<%=colName%> != null
-<%
-				}else { //CONDITION_00141 ELSE
-%> 
-	true
-<%
-				} //CONDITION_00141 STOP
+                }  //CONDITION_00131 STOP
 %>
-	) {
+        ifPassedThrough = ifPassedThrough?ifPassed:false;
+        errorCodeThrough += errorCode;
+        errorMessageThrough += errorMessage;
+    }
 <%
-				if ( bIsTrim ){ //CONDITION_00142 START
-					if (bIsStringType) { //CONDITION_001421 START
+            } //CONDITION_00130 STOP
+        } //METHOD_TESTPRECISION STOP
+
+        public void testDataLength(boolean _bNullable, String _sInConnName,IMetadataColumn inColumn, IMetadataColumn metadataColumn, int maxLength, String cid) { //METHOD_TESTDATALENGTH START
+            JavaType javaType = JavaTypesManager.getJavaTypeFromId(metadataColumn.getTalendType());
+            boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType(javaType, metadataColumn.isNullable());
+            boolean bIsStringType = (javaType == JavaTypesManager.STRING), bIsIntegerType = (javaType == JavaTypesManager.INTEGER);
+            String colName = inColumn.getLabel();
+
+            if (maxLength > 0 && ( bIsStringType || bIsIntegerType )){ //CONDITION_00140 START
 %>
-		if( <%=_sInConnName%>.<%=colName%>.length() > <%=maxLength%> )
-			<%=_sInConnName%>.<%=colName%> = <%=_sInConnName%>.<%=colName%>.substring(0, <%=maxLength%>);
+    if (
 <%
-					} else if ( bIsIntegerType ){//CONDITION_001421 ELSE IF
-						String generatedType = JavaTypesManager.getTypeToGenerate(metadataColumn.getTalendType(), metadataColumn.isNullable());
-						if ("int".equals(generatedType)) { //CONDITION_0014211 START
+                if (_bNullable){ //CONDITION_00141 START
 %>
-		tmpContentThrough = String.valueOf(<%=_sInConnName%>.<%=colName%>);
+    <%=_sInConnName%>.<%=colName%> != null
 <%
-						} else{ //CONDITION_0014211 ELSE
+                    if(allEmptyAreNull || listEmptyAsNull.contains(metadataColumn.getLabel())) {
 %>
-		tmpContentThrough = <%=_sInConnName%>.<%=colName%>.toString();
+    && (!"".equals(<%=_sInConnName%>.<%=colName%>))
 <%
-						} //CONDITION_0014211 STOP
+                    }
+                }else if (!isPrimitive){ //CONDITION_00141 ELSE IF
 %>
-		if (tmpContentThrough.length() > <%=maxLength%>)
-			<%=_sInConnName%>.<%=colName%> = <%=_sInConnName%>.<%=colName%>.substring(0, <%=maxLength%>);
+    <%=_sInConnName%>.<%=colName%> != null
 <%
-					} //CONDITION_001421 STOP
-				} else{ //CONDITION_00142 ELSE
-					if (bIsStringType) { //CONDITION_001422 START
+                }else { //CONDITION_00141 ELSE
 %>
-		if (<%=_sInConnName%>.<%=colName%>.length() > <%=maxLength%>) {
-			ifPassedThrough = false;
-			errorCodeThrough += 8;
-			errorMessageThrough += "|exceed max length";
-		}
+    true
 <%
-					} else if (bIsIntegerType) { //CONDITION_001422 ELSE IF
-						String generatedType = JavaTypesManager.getTypeToGenerate(metadataColumn.getTalendType(), metadataColumn.isNullable());
-						if ("int".equals(generatedType)) { //CONDITION_0014221 START
+                } //CONDITION_00141 STOP
 %>
-		tmpContentThrough = String.valueOf(<%=_sInConnName%>.<%=colName%>);
+    ) {
 <%
-						} else { //CONDITION_0014221 ELSE
+                if ( bIsTrim ){ //CONDITION_00142 START
+                    if (bIsStringType) { //CONDITION_001421 START
 %>
-		tmpContentThrough = <%=_sInConnName%>.<%=colName%>.toString();  
+        if( <%=_sInConnName%>.<%=colName%>.length() > <%=maxLength%> )
+            <%=_sInConnName%>.<%=colName%> = <%=_sInConnName%>.<%=colName%>.substring(0, <%=maxLength%>);
 <%
-						} //CONDITION_0014221 STOP
+                    } else if ( bIsIntegerType ){//CONDITION_001421 ELSE IF
+                        String generatedType = JavaTypesManager.getTypeToGenerate(metadataColumn.getTalendType(), metadataColumn.isNullable());
+                        if ("int".equals(generatedType)) { //CONDITION_0014211 START
+%>
+        tmpContentThrough = String.valueOf(<%=_sInConnName%>.<%=colName%>);
+<%
+                        } else{ //CONDITION_0014211 ELSE
+%>
+        tmpContentThrough = <%=_sInConnName%>.<%=colName%>.toString();
+<%
+                        } //CONDITION_0014211 STOP
+%>
+        if (tmpContentThrough.length() > <%=maxLength%>)
+            <%=_sInConnName%>.<%=colName%> = <%=_sInConnName%>.<%=colName%>.substring(0, <%=maxLength%>);
+<%
+                    } //CONDITION_001421 STOP
+                } else{ //CONDITION_00142 ELSE
+                    if (bIsStringType) { //CONDITION_001422 START
+%>
+        if (<%=_sInConnName%>.<%=colName%>.length() > <%=maxLength%>) {
+            ifPassedThrough = false;
+            errorCodeThrough += 8;
+            errorMessageThrough += "|exceed max length";
+        }
+<%
+                    } else if (bIsIntegerType) { //CONDITION_001422 ELSE IF
+                        String generatedType = JavaTypesManager.getTypeToGenerate(metadataColumn.getTalendType(), metadataColumn.isNullable());
+                        if ("int".equals(generatedType)) { //CONDITION_0014221 START
+%>
+        tmpContentThrough = String.valueOf(<%=_sInConnName%>.<%=colName%>);
+<%
+                        } else { //CONDITION_0014221 ELSE
+%>
+        tmpContentThrough = <%=_sInConnName%>.<%=colName%>.toString();
+<%
+                        } //CONDITION_0014221 STOP
 %>
 
-		if (tmpContentThrough.length() > <%=maxLength%>) {
-			ifPassedThrough = false;
-			errorCodeThrough += 8;
-			errorMessageThrough += "|exceed max length";
-		}
+        if (tmpContentThrough.length() > <%=maxLength%>) {
+            ifPassedThrough = false;
+            errorCodeThrough += 8;
+            errorMessageThrough += "|exceed max length";
+        }
 <%
-					}//CONDITION_001422 STOP
-				} //CONDITION_00142 STOP
+                    }//CONDITION_001422 STOP
+                } //CONDITION_00142 STOP
 %>
-	}
-<% 
-			} //CONDITION_00140 STOP
-		} //METHOD_TESTDATALENGTH STOP
+    }
+<%
+            } //CONDITION_00140 STOP
+        } //METHOD_TESTDATALENGTH STOP
 
-		public void testDate(boolean _bNullable, String _sInConnName, IMetadataColumn metadataColumn, String pattern, String cid) { //METHOD_TESTDATE START
-			JavaType javaType = JavaTypesManager.getJavaTypeFromId(metadataColumn.getTalendType());
-			boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType( javaType, metadataColumn.isNullable());
-			String colName = metadataColumn.getLabel();
+        public void testDate(boolean _bNullable, String _sInConnName, IMetadataColumn metadataColumn, String pattern, String cid) { //METHOD_TESTDATE START
+            JavaType javaType = JavaTypesManager.getJavaTypeFromId(metadataColumn.getTalendType());
+            boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType( javaType, metadataColumn.isNullable());
+            String colName = metadataColumn.getLabel();
 
-			if ("".equals(pattern)){ //CONDITION_00150 START
+            if ("".equals(pattern)){ //CONDITION_00150 START
 %>
-	ifPassedThrough = false;
-	errorCodeThrough += 2;
-	errorMessageThrough += "|Date format not defined";
+    ifPassedThrough = false;
+    errorCodeThrough += 2;
+    errorMessageThrough += "|Date format not defined";
 <%
-			} else { //CONDITION_00150 ELSE
-				if (javaType == JavaTypesManager.OBJECT || javaType == JavaTypesManager.STRING) { //CONDITION_00151 START
+            } else { //CONDITION_00150 ELSE
+                if (javaType == JavaTypesManager.OBJECT || javaType == JavaTypesManager.STRING) { //CONDITION_00151 START
 %>
-	try{
-		if (
+    try{
+        if (
 <%
-					if (_bNullable){ //CONDITION_001511 START
+                    if (_bNullable){ //CONDITION_001511 START
 %>
-		<%=_sInConnName%>.<%=colName%> != null 
+        <%=_sInConnName%>.<%=colName%> != null
 <%
-						if(allEmptyAreNull || listEmptyAsNull.contains(metadataColumn.getLabel())) {
+                        if(allEmptyAreNull || listEmptyAsNull.contains(metadataColumn.getLabel())) {
 %>
-		&& (!"".equals(<%=_sInConnName%>.<%=colName%>))
+        && (!"".equals(<%=_sInConnName%>.<%=colName%>))
 <%
-						}
-					}else if (!isPrimitive){ //CONDITION_001511 ELSE IF
-%> 
-		<%=_sInConnName%>.<%=colName%> != null
-<%
-					}else { //CONDITION_001511 ELSE
-%> 
-		true
-<%
-					} //CONDITION_001511 STOP
+                        }
+                    }else if (!isPrimitive){ //CONDITION_001511 ELSE IF
 %>
-		){
+        <%=_sInConnName%>.<%=colName%> != null
 <%
-					if (!useFasteDateChecker) { //CONDITION_001512 START
+                    }else { //CONDITION_001511 ELSE
 %>
-			if (!TalendDate.isDate((<%=_sInConnName%>.<%=colName%>).toString(), <%=pattern%>,<%if(ignoreTimeZone){%>true<%}else{%>false<%}%>))
-				throw new IllegalArgumentException("Data format not matches");
+        true
 <%
-					} else { //CONDITION_001512 ELSE
+                    } //CONDITION_001511 STOP
 %>
-			FastDateParser.getInstance(<%=pattern%>, false).parse(<%=_sInConnName%>.<%=colName%>);            
+        ){
 <%
-					} //CONDITION_001512 STOP
+                    if (!useFasteDateChecker && !useStrictDateChecker) { //CONDITION_001512 START
 %>
-		}
-	} catch(java.lang.Exception e){
-		ifPassedThrough = false;
-		errorCodeThrough += 2;
-		errorMessageThrough += "|wrong DATE pattern or wrong DATE data";
-	}
+                        if (!TalendDate.isDate((<%=_sInConnName%>.<%=colName%>).toString(), <%=pattern%>,<%if(ignoreTimeZone){%>true<%}else{%>false<%}%>))
+                            throw new IllegalArgumentException("Data format not matches");
 <%
-				// date type need check also (some inputting data not legal, beacause original data is not suite with pattern and has be converted)
-				} else if (javaType == JavaTypesManager.DATE){ //CONDITION_00151 ELSE IF
-					if (!metadataColumn.getPattern().equals(pattern)){ //CONDITION_001513 START
+                    } else if (useFasteDateChecker){ //CONDITION_001512 ELSE
 %>
-	ifPassedThrough = false;
-	errorCodeThrough += 2;
-	errorMessageThrough += "|wrong DATE pattern or wrong DATE data";
+                        FastDateParser.getInstance(<%=pattern%>, false).parse(<%=_sInConnName%>.<%=colName%>);
 <%
-					} //CONDITION_001513 STOP
-				} else{ //CONDITION_00151 ELSE
+                    } else {//CONDITION_001512 STOP
 %>
-	ifPassedThrough = false;
-	errorCodeThrough += 2;
-	errorMessageThrough += "|The TYPE of inputting data is error. (one of OBJECT, STRING, DATE)";
+                        if(!TalendDate.isDateStrict((<%=_sInConnName%>.<%=colName%>).toString(), <%=pattern%>))
+                            throw new IllegalArgumentException("Data format not matches");
 <%
-				} //CONDITION_00151 STOP
-			} //CONDITION_00150 STOP
-		} //METHOD_TESTDATE STOP
+                    }
+%>
+        }
+    } catch(java.lang.Exception e){
+        ifPassedThrough = false;
+        errorCodeThrough += 2;
+        errorMessageThrough += "|wrong DATE pattern or wrong DATE data";
+    }
+<%
+                // date type need check also (some inputting data not legal, beacause original data is not suite with pattern and has be converted)
+                } else if (javaType == JavaTypesManager.DATE){ //CONDITION_00151 ELSE IF
+                    if (!metadataColumn.getPattern().equals(pattern)){ //CONDITION_001513 START
+%>
+    ifPassedThrough = false;
+    errorCodeThrough += 2;
+    errorMessageThrough += "|wrong DATE pattern or wrong DATE data";
+<%
+                    } //CONDITION_001513 STOP
+                } else{ //CONDITION_00151 ELSE
+%>
+    ifPassedThrough = false;
+    errorCodeThrough += 2;
+    errorMessageThrough += "|The TYPE of inputting data is error. (one of OBJECT, STRING, DATE)";
+<%
+                } //CONDITION_00151 STOP
+            } //CONDITION_00150 STOP
+        } //METHOD_TESTDATE STOP
 
-		public void testNull(String _sInConnName, IMetadataColumn metadataColumn, String cid){ //METHOD_TESTNULL START
-			boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType(metadataColumn.getTalendType(), metadataColumn.isNullable());
-			if (!isPrimitive){ //CONDITION_00160 START
-				if(emptyIsNull && !allEmptyAreNull){ //CONDITION_001601 START - for the migration task
-					if(listEmptyAsNull.contains(metadataColumn.getLabel())){ //CONDITION_0016011 START
+        public void testNull(String _sInConnName, IMetadataColumn metadataColumn, String cid){ //METHOD_TESTNULL START
+            boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType(metadataColumn.getTalendType(), metadataColumn.isNullable());
+            if (!isPrimitive){ //CONDITION_00160 START
+                if(emptyIsNull && !allEmptyAreNull){ //CONDITION_001601 START - for the migration task
+                    if(listEmptyAsNull.contains(metadataColumn.getLabel())){ //CONDITION_0016011 START
 %>
-	// validate nullable (empty as null)
-	if ((<%=_sInConnName%>.<%=metadataColumn.getLabel()%> == null) || ("".equals(<%=_sInConnName%>.<%=metadataColumn.getLabel()%>))) {
+    // validate nullable (empty as null)
+    if ((<%=_sInConnName%>.<%=metadataColumn.getLabel()%> == null) || ("".equals(<%=_sInConnName%>.<%=metadataColumn.getLabel()%>))) {
 <%
-					}else{ //CONDITION_0016011 ELSE
+                    }else{ //CONDITION_0016011 ELSE
 %>
-	// validate nullable
-	if (<%=_sInConnName%>.<%=metadataColumn.getLabel()%> == null) {
+    // validate nullable
+    if (<%=_sInConnName%>.<%=metadataColumn.getLabel()%> == null) {
 <%
-					} //CONDITION_0016011 STOP
-				}else{ //CONDITION_001601 ELSE
-					if(allEmptyAreNull){ //CONDITION_0016012 START
+                    } //CONDITION_0016011 STOP
+                }else{ //CONDITION_001601 ELSE
+                    if(allEmptyAreNull){ //CONDITION_0016012 START
 %>
-	// validate nullable (empty as null)
-	if ((<%=_sInConnName%>.<%=metadataColumn.getLabel()%> == null) || ("".equals(<%=_sInConnName%>.<%=metadataColumn.getLabel()%>))) {
+    // validate nullable (empty as null)
+    if ((<%=_sInConnName%>.<%=metadataColumn.getLabel()%> == null) || ("".equals(<%=_sInConnName%>.<%=metadataColumn.getLabel()%>))) {
 <%
-					}else if(listEmptyAsNull.contains(metadataColumn.getLabel())){ //CONDITION_0016012 ELSE IF
+                    }else if(listEmptyAsNull.contains(metadataColumn.getLabel())){ //CONDITION_0016012 ELSE IF
 %>
-	// validate nullable (empty as null)
-	if ((<%=_sInConnName%>.<%=metadataColumn.getLabel()%> == null) || ("".equals(<%=_sInConnName%>.<%=metadataColumn.getLabel()%>))) {
+    // validate nullable (empty as null)
+    if ((<%=_sInConnName%>.<%=metadataColumn.getLabel()%> == null) || ("".equals(<%=_sInConnName%>.<%=metadataColumn.getLabel()%>))) {
 <%
-					}else{ //CONDITION_0016012 ELSE
+                    }else{ //CONDITION_0016012 ELSE
 %>
-	// validate nullable
-	if (<%=_sInConnName%>.<%=metadataColumn.getLabel()%> == null) {
+    // validate nullable
+    if (<%=_sInConnName%>.<%=metadataColumn.getLabel()%> == null) {
 <%
-					} //CONDITION_0016012 STOP
-				} //CONDITION_001601 STOP
+                    } //CONDITION_0016012 STOP
+                } //CONDITION_001601 STOP
 %>
-		ifPassedThrough = false;
-		errorCodeThrough += 4;
-		errorMessageThrough += "|empty or null";
-	}
+        ifPassedThrough = false;
+        errorCodeThrough += 4;
+        errorMessageThrough += "|empty or null";
+    }
 <%
-			} //CONDITION_00160 STOP
-		} //METHOD_TESTNULL STOP
-	} //CLASS SCHEMACHECKER STOP
+            } //CONDITION_00160 STOP
+        } //METHOD_TESTNULL STOP
+    } //CLASS SCHEMACHECKER STOP
 
-	SchemaChecker checker = new SchemaChecker();    
-	List<Map<String, String>> listCheckedColumns = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__CHECKCOLS__");
-	boolean bNeedReferSchema = false;
+    SchemaChecker checker = new SchemaChecker();
+    List<Map<String, String>> listCheckedColumns = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__CHECKCOLS__");
+    boolean bNeedReferSchema = false;
 
-	if ("true".equals(anotherChecked)){
-		if (node.getMetadataFromConnector("OTHER") != null)
-			listColumsToTest = node.getMetadataFromConnector("OTHER").getListColumns();
-	} else if ("true".equals(checkAll)){
-		;
-	} else{
-		bNeedReferSchema = true;
-	}
+    if ("true".equals(anotherChecked)){
+        if (node.getMetadataFromConnector("OTHER") != null)
+            listColumsToTest = node.getMetadataFromConnector("OTHER").getListColumns();
+    } else if ("true".equals(checkAll)){
+        ;
+    } else{
+        bNeedReferSchema = true;
+    }
 
 %>
-	class RowSetValueUtil_<%=cid %> {
+    class RowSetValueUtil_<%=cid %> {
 
-		boolean ifPassedThrough = true;
-		int errorCodeThrough = 0;
-		String errorMessageThrough = "";
-		int resultErrorCodeThrough = 0;
-		String resultErrorMessageThrough = "";
-		String tmpContentThrough = null;
+        boolean ifPassedThrough = true;
+        int errorCodeThrough = 0;
+        String errorMessageThrough = "";
+        int resultErrorCodeThrough = 0;
+        String resultErrorMessageThrough = "";
+        String tmpContentThrough = null;
 
-		boolean ifPassed = true;
-		int errorCode = 0;
-		String errorMessage = "";
+        boolean ifPassed = true;
+        int errorCode = 0;
+        String errorMessage = "";
 
-		void handleBigdecimalPrecision(String data, int iPrecision, int maxLength){
-			//number of digits before the decimal point(ignoring frontend zeroes)
-			int len1 = 0;
-			int len2 = 0;
-			ifPassed = true;
-			errorCode = 0;
-			errorMessage = "";
-			if(data.startsWith("-")){
-				data = data.substring(1);
-			}
-			data = org.apache.commons.lang.StringUtils.stripStart(data, "0");
+        void handleBigdecimalPrecision(String data, int iPrecision, int maxLength){
+            //number of digits before the decimal point(ignoring frontend zeroes)
+            int len1 = 0;
+            int len2 = 0;
+            ifPassed = true;
+            errorCode = 0;
+            errorMessage = "";
+            if(data.startsWith("-")){
+                data = data.substring(1);
+            }
+            data = org.apache.commons.lang.StringUtils.stripStart(data, "0");
 
-			if(data.indexOf(".") >= 0){
-				len1 = data.indexOf(".");
-				data = org.apache.commons.lang.StringUtils.stripEnd(data, "0");
-				len2 = data.length() - (len1 + 1);
-			}else{
-				len1 = data.length();
-			}
+            if(data.indexOf(".") >= 0){
+                len1 = data.indexOf(".");
+                data = org.apache.commons.lang.StringUtils.stripEnd(data, "0");
+                len2 = data.length() - (len1 + 1);
+            }else{
+                len1 = data.length();
+            }
 
-			if (iPrecision < len2) {
-				ifPassed = false;
-				errorCode += 8;
-				errorMessage += "|precision Non-matches";
-			} else if (maxLength < len1 + iPrecision) {
-				ifPassed = false;
-				errorCode += 8;
-				errorMessage += "|invalid Length setting is unsuitable for Precision";
-			}
-		}
+            if (iPrecision < len2) {
+                ifPassed = false;
+                errorCode += 8;
+                errorMessage += "|precision Non-matches";
+            } else if (maxLength < len1 + iPrecision) {
+                ifPassed = false;
+                errorCode += 8;
+                errorMessage += "|invalid Length setting is unsuitable for Precision";
+            }
+        }
 
-		int handleErrorCode(int errorCode, int resultErrorCode){
-			if (errorCode > 0) {
-				if (resultErrorCode > 0) {
-					resultErrorCode = 16;
-				} else {
-					resultErrorCode = errorCode;
-				}
-			}
-			return resultErrorCode;
-		}
+        int handleErrorCode(int errorCode, int resultErrorCode){
+            if (errorCode > 0) {
+                if (resultErrorCode > 0) {
+                    resultErrorCode = 16;
+                } else {
+                    resultErrorCode = errorCode;
+                }
+            }
+            return resultErrorCode;
+        }
 
-		String handleErrorMessage(String errorMessage, String resultErrorMessage, String columnLabel){
-			if (errorMessage.length() > 0) {
-				if (resultErrorMessage.length() > 0) {
-					resultErrorMessage += ";"+ errorMessage.replaceFirst("\\|", columnLabel);
-				} else {
-					resultErrorMessage = errorMessage.replaceFirst("\\|", columnLabel);
-				}
-			}
-			return resultErrorMessage;
-		}
+        String handleErrorMessage(String errorMessage, String resultErrorMessage, String columnLabel){
+            if (errorMessage.length() > 0) {
+                if (resultErrorMessage.length() > 0) {
+                    resultErrorMessage += ";"+ errorMessage.replaceFirst("\\|", columnLabel);
+                } else {
+                    resultErrorMessage = errorMessage.replaceFirst("\\|", columnLabel);
+                }
+            }
+            return resultErrorMessage;
+        }
 
-		void reset(){
-			ifPassedThrough = true;
-			errorCodeThrough = 0;
-			errorMessageThrough = "";
-			resultErrorCodeThrough = 0;
-			resultErrorMessageThrough = "";
-			tmpContentThrough = null;
+        void reset(){
+            ifPassedThrough = true;
+            errorCodeThrough = 0;
+            errorMessageThrough = "";
+            resultErrorCodeThrough = 0;
+            resultErrorMessageThrough = "";
+            tmpContentThrough = null;
 
-			ifPassed = true;
-			errorCode = 0;
-			errorMessage = "";
-		}
+            ifPassed = true;
+            errorCode = 0;
+            errorMessage = "";
+        }
 
 <%
-	for (IMetadataColumn inColumn : listInColumns) { //LOOP_00100 START
-		int iInColIndex = listInColumns.indexOf(inColumn);
-		if(iInColIndex % 100 == 0){ //CONDITION_00170 START
+    for (IMetadataColumn inColumn : listInColumns) { //LOOP_00100 START
+        int iInColIndex = listInColumns.indexOf(inColumn);
+        if(iInColIndex % 100 == 0){ //CONDITION_00170 START
 %>
-		void setRowValue_<%=(iInColIndex/100) %>(<%=NodeUtil.getPrivateConnClassName(inConn) %>Struct <%=sInConnName %>) {
+        void setRowValue_<%=(iInColIndex/100) %>(<%=NodeUtil.getPrivateConnClassName(inConn) %>Struct <%=sInConnName %>) {
 <%
-		} //CONDITION_00170 STOP
-		// when using another schema, it's size may less than listInColumns
-		if (iInColIndex >= listColumsToTest.size()){
-			break;
-		}
+        } //CONDITION_00170 STOP
+        // when using another schema, it's size may less than listInColumns
+        if (iInColIndex >= listColumsToTest.size()){
+            break;
+        }
 
-		Object pre_iPrecision = null;
-		String sInColumnName = inColumn.getLabel(), sTestColName = null, sTestColType = null, sTestColPattern = null;
-		boolean bNullable = true, bMaxLenLimited = true;
-		/* use setting of tSchemaComplianceCheck schema (it is synchronize with inputting schema, but length value can be different) */
-		Object pre_maxLength = listColumsToTest.get(iInColIndex).getLength();
-		int maxLength = (pre_maxLength == null) ? 0 : Integer.parseInt(pre_maxLength.toString());
-		IMetadataColumn schemaColumn = null;
+        Object pre_iPrecision = null;
+        String sInColumnName = inColumn.getLabel(), sTestColName = null, sTestColType = null, sTestColPattern = null;
+        boolean bNullable = true, bMaxLenLimited = true;
+        /* use setting of tSchemaComplianceCheck schema (it is synchronize with inputting schema, but length value can be different) */
+        Object pre_maxLength = listColumsToTest.get(iInColIndex).getLength();
+        int maxLength = (pre_maxLength == null) ? 0 : Integer.parseInt(pre_maxLength.toString());
+        IMetadataColumn schemaColumn = null;
 
-		if (bNeedReferSchema) {
-			Map<String, String> checkedColumn = listCheckedColumns.get(iInColIndex);
-			sTestColName = checkedColumn.get("SCHEMA_COLUMN");
-			sTestColType = checkedColumn.get("SELECTED_TYPE");
-			sTestColPattern = checkedColumn.get("DATEPATTERN");
-			bNullable = "true".equals(checkedColumn.get("NULLABLE"));
-			bMaxLenLimited = "true".equals(checkedColumn.get("MAX_LENGTH"));
-		} else{
-			schemaColumn = listColumsToTest.get(iInColIndex);
-			sTestColName = schemaColumn.getLabel();
-			sTestColType = JavaTypesManager.getTypeToGenerate(schemaColumn.getTalendType(), true);
-			sTestColPattern = schemaColumn.getPattern();
-			bNullable = schemaColumn.isNullable();
-			pre_iPrecision = schemaColumn.getPrecision();
-		}
+        if (bNeedReferSchema) {
+            Map<String, String> checkedColumn = listCheckedColumns.get(iInColIndex);
+            sTestColName = checkedColumn.get("SCHEMA_COLUMN");
+            sTestColType = checkedColumn.get("SELECTED_TYPE");
+            sTestColPattern = checkedColumn.get("DATEPATTERN");
+            bNullable = "true".equals(checkedColumn.get("NULLABLE"));
+            bMaxLenLimited = "true".equals(checkedColumn.get("MAX_LENGTH"));
+        } else{
+            schemaColumn = listColumsToTest.get(iInColIndex);
+            sTestColName = schemaColumn.getLabel();
+            sTestColType = JavaTypesManager.getTypeToGenerate(schemaColumn.getTalendType(), true);
+            sTestColPattern = schemaColumn.getPattern();
+            bNullable = schemaColumn.isNullable();
+            pre_iPrecision = schemaColumn.getPrecision();
+        }
 
-		// NULL checking
-		if (!bNullable){
-			checker.testNull(sInConnName, inColumn, cid);
-		}
+        // NULL checking
+        if (!bNullable){
+            checker.testNull(sInConnName, inColumn, cid);
+        }
 
-		// type checking
-		if (sTestColType != null){
-			if (sTestColType.indexOf("Date") >= 0){
-				checker.testDate(bNullable, sInConnName, inColumn, sTestColPattern, cid); 
-			} else{
-				checker.testDataType(bNullable, sInConnName, inColumn, sTestColType, cid);
-			}
-		}
+        // type checking
+        if (sTestColType != null){
+            if (sTestColType.indexOf("Date") >= 0){
+                checker.testDate(bNullable, sInConnName, inColumn, sTestColPattern, cid);
+            } else{
+                checker.testDataType(bNullable, sInConnName, inColumn, sTestColType, cid);
+            }
+        }
 
-		// length checking
-		if (bMaxLenLimited){
-			checker.testDataLength(bNullable, sInConnName,inColumn, "true".equals(anotherChecked)?schemaColumn:inColumn, maxLength, cid);
-		}
+        // length checking
+        if (bMaxLenLimited){
+            checker.testDataLength(bNullable, sInConnName,inColumn, "true".equals(anotherChecked)?schemaColumn:inColumn, maxLength, cid);
+        }
 
-		// precision checking
-		if (pre_iPrecision != null){
-			checker.testPrecision(maxLength, Integer.parseInt(pre_iPrecision.toString()), sInConnName, inColumn, sTestColType, cid);
-		}
+        // precision checking
+        if (pre_iPrecision != null){
+            checker.testPrecision(maxLength, Integer.parseInt(pre_iPrecision.toString()), sInConnName, inColumn, sTestColType, cid);
+        }
 %>
-			resultErrorCodeThrough = handleErrorCode(errorCodeThrough,resultErrorCodeThrough);
-			errorCodeThrough = 0;
-			resultErrorMessageThrough = handleErrorMessage(errorMessageThrough,resultErrorMessageThrough,"<%=inColumn.getLabel()%>:");
-			errorMessageThrough = "";
+            resultErrorCodeThrough = handleErrorCode(errorCodeThrough,resultErrorCodeThrough);
+            errorCodeThrough = 0;
+            resultErrorMessageThrough = handleErrorMessage(errorMessageThrough,resultErrorMessageThrough,"<%=inColumn.getLabel()%>:");
+            errorMessageThrough = "";
 <%
-		if((iInColIndex + 1) % 100 == 0){ //CONDITION_00171 START
+        if((iInColIndex + 1) % 100 == 0){ //CONDITION_00171 START
 %>
-		}
+        }
 <%
-		} //CONDITION_00171 STOP
-	} //LOOP_00100 STOP
-	if(listInColumns.size() > 0 && listInColumns.size() % 100 > 0){ //CONDITION_00180 START
+        } //CONDITION_00171 STOP
+    } //LOOP_00100 STOP
+    if(listInColumns.size() > 0 && listInColumns.size() % 100 > 0){ //CONDITION_00180 START
 %>
-		}
+        }
 <%
-	} //CONDITION_00180 STOP
+    } //CONDITION_00180 STOP
 %>
-	}
-	RowSetValueUtil_<%=cid %> rsvUtil_<%=cid %> = new RowSetValueUtil_<%=cid %>();
+    }
+    RowSetValueUtil_<%=cid %> rsvUtil_<%=cid %> = new RowSetValueUtil_<%=cid %>();
