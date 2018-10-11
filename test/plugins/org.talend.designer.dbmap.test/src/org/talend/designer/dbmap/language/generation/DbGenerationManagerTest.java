@@ -363,4 +363,16 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         property.setVersion(VersionUtils.DEFAULT_VERSION);
         return property;
     }
+    
+    @Test
+    public void testAppendSqlQuery(){
+    	StringBuilder sb = new StringBuilder();
+    	dbManager.getQueryColumnsSegments().clear();
+    	dbManager.appendSqlQuery(sb, "table1", true);
+    	Assert.assertTrue(dbManager.getQueryColumnsSegments().size()==1);
+    	
+    	dbManager.getQueryColumnsSegments().clear();
+    	dbManager.appendSqlQuery(sb, "table1", false);
+    	Assert.assertTrue(dbManager.getQueryColumnsSegments().isEmpty());
+    }
 }
