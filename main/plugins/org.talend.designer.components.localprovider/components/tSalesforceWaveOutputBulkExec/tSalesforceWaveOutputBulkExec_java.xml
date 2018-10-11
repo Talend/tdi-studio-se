@@ -68,6 +68,9 @@
           <PARAMETER NAME="FIELDSEPARATOR" FIELD="TEXT" NUM_ROW="30" SHOW="false">
             <DEFAULT>";"</DEFAULT>
           </PARAMETER>
+          <PARAMETER NAME="FILE_EXIST_EXCEPTION" FIELD="CHECK" NUM_ROW="30" SHOW="false">
+	          <DEFAULT>false</DEFAULT>
+	      </PARAMETER>
           <!-- tFileOutputDelimited parameters end -->
 
           <!-- tSalesforceWaveBulkExec parameters begin -->
@@ -495,6 +498,7 @@
         <TEMPLATE_PARAM SOURCE="self.Talend_CSV"   TARGET="in.Talend_CSV" />
         <TEMPLATE_PARAM SOURCE="self.NB_LINE"   TARGET="in.NB_LINE" />
         <TEMPLATE_PARAM SOURCE="self.FILE_NAME"   TARGET="in.FILE_NAME" />
+        <TEMPLATE_PARAM SOURCE="self.FILE_EXIST_EXCEPTION"   TARGET="in.FILE_EXIST_EXCEPTION" />
 
         <TEMPLATE_PARAM SOURCE="self.USE_EXISTING_CONNECTION"   TARGET="out.USE_EXISTING_CONNECTION" />
         <TEMPLATE_PARAM SOURCE="self.CONNECTION"   TARGET="out.CONNECTION" />
