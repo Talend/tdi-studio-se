@@ -395,6 +395,11 @@ public class DesignerCoreService implements IDesignerCoreService {
         return UpdateManagerUtils.executeUpdates(results, onlySimpleShow, true);
     }
 
+    @Override
+    public boolean executeUpdatesManagerBackgroud(List<UpdateResult> results, boolean onlySimpleShow) {
+        return UpdateManagerUtils.executeUpdates(results, onlySimpleShow, true, false, true);
+    }
+
     /*
      * (non-Javadoc)
      * 
