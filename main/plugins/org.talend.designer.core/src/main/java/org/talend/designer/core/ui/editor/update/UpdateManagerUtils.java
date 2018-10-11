@@ -262,6 +262,26 @@ public final class UpdateManagerUtils {
             if (CommonsPlugin.isHeadless() || !ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
                 doExecuteUpdates(results, updateAllJobs);
             } else {
+                // if not in UI thread
+                if (PlatformUI.getWorkbench().getActiveWorkbenchWindow() == null) {
+                    final StringBuilder isUpdated = new StringBuilder();
+                    PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            UpdateDetectionDialog checkDialog = new UpdateDetectionDialog(
+                                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), results, onlySimpleShow);
+
+                            if (checkDialog.open() == IDialogConstants.OK_ID) {
+                                if (checkDialog.getSelectedElements().size() > 0) {
+                                    isUpdated.append(String.valueOf(checkDialog.getSelectedElements().size()));
+                                }
+                                doExecuteUpdates(checkDialog.getSelectedElements(), updateAllJobs);
+                            }
+                        }
+                    });
+                    return StringUtils.isNotBlank(isUpdated.toString());
+                }
                 // changed by hqzhang, Display.getCurrent().getActiveShell() may cause studio freeze
                 UpdateDetectionDialog checkDialog = new UpdateDetectionDialog(
                         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), results, onlySimpleShow);
