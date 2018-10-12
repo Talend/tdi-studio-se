@@ -80,6 +80,7 @@ import org.talend.core.service.IESBRouteService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.tools.ProjectPomManager;
 import org.talend.designer.maven.utils.PomIdsHelper;
@@ -730,6 +731,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             PomIdsHelper.resetPreferencesManagers();
             MavenPomSynchronizer.removeChangeLibrariesListener();
             TalendJavaProjectManager.deleteEclipseProjectByNatureId(TalendJobNature.ID);
+            BuildCacheManager.getInstance().clearAllCaches();
         } catch (CoreException e) {
             ExceptionHandler.process(e);
         }
