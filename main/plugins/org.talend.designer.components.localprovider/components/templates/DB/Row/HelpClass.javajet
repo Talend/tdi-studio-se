@@ -68,7 +68,7 @@
 				if ("REDSHIFT".equals(type)){
 					String jdbcUrl = "";
 					//Retrieve connection node and check if SSO was used for correct logging
-					List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
+					java.util.List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
 					String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
 					for (INode ne : nodes) {
 						if (connectionRedShift.equals(ne.getUniqueName())) {
