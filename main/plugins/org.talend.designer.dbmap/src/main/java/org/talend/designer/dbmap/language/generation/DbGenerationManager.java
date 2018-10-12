@@ -1043,6 +1043,7 @@ public abstract class DbGenerationManager {
                 itemNameList = mapParser2.parseInTableEntryLocations(expression);
             }
 
+            String quoParser = "[\\\\]?\\\""; //$NON-NLS-1$
             for (Map<String, String> itemNamemap : itemNameList) {
                 Set<Entry<String, String>> set = itemNamemap.entrySet();
                 Iterator<Entry<String, String>> ite = set.iterator();
@@ -1108,12 +1109,12 @@ public abstract class DbGenerationManager {
                                         }
                                         if (expression.trim().equals(tableValue + "." + oriName)) {
                                             expression = tableValue + "." + getColumnName(iconn, oriName);
-                                            expression = expression.replace("\"", "\\\"");
+                                            expression = expression.replaceAll(quoParser,"\\\\\""); //$NON-NLS-1$
                                             continue;
                                         }
                                         if (expression.trim().equals(originaltableName + "." + oriName)) {
                                             expression = originaltableName + "." + getColumnName(iconn, oriName);
-                                            expression = expression.replace("\"", "\\\"");
+                                            expression = expression.replaceAll(quoParser,"\\\\\""); //$NON-NLS-1$
                                             continue;
                                         }
                                         // if it is temp delived table, use label to generate sql
@@ -1127,7 +1128,7 @@ public abstract class DbGenerationManager {
                                         }
                                         expression = expression.replaceFirst("\\." + co.getLabel(), //$NON-NLS-1$
                                                 "\\." + oriName); //$NON-NLS-1$
-                                        expression = expression.replace("\"", "\\\"");
+                                        expression = expression.replaceAll(quoParser,"\\\\\""); //$NON-NLS-1$
                                     }
                                 }
 

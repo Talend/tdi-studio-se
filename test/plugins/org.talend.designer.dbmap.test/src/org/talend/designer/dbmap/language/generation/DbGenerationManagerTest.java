@@ -79,8 +79,9 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         tableEntries.add(extMapEntry);
 
         List<IConnection> incomingConnections = new ArrayList<IConnection>();
-        String[] columns = new String[] { "\\\"id\\\"" };
-        incomingConnections.add(createConnection("t1", "t1", "id", columns));
+        String[] columns = new String[] { "\\\"id\\\"",  "\\\"name\\\""};
+        String[] labels = new String[] { "id",  "name"};
+        incomingConnections.add(createConnection("t1", "t1", labels, columns));
         dbMapComponent.setIncomingConnections(incomingConnections);
 
         if (dbMapComponent.getElementParameters() == null) {
@@ -110,7 +111,8 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
 
         List<IConnection> incomingConnections4SubQuery = new ArrayList<IConnection>();
         String[] columns4SubQuery = new String[] { "\\\"id\\\"" };
-        incomingConnections4SubQuery.add(createConnection("t5", "t5", "id", columns4SubQuery));
+        String[] labelSubQuery = new String[] { "id" };
+        incomingConnections4SubQuery.add(createConnection("t5", "t5", labelSubQuery, columns4SubQuery));
         dbMapComponent4SubQuery.setIncomingConnections(incomingConnections4SubQuery);
 
         if (dbMapComponent4SubQuery.getElementParameters() == null) {
@@ -135,24 +137,28 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
 
     @Test
     public void testInitExpression() {
-        checkValue("t1.\\\"id\\\"");
+        checkValue("t1.\\\"id\\\"", extMapEntry);
+        
+        ExternalDbMapEntry extMapEntry2 = new ExternalDbMapEntry("multiple", "t1.id + t1.name");
+        tableEntries.add(extMapEntry2);
+        checkValue("t1.\\\"id\\\" + t1.\\\"name\\\"", extMapEntry2);
     }
 
-    public void checkValue(String expression) {
-        Assert.assertEquals(expression, dbManager.initExpression(dbMapComponent, extMapEntry));
+    public void checkValue(String expression, ExternalDbMapEntry entry) {
+        Assert.assertEquals(expression, dbManager.initExpression(dbMapComponent, entry));
     }
 
-    private IConnection createConnection(String schemaName, String tableName, String label, String[] columns) {
+    private IConnection createConnection(String schemaName, String tableName, String[] labels, String[] columns) {
         Connection connection = mock(Connection.class);
         when(connection.getName()).thenReturn(tableName);
         IMetadataTable metadataTable = new MetadataTable();
         metadataTable.setLabel(tableName);
         metadataTable.setTableName(tableName);
         List<IMetadataColumn> listColumns = new ArrayList<IMetadataColumn>();
-        for (String columnName : columns) {
-            IMetadataColumn column = new MetadataColumn();
-            column.setLabel(label);
-            column.setOriginalDbColumnName(columnName);
+        for(int i =0; i < columns.length; i++){
+        	IMetadataColumn column = new MetadataColumn();
+            column.setLabel(labels[i]);
+            column.setOriginalDbColumnName(columns[i]);
             listColumns.add(column);
         }
         metadataTable.setListColumns(listColumns);
