@@ -1413,6 +1413,14 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 type = "ORACLE_SID"; //$NON-NLS-1$
             }
         }
+        if(type.equals("Redshift")) {
+        	 IElementParameter ele = element.getElementParameter("JDBC_URL");
+        	  if (ele != null&&((String)ele.getValue()).equals("SSO")) {
+                  type = "Redshift SSO";
+              } else {
+                  type = "Redshift"; //$NON-NLS-1$
+              }
+        }
         // Get real hsqldb type
         if (type.equals(EDatabaseTypeName.HSQLDB.name())
                 && getValueFromRepositoryName(element, "RUNNING_MODE", basePropertyParameter).equals("HSQLDB_INPROGRESS_PERSISTENT")) {//$NON-NLS-1$
