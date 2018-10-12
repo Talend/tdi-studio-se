@@ -189,8 +189,28 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
         checkUpdatePerDaysText.addModifyListener(new ModifyListener() {
 
+            private boolean skip = false;
+
             @Override
             public void modifyText(ModifyEvent e) {
+                if (skip) {
+                    return;
+                }
+                String daysText = checkUpdatePerDaysText.getText();
+                if (1 < daysText.length()) {
+                    String stripStart = StringUtils.stripStart(daysText, "0"); //$NON-NLS-1$
+                    if (stripStart.length() <= 0) {
+                        stripStart = daysText.substring(daysText.length() - 1);
+                    }
+                    if (daysText.length() != stripStart.length()) {
+                        try {
+                            skip = true;
+                            checkUpdatePerDaysText.setText(stripStart);
+                        } finally {
+                            skip = false;
+                        }
+                    }
+                }
                 validate();
             }
         });
@@ -228,7 +248,7 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
         try {
             if (StringUtils.isNotBlank(e.text)) {
                 Integer i = Integer.valueOf(e.text);
-                if (i <= 0) {
+                if (i < 0) {
                     e.doit = false;
                 }
             }
@@ -242,11 +262,7 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
         if (e.character != 0 && e.keyCode != SWT.BS && e.keyCode != SWT.DEL && !Character.isDigit(e.character)) {
             e.doit = false;
         } else {
-            if (e.character == '0' && e.start == 0) {
-                e.doit = false;
-            } else {
-                e.doit = true;
-            }
+            e.doit = true;
         }
         return e.doit;
     }
