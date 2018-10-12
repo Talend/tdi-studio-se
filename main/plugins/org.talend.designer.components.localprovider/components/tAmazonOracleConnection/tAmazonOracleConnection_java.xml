@@ -59,7 +59,6 @@
 		REPOSITORY_VALUE="DB_VERSION">
 		<ITEMS DEFAULT="ORACLE_12">
 			<ITEM NAME="ORACLE_12" VALUE="ORACLE_12" />
-			<ITEM NAME="ORACLE_11-6" VALUE="ORACLE_11-6" />
 			<ITEM NAME="ORACLE_11" VALUE="ORACLE_11" />
 		</ITEMS>
 	</PARAMETER>
@@ -241,8 +240,7 @@
     <IMPORTS>
        <IMPORT NAME="TNS" MODULE="tns.jar" MVN="mvn:org.talend.libraries/tns/6.0.0"  REQUIRED="true" />
        <IMPORT NAME="Driver-Ojdbc7" MODULE="ojdbc7.jar" MVN="mvn:org.talend.libraries/ojdbc7/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_12')" />
-       <IMPORT NAME="Driver-Ojdbc6" MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_11-6')" />
-       <IMPORT NAME="Driver-Ojdbc5" MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_11')" />
+       <IMPORT NAME="Driver-Ojdbc6" MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_11')" />
     </IMPORTS>
    </CODEGENERATION>
 

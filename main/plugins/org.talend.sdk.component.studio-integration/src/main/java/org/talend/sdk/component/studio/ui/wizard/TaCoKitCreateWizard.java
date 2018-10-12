@@ -41,6 +41,10 @@ public class TaCoKitCreateWizard extends TaCoKitConfigurationWizard {
         super(workbench, runtimeData);
     }
 
+    @Override protected boolean isNew() {
+        return true;
+    }
+
     /**
      * Part of constructor
      * Sets window title depending on whether it is {@code creation} wizard or editing
@@ -60,15 +64,11 @@ public class TaCoKitCreateWizard extends TaCoKitConfigurationWizard {
      */
     @Override
     protected IWorkspaceRunnable createFinishOperation() {
-        return new IWorkspaceRunnable() {
-
-            @Override
-            public void run(final IProgressMonitor monitor) throws CoreException {
-                try {
-                    createConfigurationItem();
-                } catch (Exception e) {
-                    throw new CoreException(new Status(IStatus.ERROR, GAV.INSTANCE.getArtifactId(), e.getMessage(), e));
-                }
+        return monitor -> {
+            try {
+                createConfigurationItem();
+            } catch (Exception e) {
+                throw new CoreException(new Status(IStatus.ERROR, GAV.INSTANCE.getArtifactId(), e.getMessage(), e));
             }
         };
     }

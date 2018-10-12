@@ -11,11 +11,9 @@ Require-Bundle: org.eclipse.jface.text,
  org.talend.commons.ui,
  org.talend.core,
  org.talend.core.repository,
- org.talend.camel.model,
  org.talend.metadata.managment.ui,
  org.talend.repository,
  org.talend.designer.core,
- org.talend.designer.camel.resource.core,
  org.talend.repository.items.importexport,
  org.talend.core.ui
 Bundle-ActivationPolicy: lazy

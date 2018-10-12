@@ -2423,15 +2423,18 @@ if(columnList != null && columnList.size() > 0) {
 	            }     
             <%
             } else if("MYSQL".equalsIgnoreCase(dbType)) {
-                List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
-                String dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
-                if (dbnameMySQL == null || "\"\"".equals(dbnameMySQL) || "".equals(dbnameMySQL)) {
-                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION_MYSQL__");
+                boolean useExistMySQLConn = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+                String dbnameMySQL = "";
+                if (useExistMySQLConn) {
+                    List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
+                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
                     for (INode ne : nodes) {
                         if (connectionMySQL.equals(ne.getUniqueName())) {
                             dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
                         }
                     }
+                } else {
+                    dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                 }
                 if (dbnameMySQL == null || dbnameMySQL.isEmpty()) dbnameMySQL = "\"\"";
             %>

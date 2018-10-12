@@ -332,16 +332,17 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
             }
             
             for (IElementParameter param : elementParameters) {
-            	if(param.getName().equals("JDBC_URL")&&connection!=null) {
-             	   DatabaseConnectionImpl db =	(DatabaseConnectionImpl)connection;
-             	   if(db.getDatabaseType().equals("Redshift SSO")) {
-             		   param.setRepositoryValue("SSO");
-                        param.setValue("SSO");
-             	   }else {
-             		   param.setRepositoryValue("STANDARD");
-                        param.setValue("STANDARD");
-             	   }
-                }
+                   if(param.getName().equals("JDBC_URL")&&connection!=null) {
+                	   DatabaseConnectionImpl db =	(DatabaseConnectionImpl)connection;
+                	   if(db.getDatabaseType().equals("Redshift SSO")) {
+                		   param.setRepositoryValue("SSO");
+                           param.setValue("SSO");
+                	   }else {
+                		   param.setRepositoryValue("STANDARD");
+                           param.setValue("STANDARD");
+                	   }
+                   }
+                  
                 String repositoryValue = param.getRepositoryValue();
                 if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
                     continue;

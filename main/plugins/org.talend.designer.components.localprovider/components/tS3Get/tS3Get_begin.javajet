@@ -15,8 +15,24 @@ imports="
     String key = ElementParameterParser.getValue(node,"__KEY__");
     String file = ElementParameterParser.getValue(node,"__FILE__");
     boolean dieOnError = "true".equals(ElementParameterParser.getValue(node,"__DIE_ON_ERROR__"));
+    boolean use_select = "true".equals(ElementParameterParser.getValue(node,"__USE_SELECT__"));
+    String header_type = ElementParameterParser.getValue(node,"__HEADER_TYPE__");
+    boolean advance_csv = "true".equals(ElementParameterParser.getValue(node,"__ADVANCE_CSV__"));
+    boolean globalmap_inputstream = "true".equals(ElementParameterParser.getValue(node,"__GLOBALMAP_INPUTSTREAM__"));
+    String file_type = ElementParameterParser.getValue(node,"__FILE_TYPE__");
+    String compressed_type = ElementParameterParser.getValue(node,"__COMPRESSED_TYPE__");
+    String json_type = ElementParameterParser.getValue(node,"__JSON_TYPE__");
+    String field_separator = ElementParameterParser.getValue(node,"__FIELD_SEPARATOR__");
+    String query = ElementParameterParser.getValue(node,"__QUERY__");
+    boolean config_output = "true".equals(ElementParameterParser.getValue(node,"__CONFIG_OUTPUT__"));
+    String output_type = ElementParameterParser.getValue(node,"__OUTPUT_TYPE__");
+    String json_recorddelimiter = ElementParameterParser.getValue(node,"__JSON_RECORDDELIMITER__");
+    
+    List<Map<String,String>> output_csv_config = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__OUTPUT_CSV_CONFIG__");
+    List<Map<String,String>> csv_configuration = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__CSV_CONFIGURATION__");
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
+	<%if(!use_select){%>
 	try{
 		<%
 		if(isLog4jEnabled){
@@ -75,4 +91,125 @@ imports="
 		}
 		%>
 	}
+	<%}else{%>
 	
+	    com.amazonaws.services.s3.model.SelectObjectContentRequest request_<%=cid%> = new com.amazonaws.services.s3.model.SelectObjectContentRequest();
+	    request_<%=cid%>.setBucketName(<%=bucket%>);
+        request_<%=cid%>.setKey(<%=key%>);
+        request_<%=cid%>.setExpression(<%=query%>);
+        request_<%=cid%>.setExpressionType(com.amazonaws.services.s3.model.ExpressionType.SQL);
+        com.amazonaws.services.s3.model.InputSerialization inputSerialization_<%=cid%> = new com.amazonaws.services.s3.model.InputSerialization();
+        <%if("CSV".equals(file_type)){%>
+        com.amazonaws.services.s3.model.CSVInput csvInput_<%=cid%> = new com.amazonaws.services.s3.model.CSVInput()
+             .withFieldDelimiter(<%=field_separator%>)
+             <%if(advance_csv && csv_configuration.size()>0){
+                 for(Map<String,String> map :csv_configuration){
+				    String csv_parameter = map.get("CSV_PARAMETER");
+				    String value = map.get("VALUE");%>
+				    .with<%=csv_parameter%>(<%=value%>)
+				<%}
+             }%>
+             
+            .withFileHeaderInfo("<%=header_type%>");
+            inputSerialization_<%=cid%>.setCsv(csvInput_<%=cid%>);
+        <%}else if("JSON".equals(file_type)){%>
+            com.amazonaws.services.s3.model.JSONInput json_<%=cid%> = new com.amazonaws.services.s3.model.JSONInput().withType("<%=json_type%>");
+            inputSerialization_<%=cid%>.setJson(json_<%=cid%>);
+        <%}else{//APACHE_PARQUET%>
+            inputSerialization_<%=cid%>.setParquet(new com.amazonaws.services.s3.model.ParquetInput());
+        <%}%>
+        inputSerialization_<%=cid%>.setCompressionType(com.amazonaws.services.s3.model.CompressionType.<%=compressed_type%>);
+        request_<%=cid%>.setInputSerialization(inputSerialization_<%=cid%>);
+        com.amazonaws.services.s3.model.OutputSerialization outputSerialization_<%=cid%> = new com.amazonaws.services.s3.model.OutputSerialization();
+        <%if(config_output){%>
+            <%if("CSV".equals(output_type)){%>
+            com.amazonaws.services.s3.model.CSVOutput csvOutput_<%=cid%> = new com.amazonaws.services.s3.model.CSVOutput()
+                 <%if(output_csv_config.size()>0){
+                     for(Map<String,String> map :output_csv_config){
+				        String csv_parameter = map.get("CSV_PARAMETER");
+				        String value = map.get("VALUE");%>
+				    .with<%=csv_parameter%>(<%=value%>)
+				    <%}
+                 }%>;
+            outputSerialization_<%=cid%>.setCsv(csvOutput_<%=cid%>);
+            
+            <%}else if("JSON".equals(output_type)){%>
+            outputSerialization_<%=cid%>.setJson(new com.amazonaws.services.s3.model.JSONOutput().withRecordDelimiter(<%=json_recorddelimiter%>));
+            <%}%>
+        <%}else{%>
+            <%if("JSON".equals(file_type)){%>
+            outputSerialization_<%=cid%>.setJson(new com.amazonaws.services.s3.model.JSONOutput());
+            <%}else{//CSV Parquet%>
+            outputSerialization_<%=cid%>.setCsv(new com.amazonaws.services.s3.model.CSVOutput());
+            <%}%>
+         <%}%>
+        request_<%=cid%>.setOutputSerialization(outputSerialization_<%=cid%>);
+        
+	  	<%if(globalmap_inputstream){%>
+		try{
+		com.amazonaws.services.s3.model.SelectObjectContentResult result_<%=cid%> = conn_<%=cid%>.selectObjectContent(request_<%=cid%>);
+		<%}else{%>
+		try (java.io.OutputStream fos_<%=cid%> = new java.io.FileOutputStream(new java.io.File (<%=file%>));
+		com.amazonaws.services.s3.model.SelectObjectContentResult result_<%=cid%> = conn_<%=cid%>.selectObjectContent(request_<%=cid%>)){
+		<%}%>
+		<%
+		if(isLog4jEnabled){
+		%>	
+			log.info("<%=cid%> - Getting an object with key:" + <%=key%>);
+		<%
+		}
+		%>
+		            java.io.InputStream ris_<%=cid%> = result_<%=cid%>.getPayload().getRecordsInputStream(
+		            		<%
+		if(isLog4jEnabled){
+		%>	
+                    new com.amazonaws.services.s3.model.SelectObjectContentEventVisitor() {
+                        @Override
+                        public void visit(com.amazonaws.services.s3.model.SelectObjectContentEvent.StatsEvent event)
+                        {
+                            log.info(
+                                    "Received Stats, Bytes Scanned: " + event.getDetails().getBytesScanned()
+                                            +  " Bytes Processed: " + event.getDetails().getBytesProcessed());
+                        }
+
+                        @Override
+                        public void visit(com.amazonaws.services.s3.model.SelectObjectContentEvent.EndEvent event)
+                        {
+                            log.info("Received End Event. Result is complete.");
+                        }
+                    }
+                    		<%
+		}
+		%>
+            );
+            
+            <%if(globalmap_inputstream){%>
+            globalMap.put("<%=cid%>_RECORDS_INPUTSTREAM",ris_<%=cid%>);
+            <%}else{%>
+             com.amazonaws.util.IOUtils.copy(ris_<%=cid%>,fos_<%=cid%>);
+		<%
+		    }
+		if(isLog4jEnabled){
+		%>	
+			log.info("<%=cid%> - Get the object successfully.");
+		<%
+		}
+		%>
+	}catch(java.lang.Exception e_<%=cid%>){
+		<%
+		if (dieOnError) {
+		%>
+			throw(e_<%=cid%>);
+		<%
+		} else {
+			if(isLog4jEnabled){
+			%>
+				log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+			<%
+			}
+			%>
+		System.err.println(e_<%=cid%>.getMessage());
+		<%
+		}%>
+	}
+    <%}%>

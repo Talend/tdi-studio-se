@@ -60,6 +60,7 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
@@ -538,9 +539,10 @@ public class TalendJavaProjectManager {
             // Gen poms only
             ((MavenJavaProcessor) processor).generatePom(option);
         }
+        boolean checkFilter = !BitwiseOptionUtils.containOption(option, TalendProcessOptionConstants.GENERATE_POM_NO_FILTER);
         AggregatorPomsHelper.addToParentModules(
                 AggregatorPomsHelper.getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME),
-                item.getProperty());
+                item.getProperty(), checkFilter);
     }
 
 }

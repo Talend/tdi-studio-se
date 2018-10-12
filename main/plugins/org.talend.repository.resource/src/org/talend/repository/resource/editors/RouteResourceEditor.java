@@ -25,11 +25,11 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
-import org.talend.camel.core.model.camelProperties.RouteResourceItem;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.properties.ByteArray;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ReferenceFileItem;
+import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.resource.editors.input.RouteResourceInput;
 
@@ -87,7 +87,7 @@ public class RouteResourceEditor extends TextEditor {
 	public static void saveContentsToItem(RouteResourceInput rrInput) {
 
 		try {
-			RouteResourceItem item = (RouteResourceItem) rrInput.getItem();
+            ResourceItem item = (ResourceItem) rrInput.getItem();
 
 			ReferenceFileItem refFile = (ReferenceFileItem) item
 					.getReferenceResources().get(0);

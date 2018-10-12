@@ -3129,6 +3129,15 @@
               name="PostgresqlDefaultDBVersion"
               version="7.1.0">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.UseOracle11VersionInsteadOfRemoved"
+              description="Use oracle 11 version instead of removed"
+              id="org.talend.repository.model.migration.UseOracle11VersionInsteadOfRemoved"
+              name="UseOracle11VersionInsteadOfRemoved"
+              version="7.1.0">
+        </projecttask>
    </extension>
 
    <extension
@@ -3217,6 +3226,9 @@
       </initializer>
       <initializer
             class="org.talend.repository.preference.initializer.MavenVersionManagementProjectSettingPageInitializer">
+      </initializer>
+      <initializer
+            class="org.talend.repository.preference.initializer.ArtifactRepositoryShareSettingPageInitializer">
       </initializer>
    </extension>
    <extension
@@ -3338,6 +3350,14 @@
             title="%projectSetting.deploymentConfiguration">
          <tester
                class="org.talend.repository.preference.MavenDeploymentConfigurationProjectSettingPageTester">
+         </tester>
+      </page>
+      <page
+            class="org.talend.repository.preference.ArtifactRepositoryShareSettingPage"
+            id="projectsetting.RepositoryShare"
+            title="%projectsetting.RepositoryShare">
+         <tester
+               class="org.talend.repository.preference.ArtifactRepositoryShareSettingPageTester">
          </tester>
       </page>
    </extension>

@@ -14,6 +14,7 @@ imports="
 
 			String logLevel= ElementParameterParser.getValue(node, "__LOG_LEVEL__");
 			String logFile= ElementParameterParser.getValue(node, "__LOG_FILE__");
+			String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
 
 			if (!logLevel.equals("0")) {
 %>
@@ -24,21 +25,36 @@ imports="
 <%
 			}
 %>
-			StringBuilder sbuilder_<%=cid%> = new StringBuilder();
-			sbuilder_<%=cid%>.append("jdbc:redshift://").append(<%=dbhost%>).append(":").append(<%=dbport%>).append("/").append(<%=dbname%>).append("?loglevel=").append(<%= logLevel %>);
+            StringBuilder sbuilder_<%=cid%> = new StringBuilder();
+            sbuilder_<%=cid%>.append("jdbc:redshift:");
 <%
-			if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
+            if ("SSO".equals(jdbcUrl)){
 %>
-				sbuilder_<%=cid%>.append("&").append(<%=dbproperties%>);
+                sbuilder_<%=cid%>.append("iam:");
 <%
-			}
+            }
 %>
-			String url_<%=cid%> = sbuilder_<%=cid%>.toString();
+            sbuilder_<%=cid%>.append("//")
+                             .append(<%=dbhost%>)
+                             .append(":")
+                             .append(<%=dbport%>)
+                             .append("/")
+                             .append(<%=dbname%>)
+                             .append("?loglevel=")
+                             .append(<%=logLevel%>);
+<%
+            if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
+%>
+                sbuilder_<%=cid%>.append("&").append(<%=dbproperties%>);
+<%
+            }
+%>
+            String url_<%=cid%> = sbuilder_<%=cid%>.toString();
 <%
 		}
 		
 		public String getDirverClassName(INode node){
-			return "com.amazon.redshift.jdbc41.Driver";
+			return "com.amazon.redshift.jdbc42.Driver";
 		}
 		
 	}//end class

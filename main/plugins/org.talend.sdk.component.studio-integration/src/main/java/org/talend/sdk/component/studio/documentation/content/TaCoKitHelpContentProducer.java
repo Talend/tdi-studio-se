@@ -38,7 +38,8 @@ public class TaCoKitHelpContentProducer implements IHelpContentProducer {
      * @param href href is a component id + .html[?lang=en_US], which we can use to get the documentation
      * @param locale to be used
      */
-    @Override public InputStream getInputStream(String pluginId, String href, Locale locale) {
+    @Override
+    public InputStream getInputStream(String pluginId, String href, Locale locale) {
         String id = href;
         final WebSocketClient client = Lookups.client();
         int index = id.lastIndexOf(".html");
@@ -50,10 +51,10 @@ public class TaCoKitHelpContentProducer implements IHelpContentProducer {
             return null;
         }
         String source = null;
-        String componentName = componentList.getDetails().get(0).getDisplayName();
+        final String componentName = componentList.getDetails().get(0).getDisplayName();
         try {
-            DocumentationContent content = client.v1().documentation().getDocumentation(locale.getLanguage(), id, "html");
-            source = "<!DOCTYPE html>\r\n" + "<html>\r\n" + getHeader(componentName) + content.getSource() + "</body></html>";
+            final DocumentationContent content = client.v1().documentation().getDocumentation(locale.getLanguage(), id, "adoc");
+            source = "<!DOCTYPE html>\r\n" + "<html>\r\n" + getHeader(componentName) + toHtml(content.getSource()) + "</body></html>";
         } catch (ClientException e) {
             if (e.getErrorPayload().getCode().equals(ErrorDictionary.COMPONENT_MISSING)) {
                 source = createErrorPage(componentName);
@@ -65,6 +66,10 @@ public class TaCoKitHelpContentProducer implements IHelpContentProducer {
         return new ByteArrayInputStream(source.getBytes());
     }
 
+    private String toHtml(final String adoc) {
+        return Lookups.asciidoctor().convert(adoc);
+    }
+
     private String createErrorPage(final String componentName) {
         return "<!DOCTYPE html>\r\n" + "<html>\r\n" + getHeader(componentName) + "<body>\r\n" + "<p>\r\n"
                 + Messages.getString("documentation.content.error.missing", componentName) + "\r\n" + "</p>\r\n" + "</body>\r\n"
@@ -73,7 +78,11 @@ public class TaCoKitHelpContentProducer implements IHelpContentProducer {
 
     private String getHeader(final String componentName) {
         return "<head>\r\n" + "<meta charset=\"UTF-8\">\r\n" + "<title>" + componentName.toUpperCase() + "</title>\r\n"
-                + "</head>\r\n";
+                + "<style>" +
+                "table.tableblock { border-collapse: collapse; }\n" +
+                "table.tableblock,th.tableblock,td.tableblock {border: 1px solid black;}" +
+                "</style>\r\n"
+                + "</head>\r\n<body>";
     }
 
 }

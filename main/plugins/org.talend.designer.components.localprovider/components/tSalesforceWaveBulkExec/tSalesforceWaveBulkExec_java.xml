@@ -86,7 +86,7 @@
           REPOSITORY_VALUE="ENDPOINT"
           SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
         >
-          <DEFAULT>"https://login.salesforce.com/services/Soap/u/42.0"</DEFAULT>
+          <DEFAULT>"https://login.salesforce.com/services/Soap/u/43.0"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER
@@ -339,15 +339,40 @@
     <CODEGENERATION>
       <IMPORTS>
         <IMPORT
-            NAME="force-wsc-42.0.0"
-            MODULE="force-wsc-42.0.0.jar"
-            MVN="mvn:com.force.api/force-wsc/42.0.0"
+            NAME="force-wsc-44.0.0"
+            MODULE="force-wsc-44.0.0.jar"
+            MVN="mvn:com.force.api/force-wsc/44.0.0"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT
-            NAME="force-partner-api-42.0.0"
-            MODULE="force-partner-api-42.0.0.jar"
-            MVN="mvn:com.force.api/force-partner-api/42.0.0"
+            NAME="force-partner-api-44.0.0"
+            MODULE="force-partner-api-44.0.0.jar"
+            MVN="mvn:com.force.api/force-partner-api/44.0.0"
+            REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
+        />
+        <IMPORT
+            NAME="commons-beanutils-1.8.3"
+            MODULE="commons-beanutils-1.8.3.jar"
+            MVN="mvn:commons-beanutils/commons-beanutils/1.8.3"
+            UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-beanutils-1.8.3.jar"
+            REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
+        />
+        <IMPORT
+            NAME="ST4-4.0.7"
+            MODULE="ST4-4.0.7.jar"
+            MVN="mvn:org.antlr/ST4/4.0.7"
+            REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
+        />
+        <IMPORT
+            NAME="jackson-core-asl-1.9.14-TALEND"
+            MODULE="jackson-core-asl-1.9.14-TALEND.jar"
+            MVN="mvn:org.codehaus.jackson/jackson-core-asl/1.9.14-TALEND"
+            REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
+        />
+        <IMPORT
+            NAME="jackson-mapper-asl-1.9.14-TALEND"
+            MODULE="jackson-mapper-asl-1.9.14-TALEND.jar"
+            MVN="mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.14-TALEND"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT

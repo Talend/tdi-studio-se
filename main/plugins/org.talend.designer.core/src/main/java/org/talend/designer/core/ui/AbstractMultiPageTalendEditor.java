@@ -162,6 +162,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType
 import org.talend.designer.core.ui.editor.AbstractTalendEditor;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.TalendJavaEditor;
+import org.talend.designer.core.ui.editor.dependencies.JobDependenciesEditor;
 import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletUtil;
@@ -278,6 +279,8 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
     protected AbstractTalendEditor designerEditor;
 
     private AbstractDecoratedTextEditor jobletEditor;
+
+    private JobDependenciesEditor dependenciesEditor;
 
     protected List propertyInformation;
 
@@ -1782,6 +1785,10 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
     @Override
     public AbstractTalendEditor getTalendEditor() {
         return designerEditor;
+    }
+
+    public JobDependenciesEditor getDependenciesEditor() {
+        return dependenciesEditor;
     }
 
     public void beforeDispose() {
