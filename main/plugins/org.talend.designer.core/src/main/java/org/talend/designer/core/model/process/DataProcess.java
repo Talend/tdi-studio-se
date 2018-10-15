@@ -2725,7 +2725,7 @@ public class DataProcess implements IGeneratingProcess {
             node.getElementParameter("TYPE").setValue(dbConnection.getDatabaseType());//$NON-NLS-1$
             node.getElementParameter("USER").setValue(dbConnection.getUsername());//$NON-NLS-1$
             node.getElementParameter("PASS").setValue(dbConnection.getPassword());//$NON-NLS-1$
-            if (EDatabaseTypeName.ORACLESN.getProduct().equals(typeFromDbType.getProduct())) {
+            if (typeFromDbType != null && EDatabaseTypeName.ORACLESN.getProduct().equals(typeFromDbType.getProduct())) {
                 if (EDatabaseTypeName.ORACLE_OCI == typeFromDbType) {
                     node.getElementParameter("LOCAL_SERVICE_NAME").setValue(dbConnection.getSID());//$NON-NLS-1$
                 } else if (EDatabaseTypeName.ORACLE_CUSTOM == typeFromDbType) {
@@ -2739,7 +2739,7 @@ public class DataProcess implements IGeneratingProcess {
             node.getElementParameter("TYPE").setValue(TalendTextUtils.addQuotes(dbConnection.getDatabaseType()));//$NON-NLS-1$
             node.getElementParameter("USER").setValue(TalendTextUtils.addQuotes(dbConnection.getUsername()));//$NON-NLS-1$
             node.getElementParameter("PASS").setValue(TalendTextUtils.addQuotes(dbConnection.getRawPassword()));//$NON-NLS-1$
-            if (EDatabaseTypeName.ORACLESN.getProduct().equals(typeFromDbType.getProduct())) {
+            if (typeFromDbType != null && EDatabaseTypeName.ORACLESN.getProduct().equals(typeFromDbType.getProduct())) {
                 if (EDatabaseTypeName.ORACLE_OCI == typeFromDbType) {
                     node.getElementParameter("LOCAL_SERVICE_NAME").setValue(TalendTextUtils.addQuotes(dbConnection.getSID()));//$NON-NLS-1$
                 } else if (EDatabaseTypeName.ORACLE_CUSTOM == typeFromDbType) {
@@ -2747,12 +2747,14 @@ public class DataProcess implements IGeneratingProcess {
                 }
             }
         }
-        if (EDatabaseTypeName.MSSQL.getProduct().equals(typeFromDbType.getProduct())) {
-            node.getElementParameter("DRIVER").setValue(dbConnection.getDbVersionString());//$NON-NLS-1$
-        } else if (EDatabaseTypeName.ORACLESN.getProduct().equals(typeFromDbType.getProduct())) {
-            node.getElementParameter("CONNECTION_TYPE") //$NON-NLS-1$
-                    .setValue(typeFromDbType.getXmlName());
-            node.getElementParameter("DB_VERSION").setValue(dbConnection.getDbVersionString());//$NON-NLS-1$
+        if (typeFromDbType != null) {
+            if (EDatabaseTypeName.MSSQL.getProduct().equals(typeFromDbType.getProduct())) {
+                node.getElementParameter("DRIVER").setValue(dbConnection.getDbVersionString());//$NON-NLS-1$
+            } else if (EDatabaseTypeName.ORACLESN.getProduct().equals(typeFromDbType.getProduct())) {
+                node.getElementParameter("CONNECTION_TYPE") //$NON-NLS-1$
+                        .setValue(typeFromDbType.getXmlName());
+                node.getElementParameter("DB_VERSION").setValue(dbConnection.getDbVersionString());//$NON-NLS-1$
+            }
         }
     }
 
