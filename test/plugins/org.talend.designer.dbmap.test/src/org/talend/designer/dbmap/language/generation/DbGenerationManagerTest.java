@@ -367,12 +367,12 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
     @Test
     public void testAppendSqlQuery(){
     	StringBuilder sb = new StringBuilder();
-    	dbManager.getQueryColumnsSegments().clear();
+    	dbManager.getQuerySegments().clear();
     	dbManager.appendSqlQuery(sb, "table1", true);
-    	Assert.assertTrue(dbManager.getQueryColumnsSegments().size()==1);
+    	Assert.assertTrue(dbManager.getQuerySegments().size()==1);
     	
-    	dbManager.getQueryColumnsSegments().clear();
+    	dbManager.getQuerySegments().clear();
     	dbManager.appendSqlQuery(sb, "table1", false);
-    	Assert.assertTrue(dbManager.getQueryColumnsSegments().isEmpty());
+    	Assert.assertTrue(dbManager.getQuerySegments().isEmpty());
     }
 }
