@@ -299,7 +299,6 @@ public class ImplicitContextLoadHelper {
         case DISABLE_ERROR: // java only
         case DISABLE_WARNINGS:
         case DISABLE_INFO: // java only
-        case PROPERTY_TYPE:
             return param.getName();
         default:
             return JobSettingsConstants.getExtraParameterName(param.getName());
