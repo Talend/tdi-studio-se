@@ -108,12 +108,10 @@ public class ConnectionUtil {
                 if(obj instanceof Map){
                     Map map = (Map) obj;
                     String driver = (String) map.get("drivers");
-                    if(driver!=null) {
                     	if(driver.contains("/")){
                             driver = driver.split("/")[1]+".jar";
                         }
                         map.put("drivers", driver);	
-                    }
                     
                 }
             }
