@@ -190,7 +190,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                 if (selectGeneratePath()) {
 
                     ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(
-                            PlatformUI.getWorkbench().getDisplay().getActiveShell().getShell());
+                            PlatformUI.getWorkbench().getDisplay().getActiveShell());
                     IRunnableWithProgress runnable = new IRunnableWithProgress() {
 
                         @Override
@@ -348,7 +348,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                 if (selectGeneratePath()) {
 
                     ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(
-                            PlatformUI.getWorkbench().getDisplay().getActiveShell().getShell());
+                            PlatformUI.getWorkbench().getDisplay().getActiveShell());
                     IRunnableWithProgress runnable = new IRunnableWithProgress() {
 
                         @Override
