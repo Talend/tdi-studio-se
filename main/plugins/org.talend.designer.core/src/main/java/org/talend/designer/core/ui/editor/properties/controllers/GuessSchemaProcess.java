@@ -206,6 +206,10 @@ public class GuessSchemaProcess {
 
         // fix for TDI-26285
         String createStatament = "conn.createStatement(java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE,java.sql.ResultSet.CONCUR_READ_ONLY)";//$NON-NLS-1$
+        // fix for TUP-20711
+        if(EDatabaseTypeName.MSSQL.getDisplayName().equals(info.getDbType())) {
+        	createStatament = "conn.createStatement()";
+        }
         String systemProperty = "";//$NON-NLS-1$ 
         if (info.isHive()) {
             createStatament = "conn.createStatement()";//$NON-NLS-1$ 
