@@ -112,7 +112,6 @@ public class ConnectionUtil {
                             driver = driver.split("/")[1]+".jar";
                         }
                         map.put("drivers", driver);	
-                    
                 }
             }
         }
