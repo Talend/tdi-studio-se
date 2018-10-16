@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="TaCoKitService">
+  <implementation class="org.talend.sdk.component.studio.service.TaCoKitService"/>
+  <service>
+    <provide interface="org.talend.commons.runtime.service.ITaCoKitService"/>
+  </service>
+</component>

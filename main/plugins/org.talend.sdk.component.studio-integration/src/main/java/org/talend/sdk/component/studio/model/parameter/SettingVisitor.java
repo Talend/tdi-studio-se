@@ -343,7 +343,7 @@ public class SettingVisitor implements PropertyVisitor {
         if (isEnum && (validation == null || validation.getEnumValues() == null)) {
             throw new IllegalArgumentException("No values for enum " + node.getProperty().getPath());
         }
-        final int valuesCount;
+
         if (validation == null || validation.getEnumValues() == null || validation.getEnumValues().isEmpty()) {
             final ActionReference dynamicValuesAction =
                     ofNullable(node.getProperty().getMetadata().get("action::dynamic_values"))
@@ -365,7 +365,6 @@ public class SettingVisitor implements PropertyVisitor {
                 throw new IllegalStateException("No proposals for " + node.getProperty().getPath());
             }
             final Collection<Map<String, String>> items = Collection.class.cast(rawItems);
-            valuesCount = items.size();
             final String[] ids = items.stream().map(m -> m.get("id")).toArray(String[]::new);
             final String[] labels =
                     items.stream().map(m -> m.getOrDefault("label", m.get("id"))).toArray(String[]::new);
@@ -374,7 +373,7 @@ public class SettingVisitor implements PropertyVisitor {
             parameter.setListItemsDisplayCodeName(labels);
         } else {
             final List<String> possibleValues = new ArrayList<>(validation.getEnumValues());
-            valuesCount = possibleValues.size();
+            final int valuesCount = possibleValues.size();
 
             final String[] valuesArray = possibleValues.toArray(new String[valuesCount]);
             parameter.setListItemsValue(valuesArray);
@@ -385,17 +384,13 @@ public class SettingVisitor implements PropertyVisitor {
             parameter.setListItemsDisplayCodeName(valuesArray);
         }
 
-        parameter.setListItemsReadOnlyIf(new String[valuesCount]);
-        parameter.setListItemsNotReadOnlyIf(new String[valuesCount]);
-        parameter.setListItemsShowIf(new String[valuesCount]);
-        parameter.setListItemsNotShowIf(new String[valuesCount]);
-
         String defaultValue = node.getProperty().getDefaultValue();
         if (defaultValue == null && node.getProperty().getMetadata() != null) {
             defaultValue = node.getProperty().getMetadata().get("ui::defaultvalue::value");
         }
         parameter.setDefaultClosedListValue(defaultValue);
         parameter.setDefaultValue(defaultValue);
+        parameter.setValue(defaultValue);
         return parameter;
     }
 
@@ -590,7 +585,7 @@ public class SettingVisitor implements PropertyVisitor {
      * @return list of table parameters
      */
     private List<IElementParameter> createTableParameters(final ListPropertyNode tableNode) {
-        final List<PropertyNode> columns = tableNode.getColumns();
+        final List<PropertyNode> columns = tableNode.getColumns(form);
         if (columns.size() == 1 && columns.get(0).getProperty().getDisplayName().endsWith("[${index}]")) {
             columns.iterator().next().getProperty().setDisplayName("Value");
         }

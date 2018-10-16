@@ -452,6 +452,11 @@ public class RunProcessService implements IRunProcessService {
         delegateService.generatePom(item);
     }
 
+    @Override
+    public void generatePom(Item item, int option) {
+        delegateService.generatePom(item, option);
+    }
+
     /*
      * (non-Javadoc)
      * 

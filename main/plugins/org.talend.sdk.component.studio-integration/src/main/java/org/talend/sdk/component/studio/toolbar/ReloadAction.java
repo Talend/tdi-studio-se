@@ -17,6 +17,8 @@ package org.talend.sdk.component.studio.toolbar;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -28,11 +30,16 @@ public class ReloadAction extends AbstractHandler {
     @Override
     public Object execute(final ExecutionEvent executionEvent) {
         Display.getDefault().asyncExec(() -> {
-            final String status = Lookups.manager().reload();
-            doRefresh();
+            final String status = reload(new NullProgressMonitor());
             MessageDialog.openInformation(new Shell(), "Reload ended", status);
         });
         return null;
+    }
+
+    public String reload(final IProgressMonitor monitor) {
+        String status = Lookups.manager().reload();
+        doRefresh();
+        return status;
     }
 
     private void doRefresh() {

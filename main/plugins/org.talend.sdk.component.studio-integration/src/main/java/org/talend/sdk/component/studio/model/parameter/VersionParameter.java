@@ -5,7 +5,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.designer.core.model.components.ElementParameter;
 
-public class VersionParameter extends ElementParameter {
+public class VersionParameter extends TaCoKitElementParameter {
 
     public static final String VERSION_SUFFIX = ".__version";
 
@@ -13,7 +13,7 @@ public class VersionParameter extends ElementParameter {
         super(element);
         setTaggedValue("org.talend.sdk.component.source", "tacokit");
         setName(path + VERSION_SUFFIX);
-        setValue(version);
+        updateValueOnly(version);
         setDisplayName(path + VERSION_SUFFIX);
         setFieldType(EParameterFieldType.TECHNICAL);
         setCategory(EComponentCategory.BASIC);

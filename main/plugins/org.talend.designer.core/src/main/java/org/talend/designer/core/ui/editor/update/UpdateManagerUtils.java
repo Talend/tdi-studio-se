@@ -234,17 +234,23 @@ public final class UpdateManagerUtils {
     @SuppressWarnings("unchecked")
     public static boolean executeUpdates(final List<UpdateResult> results, final boolean onlySimpleShow,
             final boolean updateAllJobs, final boolean noRepositoryWorkUnit) {
+        return executeUpdates(results, onlySimpleShow, updateAllJobs, noRepositoryWorkUnit, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static boolean executeUpdates(final List<UpdateResult> results, final boolean onlySimpleShow,
+            final boolean updateAllJobs, final boolean noRepositoryWorkUnit, final boolean executeAllWithoutChoose) {
         if (noRepositoryWorkUnit) {
             // RWU means also SVN Access, maybe in some cases to optimize,
             // we want to avoid SVN Access to optimize since we don't really save any file
-            return doExecuteUpdates(results, onlySimpleShow, updateAllJobs);
+            return doExecuteUpdates(results, onlySimpleShow, updateAllJobs, executeAllWithoutChoose);
         } else {
             RepositoryWorkUnit<Boolean> repositoryWorkUnit = new RepositoryWorkUnit<Boolean>(
                     Messages.getString("UpdateManagerUtils.updateMOfification")) { //$NON-NLS-1$
 
                 @Override
                 protected void run() throws LoginException, PersistenceException {
-                    result = doExecuteUpdates(results, onlySimpleShow, updateAllJobs);
+                    result = doExecuteUpdates(results, onlySimpleShow, updateAllJobs, executeAllWithoutChoose);
                 }
 
             };
@@ -254,7 +260,8 @@ public final class UpdateManagerUtils {
         }
     }
 
-    private static boolean doExecuteUpdates(final List<UpdateResult> results, boolean onlySimpleShow, final boolean updateAllJobs) {
+    private static boolean doExecuteUpdates(final List<UpdateResult> results, boolean onlySimpleShow, final boolean updateAllJobs,
+            final boolean executeAllWithoutChoose) {
         if (results == null || results.isEmpty()) {
             return false;
         }
@@ -262,6 +269,9 @@ public final class UpdateManagerUtils {
             if (CommonsPlugin.isHeadless() || !ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
                 doExecuteUpdates(results, updateAllJobs);
             } else {
+                if (executeAllWithoutChoose) {
+                    return doExecuteUpdates(results, updateAllJobs, true);
+                }
                 // changed by hqzhang, Display.getCurrent().getActiveShell() may cause studio freeze
                 UpdateDetectionDialog checkDialog = new UpdateDetectionDialog(
                         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), results, onlySimpleShow);
@@ -277,6 +287,11 @@ public final class UpdateManagerUtils {
     }
 
     private static boolean doExecuteUpdates(final List<UpdateResult> results, final boolean updateAllJobs) {
+        return doExecuteUpdates(results, updateAllJobs, false);
+    }
+
+    private static boolean doExecuteUpdates(final List<UpdateResult> results, final boolean updateAllJobs,
+            final boolean executeWithoutShow) {
         if (results == null || results.isEmpty()) {
             return false;
         }
@@ -493,7 +508,8 @@ public final class UpdateManagerUtils {
                 }
             };
             try {
-                if (!CommonsPlugin.isHeadless() && ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
+                if (!CommonsPlugin.isHeadless() && ProxyRepositoryFactory.getInstance().isFullLogonFinished()
+                        && !executeWithoutShow) {
                     new ProgressMonitorDialog(null).run(false, false, iRunnableWithProgress);
                 } else {
                     iRunnableWithProgress.run(new NullProgressMonitor());

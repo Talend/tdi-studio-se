@@ -188,6 +188,7 @@ public abstract class JobScriptsManager {
         needWSDD,
         needWSDL,
         needLauncher,
+        launcherName,
         needSystemRoutine,
         needUserRoutine,
         needPigudf,

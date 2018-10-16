@@ -381,7 +381,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 							int countSum_<%=cid%> = 0;
 							<%dbLog.batch().executeTry(dbLog.str(dataAction));%>
 							for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
-								countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : 1);
+								countSum_<%=cid%> += (countEach_<%=cid%> == java.sql.Statement.EXECUTE_FAILED ? 0 : 1);
 							}
 							<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
 	            	    	<%if (("INSERT").equals(dataAction)) {

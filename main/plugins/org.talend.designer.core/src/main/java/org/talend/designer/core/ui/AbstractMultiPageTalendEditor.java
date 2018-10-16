@@ -1063,18 +1063,6 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         }
     }
 
-    // create Dependencies editor
-    protected void createPage3() {
-        dependenciesEditor = new JobDependenciesEditor(this, designerEditor.isReadOnly());
-        try {
-            int index = addPage(dependenciesEditor, getEditorInput());
-            setPageText(index, Messages.getString("AbstractMultiPageTalendEditor.DependenciesPage")); //$NON-NLS-1$
-            setPageImage(index, DesignerPlugin.getImageDescriptor("icons/dependencies/dependencies.gif").createImage());
-        } catch (PartInitException e) {
-            ExceptionHandler.process(e);
-        }
-    }
-
     /**
      * DOC bqian Comment method "generateCode".
      */

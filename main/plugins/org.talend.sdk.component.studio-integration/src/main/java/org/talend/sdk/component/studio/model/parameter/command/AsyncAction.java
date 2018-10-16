@@ -15,15 +15,17 @@
  */
 package org.talend.sdk.component.studio.model.parameter.command;
 
+import static java.util.Optional.ofNullable;
+import static org.eclipse.jface.dialogs.MessageDialog.openError;
+import static org.eclipse.jface.dialogs.MessageDialog.openInformation;
 import static org.talend.sdk.component.studio.model.action.Action.MESSAGE;
 import static org.talend.sdk.component.studio.model.action.Action.OK;
 import static org.talend.sdk.component.studio.model.action.Action.STATUS;
 
 import java.util.Map;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.eclipse.swt.widgets.Shell;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
 
@@ -39,12 +41,17 @@ public class AsyncAction extends BaseAsyncAction<String> {
 
     @Override
     protected void onResult(final Map<String, String> result) {
-        Display.getDefault().asyncExec(() -> {
-            final String dialogTitle = Messages.getString("action.result.title");
-            if (OK.equals(result.get(STATUS))) {
-                MessageDialog.openInformation(DisplayUtils.getDefaultShell(), dialogTitle, result.get(MESSAGE));
+        final boolean success = OK.equals(result.get(STATUS));
+        final String dialogTitle = Messages.getString("action.result.title");
+        final String message = result.get(MESSAGE);
+        final Display display = ofNullable(Display.getCurrent()).orElseGet(Display::getDefault);
+        display.syncExec(() -> {
+            final Shell shell = ofNullable(Display.getDefault().getActiveShell())
+                    .orElseGet(Shell::new);
+            if (success) {
+                openInformation(shell, dialogTitle, message);
             } else {
-                MessageDialog.openError(DisplayUtils.getDefaultShell(), dialogTitle, result.get(MESSAGE));
+                openError(shell, dialogTitle, message);
             }
         });
     }

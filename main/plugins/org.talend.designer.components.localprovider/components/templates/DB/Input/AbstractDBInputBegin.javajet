@@ -58,11 +58,27 @@ imports="
 		        String conn = "conn_" + connection;
 		        
 		        if(isAmazonAurora){
-            		conn += "_in";
-            }
+                    conn += "_in";
+                }
 %>
 		        conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
-				<%log4jCodeGenerateUtil.useExistConnection(node);%>
+<%
+				if ("REDSHIFT".equals(type)){
+					String jdbcUrl = "";
+					//Retrieve connection node and check if SSO was used for correct logging
+					List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
+					String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
+					for (INode ne : nodes) {
+						if (connectionRedShift.equals(ne.getUniqueName())) {
+							jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
+						}
+					}
+					boolean needUserAndPassword = !"SSO".equals(jdbcUrl);
+					log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
+				} else {
+					log4jCodeGenerateUtil.useExistConnection(node);
+				}
+%>
 <%
 				dbInputBeginUtil.afterUseExistConnection(node);
 		    } else {
@@ -311,7 +327,7 @@ imports="
 					    					<% if("JTDS".equals(driver)) { %>
 						 					if ("NTEXT".equals(rsmd_<%=cid%>.getColumnTypeName(i_<%=cid %> ).toUpperCase())) {
 												net.sourceforge.jtds.jdbc.ClobImpl clob_<%=cid %> = (net.sourceforge.jtds.jdbc.ClobImpl) rs_<%=cid%>.getClob(i_<%=cid %>);
-												if(clob_<%=cid %>!=null){
+												if(clob_<%=cid %> !=null){
 													net.sourceforge.jtds.jdbc.TalendNTextImpl tNTextImpl_<%=cid %> = new net.sourceforge.jtds.jdbc.TalendNTextImpl(clob_<%=cid %>);
 							  						list_<%=cid %>.add(tNTextImpl_<%=cid %>.getValue());
 												}else{

@@ -26,6 +26,7 @@ imports="
 	String table = ElementParameterParser.getValue(node, "__TABLE__");
 	String userName = ElementParameterParser.getValue(node, "__USER__");
 	String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
+	String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
 	
 	String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
 	dbquery = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(dbquery);
@@ -39,31 +40,55 @@ imports="
 %>
 	 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 <%
-		log4jCodeGenerateUtil.useExistConnection(node);
+        //Retrieve connection node and check if SSO was used for correct logging
+        List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
+        String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
+        for (INode ne : nodes) {
+            if (connectionRedShift.equals(ne.getUniqueName())) {
+                jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
+            }
+        }
+        boolean needUserAndPassword = !"SSO".equals(jdbcUrl);
+        log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
 	} else {
 %>
-		String driverClass_<%=cid%> = "com.amazon.redshift.jdbc41.Driver";
+		String driverClass_<%=cid%> = "com.amazon.redshift.jdbc42.Driver";
 		Class.forName(driverClass_<%=cid%>).newInstance();
-		<%
-		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
-		%>
-			String url_<%=cid%> = "jdbc:redshift://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>;
-		<%
-		} else {
-		%>
-			String url_<%=cid%> = "jdbc:redshift://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%> + "?" + <%=dbproperties%>;
-		<%
-		}
-		String passwordFieldName = "__PASS__";
-		%>
-		<%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
-		final String decryptedPass_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
-		<%} else {%>
-		final String decryptedPass_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
-		<%}%>
-		String dbUser_<%=cid %> = <%=userName%>;
-		String dbPwd_<%=cid %> = decryptedPass_<%=cid%>;
-		<%
+        StringBuilder sbuilder_<%=cid%> = new StringBuilder();
+        sbuilder_<%=cid%>.append("jdbc:redshift:");
+<%
+        if ("SSO".equals(jdbcUrl)){
+%>
+            sbuilder_<%=cid%>.append("iam:");
+<%
+}
+%>
+        sbuilder_<%=cid%>.append("//")
+                         .append(<%=host%>)
+                         .append(":")
+                         .append(<%=port%>)
+                         .append("/")
+                         .append(<%=dbName%>);
+<%
+        if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
+%>
+        sbuilder_<%=cid%>.append("?").append(<%=dbproperties%>);
+<%
+        }
+%>
+        String url_<%=cid%> = sbuilder_<%=cid%>.toString();
+<%
+        if (!"SSO".equals(jdbcUrl)){
+            String passwordFieldName = "__PASS__";
+            %>
+            <%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+            final String decryptedPass_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+            <%} else {%>
+            final String decryptedPass_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+            <%}%>
+            String dbUser_<%=cid %> = <%=userName%>;
+            String dbPwd_<%=cid %> = decryptedPass_<%=cid%>;
+<%      }
 		log4jCodeGenerateUtil.connect(node);
 	}
 	
