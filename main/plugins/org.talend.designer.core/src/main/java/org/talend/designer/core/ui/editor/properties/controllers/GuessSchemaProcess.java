@@ -203,7 +203,7 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
                 + "csvWriter.writeNext(dataOneRow);"; //$NON-NLS-1$
         
         
-        if(EDatabaseTypeName.REDSHIFT.getXmlName().equals(info.getDbType())){
+        if(EDatabaseTypeName.REDSHIFT.getXmlName().equals(info.getDbType())||EDatabaseTypeName.REDSHIFT_SSO.getXmlName().equals(info.getDbType())){
             codeEnd = "nbRows++;\r\n" + "    if (nbRows > " + maximumRowsToPreview + ") break;\r\n" + "}\r\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     + "conn.close();\r\n" + "csvWriter.close();\r\n"; //$NON-NLS-1$ //$NON-NLS-2$
         }else{
@@ -234,7 +234,7 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
     private String getCodeStart(INode connectionNode, String createStatament, int fetchSize){
         IPath temppath = getTemppath();
         String codeStart = null;
-        if(EDatabaseTypeName.REDSHIFT.getXmlName().equals(info.getDbType())){
+        if(EDatabaseTypeName.REDSHIFT.getXmlName().equals(info.getDbType())||EDatabaseTypeName.REDSHIFT_SSO.getXmlName().equals(info.getDbType())){
             INode node = getNode();
             String tableName = (String) node.getElementParameter("TABLE").getValue();
             String dbName = null;
@@ -254,7 +254,13 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
                     schema = (String) node.getElementParameter("SCHEMA_DB").getValue();
                 }
             }
-            codeStart = "java.lang.Class.forName(\"" + info.getDriverClassName() + "\");\r\n" + "String url = \"" + info.getUrl() //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            String url=null;
+            if(EDatabaseTypeName.REDSHIFT_SSO.getXmlName().equals(info.getDbType())) {
+            	url = info.getUrl()+"?"+info.getadditionalParams();
+            }else {
+            	url = info.getUrl();
+            }
+            codeStart = "java.lang.Class.forName(\"" + info.getDriverClassName() + "\");\r\n" + "String url = \"" + url //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     + "\";\r\n" + "java.sql.Connection conn = java.sql.DriverManager.getConnection(url, \"" + info.getUsername() //$NON-NLS-1$ //$NON-NLS-2$
                     + "\", \"" + info.getPwd() + "\");\r\n" + "java.sql.DatabaseMetaData metaData = conn.getMetaData();\r\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     + "java.sql.ResultSet rs = metaData.getColumns(" + dbName + "," + schema + "," + tableName + ",null);\r\n" //$NON-NLS-1$ //$NON-NLS-2$

@@ -101,10 +101,12 @@ public class DbInfo {
         this.dbVersion = dbVersion;
         this.url = url;
         this.driverJarPath = driverJarPath;
+        this.additionalParams = additionalParams;
         generateDriverName();
         getConnFromNode();
         genarateDriverJarPath();
         this.trueDBTypeForJDBC = getTrueDBType(driverClassName, driverJarPath);
+        
     }
 
     public String getTrueDBTypeForJDBC() {
@@ -157,7 +159,9 @@ public class DbInfo {
     public String getPwd() {
         return this.pwd;
     }
-
+    public String getadditionalParams() {
+    	return this.additionalParams;
+    }
     public void setPwd(String pwd) {
         this.pwd = pwd;
     }
