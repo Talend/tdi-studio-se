@@ -482,7 +482,7 @@ public class ProjectSettingManager extends Utils {
         param.setListItemsDisplayName(new String[] { EmfComponent.TEXT_BUILTIN, EmfComponent.TEXT_REPOSITORY });
         param.setListItemsDisplayCodeName(new String[] { EmfComponent.BUILTIN, EmfComponent.REPOSITORY });
         param.setListItemsValue(new String[] { EmfComponent.BUILTIN, EmfComponent.REPOSITORY });
-        param.setValue(preferenceStore.getString(getPreferenceName(EParameterName.PROPERTY_TYPE)));
+        param.setValue(preferenceStore.getString(languagePrefix + EParameterName.PROPERTY_TYPE.getName()));
         param.setCategory(EComponentCategory.EXTRA);
         param.setFieldType(EParameterFieldType.TECHNICAL);
         param.setRepositoryValue(ERepositoryCategoryType.DATABASE.getName());

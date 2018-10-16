@@ -861,7 +861,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             }
             shellLauncherButton.setSelection(settings.getBoolean(STORE_SHELL_LAUNCHER_ID));
             // TDQ-15391: when have tDqReportRun, must always export items.
-            if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+            if (EmfModelUtils.getComponentByName(getProcessItem(), "tDqReportRun") != null) { //$NON-NLS-1$
                 jobItemButton.setSelection(true);
             } else {
                 jobItemButton.setSelection(settings.getBoolean(STORE_JOB_ID));
@@ -1093,7 +1093,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         exportChoiceMap.put(ExportChoice.needUserRoutine, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needTalendLibraries, Boolean.TRUE);
         // TDQ-15391: when have tDqReportRun, must always export items.
-        if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+        if (EmfModelUtils.getComponentByName(getProcessItem(), "tDqReportRun") != null) { //$NON-NLS-1$
             exportChoiceMap.put(ExportChoice.needJobItem, Boolean.TRUE);
         } else {
             exportChoiceMap.put(ExportChoice.needJobItem, Boolean.FALSE);

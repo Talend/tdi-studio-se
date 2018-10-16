@@ -51,7 +51,6 @@ import org.talend.repository.viewer.content.VisitResourceHelper;
 import org.talend.repository.viewer.content.listener.ResourceCollectorVisitor;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.compatibility.Compatibility;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
@@ -122,7 +121,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
                     try {
                         List<IRepositoryNode> repNodes = new ArrayList<>();
                         repNodes.add(repNode);
-                        Compatibility.collectRepositoryNodes(ProjectRepositoryNode.class.cast(rootNode), repNodes);
+                        ProjectRepositoryNode.class.cast(rootNode).collectRepositoryNodes(repNodes);
                     } catch (Exception e) {
                         ExceptionHandler.process(e);
                     }
@@ -155,15 +154,15 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
                 }
                 familyNodesCache = getTaCoKitFamilies(repoNode, true, false);
                 if (familyNodesCache != null && !familyNodesCache.isEmpty()) {
-                    try {
-                        Compatibility.collectRepositoryNodes(rootNode, new ArrayList<>(familyNodesCache));
-                    } catch (Exception e) {
-                        ExceptionHandler.process(e);
-                    }
+                    rootNode.collectRepositoryNodes(new ArrayList<>(familyNodesCache));
                 }
             }
-            familyNodesMapCache.put(repoNode, familyNodesCache);
-            return familyNodesCache;
+            if (familyNodesCache == null) {
+                return Collections.EMPTY_SET;
+            } else {
+                familyNodesMapCache.put(repoNode, familyNodesCache);
+                return familyNodesCache;
+            }
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }

@@ -706,7 +706,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             }
 
             // TDQ-15391: when have tDqReportRun, must always export items.
-            if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+            if (EmfModelUtils.getComponentByName(getProcessItem(), "tDqReportRun") != null) { //$NON-NLS-1$
                 jobItemButton.setSelection(true);
                 jobItemButton.setEnabled(false);
             }

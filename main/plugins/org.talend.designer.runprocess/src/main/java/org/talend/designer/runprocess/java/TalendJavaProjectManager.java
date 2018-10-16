@@ -51,6 +51,7 @@ import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -93,63 +94,82 @@ public class TalendJavaProjectManager {
 
             @Override
             protected void run() {
+                final IWorkspaceRunnable op = new IWorkspaceRunnable() {
+
+                    @Override
+                    public void run(IProgressMonitor monitor) throws CoreException {
+                        try {
+                            // create aggregator poms
+                            AggregatorPomsHelper helper = new AggregatorPomsHelper(project.getTechnicalLabel());
+                            // create poms folder.
+                            IFolder poms = createFolderIfNotExist(helper.getProjectPomsFolder(), monitor);
+
+                            // codes
+                            IFolder code = createFolderIfNotExist(poms.getFolder(DIR_CODES), monitor);
+                            // routines
+                            createFolderIfNotExist(code.getFolder(DIR_ROUTINES), monitor);
+                            // pigudfs
+                            if (ProcessUtils.isRequiredPigUDFs(null)) {
+                                createFolderIfNotExist(code.getFolder(DIR_PIGUDFS), monitor);
+                            }
+                            // beans
+                            if (ProcessUtils.isRequiredBeans(null)) {
+                                createFolderIfNotExist(code.getFolder(DIR_BEANS), monitor);
+                            }
+
+                            // jobs
+                            IFolder jobs = createFolderIfNotExist(poms.getFolder(DIR_JOBS), monitor);
+                            // process
+                            createFolderIfNotExist(jobs.getFolder(DIR_PROCESS), monitor);
+                            // process_mr
+                            if (PluginChecker.isMapReducePluginLoader()) {
+                                createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_MR), monitor);
+                            }
+                            // process_storm
+                            if (PluginChecker.isStormPluginLoader()) {
+                                createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_STORM), monitor);
+                            }
+                            // routes
+                            if (PluginChecker.isRouteLoaded()) {
+                                createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_ROUTES), monitor);
+                            }
+                            // services
+                            if (PluginChecker.isServiceLoaded()) {
+                                createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_SERVICES), monitor);
+                            }
+                            // joblets
+                            if (PluginChecker.isJobLetPluginLoaded()) {
+                                createFolderIfNotExist(jobs.getFolder(DIR_JOBLETS), monitor);
+                            }
+                            // joblets_spark
+                            if (PluginChecker.isSparkJobLetPluginLoaded()) {
+                                createFolderIfNotExist(jobs.getFolder(DIR_JOBLETS_SPARK), monitor);
+                            }
+                            // joblets_spark_streaming
+                            if (PluginChecker.isSparkStreamingJobLetPluginLoaded()) {
+                                createFolderIfNotExist(jobs.getFolder(DIR_JOBLETS_SPARK_STREAMING), monitor);
+                            }
+                            // routelets
+                            if (PluginChecker.isRouteletLoaded()) {
+                                createFolderIfNotExist(jobs.getFolder(DIR_ROUTELETS), monitor);
+                            }
+                            helper.createRootPom(monitor);
+                            List<ProjectReference> references = project.getProjectReferenceList(true);
+                            for (ProjectReference ref : references) {
+                                createRefRootPoms(monitor, new Project(ref.getReferencedProject()));
+                            }
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
+                    }
+                };
                 try {
-                    // create aggregator poms
-                    AggregatorPomsHelper helper = new AggregatorPomsHelper(project.getTechnicalLabel());
-                    // create poms folder.
-                    IFolder poms = createFolderIfNotExist(helper.getProjectPomsFolder(), monitor);
-
-                    // codes
-                    IFolder code = createFolderIfNotExist(poms.getFolder(DIR_CODES), monitor);
-                    // routines
-                    createFolderIfNotExist(code.getFolder(DIR_ROUTINES), monitor);
-                    // pigudfs
-                    if (ProcessUtils.isRequiredPigUDFs(null)) {
-                        createFolderIfNotExist(code.getFolder(DIR_PIGUDFS), monitor);
-                    }
-                    // beans
-                    if (ProcessUtils.isRequiredBeans(null)) {
-                        createFolderIfNotExist(code.getFolder(DIR_BEANS), monitor);
-                    }
-
-                    // jobs
-                    IFolder jobs = createFolderIfNotExist(poms.getFolder(DIR_JOBS), monitor);
-                    // process
-                    createFolderIfNotExist(jobs.getFolder(DIR_PROCESS), monitor);
-                    // process_mr
-                    if (PluginChecker.isMapReducePluginLoader()) {
-                        createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_MR), monitor);
-                    }
-                    // process_storm
-                    if (PluginChecker.isStormPluginLoader()) {
-                        createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_STORM), monitor);
-                    }
-                    // routes
-                    if (PluginChecker.isRouteLoaded()) {
-                        createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_ROUTES), monitor);
-                    }
-                    // services
-                    if (PluginChecker.isServiceLoaded()) {
-                        createFolderIfNotExist(jobs.getFolder(DIR_PROCESS_SERVICES), monitor);
-                    }
-                    // joblets
-                    if (PluginChecker.isJobLetPluginLoaded()) {
-                        createFolderIfNotExist(jobs.getFolder(DIR_JOBLETS), monitor);
-                    }
-                    // joblets_spark
-                    if (PluginChecker.isSparkJobLetPluginLoaded()) {
-                        createFolderIfNotExist(jobs.getFolder(DIR_JOBLETS_SPARK), monitor);
-                    }
-                    // joblets_spark_streaming
-                    if (PluginChecker.isSparkStreamingJobLetPluginLoaded()) {
-                        createFolderIfNotExist(jobs.getFolder(DIR_JOBLETS_SPARK_STREAMING), monitor);
-                    }
-                    // routelets
-                    if (PluginChecker.isRouteletLoaded()) {
-                        createFolderIfNotExist(jobs.getFolder(DIR_ROUTELETS), monitor);
-                    }
-                    helper.createRootPom(monitor);
-                } catch (Exception e) {
+                    IWorkspace workspace = ResourcesPlugin.getWorkspace();
+                    ISchedulingRule schedulingRule = workspace.getRoot();
+                    // the update the project files need to be done in the workspace runnable to
+                    // avoid all notification of changes before the end of the modifications.
+                    workspace.run(op, schedulingRule, IWorkspace.AVOID_UPDATE, monitor);
+                } catch (CoreException e) {
                     ExceptionHandler.process(e);
                 }
             }
@@ -413,6 +433,13 @@ public class TalendJavaProjectManager {
         };
         workUnit.setAvoidUnloadResources(true);
         ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
+    }
+
+    private static void createRefRootPoms(IProgressMonitor monitor, Project refProject) throws Exception {
+        for (ProjectReference ref : refProject.getProjectReferenceList(true)) {
+            createRefRootPoms(monitor, new Project(ref.getReferencedProject()));
+        }
+        new AggregatorPomsHelper(refProject.getTechnicalLabel()).createRootPom(monitor);
     }
 
     private static void createMavenJavaProject(IProgressMonitor monitor, IProject jobProject, Property property,

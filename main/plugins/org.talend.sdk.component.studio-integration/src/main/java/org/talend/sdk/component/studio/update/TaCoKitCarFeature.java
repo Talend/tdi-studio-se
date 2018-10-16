@@ -180,10 +180,33 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
         }
         Process exec = Runtime.getRuntime().exec(cmd);
         while (exec.isAlive()) {
+            try {
+                TaCoKitUtil.checkMonitor(progress);
+            } catch (InterruptedException e) {
+                exec.destroy();
+                boolean alreadyInstalled = false;
+                try {
+                    InstallationStatus installationStatus = getInstallationStatus(new NullProgressMonitor());
+                    if (installationStatus != null) {
+                        org.talend.updates.runtime.model.InstallationStatus.Status status = installationStatus.getStatus();
+                        if (status != null) {
+                            if (status.isInstalled()) {
+                                String installedVersion = installationStatus.getInstalledVersion();
+                                alreadyInstalled = StringUtils.equals(getVersion(), installedVersion);
+                            }
+                        }
+                    }
+                } catch (Exception e1) {
+                    ExceptionHandler.process(e);
+                }
+                if (alreadyInstalled) {
+                    return true;
+                } else {
+                    throw e;
+                }
+            }
             Thread.sleep(100);
-            TaCoKitUtil.checkMonitor(progress);
         }
-        TaCoKitUtil.checkMonitor(progress);
         int exitValue = exec.exitValue();
         if (exitValue != 0) {
             throw new Exception(getErrorMessage(exec));

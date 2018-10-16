@@ -86,7 +86,7 @@
           REPOSITORY_VALUE="ENDPOINT"
           SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
         >
-          <DEFAULT>"https://login.salesforce.com/services/Soap/u/43.0"</DEFAULT>
+          <DEFAULT>"https://login.salesforce.com/services/Soap/u/44.0"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER
