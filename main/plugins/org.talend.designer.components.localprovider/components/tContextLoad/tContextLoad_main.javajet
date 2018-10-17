@@ -95,7 +95,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				for (IContextParameter ctxParam: params) {
 					if ("id_Password".equals(ctxParam.getType()) ) {
 %>						
-						if ("<%=ctxParam.getName()%>".equals(key_<%=cid %>) ) currentValue_<%=cid %> = currentValue_<%=cid %>.replaceAll(".", "*");
+						if ((key_<%=cid %> != null) && ("<%=ctxParam.getName()%>".equals(key_<%=cid %>)) ) currentValue_<%=cid %> = currentValue_<%=cid %>.replaceAll(".", "*");
 <%						
 					}	
 
