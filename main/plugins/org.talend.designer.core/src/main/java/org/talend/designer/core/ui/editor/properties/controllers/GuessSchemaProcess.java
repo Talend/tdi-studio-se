@@ -258,13 +258,8 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
                     schema = (String) node.getElementParameter("SCHEMA_DB").getValue();
                 }
             }
-            String url=null;
-            if(EDatabaseTypeName.REDSHIFT_SSO.getXmlName().equals(info.getDbType())) {
-            	url = info.getUrl()+"?"+info.getadditionalParams();
-            }else {
-            	url = info.getUrl();
-            }
-            codeStart = "java.lang.Class.forName(\"" + info.getDriverClassName() + "\");\r\n" + "String url = \"" + url //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+            codeStart = "java.lang.Class.forName(\"" + info.getDriverClassName() + "\");\r\n" + "String url = \"" + info.getUrl() //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     + "\";\r\n" + "java.sql.Connection conn = java.sql.DriverManager.getConnection(url, \"" + info.getUsername() //$NON-NLS-1$ //$NON-NLS-2$
                     + "\", \"" + info.getPwd() + "\");\r\n" + "java.sql.DatabaseMetaData metaData = conn.getMetaData();\r\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     + "java.sql.ResultSet rs = metaData.getColumns(" + dbName + "," + schema + "," + tableName + ",null);\r\n" //$NON-NLS-1$ //$NON-NLS-2$

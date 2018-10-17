@@ -42,7 +42,6 @@ import org.talend.core.model.metadata.builder.connection.SalesforceModuleUnit;
 import org.talend.core.model.metadata.builder.connection.SalesforceSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.WSDLSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.XmlFileConnection;
-import org.talend.core.model.metadata.builder.connection.impl.DatabaseConnectionImpl;
 import org.talend.core.model.metadata.builder.connection.impl.XmlFileConnectionImpl;
 import org.talend.core.model.metadata.designerproperties.PropertyConstants.CDCTypeMode;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
@@ -332,16 +331,14 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
             }
             
             for (IElementParameter param : elementParameters) {
-                   if(param.getName().equals("JDBC_URL")&&connection!=null) {
-                	   DatabaseConnectionImpl db =	(DatabaseConnectionImpl)connection;
-                	   if(db.getDatabaseType().equals("Redshift SSO")) {
-                		   param.setRepositoryValue("SSO");
-                           param.setValue("SSO");
-                	   }else {
-                		   param.setRepositoryValue("STANDARD");
-                           param.setValue("STANDARD");
-                	   }
-                   }
+                // if(param.getName().equals("JDBC_URL")&&connection!=null) {
+                // DatabaseConnectionImpl db = (DatabaseConnectionImpl)connection;
+                // if(db.getDatabaseType().equals("Redshift SSO")) {
+                // param.setValue("SSO");
+                // }else {
+                // param.setValue("STANDARD");
+                // }
+                // }
                   
                 String repositoryValue = param.getRepositoryValue();
                 if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
