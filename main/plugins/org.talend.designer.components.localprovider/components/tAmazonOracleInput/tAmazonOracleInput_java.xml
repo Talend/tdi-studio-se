@@ -39,7 +39,8 @@
 		</PARAMETER>
 		<PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="30"
 			REPOSITORY_VALUE="DB_VERSION" SHOW_IF="(USE_EXISTING_CONNECTION == 'false')">
-			<ITEMS DEFAULT="ORACLE_12">
+			<ITEMS DEFAULT="ORACLE_18">
+				<ITEM NAME="ORACLE_18" VALUE="ORACLE_18" />
 				<ITEM NAME="ORACLE_12" VALUE="ORACLE_12" />
 				<ITEM NAME="ORACLE_11" VALUE="ORACLE_11" />
 			</ITEMS>
@@ -170,6 +171,7 @@
 	   <IMPORT NAME="Driver-Oracle-XDB" MODULE="xdb.jar" MVN="mvn:org.talend.libraries/xdb/6.0.0"  REQUIRED_IF="SCHEMA.DB_TYPE IN ['XMLTYPE']" />
 	   <IMPORT NAME="Driver-Oracle-XMLPARSERV2" BundleID="" MODULE="xmlparserv2.jar" MVN="mvn:org.talend.libraries/xmlparserv2/6.0.0"  REQUIRED_IF="SCHEMA.DB_TYPE IN ['XMLTYPE']" />
        <IMPORT NAME="Driver-Oracle12c" MODULE="ojdbc7.jar" MVN="mvn:org.talend.libraries/ojdbc7/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_12') AND (USE_EXISTING_CONNECTION == 'false')" />
+       <IMPORT NAME="Driver-Oracle18c" MODULE="ojdbc8.jar" MVN="mvn:com.oracle.jdbc/ojdbc8/12.2.0.1" REQUIRED_IF="(DB_VERSION == 'ORACLE_18') AND (USE_EXISTING_CONNECTION == 'false')" />
      </IMPORTS>
 	</CODEGENERATION>
 	<RETURNS>

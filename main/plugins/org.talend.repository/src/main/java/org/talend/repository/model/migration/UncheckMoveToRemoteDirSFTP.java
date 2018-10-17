@@ -59,7 +59,7 @@ public class UncheckMoveToRemoteDirSFTP extends AbstractJobMigrationTask {
                         String connectionComponentName = ComponentUtilities.getNodePropertyValue(node, CONNECTION_PROPERTY_NAME);
                         NodeType connectionNode = ComponentUtilities.getNodeTypeFromUniqueName(processType,
                                 connectionComponentName);
-                        if (isConnectionUseSFTP(connectionNode)) {
+                        if (isConnectionUseSFTP(connectionNode) && ComponentUtilities.getNodeProperty(node, MOVE_TO_DIR_PROPERTY_NAME) != null) {
                             ComponentUtilities.setNodeValue(node, MOVE_TO_DIR_PROPERTY_NAME, "false");
                         }
                     }
@@ -67,7 +67,7 @@ public class UncheckMoveToRemoteDirSFTP extends AbstractJobMigrationTask {
                 }
 
                 private boolean isConnectionUseSFTP(NodeType connectionNode) {
-                    return "true".equals(ComponentUtilities.getNodePropertyValue(connectionNode, SFTP_PROPERTY_NAME));
+                    return connectionNode != null && "true".equals(ComponentUtilities.getNodePropertyValue(connectionNode, SFTP_PROPERTY_NAME));
                 }
 
             };

@@ -303,10 +303,10 @@ public class BuildJobManager {
             String logMsg = getLogErrorMsg(mvnLogFile);
 
             if (jobExportType != JobExportType.IMAGE) {
-                File targetFile = buildJobHandler.getJobTargetFile().getLocation().toFile();
+                IFile targetFile = buildJobHandler.getJobTargetFile();
                 if (targetFile != null && targetFile.exists()) {
-                    File jobZipFile = targetFile;
-                    String jobZip = targetFile.toString();
+                    File jobZipFile = targetFile.getLocation().toFile();
+                    String jobZip = jobZipFile.toString();
                     if (needClasspathJar(exportChoiceMap)) {
                         ExportJobUtil.deleteTempFiles();
                         JavaJobExportReArchieveCreator creator = new JavaJobExportReArchieveCreator(jobZip, label);
