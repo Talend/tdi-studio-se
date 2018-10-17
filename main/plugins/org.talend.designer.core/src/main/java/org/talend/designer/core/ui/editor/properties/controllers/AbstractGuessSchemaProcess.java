@@ -128,7 +128,9 @@ public abstract class AbstractGuessSchemaProcess {
                     StringBuilder sqlError = new StringBuilder();
                     if (tokenizer.countTokens() > 2) {
                         tokenizer.nextToken();
-                        sqlError.append(tokenizer.nextToken()).append("\n");
+                        sqlError.append(tokenizer.nextToken()).append("\n"); //$NON-NLS-1$
+                    } else if (tokenizer.countTokens() == 1) {
+                        sqlError.append(tokenizer.nextToken()).append("\n"); //$NON-NLS-1$
                     }
                     return sqlError.toString();
                 }
