@@ -26,7 +26,6 @@ if (("true").equals(useExistingConn)) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
       ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
-      break;
     }
   }
 } else {
@@ -45,9 +44,9 @@ if (sftp) { // *** sftp *** //
 			log.info("<%=cid%> - Connection to the server closed.");
 		<%}%>
 <%
-	} else if (!moveToCurrentDir){
+	} else if (moveToCurrentDir){
 %>
-		c_<%=cid%>.cd(rootDir_<%=cid %>);
+		c_<%=cid%>.cd(<%=remoteDir %>);
 <%
 	}
 } else if (ftps) { // *** ftps *** //

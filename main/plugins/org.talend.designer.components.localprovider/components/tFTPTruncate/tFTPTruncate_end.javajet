@@ -19,13 +19,12 @@
 	boolean ftps = false;
 	if(("true").equals(useExistingConn)){
 		List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
-        for(INode n : nodeList){
-            if(n.getUniqueName().equals(connection)){
-                sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
-                ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
-                break;
-            }
-        }
+		for(INode n : nodeList){
+			if(n.getUniqueName().equals(connection)){
+				sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+				ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+			}
+		}
 	}else{
 		sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
 		ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
@@ -39,16 +38,14 @@
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Closing the connection to the server.");
 			<%}%>
-    		session_<%=cid%>.disconnect();
+    		session_<%=cid%>.disconnect(); 
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Connection to the server closed.");
-			<%}%>
+			<%}%>  
 <%
-        } else if (!moveToCurrentDir) {
+		}
 %>
-            c_<%=cid %>.cd(rootDir_<%=cid %>);
-<%
-        }
+<%	
 	} else if (ftps) { // *** ftps *** //
 %>
 	} <% /* close main loop */ %>
