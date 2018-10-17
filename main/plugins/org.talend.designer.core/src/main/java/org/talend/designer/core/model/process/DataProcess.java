@@ -2288,15 +2288,8 @@ public class DataProcess implements IGeneratingProcess {
         inputNode.setProcess(node.getProcess());
         inputNode.setElementParameters(inputComponent.createElementParameters(inputNode));
 
-        // temporary :
-        String query = TalendTextUtils.addQuotes("select * from " + tabName + ";"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        // to change to:
-        // String query = TextUtil.addSqlQuots(DBTYPE, QUERY_WITH_ALL_COLUMNS!, refSchema);
-
-        inputNode.getElementParameter("QUERY").setValue(query); //$NON-NLS-1$
-
-        updateInputParametersWithDBConnection(inputNode, dbConnection);
+        updateInputParametersWithDBConnection(inputNode, dbConnection, tabName);
         addDataNode(inputNode);
         List<IConnection> inputNode_outgoingConnections = new ArrayList<IConnection>();
         inputNode.setOutgoingConnections(inputNode_outgoingConnections);
@@ -2742,8 +2735,10 @@ public class DataProcess implements IGeneratingProcess {
         node.getElementParameter("JOIN_KEY").setValue(list);//$NON-NLS-1$
     }
 
-    private void updateInputParametersWithDBConnection(INode node, DatabaseConnection dbConnection) {
+    private void updateInputParametersWithDBConnection(INode node, DatabaseConnection dbConnection, String tabName) {
         EDatabaseTypeName typeFromDbType = EDatabaseTypeName.getTypeFromDbType(dbConnection.getDatabaseType());
+        String query = TalendTextUtils.addQuotes("select * from " + tabName + ";"); //$NON-NLS-1$ //$NON-NLS-2$
+        node.getElementParameter("QUERY").setValue(query); //$NON-NLS-1$
         if (dbConnection.isContextMode()) {
             node.getElementParameter("HOST").setValue(dbConnection.getServerName());//$NON-NLS-1$
             node.getElementParameter("PORT").setValue(dbConnection.getPort());//$NON-NLS-1$
@@ -2780,6 +2775,8 @@ public class DataProcess implements IGeneratingProcess {
                 node.getElementParameter("CONNECTION_TYPE") //$NON-NLS-1$
                         .setValue(typeFromDbType.getXmlName());
                 node.getElementParameter("DB_VERSION").setValue(dbConnection.getDbVersionString());//$NON-NLS-1$
+                // fix for java.sql.SQLSyntaxErrorException: ORA-00911: invalid character
+                node.getElementParameter("QUERY").setValue(TalendTextUtils.addQuotes("select * from " + tabName)); //$NON-NLS-1$
             }
         }
     }
