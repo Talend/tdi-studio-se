@@ -55,7 +55,6 @@
         <ITEM
           NAME="VALUE"
           FIELD="TEXT"
-          VALUE='globalMap.get("CURRENT_FILE")'
         />
       </ITEMS>
     </PARAMETER>

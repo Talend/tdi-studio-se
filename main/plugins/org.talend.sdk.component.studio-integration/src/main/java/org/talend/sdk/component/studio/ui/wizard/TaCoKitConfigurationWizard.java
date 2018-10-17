@@ -51,6 +51,8 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
 
     private TaCoKitConfigurationWizardPage advancedPage;
 
+    protected abstract boolean isNew();
+
     public TaCoKitConfigurationWizard(final IWorkbench workbench, final TaCoKitConfigurationRuntimeData runtimeData) {
         super(workbench, runtimeData.isCreation(), runtimeData.isReadonly());
         this.runtimeData = runtimeData;
@@ -139,11 +141,11 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
         addPage(wizardPropertiesPage);
         final PropertyNode root = new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);
         if (root.hasLeaves(Metadatas.MAIN_FORM)) {
-            mainPage = new TaCoKitConfigurationWizardPage(runtimeData, Metadatas.MAIN_FORM);
+            mainPage = new TaCoKitConfigurationWizardPage(runtimeData, Metadatas.MAIN_FORM, isNew());
             addPage(mainPage);
         }
         if (root.hasLeaves(Metadatas.ADVANCED_FORM)) {
-            advancedPage = new TaCoKitConfigurationWizardPage(runtimeData, Metadatas.ADVANCED_FORM);
+            advancedPage = new TaCoKitConfigurationWizardPage(runtimeData, Metadatas.ADVANCED_FORM, isNew());
             addPage(advancedPage);
         }
     }

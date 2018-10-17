@@ -30,7 +30,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -83,17 +82,17 @@ public class LoginDialogV2 extends TrayDialog {
     /**
      * Colors used for Remote Object background when enabled.
      */
-    public static final Color WHITE_COLOR = new Color(null, 255, 255, 255);
+    public static final Color WHITE_COLOR = org.talend.commons.ui.runtime.ColorConstants.WHITE_COLOR;
 
-    public static final Color GREY_COLOR = new Color(null, 215, 215, 215);
+    public static final Color GREY_COLOR = org.talend.commons.ui.runtime.ColorConstants.GREY_COLOR;
 
-    public static final Color YELLOW_GREEN_COLOR = new Color(null, 138, 188, 0);// 143, 163, 35
+    public static final Color YELLOW_GREEN_COLOR = org.talend.commons.ui.runtime.ColorConstants.YELLOW_GREEN_COLOR;
 
-    public static final Color YELLOW_COLOR = new Color(null, 255, 173, 37);// 254, 182, 84
+    public static final Color YELLOW_COLOR = org.talend.commons.ui.runtime.ColorConstants.YELLOW_COLOR;
 
-    public static final Color RED_COLOR = new Color(null, new RGB(240, 0, 0));// 255
+    public static final Color RED_COLOR = org.talend.commons.ui.runtime.ColorConstants.RED_COLOR;
 
-    public static final Color VERTICAL_SEPERATOR_LINE_COLOR = new Color(null, 162, 179, 195);
+    public static final Color VERTICAL_SEPERATOR_LINE_COLOR = org.talend.commons.ui.runtime.ColorConstants.VERTICAL_SEPERATOR_LINE_COLOR;
 
     protected double realHeightRate;
 

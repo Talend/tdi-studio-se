@@ -68,8 +68,8 @@ public class HealthCheckResolver {
     public void resolveParameters(final Map<String, IElementParameter> settings) {
         final ButtonParameter button = new ButtonParameter(element);
         button.setCategory(category);
-        button.setDisplayName(ofNullable(node.getProperty().getDisplayName())
-                .filter(it -> !node.getProperty().getName().equals(it))
+        button.setDisplayName(ofNullable(action.getDisplayName())
+                .filter(it -> !action.getName().equals(it))
                 .orElseGet(() -> Messages.getString("healthCheck.button")));
         button.setName(node.getProperty().getPath() + ".testConnection");
         button.setNumRow(rowNumber);

@@ -706,7 +706,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             }
 
             // TDQ-15391: when have tDqReportRun, must always export items.
-            if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+            if (EmfModelUtils.getComponentByName(getProcessItem(), "tDqReportRun") != null) { //$NON-NLS-1$
                 jobItemButton.setSelection(true);
                 jobItemButton.setEnabled(false);
             }
@@ -794,6 +794,15 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
         }
         return null;
 
+    }
+    
+    protected String getLauncherName() {
+    	if(shellLauncherButton != null && !shellLauncherButton.isDisposed() && shellLauncherButton.getSelection()){
+    		if (launcherCombo != null && !launcherCombo.isDisposed()) {
+                return launcherCombo.getText();
+            }
+    	}
+        return null;
     }
 
     private void collectNodes(Map<String, Item> items, Object[] objects) {
@@ -1535,6 +1544,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
     protected Map<ExportChoice, Object> getExportChoiceMap() {
         Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
         exportChoiceMap.put(ExportChoice.needLauncher, shellLauncherButton.getSelection());
+        exportChoiceMap.put(ExportChoice.launcherName, getLauncherName());
         exportChoiceMap.put(ExportChoice.needSystemRoutine, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needUserRoutine, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needTalendLibraries, Boolean.TRUE);

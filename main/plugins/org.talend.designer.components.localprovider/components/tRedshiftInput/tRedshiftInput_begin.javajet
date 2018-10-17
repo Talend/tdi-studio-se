@@ -16,11 +16,14 @@ imports="
 <%
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
-	    
+
+        private boolean needUserAndPassword = true;
+
 		public void setURL(INode node) {
 			
 			String logLevel= ElementParameterParser.getValue(node, "__LOG_LEVEL__");
 			String logFile= ElementParameterParser.getValue(node, "__LOG_FILE__");
+			String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
 			if (!logLevel.equals("0")) {
 %>
 				java.io.Writer output_<%=cid %> = new java.io.FileWriter(<%= logFile %>, true);
@@ -29,26 +32,42 @@ imports="
 <%
 			}
 %>
-			
-			StringBuilder sbuilder_<%=cid%> = new StringBuilder();
-			sbuilder_<%=cid%>.append("jdbc:redshift://").append(<%=dbhost%>).append(":").append(<%=dbport%>).append("/").append(<%=dbname%>).append("?loglevel=").append(<%= logLevel %>);
-			<%
+            StringBuilder sbuilder_<%=cid%> = new StringBuilder();
+            sbuilder_<%=cid%>.append("jdbc:redshift:");
+<%
+            if ("SSO".equals(jdbcUrl)){
+%>
+                sbuilder_<%=cid%>.append("iam:");
+<%
+            }
+%>
+            sbuilder_<%=cid%>.append("//")
+                             .append(<%=dbhost%>)
+                             .append(":")
+                             .append(<%=dbport%>)
+                             .append("/")
+                             .append(<%=dbname%>)
+                             .append("?loglevel=")
+                             .append(<%=logLevel%>);
+<%
             if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
-        	%>
-        		sbuilder_<%=cid%>.append("&").append(<%=dbproperties%>);
-        	<%
-        	}
-            %>
+%>
+                sbuilder_<%=cid%>.append("&").append(<%=dbproperties%>);
+<%
+            }
+%>
             String url_<%=cid%> = sbuilder_<%=cid%>.toString();
 <%
 		}
 		
 		public String getDirverClassName(INode node){
-			return "com.amazon.redshift.jdbc41.Driver";
+			return "com.amazon.redshift.jdbc42.Driver";
 		}
 		
 		public void createConnection(INode node) {
-			super.createConnection(node);
+			String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
+			if ("SSO".equals(jdbcUrl)) needUserAndPassword = false;
+			super.createConnection(node, needUserAndPassword);
 			String useCursor= ElementParameterParser.getValue(node, "__USE_CURSOR__");
 			if(("true").equals(useCursor)) {
 				log4jCodeGenerateUtil.autoCommit(node,false);

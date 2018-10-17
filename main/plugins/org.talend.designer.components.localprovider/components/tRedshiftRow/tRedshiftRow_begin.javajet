@@ -16,19 +16,36 @@ imports="
 	    }
 	    
 		public void setURL(INode node) {
-    		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+			String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
 %>
-				String url_<%=cid%> = "jdbc:redshift://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+            StringBuilder sbuilder_<%=cid%> = new StringBuilder();
+            sbuilder_<%=cid%>.append("jdbc:redshift:");
 <%
-	        } else {
+            if ("SSO".equals(jdbcUrl)){
 %>
-				String url_<%=cid%> = "jdbc:redshift://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+                sbuilder_<%=cid%>.append("iam:");
+<%
+}
+%>
+            sbuilder_<%=cid%>.append("//")
+                             .append(<%=dbhost%>)
+                             .append(":")
+                             .append(<%=dbport%>)
+                             .append("/")
+                             .append(<%=dbname%>);
+<%
+            if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
+%>
+                sbuilder_<%=cid%>.append("?").append(<%=dbproperties%>);
 <%
             }
+%>
+            String url_<%=cid%> = sbuilder_<%=cid%>.toString();
+<%
 		}
 		
 		public String getDirverClassName(INode node){
-			return "com.amazon.redshift.jdbc41.Driver";
+			return "com.amazon.redshift.jdbc42.Driver";
 		}
 	}
 	dbRowBeginUtil = new DBRowBeginUtil();

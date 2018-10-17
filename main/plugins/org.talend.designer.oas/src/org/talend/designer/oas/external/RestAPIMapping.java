@@ -1,4 +1,8 @@
 package org.talend.designer.oas.external;
+
+import java.util.LinkedList;
+import java.util.List;
+
 // ============================================================================
 //
 // Copyright (C) 2006-2018 Talend Inc. - www.talend.com
@@ -28,6 +32,8 @@ public class RestAPIMapping {
     private EESBMediaType consumes;
 
     private EESBMediaType produces;
+
+    private List<APIParam> params = new LinkedList<APIParam>();
 
     /**
      * DOC dsergent RestAPIMapping constructor comment.
@@ -134,6 +140,10 @@ public class RestAPIMapping {
      */
     public void setProduces(EESBMediaType produces) {
         this.produces = produces;
+    }
+
+    public List<APIParam> getParams() {
+        return params;
     }
 
     /*

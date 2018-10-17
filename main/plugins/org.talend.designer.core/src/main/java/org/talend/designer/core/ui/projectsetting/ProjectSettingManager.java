@@ -482,7 +482,7 @@ public class ProjectSettingManager extends Utils {
         param.setListItemsDisplayName(new String[] { EmfComponent.TEXT_BUILTIN, EmfComponent.TEXT_REPOSITORY });
         param.setListItemsDisplayCodeName(new String[] { EmfComponent.BUILTIN, EmfComponent.REPOSITORY });
         param.setListItemsValue(new String[] { EmfComponent.BUILTIN, EmfComponent.REPOSITORY });
-        param.setValue(preferenceStore.getString(getPreferenceName(EParameterName.PROPERTY_TYPE)));
+        param.setValue(preferenceStore.getString(languagePrefix + EParameterName.PROPERTY_TYPE.getName()));
         param.setCategory(EComponentCategory.EXTRA);
         param.setFieldType(EParameterFieldType.TECHNICAL);
         param.setRepositoryValue(ERepositoryCategoryType.DATABASE.getName());
@@ -544,7 +544,7 @@ public class ProjectSettingManager extends Utils {
         param.setRepositoryValue("DB_VERSION"); //$NON-NLS-1$
         param.setRequired(true);
         param.setShowIf(dbCondition
-                + " and (" + dbTypeName + " == 'OCLE' or " + dbTypeName + " == 'OCLE_OCI' or " + dbTypeName + " == 'POSTGRESQL' or "+ dbTypeName + " =='ACCESS' or " + dbTypeName + " =='MSSQL' or " + dbTypeName + " =='MYSQL')"); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$ //$NON-NLS-4$
+                + " and (" + dbTypeName + " == 'OCLE' or " +dbTypeName + " == 'SYBASE' or " + dbTypeName + " == 'OCLE_OCI' or " + dbTypeName + " == 'POSTGRESQL' or "+ dbTypeName + " =='ACCESS' or " + dbTypeName + " =='MSSQL' or " + dbTypeName + " =='MYSQL')"); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$ //$NON-NLS-4$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
 
