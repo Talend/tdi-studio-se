@@ -289,7 +289,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
             otherArgsBuffer.append(TalendMavenConstants.ARG_TEST_FAILURE_IGNORE);
         }
         if (canSignJob()) {
-            otherArgsBuffer.append(" " + TalendMavenConstants.ARG_LICENSE_PATH + "=" + getLicenseFile().getAbsolutePath());
+            otherArgsBuffer.append(" " + TalendMavenConstants.ARG_LICENSE_PATH + "=\"" + getLicenseFile().getAbsolutePath() + "\"");
             otherArgsBuffer.append(" " + TalendMavenConstants.ARG_SESSION_ID + "=" + getSessionId());
         }
         otherArgsBuffer.append(" -Dmaven.main.skip=true"); //$NON-NLS-1$
