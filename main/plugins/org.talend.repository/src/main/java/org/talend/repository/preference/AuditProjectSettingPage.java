@@ -186,6 +186,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                final Map<String, String> results = new HashMap<String, String>();
                 // select a foder as the generate path
                 if (selectGeneratePath()) {
 
@@ -207,8 +208,10 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                             if (checkConnection(false)) {
                                                 service.populateAudit(urlText.getText(), driverText.getText(),
                                                         usernameText.getText(), passwordText.getText());
-                                                Map<String, String> result = service.generateAuditReport(generatePath);
-                                                showGenerationInformation(result);
+                                                Map<String, String> returnResult = service.generateAuditReport(generatePath);
+                                                if (returnResult != null) {
+                                                    results.putAll(returnResult);
+                                                }
                                             }
                                         } else {
                                             String path = "";//$NON-NLS-1$
@@ -225,8 +228,10 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                                 service.populateAudit(
                                                         "jdbc:h2:" + path + "/database/audit;AUTO_SERVER=TRUE;lock_timeout=15000", //$NON-NLS-1$ //$NON-NLS-2$
                                                         "org.h2.Driver", "tisadmin", "tisadmin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                                Map<String, String> result = service.generateAuditReport(generatePath);
-                                                showGenerationInformation(result);
+                                                Map<String, String> returnResult = service.generateAuditReport(generatePath);
+                                                if (returnResult != null) {
+                                                    results.putAll(returnResult);
+                                                }
                                             } catch (IOException e) {
                                                 // nothing
                                             } finally {
@@ -247,6 +252,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                         ExceptionHandler.process(e1);
                     }
                 }
+                // Show information
+                showGenerationInformation(results);
             }
         });
 
@@ -344,6 +351,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                final Map<String, String> results = new HashMap<String, String>();
                 // select a foder as the generate path
                 if (selectGeneratePath()) {
 
@@ -363,8 +371,10 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                     if (service != null && savedInDBButton.getSelection() && checkConnection(false)) {
                                         service.populateHistoryAudit(selectedAuditId, urlText.getText(), driverText.getText(),
                                                 usernameText.getText(), passwordText.getText());
-                                        Map<String, String> result = service.generateAuditReport(generatePath);
-                                        showGenerationInformation(result);
+                                        Map<String, String> returnResult = service.generateAuditReport(generatePath);
+                                        if (returnResult != null) {
+                                            results.putAll(returnResult);
+                                        }
                                     }
                                 }
                             });
@@ -379,6 +389,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                         ExceptionHandler.process(e1);
                     }
                 }
+                // Show information
+                showGenerationInformation(results);
             }
 
         });
