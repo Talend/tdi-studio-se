@@ -274,18 +274,6 @@ public class ComponentListController extends AbstractElementPropertySectionContr
                         if (!datanode.isVirtualGenerateNode() && datanode.getUniqueName() != null
                                 && !datanode.getUniqueName().equals(StatsAndLogsManager.CONNECTION_UID)) {
                             nodeList.add(datanode);
-                            // if(param.getFilter().startsWith("tRedshift")) {
-                            // Object datanodeUrl = datanode.getElementParameter("JDBC_URL");
-                            // Object currentNodeUrl = currentNode.getElementParameter("JDBC_URL");
-                            // if(currentNodeUrl!=null&&datanodeUrl!=null&&datanodeUrl.toString().equals(currentNodeUrl.toString()))
-                            // {
-                            // nodeList.add(datanode);
-                            // }
-                            // }else {
-                            // nodeList.add(datanode);
-                            // }
-                        	
-                           
                         }
                     }
                 }
