@@ -42,7 +42,6 @@ public class UpdateUrlForRedShiftMigrationTask extends AbstractItemMigrationTask
                             }
                         }
                     }
-
                 } catch (PersistenceException e) {
                     ExceptionHandler.process(e);
                     return ExecutionResult.FAILURE;
