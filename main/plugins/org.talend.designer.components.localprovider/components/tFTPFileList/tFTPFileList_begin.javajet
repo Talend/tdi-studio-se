@@ -272,6 +272,17 @@ if (sftp) {// *** sftp *** //
 		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%>);
 		nb_file_<%=cid%>++;
 <%
+
+
+
+
+
+
+
+
+
+
+
 } else if (ftps) { // *** ftps *** //
 	if (("false").equals(useExistingConn)) {
 		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
@@ -402,9 +413,28 @@ if (sftp) {// *** sftp *** //
 %> 
 		<%/*set to globalMap*/ %>
 		globalMap.put("<%=cid %>_CURRENT_FILE", currentFileName_<%=cid%>);
-		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%> + currentFileName_<%=cid%>);
+		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%> + ftpFile_<%=cid %>.getName());
 		nb_file_<%=cid %>++;
 <%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 } else { // *** ftp *** //
 %>
 	int nb_file_<%=cid%> = 0;
