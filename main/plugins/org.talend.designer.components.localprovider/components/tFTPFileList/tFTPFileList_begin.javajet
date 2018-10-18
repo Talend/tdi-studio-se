@@ -45,7 +45,7 @@ String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROT
 boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 
 if (("true").equals(useExistingConn)) {
-  List< ? extends INode> nodeList = node.getProcess().getGeneratingNodes();
+  List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
 
   for (INode n : nodeList) {
 	if (n.getUniqueName().equals(connection)) {
@@ -272,17 +272,6 @@ if (sftp) {// *** sftp *** //
 		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%>);
 		nb_file_<%=cid%>++;
 <%
-
-
-
-
-
-
-
-
-
-
-
 } else if (ftps) { // *** ftps *** //
 	if (("false").equals(useExistingConn)) {
 		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
@@ -416,25 +405,6 @@ if (sftp) {// *** sftp *** //
 		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%> + ftpFile_<%=cid %>.getName());
 		nb_file_<%=cid %>++;
 <%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 } else { // *** ftp *** //
 %>
 	int nb_file_<%=cid%> = 0;
