@@ -29165,9 +29165,9 @@
                 MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.5"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))" />
             <IMPORT
-                NAME="jackson-annotations-2.9.5.jar"
-                MODULE="jackson-annotations-2.9.5.jar"
-                MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.5"
+                NAME="jackson-annotations-2.9.0.jar"
+                MODULE="jackson-annotations-2.9.0.jar"
+                MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))" />
             <IMPORT
                 NAME="json-smart-2.2.1.jar"
