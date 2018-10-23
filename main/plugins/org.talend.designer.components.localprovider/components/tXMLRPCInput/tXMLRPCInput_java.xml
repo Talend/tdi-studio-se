@@ -158,7 +158,7 @@
       <IMPORT NAME="WS-util" MODULE="ws-commons-util-1.0.1.jar" MVN="mvn:org.talend.libraries/ws-commons-util-1.0.1/6.0.0"  REQUIRED="true" />
       <IMPORT NAME="XMLRPC-client" MODULE="xmlrpc-client-3.0.jar" MVN="mvn:org.talend.libraries/xmlrpc-client-3.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.xml/lib/xmlrpc-client-3.0.jar" REQUIRED="true" />
       <IMPORT NAME="XMLRPC-common" MODULE="xmlrpc-common-3.0.jar" MVN="mvn:org.talend.libraries/xmlrpc-common-3.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.xml/lib/xmlrpc-common-3.0.jar" REQUIRED="true" />
-      <IMPORT NAME="COMMONS-Logging" MODULE="commons-logging-1.1.jar" MVN="mvn:commons-logging/commons-logging/1.1"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.jar" REQUIRED="true" />
+      <IMPORT NAME="COMMONS-Logging" MODULE="commons-logging-1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.jar" REQUIRED="true" />
   	  <IMPORT NAME="COMMONS-codec" MODULE="commons-codec-1.6.jar" MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar" REQUIRED="true" />
   	  <IMPORT NAME="XMLPRC-AUTIL" MODULE="autil.jar" MVN="mvn:org.talend.libraries/autil/6.0.0"  REQUIRED="true" />
     </IMPORTS>
