@@ -176,7 +176,7 @@
 				REQUIRED="true" />
 			<IMPORT NAME="jaxen" MODULE="jaxen-1.1.1.jar" MVN="mvn:org.talend.libraries/jaxen-1.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/jaxen-1.1.1.jar" BundleID="org.apache.servicemix.bundles.jaxen"
 				REQUIRED="true" />
-			<IMPORT NAME="commons-logging" MODULE="commons-logging-1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.jar"
+			<IMPORT NAME="commons-logging" MODULE="commons-logging-1.1.jar" MVN="mvn:commons-logging/commons-logging/1.1"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.jar"
 				REQUIRED="true" />
 			<IMPORT NAME="commons-collections" MODULE="commons-collections-3.2.2.jar" MVN="mvn:commons-collections/commons-collections/3.2.2"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.2.jar"
 				REQUIRED="true" />
