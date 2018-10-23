@@ -36,6 +36,7 @@ import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
@@ -201,7 +202,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
                 process.getVersion());
         Set<String> allNeededLibsAfterAdjuster = new HashSet<String>();
         for (ModuleNeeded module : modulesNeeded) {
-            allNeededLibsAfterAdjuster.add(module.getModuleName());
+            allNeededLibsAfterAdjuster.add(MavenUrlHelper.generateModuleNameByMavenURI(module.getMavenUri()));
         }
         Iterator<String> it = libNames.iterator();
         while (it.hasNext()) {
