@@ -291,7 +291,7 @@
             <IMPORT
                 NAME="commons-logging"
                 MODULE="commons-logging-1.1.1.jar"
-                MVN="mvn:commons-logging/commons-logging/1.1.1"
+                MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0"
                 UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar"
                 REQUIRED="true"
             />
