@@ -1092,6 +1092,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
      *
      * @return the codePath
      */
+    @Override
     public IPath getSrcCodePath() {
         checkPath(this.codePath);
         return this.codePath;
@@ -1379,7 +1380,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 }
                 libPath.append(getBaseLibPath());
                 libPath.append(JavaUtils.PATH_SEPARATOR);
-                libPath.append(neededModule.getModuleName());
+                libPath.append(MavenUrlHelper.generateModuleNameByMavenURI(neededModule.getMavenUri()));
                 libPath.append(classPathSeparator);
             }
         } else {
