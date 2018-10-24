@@ -646,21 +646,13 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             @Override
             public void widgetSelected(SelectionEvent e) {
 
-                getDisplay().asyncExec(new Runnable() {
+                int consoleLine = verticalBar.getMaximum();
+                selectionLine = verticalBar.getSelection();
+                lockConsoleTrace = true;
 
-                    @Override
-                    public void run() {
-                        selectionLine = verticalBar.getSelection();
-
-                        int consoleLine = verticalBar.getMaximum();
-
-                        lockConsoleTrace = true;
-
-                        if (selectionLine <= consoleLine && selectionLine >= consoleLine - 1000) {
-                            lockConsoleTrace = false;
-                        }
-                    }
-                });
+                if (selectionLine <= consoleLine && selectionLine >= consoleLine - 1000) {
+                    lockConsoleTrace = false;
+                }
             }
         });
 
@@ -1452,6 +1444,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     public void kill() {
         killBtn.setEnabled(false);
         setHideconsoleLine(true);
+        lockConsoleTrace = false;
         processContext.kill();
     }
 
