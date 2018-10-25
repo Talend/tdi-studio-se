@@ -95,6 +95,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
     public IProcessor generateJobFiles(IProgressMonitor monitor) throws Exception {
         LastGenerationInfo.getInstance().getUseDynamicMap().clear();
         LastGenerationInfo.getInstance().getUseRulesMap().clear();
+        BuildCacheManager.getInstance().clearAllCaches();
 
         final Map<String, Object> argumentsMap = new HashMap<String, Object>(getArguments());
 
