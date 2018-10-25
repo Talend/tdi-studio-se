@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Service-Component: OSGI-INF/TaCoKitService.xml
 Bundle-ManifestVersion: 2
-Bundle-Version: 7.1.1.qualifier
+Bundle-Version: 7.2.1.qualifier
 Bundle-Vendor: .Talend SA.
 Bundle-Name: org.talend.sdk.component.studio-integration
 Bundle-SymbolicName: org.talend.sdk.component.studio-integration;singleton=true

@@ -131,26 +131,28 @@ public class UnifyPasswordEncryption4ParametersInJobMigrationTask extends UnifyP
         boolean modified = false;
 
         ParametersType parameters = processType.getParameters();
-        for (Object p : parameters.getElementParameter()) {
-            if (p instanceof ElementParameterType) {
-                ElementParameterType param = (ElementParameterType) p;
-
-                // variable name used for Stat&Logs
-                if ("PASS".equals(param.getName())) { //$NON-NLS-1$
-                    param.setField(EParameterFieldType.PASSWORD.getName());
-                    if (reencryptValueIfNeeded(param)) {
-                        modified = true;
-                    }
-                }
-
-                // variable name used for implicit context
-                if ("PASS_IMPLICIT_CONTEXT".equals(param.getName())) { //$NON-NLS-1$
-                    param.setField(EParameterFieldType.PASSWORD.getName());
-                    if (reencryptValueIfNeeded(param)) {
-                        modified = true;
-                    }
-                }
-            }
+        if (parameters != null) {
+	        for (Object p : parameters.getElementParameter()) {
+	            if (p instanceof ElementParameterType) {
+	                ElementParameterType param = (ElementParameterType) p;
+	
+	                // variable name used for Stat&Logs
+	                if ("PASS".equals(param.getName())) { //$NON-NLS-1$
+	                    param.setField(EParameterFieldType.PASSWORD.getName());
+	                    if (reencryptValueIfNeeded(param)) {
+	                        modified = true;
+	                    }
+	                }
+	
+	                // variable name used for implicit context
+	                if ("PASS_IMPLICIT_CONTEXT".equals(param.getName())) { //$NON-NLS-1$
+	                    param.setField(EParameterFieldType.PASSWORD.getName());
+	                    if (reencryptValueIfNeeded(param)) {
+	                        modified = true;
+	                    }
+	                }
+	            }
+	        }
         }
         return modified;
     }

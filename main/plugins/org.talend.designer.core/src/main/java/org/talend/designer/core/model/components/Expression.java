@@ -38,6 +38,7 @@ import org.talend.core.model.process.INode;
 import org.talend.hadoop.distribution.DistributionFactory;
 import org.talend.hadoop.distribution.ESparkVersion;
 import org.talend.hadoop.distribution.spark.SparkVersionUtil;
+import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * This class will test an expression in the element parameters. <br>
@@ -697,6 +698,9 @@ public final class Expression {
             List<? extends IElementParameter> listParam) {
         if (currentParam != null && currentParam.getElement() instanceof INode) {
             return (INode) currentParam.getElement();
+        } else if (currentParam != null && currentParam.getElement() instanceof Process) {
+            List<INode> sparkConfiguration = ((Process)currentParam.getElement()).getNodesOfType("tSparkConfiguration");
+            return sparkConfiguration.size() > 0 ? (INode) sparkConfiguration.get(0) : null;
         } else if (currentParam == null) {
             if (listParam != null && listParam.size() > 0) {
                 IElement element = listParam.get(0).getElement();

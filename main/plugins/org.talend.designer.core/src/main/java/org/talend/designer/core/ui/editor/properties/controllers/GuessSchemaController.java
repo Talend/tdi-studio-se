@@ -787,7 +787,11 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                         driverClass = EDatabase4DriverClassName.HIVE.getDriverClass();
                     }
                     info.setDriverClassName(driverClass);
-                } else {
+                } else if (EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equals(iMetadataConnection.getDbType())) {
+                	info = new DbInfo(iMetadataConnection.getDbType(), iMetadataConnection.getUsername(),
+                            iMetadataConnection.getPassword(), iMetadataConnection.getDbVersionString(),
+                            iMetadataConnection.getUrl(), iMetadataConnection.getDriverJarPath(),iMetadataConnection.getAdditionalParams());
+                }else {
                     info = new DbInfo(iMetadataConnection.getDbType(), iMetadataConnection.getUsername(),
                             iMetadataConnection.getPassword(), iMetadataConnection.getDbVersionString(),
                             iMetadataConnection.getUrl(), iMetadataConnection.getDriverJarPath());

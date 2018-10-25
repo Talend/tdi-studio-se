@@ -57,14 +57,13 @@ if (("true").equals(useExistingConn)) {
   for (INode n : nodeList) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
-      ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
-      break;
+      ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__")); 
     }
   }
 } else {
   sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
-  ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
-}
+  ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__")); 
+}  
 
 //The following part support the socks proxy for FTP and SFTP (Socks V4 or V5, they are all OK). 
 //And it can not work with the FTP proxy directly, only support the socks proxy.
@@ -93,29 +92,27 @@ if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
 <%}%>
 int nb_file_<%=cid%> = 0;
 
-<%
-if (sftp) { // *** sftp *** //
-%>
+<%if (sftp) {%>// *** sftp *** //
 
-    class MyProgressMonitor_<%=cid%> implements com.jcraft.jsch.SftpProgressMonitor {
-        public void init(int op, String src, String dest, long max) {}
-        public boolean count(long count) { return true;}
-        public void end() {}
-    }
+	class MyProgressMonitor_<%=cid%> implements com.jcraft.jsch.SftpProgressMonitor {
+		public void init(int op, String src, String dest, long max) {}
+    	public boolean count(long count) { return true;}
+    	public void end() {}
+  	}
 
-<%
-    if (("true").equals(useExistingConn)) {
-        String conn= "conn_" + connection;
-%>
-        com.jcraft.jsch.ChannelSftp c_<%=cid%> = (com.jcraft.jsch.ChannelSftp)globalMap.get("<%=conn %>");
-        <%if(isLog4jEnabled){%>
-            if(c_<%=cid%>!=null && c_<%=cid%>.getSession()!=null) {
-                log.info("<%=cid%> - Uses an existing connection. Connection username " + c_<%=cid%>.getSession().getUserName() + ", Connection hostname: " + c_<%=cid%>.getSession().getHost() + ", Connection port: " + c_<%=cid%>.getSession().getPort() + "."); 
-            }
-<%
-        }
-    } else {
-%>
+	<%if (("true").equals(useExistingConn)) {
+    	String conn= "conn_" + connection;
+    %>
+    	com.jcraft.jsch.ChannelSftp c_<%=cid%> = (com.jcraft.jsch.ChannelSftp)globalMap.get("<%=conn %>");
+		<%if(isLog4jEnabled){%>
+			if(c_<%=cid%>!=null && c_<%=cid%>.getSession()!=null) {
+				log.info("<%=cid%> - Uses an existing connection. Connection username " + c_<%=cid%>.getSession().getUserName() + ", Connection hostname: " + c_<%=cid%>.getSession().getHost() + ", Connection port: " + c_<%=cid%>.getSession().getPort() + "."); 
+			}
+		<%}%>
+    	if(c_<%=cid%>.getHome()!=null && !c_<%=cid%>.getHome().equals(c_<%=cid%>.pwd())){
+  			c_<%=cid%>.cd(c_<%=cid%>.getHome());
+  		}
+	<%} else {%>    
 		class MyUserInfo_<%=cid %> implements com.jcraft.jsch.UserInfo, com.jcraft.jsch.UIKeyboardInteractive {
 		
      	   <%
@@ -202,11 +199,10 @@ if (sftp) { // *** sftp *** //
 		
 	<%}%>
 
-    String rootDir_<%=cid %> = c_<%=cid %>.pwd();
-
 <%
 	if (createDirIfNotExist) {
 %>
+		String rootDir_<%=cid %> = c_<%=cid %>.pwd();
 		String remotedir_<%=cid %> = (<%=remotedir %>).replaceAll("\\\\", "/");
 		String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
 		for (String dir: dirsTree_<%=cid %>) {
@@ -242,8 +238,8 @@ if (sftp) { // *** sftp *** //
     	Map<String, String> line = files.get(i);
     %>
 			java.util.Map<String,String> map<%=cid %><%=i %> = new java.util.HashMap<String,String>();
-		    map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>, <%= line.get("NEWNAME") %>);
-		    list<%=cid %>.add(map<%=cid %><%=i %>);
+		    map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>, <%= line.get("NEWNAME") %>);    
+		    list<%=cid %>.add(map<%=cid %><%=i %>);       
   <%
 	}
   %>  
@@ -269,9 +265,7 @@ if (sftp) { // *** sftp *** //
 	}
 	
 	StatCheck_<%=cid%> sc_<%=cid%> = new StatCheck_<%=cid%>();
-
-    c_<%=cid %>.cd(<%=remotedir%>);
-
+	
 	for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
 
 <%} else if (!ftps) {%> // *** ftp *** //

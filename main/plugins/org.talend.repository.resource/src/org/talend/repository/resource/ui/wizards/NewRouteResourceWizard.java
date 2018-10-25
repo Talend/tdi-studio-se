@@ -40,6 +40,7 @@ import org.talend.core.repository.constants.FileConstants;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.resource.i18n.Messages;
 
 /**
  * Wizard for the creation of a new Route Resource. <br/>
@@ -100,7 +101,7 @@ public class NewRouteResourceWizard extends Wizard {
 	public void addPages() {
 		mainPage = new NewRouteResourceWizardPage(property, path);
 		addPage(mainPage);
-		setWindowTitle("New Route Resource"); //$NON-NLS-1$
+        setWindowTitle(Messages.getString("NewRouteResourceWizard.title")); //$NON-NLS-1$
 	}
 
 	/**

@@ -28,7 +28,6 @@ if (("true").equals(useExistingConn)) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
       ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
-      break;
     }
   }
 } else {
@@ -37,14 +36,10 @@ if (("true").equals(useExistingConn)) {
 }
 
 if (sftp) { // *** sftp *** //
-%>
-    String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
-    c_<%=cid %>.cd(remoteDir_<%=cid %>);
-<%
-	if (isFileType) {
-%>
+	if (isFileType) {%>
+		String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
 		try{
-			if (c_<%=cid %>.stat(<%=filename %>).getAtimeString() != null) {
+			if (c_<%=cid %>.stat(remoteDir_<%=cid %> + "/" + <%=filename %>).getAtimeString() != null) {
 				<%if(isLog4jEnabled){%>
 					log.debug("<%=cid%> - '" + <%=filename %> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
 				<%}%>
@@ -58,9 +53,10 @@ if (sftp) { // *** sftp *** //
 		}
 		globalMap.put("<%=cid %>_FILENAME", <%=filename %>);
 	<%} else {%>
+		String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
 		String directoryname_<%=cid %> = (<%=directoryname %>).replaceAll("\\\\","/");
 		try{
-			if (c_<%=cid %>.stat(directoryname_<%=cid %>).getAtimeString() != null) {
+			if (c_<%=cid %>.stat(remoteDir_<%=cid %> + "/" + directoryname_<%=cid %>).getAtimeString() != null) {
 				<%if(isLog4jEnabled){%>
 					log.debug("<%=cid%> - '" + <%=directoryname %> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
 				<%}%>

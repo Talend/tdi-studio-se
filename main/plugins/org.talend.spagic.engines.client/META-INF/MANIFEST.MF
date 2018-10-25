@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Client Plug-in
 Bundle-SymbolicName: org.talend.spagic.engines.client;singleton=true
-Bundle-Version: 7.1.1.qualifier
+Bundle-Version: 7.2.1.qualifier
 Bundle-Activator: org.talend.spagic.engines.client.Activator
 Require-Bundle: org.talend.core,
  org.eclipse.ui.ide,

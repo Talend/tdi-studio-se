@@ -44,6 +44,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.designer.core.ui.editor.dependencies.model.JobResourceDependencyModel;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.repository.ProjectManager;
 
 /**
  * DOC jding  class global comment. Detailled comment
@@ -106,7 +107,8 @@ public class ResourceDependenciesUtilTest {
 
     @Test
     public void testGetResourcePath() {
-        String expectResult = "aa/test_0_1/resources/myResource_0.1.txt";
+    	String projectName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel().toLowerCase();
+        String expectResult = projectName+"/test_0_1/resources/myResource_0.1.txt";
         JobResourceDependencyModel model = new JobResourceDependencyModel(item);
         String jobLabel = processItem.getProperty().getLabel() + "_" + processItem.getProperty().getVersion();
         String resourcePath = ResourceDependenciesUtil.getResourcePath(model, jobLabel, null);
@@ -153,6 +155,8 @@ public class ResourceDependenciesUtilTest {
                     .deleteObjectPhysical(ProxyRepositoryFactory.getInstance().getLastVersion(item.getProperty().getId()));
             ProxyRepositoryFactory.getInstance()
                     .deleteObjectPhysical(ProxyRepositoryFactory.getInstance().getLastVersion(item2.getProperty().getId()));
+            ProxyRepositoryFactory.getInstance()
+            .deleteObjectPhysical(ProxyRepositoryFactory.getInstance().getLastVersion(processItem.getProperty().getId()));
         } catch (PersistenceException e) {
             e.printStackTrace();
             fail("Test ResourceDependenciesUtilTest failure, cannot delete ResourceItem.");

@@ -205,7 +205,7 @@ if(useExistingConnection) {
 	<%
 } else {
     %>
-	<%if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion)){%>
+	<%if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)){%>
 		java.lang.Class.forName("oracle.jdbc.OracleDriver");
 		<%dbLog.conn().logJDBCDriver(dbLog.str("oracle.jdbc.OracleDriver"));%>
 	<%}else {%>

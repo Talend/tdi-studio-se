@@ -59,6 +59,7 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
@@ -91,6 +92,7 @@ public class JavaProcessorUtilities {
     /**
      * @deprecated use {@link org.talend.designer.runprocess.java.TalendJavaProjectManager#getTalendJobJavaProject(Property)} instead
      */
+    @Deprecated
     public static ITalendProcessJavaProject getTalendJavaProject() {
         return null;
     }
@@ -126,7 +128,7 @@ public class JavaProcessorUtilities {
                         continue;
                     }
                 }
-                libNames.add(currentModule.getModuleName());
+                libNames.add(MavenUrlHelper.generateModuleNameByMavenURI(currentModule.getMavenUri()));
             }
         }
         return libNames;

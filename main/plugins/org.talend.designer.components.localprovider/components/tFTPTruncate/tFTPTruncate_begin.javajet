@@ -50,7 +50,6 @@ if (("true").equals(useExistingConn)) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
       ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
-      break;
     }
   }
 } else {
@@ -185,12 +184,11 @@ if (sftp) {// *** sftp *** //
 			if(c_<%=cid%>!=null && c_<%=cid%>.getSession()!=null) {
 				log.info("<%=cid%> - Use an existing connection.Connection username: " + c_<%=cid%>.getSession().getUserName() + ", Connection hostname: " + c_<%=cid%>.getSession().getHost() + ", Connection port: " + c_<%=cid%>.getSession().getPort() + "."); 
 			}
-		<%}
-        if (!moveToCurrentDir) {
-%>
-            String rootDir_<%=cid %> = c_<%=cid %>.pwd();
-<%
-        }
+		<%}%>
+	    if(c_<%=cid%>.getHome()!=null && !c_<%=cid%>.getHome().equals(c_<%=cid%>.pwd())){
+	  		c_<%=cid%>.cd(c_<%=cid%>.getHome());
+	  	}
+	<%
 	}
 	%> 
 	java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
@@ -202,8 +200,6 @@ if (sftp) {// *** sftp *** //
 	    map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>,"");
 	    list<%=cid %>.add(map<%=cid %><%=i %>);
 	<%}%>
-
-    c_<%=cid %>.cd(<%=remotedir%>);
 
     <%if(isLog4jEnabled){%>
     	log.info("<%=cid%> - Truncating file from the server.");

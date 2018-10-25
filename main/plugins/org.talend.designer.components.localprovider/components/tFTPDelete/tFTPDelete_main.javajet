@@ -23,13 +23,12 @@
 	boolean usePerl5 = ("true").equals(ElementParameterParser.getValue(node, "__PERL5_REGEX__"));
 	if(("true").equals(useExistingConn)){
 		List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
-        for(INode n : nodeList){
-            if(n.getUniqueName().equals(connection)){
-                sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
-                ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
-                break;
-            }
-        }
+		for(INode n : nodeList){
+			if(n.getUniqueName().equals(connection)){
+				sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+				ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
+			}
+		}
 	}else{
 		sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
 		ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
@@ -41,7 +40,7 @@
 <%
 		if(sftp){// *** sftp *** //
 %>
-			for (String key<%=cid %> : keySet<%=cid %>) {
+			for (String key<%=cid %> : keySet<%=cid %>) {     
 				String filemask<%=cid %> = key<%=cid %>; 
 		    	String dir<%=cid %> = null;
         		<%if(!usePerl5) {//perl5 mode not support windows(\) path separator at the mask string%>
@@ -60,7 +59,7 @@
 		        <%if(!usePerl5) {%>
         			mask<%=cid %> = org.apache.oro.text.GlobCompiler.globToPerl5(mask<%=cid %>.toCharArray(), org.apache.oro.text.GlobCompiler.DEFAULT_MASK);
 		        <%}%>
-				java.util.Vector listings<%=cid %> = c_<%=cid %>.ls(".");
+				java.util.Vector listings<%=cid %> = c_<%=cid %>.ls(<%=remotedir %>);
 				for (int m<%=cid %> = 0; m<%=cid %> < listings<%=cid %>.size(); m<%=cid %>++) { 
 					String filePath<%=cid%> =  ((com.jcraft.jsch.ChannelSftp.LsEntry) listings<%=cid %>.elementAt(m<%=cid %>)).getFilename() ;
 					if ( filePath<%=cid%>.matches(mask<%=cid %>)) {
@@ -68,14 +67,14 @@
 <%
 							if("FILE".equals(targetType)){
 %>			
-							 	c_<%=cid%>.rm(filePath<%=cid%>);
+							 	c_<%=cid%>.rm((<%=remotedir %>)+"/"+ filePath<%=cid%>);
 								<%if(isLog4jEnabled){%>
 									log.debug("<%=cid%> - File '" + filePath<%=cid%>  + "' was deleted from the remote directory " + <%=remotedir %> + ".");
 								<%}%>
 <%
 							}else{
 %>
-							 	c_<%=cid%>.rmdir(filePath<%=cid%>);
+							 	c_<%=cid%>.rmdir((<%=remotedir %>)+"/"+ filePath<%=cid%>);
 								<%if(isLog4jEnabled){%>
 									log.debug("<%=cid%> - Directory '" + filePath<%=cid%>  + "' was deleted from the remote directory " + <%=remotedir %> + ".");
 								<%}%>

@@ -27,6 +27,8 @@
 	String projectId = ElementParameterParser.getValue(node,"__PROJECT_ID__");
 	String authorizationCode = ElementParameterParser.getValue(node,"__AUTHORIZATION_CODE__");
 	String query = ElementParameterParser.getValue(node,"__QUERY__");
+	boolean useLegacySql = ElementParameterParser.getBooleanValue(node,"__USE_LEGACY_SQL__");
+	
 	query = query.replaceAll("\n"," ");
 	query = query.replaceAll("\r"," ");
 	
@@ -200,7 +202,7 @@
 		<%
 		}
 		%>
-		com.google.api.services.bigquery.model.Job insert_<%=cid %> = bigQueryUtil_<%=cid%>.executeQuery(querySql_<%=cid%>, <%="LARGE".equals(resultSizeType) ? true : false%>);
+		com.google.api.services.bigquery.model.Job insert_<%=cid %> = bigQueryUtil_<%=cid%>.executeQuery(querySql_<%=cid%>, <%="LARGE".equals(resultSizeType) ? true : false%>, <%=useLegacySql%>);
 	
 		<%
 		if(isLog4jEnabled){
@@ -225,7 +227,7 @@
 				.build()
 				.getService();
 				
-		com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).build();
+		com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>).build();
 		com.google.cloud.bigquery.JobId jobId_tBigQueryInput_1 = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
 		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>).setJobId(jobId_<%=cid%>).build());
 

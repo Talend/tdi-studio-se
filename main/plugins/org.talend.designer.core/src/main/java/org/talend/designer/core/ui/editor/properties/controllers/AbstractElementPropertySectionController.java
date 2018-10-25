@@ -1413,6 +1413,14 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 type = "ORACLE_SID"; //$NON-NLS-1$
             }
         }
+        if (type.equalsIgnoreCase("REDSHIFT")) {
+       	 IElementParameter ele = element.getElementParameter("JDBC_URL");
+       	  if (ele != null&&((String)ele.getValue()).equals("SSO")) {
+                type = EDatabaseTypeName.REDSHIFT_SSO.getXmlName();
+             } else {
+                type = EDatabaseTypeName.REDSHIFT.getXmlName(); // $NON-NLS-1$
+             }
+       }
         // Get real hsqldb type
         if (type.equals(EDatabaseTypeName.HSQLDB.name())
                 && getValueFromRepositoryName(element, "RUNNING_MODE", basePropertyParameter).equals("HSQLDB_INPROGRESS_PERSISTENT")) {//$NON-NLS-1$
@@ -1597,7 +1605,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             }
         }
         connParameters.setDbType(type); 
-        connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(type));
+        connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(type)); 
         connParameters.setSchemaName(QueryUtil.getTableName(elem, connParameters.getMetadataTable(),
                 TalendTextUtils.removeQuotes(schema), type, realTableName));
     }
@@ -1700,8 +1708,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
                     driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
                 }
             }
-            connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(connParameters.getDbType()));
-
+            connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(connParameters.getDbType())); 
             connParameters.setDriverJar(TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.DRIVER_JAR.getName(), context, basePropertyParameter)));
         }

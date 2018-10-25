@@ -3,6 +3,8 @@ imports="
 			org.talend.core.model.process.INode 
 			org.talend.core.model.process.ElementParameterParser 
 			org.talend.designer.codegen.config.CodeGeneratorArgument
+			java.util.List
+			java.util.ArrayList
 		" 
 %>
 <%@ include file="../templates/DB/Row/HelpClass.javajet"%>

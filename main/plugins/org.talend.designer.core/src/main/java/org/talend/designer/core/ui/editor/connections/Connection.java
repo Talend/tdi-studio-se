@@ -265,7 +265,13 @@ public class Connection extends Element implements IConnection, IPerformance, IA
             param.setListItemsDisplayCodeName(strList);
             param.setNbLines(1);
             param.setFieldType(EParameterFieldType.CLOSED_LIST);
-            param.setValue(supportedLanguages.getValue());
+            
+            if (supportedLanguages != null) {
+                param.setValue(supportedLanguages.getValue());	
+            } else {
+                param.setValue("");
+            }
+            
             param.setShow(true);
             param.setNumRow(1);
             addElementParameter(param);

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mozilla
 Bundle-SymbolicName: org.talend.libraries.mozilla;singleton:=true
-Bundle-Version: 7.1.1.qualifier
+Bundle-Version: 7.2.1.qualifier
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy

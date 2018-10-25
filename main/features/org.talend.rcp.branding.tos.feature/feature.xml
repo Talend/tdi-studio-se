@@ -2,7 +2,7 @@
 <feature
       id="org.talend.rcp.branding.tos.feature"
       label="Tos branding feature"
-      version="7.1.1.qualifier"
+      version="7.2.1.qualifier"
       provider-name=".Talend SA."
       plugin="org.talend.rcp.branding.tos">
 

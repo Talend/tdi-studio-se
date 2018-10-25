@@ -70,7 +70,7 @@ public enum EDatabaseComponentName implements IComponentName {
     PARACCEL(DatabaseConnectionItem.class, EDatabaseTypeName.PARACCEL, "tParAccelInput", "tParAccelOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
     GREENPLUM(DatabaseConnectionItem.class, EDatabaseTypeName.GREENPLUM, "tGreenplumInput", "tGreenplumOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
     REDSHIFT(DatabaseConnectionItem.class, EDatabaseTypeName.REDSHIFT, "tRedshiftInput", "tRedshiftOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
-
+    REDSHIFT_SSO(DatabaseConnectionItem.class, EDatabaseTypeName.REDSHIFT_SSO, "tRedshiftInput", "tRedshiftOutput", true),
     NETEZZA(DatabaseConnectionItem.class, EDatabaseTypeName.NETEZZA, "tNetezzaInput", "tNetezzaOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
 
     DBPLUSPSQL(DatabaseConnectionItem.class, EDatabaseTypeName.PLUSPSQL, "tPostgresPlusInput", "tPostgresPlusOutput", true), //$NON-NLS-1$ //$NON-NLS-2$

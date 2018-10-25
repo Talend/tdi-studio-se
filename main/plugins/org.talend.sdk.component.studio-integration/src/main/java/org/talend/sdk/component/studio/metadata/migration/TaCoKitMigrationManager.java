@@ -84,7 +84,7 @@ public class TaCoKitMigrationManager {
                 Collection<ConfigTypeNode> topLevelNodes = TaCoKitUtil.filterTopLevelNodes(nodes.values());
                 for (ConfigTypeNode node : topLevelNodes) {
                     try {
-                        checkMigration(node, progressMonitor);
+                        checkMigration(node, monitor);
                     } catch (UserCancelledException e) {
                         throw e;
                     } catch (Exception e) {
@@ -93,7 +93,7 @@ public class TaCoKitMigrationManager {
                 }
             }
         }
-        checkJobsMigration(progressMonitor);
+        checkJobsMigration(monitor);
     }
 
     private void checkJobsMigration(final IProgressMonitor monitor) throws UserCancelledException {
