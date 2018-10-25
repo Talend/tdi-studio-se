@@ -670,7 +670,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     /*
      * check job settings parameters.
      */
-    private List<UpdateResult> checkMainParameters(EUpdateItemType type, boolean onlySimpleShow) {
+    private List<UpdateResult> checkMainParameters(EUpdateItemType type, boolean onlySimpleShow, Map<Object, Object> contextData) {
         List<UpdateResult> mainResults = new ArrayList<UpdateResult>();
         switch (type) {
         case JOB_PROPERTY_MAPREDUCE:
@@ -861,9 +861,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         return jobSettingsResults;
 
     }
-
+    
     private List<UpdateResult> checkJobSettingsParameters(EComponentCategory category, EUpdateItemType type,
             boolean onlySimpleShow) {
+        return checkJobSettingsParameters(category, type, onlySimpleShow, new HashMap<Object, Object>());
+    }
+
+    private List<UpdateResult> checkJobSettingsParameters(EComponentCategory category, EUpdateItemType type,
+            boolean onlySimpleShow, Map<Object, Object> contextData) {
         List<UpdateResult> jobSettingsResults = new ArrayList<UpdateResult>();
         final IElementParameter propertyTypeParam = getProcess().getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE,
                 category);
@@ -983,7 +988,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         }
                         // for context mode(bug 5198)
                         List<UpdateResult> contextResults = checkParameterContextMode(getProcess().getElementParameters(),
-                                (ConnectionItem) lastVersion.getProperty().getItem(), category);
+                                (ConnectionItem) lastVersion.getProperty().getItem(), category, contextData);
                         if (contextResults != null) {
                             jobSettingsResults.addAll(contextResults);
                         }
@@ -1010,7 +1015,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      * check node parameters.
      */
     @SuppressWarnings("unchecked")
-    private List<UpdateResult> checkNodesParameters(EUpdateItemType type, boolean onlySimpleShow) {
+    private List<UpdateResult> checkNodesParameters(EUpdateItemType type, boolean onlySimpleShow, Map<Object, Object> contextData) {
         List<UpdateResult> nodesResults = new ArrayList<UpdateResult>();
         for (Node node : (List<Node>) getProcess().getGraphicalNodes()) {
             switch (type) {
@@ -1018,7 +1023,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 nodesResults.addAll(checkNodeSchemaFromRepository(node, onlySimpleShow));
                 break;
             case NODE_PROPERTY:
-                nodesResults.addAll(checkNodePropertiesFromRepository(node, onlySimpleShow));
+                nodesResults.addAll(checkNodePropertiesFromRepository(node, onlySimpleShow, contextData));
                 break;
             case NODE_QUERY:
                 nodesResults.addAll(checkNodeQueryFromRepository(node, onlySimpleShow));
@@ -1767,7 +1772,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         }
         return schemaResults;
     }
-
+    
     /**
      * 
      * nrousseau Comment method "checkNodePropertiesFromRepository".
@@ -1777,6 +1782,18 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      */
     @SuppressWarnings("unchecked")
     private List<UpdateResult> checkNodePropertiesFromRepository(final Node node, boolean onlySimpleShow) {
+        return checkNodePropertiesFromRepository(node, onlySimpleShow, new HashMap<Object, Object>());
+    }
+
+    /**
+     * 
+     * nrousseau Comment method "checkNodePropertiesFromRepository".
+     * 
+     * @param node
+     * @return true if the data have been modified
+     */
+    @SuppressWarnings("unchecked")
+    private List<UpdateResult> checkNodePropertiesFromRepository(final Node node, boolean onlySimpleShow, Map<Object, Object> contextData) {
         if (node == null) {
             return Collections.emptyList();
         }
@@ -1860,7 +1877,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                 }
                             }
                         }
-                        Map<Object, Object> contextData = new HashMap<Object, Object>();
                         // if the repository connection exists then test the values
                         for (IElementParameter param : node.getElementParameters()) {
                             if (needBuildIn) {
@@ -2250,7 +2266,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         }
                         // for context mode(bug 5198)
                         List<UpdateResult> contextResults = checkParameterContextMode(node.getElementParameters(),
-                                (ConnectionItem) lastVersion.getProperty().getItem(), null);
+                                (ConnectionItem) lastVersion.getProperty().getItem(), null, contextData);
                         if (contextResults != null) {
                             propertiesResults.addAll(contextResults);
                         }
@@ -2445,14 +2461,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      * for bug 5198
      */
     private List<UpdateResult> checkParameterContextMode(final List<? extends IElementParameter> parameters,
-            ConnectionItem connItem, EComponentCategory category) {
+            ConnectionItem connItem, EComponentCategory category, Map<Object, Object> contextData) {
         List<UpdateResult> contextResults = new ArrayList<UpdateResult>();
 
         if (connItem != null && parameters != null) {
             ConnectionContextHelper.checkContextMode(connItem);
             Connection connection = connItem.getConnection();
             if (connection.isContextMode()) {
-                Set<String> neededVars = ConnectionContextHelper.retrieveContextVar(parameters, connection, category);
+                Set<String> neededVars = ConnectionContextHelper.retrieveContextVar(parameters, connection, category, contextData);
                 if (neededVars != null && !neededVars.isEmpty()) {
                     ContextItem contextItem = ContextUtils.getContextItemById2(connection.getContextId());
                     EcoreUtil.resolveAll(contextItem);
@@ -2705,10 +2721,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     public List<UpdateResult> getUpdatesNeeded(IUpdateItemType type) {
         return getUpdatesNeeded(type, false);
     }
-
+    
     @Override
     public List<UpdateResult> getUpdatesNeeded(IUpdateItemType itemType, boolean onlySimpleShow) {
+        return getUpdatesNeeded(itemType, onlySimpleShow, new HashMap<Object, Object>());
+    }
 
+    @Override
+    public List<UpdateResult> getUpdatesNeeded(IUpdateItemType itemType, boolean onlySimpleShow, Map<Object, Object> contextData) {
         if (itemType == null) {
             return null;
         }
@@ -2722,14 +2742,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             case NODE_SAP_IDOC:
             case NODE_SAP_FUNCTION:
             case NODE_VALIDATION_RULE:
-                tmpResults = checkNodesParameters(type, onlySimpleShow);
+                tmpResults = checkNodesParameters(type, onlySimpleShow, contextData);
                 break;
             case JOB_PROPERTY_EXTRA:
             case JOB_PROPERTY_STATS_LOGS:
             case JOB_PROPERTY_HEADERFOOTER:
             case JOB_PROPERTY_STORM:
             case JOB_PROPERTY_MAPREDUCE:
-                tmpResults = checkMainParameters(type, onlySimpleShow);
+                tmpResults = checkMainParameters(type, onlySimpleShow, contextData);
                 break;
             case CONTEXT:
                 tmpResults = checkContext(onlySimpleShow);
