@@ -48,6 +48,7 @@ import org.talend.core.runtime.repository.build.IBuildResourcesProvider;
 import org.talend.core.runtime.util.ParametersUtil;
 import org.talend.core.services.ICoreTisService;
 import org.talend.designer.maven.model.TalendMavenConstants;
+import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
@@ -388,6 +389,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         parameters.put(OBJ_PROCESS_ITEM, processItem);
         parameters.put(VERSION, version);
         parameters.put(OBJ_PROCESS_JAVA_PROJECT, talendProcessJavaProject);
+        BuildCacheManager.getInstance().clearAllCaches();
 
         //
         List<Item> dependenciesItems = new ArrayList<Item>();
