@@ -412,6 +412,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
         List<IProcess2> openedProcesses = UpdateManagerUtils.getOpenedProcess();
 
+        Map<ContextItem, Set<String>> existedParams = new HashMap<ContextItem, Set<String>>();
+
         for (IContext context : contextManager.getListContext()) {
             for (IContextParameter param : context.getContextParameterList()) {
                 if (!param.isBuiltIn()) {
@@ -441,6 +443,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     final ContextParameterType contextParameterType = ContextUtils
                                             .getContextParameterTypeByName(contextType, paramName);
                                     if (contextParameterType != null) {
+                                        ContextItem repositoryContext = (ContextItem) contextItem;
+                                        if (existedParams.get(contextItem) == null) {
+                                            existedParams.put(repositoryContext, new HashSet<String>());
+                                        }
+                                        existedParams.get(repositoryContext).add(paramName);
                                         if (onlySimpleShow
                                                 || !ContextUtils.samePropertiesForContextParameter(param, contextParameterType)) {
                                             unsameMap.add(contextItem, paramName);
@@ -506,6 +513,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 }
             }
         }
+        checkNewAddParameterForRef(existedParams, contextManager, ContextUtils.isPropagateContextVariable());
         // see 0004661: Add an option to propagate when add or remove a variable in a repository context to
         // jobs/joblets.
         checkPropagateContextVariable(contextResults, contextManager, deleteParams, allContextItem, refContextIds);
@@ -556,6 +564,30 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         }
         repositoryRenamedMap.clear();
         return contextResults;
+    }
+
+    private void checkNewAddParameterForRef(Map<ContextItem, Set<String>> existedParams, final IContextManager contextManager,
+            boolean isPropagateContextVariable) {
+        if (!isPropagateContextVariable) {
+            return;
+        }
+
+        Map<ContextItem, Set<String>> newParametersMap = ((JobContextManager) contextManager).getNewParametersMap();
+        for (ContextItem contextItem : existedParams.keySet()) {
+            ContextType contextType = ContextUtils.getContextTypeByName((ContextItem) contextItem,
+                    contextItem.getDefaultContext(), true);
+            List<ContextParameterType> contextParameter = contextType.getContextParameter();
+            Set<String> existedParName = existedParams.get(contextItem);
+            for (ContextParameterType parameterType : contextParameter) {
+                if (!existedParName.contains(parameterType.getName())) {
+                    if (newParametersMap.get(contextItem) == null) {
+                        newParametersMap.put(contextItem, new HashSet<String>());
+                    }
+                    newParametersMap.get(contextItem).add(parameterType.getName());
+                }
+            }
+
+        }
     }
 
     /**
