@@ -405,9 +405,12 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         }
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, goal);
         argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, getProgramArgs());
+        try {
+            talendProcessJavaProject.buildModules(monitor, null, argumentsMap);
+            BuildCacheManager.getInstance().performBuildSuccess();
+        } finally {
+            BuildCacheManager.getInstance().clearAllCaches();
+        }
 
-        talendProcessJavaProject.buildModules(monitor, null, argumentsMap);
-
-        BuildCacheManager.getInstance().performBuildSuccess();
     }
 }
