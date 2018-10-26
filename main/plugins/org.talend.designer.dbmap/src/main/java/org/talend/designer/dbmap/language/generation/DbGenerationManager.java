@@ -1123,8 +1123,8 @@ public abstract class DbGenerationManager {
                                         } else {
                                             oriName = oriName.replaceAll("\\$", "\\\\\\$"); //$NON-NLS-1$ //$NON-NLS-2$
                                         }
-                                        expression = expression.replaceFirst("\\." + co.getLabel(), //$NON-NLS-1$
-                                                "\\." + oriName); //$NON-NLS-1$
+                                        expression = expression.replaceFirst(tableValue + "\\." + co.getLabel(), //$NON-NLS-1$
+                                        		tableValue + "\\." + oriName); //$NON-NLS-1$
                                         expression = expression.replaceAll(quoParser,"\\\\\""); //$NON-NLS-1$
                                     }
                                 }
