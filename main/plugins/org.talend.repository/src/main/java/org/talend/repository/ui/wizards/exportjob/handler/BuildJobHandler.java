@@ -93,6 +93,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
     public IProcessor generateJobFiles(IProgressMonitor monitor) throws Exception {
         LastGenerationInfo.getInstance().getUseDynamicMap().clear();
         LastGenerationInfo.getInstance().getUseRulesMap().clear();
+        BuildCacheManager.getInstance().clearAllCaches();
 
         final Map<String, Object> argumentsMap = new HashMap<String, Object>(getArguments());
 
@@ -384,9 +385,12 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         final Map<String, Object> argumentsMap = new HashMap<String, Object>();
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_PACKAGE);
         argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, getProgramArgs());
+        try {
+            talendProcessJavaProject.buildModules(monitor, null, argumentsMap);
+            BuildCacheManager.getInstance().performBuildSuccess();
+        } finally {
+            BuildCacheManager.getInstance().clearAllCaches();
+        }
 
-        talendProcessJavaProject.buildModules(monitor, null, argumentsMap);
-
-        BuildCacheManager.getInstance().performBuildSuccess();
     }
 }
