@@ -242,10 +242,13 @@ public class GenericWizardService implements IGenericWizardService {
             boolean forComponentValue, Map<Object, Object> contextMap) {
         List<ComponentProperties> componentProperties = new ArrayList<>();
         Set<ComponentProperties> componentPropertiesSet = new HashSet<>();
+        if(contextMap == null){
+            contextMap = new HashMap<Object, Object>();
+        }
         if (isGenericConnection(connection)) {
             String compProperties = connection.getCompProperties();
             ComponentProperties cp = null;
-            if(contextMap != null && contextMap.get(connection.getId()) != null){
+            if(contextMap.get(connection.getId()) != null){
                 cp = (ComponentProperties) contextMap.get(connection.getId());
             }else{
                 cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection,
@@ -275,7 +278,7 @@ public class GenericWizardService implements IGenericWizardService {
                 for (TaggedValue taggedValue : metadataTable.getTaggedValue()) {
                     if (IComponentConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
                         ComponentProperties compPros = null;
-                        if(contextMap != null && contextMap.get(metadataTable.getId()) != null){
+                        if(contextMap.get(metadataTable.getId()) != null){
                             compPros = (ComponentProperties) contextMap.get(metadataTable.getId());
                         }else{
                             compPros = ComponentsUtils.getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, withEvaluator);
