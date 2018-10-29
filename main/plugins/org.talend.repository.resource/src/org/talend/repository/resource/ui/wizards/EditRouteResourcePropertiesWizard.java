@@ -14,13 +14,19 @@ package org.talend.repository.resource.ui.wizards;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.service.IResourcesDependenciesService;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizard;
 import org.talend.repository.resource.i18n.Messages;
 
 public class EditRouteResourcePropertiesWizard extends PropertiesWizard{
+
+    private String originalLabel;
+
+    private String originalVersion;
 
 	public EditRouteResourcePropertiesWizard(
 			IRepositoryViewObject repositoryViewObject, IPath path,
@@ -30,6 +36,8 @@ public class EditRouteResourcePropertiesWizard extends PropertiesWizard{
 	
     @Override
     public void addPages() {
+        originalLabel = object.getProperty().getLabel();
+        originalVersion = object.getProperty().getVersion();
         mainPage = new NewRouteResourceWizardPage("WizardPage", object.getProperty(), path, isReadOnly(), false, lastVersionFound) { 
 
             @Override
@@ -53,6 +61,16 @@ public class EditRouteResourcePropertiesWizard extends PropertiesWizard{
         IDesignerCoreService designerCoreService = CoreRuntimePlugin.getInstance().getDesignerCoreService();
         if (designerCoreService != null) {
             designerCoreService.switchToCurContextsView();
+        }
+        if (!object.getProperty().getLabel().equals(originalLabel)
+                || !object.getProperty().getVersion().equals(originalVersion)) {
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IResourcesDependenciesService.class)) {
+                IResourcesDependenciesService service = (IResourcesDependenciesService) GlobalServiceRegister.getDefault()
+                        .getService(IResourcesDependenciesService.class);
+                if (service != null) {
+                    service.removeBuildJobCacheForResource(object.getProperty().getId());
+                }
+            }
         }
         
         return performFinish;
