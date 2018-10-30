@@ -113,6 +113,18 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 argumentsMap.put(key, value);
             }
         }
+        //testCase
+        if(isOptionChoosed(ExportChoice.executeTests)){
+            IFolder srcFolder = talendProcessJavaProject.getTestSrcFolder();
+            IFolder resFolder = talendProcessJavaProject.getTestResourcesFolder();
+            if(srcFolder.exists()){
+                talendProcessJavaProject.cleanFolder(monitor, srcFolder);
+            }
+            if(resFolder.exists()){
+                talendProcessJavaProject.cleanFolder(monitor, resFolder);
+            }
+        }
+        
         // context
         boolean needContext = isOptionChoosed(ExportChoice.needContext);
         if (needContext) {
