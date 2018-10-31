@@ -1463,8 +1463,8 @@ public class Component extends AbstractBasicComponent {
         if (GenericTypeUtils.isEnumType(property)) {
             if (ContextParameterUtils.isContainContextParam(value) || value.indexOf("globalMap.get") > -1) {
                 return value;
-            } else {
-                return TalendQuoteUtils.addQuotesIfNotExist(value);
+            }else {
+                return TalendQuoteUtils.addQuotesForComplexusString(value);
             }
         }
         if (GenericTypeUtils.isStringType(property)
@@ -1494,6 +1494,8 @@ public class Component extends AbstractBasicComponent {
         }
         return value;
     }
+    
+    
 
     @Override
     public int hashCode() {

@@ -45,7 +45,7 @@ String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROT
 boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 
 if (("true").equals(useExistingConn)) {
-  List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
+  List< ? extends INode> nodeList = node.getProcess().getGeneratingNodes();
 
   for (INode n : nodeList) {
 	if (n.getUniqueName().equals(connection)) {
@@ -402,7 +402,7 @@ if (sftp) {// *** sftp *** //
 %> 
 		<%/*set to globalMap*/ %>
 		globalMap.put("<%=cid %>_CURRENT_FILE", currentFileName_<%=cid%>);
-		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%> + currentFileName_<%=cid%>);
+		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%> + ftpFile_<%=cid %>.getName());
 		nb_file_<%=cid %>++;
 <%
 } else { // *** ftp *** //
@@ -452,13 +452,8 @@ if (sftp) {// *** sftp *** //
 	<%}%>
 	String remotedir_<%=cid %> = (<%=remotedir%>).replaceAll("\\\\","/");
 	ftp_<%=cid %>.chdir(remotedir_<%=cid %>);
-	String[] fileList_<%=cid %>;
-
-	if (<%=dirFull %>) {
-		fileList_<%=cid %> = ftp_<%=cid %>.dir(null, true);
-	} else {
-		fileList_<%=cid %> = ftp_<%=cid %>.dir(null, false);
-	}
+	String[] fileList_<%=cid %> = ftp_<%=cid %>.dir(null, true);
+    String[] fileListwithNames_<%=cid %> = ftp_<%=cid %>.dir(null, false);
 <%
 	if (("true").equals(useExistingConn)) {
 		if(!moveToCurrentDir){
@@ -469,13 +464,17 @@ if (sftp) {// *** sftp *** //
 	}
 %>
 	List<String> fileListTemp_<%=cid %> = new java.util.ArrayList<String>();
+    List<String> fileListTempWithNames_<%=cid %> = new java.util.ArrayList<String>();
 
 	for (String filemask_<%=cid %> : maskList_<%=cid %>) {
 		java.util.regex.Pattern fileNamePattern_<%=cid %> = java.util.regex.Pattern.compile(filemask_<%=cid %>.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
-	
-		for (String filemaskTemp_<%=cid %> : fileList_<%=cid %>) {
-			if (fileNamePattern_<%=cid %>.matcher(filemaskTemp_<%=cid %>).matches()) {
+        for (int i_<%=cid%> = 0; i_<%=cid%> < fileList_<%=cid%>.length; i_<%=cid%>++){
+            String filemaskTemp_<%=cid%> = fileList_<%=cid%>[i_<%=cid%>];
+            String filemaskTempName_<%=cid%> = fileListwithNames_<%=cid%>[i_<%=cid%>];
+            
+			if (fileNamePattern_<%=cid %>.matcher(filemaskTempName_<%=cid %>).matches()) {
 				fileListTemp_<%=cid %>.add(filemaskTemp_<%=cid %>);
+                fileListTempWithNames_<%=cid%>.add(fileListwithNames_<%=cid%>[i_<%=cid%>]);
 			}
 		}
 	}
@@ -485,12 +484,18 @@ if (sftp) {// *** sftp *** //
 		log.info("<%=cid%> - Listing files from server.");
 	<%}%> 
 	while (++i_<%=cid %> < fileListTemp_<%=cid %>.size()) {
-		String currentFileName_<%=cid%> = fileListTemp_<%=cid %>.get(i_<%=cid %>); 
+<%      if (dirFull){%>
+            String currentFileName_<%=cid%> = fileListTemp_<%=cid %>.get(i_<%=cid %>);
+<%      } else {%>
+            String currentFileName_<%=cid%> = fileListTempWithNames_<%=cid %>.get(i_<%=cid %>);
+<%      }%>
+		 
 		String currentFilePath_<%=cid%> = remotedir_<%=cid %>;
 		if(!remotedir_<%=cid%>.endsWith("/")&&!remotedir_<%=cid%>.endsWith("\\")){
 			currentFilePath_<%=cid%> += "/";
 		}
-		currentFilePath_<%=cid%> += fileListTemp_<%=cid%>.get(i_<%=cid%>);
+        currentFilePath_<%=cid%> += fileListTempWithNames_<%=cid%>.get(i_<%=cid%>);
+        
 		<%if(isLog4jEnabled){%>
 			log.debug("<%=cid%> - List file : '" + currentFilePath_<%=cid%> + "' .");
 		<%}%> 

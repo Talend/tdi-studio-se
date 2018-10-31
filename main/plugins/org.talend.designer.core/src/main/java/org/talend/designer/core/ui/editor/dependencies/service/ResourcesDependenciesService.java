@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.dependencies.service;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.gef.commands.Command;
@@ -31,6 +33,7 @@ import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -41,6 +44,7 @@ import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.dependencies.dialog.DependenciesResourceSelectionDialog;
 import org.talend.designer.core.ui.editor.dependencies.model.JobResourceDependencyModel;
 import org.talend.designer.core.ui.editor.dependencies.util.ResourceDependenciesUtil;
+import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.repository.ProjectManager;
 
 public class ResourcesDependenciesService implements IResourcesDependenciesService {
@@ -189,5 +193,29 @@ public class ResourcesDependenciesService implements IResourcesDependenciesServi
 
         }
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.service.IResourcesDependenciesService#removeBuildJobCacheForResource(java.lang.String)
+     */
+    @Override
+    public void removeBuildJobCacheForResource(String resourceId) {
+        ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+        BuildCacheManager buildCacheManager = BuildCacheManager.getInstance();
+        List<Relation> relations = RelationshipItemBuilder.getInstance().getAllVersionItemsRelatedTo(resourceId,
+                RelationshipItemBuilder.RESOURCE_RELATION, true);
+        try {
+            for (Relation relation : relations) {
+                IRepositoryViewObject object = factory.getSpecificVersion(relation.getId(), relation.getVersion(), false);
+                if (object != null) {
+                    buildCacheManager.preRemoveJobCache(object.getProperty());
+                }
+            }
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
 
 }
