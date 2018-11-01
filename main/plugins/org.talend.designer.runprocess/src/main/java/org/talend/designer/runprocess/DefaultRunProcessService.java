@@ -695,6 +695,10 @@ public class DefaultRunProcessService implements IRunProcessService {
         return ProcessorUtilities.isExportConfig();
     }
 
+    public boolean isdebug() {
+        return ProcessorUtilities.isdebug();
+    }
+
     @Override
     public void buildCodesJavaProject(IProgressMonitor monitor) {
         try {

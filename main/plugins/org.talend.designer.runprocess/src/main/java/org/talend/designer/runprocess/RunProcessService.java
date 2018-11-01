@@ -473,4 +473,10 @@ public class RunProcessService implements IRunProcessService {
         delegateService.handleJobDependencyLoop(mainJobInfo, listJobs, progressMonitor);
     }
 
+    @Override
+    public boolean isdebug() {
+        
+        return delegateService.isdebug();
+    }
+
 }
