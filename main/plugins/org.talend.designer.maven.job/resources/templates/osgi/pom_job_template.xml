@@ -250,7 +250,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <survivorship.rules.dir>${current.resources.dir}/metadata/survivorship/</survivorship.rules.dir>
+                <survivorship.rules.dir>${current.int-resources.dir}/metadata/survivorship/</survivorship.rules.dir>
             </properties>
         </profile>
 
