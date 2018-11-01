@@ -682,9 +682,6 @@ public final class UpdateManagerUtils {
 
                 UpdateManagerProviderDetector.INSTANCE.postUpdate(unChecked);
 
-                // update joblet reference
-                upadateJobletReferenceInfor();
-
                 if (!CommonsPlugin.isHeadless() && ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
                     final List<UpdateResult> tempResults = new ArrayList<UpdateResult>(unChecked);
                     // refresh
