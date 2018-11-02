@@ -54,21 +54,20 @@ public class TaCoKitService implements ITaCoKitService {
             for (String id : lastConfigComponent.keySet()) {
                 // content{name,version,displayName}
                 String[] content = lastConfigComponent.get(id);
-                ConfigTypeNode configTypeNode = currentCach.getConfigTypeNode(id);
-                if (configTypeNode != null) {
+                try {
+                    ConfigTypeNode configTypeNode = currentCach.getConfigTypeNode(id);
                     if (configTypeNode.getVersion() != Integer.parseInt(content[1])) {
                         isNeed = true;
                         break;
                     }
+                } catch (IllegalArgumentException e) {
+                    // means Config type not found for the id, nothing to do here
                 }
             }
-        } else {
-            if (configTypeNodes.size() > 0) {
-                isNeed = true;
-            }
         }
+
         // if installed new component, need update
-        if (configTypeNodes.size() != lastConfigComponent.values().size()) {
+        if (configTypeNodes.size() > lastConfigComponent.values().size()) {
             ProjectDataJsonProvider.saveConfigComponent(projectLabel, configTypeNodes);
         }
         return isNeed;
