@@ -758,6 +758,7 @@ public class ConnectionFormComposite extends Composite {
         fillFields();
         showHideDynamicsControls();
         validateFields();
+        fillBean(true);
         showHideTexts();
         changeUserLabel();
     }
