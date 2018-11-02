@@ -19,6 +19,7 @@ import java.util.Set;
 import org.apache.axis.utils.StringUtils;
 import org.apache.log4j.Priority;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
@@ -50,9 +51,12 @@ import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.JavaProcessUtil;
+import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.utils.sql.metadata.constants.GetTable;
+
 import orgomg.cwm.objectmodel.core.ModelElement;
 import orgomg.cwm.resource.relational.Catalog;
 import orgomg.cwm.resource.relational.Schema;
@@ -449,13 +453,23 @@ public class QueryGuessCommand extends Command {
                 && realTableName.length() > 2) {
             realTableName = realTableName.substring(1, realTableName.length() - 1);
         }
-        if (conn != null
-                && (isJdbc || dbType.equals(EDatabaseTypeName.JAVADB_EMBEDED.getDisplayName()) || (StringUtils.isEmpty(schema) && (EDatabaseTypeName.ORACLE_CUSTOM
-                        .equals(EDatabaseTypeName.getTypeFromDbType(dbType))
-                        || EDatabaseTypeName.ORACLEFORSID.equals(EDatabaseTypeName.getTypeFromDbType(dbType))
-                        || EDatabaseTypeName.ORACLESN.equals(EDatabaseTypeName.getTypeFromDbType(dbType)) || EDatabaseTypeName.ORACLE_OCI
-                            .equals(EDatabaseTypeName.getTypeFromDbType(dbType)))))) {
-            schema = getDefaultSchema(realTableName);
+        if (conn != null && conn instanceof DatabaseConnection) {
+            ContextType contextType = ConnectionContextHelper
+                    .getContextTypeForContextMode(PlatformUI.getWorkbench().getDisplay().getActiveShell(), conn, true);
+            String schemaOriginalValue = ContextParameterUtils.getOriginalValue(contextType,
+                    ((DatabaseConnection) conn).getUiSchema());
+            if (isJdbc || dbType.equals(EDatabaseTypeName.JAVADB_EMBEDED.getDisplayName())
+                    || ((StringUtils.isEmpty(schema) || (StringUtils.isEmpty(schemaOriginalValue)))
+                            && (EDatabaseTypeName.ORACLE_CUSTOM.equals(EDatabaseTypeName.getTypeFromDbType(dbType))
+                                    || EDatabaseTypeName.ORACLEFORSID.equals(EDatabaseTypeName.getTypeFromDbType(dbType))
+                                    || EDatabaseTypeName.ORACLESN.equals(EDatabaseTypeName.getTypeFromDbType(dbType))
+                                    || EDatabaseTypeName.ORACLE_OCI.equals(EDatabaseTypeName.getTypeFromDbType(dbType))))) {
+                if (StringUtils.isEmpty(schemaOriginalValue)) {
+                    realTableName = QueryUtil.getTableName(node, newOutputMetadataTable, schemaOriginalValue, dbType,
+                            realTableName);
+                }
+                schema = getDefaultSchema(realTableName);
+            }
         }
 
         newQuery = QueryUtil.generateNewQuery(node, newOutputMetadataTable, isJdbc, dbType, schema, realTableName);
