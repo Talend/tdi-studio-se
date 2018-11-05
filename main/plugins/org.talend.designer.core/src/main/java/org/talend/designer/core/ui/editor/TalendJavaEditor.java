@@ -288,4 +288,14 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
     protected void restoreSelection() {
         // do nothing since we display the code only in the editor after generate the code
     }
+
+    @Override
+    protected void initializeDragAndDrop(ISourceViewer viewer) {
+        if(!this.isEditable()){
+            return;
+        }
+        super.initializeDragAndDrop(viewer);
+    }
+    
+    
 }
