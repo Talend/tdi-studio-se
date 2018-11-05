@@ -277,6 +277,7 @@ public final class UpdateManagerUtils {
                         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), results, onlySimpleShow);
 
                 if (checkDialog.open() == IDialogConstants.OK_ID) {
+                    doExecuteBuiltIn(checkDialog.getBuiltInElements(), updateAllJobs, false);
                     return doExecuteUpdates(checkDialog.getSelectedElements(), updateAllJobs);
                 }
             }
@@ -289,7 +290,7 @@ public final class UpdateManagerUtils {
     private static boolean doExecuteUpdates(final List<UpdateResult> results, final boolean updateAllJobs) {
         return doExecuteUpdates(results, updateAllJobs, false);
     }
-
+    
     private static boolean doExecuteUpdates(final List<UpdateResult> results, final boolean updateAllJobs,
             final boolean executeWithoutShow) {
         if (results == null || results.isEmpty()) {
@@ -521,6 +522,213 @@ public final class UpdateManagerUtils {
             return !results.isEmpty();
         } finally {
             results.clear();
+        }
+    }
+    
+    private static void doExecuteBuiltIn(final List<UpdateResult> unChecked, final boolean updateAllJobs,
+            final boolean executeWithoutShow) {
+        if (unChecked == null || unChecked.isEmpty()) {
+            return;
+        }
+        final IWorkspaceRunnable op = new IWorkspaceRunnable() {
+
+            @Override
+            public void run(IProgressMonitor monitor) throws CoreException {
+                monitor.setCanceled(false);
+                int size = (unChecked.size() * 2 + 1) * UpdatesConstants.SCALE;
+                monitor.beginTask(Messages.getString("UpdateManagerUtils.Update"), size); //$NON-NLS-1$
+
+                ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+
+                // first list by job we need to update
+
+                Map<String, Set<String>> jobIdToVersion = new HashMap<String, Set<String>>();
+                Map<String, Boolean> jobIdClosed = new HashMap<String, Boolean>();
+
+                for (UpdateResult result : unChecked) {
+                    String id = result.getObjectId();
+                    String version = result.getObjectVersion();
+                    if (id == null) {
+                        if (result.getJob() != null && result.getJob() instanceof IProcess) {
+                            IProcess process = (IProcess) result.getJob();
+                            if (process instanceof IProcess2
+                                    && ERepositoryStatus.LOCK_BY_OTHER.equals(factory.getStatus(((IProcess2) process)
+                                            .getProperty().getItem()))) {
+                                // if item is locked by another user, don't do anything, or it might corrupt the
+                                // file.
+                                continue;
+
+                            }
+                            id = process.getId();
+                            version = process.getVersion();
+                            result.setObjectId(id);
+                            result.setObjectVersion(version);
+                        } else {
+                            continue;
+                        }
+                    }
+                    Set<String> versionList;
+                    if (!jobIdToVersion.containsKey(id)) {
+                        versionList = new HashSet<String>();
+                        jobIdToVersion.put(id, versionList);
+                    } else {
+                        versionList = jobIdToVersion.get(id);
+                    }
+                    versionList.add(version);
+                    jobIdClosed.put(id + " - " + version, result.isFromItem()); //$NON-NLS-1$
+                }
+
+                // now will execute updates only for the job selected depends this list.
+                for (String currentId : jobIdToVersion.keySet()) {
+
+                    for (String version : jobIdToVersion.get(currentId)) {
+                        IRepositoryViewObject currentObj = null;
+                        boolean closedItem = jobIdClosed.get(currentId + " - " + version); //$NON-NLS-1$
+
+                        IProcess process = null;
+                        Item item = null;
+
+                        if (closedItem) {
+                            // if item is closed, then just load it.
+                            boolean checkOnlyLastVersion = Boolean.parseBoolean(DesignerPlugin.getDefault()
+                                    .getPreferenceStore().getString("checkOnlyLastVersion")); //$NON-NLS-1$
+                            try {
+                                if (checkOnlyLastVersion || version == null) {
+                                    currentObj = factory.getLastVersion(currentId);
+                                } else {
+                                    List<IRepositoryViewObject> allVersion = factory.getAllVersion(currentId);
+                                    for (IRepositoryViewObject obj : allVersion) {
+                                        if (obj.getVersion().equals(version)) {
+                                            currentObj = obj;
+                                        }
+                                    }
+
+                                }
+                            } catch (PersistenceException e) {
+                                ExceptionHandler.process(e);
+                            }
+
+                            if (currentObj == null) {
+                                // item not found, don't do anything
+                                continue;
+                            }
+                            item = currentObj.getProperty().getItem();
+                            IDesignerCoreService designerCoreService = CorePlugin.getDefault().getDesignerCoreService();
+                            if (item instanceof ProcessItem) {
+                                process = designerCoreService.getProcessFromProcessItem((ProcessItem) item);
+                            } else if (item instanceof JobletProcessItem) {
+                                process = designerCoreService.getProcessFromJobletProcessItem((JobletProcessItem) item);
+                            }
+                        }
+
+                        for (UpdateResult result : unChecked) {
+                            if (!StringUtils.equals(currentId, result.getObjectId())) {
+                                continue; // not the current job we need to update
+                            }
+                            if (closedItem) {
+                                if (result.getJob() == null) {
+                                    result.setJob(process);
+                                } else {
+                                    process = (IProcess) result.getJob();
+                                }
+                            }
+                            // execute
+                            executeUpdate(result, monitor, updateAllJobs);
+
+                            if (closedItem) {
+                                result.setJob(null);
+                            }
+                        }
+                        boolean isTestContainer = false;
+                        ITestContainerProviderService testContainerService = null;
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+                            testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                                    .getDefault().getService(ITestContainerProviderService.class);
+                            if (testContainerService != null ) {
+                                isTestContainer = testContainerService.isTestContainerItem(item);
+                            }
+                        }
+
+                        if (closedItem && process instanceof IProcess2) {
+                            IProcess2 process2 = (IProcess2) process;
+                            ProcessType processType;
+                            try {
+                                processType = process2.saveXmlFile(false);
+                                if(isTestContainer){
+                                    testContainerService.setTestContainerProcess(processType,item);
+                                }else if (item instanceof JobletProcessItem) {
+                                    ((JobletProcessItem) item).setJobletProcess((JobletProcess) processType);
+                                } else {
+                                    ((ProcessItem) item).setProcess(processType);
+                                }
+                                factory.save(item);
+                            } catch (IOException e) {
+                                ExceptionHandler.process(e);
+                            } catch (PersistenceException e) {
+                                ExceptionHandler.process(e);
+                            }
+                        }
+
+                        if (closedItem && !ERepositoryStatus.LOCK_BY_USER.equals(factory.getStatus(item))) {
+                            // unload item from memory, but only if this one is not locked by current user.
+                            try {
+                                factory.unloadResources(item.getProperty());
+                            } catch (PersistenceException e) {
+                                ExceptionHandler.process(e);
+                            }
+                        }
+                    }
+                }
+
+                UpdateManagerProviderDetector.INSTANCE.postUpdate(unChecked);
+
+                if (!CommonsPlugin.isHeadless() && ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
+                    final List<UpdateResult> tempResults = new ArrayList<UpdateResult>(unChecked);
+                    // refresh
+                    Display.getDefault().asyncExec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            refreshRelatedViewers(tempResults);
+
+                            // hyWang add method checkandRefreshProcess for bug7248
+                            checkandRefreshProcess(tempResults);
+                        }
+                    });
+                }
+
+
+                monitor.worked(1 * UpdatesConstants.SCALE);
+                monitor.done();
+            }
+        };
+
+        final IRunnableWithProgress iRunnableWithProgress = new IRunnableWithProgress() {
+
+            @Override
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                IWorkspace workspace = ResourcesPlugin.getWorkspace();
+                try {
+                    ISchedulingRule refreshRule = workspace.getRuleFactory().refreshRule(workspace.getRoot());
+                    workspace.run(op, refreshRule, IWorkspace.AVOID_UPDATE, monitor);
+                } catch (CoreException e) {
+                    throw new InvocationTargetException(e);
+                }
+            }
+        };
+        
+        try {
+            if (!CommonsPlugin.isHeadless() && ProxyRepositoryFactory.getInstance().isFullLogonFinished()
+                    && !executeWithoutShow) {
+                new ProgressMonitorDialog(null).run(false, false, iRunnableWithProgress);
+            } else {
+                iRunnableWithProgress.run(new NullProgressMonitor());
+            }
+        } catch (InvocationTargetException e) {
+            ExceptionHandler.process(e);
+        } catch (InterruptedException e) {
+        }finally {
+            unChecked.clear();
         }
     }
 
