@@ -43,6 +43,7 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.commons.ui.swt.formtools.LabelledCombo;
 import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.commons.utils.io.FilesUtils;
@@ -53,6 +54,7 @@ import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.ICommandLineService;
+import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.preference.audit.AuditManager;
@@ -187,6 +189,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 final Map<String, String> results = new HashMap<String, String>();
+                final TypedReturnCode<java.sql.Connection> dbResults = new TypedReturnCode<java.sql.Connection>(Boolean.FALSE);
                 // select a foder as the generate path
                 if (selectGeneratePath()) {
 
@@ -205,7 +208,11 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                     ICommandLineService service = getCommandLineService();
                                     if (service != null) {
                                         if (savedInDBButton.getSelection()) {
-                                            if (checkConnection(false)) {
+                                            TypedReturnCode<java.sql.Connection> rc = getConnectionReturnCode();
+                                            dbResults.setOk(rc.isOk());
+                                            dbResults.setObject(rc.getObject());
+                                            dbResults.setMessage(rc.getMessage());
+                                            if (dbResults.isOk()) {
                                                 service.populateAudit(urlText.getText(), driverText.getText(),
                                                         usernameText.getText(), passwordText.getText());
                                                 Map<String, String> returnResult = service.generateAuditReport(generatePath);
@@ -229,9 +236,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                                         "jdbc:h2:" + path + "/database/audit;AUTO_SERVER=TRUE;lock_timeout=15000", //$NON-NLS-1$ //$NON-NLS-2$
                                                         "org.h2.Driver", "tisadmin", "tisadmin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                                 Map<String, String> returnResult = service.generateAuditReport(generatePath);
-                                                if (returnResult != null) {
-                                                    results.putAll(returnResult);
-                                                }
+                                                results.putAll(returnResult);
                                             } catch (IOException e) {
                                                 // nothing
                                             } finally {
@@ -253,6 +258,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                     }
                 }
                 // Show information
+                showCheckConnectionInformation(false, dbResults);
                 showGenerationInformation(results);
             }
         });
@@ -310,7 +316,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                checkConnection(true);
+                TypedReturnCode<java.sql.Connection> dbResults = getConnectionReturnCode();
+                showCheckConnectionInformation(true, dbResults);
             }
 
         });
@@ -334,13 +341,17 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 ICommandLineService service = getCommandLineService();
-                if (service != null && savedInDBButton.getSelection() && checkConnection(false)) {
-                    currentParameters = service.listAllHistoryAudits(urlText.getText(), driverText.getText(),
-                            usernameText.getText(), passwordText.getText());
-                    String[] items = initHistoryDisplayNames();
-                    historyCombo.getCombo().setItems(items);
-                    if (items.length > 0) {
-                        historyCombo.getCombo().select(0);
+                if (service != null && savedInDBButton.getSelection()) {
+                    TypedReturnCode<java.sql.Connection> dbResults = getConnectionReturnCode();
+                    showCheckConnectionInformation(false, dbResults);
+                    if (dbResults.isOk()) {
+                        currentParameters = service.listAllHistoryAudits(urlText.getText(), driverText.getText(),
+                                usernameText.getText(), passwordText.getText());
+                        String[] items = initHistoryDisplayNames();
+                        historyCombo.getCombo().setItems(items);
+                        if (items.length > 0) {
+                            historyCombo.getCombo().select(0);
+                        }
                     }
                 }
             }
@@ -352,6 +363,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 final Map<String, String> results = new HashMap<String, String>();
+                final TypedReturnCode<java.sql.Connection> dbResults = new TypedReturnCode<java.sql.Connection>(Boolean.FALSE);
                 // select a foder as the generate path
                 if (selectGeneratePath()) {
 
@@ -368,11 +380,15 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                 @Override
                                 public void run() {
                                     ICommandLineService service = getCommandLineService();
-                                    if (service != null && savedInDBButton.getSelection() && checkConnection(false)) {
-                                        service.populateHistoryAudit(selectedAuditId, urlText.getText(), driverText.getText(),
-                                                usernameText.getText(), passwordText.getText());
-                                        Map<String, String> returnResult = service.generateAuditReport(generatePath);
-                                        if (returnResult != null) {
+                                    if (service != null && savedInDBButton.getSelection()) {
+                                        TypedReturnCode<java.sql.Connection> rc = getConnectionReturnCode();
+                                        dbResults.setOk(rc.isOk());
+                                        dbResults.setObject(rc.getObject());
+                                        dbResults.setMessage(rc.getMessage());
+                                        if (dbResults.isOk()) {
+                                            service.populateHistoryAudit(selectedAuditId, urlText.getText(), driverText.getText(),
+                                                    usernameText.getText(), passwordText.getText());
+                                            Map<String, String> returnResult = service.generateAuditReport(generatePath);
                                             results.putAll(returnResult);
                                         }
                                     }
@@ -390,6 +406,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                     }
                 }
                 // Show information
+                showCheckConnectionInformation(false, dbResults);
                 showGenerationInformation(results);
             }
 
@@ -482,19 +499,13 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
         return -1;
     }
 
-    private boolean checkConnection(boolean show) {
+    private TypedReturnCode<java.sql.Connection> getConnectionReturnCode() {
         ICommandLineService service = getCommandLineService();
         if (service != null) {
-            TypedReturnCode<java.sql.Connection> result = service.checkConnection(getCurrentDBVersion(), urlText.getText(),
-                    driverText.getText(), usernameText.getText(), passwordText.getText());
-            boolean isShow = result.isOk() ? show : true;
-            if (isShow) {
-                MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.DBConfig.CheckButtonText"), //$NON-NLS-1$
-                        result.getMessage());
-            }
-            return result.isOk();
+            return service.checkConnection(getCurrentDBVersion(), urlText.getText(), driverText.getText(), usernameText.getText(),
+                    passwordText.getText());
         }
-        return false;
+        return new TypedReturnCode<java.sql.Connection>();
     }
 
     private ICommandLineService getCommandLineService() {
@@ -522,6 +533,16 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
         } else {
             MessageDialog.openWarning(getShell(), Messages.getString("AuditProjectSettingPage.generate.title"), //$NON-NLS-1$
                     Messages.getString("AuditProjectSettingPage.generate.failed")); //$NON-NLS-1$
+        }
+    }
+
+    private void showCheckConnectionInformation(boolean show, TypedReturnCode<java.sql.Connection> result) {
+        if (!result.isOk()) {
+            String mainMsg = Messages.getString("AuditProjectSettingPage.DBConfig.CheckConnection.failed"); //$NON-NLS-1$
+            new ErrorDialogWidthDetailArea(getShell(), RepositoryPlugin.PLUGIN_ID, mainMsg, result.getMessage());
+        } else if (result.isOk() && show) {
+            MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.DBConfig.CheckButtonText"), //$NON-NLS-1$
+                    result.getMessage());
         }
     }
 
