@@ -105,7 +105,7 @@ public class StatsAndLogsConstants {
     		 "ORACLE_18", "ORACLE_12", "ORACLE_11", "ORACLE_10", "ORACLE_9", "ORACLE_8" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
     public static final String[] ORACLE_VERSION_DRIVER = new String[] {
-    		"ojdbc8.jar", "ojdbc7.jar", "ojdbc6.jar", "ojdbc14.jar", "ojdbc14-9i.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "ojdbc8-12.2.0.1.jar", "ojdbc7.jar", "ojdbc6.jar", "ojdbc14.jar", "ojdbc14-9i.jar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             "ojdbc12.jar" }; //$NON-NLS-1$
 
     // for bug 11487
