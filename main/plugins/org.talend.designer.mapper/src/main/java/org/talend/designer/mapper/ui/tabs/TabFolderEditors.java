@@ -48,6 +48,9 @@ import org.talend.core.ui.metadata.editor.MetadataToolbarEditorView;
 import org.talend.designer.mapper.MapperMain;
 import org.talend.designer.mapper.i18n.Messages;
 import org.talend.designer.mapper.managers.MapperManager;
+import org.talend.designer.mapper.model.table.InputTable;
+import org.talend.designer.mapper.model.table.OutputTable;
+import org.talend.designer.mapper.ui.visualmap.table.DataMapTableView;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -158,8 +161,20 @@ public class TabFolderEditors extends CTabFolder {
 
         };
 
+        IExtendedButtonListener afterCommandListener = new IExtendedButtonListener() {
+
+            public void handleEvent(ExtendedButtonEvent event) {
+                List<InputTable> inputTablesList = mapperManager.getInputTables();
+                for (InputTable inputTable : inputTablesList) {
+                    DataMapTableView view = mapperManager.retrieveAbstractDataMapTableView(inputTable);
+                    view.getTableViewerCreatorForColumns().getTableViewer().refresh();
+                }
+            }
+        };
+
         for (ExtendedPushButton extendedPushButton : inputToolBarButtons) {
             extendedPushButton.addListener(beforeCommandListenerForInputButtons, true);
+            extendedPushButton.addListener(afterCommandListener, false);
         }
 
         this.addDisposeListener(new DisposeListener() {
@@ -197,8 +212,20 @@ public class TabFolderEditors extends CTabFolder {
 
         };
 
+        IExtendedButtonListener afterCommandListener = new IExtendedButtonListener() {
+
+            public void handleEvent(ExtendedButtonEvent event) {
+                List<OutputTable> outputTablesList = mapperManager.getOutputTables();
+                for (OutputTable outputTable : outputTablesList) {
+                    DataMapTableView view = mapperManager.retrieveAbstractDataMapTableView(outputTable);
+                    view.getTableViewerCreatorForColumns().getTableViewer().refresh();
+                }
+            }
+        };
+
         for (ExtendedPushButton extendedPushButton : outputToolBarButtons) {
             extendedPushButton.addListener(beforeCommandListenerForOutputButtons, true);
+            extendedPushButton.addListener(afterCommandListener, false);
             if (extendedPushButton instanceof RemovePushButton && !mapperManager.componentIsReadOnly()) {
                 removeButton = (RemovePushButtonForExtendedTable) extendedPushButton;
             }
