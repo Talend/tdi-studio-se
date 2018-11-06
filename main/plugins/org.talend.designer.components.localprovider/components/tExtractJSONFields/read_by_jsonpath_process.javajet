@@ -8,8 +8,9 @@ String loopPath_<%=cid%> = <%=loopQuery%>;
 java.util.List<Object> resultset_<%=cid%> = new java.util.ArrayList<Object>();
 
 boolean isStructError_<%=cid %> = true;
+com.jayway.jsonpath.ReadContext document_<%=cid%> = null;
 try {
-	com.jayway.jsonpath.ReadContext document_<%=cid%> = com.jayway.jsonpath.JsonPath.parse(jsonStr_<%=cid%>);
+	document_<%=cid%> = com.jayway.jsonpath.JsonPath.parse(jsonStr_<%=cid%>);
 	com.jayway.jsonpath.JsonPath compiledLoopPath_<%=cid%> = jsonPathCache_<%=cid%>.getCompiledJsonPath(loopPath_<%=cid%>);
 	Object result_<%=cid%> = document_<%=cid%>.read(compiledLoopPath_<%=cid%>,net.minidev.json.JSONObject.class);
 	if (result_<%=cid%> instanceof net.minidev.json.JSONArray) {
@@ -64,6 +65,7 @@ com.jayway.jsonpath.JsonPath compiledJsonPath_<%=cid%> = null;
 
 Object value_<%=cid%> = null;
 
+Object root_<%=cid%> = null;
 for(int i_<%=cid %>=0; isStructError_<%=cid %> || (i_<%=cid %> < resultset_<%=cid %>.size());i_<%=cid %>++){
 	if(!isStructError_<%=cid %>){
 		Object row_<%=cid%> = resultset_<%=cid %>.get(i_<%=cid %>);
@@ -82,6 +84,7 @@ if(outConns!=null){
 	nb_line_<%=cid%>++;
 	try {
 <%
+boolean useLoopAsRoot = "true".equals(ElementParameterParser.getValue(node, "__USE_LOOP_AS_ROOT__"));
 boolean splitList = "true".equals(ElementParameterParser.getValue(node, "__SPLIT_LIST__"));
 for (int i=0;i<mapping.size();i++) {
 	for(IMetadataColumn column : outConn.getMetadataTable().getListColumns()) {
@@ -113,8 +116,23 @@ for (int i=0;i<mapping.size();i++) {
 		compiledJsonPath_<%=cid%> = jsonPathCache_<%=cid%>.getCompiledJsonPath(jsonPath_<%=cid%>);
 		
 		try {
-			value_<%=cid%> = compiledJsonPath_<%=cid%>.read(row_<%=cid%>);
+		    <%
+		    if(useLoopAsRoot){
+		    %>
+		        value_<%=cid%> = compiledJsonPath_<%=cid%>.read(row_<%=cid%>);
+		    <%
+		    }else{
+		    %>
+		        if(jsonPath_<%=cid%>.startsWith("$")){
+		            if(root_<%=cid%> == null){
+		                root_<%=cid%> = document_<%=cid%>.read(jsonPathCache_<%=cid%>.getCompiledJsonPath("$"));
+					   }
+		            value_<%=cid%> = compiledJsonPath_<%=cid%>.read(root_<%=cid%>);
+		        }else{
+		            value_<%=cid%> = compiledJsonPath_<%=cid%>.read(row_<%=cid%>);
+		        }
 <%
+		    }
         	if(javaType == JavaTypesManager.STRING){
 %>
 				<%=firstConnName%>.<%=column.getLabel() %> = value_<%=cid%> == null ? <%@ include file="./set_default_value.javajet"%> : value_<%=cid%>.toString();
