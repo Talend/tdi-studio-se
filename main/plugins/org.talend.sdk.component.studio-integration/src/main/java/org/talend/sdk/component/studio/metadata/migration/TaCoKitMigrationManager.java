@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -94,7 +95,7 @@ public class TaCoKitMigrationManager {
                 }
                 // as for it will do migration for all project, need to cache config component to component.index file
                 // under .setting folder from all project
-                List<ConfigTypeNode> configTypeNodeList = new ArrayList<ConfigTypeNode>(nodes.values());
+                List<ConfigTypeNode> configTypeNodeList = new LinkedList<ConfigTypeNode>(nodes.values());
                 Collections.sort(configTypeNodeList, new Comparator<ConfigTypeNode>() {
 
                     @Override

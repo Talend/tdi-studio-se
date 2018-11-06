@@ -13,10 +13,10 @@
 package org.talend.sdk.component.studio.service;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +72,7 @@ public class TaCoKitService implements ITaCoKitService {
 
         // if installed new component, need update
         if (configTypeNodes.size() > lastConfigComponent.values().size()) {
-            List<ConfigTypeNode> configTypeNodeList = new ArrayList<ConfigTypeNode>(configTypeNodes);
+            List<ConfigTypeNode> configTypeNodeList = new LinkedList<ConfigTypeNode>(configTypeNodes);
             Collections.sort(configTypeNodeList, new Comparator<ConfigTypeNode>() {
 
                 @Override
