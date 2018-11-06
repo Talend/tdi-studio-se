@@ -55,7 +55,7 @@ public class SchemaElementParameter extends TaCoKitElementParameter {
             return Optional.empty();
         }
         final IMetadataTable metadata = ((Node) elem).getMetadataFromConnector(getContext());
-        return Optional.of(metadata);
+        return Optional.ofNullable(metadata);
     }
 
     /**
