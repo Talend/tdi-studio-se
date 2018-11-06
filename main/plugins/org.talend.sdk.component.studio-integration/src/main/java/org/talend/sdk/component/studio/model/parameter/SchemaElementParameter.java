@@ -1,5 +1,6 @@
 package org.talend.sdk.component.studio.model.parameter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -7,10 +8,8 @@ import java.util.stream.Collectors;
 
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
-import org.talend.core.model.process.IConnection;
+import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.process.IElement;
-import org.talend.core.model.utils.NodeUtil;
-import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 
@@ -19,7 +18,12 @@ import org.talend.sdk.component.studio.model.action.IActionParameter;
  */
 public class SchemaElementParameter extends TaCoKitElementParameter {
 
-    public static final String CONNECTION_TYPE = "org.talend.sdk.connection.type";
+    private static final String GUESS_BUTTON_PREFIX = "Guess Schema_";
+
+    /**
+     * Talend type which denotes String. It is used as default type for schema column
+     */
+    private static final String STRING = "id_String";
 
     public SchemaElementParameter(final IElement element) {
         super(element);
@@ -50,42 +54,8 @@ public class SchemaElementParameter extends TaCoKitElementParameter {
         if (elem == null || !(elem instanceof Node)) {
             return Optional.empty();
         }
-        // TODO connection type should be set in constructor and should be always present
-        final String connectionType = (String) getTaggedValue(CONNECTION_TYPE);
-        if (connectionType == null) {
-            return Optional.empty();
-        }
-        final Optional<IConnection> connection = findConnection(connectionType, (Node) elem);
-        return connection.map(IConnection::getMetadataTable);
-
-    }
-
-    // TODO try to get Metadata directly form Node, not from Connection
-    private Optional<IConnection> findConnection(final String connectionType, final Node node) {
-        if ("in".equalsIgnoreCase(connectionType)) {
-            if (node.getComponent().useLookup()) {
-                for (final IConnection conn : node.getIncomingConnections()) {
-                    if (!(conn instanceof IAdditionalInfo)) {
-                        continue;
-                    }
-                    String inputName = (String) IAdditionalInfo.class.cast(conn).getInfo("INPUT_NAME");
-                    if (inputName != null && inputName.equals(getContext())) {
-                        return Optional.of(conn);
-                    }
-                }
-            } else {
-                final List<? extends IConnection> connections = NodeUtil.getIncomingConnections(node, getContext());
-                if (connections != null && !connections.isEmpty()) {
-                    return Optional.of(connections.get(0));
-                }
-            }
-        } else {
-            final List<? extends IConnection> connections = NodeUtil.getOutgoingConnections(node, getContext());
-            if (connections != null && !connections.isEmpty()) {
-                return Optional.of(connections.get(0));
-            }
-        }
-        return Optional.empty();
+        final IMetadataTable metadata = ((Node) elem).getMetadataFromConnector(getContext());
+        return Optional.of(metadata);
     }
 
     /**
@@ -116,13 +86,28 @@ public class SchemaElementParameter extends TaCoKitElementParameter {
     }
 
     /**
-     * Sets new value
+     * Sets schema value.
+     * It creates MetadataColumns (schema columns) and sets column names.
+     * Then sets columns to Node MetadataTable
      *
-     * @param newValue value to be set
+     * @param newValue {@code List<String>} of column names to be set
      */
     @Override
     public void setValue(final Object newValue) {
-        super.setValue(newValue); // TODO
+        if (newValue != null && newValue instanceof List) {
+            final List<String> schema = (List<String>) newValue;
+
+            final List<IMetadataColumn> columns = new ArrayList<>();
+            for (final String columnName : schema) {
+                final MetadataColumn column = new MetadataColumn();
+                column.setLabel(columnName);
+                column.setOriginalDbColumnName(columnName);
+                column.setTalendType(STRING);
+                columns.add(column);
+            }
+            final Optional<IMetadataTable> metadata = getMetadata();
+            metadata.ifPresent(m -> m.setListColumns(columns));
+        }
     }
 
     /**
@@ -134,5 +119,15 @@ public class SchemaElementParameter extends TaCoKitElementParameter {
     @Override
     public boolean isPersisted() {
         return false;
+    }
+
+    /**
+     * Creates name for Guess Schema button ElementParameter
+     *
+     * @param schemaName a name of schema, which is guessed by the button
+     * @return name for Guess Schema button ElementParameter
+     */
+    public static String guessButtonName(final String schemaName) {
+        return GUESS_BUTTON_PREFIX + schemaName;
     }
 }
