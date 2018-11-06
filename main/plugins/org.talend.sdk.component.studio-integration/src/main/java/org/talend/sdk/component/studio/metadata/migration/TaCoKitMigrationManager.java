@@ -14,8 +14,6 @@ package org.talend.sdk.component.studio.metadata.migration;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +41,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.VersionList;
+import org.talend.core.repository.utils.ComponentsJsonModel;
 import org.talend.core.repository.utils.ProjectDataJsonProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ProcessTypeImpl;
@@ -95,21 +94,32 @@ public class TaCoKitMigrationManager {
                 }
                 // as for it will do migration for all project, need to cache config component to component.index file
                 // under .setting folder from all project
-                List<ConfigTypeNode> configTypeNodeList = new LinkedList<ConfigTypeNode>(nodes.values());
-                Collections.sort(configTypeNodeList, new Comparator<ConfigTypeNode>() {
-
-                    @Override
-                    public int compare(ConfigTypeNode configTypeNode1, ConfigTypeNode configTypeNode2) {
-                        return configTypeNode1.getId().compareTo(configTypeNode2.getId());
-                    }
-
-                });
+                List<ComponentsJsonModel> adaptComponentIndexJson = adaptComponentIndexJson(nodes.values());
                 for (final Project project : getAllProjects()) {
-                    ProjectDataJsonProvider.saveConfigComponent(project.getTechnicalLabel(), configTypeNodeList);
+                    ProjectDataJsonProvider.saveConfigComponent(project.getTechnicalLabel(), adaptComponentIndexJson);
                 }
             }
         }
         checkJobsMigration(monitor);
+    }
+
+    public static List<ComponentsJsonModel> adaptComponentIndexJson(Collection<ConfigTypeNode> ConfigTypeNodes) {
+        List<ComponentsJsonModel> modelList = new LinkedList<ComponentsJsonModel>();
+        for (ConfigTypeNode configTypeNode : ConfigTypeNodes) {
+            ComponentsJsonModel model = new ComponentsJsonModel();
+            model.setId(configTypeNode.getId());
+            model.setVersion(String.valueOf(configTypeNode.getVersion()));
+            model.setName(configTypeNode.getName());
+            model.setDisplayName(configTypeNode.getDisplayName());
+            model.setParentId(configTypeNode.getParentId());
+            model.setEdges(configTypeNode.getEdges());
+            model.setConfigurationType(configTypeNode.getConfigurationType());
+            model.setActions(configTypeNode.getActions());
+            model.setProperties(configTypeNode.getProperties());
+            modelList.add(model);
+        }
+        return modelList;
+
     }
 
     private void checkJobsMigration(final IProgressMonitor monitor) throws UserCancelledException {

@@ -14,18 +14,17 @@ package org.talend.sdk.component.studio.service;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.runtime.service.ITaCoKitService;
+import org.talend.core.repository.utils.ComponentsJsonModel;
 import org.talend.core.repository.utils.ProjectDataJsonProvider;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
+import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
 import org.talend.sdk.component.studio.toolbar.ReloadAction;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService;
 
@@ -72,16 +71,8 @@ public class TaCoKitService implements ITaCoKitService {
 
         // if installed new component, need update
         if (configTypeNodes.size() > lastConfigComponent.values().size()) {
-            List<ConfigTypeNode> configTypeNodeList = new LinkedList<ConfigTypeNode>(configTypeNodes);
-            Collections.sort(configTypeNodeList, new Comparator<ConfigTypeNode>() {
-
-                @Override
-                public int compare(ConfigTypeNode configTypeNode1, ConfigTypeNode configTypeNode2) {
-                    return configTypeNode1.getId().compareTo(configTypeNode2.getId());
-                }
-
-            });
-            ProjectDataJsonProvider.saveConfigComponent(projectLabel, configTypeNodeList);
+            List<ComponentsJsonModel> componentIndexJsons = TaCoKitMigrationManager.adaptComponentIndexJson(configTypeNodes);
+            ProjectDataJsonProvider.saveConfigComponent(projectLabel, componentIndexJsons);
         }
         return isNeed;
     }
