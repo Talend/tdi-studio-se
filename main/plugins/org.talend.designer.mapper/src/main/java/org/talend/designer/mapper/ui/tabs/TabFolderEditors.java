@@ -212,10 +212,10 @@ public class TabFolderEditors extends CTabFolder {
 
         };
 
-        final List<OutputTable> outputTables = mapperManager.getOutputTables();
         IExtendedButtonListener afterCommandListener = new IExtendedButtonListener() {
 
             public void handleEvent(ExtendedButtonEvent event) {
+                List<OutputTable> outputTables = mapperManager.getOutputTables();
                 for (OutputTable outputTable : outputTables) {
                     DataMapTableView view = mapperManager.retrieveAbstractDataMapTableView(outputTable);
                     view.getTableViewerCreatorForColumns().getTableViewer().refresh();
