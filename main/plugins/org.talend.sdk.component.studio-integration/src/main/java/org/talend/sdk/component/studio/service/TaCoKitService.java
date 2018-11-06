@@ -13,7 +13,11 @@
 package org.talend.sdk.component.studio.service;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -68,7 +72,16 @@ public class TaCoKitService implements ITaCoKitService {
 
         // if installed new component, need update
         if (configTypeNodes.size() > lastConfigComponent.values().size()) {
-            ProjectDataJsonProvider.saveConfigComponent(projectLabel, configTypeNodes);
+            List<ConfigTypeNode> configTypeNodeList = new ArrayList<ConfigTypeNode>(configTypeNodes);
+            Collections.sort(configTypeNodeList, new Comparator<ConfigTypeNode>() {
+
+                @Override
+                public int compare(ConfigTypeNode configTypeNode1, ConfigTypeNode configTypeNode2) {
+                    return configTypeNode1.getId().compareTo(configTypeNode2.getId());
+                }
+
+            });
+            ProjectDataJsonProvider.saveConfigComponent(projectLabel, configTypeNodeList);
         }
         return isNeed;
     }

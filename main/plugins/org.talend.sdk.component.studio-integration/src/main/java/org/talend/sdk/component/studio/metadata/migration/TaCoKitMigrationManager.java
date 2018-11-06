@@ -14,6 +14,8 @@ package org.talend.sdk.component.studio.metadata.migration;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -92,8 +94,17 @@ public class TaCoKitMigrationManager {
                 }
                 // as for it will do migration for all project, need to cache config component to component.index file
                 // under .setting folder from all project
+                List<ConfigTypeNode> configTypeNodeList = new ArrayList<ConfigTypeNode>(nodes.values());
+                Collections.sort(configTypeNodeList, new Comparator<ConfigTypeNode>() {
+
+                    @Override
+                    public int compare(ConfigTypeNode configTypeNode1, ConfigTypeNode configTypeNode2) {
+                        return configTypeNode1.getId().compareTo(configTypeNode2.getId());
+                    }
+
+                });
                 for (final Project project : getAllProjects()) {
-                    ProjectDataJsonProvider.saveConfigComponent(project.getTechnicalLabel(), nodes.values());
+                    ProjectDataJsonProvider.saveConfigComponent(project.getTechnicalLabel(), configTypeNodeList);
                 }
             }
         }
