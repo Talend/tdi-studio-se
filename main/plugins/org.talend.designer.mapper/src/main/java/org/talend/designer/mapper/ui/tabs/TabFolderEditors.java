@@ -161,11 +161,11 @@ public class TabFolderEditors extends CTabFolder {
 
         };
 
-        final List<InputTable> inputTables = mapperManager.getInputTables();
         IExtendedButtonListener afterCommandListener = new IExtendedButtonListener() {
 
             public void handleEvent(ExtendedButtonEvent event) {
-                for (InputTable inputTable : inputTables) {
+                List<InputTable> inputTablesList = mapperManager.getInputTables();
+                for (InputTable inputTable : inputTablesList) {
                     DataMapTableView view = mapperManager.retrieveAbstractDataMapTableView(inputTable);
                     view.getTableViewerCreatorForColumns().getTableViewer().refresh();
                 }
@@ -215,8 +215,8 @@ public class TabFolderEditors extends CTabFolder {
         IExtendedButtonListener afterCommandListener = new IExtendedButtonListener() {
 
             public void handleEvent(ExtendedButtonEvent event) {
-                List<OutputTable> outputTables = mapperManager.getOutputTables();
-                for (OutputTable outputTable : outputTables) {
+                List<OutputTable> outputTablesList = mapperManager.getOutputTables();
+                for (OutputTable outputTable : outputTablesList) {
                     DataMapTableView view = mapperManager.retrieveAbstractDataMapTableView(outputTable);
                     view.getTableViewerCreatorForColumns().getTableViewer().refresh();
                 }
