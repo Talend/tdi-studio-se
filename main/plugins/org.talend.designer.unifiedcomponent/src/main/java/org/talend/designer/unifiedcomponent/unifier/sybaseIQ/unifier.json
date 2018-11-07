@@ -3,7 +3,9 @@
     "component_delegate":"tDBOutputBulkExec",
     "component":"tSybaseIQOutputBulkExec",
     "category":"DI",
-    "family":""
+    "family":"",
+    "parameter":{
+        "exclude":"TYPE"}
 },
 {
     "component_delegate":"tDBBulkExec",

@@ -285,21 +285,26 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             public void modifyText(final ModifyEvent e) {
                 String selectedItem = ((Combo) e.getSource()).getText();
                 String dbType = SupportDBUrlStore.getInstance().getDBType(selectedItem);
-                urlText.setText(SupportDBUrlStore.getInstance().getDefaultDBUrl(dbType));
                 dbVersionCombo.getCombo().setItems(SupportDBVersions.getDisplayedVersions(dbType));
-                if (dbVersionCombo.getCombo().getItemCount() > 0) {
-                    dbVersionCombo.getCombo().select(0);
-                }
-                String driverClassName = SupportDBUrlStore.getInstance().getDBUrlType(dbType).getDbDriver();
-                if (EDatabaseTypeName.MYSQL.getDisplayName().equalsIgnoreCase(dbType)) {
-                    if (EDatabaseVersion4Drivers.MYSQL_8.getVersionValue().equals(getCurrentDBVersion())) {
-                        driverClassName = EDatabase4DriverClassName.MYSQL8.getDriverClass();
+                String savedDbType = prefManager.getValue(AuditManager.AUDIT_DBTYPE);
+                if (savedDbType != null && savedDbType.equals(dbType)) {
+                    reLoad();
+                } else {
+                    if (dbVersionCombo.getCombo().getItemCount() > 0) {
+                        dbVersionCombo.getCombo().select(0);
                     }
+                    urlText.setText(SupportDBUrlStore.getInstance().getDefaultDBUrl(dbType));
+                    String driverClassName = SupportDBUrlStore.getInstance().getDBUrlType(dbType).getDbDriver();
+                    if (EDatabaseTypeName.MYSQL.getDisplayName().equalsIgnoreCase(dbType)) {
+                        if (EDatabaseVersion4Drivers.MYSQL_8.getVersionValue().equals(getCurrentDBVersion())) {
+                            driverClassName = EDatabase4DriverClassName.MYSQL8.getDriverClass();
+                        }
+                    }
+                    driverText.setText(driverClassName);
+                    //
+                    usernameText.setText("");//$NON-NLS-1$
+                    passwordText.setText("");//$NON-NLS-1$
                 }
-                driverText.setText(driverClassName);
-                //
-                usernameText.setText("");//$NON-NLS-1$
-                passwordText.setText("");//$NON-NLS-1$
             }
         });
 
@@ -358,6 +363,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                         historyCombo.getCombo().setItems(items);
                         if (items.length > 0) {
                             historyCombo.getCombo().select(0);
+                        } else {
+                            historyGenerateButton.setEnabled(false);
                         }
                     }
                 }
@@ -543,7 +550,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                     Messages.getString("AuditProjectSettingPage.generate.successful", //$NON-NLS-1$
                             result.get(AuditManager.AUDIT_GENERATE_REPORT_PATH)));
         } else {
-            String mainMsg = Messages.getString("AuditProjectSettingPage.generate.failed"); //$NON-NLS-1$
+            String mainMsg = Messages.getString("AuditProjectSettingPage.generate.failed.message"); //$NON-NLS-1$
             new ErrorDialogWidthDetailArea(getShell(), RepositoryPlugin.PLUGIN_ID, mainMsg,
                     result.get(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION));
         }
@@ -554,8 +561,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             String mainMsg = Messages.getString("AuditProjectSettingPage.DBConfig.CheckConnection.failed"); //$NON-NLS-1$
             new ErrorDialogWidthDetailArea(getShell(), RepositoryPlugin.PLUGIN_ID, mainMsg, result.getMessage());
         } else if (result.isOk() && show) {
-            MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.DBConfig.CheckButtonText"), //$NON-NLS-1$
-                    result.getMessage());
+            MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.DBConfig.CheckButtonText"),result.getMessage()); //$NON-NLS-1$
         }
     }
 

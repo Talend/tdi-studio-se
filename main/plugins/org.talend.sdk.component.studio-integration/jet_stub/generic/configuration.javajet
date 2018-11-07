@@ -47,18 +47,13 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                     }
                 }
             } else if(p.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
-                final String schemaName = p.getName();
-                if(schemaName == null || !schemaName.contains("$$")) {
-                    continue;
+                final String connectionType = (String)p.getTaggedValue("org.talend.sdk.connection.type");
+                if(connectionType == null) {
+                	continue;
                 }
-                final String[] splitName = schemaName.split(java.util.regex.Pattern.quote("$$"));
-                if(splitName.length < 2) {
-                    continue;
-                }
-                final String parameterName = splitName[1];
-                //EConnectionType type = EConnectionType.getTypeFromName(p.getContext());
+                final String parameterName = p.getName();
                 IConnection connection = null;
-                if("in".equalsIgnoreCase(splitName[0])) {
+                if("in".equalsIgnoreCase(connectionType)) {
                     if(node.getComponent().useLookup()) {
                         for (final IConnection conn : node.getIncomingConnections()) {
                             String input_name = null;

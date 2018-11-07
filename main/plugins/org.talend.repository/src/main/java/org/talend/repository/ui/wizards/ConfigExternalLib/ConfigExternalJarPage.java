@@ -13,8 +13,6 @@
 package org.talend.repository.ui.wizards.ConfigExternalLib;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,11 +23,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -96,37 +91,7 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
         routineItem = getSelectedRoutine();
         routines = routineItem.getImports();
         libField.setInput(routines);
-        Button button = new Button(composite, getMessageType());
-        button.setText(Messages.getString("ConfigExternalJarPage.reloadLibrary")); //$NON-NLS-1$
-        button.addSelectionListener(new SelectionListener() {
 
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-
-            }
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                for (int i = 0; i < routines.size(); i++) {
-                    String value = ((IMPORTType) routines.get(i)).getUrlPath();
-                    File file = new File(value);
-                    if (file.exists()) {
-                        try {
-                            CorePlugin.getDefault().getLibrariesService().deployLibrary(file.toURL());
-                        } catch (MalformedURLException e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                        } catch (IOException e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                        }
-                    }
-
-                }
-
-            }
-
-        });
         setErrorMessage(null); // should not initially have error message
 
         setControl(composite);
