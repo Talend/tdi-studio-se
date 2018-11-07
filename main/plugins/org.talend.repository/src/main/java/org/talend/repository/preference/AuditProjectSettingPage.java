@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -213,11 +214,14 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                             dbResults.setObject(rc.getObject());
                                             dbResults.setMessage(rc.getMessage());
                                             if (dbResults.isOk()) {
-                                                service.populateAudit(urlText.getText(), driverText.getText(),
-                                                        usernameText.getText(), passwordText.getText());
-                                                Map<String, String> returnResult = service.generateAuditReport(generatePath);
-                                                if (returnResult != null) {
+                                                try {
+                                                    service.populateAudit(urlText.getText(), driverText.getText(),
+                                                            usernameText.getText(), passwordText.getText());
+                                                    Map<String, String> returnResult = service.generateAuditReport(generatePath);
                                                     results.putAll(returnResult);
+                                                } catch (Exception e) {
+                                                    results.put(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION,
+                                                            ExceptionUtils.getFullStackTrace(e));
                                                 }
                                             }
                                         } else {
@@ -238,7 +242,10 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                                 Map<String, String> returnResult = service.generateAuditReport(generatePath);
                                                 results.putAll(returnResult);
                                             } catch (IOException e) {
-                                                // nothing
+                                                ExceptionHandler.process(e);
+                                            } catch (Exception e) {
+                                                results.put(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION,
+                                                        ExceptionUtils.getFullStackTrace(e));
                                             } finally {
                                                 FilesUtils.deleteFile(tempFolder, true);
                                             }
@@ -386,10 +393,15 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                         dbResults.setObject(rc.getObject());
                                         dbResults.setMessage(rc.getMessage());
                                         if (dbResults.isOk()) {
-                                            service.populateHistoryAudit(selectedAuditId, urlText.getText(), driverText.getText(),
-                                                    usernameText.getText(), passwordText.getText());
-                                            Map<String, String> returnResult = service.generateAuditReport(generatePath);
-                                            results.putAll(returnResult);
+                                            try {
+                                                service.populateHistoryAudit(selectedAuditId, urlText.getText(),
+                                                        driverText.getText(), usernameText.getText(), passwordText.getText());
+                                                Map<String, String> returnResult = service.generateAuditReport(generatePath);
+                                                results.putAll(returnResult);
+                                            } catch (Exception e) {
+                                                results.put(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION,
+                                                        ExceptionUtils.getFullStackTrace(e));
+                                            }
                                         }
                                     }
                                 }
@@ -531,8 +543,9 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                     Messages.getString("AuditProjectSettingPage.generate.successful", //$NON-NLS-1$
                             result.get(AuditManager.AUDIT_GENERATE_REPORT_PATH)));
         } else {
-            MessageDialog.openWarning(getShell(), Messages.getString("AuditProjectSettingPage.generate.title"), //$NON-NLS-1$
-                    Messages.getString("AuditProjectSettingPage.generate.failed")); //$NON-NLS-1$
+            String mainMsg = Messages.getString("AuditProjectSettingPage.generate.failed"); //$NON-NLS-1$
+            new ErrorDialogWidthDetailArea(getShell(), RepositoryPlugin.PLUGIN_ID, mainMsg,
+                    result.get(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION));
         }
     }
 
