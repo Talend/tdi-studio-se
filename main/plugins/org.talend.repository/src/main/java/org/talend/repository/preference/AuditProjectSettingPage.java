@@ -528,7 +528,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                             result.get(AuditManager.AUDIT_GENERATE_REPORT_PATH)));
         } else {
             MessageDialog.openWarning(getShell(), Messages.getString("AuditProjectSettingPage.generate.title"), //$NON-NLS-1$
-                    Messages.getString("AuditProjectSettingPage.generate.failed")); //$NON-NLS-1$
+                    Messages.getString("AuditProjectSettingPage.generate.failed.message")); //$NON-NLS-1$
         }
     }
 
