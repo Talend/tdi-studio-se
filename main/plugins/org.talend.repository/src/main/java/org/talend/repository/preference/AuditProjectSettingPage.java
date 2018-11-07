@@ -346,6 +346,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                     historyCombo.getCombo().setItems(items);
                     if (items.length > 0) {
                         historyCombo.getCombo().select(0);
+                    } else {
+                        historyGenerateButton.setEnabled(false);
                     }
                 }
             }
