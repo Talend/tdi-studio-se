@@ -272,21 +272,26 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             public void modifyText(final ModifyEvent e) {
                 String selectedItem = ((Combo) e.getSource()).getText();
                 String dbType = SupportDBUrlStore.getInstance().getDBType(selectedItem);
-                urlText.setText(SupportDBUrlStore.getInstance().getDefaultDBUrl(dbType));
                 dbVersionCombo.getCombo().setItems(SupportDBVersions.getDisplayedVersions(dbType));
-                if (dbVersionCombo.getCombo().getItemCount() > 0) {
-                    dbVersionCombo.getCombo().select(0);
-                }
-                String driverClassName = SupportDBUrlStore.getInstance().getDBUrlType(dbType).getDbDriver();
-                if (EDatabaseTypeName.MYSQL.getDisplayName().equalsIgnoreCase(dbType)) {
-                    if (EDatabaseVersion4Drivers.MYSQL_8.getVersionValue().equals(getCurrentDBVersion())) {
-                        driverClassName = EDatabase4DriverClassName.MYSQL8.getDriverClass();
+                String savedDbType = prefManager.getValue(AuditManager.AUDIT_DBTYPE);
+                if (savedDbType != null && savedDbType.equals(dbType)) {
+                    reLoad();
+                } else {
+                    if (dbVersionCombo.getCombo().getItemCount() > 0) {
+                        dbVersionCombo.getCombo().select(0);
                     }
+                    urlText.setText(SupportDBUrlStore.getInstance().getDefaultDBUrl(dbType));
+                    String driverClassName = SupportDBUrlStore.getInstance().getDBUrlType(dbType).getDbDriver();
+                    if (EDatabaseTypeName.MYSQL.getDisplayName().equalsIgnoreCase(dbType)) {
+                        if (EDatabaseVersion4Drivers.MYSQL_8.getVersionValue().equals(getCurrentDBVersion())) {
+                            driverClassName = EDatabase4DriverClassName.MYSQL8.getDriverClass();
+                        }
+                    }
+                    driverText.setText(driverClassName);
+                    //
+                    usernameText.setText("");//$NON-NLS-1$
+                    passwordText.setText("");//$NON-NLS-1$
                 }
-                driverText.setText(driverClassName);
-                //
-                usernameText.setText("");//$NON-NLS-1$
-                passwordText.setText("");//$NON-NLS-1$
             }
         });
 
@@ -341,6 +346,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                     historyCombo.getCombo().setItems(items);
                     if (items.length > 0) {
                         historyCombo.getCombo().select(0);
+                    } else {
+                        historyGenerateButton.setEnabled(false);
                     }
                 }
             }
