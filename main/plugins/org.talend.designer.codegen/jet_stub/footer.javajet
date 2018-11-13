@@ -506,7 +506,7 @@
             if (inContext == null) {
                 inContext = <%=className%>.class.getClassLoader().getResourceAsStream("config/contexts/" + contextStr + ".properties");
             }
-            if (inContext != null) {
+            if (inContext != null && context != null && context.isEmpty()) {
                 //defaultProps is in order to keep the original context value
                 defaultProps.load(inContext);
                 inContext.close();
