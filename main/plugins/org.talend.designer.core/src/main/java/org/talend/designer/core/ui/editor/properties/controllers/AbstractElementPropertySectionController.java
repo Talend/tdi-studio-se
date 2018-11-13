@@ -1440,7 +1440,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
         String schema = getValueFromRepositoryName(element, EConnectionParameterName.SCHEMA.getName(), basePropertyParameter);
         connParameters.setSchema(schema);
 
-        if ((elem instanceof Node) && ((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)) {
+        if ((elem instanceof Node) && (((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC) 
+                || ((Node)element).getComponent().getComponentType().equals(EComponentType.GENERIC))) {
             String userName = getValueFromRepositoryName(element, EConnectionParameterName.GENERIC_USERNAME.getDisplayName(), basePropertyParameter);
             connParameters.setUserName(userName);
 
@@ -1664,7 +1665,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
             dbName = ""; //$NON-NLS-1$
         }
         connParameters.setDbName(dbName);
-        if ((elem instanceof Node) && ((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)) {
+        
+        if ((elem instanceof Node) && (((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)
+                || ((Node)element).getComponent().getComponentType().equals(EComponentType.GENERIC))) {
             connParameters.setUserName(getParameterValueWithContext(element, EConnectionParameterName.GENERIC_USERNAME.getDisplayName(), context,
                     basePropertyParameter));
             connParameters.setPassword(getParameterValueWithContext(element, EConnectionParameterName.GENERIC_PASSWORD.getDisplayName(), context,

@@ -580,4 +580,15 @@ public class TestProcessor implements IProcessor {
         return null;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.runprocess.IProcessor#unloadProcess()
+     */
+    @Override
+    public void unloadProcess() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

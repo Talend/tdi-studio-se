@@ -2063,4 +2063,15 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         // build whole project by default.
         getTalendJavaProject().buildModules(monitor, null, null);
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.runprocess.IProcessor#unloadProcess()
+     */
+    @Override
+    public void unloadProcess() {
+        this.process = null;
+        this.property = null;
+    }
 }
