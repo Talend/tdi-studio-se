@@ -49,7 +49,7 @@ public class SchemaElementParameter extends TaCoKitElementParameter {
         }
     }
 
-    private Optional<IMetadataTable> getMetadata() {
+    protected Optional<IMetadataTable> getMetadata() {
         IElement elem = getElement();
         if (elem == null || !(elem instanceof Node)) {
             return Optional.empty();
