@@ -41,6 +41,8 @@ public class NetworkErrorRetryDialog extends MessageDialog {
     private String exceptionString;
 
     private String information;
+    
+    private boolean donnotRetryByCancel = false;
 
     public NetworkErrorRetryDialog(Shell parentShell, Throwable ex) {
         super(parentShell, Messages.getString("NetworkErrorRetryDialog.title"), null, null, MessageDialog.INFORMATION, //$NON-NLS-1$
@@ -51,6 +53,7 @@ public class NetworkErrorRetryDialog extends MessageDialog {
         } else {
             information = Messages.getString("NetworkErrorRetryDialog.message.default"); //$NON-NLS-1$
         }
+        setDonnotRetryByCancel(false);
     }
 
     @Override
@@ -92,6 +95,7 @@ public class NetworkErrorRetryDialog extends MessageDialog {
             form.performFinish();
         } else {
             form.performCancel();
+            setDonnotRetryByCancel(true);
         }
         super.buttonPressed(buttonId);
     }
@@ -127,6 +131,14 @@ public class NetworkErrorRetryDialog extends MessageDialog {
 
     public void setInformation(String information) {
         this.information = information;
+    }
+
+    public boolean isDonnotRetryByCancel() {
+        return donnotRetryByCancel;
+    }
+
+    public void setDonnotRetryByCancel(boolean donnotRetryByCancel) {
+        this.donnotRetryByCancel = donnotRetryByCancel;
     }
 
     // @Override

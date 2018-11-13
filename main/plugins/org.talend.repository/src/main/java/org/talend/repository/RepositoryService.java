@@ -173,6 +173,8 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     private volatile boolean donnotRetryAgainBeforeRestart = false;
 
+    private volatile boolean donnotRetryByCancel = false;
+
     /*
      * (non-Javadoc)
      * 
@@ -936,6 +938,9 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
         if (donnotRetryAgainBeforeRestart) {
             return false;
         }
+        if (donnotRetryByCancel) {
+            return false;
+        }
         final AtomicBoolean retry = new AtomicBoolean(false);
         try {
 
@@ -1001,6 +1006,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
         NetworkErrorRetryDialog dialog = new NetworkErrorRetryDialog(shell, ex);
         int result = dialog.open();
         donnotRetryAgainBeforeRestart = dialog.donnotRetryAgainBeforeRestart();
+        donnotRetryByCancel = dialog.isDonnotRetryByCancel();
         return NetworkErrorRetryDialog.BUTTON_RETRY_INDEX == result;
     }
 
