@@ -12,14 +12,17 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -30,11 +33,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Manifest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.map.MultiKeyMap;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
@@ -65,8 +70,6 @@ import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
-import org.talend.designer.maven.launch.MavenPomCommandLauncher;
-import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
@@ -673,29 +676,34 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     }
 
     private Manifest getManifest(ExportFileResource libResource, ProcessItem processItem) throws IOException {
-
+        Analyzer analyzer = createAnalyzer(libResource, processItem);
+        
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
                     .getService(IRunProcessService.class);
             ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(processItem.getProperty());
             if (talendProcessJavaProject != null) {
-                MavenPomCommandLauncher mavenLauncher = new MavenPomCommandLauncher(talendProcessJavaProject.getProjectPom(),
-                        TalendMavenConstants.GOAL_COMPILE);
-                mavenLauncher.setSkipCIBuilder(true);
-                mavenLauncher.setSkipTests(true);
-                try {
-                    mavenLauncher.execute(new NullProgressMonitor());
-                    FileCopyUtils.copyFolder(talendProcessJavaProject.getOutputFolder().getLocation().toFile(), classesLocation);
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
+                String src = JavaResourcesHelper.getJobClassFilePath(processItem, true);
+                IFile srcFile = talendProcessJavaProject.getSrcFolder().getFile(src);
+                Set<String> imports = importCompiler(srcFile.getLocation().toString()+"");
+                String[] defaultPackages = analyzer.getProperty(Analyzer.IMPORT_PACKAGE).split(",");
+                imports.addAll(Arrays.asList(defaultPackages));
+                imports.remove("*;resolution:=optional");
+                imports.remove("routines.system");
+                StringBuilder importPackage = new StringBuilder();
+                for (String ip : imports) {
+                    importPackage.append(ip).append(',');
                 }
-            }
+                importPackage.append("*;resolution:=optional");
+                analyzer.setProperty(Analyzer.IMPORT_PACKAGE, importPackage.toString());
+            }   
         }
-        Analyzer analyzer = createAnalyzer(libResource, processItem);
+        
         // Calculate the manifest
         Manifest manifest = null;
         try {
             manifest = analyzer.calcManifest();
+            manifest.getAttributes(Analyzer.IMPORT_PACKAGE);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
@@ -922,4 +930,36 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         return processor.getProcess();
     }
 
+    private Set<String> importCompiler(String src) {
+        Set<String> imports = new HashSet<String>();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        try {
+            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn", new PrintWriter(out),
+                    new PrintWriter(err), null);
+            String errString = new String(err.toByteArray());
+            String[] errBlocks = errString.split("----------");
+            String reg = "([a-z_0-9\\.]+)\\.";
+            Pattern pattern = Pattern.compile(reg);
+            for (String errBlock : errBlocks) {
+                String[] lines = errBlock.trim().replaceAll("\r", "").split("\n");
+                if (lines.length == 4) {
+                    if (lines[3].endsWith("cannot be resolved to a type") || lines[3].endsWith("cannot be resolved")) {
+                        int markerPos = lines[2].indexOf('^');
+                        Matcher m = pattern.matcher(lines[1].substring(markerPos));
+                        if (m.find()) {
+                            if (m.groupCount() == 1 && m.group(1).indexOf('.') > 0) {
+                                imports.add(m.group(1));
+                            }
+                        }
+                    }
+                }
+            }
+            out.close();
+            err.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imports;
+    }
 }
