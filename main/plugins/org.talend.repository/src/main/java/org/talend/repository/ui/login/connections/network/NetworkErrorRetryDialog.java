@@ -46,7 +46,7 @@ public class NetworkErrorRetryDialog extends MessageDialog {
 
     public NetworkErrorRetryDialog(Shell parentShell, Throwable ex) {
         super(parentShell, Messages.getString("NetworkErrorRetryDialog.title"), null, null, MessageDialog.INFORMATION, //$NON-NLS-1$
-                new String[] { IDialogConstants.RETRY_LABEL, IDialogConstants.CANCEL_LABEL }, BUTTON_DEFAULT_INDEX);
+                new String[] { IDialogConstants.RETRY_LABEL, IDialogConstants.NO_LABEL }, BUTTON_DEFAULT_INDEX);
         this.ex = ex;
         if (this.ex instanceof SocketTimeoutException) {
             information = Messages.getString("NetworkErrorRetryDialog.message.default.timeout"); //$NON-NLS-1$
@@ -94,7 +94,6 @@ public class NetworkErrorRetryDialog extends MessageDialog {
         if (buttonId == BUTTON_RETRY_INDEX) {
             form.performFinish();
         } else {
-            form.performCancel();
             setDonnotRetryByCancel(true);
         }
         super.buttonPressed(buttonId);
@@ -105,9 +104,6 @@ public class NetworkErrorRetryDialog extends MessageDialog {
         return true;
     }
 
-    public boolean donnotRetryAgainBeforeRestart() {
-        return form.donnotRetryAgainBeforeRestart();
-    }
 
     public Throwable getEx() {
         return this.ex;
