@@ -119,6 +119,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.runprocess.IJavaProcessorStates;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -130,6 +131,7 @@ import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.codegen.ICodeGenerator;
 import org.talend.designer.codegen.ICodeGeneratorService;
 import org.talend.designer.core.DesignerPlugin;
+import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
@@ -205,6 +207,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
     private boolean doClean = false;
 
+    private String jobId;
+
+    private String jobVersion;
+
     /**
      * Set current status.
      *
@@ -225,6 +231,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     public JavaProcessor(IProcess process, Property property, boolean filenameFromLabel) {
         super(process);
         this.property = property;
+        if (this.property != null) {
+            this.jobId = property.getId();
+            this.jobVersion = property.getVersion();
+        }
         if (!ProcessorUtilities.isGeneratePomOnly()) {
             if (isStandardJob() && !isGuessSchemaJob(property)) {
                 this.talendJavaProject = TalendJavaProjectManager.getTalendJobJavaProject(property);
@@ -2073,5 +2083,36 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     public void unloadProcess() {
         this.process = null;
         this.property = null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.runprocess.IProcessor#isUnloaded()
+     */
+    @Override
+    public boolean isProcessUnloaded() {
+        return this.process == null || this.property == null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.runprocess.IProcessor#reloadProcess()
+     */
+    @Override
+    public void reloadProcess() {
+        if ((process == null || property == null) && this.jobId != null && this.jobVersion != null) {
+            ProcessItem processItem = ItemCacheManager.getProcessItem(jobId, jobVersion);
+            if (processItem != null) {
+                IDesignerCoreService service = CoreRuntimePlugin.getInstance().getDesignerCoreService();
+                process = service.getProcessFromProcessItem(processItem);
+                property = processItem.getProperty();
+                if (process instanceof IProcess2) {
+                    ((IProcess2) process).setProperty(property);
+                }
+            }
+        }
+
     }
 }
