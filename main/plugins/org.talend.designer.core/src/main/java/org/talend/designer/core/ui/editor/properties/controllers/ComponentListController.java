@@ -48,6 +48,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.runtime.services.IGenericService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.process.IGraphicalNode;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
@@ -208,6 +209,20 @@ public class ComponentListController extends AbstractElementPropertySectionContr
                         curParam.setValue(newConnectionName);
                     } else if (value != null && value.startsWith(oldConnectionName + "_")) {
                         curParam.setValue(value.replaceFirst(oldConnectionName + "_", newConnectionName + "_"));
+                    }
+                }else if(curParam.getFieldType().equals(EParameterFieldType.COMPONENT_REFERENCE)){
+                    String value = (String)curParam.getValue();
+                    if (oldConnectionName.equals(value)) {
+                        curParam.setValue(newConnectionName);
+                    } else if (value != null && value.startsWith(oldConnectionName + "_")) {
+                        curParam.setValue(value.replaceFirst(oldConnectionName + "_", newConnectionName + "_"));
+                    }
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericService.class)) {
+                        IGenericService genericService = (IGenericService) GlobalServiceRegister.getDefault().getService(
+                                IGenericService.class);
+                        if(genericService != null){
+                            genericService.resetReferenceValue(curNode, oldConnectionName, newConnectionName);
+                        }
                     }
                 } else if (curParam.getFieldType().equals(EParameterFieldType.TABLE)) {
                     final Object[] itemsValue = curParam.getListItemsValue();
