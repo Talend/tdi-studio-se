@@ -81,11 +81,10 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
         // to compute import-package for the manifest.mf. TalendJavaProjectManager.getTalendJobJavaProject is always
         // disabled MavenNature when create project(false), it will stop jdt to compile, and imporve this part will help
         // to avoid using maven in this step.
-        final Map<String, Object> argumentsMap = new HashMap<String, Object>();
-        argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, "-Dci.builder.skip=true");
         MavenPomCommandLauncher mavenLauncher = new MavenPomCommandLauncher(talendProcessJavaProject.getProjectPom(),
                 TalendMavenConstants.GOAL_COMPILE);
-        mavenLauncher.setArgumentsMap(argumentsMap);
+        mavenLauncher.setSkipCIBuilder(true);
+        mavenLauncher.setSkipTests(true);
         mavenLauncher.execute(monitor);
 
         List<ExportFileResource> resources = osgiMavenManager

@@ -34,6 +34,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
@@ -55,6 +56,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.ui.branding.IBrandingService;
@@ -63,6 +65,8 @@ import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.designer.maven.launch.MavenPomCommandLauncher;
+import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
@@ -669,6 +673,24 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     }
 
     private Manifest getManifest(ExportFileResource libResource, ProcessItem processItem) throws IOException {
+
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+            IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
+                    .getService(IRunProcessService.class);
+            ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(processItem.getProperty());
+            if (talendProcessJavaProject != null) {
+                MavenPomCommandLauncher mavenLauncher = new MavenPomCommandLauncher(talendProcessJavaProject.getProjectPom(),
+                        TalendMavenConstants.GOAL_COMPILE);
+                mavenLauncher.setSkipCIBuilder(true);
+                mavenLauncher.setSkipTests(true);
+                try {
+                    mavenLauncher.execute(new NullProgressMonitor());
+                    FileCopyUtils.copyFolder(talendProcessJavaProject.getOutputFolder().getLocation().toFile(), classesLocation);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
         Analyzer analyzer = createAnalyzer(libResource, processItem);
         // Calculate the manifest
         Manifest manifest = null;
