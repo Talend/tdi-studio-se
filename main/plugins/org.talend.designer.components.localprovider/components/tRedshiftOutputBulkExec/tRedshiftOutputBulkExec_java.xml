@@ -511,7 +511,7 @@
 		</TEMPLATES>
 
 		<IMPORTS>
-			<IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC42-no-awssdk-1.2.16.1027.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.16.1027" REQUIRED="true" />
+			<IMPORT NAME="Driver-Redshift" MODULE="redshiftJDBC42-no-awssdk-1.2.16.1027.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.16.1027" REQUIRED="true" />
 			<IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
 				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406"
 				REQUIRED="true" />

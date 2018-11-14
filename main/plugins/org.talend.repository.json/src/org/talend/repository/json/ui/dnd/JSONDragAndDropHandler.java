@@ -163,6 +163,11 @@ public class JSONDragAndDropHandler extends AbstractDragAndDropServiceHandler {
         if (value.equals("JSON_MAPPING")) {
             return getTableJSONMappingValue(connection);
         }
+        
+        // Need to be changed when this parameter is configurable in wizard.
+        if (value.equals("USE_LOOP_AS_ROOT")) {
+            return false;
+        }
 
         return null;
     }

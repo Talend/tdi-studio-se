@@ -545,4 +545,15 @@ public class UpdateDetectionDialog extends SelectionDialog {
     public List<UpdateResult> getSelectedElements() {
         return selectedElement;
     }
+    
+    public List<UpdateResult> getBuiltInElements() {
+        List<UpdateResult> builtIn = new ArrayList<>();
+        for(UpdateResult result : getInputElements()){
+            if (!result.isChecked()
+                    && (result.getResultType() == EUpdateResult.UPDATE || result.getResultType() == EUpdateResult.DELETE)) {
+                builtIn.add(result);
+            }
+        }
+        return builtIn;
+    }
 }

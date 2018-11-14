@@ -422,12 +422,15 @@ public class SettingVisitor implements PropertyVisitor {
         final String connectorName = node.getProperty().getConnection().getValue();
         final String connectionName =
                 connectorName.equals("__default__") ? EConnectionType.FLOW_MAIN.getName() : connectorName;
-        final String schemaName = node.getProperty().getSchemaName();
         final String discoverSchemaAction = ofNullable(node.getProperty().getMetadata()).orElse(emptyMap())
                 .entrySet().stream().filter(e -> "ui::structure::discoverSchema".equals(e.getKey()))
                 .map(Map.Entry::getValue).filter(Objects::nonNull).findFirst().orElse(null);
 
-        return createSchemaParameter(connectionName, schemaName, discoverSchemaAction, true);
+        TaCoKitElementParameter schemaParam =
+                createSchemaParameter(connectionName, node.getProperty().getPath(), discoverSchemaAction, true);
+        schemaParam.setTaggedValue("org.talend.sdk.connection.type",
+                node.getProperty().getConnection().getType().toString());
+        return schemaParam;
     }
 
     private ValueSelectionParameter visitValueSelection(final PropertyNode node) {
@@ -469,7 +472,7 @@ public class SettingVisitor implements PropertyVisitor {
             final boolean show) {
         String baseSchema = EConnectionType.FLOW_MAIN.getName();
         // Maybe need to find some other condition. this way we will show schema widget for main flow only.
-        final TaCoKitElementParameter schema = new TaCoKitElementParameter(getNode());
+        final TaCoKitElementParameter schema = new SchemaElementParameter(getNode());
         schema.setName(schemaName);
         schema.setDisplayName("!!!SCHEMA.NAME!!!");
         schema.setCategory(EComponentCategory.BASIC);

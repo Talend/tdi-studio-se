@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.CommonUIPlugin;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.GlobalServiceRegister;
@@ -95,6 +96,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
     public IProcessor generateJobFiles(IProgressMonitor monitor) throws Exception {
         LastGenerationInfo.getInstance().getUseDynamicMap().clear();
         LastGenerationInfo.getInstance().getUseRulesMap().clear();
+        BuildCacheManager.getInstance().clearAllCaches();
 
         final Map<String, Object> argumentsMap = new HashMap<String, Object>(getArguments());
 
@@ -112,6 +114,18 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 argumentsMap.put(key, value);
             }
         }
+        //testCase
+        if(isOptionChoosed(ExportChoice.executeTests)){
+            IFolder srcFolder = talendProcessJavaProject.getTestSrcFolder();
+            IFolder resFolder = talendProcessJavaProject.getTestResourcesFolder();
+            if(srcFolder.exists()){
+                talendProcessJavaProject.cleanFolder(monitor, srcFolder);
+            }
+            if(resFolder.exists()){
+                talendProcessJavaProject.cleanFolder(monitor, resFolder);
+            }
+        }
+        
         // context
         boolean needContext = isOptionChoosed(ExportChoice.needContext);
         if (needContext) {
@@ -376,7 +390,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 try {
                     buildDelegate(monitor);
                 } catch (Exception e) {
-                    if (isOptionChoosed(ExportChoice.pushImage)) {
+                    if (!CommonUIPlugin.isFullyHeadless() && isOptionChoosed(ExportChoice.buildImage)) {
                         MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
                     } else {
                         ExceptionHandler.process(e);
@@ -405,9 +419,12 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         }
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, goal);
         argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, getProgramArgs());
+        try {
+            talendProcessJavaProject.buildModules(monitor, null, argumentsMap);
+            BuildCacheManager.getInstance().performBuildSuccess();
+        } finally {
+            BuildCacheManager.getInstance().clearAllCaches();
+        }
 
-        talendProcessJavaProject.buildModules(monitor, null, argumentsMap);
-
-        BuildCacheManager.getInstance().performBuildSuccess();
     }
 }

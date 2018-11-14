@@ -879,7 +879,7 @@
   		
   		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9302.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9302/6.3.0"  REQUIRED_IF="(DBTYPE=='EXASOL') and (USE_EXISTING_CONNECTION == 'false')" />
      
-        <IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC42-no-awssdk-1.2.16.1027.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.16.1027" REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
+        <IMPORT NAME="Driver-Redshift" MODULE="redshiftJDBC42-no-awssdk-1.2.16.1027.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.16.1027" REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
         
         <IMPORT NAME="Driver-Snowflake" MODULE="snowflake-jdbc-3.5.3.jar" MVN="mvn:net.snowflake/snowflake-jdbc/3.5.3"  REQUIRED_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')" />
      </IMPORTS>

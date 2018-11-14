@@ -54,7 +54,6 @@
 %>
 
 final java.io.PrintStream out = System.out;
-System.setOut(System.err);
 System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
         @Override
         public void write(final int b) {
@@ -62,7 +61,6 @@ System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
             // This stream is used to transfer the schema between process
         }
 }));
-
 
 <%
     if ("input".equalsIgnoreCase(tacokitComponentType)) {

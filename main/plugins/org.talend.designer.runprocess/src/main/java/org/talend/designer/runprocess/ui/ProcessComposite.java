@@ -77,6 +77,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
@@ -148,6 +149,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     private static final int MINIMUM_WIDTH = 530;
 
+    private int selectionLine = 0;
+
     private IProcessViewHelper processViewHelper;
 
     private static RunProcessContext processContext;
@@ -198,6 +201,10 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     private boolean isAddedStreamListener;
 
     private boolean hideConsoleLine = false;
+
+    private boolean lockConsoleTrace = false;
+
+    private ScrollBar verticalBar;
 
     private Button enableLineLimitButton;
 
@@ -393,6 +400,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
             @Override
             public void widgetSelected(SelectionEvent event) {
+                lockConsoleTrace = false;
                 execRun();
             }
         });
@@ -630,6 +638,30 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             @Override
             public void keyReleased(KeyEvent arg0) {
 
+            }
+        });
+
+        // for TUP-20927, added a listener to verticalBar to stop the console printing logs when user drag up the bar.
+        verticalBar = consoleText.getVerticalBar();
+        verticalBar.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+
+                int consoleLine = verticalBar.getMaximum();
+                int barLength = verticalBar.getThumb();
+                int increment = verticalBar.getIncrement();
+                selectionLine = verticalBar.getSelection();
+                lockConsoleTrace = true;
+
+                if (selectionLine <= consoleLine && selectionLine >= consoleLine - barLength - increment
+                        && !processContext.isTracPause()) {
+                    lockConsoleTrace = false;
+
+                    if (processContext != null && !processContext.isRunning()) {
+                        fillConsole(processContext.getMessages());
+                    }
+                }
             }
         });
 
@@ -1041,7 +1073,10 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // clearBeforeExec.setEnabled(processContext != null);
         // clearBeforeExec.setSelection(processContext != null && processContext.isClearBeforeExec());
         // contextComposite.setProcess(((processContext != null) && !disableAll ? processContext.getProcess() : null));
-        fillConsole(processContext != null ? processContext.getMessages() : new ArrayList<IProcessMessage>());
+
+        if (!lockConsoleTrace) {
+            fillConsole(processContext != null ? processContext.getMessages() : new ArrayList<IProcessMessage>());
+        }
 
         // remove trace if basic run tab active
         if (processContext != null) {
@@ -1229,7 +1264,10 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             return;
         }
 
-        consoleText.setText(consoleMsgText.toString());
+        if (!lockConsoleTrace) {
+            consoleText.setText(consoleMsgText.toString());
+        }
+
         if (newStyle) {
             consoleText.setStyleRanges(styles.toArray(new StyleRange[0]));
         }
@@ -1272,7 +1310,12 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         if (consoleText.isDisposed()) {
             return;
         }
-        consoleText.setTopIndex(consoleText.getLineCount() - 1);
+
+        if (lockConsoleTrace) {
+            consoleText.setTopIndex(selectionLine);
+        } else {
+            consoleText.setTopIndex(consoleText.getLineCount() - 1);
+        }
     }
 
     private String getRowLimitContent(IProcessMessage message) {
@@ -1410,6 +1453,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     public void kill() {
         killBtn.setEnabled(false);
         setHideconsoleLine(true);
+        lockConsoleTrace = false;
         processContext.kill();
     }
 
@@ -1629,7 +1673,9 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                             return;
                         }
                         if (processContext != null) {
-                            fillConsole(processContext.getMessages());
+                            if (!lockConsoleTrace) {
+                                fillConsole(processContext.getMessages());
+                            }
                         }
                     }
                 });
@@ -1684,7 +1730,9 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                     setRunnable(!running);
                     killBtn.setEnabled(running);
                     if (processContext != null) {
-                        fillConsole(processContext.getMessages());
+                        if (!lockConsoleTrace) {
+                            fillConsole(processContext.getMessages());
+                        }
                     }
                 }
             });

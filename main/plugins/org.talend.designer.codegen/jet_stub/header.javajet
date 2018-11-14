@@ -312,7 +312,7 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 		}
 %>
 	}
-	private ContextProperties context = new ContextProperties();
+	protected ContextProperties context = new ContextProperties(); // will be instanciated by MS.
 	public ContextProperties getContext() {
 		return this.context;
 	}

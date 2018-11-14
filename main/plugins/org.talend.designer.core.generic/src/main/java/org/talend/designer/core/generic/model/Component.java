@@ -1262,7 +1262,7 @@ public class Component extends AbstractBasicComponent {
         }
         ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
         componentImportNeedsList.add(moduleNeeded);
-        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.25.3");
+        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.25.4");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
     }
@@ -1463,8 +1463,8 @@ public class Component extends AbstractBasicComponent {
         if (GenericTypeUtils.isEnumType(property)) {
             if (ContextParameterUtils.isContainContextParam(value) || value.indexOf("globalMap.get") > -1) {
                 return value;
-            } else {
-                return TalendQuoteUtils.addQuotesIfNotExist(value);
+            }else {
+                return TalendQuoteUtils.addQuotesForComplexusString(value);
             }
         }
         if (GenericTypeUtils.isStringType(property)
@@ -1494,6 +1494,8 @@ public class Component extends AbstractBasicComponent {
         }
         return value;
     }
+    
+    
 
     @Override
     public int hashCode() {

@@ -282,7 +282,7 @@ if (("true").equals(printHeader)) {
     					} 
    						if (("true").equals(useFixedLength)) {//AAA
 %>
-							strBuffer_<%=cid%>.append(formatter_<%=column.getLabel() %>_<%=cid%>.format("%1$<%=lengths.get(i).get("LENGTH") %>s", 
+							strBuffer_<%=cid%>.append(formatter_<%=column.getLabel() %>_<%=cid%>.format("%1$"+<%=lengths.get(i).get("LENGTH") %>+"s", 
 <%
     						String pattern = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
     							if (javaType == JavaTypesManager.DATE && pattern != null && pattern.trim().length() != 0) {//Date
