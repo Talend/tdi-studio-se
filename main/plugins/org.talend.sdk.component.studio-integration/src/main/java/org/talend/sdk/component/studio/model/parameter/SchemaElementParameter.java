@@ -10,13 +10,12 @@ import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.process.IElement;
-import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 
 /**
  * TacokitElementParameter, which provides a view for Component metadata (schema) if the form of {@code List<String>}
  */
-public class SchemaElementParameter extends TaCoKitElementParameter {
+public abstract class SchemaElementParameter extends TaCoKitElementParameter {
 
     /**
      * Schema display name default value
@@ -59,14 +58,7 @@ public class SchemaElementParameter extends TaCoKitElementParameter {
         }
     }
 
-    protected Optional<IMetadataTable> getMetadata() {
-        IElement elem = getElement();
-        if (elem == null || !(elem instanceof Node)) {
-            return Optional.empty();
-        }
-        final IMetadataTable metadata = ((Node) elem).getMetadataFromConnector(getContext());
-        return Optional.ofNullable(metadata);
-    }
+    abstract Optional<IMetadataTable> getMetadata();
 
     /**
      * Retrieves schema column names {code List<String>} from IMetadataTable

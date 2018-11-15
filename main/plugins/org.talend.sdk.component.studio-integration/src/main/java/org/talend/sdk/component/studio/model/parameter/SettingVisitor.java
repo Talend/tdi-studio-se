@@ -32,7 +32,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -491,7 +490,7 @@ public class SettingVisitor implements PropertyVisitor {
             final boolean show) {
         String baseSchema = EConnectionType.FLOW_MAIN.getName();
         // Maybe need to find some other condition. this way we will show schema widget for main flow only.
-        final TaCoKitElementParameter schema = new SchemaElementParameter(getNode());
+        final TaCoKitElementParameter schema = new OutputSchemaParameter(getNode());
         schema.setName(schemaName);
         schema.setDisplayName("!!!SCHEMA.NAME!!!");
         schema.setCategory(EComponentCategory.BASIC);

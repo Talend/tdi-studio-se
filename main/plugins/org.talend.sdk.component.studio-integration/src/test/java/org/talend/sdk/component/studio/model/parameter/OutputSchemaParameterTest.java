@@ -22,14 +22,14 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 
-class SchemaElementParameterTest {
+class OutputSchemaParameterTest {
 
     private static final String CONNECTOR_NAME = "FLOW";
 
     @Test
     void testCreateActionParameter() {
         final Node nodeMock = mockNode(metadata());
-        final SchemaElementParameter parameter = new SchemaElementParameter(nodeMock);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock);
         parameter.setContext(CONNECTOR_NAME);
         final IActionParameter actionParameter = parameter.createActionParameter("param");
         final Collection<Pair<String, String>> parameters = actionParameter.parameters();
@@ -43,7 +43,7 @@ class SchemaElementParameterTest {
     @Test
     void testGetValue() {
         final Node nodeMock = mockNode(metadata());
-        final SchemaElementParameter parameter = new SchemaElementParameter(nodeMock);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock);
         parameter.setContext(CONNECTOR_NAME);
         assertEquals(Arrays.asList("c1", "c2"), parameter.getValue());
     }
@@ -51,7 +51,7 @@ class SchemaElementParameterTest {
     @Test
     void testGetValueNoMetadata() {
         final Node nodeMock = mockNode(null);
-        final SchemaElementParameter parameter = new SchemaElementParameter(nodeMock);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock);
         parameter.setContext(CONNECTOR_NAME);
         assertEquals(Collections.emptyList(), parameter.getValue());
     }
@@ -59,7 +59,7 @@ class SchemaElementParameterTest {
     @Test
     void testGetStringValue() {
         final Node nodeMock = mockNode(metadata());
-        final SchemaElementParameter parameter = new SchemaElementParameter(nodeMock);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock);
         parameter.setContext(CONNECTOR_NAME);
         assertEquals("[c1, c2]", parameter.getStringValue());
     }
@@ -67,7 +67,7 @@ class SchemaElementParameterTest {
     @Test
     void testGetStringValueNoMetadata() {
         final Node nodeMock = mockNode(null);
-        final SchemaElementParameter parameter = new SchemaElementParameter(nodeMock);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock);
         parameter.setContext(CONNECTOR_NAME);
         assertEquals("[]", parameter.getStringValue());
     }
@@ -76,7 +76,7 @@ class SchemaElementParameterTest {
     void testSetValue() {
         final IMetadataTable metadata = new MetadataTable();
         final Node nodeMock = mockNode(metadata);
-        final SchemaElementParameter parameter = new SchemaElementParameter(nodeMock);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock);
 
         final List<String> schema = Arrays.asList("c1", "c2", "c3");
         parameter.setContext(CONNECTOR_NAME);
@@ -105,7 +105,7 @@ class SchemaElementParameterTest {
     @Test
     void testSetValueNoMetadata() {
         final Node nodeMock = mockNode(null);
-        final SchemaElementParameter parameter = new SchemaElementParameter(nodeMock);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(nodeMock);
 
         final List<String> schema = Arrays.asList("c1", "c2", "c3");
         parameter.setContext(CONNECTOR_NAME);
@@ -114,13 +114,13 @@ class SchemaElementParameterTest {
 
     @Test
     void testIsPersisted() {
-        final SchemaElementParameter parameter = new SchemaElementParameter(null);
+        final OutputSchemaParameter parameter = new OutputSchemaParameter(null);
         assertFalse(parameter.isPersisted());
     }
 
     @Test
     void testGuessButtonName() {
-        assertEquals("Guess Schema_config.datastore.dataset", SchemaElementParameter.guessButtonName("config.datastore.dataset"));
+        assertEquals("Guess Schema_config.datastore.dataset", OutputSchemaParameter.guessButtonName("config.datastore.dataset"));
     }
 
     private Node mockNode(final IMetadataTable metadata) {
