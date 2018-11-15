@@ -507,6 +507,8 @@ public class CompleteDropTargetTableListener extends DefaultDropTargetListener {
 
         uiManager.selectLinks(dataMapTableViewTarget, selectedEntries, true, false);
         dataMapTableViewTarget.checkChangementsAfterEntryModifiedOrAdded(false);
+        // refresh for cell data disappear on MAC
+        tableViewerCreatorTarget.getTableViewer().refresh();
         tableViewerCreatorTarget.getTable().setFocus();
 
         uiManager.setDragging(false);
