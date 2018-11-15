@@ -21,6 +21,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.core.model.components.EComponentType;
+import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.EComponentCategory;
@@ -29,6 +30,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.temp.ECodePart;
+import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
@@ -53,9 +55,12 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     private Set<UnifiedObject> unifiedObjects = new HashSet<UnifiedObject>();
 
+    private String translatedFamilyName;
+
     public DelegateComponent(String familyName, String name) {
         this.name = name;
         this.familyName = familyName;
+        getTranslatedFamilyName();
     }
 
     /*
@@ -115,7 +120,27 @@ public class DelegateComponent extends AbstractBasicComponent {
      */
     @Override
     public String getTranslatedFamilyName() {
-        return familyName;
+        String[] transNames = familyName.split("/"); //$NON-NLS-1$
+        IComponentsFactory factory = ComponentsFactoryProvider.getInstance();
+        if (transNames != null && transNames.length > 0) {
+            StringBuffer stringBuffer = new StringBuffer();
+            for (String toTranslate : transNames) {
+                String translated = factory.getFamilyTranslation(this, "FAMILY." + toTranslate.replace(" ", "_"));
+                if (translated.startsWith("!!")) { //$NON-NLS-1$
+                    if (stringBuffer.length() > 0) {
+                        stringBuffer.append("/");
+                    }
+                    stringBuffer.append(toTranslate);
+                } else {
+                    if (stringBuffer.length() > 0) {
+                        stringBuffer.append("/");
+                    }
+                    stringBuffer.append(translated);
+                }
+            }
+            translatedFamilyName = stringBuffer.toString();
+        }
+        return translatedFamilyName;
     }
 
     /*
