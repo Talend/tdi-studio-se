@@ -717,6 +717,8 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
     public static class Connection {
 
+        public static final String DEFAULT = "__default__";
+
         private final Type type;
 
         private final String value;

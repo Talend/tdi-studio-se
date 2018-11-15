@@ -233,8 +233,12 @@ public class SettingVisitor implements PropertyVisitor {
                 settings.put(table.getName(), table);
                 break;
             case SCHEMA_TYPE:
-                final TaCoKitElementParameter schema = visitSchema(node);
-                settings.put(schema.getName(), schema);
+                final TaCoKitElementParameter outSchema = visitOutSchema(node);
+                settings.put(outSchema.getName(), outSchema);
+                break;
+            case TACOKIT_INPUT_SCHEMA:
+                final TaCoKitElementParameter inSchema = visitInSchema(node);
+                settings.put(inSchema.getName(), inSchema);
                 break;
             case TACOKIT_VALUE_SELECTION:
                 final TaCoKitElementParameter valueSelection = visitValueSelection(node);
@@ -418,10 +422,8 @@ public class SettingVisitor implements PropertyVisitor {
         return parameter;
     }
 
-    private TaCoKitElementParameter visitSchema(final PropertyNode node) {
-        final String connectorName = node.getProperty().getConnection().getValue();
-        final String connectionName =
-                connectorName.equals("__default__") ? EConnectionType.FLOW_MAIN.getName() : connectorName;
+    private TaCoKitElementParameter visitOutSchema(final PropertyNode node) {
+        final String connectionName = getConnectionName(node);
         final String discoverSchemaAction = ofNullable(node.getProperty().getMetadata()).orElse(emptyMap())
                 .entrySet().stream().filter(e -> "ui::structure::discoverSchema".equals(e.getKey()))
                 .map(Map.Entry::getValue).filter(Objects::nonNull).findFirst().orElse(null);
@@ -431,6 +433,43 @@ public class SettingVisitor implements PropertyVisitor {
         schemaParam.setTaggedValue("org.talend.sdk.connection.type",
                 node.getProperty().getConnection().getType().toString());
         return schemaParam;
+    }
+
+    private TaCoKitElementParameter visitInSchema(final PropertyNode node) {
+        final String connectionName = getConnectionName(node);
+        TaCoKitElementParameter schemaParam = createInputSchema(node, connectionName);
+        schemaParam.setTaggedValue("org.talend.sdk.connection.type",
+                node.getProperty().getConnection().getType().toString());
+        return schemaParam;
+    }
+
+    private TaCoKitElementParameter createInputSchema(final PropertyNode node, final String connectionName) {
+        final TaCoKitElementParameter schema = new InputSchemaParameter(getNode());
+        schema.setName(node.getProperty().getPath());
+        schema.setDisplayName("!!!SCHEMA.NAME!!!");
+        schema.setCategory(EComponentCategory.BASIC);
+        schema.setFieldType(EParameterFieldType.TACOKIT_INPUT_SCHEMA);
+        schema.setNumRow(SCHEMA_ROW_NUMBER);
+        schema.setShow(false);
+        schema.setReadOnly(false);
+        schema.setRequired(false);
+        schema.setContext(connectionName);
+        return schema;
+    }
+
+    /**
+     * Computes Node connection name. This name is used to get connection by name and then get schema from
+     * connection.
+     *
+     * @param node Schema PropertyNode
+     */
+    private String getConnectionName(final PropertyNode node) {
+        final String connectorName = node.getProperty().getConnection().getValue();
+        if (PropertyDefinitionDecorator.Connection.DEFAULT.equals(connectorName)) {
+            return EConnectionType.FLOW_MAIN.getName();
+        } else {
+            return connectorName;
+        }
     }
 
     private ValueSelectionParameter visitValueSelection(final PropertyNode node) {
