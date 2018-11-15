@@ -9,6 +9,9 @@ import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 
@@ -92,10 +95,7 @@ public class ConnectionUtil {
                     continue;
                 }
                 if(value instanceof String){
-                    if(((String)value).contains("/")){
-                        line.put("drivers", ((String)value).split("/")[1]+".jar");
-                    }
-                    
+                    line.put("drivers", getDriverJarFromMvnUrl((String) value));
                 }
             }
         }
@@ -107,13 +107,19 @@ public class ConnectionUtil {
             for(Object obj : objs){
                 if(obj instanceof Map){
                     Map map = (Map) obj;
-                    String driver = (String) map.get("drivers");
-                    if(driver.contains("/")){
-                        driver = driver.split("/")[1]+".jar";
-                    }
-                    map.put("drivers", driver);
+                    String driver = (String) map.get("drivers"); //$NON-NLS-1$
+                    map.put("drivers", getDriverJarFromMvnUrl(driver));//$NON-NLS-1$
                 }
             }
         }
+    }
+
+    public static String getDriverJarFromMvnUrl(String driver) {
+        String driverStr = TalendQuoteUtils.removeQuotesIfExist(driver);
+        MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(driverStr);
+        if (artifact != null) {
+            return artifact.getFileName();
+        }
+        return driver;
     }
 }
