@@ -424,9 +424,7 @@ public class SettingVisitor implements PropertyVisitor {
 
     private TaCoKitElementParameter visitOutSchema(final PropertyNode node) {
         final String connectionName = getConnectionName(node);
-        final String discoverSchemaAction = ofNullable(node.getProperty().getMetadata()).orElse(emptyMap())
-                .entrySet().stream().filter(e -> "ui::structure::discoverSchema".equals(e.getKey()))
-                .map(Map.Entry::getValue).filter(Objects::nonNull).findFirst().orElse(null);
+        final String discoverSchemaAction = node.getProperty().getConnection().getDiscoverSchema();
 
         TaCoKitElementParameter schemaParam =
                 createSchemaParameter(connectionName, node.getProperty().getPath(), discoverSchemaAction, true);
