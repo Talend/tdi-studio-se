@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.utils.NodeUtil;
@@ -24,11 +25,27 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 /**
  * SchemaElementParameter for Component input schema.
  * It stores incoming metadata in previous linked Component Node
+ * InputSchemaParameter is not shown on UI
  */
 public class InputSchemaParameter extends SchemaElementParameter {
 
-    public InputSchemaParameter(final IElement element) {
+    /**
+     * Constructor
+     *
+     * @param element        IElement to which this parameter belongs
+     * @param name           parameter name - unique identifier
+     * @param connectionName a name of connections with which this schema associated
+     */
+    public InputSchemaParameter(final IElement element, final String name, final String connectionName) {
         super(element);
+        setName(name);
+        setDisplayName(DISPLAY_NAME);
+        setFieldType(EParameterFieldType.TACOKIT_INPUT_SCHEMA);
+        setShow(false);
+        setReadOnly(false);
+        setRequired(false);
+        setContext(connectionName);
+        setTaggedValue(CONNECTION_TYPE, PropertyDefinitionDecorator.Connection.Type.IN.toString());
     }
 
     /**

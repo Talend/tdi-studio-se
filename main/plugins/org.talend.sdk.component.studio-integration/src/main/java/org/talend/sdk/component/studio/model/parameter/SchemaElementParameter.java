@@ -18,6 +18,10 @@ import org.talend.sdk.component.studio.model.action.IActionParameter;
  */
 public class SchemaElementParameter extends TaCoKitElementParameter {
 
+    static final String DISPLAY_NAME = "!!!SCHEMA.NAME!!!";
+
+    static final String CONNECTION_TYPE = "org.talend.sdk.connection.type";
+
     private static final String GUESS_BUTTON_PREFIX = "Guess Schema_";
 
     /**

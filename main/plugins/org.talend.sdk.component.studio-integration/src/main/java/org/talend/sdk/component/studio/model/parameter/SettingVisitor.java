@@ -436,25 +436,7 @@ public class SettingVisitor implements PropertyVisitor {
     }
 
     private TaCoKitElementParameter visitInSchema(final PropertyNode node) {
-        final String connectionName = getConnectionName(node);
-        TaCoKitElementParameter schemaParam = createInputSchema(node, connectionName);
-        schemaParam.setTaggedValue("org.talend.sdk.connection.type",
-                node.getProperty().getConnection().getType().toString());
-        return schemaParam;
-    }
-
-    private TaCoKitElementParameter createInputSchema(final PropertyNode node, final String connectionName) {
-        final TaCoKitElementParameter schema = new InputSchemaParameter(getNode());
-        schema.setName(node.getProperty().getPath());
-        schema.setDisplayName("!!!SCHEMA.NAME!!!");
-        schema.setCategory(EComponentCategory.BASIC);
-        schema.setFieldType(EParameterFieldType.TACOKIT_INPUT_SCHEMA);
-        schema.setNumRow(SCHEMA_ROW_NUMBER);
-        schema.setShow(false);
-        schema.setReadOnly(false);
-        schema.setRequired(false);
-        schema.setContext(connectionName);
-        return schema;
+        return new InputSchemaParameter(getNode(), node.getProperty().getPath(), getConnectionName(node));
     }
 
     /**
