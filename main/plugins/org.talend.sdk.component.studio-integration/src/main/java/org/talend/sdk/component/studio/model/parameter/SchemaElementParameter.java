@@ -125,6 +125,7 @@ public abstract class SchemaElementParameter extends TaCoKitElementParameter {
 
     /**
      * Creates name for Guess Schema button ElementParameter
+     * TODO move to OutputSchemaParameter class
      *
      * @param schemaName a name of schema, which is guessed by the button
      * @return name for Guess Schema button ElementParameter
