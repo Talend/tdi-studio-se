@@ -50,18 +50,18 @@ public class OutputSchemaParameter extends SchemaElementParameter {
         setRequired(true);
         setContext(connectionName);
 
-        createSchemaType(name, connectionName, show);
+        createSchemaType(connectionName, show);
         createRepository(show);
         createGuessSchema(name, connectionName, discoverSchema, show);
 
         setTaggedValue(CONNECTION_TYPE, PropertyDefinitionDecorator.Connection.Type.OUT.toString());
     }
 
-    private void createSchemaType(final String name, final String connectionName, final boolean show) {
+    private void createSchemaType(final String connectionName, final boolean show) {
         final ElementParameter schemaType = new ElementParameter(getElement());
         schemaType.setCategory(EComponentCategory.BASIC);
         schemaType.setContext(EConnectionType.FLOW_MAIN.getName());
-        schemaType.setDisplayName(schemaDisplayName(connectionName, name));
+        schemaType.setDisplayName(schemaDisplayName(connectionName));
         schemaType.setFieldType(EParameterFieldType.TECHNICAL);
         schemaType.setListItemsDisplayCodeName(new String[]{"BUILT_IN", "REPOSITORY"});
         schemaType.setListItemsDisplayName(new String[]{"Built-In", "Repository"});
@@ -138,25 +138,14 @@ public class OutputSchemaParameter extends SchemaElementParameter {
     }
 
     // TODO i18n it
-    // TODO Refactor it
-    private String schemaDisplayName(final String connectionName, final String schemaName) {
-        final String connectorName = connectionName.equalsIgnoreCase(EConnectionType.FLOW_MAIN.getName())
-                ? EConnectionType.FLOW_MAIN.getDefaultLinkName()
-                : connectionName;
+    private String schemaDisplayName(final String connectionName) {
         if ("REJECT".equalsIgnoreCase(connectionName)) {
             return "Reject Schema";
         }
-        // TODO remove $$
-        if (schemaName.contains("$$")) {
-            final String type = schemaName.substring(0, schemaName.indexOf("$$"));
-            if ("OUT".equalsIgnoreCase(type)) {
-                return "Output Schema" + "(" + connectorName + ")";
-            }
-            if ("IN".equalsIgnoreCase(type)) {
-                return "Input Schema" + "(" + connectorName + ")";
-            }
+        if (EConnectionType.FLOW_MAIN.getName().equalsIgnoreCase(connectionName)) {
+            return "Schema";
         }
-        return "Schema" + "(" + connectorName + ")";
+        return "Schema" + " " + connectionName;
     }
 
     /**
