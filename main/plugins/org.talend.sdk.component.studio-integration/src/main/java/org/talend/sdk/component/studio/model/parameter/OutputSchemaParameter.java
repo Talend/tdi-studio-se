@@ -15,6 +15,7 @@ package org.talend.sdk.component.studio.model.parameter;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
@@ -111,29 +112,29 @@ public class OutputSchemaParameter extends SchemaElementParameter {
         }
     }
 
+    /**
+     * Checks whether "Guess schema" button should be created.
+     * "Guess schema" button is created for those schemas, which are associated with connection which has outputs
+     *
+     * @param connectorName connector name
+     * @return true, is button should be created
+     */
     private boolean canAddGuessSchema(final String connectorName) {
-        if (TaCoKitUtil.isBlank(connectorName)) {
+        if (StringUtils.isBlank(connectorName)) {
             return false;
         }
-        boolean canAddGuessSchema = false;
         final IElement node = getElement();
-        if (node instanceof Node) {
-            boolean hasOutputConnector = false;
+        if (node != null && node instanceof Node) {
             final List<? extends INodeConnector> listConnector = ((Node) node).getListConnector();
             if (listConnector != null) {
                 for (final INodeConnector connector : listConnector) {
-                    if (connectorName.equals(connector.getName())) {
-                        if (0 < connector.getMaxLinkOutput()) {
-                            hasOutputConnector = true;
-                            // input and output connectors may have same name
-                            break;
-                        }
+                    if (connectorName.equals(connector.getName()) && connector.getMaxLinkOutput() > 0) {
+                        return true;
                     }
                 }
             }
-            canAddGuessSchema = hasOutputConnector;
         }
-        return canAddGuessSchema;
+        return false;
     }
 
     // TODO i18n it
