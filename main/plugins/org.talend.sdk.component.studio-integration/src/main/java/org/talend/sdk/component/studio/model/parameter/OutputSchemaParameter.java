@@ -34,6 +34,8 @@ import org.talend.sdk.component.studio.util.TaCoKitUtil;
  */
 public class OutputSchemaParameter extends SchemaElementParameter {
 
+    public static final String ADDITIONAL_PARAM_METADATA_ELEMENT = "TACOKIT_ADDITIONAL_PARAM_METADATA_ELEMENT";
+
     public OutputSchemaParameter(final IElement element, final String name, final String connectionName,
                                  final String discoverSchema, final boolean show) {
         super(element);
@@ -105,7 +107,7 @@ public class OutputSchemaParameter extends SchemaElementParameter {
             guessSchemaParameter.setReadOnly(false);
             guessSchemaParameter.setRequired(false);
             guessSchemaParameter.setShow(show);
-            guessSchemaParameter.putInfo(TaCoKitConst.ADDITIONAL_PARAM_METADATA_ELEMENT, this);
+            guessSchemaParameter.putInfo(ADDITIONAL_PARAM_METADATA_ELEMENT, this);
         }
     }
 
