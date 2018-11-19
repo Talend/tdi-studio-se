@@ -40,7 +40,7 @@ public class InputSchemaParameter extends SchemaElementParameter {
         super(element);
         setName(name);
         setDisplayName(DISPLAY_NAME);
-        setFieldType(EParameterFieldType.TACOKIT_INPUT_SCHEMA);
+        setFieldType(EParameterFieldType.SCHEMA_TYPE);
         setShow(false);
         setReadOnly(false);
         setRequired(false);
