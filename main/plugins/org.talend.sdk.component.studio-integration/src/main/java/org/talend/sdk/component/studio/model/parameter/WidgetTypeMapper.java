@@ -27,7 +27,6 @@ import static org.talend.core.model.process.EParameterFieldType.OPENED_LIST;
 import static org.talend.core.model.process.EParameterFieldType.PASSWORD;
 import static org.talend.core.model.process.EParameterFieldType.SCHEMA_TYPE;
 import static org.talend.core.model.process.EParameterFieldType.TABLE;
-import static org.talend.core.model.process.EParameterFieldType.TACOKIT_INPUT_SCHEMA;
 import static org.talend.core.model.process.EParameterFieldType.TACOKIT_VALUE_SELECTION;
 import static org.talend.core.model.process.EParameterFieldType.TEXT;
 import static org.talend.core.model.process.EParameterFieldType.TEXT_AREA;
@@ -49,10 +48,6 @@ import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
  */
 public class WidgetTypeMapper {
 
-    private static final String TYPE_INPUT = "in";
-
-    private static final String TYPE_OUTPUT = "out";
-
     /**
      * Recognizes {@link EParameterFieldType} for given {@link PropertyDefinitionDecorator}
      * Implementation note: Most possible types are located first.
@@ -66,10 +61,8 @@ public class WidgetTypeMapper {
         if (property == null) {
             throw new IllegalArgumentException("property should not be null");
         }
-        if (isOutputSchema(property)) {
-            return getOutputSchemaType();
-        } else if (isInputSchema(property)) {
-            return getInputSchemaType();
+        if (isSchema(property)) {
+            return getSchemaType();
         } else if (isText(property)) {
             return getTextType();
         } else if (isCredential(property)) {
@@ -97,29 +90,14 @@ public class WidgetTypeMapper {
     }
 
     /**
-     * Checks whether {@code property} represents output schema.
-     * Output schema is a Structure with type OUT
-     * For output schema widget type should be {@link EParameterFieldType#SCHEMA_TYPE}
-     *
+     * Checks whether widget type is {@link EParameterFieldType#SCHEMA_TYPE}
+     * 
      * @param property SimplePropertyDefinition to test
      * @return check result
      */
-    private boolean isOutputSchema(final SimplePropertyDefinition property) {
-        return property.getMetadata().containsKey(UI_STRUCTURE_VALUE)
-                && TYPE_OUTPUT.equalsIgnoreCase(property.getMetadata().get(UI_STRUCTURE_TYPE));
-    }
-
-    /**
-     * Checks whether {@code property} represents input schema.
-     * Input schema is a Structure with type IN
-     * For output schema widget type should be {@link EParameterFieldType#TACOKIT_INPUT_SCHEMA}
-     *
-     * @param property SimplePropertyDefinition to test
-     * @return check result
-     */
-    private boolean isInputSchema(final SimplePropertyDefinition property) {
-        return property.getMetadata().containsKey(UI_STRUCTURE_VALUE)
-                && TYPE_INPUT.equalsIgnoreCase(property.getMetadata().get(UI_STRUCTURE_TYPE));
+    private boolean isSchema(final SimplePropertyDefinition property) {
+        return property.getMetadata().containsKey(UI_STRUCTURE_TYPE)
+                || property.getMetadata().containsKey(UI_STRUCTURE_VALUE);
     }
 
     protected EParameterFieldType getCodeType(final String codeStyle) {
@@ -135,11 +113,7 @@ public class WidgetTypeMapper {
         }
     }
 
-    protected EParameterFieldType getInputSchemaType() {
-        return TACOKIT_INPUT_SCHEMA;
-    }
-
-    protected EParameterFieldType getOutputSchemaType() {
+    protected EParameterFieldType getSchemaType() {
         return SCHEMA_TYPE;
     }
 
