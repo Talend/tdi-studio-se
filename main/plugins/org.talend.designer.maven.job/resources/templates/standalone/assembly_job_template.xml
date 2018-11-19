@@ -6,7 +6,7 @@
 	<id>bin</id>
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<formats>
-		<format>zip</format>
+		<format>${assembly.format}</format>
 	</formats>
 
 	<files>

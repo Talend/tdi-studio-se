@@ -19,6 +19,12 @@ imports="
 	
 	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-SERVER-SIDE-ENCRYPTION__"));
 	
+	String partSizeMb = ElementParameterParser.getValue(node, "__PART_SIZE__");
+	
+	if((partSizeMb == null) || "".equals(partSizeMb) || "\"\"".equals(partSizeMb)) {
+			partSizeMb = "100";
+	}
+	
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	try{
@@ -29,19 +35,93 @@ imports="
 		<%
 		}
 		%>
-		com.amazonaws.services.s3.model.CopyObjectRequest copyRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyObjectRequest(<%=from_bucket%>, <%=from_key%>, <%=to_bucket%>, <%=to_key%>);
 		
+		long partSizeInBytes_<%=cid%> = <%=partSizeMb%> * 1024 * 1024;
+		long maxBytes4SingleCopyCall_<%=cid%> = 5 * 1024 * 1024 * 1024;//5GB
+		com.amazonaws.services.s3.model.ObjectMetadata objectMetadata_<%=cid%> = null;
 		<%
 		if(enableServerSideEncryption){
 		%>
-			com.amazonaws.services.s3.model.ObjectMetadata objectMetadata_<%=cid%> = new com.amazonaws.services.s3.model.ObjectMetadata();
+			objectMetadata_<%=cid%> = new com.amazonaws.services.s3.model.ObjectMetadata();
 			objectMetadata_<%=cid%>.setSSEAlgorithm(com.amazonaws.services.s3.model.ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-			copyRequest_<%=cid%>.setNewObjectMetadata(objectMetadata_<%=cid%>);
 		<%
 		}
 		%>
 		
-		conn_<%=cid%>.copyObject(copyRequest_<%=cid%>);
+		final String from_bucket_<%=cid%> = <%=from_bucket%>;
+		final String from_key_<%=cid%> = <%=from_key%>;
+		final String to_bucket_<%=cid%> = <%=to_bucket%>; 
+		final String to_key_<%=cid%> = <%=to_key%>;
+		
+		//get the source metadata information
+		com.amazonaws.services.s3.model.GetObjectMetadataRequest metadataRequest_<%=cid%> = new com.amazonaws.services.s3.model.GetObjectMetadataRequest(from_bucket_<%=cid%>, from_key_<%=cid%>);
+    com.amazonaws.services.s3.model.ObjectMetadata metadataResult_<%=cid%> = conn_<%=cid%>.getObjectMetadata(metadataRequest_<%=cid%>);
+    long objectSize_<%=cid%> = metadataResult_<%=cid%>.getContentLength();
+    
+    boolean multiUpload_<%=cid%> = objectSize_<%=cid%> > maxBytes4SingleCopyCall_<%=cid%>;
+    
+    if(!multiUpload_<%=cid%>) {
+    		com.amazonaws.services.s3.model.CopyObjectRequest putRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyObjectRequest(from_bucket_<%=cid%>, from_key_<%=cid%>, to_bucket_<%=cid%>, to_key_<%=cid%>);
+    		if(objectMetadata_<%=cid%> != null) {
+    				putRequest_<%=cid%>.setNewObjectMetadata(objectMetadata_<%=cid%>);
+    		}
+    		
+    		conn_<%=cid%>.copyObject(putRequest_<%=cid%>);
+		} else {
+						<%
+						//as the s3 service limit, the multi upload copy may lose s3 object metadata information or changed, but some object metadata information is important like the "x-amz-iv" key for client encrypt with kms
+						//which will make the decrypt not work with different key like expected, so fail asap here and there is very rare risk which use a large file than 5GB and also with client encrypt, so ignore it now.
+						%>
+						java.util.Map<String,String> userMetadata_<%=cid%> = metadataResult_<%=cid%>.getUserMetadata();
+						if((userMetadata_<%=cid%>!=null) && userMetadata_<%=cid%>.get("x-amz-iv")!=null) {
+								throw new RuntimeException("the metadata key : \"x-amz-iv\" exists in the current object metadata, its value is important for client encrypt with KMS, which can't be copied as s3 service limit it");
+						}
+						
+    				com.amazonaws.services.s3.model.InitiateMultipartUploadRequest putRequest_<%=cid%> = null;
+    				if(objectMetadata_<%=cid%> != null) {
+    						putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, objectMetadata_<%=cid%>);
+    				} else {
+    						//even pass the source object metadata, some metadata will change too like "x-amz-iv"
+    						putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, metadataResult_<%=cid%>);
+    				}
+    				
+    				
+            com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResult_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);
+            
+            long bytePosition_<%=cid%> = 0;
+            int partNum_<%=cid%> = 1;
+            
+            java.util.List<com.amazonaws.services.s3.model.PartETag> partTags_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.s3.model.PartETag>();
+            
+      	try {
+            while (bytePosition_<%=cid%> < objectSize_<%=cid%>) {
+                long lastByte_<%=cid%> = java.lang.Math.min(bytePosition_<%=cid%> + partSizeInBytes_<%=cid%> - 1, objectSize_<%=cid%> - 1);
+                
+                com.amazonaws.services.s3.model.CopyPartRequest copyPartRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyPartRequest()
+                        .withSourceBucketName(from_bucket_<%=cid%>)
+                        .withSourceKey(from_key_<%=cid%>)
+                        .withDestinationBucketName(to_bucket_<%=cid%>)
+                        .withDestinationKey(to_key_<%=cid%>)
+                        .withUploadId(initResult_<%=cid%>.getUploadId())
+                        .withFirstByte(bytePosition_<%=cid%>)
+                        .withLastByte(lastByte_<%=cid%>)
+                        .withPartNumber(partNum_<%=cid%>++);
+                partTags_<%=cid%>.add(conn_<%=cid%>.copyPart(copyPartRequest_<%=cid%>).getPartETag());
+                bytePosition_<%=cid%> += partSizeInBytes_<%=cid%>;
+            }
+    
+            com.amazonaws.services.s3.model.CompleteMultipartUploadRequest completeRequest_<%=cid%> = new com.amazonaws.services.s3.model.CompleteMultipartUploadRequest(
+                                                                       	to_bucket_<%=cid%>,
+                                                                        to_key_<%=cid%>, 
+                                                                        initResult_<%=cid%>.getUploadId(),
+                                                                        partTags_<%=cid%>);
+            conn_<%=cid%>.completeMultipartUpload(completeRequest_<%=cid%>);
+    		} catch (java.lang.Exception uploadException_<%=cid%>) {
+    				conn_<%=cid%>.abortMultipartUpload(new com.amazonaws.services.s3.model.AbortMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, initResult_<%=cid%>.getUploadId()));
+    				throw uploadException_<%=cid%>;
+    		}
+    }
+    
 		<%
 		if(isLog4jEnabled){
 		%>	

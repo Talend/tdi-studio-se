@@ -23,6 +23,8 @@ import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -52,9 +54,13 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.JobInfo;
+import org.talend.core.model.process.ProcessUtils;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
+import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -253,11 +259,37 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
                 getChildrenJobAndContextName(allResources, process.getProperty().getLabel(), list, process, projectName,
                         processedJob, allJobScripts, srcResource, exportChoice, selectedJobVersion);
                 libResource.addResources(allJobScripts);
+                
+                List<Item> items = new ArrayList<Item>();
+                addExportDependenciesToClasses(process, contextResource, items);
+
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
         }
     }
+    
+    private void addExportDependenciesToClasses(ProcessItem process, ExportFileResource contextResource, List<Item> items) {
+        if (items.contains(process)) {
+            return;
+        }
+        
+        // set dependencies here as OSGI, as it will be runtime dependencies
+        // and TDM right now only allow to export in a folder dependencies in folder for OSGI dependencies
+        BuildExportManager.getInstance().exportOSGIDependencies(contextResource, process);
+        Collection<IRepositoryViewObject> allDependencies = ProcessUtils.getAllProcessDependencies(
+                Arrays.asList(new Item[] { process }), false);
+        
+        items.add(process);
+        for (IRepositoryViewObject object : allDependencies) {
+            Item item = object.getProperty().getItem();                    
+            if (item instanceof ProcessItem) {
+                addExportDependenciesToClasses((ProcessItem) item, contextResource, items);
+            }
+        }
+    }
+    
+    
 
     private void copyServerConfigFileToTempDir() {
         final Bundle b = Platform.getBundle(RepositoryPlugin.PLUGIN_ID);

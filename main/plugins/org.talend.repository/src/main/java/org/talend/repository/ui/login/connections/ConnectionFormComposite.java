@@ -36,6 +36,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -479,6 +480,16 @@ public class ConnectionFormComposite extends Composite {
 
         @Override
         public void modifyText(ModifyEvent e) {
+            IRepositoryFactory repository = getRepository();
+            if (repository != null && LoginHelper.isCloudRepository(repository.getId())) {
+                String text = userText.getText();
+                String lowerCaseText = text.toLowerCase();
+                if (!text.equals(lowerCaseText)) {
+                    Point selection = userText.getSelection();
+                    userText.setText(lowerCaseText);
+                    userText.setSelection(selection);
+                }
+            }
             fillBean(false);
             validateFields();
         }

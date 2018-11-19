@@ -76,7 +76,12 @@ if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
   String decryptedProxyPassword_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
 <%}%>
 
-  props_<%=cid%>.put("java.net.socks.password",decryptedProxyPassword_<%=cid%>);        
+  props_<%=cid%>.put("java.net.socks.password",decryptedProxyPassword_<%=cid%>);
+  java.net.Authenticator.setDefault(new java.net.Authenticator() {
+        public java.net.PasswordAuthentication getPasswordAuthentication() {
+            return new java.net.PasswordAuthentication(<%=proxyUser %>, decryptedProxyPassword_<%=cid%>.toCharArray());
+        }
+  });
 <%}%>
 int nb_file_<%=cid%> = 0;
 
@@ -205,6 +210,25 @@ int nb_file_<%=cid%> = 0;
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Putting file to the server.");
 	<%}%>
+	
+	class StatCheck_<%=cid%> {
+			
+			boolean statOK(com.jcraft.jsch.ChannelSftp client, String path) {
+					try {
+							return client.stat(path).getAtimeString() != null;
+					} catch (Exception e) {
+							<%if(isLog4jEnabled){%>
+							log.warn("<%=cid%> - Directory or file permission denied for checking the status of the path : " + path);
+							<%}%>
+					}
+					
+					return false;
+			}
+			
+	}
+	
+	StatCheck_<%=cid%> sc_<%=cid%> = new StatCheck_<%=cid%>();
+	
 	for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
 
 <%} else if (!ftps) {%> // *** ftp *** //

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -41,7 +42,9 @@ import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.context.ContextUtils;
+import org.talend.core.model.context.JobContext;
 import org.talend.core.model.context.JobContextManager;
+import org.talend.core.model.context.JobContextParameter;
 import org.talend.core.model.metadata.IEbcdicConstant;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -175,122 +178,207 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     private List<UpdateResult> checkGroupContext(boolean onlySimpleShow) {
         List<UpdateResult> contextResults = new ArrayList<UpdateResult>();
         final IContextManager contextManager = getProcess().getContextManager();
-        List<IContext> addGroupContext = ((JobContextManager) contextManager).getAddGroupContext();
-        Map<ContextItem, List<IContext>> addContextGroupMap = ((JobContextManager) contextManager).getAddContextGroupMap();
+        if (contextManager instanceof JobContextManager) {
+            List<IProcess2> openedProcesses = UpdateManagerUtils.getOpenedProcess();
+            if (((JobContextManager) contextManager).isConfigContextGroup()) {
+                // add,remove/rename context group map is only filled when change it in the context group dialog of
+                // repository
+                List<IContext> addGroupContext = ((JobContextManager) contextManager).getAddGroupContext();
+                Map<ContextItem, List<IContext>> addContextGroupMap = ((JobContextManager) contextManager)
+                        .getAddContextGroupMap();
 
-        List<IContext> removeGroupContext = ((JobContextManager) contextManager).getRemoveGroupContext();
-        Map<ContextItem, List<IContext>> removeContextGroupMap = ((JobContextManager) contextManager).getRemoveContextGroupMap();
+                List<IContext> removeGroupContext = ((JobContextManager) contextManager).getRemoveGroupContext();
+                Map<ContextItem, List<IContext>> removeContextGroupMap = ((JobContextManager) contextManager)
+                        .getRemoveContextGroupMap();
 
-        Map<IContext, String> renameGroupContext = ((JobContextManager) contextManager).getRenameGroupContext();
-        Map<ContextItem, List<IContext>> renameContextGroupMap = ((JobContextManager) contextManager).getRenameContextGroupMap();
+                Map<IContext, String> renameGroupContext = ((JobContextManager) contextManager).getRenameGroupContext();
+                Map<ContextItem, List<IContext>> renameContextGroupMap = ((JobContextManager) contextManager)
+                        .getRenameContextGroupMap();
 
-        List<IContext> listContext = contextManager.getListContext();
+                List<IContext> listContext = contextManager.getListContext();
 
-        List<IProcess2> openedProcesses = UpdateManagerUtils.getOpenedProcess();
+                for (ContextItem item : addContextGroupMap.keySet()) {
 
-        for (ContextItem item : addContextGroupMap.keySet()) {
+                    List<IContext> existedContextGroup = new ArrayList<IContext>();
 
-            List<IContext> existedContextGroup = new ArrayList<IContext>();
+                    if (addGroupContext.size() > 0) {
+                        for (int i = 0; i < addGroupContext.size(); i++) {
+                            IContext context = addGroupContext.get(i);
+                            for (int j = 0; j < listContext.size(); j++) {
+                                if (context.getName().equals(listContext.get(j).getName())) {
+                                    existedContextGroup.add(context);
+                                    break;
+                                }
+                            }
+                        }
+                        addGroupContext.removeAll(existedContextGroup);
+                    }
 
-            if (addGroupContext.size() > 0) {
-                for (int i = 0; i < addGroupContext.size(); i++) {
-                    IContext context = addGroupContext.get(i);
-                    for (int j = 0; j < listContext.size(); j++) {
-                        if (context.getName().equals(listContext.get(j).getName())) {
-                            existedContextGroup.add(context);
-                            break;
+                    if (addGroupContext.size() > 0) {
+                        for (IContext context : addGroupContext) {
+
+                            UpdateCheckResult result = new UpdateCheckResult(context);
+                            String remark = UpdateRepositoryUtils.getRepositorySourceName(item);
+                            result.setResult(EUpdateItemType.CONTEXT_GROUP, EUpdateResult.ADD, item, remark);
+                            if (!openedProcesses.contains(getProcess())) {
+                                result.setFromItem(true);
+                            }
+                            result.setJob(getProcess());
+                            setConfigrationForReadOnlyJob(result);
+                            contextResults.add(result);
                         }
                     }
                 }
-                addGroupContext.removeAll(existedContextGroup);
-            }
 
-            if (addGroupContext.size() > 0) {
-                for (IContext context : addGroupContext) {
+                for (ContextItem item : removeContextGroupMap.keySet()) {
 
-                    UpdateCheckResult result = new UpdateCheckResult(context);
-                    String remark = UpdateRepositoryUtils.getRepositorySourceName(item);
-                    result.setResult(EUpdateItemType.CONTEXT_GROUP, EUpdateResult.ADD, item, remark);
-                    if (!openedProcesses.contains(getProcess())) {
-                        result.setFromItem(true);
+                    List<IContext> notExistedContextGroup = new ArrayList<IContext>();
+
+                    if (removeGroupContext.size() > 0) {
+                        for (int i = 0; i < removeGroupContext.size(); i++) {
+                            IContext context = removeGroupContext.get(i);
+                            boolean haveFound = false;
+                            for (int j = 0; j < listContext.size(); j++) {
+                                if (context.getName().equals(listContext.get(j).getName())) {
+                                    haveFound = true;
+                                    break;
+                                }
+                            }
+                            if (!haveFound) {
+                                notExistedContextGroup.add(context);
+                            }
+                        }
+                        removeGroupContext.removeAll(notExistedContextGroup);
                     }
-                    result.setJob(getProcess());
-                    setConfigrationForReadOnlyJob(result);
-                    contextResults.add(result);
-                }
-            }
-        }
 
-        for (ContextItem item : removeContextGroupMap.keySet()) {
+                    if (removeGroupContext.size() > 0) {
+                        for (IContext context : removeGroupContext) {
 
-            List<IContext> notExistedContextGroup = new ArrayList<IContext>();
-
-            if (removeGroupContext.size() > 0) {
-                for (int i = 0; i < removeGroupContext.size(); i++) {
-                    IContext context = removeGroupContext.get(i);
-                    boolean haveFound = false;
-                    for (int j = 0; j < listContext.size(); j++) {
-                        if (context.getName().equals(listContext.get(j).getName())) {
-                            haveFound = true;
-                            break;
+                            UpdateCheckResult result = new UpdateCheckResult(context);
+                            String remark = UpdateRepositoryUtils.getRepositorySourceName(item);
+                            result.setResult(EUpdateItemType.CONTEXT_GROUP, EUpdateResult.DELETE, item, remark);
+                            if (!openedProcesses.contains(getProcess())) {
+                                result.setFromItem(true);
+                            }
+                            result.setJob(getProcess());
+                            setConfigrationForReadOnlyJob(result);
+                            contextResults.add(result);
                         }
                     }
-                    if (!haveFound) {
-                        notExistedContextGroup.add(context);
-                    }
                 }
-                removeGroupContext.removeAll(notExistedContextGroup);
-            }
 
-            if (removeGroupContext.size() > 0) {
-                for (IContext context : removeGroupContext) {
+                Map<IContext, String> temRenameGroupContext = new HashMap<IContext, String>();
+                temRenameGroupContext.putAll(renameGroupContext);
+                for (ContextItem item : renameContextGroupMap.keySet()) {
 
-                    UpdateCheckResult result = new UpdateCheckResult(context);
-                    String remark = UpdateRepositoryUtils.getRepositorySourceName(item);
-                    result.setResult(EUpdateItemType.CONTEXT_GROUP, EUpdateResult.DELETE, item, remark);
-                    if (!openedProcesses.contains(getProcess())) {
-                        result.setFromItem(true);
-                    }
-                    result.setJob(getProcess());
-                    setConfigrationForReadOnlyJob(result);
-                    contextResults.add(result);
-                }
-            }
-        }
-
-        Map<IContext, String> temRenameGroupContext = new HashMap<IContext, String>();
-        temRenameGroupContext.putAll(renameGroupContext);
-        for (ContextItem item : renameContextGroupMap.keySet()) {
-
-            if (renameGroupContext.size() > 0) {
-                for (IContext context : temRenameGroupContext.keySet()) {
-                    // IContext context = renameGroupContext.get(i);
-                    boolean haveFound = false;
-                    for (int j = 0; j < listContext.size(); j++) {
-                        if (temRenameGroupContext.get(context).equals(listContext.get(j).getName())) {
-                            haveFound = true;
-                            break;
+                    if (renameGroupContext.size() > 0) {
+                        for (IContext context : temRenameGroupContext.keySet()) {
+                            // IContext context = renameGroupContext.get(i);
+                            boolean haveFound = false;
+                            for (int j = 0; j < listContext.size(); j++) {
+                                if (temRenameGroupContext.get(context).equals(listContext.get(j).getName())) {
+                                    haveFound = true;
+                                    break;
+                                }
+                            }
+                            if (!haveFound) {
+                                renameGroupContext.remove(context);
+                            }
                         }
                     }
-                    if (!haveFound) {
-                        renameGroupContext.remove(context);
+
+                    if (renameGroupContext.size() > 0) {
+                        for (IContext context : renameGroupContext.keySet()) {
+
+                            UpdateCheckResult result = new UpdateCheckResult(context);
+                            String remark = UpdateRepositoryUtils.getRepositorySourceName(item);
+                            result.setResult(EUpdateItemType.CONTEXT_GROUP, EUpdateResult.RENAME, item, remark);
+                            if (!openedProcesses.contains(getProcess())) {
+                                result.setFromItem(true);
+                            }
+                            result.setJob(getProcess());
+                            setConfigrationForReadOnlyJob(result);
+                            contextResults.add(result);
+                        }
                     }
                 }
-            }
-
-            if (renameGroupContext.size() > 0) {
-                for (IContext context : renameGroupContext.keySet()) {
-
-                    UpdateCheckResult result = new UpdateCheckResult(context);
-                    String remark = UpdateRepositoryUtils.getRepositorySourceName(item);
-                    result.setResult(EUpdateItemType.CONTEXT_GROUP, EUpdateResult.RENAME, item, remark);
-                    if (!openedProcesses.contains(getProcess())) {
-                        result.setFromItem(true);
-                    }
-                    result.setJob(getProcess());
-                    setConfigrationForReadOnlyJob(result);
-                    contextResults.add(result);
+            }else {
+                // only handle added groups
+                Set<String> contextSourceChecked = new HashSet<String>();
+                Set<String> processContextGroups = new HashSet<String>();
+                for (IContext contextGroup : contextManager.getListContext()) {
+                    processContextGroups.add(contextGroup.getName());
                 }
+                IContext defaultContext = contextManager.getDefaultContext();
+                Set<String> processContextVars = new HashSet<String>();
+                for (IContextParameter param : defaultContext.getContextParameterList()) {
+                    processContextVars.add(param.getName());
+                }
+                Map<String, JobContext> newGroupMap = new HashMap<>();
+                for (IContextParameter param : defaultContext.getContextParameterList()) {
+                    if (!param.isBuiltIn()) {
+                        String source = param.getSource();
+                        if (contextSourceChecked.contains(source)) {
+                            continue;
+                        }
+                        contextSourceChecked.add(source);
+                        final Item contextItem = ContextUtils.getRepositoryContextItemById(source);
+                        if (contextItem != null) {
+                            if (contextItem instanceof ContextItem) {
+                                EList contexts = ((ContextItem) contextItem).getContext();
+                                for (Object context : contexts) {
+                                    if (context instanceof ContextType) {
+                                        String groupName = ((ContextType) context).getName();
+                                        JobContext newJobContext = null;
+                                        if (!processContextGroups.contains(groupName)) {
+                                            newJobContext = new JobContext(groupName);
+                                            List<IContextParameter> newParamList = new ArrayList<IContextParameter>();
+                                            newJobContext.setContextParameterList(newParamList);
+                                            for (Object contextParamType : ((ContextType) context).getContextParameter()) {
+                                                ContextParameterType contextImpl = (ContextParameterType) contextParamType;
+                                                if (processContextVars.contains(contextImpl.getName())) {
+                                                    JobContextParameter jobContextParam = new JobContextParameter();
+                                                    ContextUtils.updateParameter(contextImpl, jobContextParam);
+                                                    jobContextParam.setSource(source);
+                                                    jobContextParam.setContext(newJobContext);
+                                                    newJobContext.getContextParameterList().add(jobContextParam);
+                                                }
+                                            }
+                                            newGroupMap.put(groupName, newJobContext);
+                                            UpdateCheckResult result = new UpdateCheckResult(newJobContext);
+                                            String remark = UpdateRepositoryUtils.getRepositorySourceName(contextItem);
+                                            result.setResult(EUpdateItemType.CONTEXT_GROUP, EUpdateResult.ADD, contextItem,
+                                                    remark);
+                                            if (!openedProcesses.contains(getProcess())) {
+                                                result.setFromItem(true);
+                                            }
+                                            result.setJob(getProcess());
+                                            setConfigrationForReadOnlyJob(result);
+                                            contextResults.add(result);
+                                        } else {
+                                            newJobContext = newGroupMap.get(groupName);
+                                            if (newJobContext != null) {
+                                                for (Object contextParamType : ((ContextType) context).getContextParameter()) {
+                                                    ContextParameterType contextImpl = (ContextParameterType) contextParamType;
+                                                    if (processContextVars.contains(contextImpl.getName())
+                                                            && newJobContext.getContextParameter(contextImpl.getName()) == null) {
+                                                        JobContextParameter jobContextParam = new JobContextParameter();
+                                                        ContextUtils.updateParameter(contextImpl, jobContextParam);
+                                                        jobContextParam.setSource(source);
+                                                        jobContextParam.setContext(newJobContext);
+                                                        newJobContext.getContextParameterList().add(jobContextParam);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            
+                
             }
         }
 
@@ -322,6 +410,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
         List<IProcess2> openedProcesses = UpdateManagerUtils.getOpenedProcess();
 
+        Map<ContextItem, Set<String>> existedParams = new HashMap<ContextItem, Set<String>>();
+
         for (IContext context : contextManager.getListContext()) {
             for (IContextParameter param : context.getContextParameterList()) {
                 if (!param.isBuiltIn()) {
@@ -351,6 +441,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     final ContextParameterType contextParameterType = ContextUtils.getContextParameterTypeByName(
                                             contextType, paramName);
                                     if (contextParameterType != null) {
+                                        ContextItem repositoryContext = (ContextItem) contextItem;
+                                        if (existedParams.get(contextItem) == null) {
+                                            existedParams.put(repositoryContext, new HashSet<String>());
+                                        }
+                                        existedParams.get(repositoryContext).add(paramName);
                                         if (onlySimpleShow
                                                 || !ContextUtils.samePropertiesForContextParameter(param, contextParameterType)) {
                                             unsameMap.add(contextItem, paramName);
@@ -416,6 +511,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 }
             }
         }
+        checkNewAddParameterForRef(existedParams, contextManager, ContextUtils.isPropagateContextVariable());
         // see 0004661: Add an option to propagate when add or remove a variable in a repository context to
         // jobs/joblets.
         checkPropagateContextVariable(contextResults, contextManager, deleteParams, allContextItem, refContextIds);
@@ -466,6 +562,30 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         }
         repositoryRenamedMap.clear();
         return contextResults;
+    }
+
+    private void checkNewAddParameterForRef(Map<ContextItem, Set<String>> existedParams, final IContextManager contextManager,
+            boolean isPropagateContextVariable) {
+        if (!isPropagateContextVariable) {
+            return;
+        }
+
+        Map<ContextItem, Set<String>> newParametersMap = ((JobContextManager) contextManager).getNewParametersMap();
+        for (ContextItem contextItem : existedParams.keySet()) {
+            ContextType contextType = ContextUtils.getContextTypeByName((ContextItem) contextItem,
+                    contextItem.getDefaultContext(), true);
+            List<ContextParameterType> contextParameter = contextType.getContextParameter();
+            Set<String> existedParName = existedParams.get(contextItem);
+            for (ContextParameterType parameterType : contextParameter) {
+                if (!existedParName.contains(parameterType.getName())) {
+                    if (newParametersMap.get(contextItem) == null) {
+                        newParametersMap.put(contextItem, new HashSet<String>());
+                    }
+                    newParametersMap.get(contextItem).add(parameterType.getName());
+                }
+            }
+
+        }
     }
 
     /**

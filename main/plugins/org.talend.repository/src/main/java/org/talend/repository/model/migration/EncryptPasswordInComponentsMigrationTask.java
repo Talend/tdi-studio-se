@@ -34,6 +34,7 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
@@ -125,7 +126,8 @@ public class EncryptPasswordInComponentsMigrationTask extends AbstractItemMigrat
                         }
 
                         if (!encrypted) {
-                            param.setValue(PasswordEncryptUtil.encryptPassword(param.getValue())
+                            param.setValue(
+                                    PasswordEncryptUtil.encryptPassword(ConnectionHelper.getCleanPassword(param.getValue()))
                                     + PasswordEncryptUtil.ENCRYPT_KEY);
                             modified = true;
                         }

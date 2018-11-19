@@ -185,7 +185,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                             .getResourcesByRelativePath(JOB_SOURCE_FOLDER_NAME + PATH_SEPARATOR + JavaUtils.JAVA_XML_MAPPING);
 
                     if (CollectionUtils.isNotEmpty(urls)) {
-                        xm.addResources(new ArrayList<URL>());
+                        xm.addResources(new ArrayList<URL>(urls));
                         list.add(xm);
                     }
                 }

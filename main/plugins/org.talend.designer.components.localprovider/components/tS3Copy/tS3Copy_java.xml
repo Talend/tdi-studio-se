@@ -261,6 +261,15 @@
     	>
       	  <DEFAULT>""</DEFAULT>
     	</PARAMETER>
+    	
+    	<PARAMETER
+    	  NAME="PART_SIZE"
+    	  FIELD="TEXT"
+    	  NUM_ROW="40"
+    	  REQUIRED="true"
+    	>
+    	  <DEFAULT>100</DEFAULT>
+    	</PARAMETER>
 
     </ADVANCED_PARAMETERS>
 

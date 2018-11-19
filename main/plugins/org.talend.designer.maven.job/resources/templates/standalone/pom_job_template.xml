@@ -15,6 +15,8 @@
 	<name>@ProjectName@ @JobName@ (@JobType@)</name>
 
 	<properties>
+		<maven.deploy.skip>false</maven.deploy.skip>
+		<assembly.format>zip</assembly.format>
 		<talend.job.path>@JobPath@</talend.job.path>
 		<talend.job.package>@JobPackage@</talend.job.package>
 
@@ -22,7 +24,6 @@
 		<talend.project.name>@ProjectName@</talend.project.name>
 		<talend.project.name.lowercase>@ProjectName@</talend.project.name.lowercase>
 		<talend.project.id>@ProjectId@</talend.project.id>
-		<talend.project.branch>@ProjectBranch@</talend.project.branch>
 		<talend.job.name>@JobName@</talend.job.name>
 		<talend.job.version>@TalendJobVersion@</talend.job.version>
 		<talend.job.date>@JobDate@</talend.job.date>
@@ -142,8 +143,32 @@
                   </configuration>
                 </execution>
              </executions>
-           </plugin>			
-		 </plugins>
+            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>deploy-file</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy-file</goal>
+						</goals>
+						<configuration>
+							<file>${project.build.directory}/${talend.job.finalName}.${assembly.format}</file>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>${project.artifactId}</artifactId>
+							<version>${project.version}</version>
+							<packaging>${assembly.format}</packaging>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 	<profiles>
 	    <profile>

@@ -109,7 +109,7 @@ if(<%=incomingConnName%>.<%=column.getLabel()%>==null){
 	isObject = true;
 	%>
 if(<%=incomingConnName%>.<%=column.getLabel()%>==null){
-	<%=prefix+cid%>.setNull(<%=counter%>,java.sql.Types.DATE);
+	<%=prefix+cid%>.setNull(<%=counter%>,java.sql.Types.TIMESTAMP);
 	<%
 	}else if(("Timestamp").equals(typeToGenerate)){
     isObject = true;
@@ -191,11 +191,11 @@ if(isObject){
 	%>
 	if(<%=incomingConnName%>.<%=column.getLabel()%>!=null){
 	
-		<%=prefix+cid%>.setDate(<%=counter%>,new java.sql.Date(<%=incomingConnName%>.<%=column.getLabel()%>.getTime()));
+		<%=prefix+cid%>.setTimestamp(<%=counter%>,new java.sql.Timestamp(<%=incomingConnName%>.<%=column.getLabel()%>.getTime()));
 		
 	}else{
 	
-		<%=prefix+cid%>.setNull(<%=counter%>,java.sql.Types.DATE);
+		<%=prefix+cid%>.setNull(<%=counter%>,java.sql.Types.TIMESTAMP);
 		
 	}
 	<%

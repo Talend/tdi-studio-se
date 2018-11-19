@@ -71,7 +71,12 @@ if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
   String decryptedProxyPassword_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
 <%}%>
 
-  props_<%=cid%>.put("java.net.socks.password", decryptedProxyPassword_<%=cid%>);        
+  props_<%=cid%>.put("java.net.socks.password", decryptedProxyPassword_<%=cid%>);
+  java.net.Authenticator.setDefault(new java.net.Authenticator() {
+        public java.net.PasswordAuthentication getPasswordAuthentication() {
+            return new java.net.PasswordAuthentication(<%=proxyUser %>, decryptedProxyPassword_<%=cid%>.toCharArray());
+        }
+  });
 <%}%>
 int nb_file_<%=cid%> = 0;
 

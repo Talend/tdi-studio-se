@@ -789,6 +789,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
                                     final INode argNode = node;
                                     final String argMsg = msg;
                                     dbDetailsComposite.setSelectedNode(argNode, argMsg);
+                                    if(sessionTreeNode!=null) {
                                     // bug 17980
                                     wapperDriver = sessionTreeNode.getWapperDriver();
 
@@ -809,6 +810,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
                                             // exception of shutdown success. no need to catch.
                                         }
                                     }
+                                }
                                 }
                             }
                         });
