@@ -218,14 +218,13 @@ public class SettingVisitor implements PropertyVisitor {
                 settings.put(table.getName(), table);
                 break;
             case SCHEMA_TYPE:
+                TaCoKitElementParameter schema;
                 if (node.getProperty().getConnection().getType() == PropertyDefinitionDecorator.Connection.Type.OUT) {
-                    final TaCoKitElementParameter outSchema = visitOutSchema(node);
-                    settings.put(outSchema.getName(), outSchema);
+                    schema = visitOutSchema(node);
+                } else {
+                    schema = visitInSchema(node);
                 }
-                if (node.getProperty().getConnection().getType() == PropertyDefinitionDecorator.Connection.Type.IN) {
-                    final TaCoKitElementParameter inSchema = visitInSchema(node);
-                    settings.put(inSchema.getName(), inSchema);
-                }
+                settings.put(schema.getName(), schema);
                 break;
             case TACOKIT_VALUE_SELECTION:
                 final TaCoKitElementParameter valueSelection = visitValueSelection(node);

@@ -64,7 +64,7 @@ public class InputSchemaParameter extends SchemaElementParameter {
         if (elem == null || !(elem instanceof Node)) {
             return Optional.empty();
         }
-        final List<? extends IConnection> connections = NodeUtil.getIncomingConnections(((Node) elem), getContext());
+        final List<? extends IConnection> connections = NodeUtil.getIncomingConnections((Node) elem, getContext());
         if (connections == null || connections.isEmpty()) {
             return Optional.empty();
         }
