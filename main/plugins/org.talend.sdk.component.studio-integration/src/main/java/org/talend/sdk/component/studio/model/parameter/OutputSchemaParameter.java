@@ -145,7 +145,7 @@ public class OutputSchemaParameter extends SchemaElementParameter {
         if (EConnectionType.FLOW_MAIN.getName().equalsIgnoreCase(connectionName)) {
             return "Schema";
         }
-        return "Schema" + " " + connectionName;
+        return "Schema " + connectionName;
     }
 
     /**
