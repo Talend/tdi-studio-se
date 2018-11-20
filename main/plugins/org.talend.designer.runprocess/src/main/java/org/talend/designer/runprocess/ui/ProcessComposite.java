@@ -641,6 +641,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             }
         });
 
+        // for TUP-20927, added a listener to verticalBar to stop the console printing logs when user drag up the bar.
         verticalBar = consoleText.getVerticalBar();
         verticalBar.addSelectionListener(new SelectionAdapter() {
 
@@ -649,12 +650,16 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
                 int consoleLine = verticalBar.getMaximum();
                 int barLength = verticalBar.getThumb();
-                int increment = verticalBar.getIncrement();
                 selectionLine = verticalBar.getSelection();
                 lockConsoleTrace = true;
 
-                if (selectionLine <= consoleLine && selectionLine >= consoleLine - barLength - increment) {
+                if (selectionLine <= consoleLine && selectionLine >= consoleLine - barLength
+                        && !processContext.isTracPause()) {
                     lockConsoleTrace = false;
+
+                    if (processContext != null && !processContext.isRunning()) {
+                        fillConsole(processContext.getMessages());
+                    }
                 }
             }
         });

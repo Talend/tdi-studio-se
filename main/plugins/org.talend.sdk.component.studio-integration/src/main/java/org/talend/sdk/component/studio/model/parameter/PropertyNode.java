@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -199,6 +200,19 @@ public class PropertyNode {
     }
 
     /**
+     * Returns all children names
+     *
+     * Subclasses may override this method
+     *
+     * @return children names
+     */
+    protected Set<String> getChildrenNames() {
+        final Set<String> names = new LinkedHashSet<>();
+        children.forEach(node -> names.add(node.getProperty().getName()));
+        return names;
+    }
+
+    /**
      * Returns children names for specified <code>form</code>.
      * If <code>form</code> is Main form its children may be specified by ui::gridlayout or ui:optionsorder.
      * If it has no both metadata, then all children are considered as Main children.
@@ -222,6 +236,8 @@ public class PropertyNode {
      * If it has ui:optionsorder (and has no any ui:gridlayout), then names are retrieved from there
      * If it has no both metadatas, then all children belong to Main form
      *
+     * This implementation calls overridable {@link #getChildrenNames()} to get all children names
+     *
      * @return children names for Main form
      */
     private Set<String> getMainChildrenNames() {
@@ -234,9 +250,7 @@ public class PropertyNode {
         if (property.hasOptionsOrder()) {
             return property.getOptionsOrderNames();
         }
-        final Set<String> names = new HashSet<>();
-        children.forEach(node -> names.add(node.getProperty().getName()));
-        return names;
+        return getChildrenNames();
     }
 
     public Layout getLayout(final String name) {

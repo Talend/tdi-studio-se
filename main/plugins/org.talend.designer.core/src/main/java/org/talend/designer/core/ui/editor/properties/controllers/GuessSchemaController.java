@@ -505,7 +505,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                 @Override
                 public void run() {
                     MessageDialog.openWarning(composite.getShell(),
-                            Messages.getString("GuessSchemaController.connectionError"), strExcepton); //$NON-NLS-1$
+                            Messages.getString("GuessSchemaController.connectionWarning"), strExcepton); //$NON-NLS-1$
                 }
             });
             ExceptionHandler.process(e);
