@@ -47,36 +47,28 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                     }
                 }
             } else if(p.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
-                final String connectionType = (String)p.getTaggedValue("org.talend.sdk.connection.type");
-                if(connectionType == null) {
-                	continue;
-                }
                 final String parameterName = p.getName();
                 IConnection connection = null;
-                if("in".equalsIgnoreCase(connectionType)) {
-                    if(node.getComponent().useLookup()) {
-                        for (final IConnection conn : node.getIncomingConnections()) {
-                            String input_name = null;
-                            if (!(conn instanceof IAdditionalInfo)) {
-                                continue;
-                            }
-                            input_name = (String)IAdditionalInfo.class.cast(conn).getInfo("INPUT_NAME");
-                            if(input_name != null && input_name.equals(p.getContext())) {
-                                connection = conn;
-                                break;
-                            }
-                        }
-                    } else {
-                        final List<? extends IConnection> connections = NodeUtil.getIncomingConnections(node, p.getContext());
-                        if(connections != null && !connections.isEmpty()) {
-                            connection = connections.get(0);
-                        }
+                final List<? extends IConnection> connections = NodeUtil.getOutgoingConnections(node, p.getContext());
+                if(connections != null && !connections.isEmpty()) {
+                    connection = connections.get(0);
+                }
+                if(connection != null) {
+                    IMetadataTable metaTable = connection.getMetadataTable();
+                    List<IMetadataColumn> columns = metaTable.getListColumns();
+                    for(int i = 0; i < columns.size(); i++) {
+                        IMetadataColumn column = columns.get(i);
+                    %>
+                        configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
+                    <%
                     }
-                } else {
-                    final List<? extends IConnection> connections = NodeUtil.getOutgoingConnections(node, p.getContext());
-                    if(connections != null && !connections.isEmpty()) {
-                        connection = connections.get(0);
-                    }
+                }
+            } else if (p.getFieldType() == EParameterFieldType.TACOKIT_INPUT_SCHEMA) {
+                final String parameterName = p.getName();
+                IConnection connection = null;
+                final List<? extends IConnection> connections = NodeUtil.getIncomingConnections(node, p.getContext());
+                if(connections != null && !connections.isEmpty()) {
+                    connection = connections.get(0);
                 }
                 if(connection != null) {
                     IMetadataTable metaTable = connection.getMetadataTable();
