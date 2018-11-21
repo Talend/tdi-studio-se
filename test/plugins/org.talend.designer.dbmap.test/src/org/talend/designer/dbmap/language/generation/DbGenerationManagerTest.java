@@ -29,6 +29,7 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.NodeConnector;
 import org.talend.designer.core.ui.editor.connections.Connection;
@@ -134,11 +135,42 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
 
     @Test
     public void testInitExpression() {
-        checkValue("t1.\\\"id\\\"", extMapEntry);
+    	checkValue("t1.\\\"id\\\"", extMapEntry);
         
         ExternalDbMapEntry extMapEntry2 = new ExternalDbMapEntry("multiple", "t1.id + t1.name");
         tableEntries.add(extMapEntry2);
         checkValue("t1.\\\"id\\\" + t1.\\\"name\\\"", extMapEntry2);
+        
+        testWithQuote();
+    }
+    
+    private void testWithQuote(){
+    	dbManager.setUseDelimitedIdentifiers(true);
+    	List<IConnection> incomingConnections = new ArrayList<IConnection>();
+        String[] columns = new String[] { "id",  "name"};
+        String[] labels = new String[] { "id",  "name"};
+        incomingConnections.add(createConnection("t1", "t1", labels, columns));
+        dbMapComponent.setIncomingConnections(incomingConnections);
+        
+        ElementParameter param = new ElementParameter(dbMapComponent);
+    	param.setName(EParameterName.MAPPING.getName());
+    	param.setValue("mysql_id");
+    	List<ElementParameter> list = new ArrayList<>();
+    	list.add(param);
+    	dbMapComponent.setElementParameters(list);
+    	checkValue("t1.`id`", extMapEntry);
+    	
+    	ExternalDbMapEntry extMapEntry2 = new ExternalDbMapEntry("multiple", "t1.id + t1.name");
+        tableEntries.add(extMapEntry2);
+        checkValue("t1.`id` + t1.`name`", extMapEntry2);
+    	
+    	param.setValue("oracle_id");
+    	checkValue("t1.\\\"id\\\"", extMapEntry);
+    	checkValue("t1.\\\"id\\\" + t1.\\\"name\\\"", extMapEntry2);
+    	
+    	param.setValue("mssql_id");
+    	checkValue("t1.\\\"id\\\"", extMapEntry);
+    	checkValue("t1.\\\"id\\\" + t1.\\\"name\\\"", extMapEntry2);
     }
 
     public void checkValue(String expression, ExternalDbMapEntry entry) {
