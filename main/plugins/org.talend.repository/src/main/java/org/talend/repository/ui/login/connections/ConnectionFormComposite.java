@@ -710,6 +710,11 @@ public class ConnectionFormComposite extends Composite {
             repositoryCombo.setSelection(new StructuredSelection(new Object[] { repositoriyById }));
 
             if (getRepository() != null) {
+                Map<String, String> dynamicFields = connection.getDynamicFields();
+                String url = dynamicFields.get(RepositoryConstants.REPOSITORY_URL);
+                if (null == url || "".equals(url)) {
+                    dynamicFields.put(RepositoryConstants.REPOSITORY_URL, getRepository().getFields().get(0).getDefaultValue());
+                }
                 Map<String, LabelText> map = dynamicControls.get(getRepository());
 
                 for (String fieldKey : map.keySet()) {
@@ -758,7 +763,6 @@ public class ConnectionFormComposite extends Composite {
         fillFields();
         showHideDynamicsControls();
         validateFields();
-        fillBean(true);
         showHideTexts();
         changeUserLabel();
     }
