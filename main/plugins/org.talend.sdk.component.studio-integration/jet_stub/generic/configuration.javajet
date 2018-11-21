@@ -53,12 +53,26 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                 }
                 final String parameterName = p.getName();
                 IConnection connection = null;
-                    final List<? extends IConnection> connections = NodeUtil.getIncomingConnections(node, p.getContext());
-                    if(connections != null && !connections.isEmpty()) {
-                        connection = connections.get(0);
+                if("in".equalsIgnoreCase(connectionType)) {
+                    if(node.getComponent().useLookup()) {
+                        for (final IConnection conn : node.getIncomingConnections()) {
+                            String input_name = null;
+                            if (!(conn instanceof IAdditionalInfo)) {
+                                continue;
+                            }
+                            input_name = (String)IAdditionalInfo.class.cast(conn).getInfo("INPUT_NAME");
+                            if(input_name != null && input_name.equals(p.getContext())) {
+                                connection = conn;
+                                break;
+                            }
+                        }
+                    } else {
+                        final List<? extends IConnection> connections = NodeUtil.getIncomingConnections(node, p.getContext());
+                        if(connections != null && !connections.isEmpty()) {
+                            connection = connections.get(0);
+                        }
                     }
-                }
-                if("out".equalsIgnoreCase(connectionType)) {
+                } else {
                     final List<? extends IConnection> connections = NodeUtil.getOutgoingConnections(node, p.getContext());
                     if(connections != null && !connections.isEmpty()) {
                         connection = connections.get(0);
