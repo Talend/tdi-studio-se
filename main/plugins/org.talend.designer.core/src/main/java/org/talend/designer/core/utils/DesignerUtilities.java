@@ -105,7 +105,7 @@ public class DesignerUtilities {
      * @param jobName
      * @param jobVersion
      */
-    public static IProcess2 findProcessFromEditors(final String projectLabel, final String jobId, final String jobVersion) {
+    public static IProcess2 findProcessFromEditors(final String jobProjectLabel, final String jobId, final String jobVersion) {
         final IProcess2[] process = new IProcess2[1];
 
         Display.getDefault().syncExec(new Runnable() {
@@ -122,7 +122,7 @@ public class DesignerUtilities {
                         IProcess2 p = rInput.getLoadedProcess();
                         String pProjectLabel = ProjectManager.getInstance().getProject(p.getProperty()).getTechnicalLabel();
                         if (p != null && p.getId().equals(jobId) && p.getVersion().equals(jobVersion)
-                                && projectLabel.equals(pProjectLabel)) {
+                                && jobProjectLabel.equals(pProjectLabel)) {
                             process[0] = p;
                             break;
                         }

@@ -180,8 +180,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
                 if (projectName == null) {
                     continue;
                 }
-                org.talend.core.model.properties.Project fileProject = ProjectManager.getInstance().getProject(file.getProperty());
-                if (fileProject != null && !projectName.equals(fileProject.getLabel())) {
+                if (!projectName.equals(ProjectManager.getInstance().getCurrentProject().getLabel())) {
                     continue;
                 }
                 String jobId = config.getAttribute(TalendDebugUIConstants.JOB_ID, (String) null);
@@ -218,6 +217,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
         String jobId = file.getProperty().getId();
         String jobName = file.getProperty().getLabel();
         String jobVersion = file.getProperty().getVersion();
+        String jobProjectLabel = ProjectManager.getInstance().getProject(file.getProperty()).getTechnicalLabel();
         ILaunchConfigurationType type = getLaunchManager()
                 .getLaunchConfigurationType(TalendDebugUIConstants.JOB_DEBUG_LAUNCH_CONFIGURATION_TYPE);
         String displayName = jobName + " " + jobVersion; //$NON-NLS-1$
@@ -229,8 +229,8 @@ public class JobLaunchShortcut implements ILaunchShortcut {
                 wc.setAttribute(TalendDebugUIConstants.JOB_NAME, jobName);
                 wc.setAttribute(TalendDebugUIConstants.JOB_ID, jobId);
                 wc.setAttribute(TalendDebugUIConstants.JOB_VERSION, jobVersion);
-                String projectName = ProjectManager.getInstance().getProject(file.getProperty()).getLabel();
-                wc.setAttribute(TalendDebugUIConstants.CURRENT_PROJECT_NAME, projectName);
+                wc.setAttribute(TalendDebugUIConstants.JOB_PROJECT_LABEL, jobProjectLabel);
+                wc.setAttribute(TalendDebugUIConstants.CURRENT_PROJECT_NAME, ProjectManager.getInstance().getCurrentProject().getLabel());
                 config = wc.doSave();
             }
         } catch (CoreException e) {
