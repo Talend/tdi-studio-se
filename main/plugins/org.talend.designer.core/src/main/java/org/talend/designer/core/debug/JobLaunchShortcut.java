@@ -181,7 +181,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
                     continue;
                 }
                 org.talend.core.model.properties.Project fileProject = ProjectManager.getInstance().getProject(file.getProperty());
-                if (fileProject != null && !projectName.equals(fileProject.getTechnicalLabel())) {
+                if (fileProject != null && !projectName.equals(fileProject.getLabel())) {
                     continue;
                 }
                 String jobId = config.getAttribute(TalendDebugUIConstants.JOB_ID, (String) null);
@@ -229,7 +229,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
                 wc.setAttribute(TalendDebugUIConstants.JOB_NAME, jobName);
                 wc.setAttribute(TalendDebugUIConstants.JOB_ID, jobId);
                 wc.setAttribute(TalendDebugUIConstants.JOB_VERSION, jobVersion);
-                String projectName = ProjectManager.getInstance().getProject(file.getProperty()).getTechnicalLabel();
+                String projectName = ProjectManager.getInstance().getProject(file.getProperty()).getLabel();
                 wc.setAttribute(TalendDebugUIConstants.CURRENT_PROJECT_NAME, projectName);
                 config = wc.doSave();
             }
