@@ -59,6 +59,8 @@ public class TaCoKitConst {
 
     public static final String COMPONENT_NAME_SEPARATOR = "";
 
+    public static final String ADDITIONAL_PARAM_METADATA_ELEMENT = "TACOKIT_ADDITIONAL_PARAM_METADATA_ELEMENT"; //$NON-NLS-1$
+
     public static final String PROP_COMPONENT = "component.java.coordinates"; //$NON-NLS-1$
 
     public static final String PROP_REGISTRY = "component.java.registry"; //$NON-NLS-1$

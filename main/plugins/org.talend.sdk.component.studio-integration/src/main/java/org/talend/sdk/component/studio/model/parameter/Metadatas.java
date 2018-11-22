@@ -76,8 +76,6 @@ public final class Metadatas {
 
     public static final String UI_STRUCTURE_VALUE = "ui::structure::value";
 
-    public static final String UI_STRUCTURE_DISCOVERSCHEMA = "ui::structure::discoverSchema";
-
     public static final String UI_TEXTAREA = "ui::textarea";
 
     /**

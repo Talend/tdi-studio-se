@@ -135,7 +135,7 @@ public class PropertyTreeCreator {
         PropertyNode node;
         switch (fieldType) {
         case TABLE:
-        case TACOKIT_INPUT_SCHEMA:
+
         case SCHEMA_TYPE:
             node = new ListPropertyNode(property, fieldType, isRoot);
             break;

@@ -14,7 +14,6 @@ package org.talend.sdk.component.studio.ui.guessschema;
 
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.singletonList;
-import static org.talend.sdk.component.studio.model.parameter.OutputSchemaParameter.ADDITIONAL_PARAM_METADATA_ELEMENT;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -151,7 +150,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
             IElementParameter param = node.getElementParameter(elementParameter.getName());
             if (param instanceof IAdditionalInfo) {
                 IElementParameter schemaParam = (IElementParameter) ((IAdditionalInfo) param)
-                        .getInfo(ADDITIONAL_PARAM_METADATA_ELEMENT);
+                        .getInfo(TaCoKitConst.ADDITIONAL_PARAM_METADATA_ELEMENT);
                 if (schemaParam != null) {
                     param = node.getElementParameter(schemaParam.getName());
                 }
