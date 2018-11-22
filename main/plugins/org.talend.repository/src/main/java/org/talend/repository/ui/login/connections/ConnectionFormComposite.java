@@ -713,7 +713,17 @@ public class ConnectionFormComposite extends Composite {
                 Map<String, String> dynamicFields = connection.getDynamicFields();
                 String url = dynamicFields.get(RepositoryConstants.REPOSITORY_URL);
                 if (null == url || "".equals(url)) {
-                    dynamicFields.put(RepositoryConstants.REPOSITORY_URL, getRepository().getFields().get(0).getDefaultValue());
+                    List<DynamicFieldBean> fields = getRepository().getFields();
+                    DynamicFieldBean dynamicUrlBean = null;
+                    for (DynamicFieldBean field : fields) {
+                        if (RepositoryConstants.REPOSITORY_URL.equals(field.getId())) {
+                            dynamicUrlBean = field;
+                            break;
+                        }
+                    }
+                    if (dynamicUrlBean != null) {
+                        dynamicFields.put(RepositoryConstants.REPOSITORY_URL, dynamicUrlBean.getDefaultValue());
+                    }
                 }
                 Map<String, LabelText> map = dynamicControls.get(getRepository());
 
