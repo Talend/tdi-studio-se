@@ -683,6 +683,7 @@ public class StatsAndLogsManager {
                 param.setValue(connectionUID);
             }
         }
+        boolean isUrlContainsAutoCommit = false;
         if (connectionNode == null) {
             IComponent component = null;
             String[] javaDbComponents = StatsAndLogsConstants.DB_OUTPUT_COMPONENTS;
@@ -737,6 +738,21 @@ public class StatsAndLogsManager {
 
                         if (isGeneric) {// reset the show if
                             resetShowIf(connectionNode);
+                            IElementParameter urlParam = connectionNode
+                                    .getElementParameter(EConnectionParameterName.GENERIC_URL.getDisplayName());
+                            if (urlParam != null) {
+                                Object obj = urlParam.getValue();
+                                if (obj != null && obj instanceof String) {
+                                    String url = (String) obj;
+                                    if (url != null && url.toLowerCase().contains("autocommit=true")) {//$NON-NLS-1$
+                                        isUrlContainsAutoCommit = true;
+                                        IElementParameter autoCommitParam = connectionNode.getElementParameter("autocommit");//$NON-NLS-1$
+                                        if (autoCommitParam != null) {
+                                            autoCommitParam.setValue(Boolean.TRUE);
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         if (connectionComponentName.contains("Oracle")) {//$NON-NLS-1$
@@ -764,10 +780,11 @@ public class StatsAndLogsManager {
                 }
             }
         }
-        DataConnection dataConnec = createDataConnectionForSubJobOK(dataNode, commitNode);
-        ((List<IConnection>) dataNode.getOutgoingConnections()).add(dataConnec);
-        ((List<IConnection>) commitNode.getIncomingConnections()).add(dataConnec);
-
+        if (!isUrlContainsAutoCommit) {
+            DataConnection dataConnec = createDataConnectionForSubJobOK(dataNode, commitNode);
+            ((List<IConnection>) dataNode.getOutgoingConnections()).add(dataConnec);
+            ((List<IConnection>) commitNode.getIncomingConnections()).add(dataConnec);
+        }
         return connectionNode;
     }
 
