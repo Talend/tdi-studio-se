@@ -41,6 +41,7 @@ import org.eclipse.jdt.internal.corext.refactoring.rename.JavaRenameProcessor;
 import org.eclipse.jdt.internal.corext.refactoring.rename.RenameCompilationUnitProcessor;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -58,6 +59,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.FileEditorInput;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -418,8 +420,28 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
         if (!isEditable()) {
             return false;
         }
-        return super.isDirty();
+        boolean dirty = super.isDirty();
+        if (dirty) {
+            checkSaveAsEnabled();
+        }
+        return dirty;
     }
+
+    private void checkSaveAsEnabled() {
+        if (!isSaveAsAllowed()) {
+            return;
+        }
+        IAction action = getAction(ActionFactory.SAVE_AS.getId());
+        if (action == null) {
+            action = ActionFactory.SAVE_AS.create(PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+            setAction(ActionFactory.SAVE_AS.getId(), action);
+        }
+        IAction saveAsAction = getAction(ActionFactory.SAVE_AS.getId());
+        if (saveAsAction != null && !getAction(ActionFactory.SAVE_AS.getId()).isEnabled()) {
+            getAction(ActionFactory.SAVE_AS.getId()).setEnabled(true);
+        }
+    }
+
 
     @Override
     public boolean isEditorInputReadOnly() {
@@ -730,6 +752,10 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
 
     @Override
     public void doSaveAs() {
+        // for the EditorInput of new created RepositoryNode, need to reload
+        if (this.rEditorInput.getRepositoryNode() == null) {
+            this.rEditorInput.setRepositoryNode(null);
+        }
         ERepositoryObjectType type = this.rEditorInput.getRepositoryNode().getObject().getRepositoryObjectType();
         if (type == ERepositoryObjectType.ROUTINES) {
             SaveAsRoutineAction saveAsAction = new SaveAsRoutineAction(this);
