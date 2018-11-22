@@ -740,7 +740,7 @@ public class JSONFileStep1Form extends AbstractJSONFileStepForm {
     protected boolean checkFieldsValue() {
         String jsonFilePathText = fileFieldJSON.getText();
         // The fields
-        if (jsonFilePathText == "Filepath must be specified") {
+        if ("Filepath must be specified".equals(jsonFilePathText)) {
             updateStatus(IStatus.ERROR, ""); //$NON-NLS-1$
             return false;
         }

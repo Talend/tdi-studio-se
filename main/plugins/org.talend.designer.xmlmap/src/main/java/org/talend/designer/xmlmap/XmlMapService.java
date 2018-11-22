@@ -122,7 +122,7 @@ public class XmlMapService implements IXmlMapService {
             if (oriInput.isActivateExpressionFilter() != testInput.isActivateExpressionFilter()) {
                 return true;
             }
-            if (oriInput.getExpressionFilter() != testInput.getExpressionFilter()) {
+            if (!oriInput.getExpressionFilter().equals(testInput.getExpressionFilter())) {
                 return true;
             }
             if (oriInput.isMinimized() != testInput.isMinimized()) {
@@ -172,7 +172,7 @@ public class XmlMapService implements IXmlMapService {
             if (oriOutput.isActivateExpressionFilter() != testOutput.isActivateExpressionFilter()) {
                 return true;
             }
-            if (oriOutput.getExpressionFilter() != testOutput.getExpressionFilter()) {
+            if (!oriOutput.getExpressionFilter().equals(testOutput.getExpressionFilter())) {
                 return true;
             }
             if (oriOutput.isMinimized() != testOutput.isMinimized()) {
