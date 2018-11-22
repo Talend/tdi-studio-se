@@ -16,7 +16,7 @@
 package org.talend.sdk.component.studio.ui.composite;
 
 import static java.util.stream.Stream.of;
-import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
+import static org.talend.sdk.component.studio.model.parameter.SchemaElementParameter.guessButtonName;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;

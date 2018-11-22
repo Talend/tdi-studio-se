@@ -487,10 +487,11 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     Connection getConnection() {
         final String type = delegate.getMetadata().get(Metadatas.UI_STRUCTURE_TYPE);
         final String value = delegate.getMetadata().get(Metadatas.UI_STRUCTURE_VALUE);
+        final String discoverSchema = delegate.getMetadata().get(Metadatas.UI_STRUCTURE_DISCOVERSCHEMA);
         if (type == null || value == null) {
             throw new IllegalStateException("property has no structure");
         }
-        return new Connection(Connection.Type.valueOf(type), value);
+        return new Connection(Connection.Type.valueOf(type), value, discoverSchema);
     }
 
     String getSchemaName() {
@@ -717,18 +718,23 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
     public static class Connection {
 
+        public static final String DEFAULT = "__default__";
+
         private final Type type;
 
         private final String value;
+
+        private final String discoverSchema;
 
         public enum Type {
             IN,
             OUT;
         }
 
-        public Connection(final Type type, final String value) {
+        public Connection(final Type type, final String value, final String discoverSchema) {
             this.type = type;
             this.value = value;
+            this.discoverSchema = discoverSchema;
         }
 
         public Type getType() {
@@ -739,45 +745,10 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             return this.value;
         }
 
-        @Override
-        public boolean equals(final Object o) {
-            if (o == this)
-                return true;
-            if (!(o instanceof Connection))
-                return false;
-            final Connection other = (Connection) o;
-            if (!other.canEqual(this))
-                return false;
-            final Object this$type = this.getType();
-            final Object other$type = other.getType();
-            if (this$type == null ? other$type != null : !this$type.equals(other$type))
-                return false;
-            final Object this$value = this.getValue();
-            final Object other$value = other.getValue();
-            if (this$value == null ? other$value != null : !this$value.equals(other$value))
-                return false;
-            return true;
+        public String getDiscoverSchema() {
+            return this.discoverSchema;
         }
 
-        protected boolean canEqual(final Object other) {
-            return other instanceof Connection;
-        }
-
-        @Override
-        public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            final Object $type = this.getType();
-            result = result * PRIME + ($type == null ? 43 : $type.hashCode());
-            final Object $value = this.getValue();
-            result = result * PRIME + ($value == null ? 43 : $value.hashCode());
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "PropertyDefinitionDecorator.Connection(type=" + this.getType() + ", value=" + this.getValue() + ")";
-        }
     }
 
     public static class Suggestions {
