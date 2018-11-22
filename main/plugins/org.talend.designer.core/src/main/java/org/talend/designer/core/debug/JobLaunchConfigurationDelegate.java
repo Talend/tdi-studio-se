@@ -60,7 +60,7 @@ public class JobLaunchConfigurationDelegate extends org.eclipse.debug.core.model
         String jobId = configuration.getAttribute(TalendDebugUIConstants.JOB_ID, (String) null);
         String jobName = configuration.getAttribute(TalendDebugUIConstants.JOB_NAME, (String) null);
         String jobVersion = configuration.getAttribute(TalendDebugUIConstants.JOB_VERSION, (String) null);
-        String jobProjectLabel = configuration.getAttribute(TalendDebugUIConstants.JOB_PROJECT_LABEL, (String) null);
+        String jobProjectLabel = configuration.getAttribute(TalendDebugUIConstants.JOB_PROJECT_TECH_LABEL, (String) null);
         // find process from open editor.
         IProcess2 process = DesignerUtilities.findProcessFromEditors(jobProjectLabel, jobId, jobVersion);
         // find process from repository

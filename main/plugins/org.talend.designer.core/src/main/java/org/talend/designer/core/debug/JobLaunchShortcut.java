@@ -229,7 +229,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
                 wc.setAttribute(TalendDebugUIConstants.JOB_NAME, jobName);
                 wc.setAttribute(TalendDebugUIConstants.JOB_ID, jobId);
                 wc.setAttribute(TalendDebugUIConstants.JOB_VERSION, jobVersion);
-                wc.setAttribute(TalendDebugUIConstants.JOB_PROJECT_LABEL, jobProjectLabel);
+                wc.setAttribute(TalendDebugUIConstants.JOB_PROJECT_TECH_LABEL, jobProjectLabel);
                 wc.setAttribute(TalendDebugUIConstants.CURRENT_PROJECT_NAME, ProjectManager.getInstance().getCurrentProject().getLabel());
                 config = wc.doSave();
             }
