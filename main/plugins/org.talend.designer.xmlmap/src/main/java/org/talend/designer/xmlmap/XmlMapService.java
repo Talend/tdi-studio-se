@@ -173,7 +173,7 @@ public class XmlMapService implements IXmlMapService {
             if (oriOutput.isActivateExpressionFilter() != testOutput.isActivateExpressionFilter()) {
                 return true;
             }
-            if (!oriOutput.getExpressionFilter().equals(testOutput.getExpressionFilter())) {
+            if (!StringUtils.equals(oriOutput.getExpressionFilter(), testOutput.getExpressionFilter())) {
                 return true;
             }
             if (oriOutput.isMinimized() != testOutput.isMinimized()) {
