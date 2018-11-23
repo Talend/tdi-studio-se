@@ -221,6 +221,7 @@ import org.talend.designer.core.ui.editor.process.ProcessPart;
 import org.talend.designer.core.ui.editor.process.TalendEditorDropTargetListener;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerPart;
+import org.talend.designer.core.ui.views.CodeView;
 import org.talend.designer.core.ui.views.jobsettings.JobSettings;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
@@ -1382,6 +1383,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         getEditDomain().setDefaultTool(null);
         getSelectionSynchronizer().removeViewer(getGraphicalViewer());
         getSite().setSelectionProvider(null);
+        CodeView.refreshCodeView(null);
     }
 
     public void gotoMarker(final IMarker marker) {
