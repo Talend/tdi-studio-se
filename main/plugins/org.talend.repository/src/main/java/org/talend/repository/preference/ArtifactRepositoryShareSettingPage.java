@@ -87,8 +87,6 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     private Label checkUpdatePerDaysTextLabel;
 
-    private boolean isCreated = false;
-
     private boolean isLocalProject;
 
     public ArtifactRepositoryShareSettingPage() {
@@ -109,16 +107,15 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
             e.printStackTrace();
         }
 
-        isCreated = true;
         Composite parent = getFieldEditorParent();
         parent.setLayout(new GridLayout(4, false));
         enableShareCheckbox = new Button(parent, SWT.CHECK);
         enableShareCheckbox.setText(Messages.getString("ArtifactRepositoryShareSettingPage.enableShareLabel")); //$NON-NLS-1$
-        GridDataFactory.fillDefaults().span(4, 1).applyTo(enableShareCheckbox);
+        GridDataFactory.fillDefaults().span(4, 1).exclude(isLocalProject).applyTo(enableShareCheckbox);
         Label repositoryIdLabel = new Label(parent, SWT.NONE);
         repositoryIdLabel.setText(Messages.getString("ArtifactRepositoryShareSettingPage.repositoryIdLabel")); //$NON-NLS-1$
         repositoryIdText = new Text(parent, SWT.BORDER);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(repositoryIdText);
+        GridDataFactory.fillDefaults().grab(true, false).exclude(isLocalProject).applyTo(repositoryIdText);
         checkButton = new Button(parent, SWT.PUSH);
         checkButton.setText(Messages.getString("ArtifactRepositoryShareSettingPage.checkLabel")); //$NON-NLS-1$
         statusLabel = new Label(parent, SWT.NONE);
@@ -131,23 +128,19 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
         autoCheckUpdateBtn = new Button(parent, SWT.CHECK);
         autoCheckUpdateBtn.setText(Messages.getString("ArtifactRepositoryShareSettingPage.autoCheckUpdate")); //$NON-NLS-1$
-        GridDataFactory.fillDefaults().span(4, 1).applyTo(autoCheckUpdateBtn);
+        GridDataFactory.fillDefaults().span(4, 1).exclude(isLocalProject).applyTo(autoCheckUpdateBtn);
 
         checkUpdatePerDaysTextLabel = new Label(parent, SWT.NONE);
         checkUpdatePerDaysTextLabel.setText(Messages.getString("ArtifactRepositoryShareSettingPage.checkUpdatePerDays")); //$NON-NLS-1$
         checkUpdatePerDaysText = new Text(parent, SWT.BORDER);
-        GridDataFactory.fillDefaults().span(3, 1).applyTo(checkUpdatePerDaysText);
+        GridDataFactory.fillDefaults().span(3, 1).exclude(isLocalProject).applyTo(checkUpdatePerDaysText);
         if (isLocalProject) {
             GridData gd = new GridData();
             gd.exclude = true;
-            enableShareCheckbox.setLayoutData(gd);
             repositoryIdLabel.setLayoutData(gd);
-            repositoryIdText.setLayoutData(gd);
             checkButton.setLayoutData(gd);
             statusLabel.setLayoutData(gd);
-            autoCheckUpdateBtn.setLayoutData(gd);
             checkUpdatePerDaysTextLabel.setLayoutData(gd);
-            checkUpdatePerDaysText.setLayoutData(gd);
         }
         initFields();
         addListeners();
@@ -300,7 +293,7 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
     }
 
     private void validate() {
-        if (!isCreated) {
+        if (!this.isControlCreated()) {
             return;
         }
         setErrorMessage(null);
@@ -362,27 +355,20 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     @Override
     public boolean performOk() {
-        if (!isCreated) {
+        if (!this.isControlCreated()) {
             return true;
         }
         if (!isValid()) {
             return false;
         }
-        if (isLocalProject) {
-            getPreferenceStore().setValue(PREF_KEY_SHOW_WARN_DIALOG_WHEN_INSTALLING_FEATURES,
-                    showWarnDialogWhenInstallingFeaturesBtn.getSelection());
-        } else {
-            if (enableShareCheckbox != null && !enableShareCheckbox.isDisposed()) {
-                getPreferenceStore().setValue(PREF_KEY_SHARE_ENABLE, enableShareCheckbox.getSelection());
-                if (enableShareCheckbox.getSelection()) {
-                    getPreferenceStore().setValue(PREF_KEY_SHARE_REPOSITORY_ID, repositoryIdText.getText());
-                }
-                getPreferenceStore().setValue(PREF_KEY_AUTO_CHECK_UPDATE, autoCheckUpdateBtn.getSelection());
-                getPreferenceStore().setValue(PREF_KEY_SHOW_WARN_DIALOG_WHEN_INSTALLING_FEATURES,
-                        showWarnDialogWhenInstallingFeaturesBtn.getSelection());
-                getPreferenceStore().setValue(PREF_KEY_CHECK_UPDATE_PER_DAYS, checkUpdatePerDaysText.getText());
-            }
+        getPreferenceStore().setValue(PREF_KEY_SHARE_ENABLE, enableShareCheckbox.getSelection());
+        if (enableShareCheckbox.getSelection()) {
+            getPreferenceStore().setValue(PREF_KEY_SHARE_REPOSITORY_ID, repositoryIdText.getText());
         }
+        getPreferenceStore().setValue(PREF_KEY_AUTO_CHECK_UPDATE, autoCheckUpdateBtn.getSelection());
+        getPreferenceStore().setValue(PREF_KEY_SHOW_WARN_DIALOG_WHEN_INSTALLING_FEATURES,
+                showWarnDialogWhenInstallingFeaturesBtn.getSelection());
+        getPreferenceStore().setValue(PREF_KEY_CHECK_UPDATE_PER_DAYS, checkUpdatePerDaysText.getText());
         return super.performOk();
     }
 
@@ -394,7 +380,7 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     @Override
     public boolean isValid() {
-        if (!isCreated) {
+        if (!this.isControlCreated()) {
             return true;
         }
         validate();
