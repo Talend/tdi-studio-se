@@ -328,6 +328,16 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
             public void widgetSelected(SelectionEvent e) {
                 if (fixedVersionButton.getSelection()) {
                     updateFixedVersionSelection();
+                    for (TableItem tableItem : itemTable.getItems()) {
+                        if (tableItem.getData() instanceof ItemVersionObject) {
+                            ItemVersionObject data = (ItemVersionObject) tableItem.getData();
+                            if (null != data) {
+                                tableItem.setText(1,
+                                        appliedFlag && StringUtils.isNotEmpty(appliedFixedVersion) ? appliedFixedVersion
+                                                : data.getNewVersion());
+                            }
+                        }
+                    }
                 } else {
                     applyVersionButton.setEnabled(false);
                 }
@@ -389,6 +399,14 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
                 applyDetail.setVisible(eachVersionButton.getSelection());
                 if (eachVersionButton.getSelection()) {
                     updateEachVersionSelection();
+                    for (TableItem tableItem : itemTable.getItems()) {
+                        if (tableItem.getData() instanceof ItemVersionObject) {
+                            ItemVersionObject data = (ItemVersionObject) tableItem.getData();
+                            if (null != data) {
+                                tableItem.setText(1, data.getNewVersion());
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -418,15 +436,6 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
         if (itemTable.getSelectionCount() > 0) {
             newVersionText.setText(appliedFixedVersion);
         }
-        for (TableItem tableItem : itemTable.getItems()) {
-            if (tableItem.getData() instanceof ItemVersionObject) {
-                ItemVersionObject data = (ItemVersionObject) tableItem.getData();
-                if (null != data) {
-                    tableItem.setText(1, appliedFlag && StringUtils.isNotEmpty(appliedFixedVersion) ? appliedFixedVersion
-                            : data.getNewVersion());
-                }
-            }
-        }
     }
 
     private void updateUseJobVersionSelection() {
@@ -443,14 +452,6 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
     }
 
     private void updateEachVersionSelection() {
-        for (TableItem tableItem : itemTable.getItems()) {
-            if (tableItem.getData() instanceof ItemVersionObject) {
-                ItemVersionObject data = (ItemVersionObject) tableItem.getData();
-                if (null != data) {
-                    tableItem.setText(1, data.getNewVersion());
-                }
-            }
-        }
         if (itemTable.getSelectionCount() > 0) {
             newVersionText.setEnabled(true);
             useSnapshot.setEnabled(true);
@@ -509,9 +510,16 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
             tableItem.setImage(itemsImage);
             tableItem.setText(item.getProperty().getLabel());
             // version
-            if (fixedVersionButton.getSelection() || eachVersionButton.getSelection()) {
+            if (fixedVersionButton.getSelection()) {
                 tableItem.setText(1, appliedFlag && StringUtils.isNotEmpty(appliedFixedVersion) ? appliedFixedVersion
                         : object.getNewVersion());
+            } else if (eachVersionButton.getSelection()) {
+                updateEachVersionSelection();
+                tableItem.setText(1, object.getNewVersion());
+            } else if (useJobVersionButton.getSelection()) {
+                    String jobDefaultVersion = MavenVersionUtils
+                        .getDefaultVersion(object.getItem().getProperty().getVersion());
+                tableItem.setText(1, jobDefaultVersion);
             } else {
                 tableItem.setText(1, object.getNewVersion());
             }
