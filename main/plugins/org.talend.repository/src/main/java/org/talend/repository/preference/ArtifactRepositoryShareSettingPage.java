@@ -92,6 +92,11 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
     public ArtifactRepositoryShareSettingPage() {
         super();
         noDefaultAndApplyButton();
+        try {
+            isLocalProject = ProxyRepositoryFactory.getInstance().isLocalConnectionProvider();
+        } catch (PersistenceException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -101,12 +106,6 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     @Override
     protected void createFieldEditors() {
-        try {
-            isLocalProject = ProxyRepositoryFactory.getInstance().isLocalConnectionProvider();
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-        }
-
         Composite parent = getFieldEditorParent();
         parent.setLayout(new GridLayout(4, false));
         enableShareCheckbox = new Button(parent, SWT.CHECK);
@@ -128,19 +127,18 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
         autoCheckUpdateBtn = new Button(parent, SWT.CHECK);
         autoCheckUpdateBtn.setText(Messages.getString("ArtifactRepositoryShareSettingPage.autoCheckUpdate")); //$NON-NLS-1$
-        GridDataFactory.fillDefaults().span(4, 1).exclude(isLocalProject).applyTo(autoCheckUpdateBtn);
+        GridDataFactory.fillDefaults().span(4, 1).applyTo(autoCheckUpdateBtn);
 
         checkUpdatePerDaysTextLabel = new Label(parent, SWT.NONE);
         checkUpdatePerDaysTextLabel.setText(Messages.getString("ArtifactRepositoryShareSettingPage.checkUpdatePerDays")); //$NON-NLS-1$
         checkUpdatePerDaysText = new Text(parent, SWT.BORDER);
-        GridDataFactory.fillDefaults().span(3, 1).exclude(isLocalProject).applyTo(checkUpdatePerDaysText);
+        GridDataFactory.fillDefaults().span(3, 1).applyTo(checkUpdatePerDaysText);
         if (isLocalProject) {
             GridData gd = new GridData();
             gd.exclude = true;
             repositoryIdLabel.setLayoutData(gd);
             checkButton.setLayoutData(gd);
             statusLabel.setLayoutData(gd);
-            checkUpdatePerDaysTextLabel.setLayoutData(gd);
         }
         initFields();
         addListeners();

@@ -14,19 +14,13 @@ package org.talend.repository.preference;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.preference.IPreferenceNode;
-import org.talend.core.context.Context;
-import org.talend.core.context.RepositoryContext;
-import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.preference.IProjectSettingPageTester;
 
 public class ArtifactRepositoryShareSettingPageTester implements IProjectSettingPageTester {
 
     @Override
     public boolean valid(IConfigurationElement element, IPreferenceNode node) {
-        RepositoryContext repositoryContext = (RepositoryContext) CoreRuntimePlugin.getInstance().getContext()
-                .getProperty(Context.REPOSITORY_CONTEXT_KEY);
-        boolean isOffline = repositoryContext.isOffline();
-        return !isOffline;
+        return true;
     }
 
 }
