@@ -22,12 +22,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
@@ -95,7 +95,7 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
         try {
             isLocalProject = ProxyRepositoryFactory.getInstance().isLocalConnectionProvider();
         } catch (PersistenceException e) {
-            e.printStackTrace();
+            ExceptionHandler.process(e);
         }
     }
 
@@ -113,13 +113,15 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
         GridDataFactory.fillDefaults().span(4, 1).exclude(isLocalProject).applyTo(enableShareCheckbox);
         Label repositoryIdLabel = new Label(parent, SWT.NONE);
         repositoryIdLabel.setText(Messages.getString("ArtifactRepositoryShareSettingPage.repositoryIdLabel")); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().exclude(isLocalProject).applyTo(repositoryIdLabel);
         repositoryIdText = new Text(parent, SWT.BORDER);
         GridDataFactory.fillDefaults().grab(true, false).exclude(isLocalProject).applyTo(repositoryIdText);
         checkButton = new Button(parent, SWT.PUSH);
         checkButton.setText(Messages.getString("ArtifactRepositoryShareSettingPage.checkLabel")); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().exclude(isLocalProject).applyTo(checkButton);
         statusLabel = new Label(parent, SWT.NONE);
         statusLabel.setImage(IMG_UNKNOWN);
-
+        GridDataFactory.fillDefaults().exclude(isLocalProject).applyTo(statusLabel);
         showWarnDialogWhenInstallingFeaturesBtn = new Button(parent, SWT.CHECK);
         showWarnDialogWhenInstallingFeaturesBtn
                 .setText(Messages.getString("ArtifactRepositoryShareSettingPage.showWarnDialogWhenInstallingFeatures")); //$NON-NLS-1$
@@ -133,13 +135,6 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
         checkUpdatePerDaysTextLabel.setText(Messages.getString("ArtifactRepositoryShareSettingPage.checkUpdatePerDays")); //$NON-NLS-1$
         checkUpdatePerDaysText = new Text(parent, SWT.BORDER);
         GridDataFactory.fillDefaults().span(3, 1).applyTo(checkUpdatePerDaysText);
-        if (isLocalProject) {
-            GridData gd = new GridData();
-            gd.exclude = true;
-            repositoryIdLabel.setLayoutData(gd);
-            checkButton.setLayoutData(gd);
-            statusLabel.setLayoutData(gd);
-        }
         initFields();
         addListeners();
         validate();
