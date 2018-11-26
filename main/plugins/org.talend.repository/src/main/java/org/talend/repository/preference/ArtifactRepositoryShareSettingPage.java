@@ -22,11 +22,13 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.GlobalServiceRegister;
@@ -34,6 +36,7 @@ import org.talend.core.model.general.INexusService;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.nexus.IRepositoryArtifactHandler;
 import org.talend.core.nexus.RepositoryArtifactHandlerManager;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.projectsetting.AbstractProjectSettingPage;
 import org.talend.repository.i18n.Messages;
 
@@ -86,6 +89,8 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     private boolean isCreated = false;
 
+    private boolean isLocalProject;
+
     public ArtifactRepositoryShareSettingPage() {
         super();
         noDefaultAndApplyButton();
@@ -98,6 +103,12 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
 
     @Override
     protected void createFieldEditors() {
+        try {
+            isLocalProject = ProxyRepositoryFactory.getInstance().isLocalConnectionProvider();
+        } catch (PersistenceException e) {
+            e.printStackTrace();
+        }
+
         isCreated = true;
         Composite parent = getFieldEditorParent();
         parent.setLayout(new GridLayout(4, false));
@@ -126,7 +137,18 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
         checkUpdatePerDaysTextLabel.setText(Messages.getString("ArtifactRepositoryShareSettingPage.checkUpdatePerDays")); //$NON-NLS-1$
         checkUpdatePerDaysText = new Text(parent, SWT.BORDER);
         GridDataFactory.fillDefaults().span(3, 1).applyTo(checkUpdatePerDaysText);
-
+        if (isLocalProject) {
+            GridData gd = new GridData();
+            gd.exclude = true;
+            enableShareCheckbox.setLayoutData(gd);
+            repositoryIdLabel.setLayoutData(gd);
+            repositoryIdText.setLayoutData(gd);
+            checkButton.setLayoutData(gd);
+            statusLabel.setLayoutData(gd);
+            autoCheckUpdateBtn.setLayoutData(gd);
+            checkUpdatePerDaysTextLabel.setLayoutData(gd);
+            checkUpdatePerDaysText.setLayoutData(gd);
+        }
         initFields();
         addListeners();
         validate();
@@ -346,15 +368,20 @@ public class ArtifactRepositoryShareSettingPage extends AbstractProjectSettingPa
         if (!isValid()) {
             return false;
         }
-        if (enableShareCheckbox != null && !enableShareCheckbox.isDisposed()) {
-            getPreferenceStore().setValue(PREF_KEY_SHARE_ENABLE, enableShareCheckbox.getSelection());
-            if (enableShareCheckbox.getSelection()) {
-                getPreferenceStore().setValue(PREF_KEY_SHARE_REPOSITORY_ID, repositoryIdText.getText());
-            }
-            getPreferenceStore().setValue(PREF_KEY_AUTO_CHECK_UPDATE, autoCheckUpdateBtn.getSelection());
+        if (isLocalProject) {
             getPreferenceStore().setValue(PREF_KEY_SHOW_WARN_DIALOG_WHEN_INSTALLING_FEATURES,
                     showWarnDialogWhenInstallingFeaturesBtn.getSelection());
-            getPreferenceStore().setValue(PREF_KEY_CHECK_UPDATE_PER_DAYS, checkUpdatePerDaysText.getText());
+        } else {
+            if (enableShareCheckbox != null && !enableShareCheckbox.isDisposed()) {
+                getPreferenceStore().setValue(PREF_KEY_SHARE_ENABLE, enableShareCheckbox.getSelection());
+                if (enableShareCheckbox.getSelection()) {
+                    getPreferenceStore().setValue(PREF_KEY_SHARE_REPOSITORY_ID, repositoryIdText.getText());
+                }
+                getPreferenceStore().setValue(PREF_KEY_AUTO_CHECK_UPDATE, autoCheckUpdateBtn.getSelection());
+                getPreferenceStore().setValue(PREF_KEY_SHOW_WARN_DIALOG_WHEN_INSTALLING_FEATURES,
+                        showWarnDialogWhenInstallingFeaturesBtn.getSelection());
+                getPreferenceStore().setValue(PREF_KEY_CHECK_UPDATE_PER_DAYS, checkUpdatePerDaysText.getText());
+            }
         }
         return super.performOk();
     }

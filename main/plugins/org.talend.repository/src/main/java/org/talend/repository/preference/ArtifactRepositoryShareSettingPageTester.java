@@ -14,11 +14,8 @@ package org.talend.repository.preference;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.preference.IPreferenceNode;
-import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.exception.PersistenceException;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
-import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.preference.IProjectSettingPageTester;
 
@@ -26,19 +23,10 @@ public class ArtifactRepositoryShareSettingPageTester implements IProjectSetting
 
     @Override
     public boolean valid(IConfigurationElement element, IPreferenceNode node) {
-        try {
-            boolean isLocalProject = ProxyRepositoryFactory.getInstance().isLocalConnectionProvider();
-            boolean isOffline = false;
-            if (!isLocalProject) {
-                RepositoryContext repositoryContext = (RepositoryContext) CoreRuntimePlugin.getInstance().getContext()
-                        .getProperty(Context.REPOSITORY_CONTEXT_KEY);
-                isOffline = repositoryContext.isOffline();
-            }
-            return !isLocalProject && !isOffline;
-        } catch (PersistenceException e) {
-            ExceptionHandler.process(e);
-        }
-        return false;
+        RepositoryContext repositoryContext = (RepositoryContext) CoreRuntimePlugin.getInstance().getContext()
+                .getProperty(Context.REPOSITORY_CONTEXT_KEY);
+        boolean isOffline = repositoryContext.isOffline();
+        return !isOffline;
     }
 
 }
