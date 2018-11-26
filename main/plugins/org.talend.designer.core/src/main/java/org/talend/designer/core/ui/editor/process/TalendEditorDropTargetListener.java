@@ -122,6 +122,7 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.EbcdicConnectionItem;
 import org.talend.core.model.properties.FileItem;
+import org.talend.core.model.properties.FolderItem;
 import org.talend.core.model.properties.HL7ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
@@ -129,6 +130,7 @@ import org.talend.core.model.properties.LinkRulesItem;
 import org.talend.core.model.properties.MDMConnectionItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.RulesItem;
 import org.talend.core.model.properties.SAPConnectionItem;
 import org.talend.core.model.properties.SQLPatternItem;
@@ -136,6 +138,7 @@ import org.talend.core.model.properties.ValidationRulesConnectionItem;
 import org.talend.core.model.repository.DragAndDropManager;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.IComponentName;
 import org.talend.core.model.utils.IDragAndDropServiceHandler;
@@ -336,7 +339,13 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                             allowed = false;
                         } else if (selectItem instanceof ContextItem && !(temItem instanceof ContextItem)) {
                             allowed = false;
-                        } else if (selectItem instanceof SQLPatternItem && !(temItem instanceof SQLPatternItem)) {
+                        } else if (selectItem instanceof SQLPatternItem && temItem instanceof SQLPatternItem) {
+                            allowed = false;
+                        } else if (selectItem instanceof ResourceItem && temItem instanceof ResourceItem) {
+                            allowed = false;
+                        } else if (selectItem instanceof RoutineItem && temItem instanceof RoutineItem) {
+                            allowed = false;
+                        } else if (selectItem instanceof FolderItem && temItem instanceof FolderItem) {
                             allowed = false;
                         }
                     }
@@ -346,6 +355,25 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 event.detail = DND.DROP_NONE;
             }
         } else {
+            if (selection.getFirstElement() instanceof RepositoryNode) {
+                RepositoryNode repositoryNode = (RepositoryNode) selection.getFirstElement();
+                IRepositoryViewObject object = repositoryNode.getObject();
+
+                if (object != null) {
+                    Item selectItem = object.getProperty().getItem();
+
+                    if (selectItem instanceof SQLPatternItem) {
+                        event.detail = DND.DROP_NONE;
+                    } else if (selectItem instanceof ResourceItem) {
+                        event.detail = DND.DROP_NONE;
+                    } else if (selectItem instanceof RoutineItem) {
+                        event.detail = DND.DROP_NONE;
+                    } else if (selectItem instanceof FolderItem) {
+                        event.detail = DND.DROP_NONE;
+                    }
+                }
+            }
+
             CreateRequest req = ((CreateRequest) getTargetRequest());
             Object o = null;
             try {
