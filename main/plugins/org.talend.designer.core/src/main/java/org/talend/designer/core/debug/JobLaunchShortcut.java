@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -35,9 +34,7 @@ import org.eclipse.ui.IEditorPart;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.ui.editor.RepositoryEditorInput;
-import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryNode;
 
@@ -220,6 +217,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
         String jobId = file.getProperty().getId();
         String jobName = file.getProperty().getLabel();
         String jobVersion = file.getProperty().getVersion();
+        String jobProjectLabel = ProjectManager.getInstance().getProject(file.getProperty()).getTechnicalLabel();
         ILaunchConfigurationType type = getLaunchManager()
                 .getLaunchConfigurationType(TalendDebugUIConstants.JOB_DEBUG_LAUNCH_CONFIGURATION_TYPE);
         String displayName = jobName + " " + jobVersion; //$NON-NLS-1$
@@ -231,8 +229,8 @@ public class JobLaunchShortcut implements ILaunchShortcut {
                 wc.setAttribute(TalendDebugUIConstants.JOB_NAME, jobName);
                 wc.setAttribute(TalendDebugUIConstants.JOB_ID, jobId);
                 wc.setAttribute(TalendDebugUIConstants.JOB_VERSION, jobVersion);
-                String projectName = ProjectManager.getInstance().getCurrentProject().getLabel();
-                wc.setAttribute(TalendDebugUIConstants.CURRENT_PROJECT_NAME, projectName);
+                wc.setAttribute(TalendDebugUIConstants.JOB_PROJECT_TECH_LABEL, jobProjectLabel);
+                wc.setAttribute(TalendDebugUIConstants.CURRENT_PROJECT_NAME, ProjectManager.getInstance().getCurrentProject().getLabel());
                 config = wc.doSave();
             }
         } catch (CoreException e) {

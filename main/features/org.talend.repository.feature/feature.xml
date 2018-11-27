@@ -110,12 +110,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.talend.libraries.jdbc.jtds"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="org.talend.libraries.jdbc.mysql"
          download-size="0"
          install-size="0"
