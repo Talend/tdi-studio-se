@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.Platform;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -152,11 +153,19 @@ public class BuildJobHandlerTest {
 
     @Test
     public void testBuildJobWithTDM() throws Exception {
-        String destinationPath = getDestinationPath(jobWithTdmItem);
-        destinationPaths.add(destinationPath);
-        BuildJobManager.getInstance().buildJob(destinationPath, jobWithTdmItem, "0.1", "Default", exportChoiceMap,
-                JobExportType.POJO, new NullProgressMonitor());
-        validateBuildResult(jobWithTdmItem, destinationPath);
+    	boolean headless = CommonsPlugin.isHeadless();
+    	try {
+    		// do the tdm build same as in the commandline
+    		// since tdm does not support to build a job in another thread than the main thread (as used in junits now)
+    		CommonsPlugin.setHeadless(true);
+	        String destinationPath = getDestinationPath(jobWithTdmItem);
+	        destinationPaths.add(destinationPath);
+	        BuildJobManager.getInstance().buildJob(destinationPath, jobWithTdmItem, "0.1", "Default", exportChoiceMap,
+	                JobExportType.POJO, new NullProgressMonitor());
+	        validateBuildResult(jobWithTdmItem, destinationPath);
+    	} finally {
+    		CommonsPlugin.setHeadless(headless);
+    	}
     }
 
     @Test
