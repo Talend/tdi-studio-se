@@ -424,12 +424,9 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
     }
     
     private void runBuildSql(String schema, String table1, String table2, String table3) {
-
         List<IConnection> incomingConnections = new ArrayList<IConnection>();
         String[] mainTableEntities = new String[] { "id", "name" };
-//        String[] lookupEndtities = new String[] { "id", "score" };
         incomingConnections.add(mockConnection(schema, table1, mainTableEntities));
-//        incomingConnections.add(mockConnection(schema, lookup_table, lookupEndtities));
         dbMapComponent.setIncomingConnections(incomingConnections);
 
         ExternalDbMapData externalData = new ExternalDbMapData();
@@ -442,23 +439,9 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         String mainTableNameNoQuote = TalendTextUtils.removeQuotes(mainTableName);
         inputTable.setTableName(mainTableNameNoQuote);
         inputTable.setName(mainTableName);
-//        if (main_alias != null && !"".equals(main_alias)) {
-//            inputTable.setAlias(main_alias);
-//        }
         List<ExternalDbMapEntry> entities = getMetadataEntities(mainTableEntities, new String[3]);
         inputTable.setMetadataTableEntries(entities);
         inputs.add(inputTable);
-        // lookup table
-//        inputTable = new ExternalDbMapTable();
-//        String lookupName = "".equals(schema) ? lookup_table : schema + "." + lookup_table;
-//        inputTable.setTableName(lookupName);
-//        inputTable.setName(lookupName);
-//        if (lookup_alias != null && !"".equals(lookup_alias)) {
-//            inputTable.setAlias(lookup_alias);
-//        }
-//        entities = getMetadataEntities(lookupEndtities, new String[2]);
-//        inputTable.setMetadataTableEntries(entities);
-//        inputs.add(inputTable);
 
         // output
         ExternalDbMapTable outputTable = new ExternalDbMapTable();
@@ -469,22 +452,16 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         outputTable.setName("table2");
         String[] names = new String[] { "id", "name" };
         String mainTable = mainTableName;
-//        if (main_alias != null && !"".equals(main_alias)) {
-//            mainTable = main_alias;
-//        }
-//        String lookupTable = lookupName;
-//        if (lookup_alias != null && !"".equals(lookup_alias)) {
-//            lookupTable = lookup_alias;
-//        }
         String[] expressions = new String[] { "table1.id", "table1.name"};
         outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
         
-        String[] otherNames = new String[]{"otherFilter"};
-        String[] otherExps = new String[]{mainTable + ".id = " + "'context.param1'"};
-        outputTable.setCustomOtherConditionsEntries(getMetadataEntities(otherNames, otherExps));
         String[] whereNames = new String[]{"whereFilter"};
-        String[] whereExps = new String[]{mainTable + ".name = " + "'context.param2'"};
+        String[] whereExps = new String[]{"table1.name = " + "'context.param2'"};
         outputTable.setCustomWhereConditionsEntries(getMetadataEntities(whereNames, whereExps));
+        
+        String[] otherNames = new String[]{"otherFilter"};
+        String[] otherExps = new String[]{"table1.id = " + "'context.param1'"};
+        outputTable.setCustomOtherConditionsEntries(getMetadataEntities(otherNames, otherExps));
         outputs.add(outputTable);
 
         externalData.setInputTables(inputs);
@@ -513,14 +490,9 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         mainTableEntities = new String[] {"id", "name"};
         
         List<IConnection> outgoingConnections = new ArrayList<IConnection>();
-        outgoingConnections.add(mockConnection(schema, table2, mainTableEntities));
+        Node map1 = mockNode(dbMapComponent);
+        outgoingConnections.add(mockConnection(map1, schema, table2, mainTableEntities));
         dbMapComponent.setOutgoingConnections(outgoingConnections);
-        
-//        incomingConnections = new ArrayList<IConnection>();
-        
-//        String[] lookupEndtities = new String[] { "id", "score" };
-//        incomingConnections.add(mockConnection(schema, main_table, mainTableEntities));
-//        incomingConnections.add(mockConnection(schema, lookup_table, lookupEndtities));
         dbMapComponent2.setIncomingConnections(outgoingConnections);
 
         inputs = new ArrayList<ExternalDbMapTable>();
@@ -532,23 +504,9 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         mainTableNameNoQuote = TalendTextUtils.removeQuotes(mainTableName);
         inputTable.setTableName(mainTableNameNoQuote);
         inputTable.setName("table2");
-//        if (main_alias != null && !"".equals(main_alias)) {
-//            inputTable.setAlias(main_alias);
-//        }
         entities = getMetadataEntities(mainTableEntities, new String[3]);
         inputTable.setMetadataTableEntries(entities);
         inputs.add(inputTable);
-//        // lookup table
-//        inputTable = new ExternalDbMapTable();
-//        String lookupName = "".equals(schema) ? lookup_table : schema + "." + lookup_table;
-//        inputTable.setTableName(lookupName);
-//        inputTable.setName(lookupName);
-//        if (lookup_alias != null && !"".equals(lookup_alias)) {
-//            inputTable.setAlias(lookup_alias);
-//        }
-//        entities = getMetadataEntities(lookupEndtities, new String[2]);
-//        inputTable.setMetadataTableEntries(entities);
-//        inputs.add(inputTable);
 
         // output
         outputTable = new ExternalDbMapTable();
@@ -559,13 +517,6 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         outputTable.setName("table3");
         names = new String[] { "id", "name"};
         mainTable = mainTableName;
-//        if (main_alias != null && !"".equals(main_alias)) {
-//            mainTable = main_alias;
-//        }
-//        String lookupTable = lookupName;
-//        if (lookup_alias != null && !"".equals(lookup_alias)) {
-//            lookupTable = lookup_alias;
-//        }
         expressions = new String[] { "table2.id", "table2.name"};
         outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
         outputs.add(outputTable);
@@ -581,9 +532,6 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         if (dbMapComponent2.getElementParameters() == null) {
             dbMapComponent2.setElementParameters(Collections.EMPTY_LIST);
         }
-        
-//        JobContext context = (JobContext) process.getContextManager().getDefaultContext();
-//        newParamList = context.getContextParameterList();
         JobContextParameter param1 = new JobContextParameter();
         param1.setName("param1");
         newParamList.add(param1);
@@ -596,8 +544,27 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         outgoingConnections.add(mockConnection(schema, table3, mainTableEntities));
         dbMapComponent2.setOutgoingConnections(outgoingConnections);
         
+        ElementParameter comName = new ElementParameter(dbMapComponent);
+        comName.setName("COMPONENT_NAME");
+        comName.setValue("tELTMap");
+        List<ElementParameter> list = new ArrayList<>();
+        list.add(comName);
+        dbMapComponent.setElementParameters(list);
+        
         dbManager = new GenericDbGenerationManager();
-        String query = dbManager.buildSqlSelect(dbMapComponent2, "table3");
-        System.out.println(query);
+        String query = dbManager.buildSqlSelect(dbMapComponent2, "table3").replaceAll("\n", "");
+        String exceptQuery = "\"SELECT\n"
+                + "table2.id, table2.name\n"
+                + "FROM\n"
+                + " (\n"
+                +"  SELECT\n"
+                +"  table1.id AS id, table1.name AS name\n"
+                +"  FROM\n"
+                +"   table1\n"
+                +"  WHERE table1.name = '\" +context.param2+ \"'\n"
+                +"  table1.id = '\" +context.param1+ \"'\n"
+                +"  \n"
+                +" ) table2\"";
+        assertEquals(exceptQuery.replaceAll("\n", "").trim(), query.trim());
     }
 }

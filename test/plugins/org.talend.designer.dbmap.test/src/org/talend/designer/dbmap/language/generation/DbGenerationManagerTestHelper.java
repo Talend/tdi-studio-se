@@ -17,6 +17,8 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.context.JobContext;
 import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.context.JobContextParameter;
@@ -27,6 +29,7 @@ import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -127,8 +130,14 @@ public class DbGenerationManagerTestHelper {
     }
 
     protected IConnection mockConnection(String schemaName, String tableName, String[] columns) {
+        return mockConnection(null, schemaName, tableName, columns);
+    }
+    
+    protected IConnection mockConnection(Node node, String schemaName, String tableName, String[] columns) {
         Connection connection = mock(Connection.class);
-        Node node = mock(Node.class);
+        if(node == null){
+            node = mock(Node.class);
+        }
         ElementParameter param = new ElementParameter(node);
         param.setName("ELT_SCHEMA_NAME");
         param.setValue(schemaName);
@@ -156,6 +165,15 @@ public class DbGenerationManagerTestHelper {
         when(connection.getMetadataTable()).thenReturn(table);
 
         return connection;
+    }
+    
+    protected Node mockNode(DbMapComponent mapCom) {
+        Node node = mock(Node.class);
+        when(node.isELTComponent()).thenReturn(true);
+        IComponent component = ComponentsFactoryProvider.getInstance().get("tELTMap", ComponentCategory.CATEGORY_4_DI.getName());
+        when(node.getComponent()).thenReturn(component);
+        when(node.getExternalNode()).thenReturn(mapCom);
+        return node;
     }
 
     protected List<ExternalDbMapEntry> getMetadataEntities(String[] entitiesName, String[] expressions) {
