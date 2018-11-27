@@ -624,35 +624,6 @@ public abstract class DbGenerationManager {
         }
         return expression;
     }
-    
-    private String getExpressionAfterChange(String expression, String context){
-    	StringBuffer sb = new StringBuffer();
-    	boolean endWithContext = expression.endsWith(context);
-    	boolean startWithContext = expression.startsWith(context);
-    	
-    	String[] exps = expression.split(context);
-    	if(exps.length <2){
-    		return expression;
-    	}
-    	for(int i = 0; i< exps.length; i++){
-    		if(startWithContext && i == 0){
-    			sb.append(context);
-    		}
-    		sb.append(exps[i]);
-    		if(i < exps.length - 1){
-    			if(!exps[i].trim().endsWith("+") && !exps[i].trim().startsWith("+")){
-    				sb.append("\" +" + context + "+ \"");
-    			}else{
-    				sb.append( context);
-    			}
-    		}
-    		if(endWithContext && i == exps.length - 1){
-    			sb.append(context);
-    		}
-    	}
-    	
-    	return sb.toString();
-    }
 
     protected void replaceQueryContext(List<String> querySegments, String context) {
         if (querySegments == null || querySegments.size() == 0) {
