@@ -194,6 +194,7 @@ public class OracleGenerationManager extends DbGenerationManager {
             }
 
             StringBuilder sbWhere = new StringBuilder();
+            this.tabSpaceString = DEFAULT_TAB_SPACE_STRING;
             boolean isFirstClause = true;
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
@@ -201,6 +202,7 @@ public class OracleGenerationManager extends DbGenerationManager {
                     isFirstClause = false;
                 }
             }
+            this.tabSpaceString = tabString;
 
             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
             appendSqlQuery(sb, tabSpaceString);
@@ -281,6 +283,7 @@ public class OracleGenerationManager extends DbGenerationManager {
             List<String> otherAddition = new ArrayList<String>();
 
             if (outputTable != null) {
+                this.tabSpaceString = DEFAULT_TAB_SPACE_STRING;
                 List<ExternalDbMapEntry> customWhereConditionsEntries = outputTable.getCustomWhereConditionsEntries();
                 if (customWhereConditionsEntries != null) {
                     for (ExternalDbMapEntry entry : customWhereConditionsEntries) {
@@ -308,10 +311,12 @@ public class OracleGenerationManager extends DbGenerationManager {
                     for (ExternalDbMapEntry entry : customOtherConditionsEntries) {
                         String exp = initExpression(component, entry);
                         if (exp != null && !DbMapSqlConstants.EMPTY.equals(exp.trim())) {
+                            exp = replaceVariablesForExpression(component, exp);
                             otherAddition.add(exp);
                         }
                     }
                 }
+                this.tabSpaceString = tabString;
             }
 
             String whereClauses = sbWhere.toString();

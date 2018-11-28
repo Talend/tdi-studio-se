@@ -436,6 +436,7 @@ public abstract class DbGenerationManager {
             }
 
             StringBuilder sbWhere = new StringBuilder();
+            this.tabSpaceString = DEFAULT_TAB_SPACE_STRING;
             boolean isFirstClause = true;
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
@@ -443,7 +444,6 @@ public abstract class DbGenerationManager {
                     isFirstClause = false;
                 }
             }
-
             /*
              * for addition conditions
              */
@@ -481,16 +481,19 @@ public abstract class DbGenerationManager {
                         }
                     }
                 }
+                
                 List<ExternalDbMapEntry> customOtherConditionsEntries = outputTable.getCustomOtherConditionsEntries();
                 if (customOtherConditionsEntries != null) {
                     for (ExternalDbMapEntry entry : customOtherConditionsEntries) {
                         String exp = initExpression(component, entry);
                         if (exp != null && !DbMapSqlConstants.EMPTY.equals(exp.trim())) {
+                            exp = replaceVariablesForExpression(component, exp);
                             otherAddition.add(exp);
                         }
                     }
                 }
             }
+            this.tabSpaceString = tabString;
 
             String whereClauses = sbWhere.toString();
 
