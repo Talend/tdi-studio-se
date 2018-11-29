@@ -29,7 +29,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.resource.MoveResourceChange;
 import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
@@ -42,6 +44,7 @@ import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.documentation.ERepositoryActionName;
 
@@ -181,7 +184,42 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     // delete all version old job projects physically, won't check to remove parent folder
                     TalendJavaProjectManager.deleteAllVersionTalendJobProject(property.getId(), null, true);
                 }
+                // check ref-project if exist same label routine
+                checkRoutinesAfterDeleteForever(property);
             }
+        }
+    }
+
+    /**
+     * 
+     * DOC jding Comment method "checkRoutinesAfterDeleteForever". After delete routines forever, need to check if
+     * ref-project exist same routines, need to rebuild routines when next job build.
+     */
+    private void checkRoutinesAfterDeleteForever(Property property) {
+        if (!ERepositoryObjectType.ROUTINES.equals(ERepositoryObjectType.getType(property))) {
+            return;
+        }
+        boolean exist = false;
+        ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+        try {
+            for (Project project : ProjectManager.getInstance().getReferencedProjects()) {
+                for (IRepositoryViewObject object : factory.getAll(project, ERepositoryObjectType.ROUTINES)) {
+                    if (property.getLabel().equals(object.getProperty().getLabel())) {
+                        exist = true;
+                        break;
+                    }
+                }
+                if (exist) {
+                    break;
+                }
+            }
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+        }
+
+        if (exist) {
+            // update last chage date, then will re-build routines at the next build time.
+            BuildCacheManager.getInstance().updateCodesLastChangeDate(ERepositoryObjectType.ROUTINES);
         }
     }
 
