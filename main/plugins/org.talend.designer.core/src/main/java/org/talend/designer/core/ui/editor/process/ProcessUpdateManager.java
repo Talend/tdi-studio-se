@@ -2418,7 +2418,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         return sameValues;
     }
 
-    private boolean isOldJDBC(Node node, Connection repositoryConnection) {
+    public boolean isOldJDBC(Node node, Connection repositoryConnection) {
         boolean isOldJDBC = false;
         if (repositoryConnection instanceof DatabaseConnection) {
             String databaseType = ((DatabaseConnection) repositoryConnection).getDatabaseType();

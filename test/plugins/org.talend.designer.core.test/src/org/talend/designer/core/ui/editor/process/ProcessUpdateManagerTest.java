@@ -3,12 +3,13 @@ package org.talend.designer.core.ui.editor.process;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Method;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.properties.PropertiesFactory;
@@ -21,47 +22,36 @@ public class ProcessUpdateManagerTest {
 
     private ProcessUpdateManager updateManager;
 
-    private final Method methods[] = ProcessUpdateManager.class.getDeclaredMethods();
+    private IComponentsService compService;
 
-    private Method method;
 
     @Before
     public void setUp() throws Exception {
         Property property = PropertiesFactory.eINSTANCE.createProperty();
         process = new Process(property);
         updateManager = new ProcessUpdateManager(process);
-        for (int i = 0; i < methods.length; ++i) {
-            if (methods[i].getName().equals("isOldJDBC")) {
-                method = methods[i];
-                method.setAccessible(true);
-            }
-        }
+        compService = (IComponentsService) GlobalServiceRegister.getDefault()
+                .getService(IComponentsService.class);
     }
 
     @Test
     public void testIsOldJDBC() throws Exception {
         IComponent com = null;
         Node node = null;
-        Object para[] = null;
         DatabaseConnection connection = ConnectionFactory.eINSTANCE.createDatabaseConnection();
 
         com = ComponentsFactoryProvider.getInstance().get("tELTMap", ComponentCategory.CATEGORY_4_DI.getName());
         node = new Node(com, process);
-        connection.setDatabaseType("JDBC");
-        para = new Object[] { node, connection };
-        assertTrue((Boolean) (method.invoke(updateManager, para)));
+        connection.setDatabaseType(EDatabaseTypeName.GENERAL_JDBC.getProduct());
+        assertTrue(updateManager.isOldJDBC(node, connection));
+
+        connection.setDatabaseType(EDatabaseTypeName.MYSQL.getProduct());
+        assertFalse(updateManager.isOldJDBC(node, connection));
 
         com = ComponentsFactoryProvider.getInstance().get("tSqoopMerge", ComponentCategory.CATEGORY_4_DI.getName());
         node = new Node(com, process);
-        connection.setDatabaseType("JDBC");
-        para = new Object[] { node, connection };
-        assertTrue((Boolean) (method.invoke(updateManager, para)));
-
-        com = ComponentsFactoryProvider.getInstance().get("tELTMap", ComponentCategory.CATEGORY_4_DI.getName());
-        node = new Node(com, process);
-        connection.setDatabaseType("MySQL");
-        para = new Object[] { node, connection };
-        assertFalse((Boolean) (method.invoke(updateManager, para)));
+        connection.setDatabaseType(EDatabaseTypeName.GENERAL_JDBC.getProduct());
+        assertTrue(updateManager.isOldJDBC(node, connection));
 
     }
 }
