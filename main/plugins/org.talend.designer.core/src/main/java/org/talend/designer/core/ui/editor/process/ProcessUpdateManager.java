@@ -2429,6 +2429,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     isOldJDBC = true;
                 } else if (component.getName().startsWith("tSqoop")) {
                     isOldJDBC = true;
+                } else if (component.getName().startsWith("tELT")) {
+                    isOldJDBC = true;
                 }
             }
         }

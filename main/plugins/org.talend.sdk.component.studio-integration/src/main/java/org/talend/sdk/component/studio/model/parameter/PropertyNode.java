@@ -20,7 +20,6 @@ import static org.talend.sdk.component.studio.model.parameter.Metadatas.MAIN_FOR
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -289,12 +288,7 @@ public class PropertyNode {
         }
 
         private void createLayout() {
-            final Layout layout;
-            if (current.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
-                layout = new Layout(current.getProperty().getSchemaName());
-            } else {
-                layout = new Layout(current.getId());
-            }
+            final Layout layout = new Layout(current.getId());
             if (!current.isLeaf()) {
                 if (current.getProperty().hasGridLayout(form)) {
                     fillGridLayout(layout, current.getProperty().getUpdatable());
