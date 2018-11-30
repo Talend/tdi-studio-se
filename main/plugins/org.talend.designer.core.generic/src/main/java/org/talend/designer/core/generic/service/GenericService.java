@@ -65,7 +65,13 @@ public class GenericService implements IGenericService {
         }
         Properties ps = pros.getProperties("referencedComponent"); //$NON-NLS-1$
         if(ps == null){
-            return;
+        	Properties conn = pros.getProperties("connection"); //$NON-NLS-1$
+        	if(conn != null){
+        		ps = conn.getProperties("referencedComponent"); //$NON-NLS-1$
+        	}
+        }
+        if(ps == null){
+        	return;
         }
         if(!(ps instanceof ComponentReferenceProperties)){
             return;
