@@ -40,7 +40,6 @@ public class MdmEeDemoImportTest extends DemosImportTest {
 	private static final String MDM_EE_DEMO_PLUGIN_ID = "org.talend.mdm.demo.enterprise"; //$NON-NLS-1$
 
 	private ResourcesManager mdmResEeManager;
-	private String rootPath = null;
 
 	@Before
 	public void importMdmEeDemo() throws Exception {
@@ -81,7 +80,7 @@ public class MdmEeDemoImportTest extends DemosImportTest {
 		// test the metadata items under MDM_EE_Demo.zip
 		int currentConnectionItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.METADATA)
 				.size();
-		Assert.assertTrue(currentConnectionItemsSize == 0);
+        Assert.assertTrue(currentConnectionItemsSize == 1);
 		List<File> demoConItemsFiles = getDemoItemFileList(rootPath + File.separator + connectionItemPath);
 		Assert.assertTrue(demoConItemsFiles.size() > 0);
 
