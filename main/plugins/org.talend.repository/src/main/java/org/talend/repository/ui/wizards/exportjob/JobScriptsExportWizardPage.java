@@ -127,7 +127,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
 
     private static final String BINARIES = Messages.getString("JavaJobScriptsExportWSWizardPage.POJO.optionType.binaries"); //$NON-NLS-1$
 
-    private static final String SOURCES = Messages.getString("JavaJobScriptsExportWSWizardPage.POJO.optionType.sources"); //$NON-NLS-1$
+    private static final String SOURCES = Messages.getString("JavaJobScriptsExportWSWizardPage.POJO.optionType.sources") + " (Deprecated)"; //$NON-NLS-1$
 
     private static final String[] OPTION_TYPES = new String[] { BINARIES, SOURCES };
 

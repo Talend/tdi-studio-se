@@ -494,11 +494,6 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         return new Connection(Connection.Type.valueOf(type), value, discoverSchema);
     }
 
-    String getSchemaName() {
-        final Connection.Type connectionType = getConnection().getType();
-        return connectionType + "$$" + getPath();
-    }
-
     @Override
     public String getPath() {
         return delegate.getPath();

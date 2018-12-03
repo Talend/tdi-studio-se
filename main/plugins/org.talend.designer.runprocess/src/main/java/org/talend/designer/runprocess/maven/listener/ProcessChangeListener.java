@@ -181,7 +181,23 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     // delete all version old job projects physically, won't check to remove parent folder
                     TalendJavaProjectManager.deleteAllVersionTalendJobProject(property.getId(), null, true);
                 }
+                // check ref-project if exist same label routine
+                checkCodesAfterDeleteForever(property);
             }
+        }
+    }
+
+    /**
+     * 
+     * DOC jding Comment method "checkRoutinesAfterDeleteForever". After delete routines forever, need to check if
+     * ref-project exist same routines, need to rebuild routines when next job build.
+     */
+    private void checkCodesAfterDeleteForever(Property property) {
+        List<ERepositoryObjectType> allTypesOfCodes = ERepositoryObjectType.getAllTypesOfCodes();
+        ERepositoryObjectType objectType = ERepositoryObjectType.getType(property);
+        if (allTypesOfCodes.contains(objectType)) {
+            // update last chage date, then will re-build routines at the next build time.
+            BuildCacheManager.getInstance().updateCodesLastChangeDate(objectType);
         }
     }
 

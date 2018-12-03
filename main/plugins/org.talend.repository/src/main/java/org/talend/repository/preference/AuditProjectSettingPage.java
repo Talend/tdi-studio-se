@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.exception.ExceptionMessageDialog;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
@@ -354,18 +355,22 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             public void widgetSelected(SelectionEvent e) {
                 ICommandLineService service = getCommandLineService();
                 if (service != null && savedInDBButton.getSelection()) {
-                    TypedReturnCode<java.sql.Connection> dbResults = getConnectionReturnCode();
-                    showCheckConnectionInformation(false, dbResults);
-                    if (dbResults.isOk()) {
-                        currentParameters = service.listAllHistoryAudits(urlText.getText(), driverText.getText(),
-                                usernameText.getText(), passwordText.getText());
-                        String[] items = initHistoryDisplayNames();
-                        historyCombo.getCombo().setItems(items);
-                        if (items.length > 0) {
-                            historyCombo.getCombo().select(0);
-                        } else {
-                            historyGenerateButton.setEnabled(false);
+                    try {
+                        TypedReturnCode<java.sql.Connection> dbResults = getConnectionReturnCode();
+                        showCheckConnectionInformation(false, dbResults);
+                        if (dbResults.isOk()) {
+                            currentParameters = service.listAllHistoryAudits(urlText.getText(), driverText.getText(),
+                                    usernameText.getText(), passwordText.getText());
+                            String[] items = initHistoryDisplayNames();
+                            historyCombo.getCombo().setItems(items);
+                            if (items.length > 0) {
+                                historyCombo.getCombo().select(0);
+                            } else {
+                                historyGenerateButton.setEnabled(false);
+                            }
                         }
+                    } catch (Exception e1) {
+                        ExceptionMessageDialog.openWarning(getShell(), "Error", e1);
                     }
                 }
             }

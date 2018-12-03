@@ -32,6 +32,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.repository.ui.editor.RepositoryEditorInput;
@@ -188,8 +189,8 @@ public class JobLaunchShortcut implements ILaunchShortcut {
                 if (jobId == null) {
                     continue;
                 }
-
-                if (file.getProperty().getId().equals(jobId) && file.getProperty().getVersion().equals(jobVersion)) {
+                String jobProjectLabel = config.getAttribute(TalendDebugUIConstants.JOB_PROJECT_TECH_LABEL, (String) null);
+                if (file.getProperty().getId().equals(jobId) && file.getProperty().getVersion().equals(jobVersion) && ProcessUtils.isInProject(jobProjectLabel, file.getProperty())) {
                     candidateConfigs.add(config);
                 }
             }

@@ -12,12 +12,26 @@ imports="
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
 	boolean checkAccessibility = "true".equals(ElementParameterParser.getValue(node, "__CHECK_ACCESSIBILITY__"));
+	boolean checkAccessibilityMethod = "BY_ACCOUNT_OWNER".equals(ElementParameterParser.getValue(node, "__CHECK_METHOD__"));
 	%>
 	<%@ include file="S3Client.javajet" %>
-	<%if(checkAccessibility){%>
+	<%if(checkAccessibility){
+	   if(checkAccessibilityMethod){%>
 	//This method is just for test connection.
 	conn_<%=cid%>.getS3AccountOwner();
-	<%}%>
+	<%}else{%>
+		try{
+			conn_<%=cid%>.getBucketLoggingConfiguration("Check-Connection-Only");
+	}catch(com.amazonaws.AmazonServiceException ase_<%=cid%>){
+			if(ase_<%=cid%>.getErrorCode().equals("NoSuchBucket")){
+			//ignore
+			}else{
+					throw ase_<%=cid%>;
+			}
+	}
+	
+	<%}
+	}%>
 	
 	globalMap.put("conn_" + "<%=cid%>",conn_<%=cid%>);
 	
