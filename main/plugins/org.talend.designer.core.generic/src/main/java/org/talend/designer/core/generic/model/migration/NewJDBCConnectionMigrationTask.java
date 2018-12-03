@@ -17,19 +17,25 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.emf.common.util.EList;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.generic.constants.IGenericConstants;
-import org.talend.migration.IMigrationTask.ExecutionResult;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 
 /**
  * DOC hwang  class global comment. Detailled comment
@@ -107,6 +113,16 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
                 setDrivers(dirJar, connection.getDriverJarPath(), isContextMode);
                 connection.setCompProperties(properties.toSerialized());
                 try {
+                    if (isContextMode) {
+                        // for context mode JDBC connection, the value of DriverJar context parameter need to be changed
+                        // <jarName>.jar => "mvn:org.talend.libraries/<jarName>/6.0.0-SNAPSHOT/jar"
+                        String contextId = dbConnection.getContextId();
+                        ContextItem contextItem = ContextUtils.getContextItemById2(contextId);
+                        if (contextItem != null) {
+                            setContextDriversValue(contextItem, connection.getDriverJarPath());
+                            factory.save(contextItem, true);
+                        }
+                    }
                     factory.save(item, true);
                     return ExecutionResult.SUCCESS_WITH_ALERT;
                 } catch (Exception e) {
@@ -137,6 +153,37 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
         dirJar.setValue(jarList);
         dirJar.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, dirJar.getName());
         dirJar.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
+    }
+
+    private void setContextDriversValue(ContextItem contextItem, String paramName) {
+        IGenericDBService dbService = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
+        }
+        boolean containContextParam = ContextParameterUtils.isContainContextParam(paramName);
+        if (!containContextParam || dbService == null) {
+            return;
+        }
+        paramName = ContextParameterUtils.getContextString(paramName);
+        EList contexts = contextItem.getContext();
+        for (Object context : contexts) {
+            if (context instanceof ContextType) {
+                ContextParameterType contextParam = ContextUtils.getContextParameterTypeByName((ContextType) context, paramName);
+                if (contextParam == null || StringUtils.isBlank(contextParam.getValue())) {
+                    continue;
+                }
+                StringBuffer jarBuffer = new StringBuffer();
+                String[] jars = contextParam.getValue().split(";");
+                for (int i = 0; i < jars.length; i++) {
+                    if (i != 0) {
+                        jarBuffer.append(";");
+                    }
+                    jarBuffer.append(dbService.getMVNPath(jars[i]));
+                }
+                contextParam.setValue(jarBuffer.toString());
+            }
+        }
+
     }
 
 }
