@@ -20,7 +20,7 @@ import static org.talend.sdk.component.studio.model.parameter.Metadatas.MAIN_FOR
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -148,7 +148,7 @@ public class PropertyNode {
      * @return children of specified form
      */
     public List<PropertyNode> getChildren(final String form) {
-        final Set<String> childrenNames = getChildrenNames(form);
+        final Set<String> childrenNames = new HashSet<>(getChildrenNames(form));
         return children.stream().filter(node -> childrenNames.contains(node.property.getName())).collect(Collectors.toList());
     }
     
@@ -186,7 +186,7 @@ public class PropertyNode {
      * @return sorted list
      */
     protected List<PropertyNode> sortChildren(final List<PropertyNode> children, final String form) {
-        final HashMap<String, Integer> order = property.getChildrenOrder(form);
+        final Map<String, Integer> order = property.getChildrenOrder(form);
         if (order != null) {
             children.sort((node1, node2) -> {
                 Integer i1 = order.get(node1.getProperty().getName());
@@ -205,10 +205,8 @@ public class PropertyNode {
      *
      * @return children names
      */
-    protected Set<String> getChildrenNames() {
-        final Set<String> names = new LinkedHashSet<>();
-        children.forEach(node -> names.add(node.getProperty().getName()));
-        return names;
+    protected List<String> getChildrenNames() {
+        return children.stream().map(n -> n.getProperty().getName()).collect(Collectors.toList());
     }
 
     /**
@@ -220,12 +218,11 @@ public class PropertyNode {
      * @param form Name of form
      * @return children names of specified <code>form</code>
      */
-    protected Set<String> getChildrenNames(final String form) {
+    protected List<String> getChildrenNames(final String form) {
         if (MAIN_FORM.equals(form)) {
             return getMainChildrenNames();
-        } else {
-            return property.getChildrenNames(form);
         }
+        return property.getChildrenNames(form);
     }
 
     /**
@@ -239,12 +236,12 @@ public class PropertyNode {
      *
      * @return children names for Main form
      */
-    private Set<String> getMainChildrenNames() {
+    private List<String> getMainChildrenNames() {
         if (property.hasGridLayout(MAIN_FORM)) {
             return property.getChildrenNames(MAIN_FORM);
         }
         if (property.hasGridLayouts()) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
         if (property.hasOptionsOrder()) {
             return property.getOptionsOrderNames();

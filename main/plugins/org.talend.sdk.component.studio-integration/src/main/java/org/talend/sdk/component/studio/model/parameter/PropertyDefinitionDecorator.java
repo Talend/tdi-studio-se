@@ -19,7 +19,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_HEALTHCHECK;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_PARAMETERS;
@@ -46,14 +45,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
@@ -170,13 +167,12 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      * @param form Name of UI form
      * @return children names specified in ui::gridlayout metadata value
      */
-    Set<String> getChildrenNames(final String form) {
+    List<String> getChildrenNames(final String form) {
         if (hasGridLayout(form)) {
             final String gridLayout = getGridLayout(form);
-            final String[] names = gridLayout.split(GRIDLAYOUT_SEPARATOR);
-            return Stream.of(names).collect(toSet());
+            return asList(gridLayout.split(GRIDLAYOUT_SEPARATOR));
         }
-        return Collections.emptySet();
+        return Collections.emptyList();
     }
 
     /**
@@ -184,13 +180,13 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      *
      * @return children names specified in ui:optionsorder metadata value
      */
-    Set<String> getOptionsOrderNames() {
+    List<String> getOptionsOrderNames() {
         if (hasOptionsOrder()) {
             final String optionsOrder = delegate.getMetadata().get(UI_OPTIONS_ORDER);
             final String[] names = optionsOrder.split(ORDER_SEPARATOR);
-            return new HashSet<>(Arrays.asList(names));
+            return Arrays.asList(names);
         }
-        return Collections.emptySet();
+        return Collections.emptyList();
     }
 
     /**
@@ -200,7 +196,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      * @param form Name of UI form
      * @return order map or null, if there is no order for specified form
      */
-    HashMap<String, Integer> getChildrenOrder(final String form) {
+    Map<String, Integer> getChildrenOrder(final String form) {
         if (MAIN_FORM.equals(form)) {
             return getMainChildrenOrder();
         }
