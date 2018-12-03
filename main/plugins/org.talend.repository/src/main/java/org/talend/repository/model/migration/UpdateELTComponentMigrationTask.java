@@ -30,6 +30,9 @@ public class UpdateELTComponentMigrationTask extends AbstractJobMigrationTask {
     public ExecutionResult execute(Item item) {
         boolean isModified = false;
         ProcessType processType = getProcessType(item);
+        if(processType == null){
+            return ExecutionResult.NOTHING_TO_DO; 
+        }
         List nodes = processType.getNode();
         List<ConnectionType> connections = processType.getConnection();
         for (ConnectionType connection : connections) {
