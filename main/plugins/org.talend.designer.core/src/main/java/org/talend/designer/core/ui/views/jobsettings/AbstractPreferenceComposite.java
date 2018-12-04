@@ -59,6 +59,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
@@ -463,7 +464,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
                                                     "AbstractPreferenceComposite.jobAssigned", runjobNode.getUniqueName())); //$NON-NLS-1$
                                     return;
                                 }
-                                if (activeProcessId.contains(id)) {
+                                if (activeProcessId.contains(ProcessUtils.getPureItemId(id))) {
                                     IEditorPart activeEditorPart = activePage.getActiveEditor();
                                     for (IEditorReference editorReference : editorReferences) {
                                         IEditorPart editorPart = editorReference.getEditor(false);

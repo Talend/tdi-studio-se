@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.CommonUIPlugin;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.GlobalServiceRegister;
@@ -113,6 +114,18 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 argumentsMap.put(key, value);
             }
         }
+        //testCase
+        if(isOptionChoosed(ExportChoice.executeTests)){
+            IFolder srcFolder = talendProcessJavaProject.getTestSrcFolder();
+            IFolder resFolder = talendProcessJavaProject.getTestResourcesFolder();
+            if(srcFolder.exists()){
+                talendProcessJavaProject.cleanFolder(monitor, srcFolder);
+            }
+            if(resFolder.exists()){
+                talendProcessJavaProject.cleanFolder(monitor, resFolder);
+            }
+        }
+        
         // context
         boolean needContext = isOptionChoosed(ExportChoice.needContext);
         if (needContext) {
@@ -377,7 +390,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 try {
                     buildDelegate(monitor);
                 } catch (Exception e) {
-                    if (isOptionChoosed(ExportChoice.pushImage)) {
+                    if (!CommonUIPlugin.isFullyHeadless() && isOptionChoosed(ExportChoice.buildImage)) {
                         MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
                     } else {
                         ExceptionHandler.process(e);

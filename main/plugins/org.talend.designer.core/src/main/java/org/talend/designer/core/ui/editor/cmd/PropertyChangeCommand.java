@@ -40,6 +40,7 @@ import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.ui.IJobletProviderService;
@@ -60,6 +61,7 @@ import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.repository.ProjectManager;
 
 /**
  * Command that changes a given property. It will call the set or get property value in an element. This element can be
@@ -378,7 +380,8 @@ public class PropertyChangeCommand extends Command {
                 // newValue is the id of the job
                 ProcessItem processItem = ItemCacheManager.getProcessItem((String) newValue);
                 if (processItem != null) {
-                    currentParam.getParentParameter().setValue(processItem.getProperty().getLabel());
+                    org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
+                    currentParam.getParentParameter().setValue(ProcessUtils.getProjectProcessLabel(project.getTechnicalLabel(),processItem.getProperty().getLabel()));
                 }
             }
         }
@@ -411,7 +414,8 @@ public class PropertyChangeCommand extends Command {
                         .get(EParameterName.PROCESS_TYPE_PROCESS.getName());
                 ProcessItem processItem = ItemCacheManager.getProcessItem((String) processIdParam.getValue(), (String) newValue);
                 if (processItem != null) {
-                    currentParam.getParentParameter().setValue(processItem.getProperty().getLabel());
+                    org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
+                    currentParam.getParentParameter().setValue(ProcessUtils.getProjectProcessLabel(project.getTechnicalLabel(),processItem.getProperty().getLabel()));
                 }
             }
 

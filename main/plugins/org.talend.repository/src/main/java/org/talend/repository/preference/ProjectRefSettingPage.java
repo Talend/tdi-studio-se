@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -86,7 +87,6 @@ import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.ui.dialog.AProgressMonitorDialogWithCancel;
 import org.talend.repository.ui.dialog.OverTimePopupDialogTask;
 import org.talend.repository.ui.dialog.ProjectSettingsPreferenceDialog;
-import org.talend.repository.ui.views.IRepositoryView;
 
 public class ProjectRefSettingPage extends ProjectSettingPage {
 
@@ -830,13 +830,19 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
             @Override
             public void run() {
                 ProjectRepositoryNode.getInstance().cleanup();
-                IRepositoryView repositoryView = RepositoryManagerHelper.findRepositoryView();
+                IViewPart repositoryView = RepositoryManagerHelper.findRepositoryView();
                 if (repositoryView instanceof CommonNavigator) {
                     CommonViewer commonViewer = ((CommonNavigator) repositoryView).getCommonViewer();
                     Object input = commonViewer.getInput();
                     // make sure to init the repository view rightly.
                     commonViewer.setInput(input);
                 }
+                // TDQ-15627: when the current is DQ Perspective, need to refresh DQ Repository View.
+                IViewPart DqrepositoryView = RepositoryManagerHelper.getDQRepositoryView();
+                if (DqrepositoryView != null) {
+                    ((CommonNavigator) DqrepositoryView).getCommonViewer().refresh();
+                }
+                // TDQ-15627~
             }
         });
     }

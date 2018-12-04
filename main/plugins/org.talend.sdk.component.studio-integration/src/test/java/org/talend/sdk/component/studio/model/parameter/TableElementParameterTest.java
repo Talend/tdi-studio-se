@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.sdk.component.studio.model.parameter;
 
-import org.eclipse.jface.action.IAction;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.EParameterFieldType;

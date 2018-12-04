@@ -17,6 +17,7 @@ package org.talend.sdk.component.studio.model.parameter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,5 +61,17 @@ public class ListPropertyNode extends PropertyNode {
                         .stream()
                         .filter(node -> childrenNames.contains(node.getProperty().getName()))
                         .collect(Collectors.toList()), form));
+    }
+
+    /**
+     * Returns all nested properties names
+     *
+     * @return nested properties names
+     */
+    @Override
+    protected Set<String> getChildrenNames() {
+        final Set<String> names = new LinkedHashSet<>();
+        nestedProperties.forEach(node -> names.add(node.getProperty().getName()));
+        return names;
     }
 }

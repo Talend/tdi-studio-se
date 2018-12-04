@@ -4,7 +4,7 @@
 	<groupId>org.talend</groupId>
 	<artifactId>talend-httputil</artifactId>
 	<name>talend-httputil</name>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 
 	<dependencies>
 		<dependency>
@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.5.3</version>
+            <version>2.9.7</version>
         </dependency>
         
         <dependency>
@@ -53,13 +53,5 @@
 				<directory>src/main/java</directory>
 			</resource>
 		</resources>
-
-		<!-- 
-		<testResources>
-			<testResource>
-				<directory>src/test/java</directory>
-			</testResource>
-		</testResources>
-		 -->
 	</build>
 </project>

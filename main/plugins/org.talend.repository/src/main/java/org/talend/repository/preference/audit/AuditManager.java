@@ -38,4 +38,6 @@ public class AuditManager {
     public static final String AUDIT_GENERATE_REPORT_PATH = "audit_generate_report_path"; //$NON-NLS-1$
 
     public static final String AUDIT_GENERATE_REPORT_STATUS = "audit_generate_report_status"; //$NON-NLS-1$
+
+    public static final String AUDIT_GENERATE_REPORT_EXCEPTION = "audit_generate_report_exception"; //$NON-NLS-1$
 }

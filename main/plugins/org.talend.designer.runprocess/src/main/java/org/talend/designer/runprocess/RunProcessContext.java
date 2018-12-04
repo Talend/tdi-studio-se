@@ -1478,7 +1478,9 @@ public class RunProcessContext {
                                     firePropertyChange(PREVIOUS_ROW, true, false);
                                 }
                                 lastIsRow = false;
-                                pred.writeObject(TraceStatusBean.STATUS_WAITING);
+                                if (!isBasicRun()) {
+                                    pred.writeObject(TraceStatusBean.STATUS_WAITING);
+                                }
                             }
                             continue;
                         } else if (data instanceof TraceDataBean && ((TraceDataBean) data).getData() != null) {

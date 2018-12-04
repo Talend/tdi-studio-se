@@ -1435,7 +1435,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             }
         }
 
-        if (getConnection() == null) {
+        ConnectionBean connection = getConnection();
+        if (connection == null) {
             // refreshProjectListAreaEnable(false);
             refreshProjectOperationAreaEnable(false);
             finishButton.setEnabled(false);
@@ -1444,7 +1445,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             refreshProjectOperationAreaEnable(false);
             finishButton.setEnabled(false);
             errorManager.setErrMessage(errorMsg);
-        } else if (getConnection() != null && projectViewer != null && projectViewer.getInput() == null) {
+        } else if ((projectViewer != null && projectViewer.getInput() == null) || !connection.isComplete()) {
             // refreshProjectListAreaEnable(false);
             refreshProjectOperationAreaEnable(false);
             finishButton.setEnabled(false);

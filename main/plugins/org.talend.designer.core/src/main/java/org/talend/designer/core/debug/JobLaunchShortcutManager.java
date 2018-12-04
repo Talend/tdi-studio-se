@@ -27,6 +27,7 @@ import org.eclipse.debug.internal.ui.launchConfigurations.LaunchShortcutExtensio
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorPart;
 import org.talend.core.model.process.Problem;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.process.TalendProblem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Project;
@@ -121,9 +122,10 @@ public class JobLaunchShortcutManager {
                 // String jobName = configuration.getAttribute(TalendDebugUIConstants.JOB_NAME, (String) null);
                 String jobVersion = config.getAttribute(TalendDebugUIConstants.JOB_VERSION, (String) null);
                 String projectName = config.getAttribute(TalendDebugUIConstants.CURRENT_PROJECT_NAME, (String) null);
+                String jobProjectLabel =  config.getAttribute(TalendDebugUIConstants.JOB_PROJECT_TECH_LABEL, (String) null);
                 ILaunchConfigurationType type = config.getType();
                 if (type != null && TalendDebugUIConstants.JOB_DEBUG_LAUNCH_CONFIGURATION_TYPE.equals(type.getIdentifier())
-                        && objProjectName.equals(projectName) && objId.equals(jobId) && objVersion.equals(jobVersion)) {
+                        && objProjectName.equals(projectName) && objId.equals(jobId) && objVersion.equals(jobVersion) && ProcessUtils.isInProject(jobProjectLabel, property)) {
                     configuration = config;
                     break;
                 }
@@ -171,13 +173,13 @@ public class JobLaunchShortcutManager {
                     String jobId = configuration.getAttribute(TalendDebugUIConstants.JOB_ID, (String) null);
                     String jobVersion = configuration.getAttribute(TalendDebugUIConstants.JOB_VERSION, (String) null);
                     String projectName = configuration.getAttribute(TalendDebugUIConstants.CURRENT_PROJECT_NAME, (String) null);
-
+                    String jobProjectLabel = configuration.getAttribute(TalendDebugUIConstants.JOB_PROJECT_TECH_LABEL, (String) null);
                     // ILaunchConfigurationType type = launchManager
                     // .getLaunchConfigurationType(TalendDebugUIConstants.JOB_DEBUG_LAUNCH_CONFIGURATION_TYPE);
                     ILaunchConfigurationType type = configuration.getType();
                     if (type != null && TalendDebugUIConstants.JOB_DEBUG_LAUNCH_CONFIGURATION_TYPE.equals(type.getIdentifier())
                             && objProjectName.equals(projectName) && id.equals(jobId) && version.equals(jobVersion)
-                            && type != null) {
+                            && type != null && ProcessUtils.isInProject(jobProjectLabel, property)) {
                         String displayName = newLabel + " " + jobVersion; //$NON-NLS-1$
                         ILaunchConfigurationWorkingCopy workingCopy = configuration.getWorkingCopy();
                         workingCopy.setAttribute(TalendDebugUIConstants.JOB_NAME, newLabel);

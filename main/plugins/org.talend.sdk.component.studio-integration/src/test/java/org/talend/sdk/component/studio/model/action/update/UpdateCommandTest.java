@@ -166,7 +166,7 @@ public class UpdateCommandTest {
         final ButtonParameter button = new ButtonParameter(null);
         final ArrayList<TaCoKitElementParameter> parameters = new ArrayList<>();
         final TaCoKitElementParameter schema = new TaCoKitElementParameter(null);
-        schema.setName("IN$$conf.updatableConfig.schema");
+        schema.setName("conf.updatableConfig.schema");
         schema.setFieldType(EParameterFieldType.SCHEMA_TYPE);
 
         final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig",

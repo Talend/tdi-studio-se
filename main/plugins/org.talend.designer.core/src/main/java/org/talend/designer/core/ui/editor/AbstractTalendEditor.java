@@ -32,7 +32,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.draw2d.Cursors;
 import org.eclipse.draw2d.FigureCanvas;
@@ -204,7 +203,6 @@ import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.connections.ConnectionPart;
 import org.talend.designer.core.ui.editor.connections.NodeConnectorTool;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
@@ -223,6 +221,7 @@ import org.talend.designer.core.ui.editor.process.ProcessPart;
 import org.talend.designer.core.ui.editor.process.TalendEditorDropTargetListener;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerPart;
+import org.talend.designer.core.ui.views.CodeView;
 import org.talend.designer.core.ui.views.jobsettings.JobSettings;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
@@ -1186,11 +1185,27 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                 this.savePreviouslyNeeded = true;
                 firePropertyChange(IEditorPart.PROP_DIRTY);
             }
+            checkSaveAsEnabled();
         } else {
             savePreviouslyNeeded = false;
             firePropertyChange(IEditorPart.PROP_DIRTY);
         }
         super.commandStackChanged(event);
+    }
+
+    private void checkSaveAsEnabled() {
+        if (!isSaveAsAllowed()) {
+            return;
+        }
+        IAction action = getAction(ActionFactory.SAVE_AS.getId());
+        if (action == null) {
+            action = ActionFactory.SAVE_AS.create(PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+            getActionRegistry().registerAction(action);
+        }
+        IAction saveAsAction = getAction(ActionFactory.SAVE_AS.getId());
+        if (saveAsAction != null && !getAction(ActionFactory.SAVE_AS.getId()).isEnabled()) {
+            getAction(ActionFactory.SAVE_AS.getId()).setEnabled(true);
+        }
     }
 
     protected void removeErrorStatusIfDirty() {
@@ -1368,6 +1383,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         getEditDomain().setDefaultTool(null);
         getSelectionSynchronizer().removeViewer(getGraphicalViewer());
         getSite().setSelectionProvider(null);
+        CodeView.refreshCodeView(null);
     }
 
     public void gotoMarker(final IMarker marker) {

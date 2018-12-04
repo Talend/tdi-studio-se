@@ -106,7 +106,7 @@
       <TABLE  READONLY="true">
         <COLUMN NAME="revision" TYPE="id_Integer"/>
         <COLUMN NAME="author" TYPE="id_String" LENGTH="50"/>
-        <COLUMN NAME="date" TYPE="id_Date"/>
+        <COLUMN NAME="date" TYPE="id_Date" PATTERN='"yyyy-MM-dd HH:mm:ss"'/>
         <COLUMN NAME="message" TYPE="id_String" LENGTH="10000"/>
         <COLUMN NAME="nb_file_added" TYPE="id_Integer"/>
         <COLUMN NAME="nb_file_modified" TYPE="id_Integer"/>

@@ -19,8 +19,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.talend.components.api.component.ComponentDefinition;
+import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INode;
 import org.talend.core.runtime.services.IGenericService;
+import org.talend.daikon.properties.Properties;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 
@@ -51,6 +55,28 @@ public class GenericService implements IGenericService {
             }
         }
         return genericComponents;
+    }
+    
+    @Override
+    public void resetReferenceValue(INode curNode, String oldConnectionName, String newConnectionName) {
+        ComponentProperties pros = curNode.getComponentProperties();
+        if(pros == null){
+            return;
+        }
+        Properties ps = pros.getProperties("referencedComponent"); //$NON-NLS-1$
+        if(ps == null){
+            return;
+        }
+        if(!(ps instanceof ComponentReferenceProperties)){
+            return;
+        }
+        ComponentReferenceProperties comPro = (ComponentReferenceProperties) ps;
+        Object sValue = comPro.componentInstanceId.getStoredValue();
+        if (oldConnectionName.equals(sValue)) {
+            comPro.componentInstanceId.setValue(newConnectionName);
+        } else if (sValue != null && ((String)sValue).startsWith(oldConnectionName + "_")) { //$NON-NLS-1$
+            comPro.componentInstanceId.setValue(((String)sValue).replaceFirst(oldConnectionName + "_", newConnectionName + "_")); //$NON-NLS-1$
+        }
     }
 
 }
