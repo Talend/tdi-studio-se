@@ -89,10 +89,13 @@ public class UpdateContextParameterCommand extends Command {
         }
         if (job instanceof IProcess2) {
             IProcess2 process = (IProcess2) job;
-
+            Set<String> existGroupNameSet = new HashSet<String>();
             ContextParameterMap deleteParameters = new ContextParameterMap();
             Object updateObject = result.getUpdateObject();
             List<IContext> listContext = process.getContextManager().getListContext();
+            for (IContext con : listContext) {
+                existGroupNameSet.add(con.getName());
+            }
             if (updateObject instanceof Set) {
                 Set<String> names = (Set<String>) updateObject;
 
@@ -191,7 +194,13 @@ public class UpdateContextParameterCommand extends Command {
                             param.setContext(newContext);
                             newParamList.add(param);
                         }
-
+                        // Remove if exist,then add.
+                        if (existGroupNameSet.contains(name)) {
+                            IContext existContext = process.getContextManager().getContext(name);
+                            if (existContext != null) {
+                                listContext.remove(existContext);
+                            }
+                        }
                         listContext.add(newContext);
                     }
                 } else if (result.getResultType() == EUpdateResult.DELETE
