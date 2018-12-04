@@ -13,10 +13,13 @@
 package org.talend.repository.demo.imports;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +40,6 @@ public class DqDemoImportTest extends DemosImportTest {
 	private static final String DQ_DEMO_PLUGIN_ID = "org.talend.dqdemo"; //$NON-NLS-1$
 
 	private ResourcesManager dqResManager;
-	private String rootPath = null;
 
 	@Before
 	public void importDqDemo() throws Exception {
@@ -152,4 +154,22 @@ public class DqDemoImportTest extends DemosImportTest {
 		map.put(rootPath + File.separator + tdqLibrariesPatternPath, FileConstants.PAT_EXTENSION);
 		return map;
 	}
+
+    @Override
+    protected String getRootPath(ResourcesManager resManager) {
+        Iterator pathes = resManager.getPaths().iterator();
+        IPath projectPath = null;
+        while (pathes.hasNext()) {
+            IPath p = ((Path) pathes.next());
+            if (p.lastSegment().equals(FileConstants.LOCAL_PROJECT_FILENAME)) {
+                projectPath = p;
+                break;
+            }
+        }
+        Assert.assertNotNull("Can't find the talend.project, so it's invalid demo", projectPath);
+        final File talendProjectFile = projectPath.toFile();
+        Assert.assertTrue(talendProjectFile.exists());
+        return talendProjectFile.getParentFile().toString();
+    }
+
 }
