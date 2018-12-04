@@ -37,7 +37,6 @@ public class DiDemoImportTest extends DemosImportTest {
 	private static final String DI_DEMO_PLUGIN_ID = "org.talend.resources";
 
 	private ResourcesManager diResManager;
-	private String rootPath = null;
 
 	@Before
 	public void importDiDemo() throws Exception {

@@ -46,7 +46,6 @@ public class EsbDemoImportTest extends DemosImportTest {
 	String ROUTE_RESOURCES = "ROUTE_RESOURCES"; //$NON-NLS-1$
 
 	String SERVICES = "SERVICES"; //$NON-NLS-1$
-	private String rootPath = null;
 
 	@Before
 	public void importEsbDemo() throws Exception {
