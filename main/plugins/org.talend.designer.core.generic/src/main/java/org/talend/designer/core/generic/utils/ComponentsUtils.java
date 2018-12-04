@@ -837,6 +837,20 @@ public class ComponentsUtils {
         }
         return nals;
     }
+    
+    public static ComponentReferenceProperties getReferencedComponent(IElementParameter refPara){
+        if (!(refPara instanceof GenericElementParameter)) {
+            return null;
+        }
+        Widget widget = ((GenericElementParameter) refPara).getWidget();
+        NamedThing widgetProperty = widget.getContent();
+        if (widgetProperty instanceof ComponentReferenceProperties
+                && Widget.COMPONENT_REFERENCE_WIDGET_TYPE.equals(widget.getWidgetType())) {
+            ComponentReferenceProperties props = (ComponentReferenceProperties) widgetProperty;
+            return props;
+        }
+        return null;
+    }
 
     public static void initReferencedComponent(IElementParameter refPara, String newValue) {
 

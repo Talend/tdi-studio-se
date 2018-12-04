@@ -21,6 +21,7 @@ import java.util.Set;
 import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.runtime.services.IGenericService;
@@ -59,30 +60,53 @@ public class GenericService implements IGenericService {
     
     @Override
     public void resetReferenceValue(INode curNode, String oldConnectionName, String newConnectionName) {
-        ComponentProperties pros = curNode.getComponentProperties();
-        if(pros == null){
+        ComponentReferenceProperties comPro = null;
+        IElementParameter refPara = curNode.getElementParameterFromField(EParameterFieldType.COMPONENT_REFERENCE);
+        if(refPara != null){
+            comPro = ComponentsUtils.getReferencedComponent(refPara);
+        }
+        if(comPro != null){
+            Object sValue = comPro.componentInstanceId.getStoredValue();
+            if (oldConnectionName.equals(sValue)) {
+                comPro.componentInstanceId.setValue(newConnectionName);
+                return;
+            } 
+            if (sValue != null && ((String)sValue).startsWith(oldConnectionName + "_")) { //$NON-NLS-1$
+                comPro.componentInstanceId.setValue(((String)sValue).replaceFirst(oldConnectionName + "_", newConnectionName + "_")); //$NON-NLS-1$
+                return;
+            }
+        }
+        comPro = getComponentReferenceProperties(curNode);
+        if(comPro == null){
             return;
         }
-        Properties ps = pros.getProperties("referencedComponent"); //$NON-NLS-1$
-        if(ps == null){
-        	Properties conn = pros.getProperties("connection"); //$NON-NLS-1$
-        	if(conn != null){
-        		ps = conn.getProperties("referencedComponent"); //$NON-NLS-1$
-        	}
-        }
-        if(ps == null){
-        	return;
-        }
-        if(!(ps instanceof ComponentReferenceProperties)){
-            return;
-        }
-        ComponentReferenceProperties comPro = (ComponentReferenceProperties) ps;
         Object sValue = comPro.componentInstanceId.getStoredValue();
         if (oldConnectionName.equals(sValue)) {
             comPro.componentInstanceId.setValue(newConnectionName);
         } else if (sValue != null && ((String)sValue).startsWith(oldConnectionName + "_")) { //$NON-NLS-1$
             comPro.componentInstanceId.setValue(((String)sValue).replaceFirst(oldConnectionName + "_", newConnectionName + "_")); //$NON-NLS-1$
         }
+    }
+    
+    private ComponentReferenceProperties getComponentReferenceProperties(INode curNode){
+        ComponentProperties pros = curNode.getComponentProperties();
+        if(pros == null){
+            return null;
+        }
+        Properties ps = pros.getProperties("referencedComponent"); //$NON-NLS-1$
+        if(ps == null){
+            Properties conn = pros.getProperties("connection"); //$NON-NLS-1$
+            if(conn != null){
+                ps = conn.getProperties("referencedComponent"); //$NON-NLS-1$
+            }
+        }
+        if(ps == null){
+            return null;
+        }
+        if(ps instanceof ComponentReferenceProperties){
+            return (ComponentReferenceProperties)ps;
+        }
+        return null;
     }
 
 }
