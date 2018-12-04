@@ -47,14 +47,18 @@ public class ProcessUpdateManagerTest {
         assertTrue(updateManager.isOldJDBC(node, connection));
 
         component = ComponentsFactoryProvider.getInstance().get("tJDBCInput", ComponentCategory.CATEGORY_4_DI.getName());
-        node = new Node(component, process);
-        connection.setDatabaseType(EDatabaseTypeName.GENERAL_JDBC.getProduct());
-        assertFalse(updateManager.isOldJDBC(node, connection));
+        if (component != null) {
+            node = new Node(component, process);
+            connection.setDatabaseType(EDatabaseTypeName.GENERAL_JDBC.getProduct());
+            assertFalse(updateManager.isOldJDBC(node, connection));
+        }
 
         component = ComponentsFactoryProvider.getInstance().get("tJDBCInput", ComponentCategory.CATEGORY_4_MAPREDUCE.getName());
-        node = new Node(component, process);
-        connection.setDatabaseType(EDatabaseTypeName.GENERAL_JDBC.getProduct());
-        assertTrue(updateManager.isOldJDBC(node, connection));
+        if (component != null) {
+            node = new Node(component, process);
+            connection.setDatabaseType(EDatabaseTypeName.GENERAL_JDBC.getProduct());
+            assertTrue(updateManager.isOldJDBC(node, connection));
+        }
 
     }
 }
