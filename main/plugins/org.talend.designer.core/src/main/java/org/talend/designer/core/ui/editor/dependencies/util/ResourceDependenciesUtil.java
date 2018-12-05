@@ -298,7 +298,7 @@ public class ResourceDependenciesUtil {
             if (StringUtils.isNotBlank(rootJobLabel)) {
                 processJobLabel = rootJobLabel;
             }
-            String extResPath = getProcessFolder(jobObject) + processJobLabel + SRC_EXTRESOURCE_FOLDER;
+            String extResPath = getProcessFolder(jobObject) + processJobLabel.toLowerCase() + SRC_EXTRESOURCE_FOLDER;
             String newFilePath = getResourcePath(model, joblabel.toString(), newVersion);
             File targetFile = project.getFile(new Path(extResPath + SEG_TAG + newFilePath)).getLocation().toFile();
             try {
