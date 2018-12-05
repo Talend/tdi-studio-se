@@ -194,6 +194,7 @@
                        <tarLongFileMode>gnu</tarLongFileMode>
                        <appendAssemblyId>false</appendAssemblyId>
                        <finalName>${talend.job.finalName}</finalName>
+                       <attach>false</attach>
                      </configuration>
                    </execution>
                 </executions>
