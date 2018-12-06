@@ -138,6 +138,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.core.utils.BigDataJobUtil;
 import org.talend.designer.maven.utils.ClasspathsJarGenerator;
 import org.talend.designer.maven.utils.MavenVersionHelper;
 import org.talend.designer.maven.utils.PomUtil;
@@ -147,7 +148,6 @@ import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.RunProcessContext;
 import org.talend.designer.runprocess.RunProcessPlugin;
-import org.talend.designer.runprocess.bigdata.BigDataJobUtil;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
@@ -366,7 +366,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             boolean needsToHaveContextInsideJar = true;
 
             if (property != null && property.getItem() instanceof ProcessItem) {
-                needsToHaveContextInsideJar = !new BigDataJobUtil((ProcessItem) property.getItem()).needsToHaveContextInsideJar();
+                needsToHaveContextInsideJar = !new BigDataJobUtil(process).needsToHaveContextInsideJar();
             }
 
             if (ProcessorUtilities.isExportConfig() && property != null && needsToHaveContextInsideJar) {
@@ -1366,7 +1366,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         final String classPathSeparator = extractClassPathSeparator();
         final String libPrefixPath = getRootWorkingDir(true);
 
-        Set<ModuleNeeded> neededModules = getNeededModules(TalendProcessOptionConstants.MODULES_WITH_CHILDREN);
+        Set<ModuleNeeded> neededModules = getNeededModules(
+                TalendProcessOptionConstants.MODULES_WITH_CHILDREN | TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED);
         JavaProcessorUtilities.checkJavaProjectLib(neededModules);
 
         // Ignore hadoop confs jars in lib path.
