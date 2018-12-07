@@ -80,6 +80,7 @@ import org.talend.core.service.IESBRouteService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.tools.ProjectPomManager;
 import org.talend.designer.maven.utils.PomIdsHelper;
@@ -730,6 +731,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             PomIdsHelper.resetPreferencesManagers();
             MavenPomSynchronizer.removeChangeLibrariesListener();
             TalendJavaProjectManager.deleteEclipseProjectByNatureId(TalendJobNature.ID);
+            BuildCacheManager.getInstance().clearAllCaches();
         } catch (CoreException e) {
             ExceptionHandler.process(e);
         }
@@ -738,6 +740,10 @@ public class DefaultRunProcessService implements IRunProcessService {
     @Override
     public boolean isExportConfig() {
         return ProcessorUtilities.isExportConfig();
+    }
+
+    public boolean isdebug() {
+        return ProcessorUtilities.isdebug();
     }
 
     @Override
@@ -758,6 +764,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     @Override
     public void generatePom(Item item) {
         TalendJavaProjectManager.generatePom(item, TalendProcessOptionConstants.GENERATE_NO_CODEGEN);
+    }
+
+    @Override
+    public void generatePom(Item item, int option) {
+        TalendJavaProjectManager.generatePom(item, option);
     }
 
     /*

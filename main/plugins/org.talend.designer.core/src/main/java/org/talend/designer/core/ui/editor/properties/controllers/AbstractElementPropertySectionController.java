@@ -1413,6 +1413,14 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 type = "ORACLE_SID"; //$NON-NLS-1$
             }
         }
+        if (type.equalsIgnoreCase("REDSHIFT")) {
+       	 IElementParameter ele = element.getElementParameter("JDBC_URL");
+       	  if (ele != null&&((String)ele.getValue()).equals("SSO")) {
+                type = EDatabaseTypeName.REDSHIFT_SSO.getXmlName();
+             } else {
+                type = EDatabaseTypeName.REDSHIFT.getXmlName(); // $NON-NLS-1$
+             }
+       }
         // Get real hsqldb type
         if (type.equals(EDatabaseTypeName.HSQLDB.name())
                 && getValueFromRepositoryName(element, "RUNNING_MODE", basePropertyParameter).equals("HSQLDB_INPROGRESS_PERSISTENT")) {//$NON-NLS-1$
@@ -1432,7 +1440,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
         String schema = getValueFromRepositoryName(element, EConnectionParameterName.SCHEMA.getName(), basePropertyParameter);
         connParameters.setSchema(schema);
 
-        if ((elem instanceof Node) && ((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)) {
+        if ((elem instanceof Node) && (((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC) 
+                || (element instanceof INode
+                        && ((INode) element).getComponent().getComponentType().equals(EComponentType.GENERIC)))) {
             String userName = getValueFromRepositoryName(element, EConnectionParameterName.GENERIC_USERNAME.getDisplayName(), basePropertyParameter);
             connParameters.setUserName(userName);
 
@@ -1596,6 +1606,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 realTableName = metadataTable.getTableName();
             }
         }
+        connParameters.setDbType(type); 
+        connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(type)); 
         connParameters.setSchemaName(QueryUtil.getTableName(elem, connParameters.getMetadataTable(),
                 TalendTextUtils.removeQuotes(schema), type, realTableName));
     }
@@ -1654,7 +1666,10 @@ public abstract class AbstractElementPropertySectionController implements Proper
             dbName = ""; //$NON-NLS-1$
         }
         connParameters.setDbName(dbName);
-        if ((elem instanceof Node) && ((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)) {
+        
+        if ((elem instanceof Node) && (((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)
+                || (element instanceof INode
+                        && ((INode) element).getComponent().getComponentType().equals(EComponentType.GENERIC)))) {
             connParameters.setUserName(getParameterValueWithContext(element, EConnectionParameterName.GENERIC_USERNAME.getDisplayName(), context,
                     basePropertyParameter));
             connParameters.setPassword(getParameterValueWithContext(element, EConnectionParameterName.GENERIC_PASSWORD.getDisplayName(), context,
@@ -1698,8 +1713,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
                     driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
                 }
             }
-            connParameters.setDriverClass(driverClass);
-
+            connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(connParameters.getDbType())); 
             connParameters.setDriverJar(TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.DRIVER_JAR.getName(), context, basePropertyParameter)));
         }

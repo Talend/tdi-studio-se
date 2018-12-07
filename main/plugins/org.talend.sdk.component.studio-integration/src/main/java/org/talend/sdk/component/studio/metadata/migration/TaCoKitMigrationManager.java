@@ -14,12 +14,12 @@ package org.talend.sdk.component.studio.metadata.migration;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IResourceRuleFactory;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,7 +29,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ConnectionItem;
@@ -42,6 +41,8 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.VersionList;
+import org.talend.core.repository.utils.ComponentsJsonModel;
+import org.talend.core.repository.utils.ProjectDataJsonProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ProcessTypeImpl;
 import org.talend.repository.ProjectManager;
@@ -84,16 +85,41 @@ public class TaCoKitMigrationManager {
                 Collection<ConfigTypeNode> topLevelNodes = TaCoKitUtil.filterTopLevelNodes(nodes.values());
                 for (ConfigTypeNode node : topLevelNodes) {
                     try {
-                        checkMigration(node, progressMonitor);
+                        checkMigration(node, monitor);
                     } catch (UserCancelledException e) {
                         throw e;
                     } catch (Exception e) {
                         ExceptionHandler.process(e);
                     }
                 }
+                // as for it will do migration for all project, need to cache config component to component.index file
+                // under .setting folder from all project
+                List<ComponentsJsonModel> adaptComponentIndexJson = adaptComponentIndexJson(nodes.values());
+                for (final Project project : getAllProjects()) {
+                    ProjectDataJsonProvider.saveConfigComponent(project.getTechnicalLabel(), adaptComponentIndexJson);
+                }
             }
         }
-        checkJobsMigration(progressMonitor);
+        checkJobsMigration(monitor);
+    }
+
+    public static List<ComponentsJsonModel> adaptComponentIndexJson(Collection<ConfigTypeNode> ConfigTypeNodes) {
+        List<ComponentsJsonModel> modelList = new LinkedList<ComponentsJsonModel>();
+        for (ConfigTypeNode configTypeNode : ConfigTypeNodes) {
+            ComponentsJsonModel model = new ComponentsJsonModel();
+            model.setId(configTypeNode.getId());
+            model.setVersion(String.valueOf(configTypeNode.getVersion()));
+            model.setName(configTypeNode.getName());
+            model.setDisplayName(configTypeNode.getDisplayName());
+            model.setParentId(configTypeNode.getParentId());
+            model.setEdges(configTypeNode.getEdges());
+            model.setConfigurationType(configTypeNode.getConfigurationType());
+            model.setActions(configTypeNode.getActions());
+            model.setProperties(configTypeNode.getProperties());
+            modelList.add(model);
+        }
+        return modelList;
+
     }
 
     private void checkJobsMigration(final IProgressMonitor monitor) throws UserCancelledException {
@@ -267,25 +293,18 @@ public class TaCoKitMigrationManager {
                 ISchedulingRule refreshRule = ruleFactory
                         .refreshRule(projectManager.getResourceProject(projectManager.getCurrentProject().getEmfProject()));
                 try {
-                    workspace.run(new IWorkspaceRunnable() {
+                    workspace.run(workspaceMonitor -> ProxyRepositoryFactory.getInstance()
+                            .executeRepositoryWorkUnit(new RepositoryWorkUnit(title) {
 
-                        @Override
-                        public void run(final IProgressMonitor workspaceMonitor) throws CoreException {
-                            ProxyRepositoryFactory.getInstance()
-                                    .executeRepositoryWorkUnit(new RepositoryWorkUnit(title) {
-
-                                        @Override
-                                        protected void run() throws LoginException, PersistenceException {
-                                            try {
-                                                checkMigration(workspaceMonitor);
-                                            } catch (Exception e) {
-                                                ExceptionHandler.process(e);
-                                            }
-                                        }
-                                    });
-
-                        }
-                    }, refreshRule, IWorkspace.AVOID_UPDATE, jobMonitor);
+                                @Override
+                                protected void run() {
+                                    try {
+                                        checkMigration(workspaceMonitor);
+                                    } catch (Exception e) {
+                                        ExceptionHandler.process(e);
+                                    }
+                                }
+                            }), refreshRule, IWorkspace.AVOID_UPDATE, jobMonitor);
                 } catch (CoreException e) {
                     ExceptionHandler.process(e);
                 }
@@ -297,8 +316,7 @@ public class TaCoKitMigrationManager {
         migrationJob.join();
     }
 
-    public void updatedRelatedItems(final ConnectionItem item, final String version, final IProgressMonitor progressMonitor)
-            throws Exception {
+    public void updatedRelatedItems(final ConnectionItem item, final String version, final IProgressMonitor progressMonitor) {
         IProgressMonitor monitor = progressMonitor;
         if (monitor == null) {
             monitor = new NullProgressMonitor();

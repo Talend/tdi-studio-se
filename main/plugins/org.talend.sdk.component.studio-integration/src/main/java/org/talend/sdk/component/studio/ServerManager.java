@@ -34,6 +34,7 @@ import org.talend.osgi.hook.maven.MavenResolver;
 import org.talend.sdk.component.studio.debounce.DebounceManager;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.mvn.Mvn;
+import org.talend.sdk.component.studio.service.AsciidoctorService;
 import org.talend.sdk.component.studio.service.ComponentService;
 import org.talend.sdk.component.studio.service.Configuration;
 import org.talend.sdk.component.studio.service.UiActionsThreadPool;
@@ -69,6 +70,7 @@ public class ServerManager extends AbstractUIPlugin {
         if (!configuration.isActive()) {
             return;
         }
+        services.add(ctx.registerService(AsciidoctorService.class.getName(), new AsciidoctorService(), new Hashtable<>()));
 
         extractFiles();
 

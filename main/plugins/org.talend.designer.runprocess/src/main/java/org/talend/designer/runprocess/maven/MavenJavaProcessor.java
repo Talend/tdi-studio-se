@@ -349,14 +349,16 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (!isMainJob && isGoalInstall) {
             if (!buildCacheManager.isJobBuild(getProperty())) {
                 deleteExistedJobJarFile(talendJavaProject);
-                
-                final Map<String, Object> argumentsMap = new HashMap<>();
-                argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_COMPILE);
-                if (!MavenProjectUtils.hasMavenNature(project)) {
-                    MavenProjectUtils.enableMavenNature(monitor, project);
-                }                 
-                talendJavaProject.buildModules(monitor, null, argumentsMap);
-                
+                if ("ROUTE".equalsIgnoreCase(getBuildType(getProperty())) && project != null &&
+                		ERepositoryObjectType.PROCESS.equals(ERepositoryObjectType.getType(getProperty()))) {
+                    // TESB-23870
+                    // child routes job project must be compiled explicitly for 
+                    // correct child job manifest generation during OSGi packaging
+                    if (!MavenProjectUtils.hasMavenNature(project)) {
+                        MavenProjectUtils.enableMavenNature(monitor, project);
+                    }
+                    talendJavaProject.buildWholeCodeProject();
+                }
                 buildCacheManager.putJobCache(getProperty());
             } else {
                 // for already installed sub jobs, can restore pom here directly
@@ -369,7 +371,7 @@ public class MavenJavaProcessor extends JavaProcessor {
             argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
             argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, "-T 1C -f " // $NON-NLS-1$
                     + BuildCacheManager.BUILD_AGGREGATOR_POM_NAME + " -P " + (packagingAndAssembly() ? "" : "!")
-                    + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY); // $NON-NLS-1$
+                    + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY + ",!" + TalendMavenConstants.PROFILE_SIGNATURE); // $NON-NLS-1$  //$NON-NLS-2$
             // install all subjobs
             buildCacheManager.build(monitor, argumentsMap);
 
@@ -444,5 +446,12 @@ public class MavenJavaProcessor extends JavaProcessor {
         }
         // Else, a simple compilation is needed.
         return TalendMavenConstants.GOAL_COMPILE;
+    }
+    
+    private String getBuildType(Property property) {
+        if (property != null && property.getAdditionalProperties() != null) {
+            return (String) property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+        }
+        return null;
     }
 }

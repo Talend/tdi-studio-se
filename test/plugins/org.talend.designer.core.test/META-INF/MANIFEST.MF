@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test
 Bundle-SymbolicName: org.talend.designer.core.test
-Bundle-Version: 7.1.1.qualifier
+Bundle-Version: 7.2.1.qualifier
 Fragment-Host: org.talend.designer.core
 Require-Bundle: org.junit;bundle-version="4.11.0",
  org.talend.utils,

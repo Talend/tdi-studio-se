@@ -37,11 +37,12 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.editor.JobEditorInput;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.repository.RepositoryWorkUnit;
-import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.documentation.ERepositoryActionName;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryNode;
 
@@ -63,7 +64,7 @@ public class SaveAsProcessWizard extends Wizard {
 
     private IPath path;
 
-    private IProxyRepositoryFactory repositoryFactory;
+    private ProxyRepositoryFactory repositoryFactory;
 
     private JobEditorInput jobEditorInput;
 
@@ -98,7 +99,7 @@ public class SaveAsProcessWizard extends Wizard {
 
         processItem.setProperty(property);
 
-        repositoryFactory = service.getProxyRepositoryFactory();
+        repositoryFactory = ProxyRepositoryFactory.getInstance();
 
         setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.PROCESS_WIZ));
     }
@@ -135,6 +136,7 @@ public class SaveAsProcessWizard extends Wizard {
                 // don't need to add depended routines.
 
                 repositoryFactory.create(processItem, mainPage.getDestinationPath());
+                repositoryFactory.fireRepositoryPropertyChange(ERepositoryActionName.SAVE.getName(), false, processItem);
                 RelationshipItemBuilder.getInstance().addOrUpdateItem(processItem);
             }
             ok = true;

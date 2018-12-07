@@ -22,7 +22,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
-import org.talend.camel.core.model.camelProperties.RouteResourceItem;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
@@ -30,11 +29,14 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.core.CorePlugin;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
+import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.service.IResourcesDependenciesService;
 import org.talend.expressionbuilder.ExpressionPersistance;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -152,6 +154,15 @@ public class OpenAnotherVersionResrouceWizard extends Wizard {
 			} catch (CoreException e) {
 				MessageBoxExceptionHandler.process(e);
 			}
+            // if create a new version Resource, need clean the latest childjob build cache
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IResourcesDependenciesService.class)) {
+                IResourcesDependenciesService service = (IResourcesDependenciesService) GlobalServiceRegister.getDefault()
+                        .getService(IResourcesDependenciesService.class);
+                if (service != null) {
+                    service.removeBuildJobCacheForResource(repoObject.getProperty().getId());
+                }
+            }
+
 		} else {
 			StructuredSelection selection = (StructuredSelection) mainPage
 					.getSelection();
@@ -199,9 +210,9 @@ public class OpenAnotherVersionResrouceWizard extends Wizard {
 			Item item = node.getObject().getProperty().getItem();
 			IWorkbenchPage page = getActivePage();
 
-			if (item instanceof RouteResourceItem) {
+            if (item instanceof ResourceItem) {
 				RouteResourceEditorUtil.openEditor(page, node,
-						(RouteResourceItem) item);
+                        (ResourceItem) item);
 			}
 		}
 	}

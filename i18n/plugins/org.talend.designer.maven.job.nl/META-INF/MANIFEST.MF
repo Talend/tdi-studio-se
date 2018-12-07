@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Maven Job NL
 Bundle-SymbolicName: org.talend.designer.maven.job.nl
-Bundle-Version: 7.1.1.qualifier
+Bundle-Version: 7.2.1.qualifier
 Bundle-Vendor: .Talend SA.
 Fragment-Host: org.talend.designer.maven.job
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

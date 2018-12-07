@@ -63,12 +63,12 @@
 			<DEFAULT>Redshift</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="USER" FIELD="TEXT" NUM_ROW="5" SHOW_IF="USE_EXISTING_CONNECTION == 'false'" 
+		<PARAMETER NAME="USER" FIELD="TEXT" NUM_ROW="5" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (JDBC_URL=='STANDARD')" 
 			REPOSITORY_VALUE="USERNAME" REQUIRED="true" GROUP="DB_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="PASS" FIELD="PASSWORD" NUM_ROW="5" SHOW_IF="USE_EXISTING_CONNECTION == 'false'" 
+		<PARAMETER NAME="PASS" FIELD="PASSWORD" NUM_ROW="5" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (JDBC_URL=='STANDARD')" 
 			REPOSITORY_VALUE="PASSWORD" REQUIRED="true" GROUP="DB_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
@@ -413,6 +413,19 @@
 				<ITEM NAME="VALUE" />
 			</ITEMS>
 		</PARAMETER>
+
+        <PARAMETER
+            NAME="JDBC_URL"
+            FIELD="CLOSED_LIST"
+            NUM_ROW="90"
+            REPOSITORY_VALUE="JDBC_URL"
+            SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        >
+            <ITEMS DEFAULT="STANDARD">
+                <ITEM NAME="STANDARD" VALUE="STANDARD" />
+                <ITEM NAME="SSO" VALUE="SSO" />
+            </ITEMS>
+        </PARAMETER>
 	</ADVANCED_PARAMETERS>
 
 	<CODEGENERATION>
@@ -494,22 +507,22 @@
 
 			<TEMPLATE_PARAM SOURCE="self.APPEND" TARGET="tROB.APPEND" />
 			<TEMPLATE_PARAM SOURCE="self.CREATE" TARGET="tROB.CREATE" />
+			<TEMPLATE_PARAM SOURCE="self.JDBC_URL" TARGET="tRBE.JDBC_URL" />
 		</TEMPLATES>
 
 		<IMPORTS>
-			<IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.10.1009.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.2.10.1009/6.0.0"  REQUIRED="true" />
-			
+			<IMPORT NAME="Driver-Redshift" MODULE="redshiftJDBC42-no-awssdk-1.2.16.1027.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.16.1027" REQUIRED="true" />
 			<IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
 				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-core-2.9.4.jar" MODULE="jackson-core-2.9.4.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.4"
+			<IMPORT NAME="jackson-core-2.9.5.jar" MODULE="jackson-core-2.9.5.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.5"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-databind-2.9.4.jar" MODULE="jackson-databind-2.9.4.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.4"
+			<IMPORT NAME="jackson-databind-2.9.5.jar" MODULE="jackson-databind-2.9.5.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.5"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-annotations-2.9.4.jar" MODULE="jackson-annotations-2.9.4.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.4"
+			<IMPORT NAME="jackson-annotations-2.9.0.jar" MODULE="jackson-annotations-2.9.0.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0"
 				REQUIRED="true" />
 			<IMPORT NAME="httpcore-4.4.9.jar" MODULE="httpcore-4.4.9.jar"
 				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"

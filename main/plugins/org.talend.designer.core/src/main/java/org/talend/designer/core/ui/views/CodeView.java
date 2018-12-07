@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.ui.views;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -247,16 +248,15 @@ public class CodeView extends ViewPart {
                 codeView = nodeCodeView;
                 nodeCodeView = -1;
             }
-            refresh();
         } else if (element instanceof IConnection) {
             selectedNode = ((IConnection) element).getSource();
             nodeCodeView = codeView;
             codeView = CODE_END;
-            refresh();
         } else if (element == null) {
             selectedNode = null;
             generatingNode = null;
         }
+        refresh();
     }
 
     private synchronized void setGenerating(boolean generating) {
@@ -277,7 +277,10 @@ public class CodeView extends ViewPart {
             return;
         }
         setGenerating(true);
-        final List<? extends INode> generatingNodes = selectedNode.getProcess().getGeneratingNodes();
+        final List<INode> generatingNodes = new ArrayList<>();
+        if(selectedNode != null){
+            generatingNodes.addAll(selectedNode.getProcess().getGeneratingNodes());
+        }
         Job job = new Job(Messages.getString("CodeView.initMessage")) { //$NON-NLS-1$
 
             @Override
@@ -303,6 +306,7 @@ public class CodeView extends ViewPart {
                         for (INode node : generatingNodes) {
                             if (node.getUniqueName().equals(selectedNode.getUniqueName())) {
                                 generatingNode = node;
+                                break;
                             }
                         }
                         if (generatingNode == null) {
@@ -347,6 +351,8 @@ public class CodeView extends ViewPart {
                         // Just ignore them, and set blank directly to the code view
                         generatedCode = ""; //$NON-NLS-1$
                     }
+                }else{
+                    generatedCode = ""; //$NON-NLS-1$
                 }
                 return org.eclipse.core.runtime.Status.OK_STATUS;
             }

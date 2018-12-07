@@ -15,10 +15,10 @@ package org.talend.repository.resource.ui.action;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.talend.camel.model.CamelRepositoryNodeType;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizard;
 import org.talend.repository.model.IRepositoryNode;
@@ -48,7 +48,7 @@ public class EditRouteResourcePropertiesAction extends EditPropertiesAction {
             if (o instanceof IRepositoryNode) {
                 final IRepositoryNode node = (IRepositoryNode) o;
                 canWork = node.getType() == ENodeType.REPOSITORY_ELEMENT
-                    && node.getObjectType() == CamelRepositoryNodeType.repositoryRouteResourceType
+                        && node.getObjectType() == ERepositoryObjectType.RESOURCES
                     && node.getObject().getRepositoryStatus() != ERepositoryStatus.DELETED
                     && isLastVersion(node);
             }

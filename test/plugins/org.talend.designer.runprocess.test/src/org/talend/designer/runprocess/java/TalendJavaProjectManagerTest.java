@@ -61,7 +61,7 @@ public class TalendJavaProjectManagerTest {
     public void setUp() throws Exception {
         property = PropertiesFactory.eINSTANCE.createProperty();
         property.setId(factory.getNextId());
-        property.setLabel("test");
+        property.setLabel("testTalendJavaProjectManagerTest");
         property.setVersion(VersionUtils.DEFAULT_VERSION);
 
         ProcessItem item = PropertiesFactory.eINSTANCE.createProcessItem();

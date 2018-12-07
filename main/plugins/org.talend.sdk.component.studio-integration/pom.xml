@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="           http://maven.apache.org/POM/4.0.0           http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="           http://maven.apache.org/POM/4.0.0           http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.talend.studio</groupId>
     <artifactId>tdi-studio-se</artifactId>
-    <version>7.1.1-SNAPSHOT</version>
+    <version>7.2.1-SNAPSHOT</version>
     <relativePath>../../../</relativePath>
   </parent>
   <artifactId>org.talend.sdk.component.studio-integration</artifactId>
@@ -15,8 +14,9 @@
   <description>Studio integration of the Talend Component Kit framework.</description>
 
   <properties>
-    <component-runtime.version>1.1.0-SNAPSHOT</component-runtime.version>
+    <component-runtime.version>1.1.2</component-runtime.version>
     <commons-lang3.version>3.6</commons-lang3.version>
+    <mockito.version>2.23.0</mockito.version>
     <oro.version>2.0.8</oro.version>
     <log4j.version>1.2.17</log4j.version>
     <system-rules.version>1.16.0</system-rules.version>
@@ -69,6 +69,12 @@
           <artifactId>component-form-model</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.asciidoctor</groupId>
+      <artifactId>asciidoctorj</artifactId>
+      <version>1.6.0-alpha.7</version>
     </dependency>
 
     <dependency>
@@ -144,6 +150,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
       <version>${commons-cli.version}</version>
@@ -205,6 +218,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
         <executions>
           <execution>
             <id>test-compile</id>
@@ -223,7 +237,7 @@
           <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-compiler-eclipse</artifactId>
-            <version>2.8.4</version>
+            <version>2.8.5</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -231,7 +245,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19.1</version>
+        <version>2.22.0</version>
         <executions>
           <execution>
             <id>unit-tests</id>
@@ -271,4 +285,23 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+
+    <profile>
+      <!--
+           This profile makes the studio dependencies available
+           and let you build this plugin without rebuilding it's studio dependencies.
+           use : mvn clean install -P TalendP2
+       -->
+      <id>TalendP2</id>
+      <repositories>
+        <repository>
+          <id>tos-p2-repo</id>
+          <url>${tos-p2-repo.url}</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
 </project>

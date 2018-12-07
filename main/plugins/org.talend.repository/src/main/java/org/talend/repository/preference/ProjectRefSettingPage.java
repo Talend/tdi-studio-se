@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -86,7 +87,6 @@ import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.ui.dialog.AProgressMonitorDialogWithCancel;
 import org.talend.repository.ui.dialog.OverTimePopupDialogTask;
 import org.talend.repository.ui.dialog.ProjectSettingsPreferenceDialog;
-import org.talend.repository.ui.views.IRepositoryView;
 
 public class ProjectRefSettingPage extends ProjectSettingPage {
 
@@ -175,7 +175,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         GridData viewerData = new GridData(GridData.FILL_BOTH);
         viewerData.horizontalSpan = 2;
         viewer.getControl().setLayoutData(viewerData);
-        viewer.addSelectionChangedListener(new ISelectionChangedListener() { 
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
@@ -274,7 +274,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         } else {
             this.setTitle(Messages.getString("ReferenceProjectSetupPage.Title")); //$NON-NLS-1$
         }
-        
+
         this.checkInvalidProject();
         return null;
     }
@@ -300,13 +300,14 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         for (ProjectReference pr : list) {
             ProjectReferenceBean prb = new ProjectReferenceBean();
             prb.setReferenceProjectLabel(pr.getReferencedProject().getTechnicalLabel());
-            prb.setReferenceProject(pr.getReferencedProject());         
+            prb.setReferenceProject(pr.getReferencedProject());
             prb.setReferenceBranch(pr.getReferencedBranch());
             result.add(prb);
         }
-
-        if (ReferenceProjectProblemManager.getInstance().getInvalidProjectReferenceSet().size() > 0) {
-            for (String invalidLabel : ReferenceProjectProblemManager.getInstance().getInvalidProjectReferenceSet()) {
+        List<String> invalidProjectLabelList = ReferenceProjectProblemManager.getInstance()
+                .getInvalidProjectReferenceList(ProjectManager.getInstance().getCurrentProject().getTechnicalLabel());
+        if (invalidProjectLabelList.size() > 0) {
+            for (String invalidLabel : invalidProjectLabelList) {
                 ProjectReferenceBean prb = new ProjectReferenceBean();
                 prb.setReferenceProjectLabel(invalidLabel);
                 prb.setReferenceBranch("");
@@ -580,58 +581,54 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
                     Messages.getString("RepoReferenceProjectSetupAction.MsgReferenceChanged")); //$NON-NLS-1$
             // Apply new setting
             errorException = null;
-            RepositoryWorkUnit repositoryWorkUnit =
-                    new RepositoryWorkUnit(Messages.getString("ReferenceProjectSetupPage.TaskApplyReferenceSetting")) { //$NON-NLS-1$
+            RepositoryWorkUnit repositoryWorkUnit = new RepositoryWorkUnit(
+                    Messages.getString("ReferenceProjectSetupPage.TaskApplyReferenceSetting")) { //$NON-NLS-1$
 
-                        public void run() throws PersistenceException {
-                            IWorkspaceRunnable workspaceRunnable = new IWorkspaceRunnable() {
+                public void run() throws PersistenceException {
+                    IWorkspaceRunnable workspaceRunnable = new IWorkspaceRunnable() {
 
-                                final String mainProjectLabel =
-                                        ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+                        final String mainProjectLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
 
-                                @Override
-                                public void run(IProgressMonitor monitor) throws CoreException {
-                                    try {
-                                        relogin(mainProjectLabel, false, monitor);
-                                        saveData();
-                                    } catch (Exception ex) {
-                                        errorException = ex;
-                                        synSetErrorMessage(errorException);
-                                        // If failed, try to roll back
-                                        try {
-                                            relogin(mainProjectLabel, true, monitor);
-                                        } catch (Exception e) {
-                                            ExceptionHandler.process(e);
-                                            log.error("Roll back reference project settings failed:" + e); //$NON-NLS-1$
-                                        }
-                                    }
-                                }
-                            };
-
-                            IRunnableWithProgress iRunnableWithProgress = new IRunnableWithProgress() {
-
-                                @Override
-                                public void run(IProgressMonitor monitor)
-                                        throws InvocationTargetException, InterruptedException {
-                                    try {
-                                        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-                                        ISchedulingRule schedulingRule = workspace.getRoot();
-                                        workspace.run(workspaceRunnable, schedulingRule, IWorkspace.AVOID_UPDATE,
-                                                monitor);
-                                    } catch (CoreException e) {
-                                        throw new InvocationTargetException(e);
-                                    }
-                                }
-                            };
-                            ProgressMonitorDialog progressDialog =
-                                    new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
+                        @Override
+                        public void run(IProgressMonitor monitor) throws CoreException {
                             try {
-                                progressDialog.run(true, false, iRunnableWithProgress);
-                            } catch (InvocationTargetException | InterruptedException ex) {
+                                relogin(mainProjectLabel, false, monitor);
+                                saveData();
+                            } catch (Exception ex) {
                                 errorException = ex;
+                                synSetErrorMessage(errorException);
+                                // If failed, try to roll back
+                                try {
+                                    relogin(mainProjectLabel, true, monitor);
+                                } catch (Exception e) {
+                                    ExceptionHandler.process(e);
+                                    log.error("Roll back reference project settings failed:" + e); //$NON-NLS-1$
+                                }
                             }
                         }
                     };
+
+                    IRunnableWithProgress iRunnableWithProgress = new IRunnableWithProgress() {
+
+                        @Override
+                        public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                            try {
+                                final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+                                ISchedulingRule schedulingRule = workspace.getRoot();
+                                workspace.run(workspaceRunnable, schedulingRule, IWorkspace.AVOID_UPDATE, monitor);
+                            } catch (CoreException e) {
+                                throw new InvocationTargetException(e);
+                            }
+                        }
+                    };
+                    ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
+                    try {
+                        progressDialog.run(true, false, iRunnableWithProgress);
+                    } catch (InvocationTargetException | InterruptedException ex) {
+                        errorException = ex;
+                    }
+                }
+            };
             repositoryWorkUnit.setAvoidUnloadResources(true);
             repositoryWorkUnit.setUnloadResourcesAfterRun(true);
             repositoryWorkUnit.setForceTransaction(true);
@@ -668,7 +665,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         }
         return false;
     }
-    
+
     private boolean checkInvalidProject() {
         this.setErrorMessage(null);
         StringBuffer sb = new StringBuffer();
@@ -690,7 +687,8 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     private boolean validate() {
         this.setErrorMessage(null);
         Map<String, List<ProjectReference>> projectRefMap = new HashMap<String, List<ProjectReference>>();
-        AProgressMonitorDialogWithCancel<Boolean> dialog = new AProgressMonitorDialogWithCancel<Boolean>(Display.getCurrent().getActiveShell()) {
+        AProgressMonitorDialogWithCancel<Boolean> dialog = new AProgressMonitorDialogWithCancel<Boolean>(
+                Display.getCurrent().getActiveShell()) {
 
             protected Boolean runWithCancel(IProgressMonitor monitor) throws Throwable {
                 return checkCycleReference(projectRefMap);
@@ -754,7 +752,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
 
     private void saveData() {
         try {
-            ProjectManager.getInstance().getCurrentProject().saveProjectReferenceList(convertToProjectReference(viewerInput));           
+            ProjectManager.getInstance().getCurrentProject().saveProjectReferenceList(convertToProjectReference(viewerInput));
             ReferenceProjectProvider.removeAllTempReferenceList();
         } catch (Exception e) {
             errorException = e;
@@ -832,13 +830,19 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
             @Override
             public void run() {
                 ProjectRepositoryNode.getInstance().cleanup();
-                IRepositoryView repositoryView = RepositoryManagerHelper.findRepositoryView();
+                IViewPart repositoryView = RepositoryManagerHelper.findRepositoryView();
                 if (repositoryView instanceof CommonNavigator) {
                     CommonViewer commonViewer = ((CommonNavigator) repositoryView).getCommonViewer();
                     Object input = commonViewer.getInput();
                     // make sure to init the repository view rightly.
                     commonViewer.setInput(input);
                 }
+                // TDQ-15627: when the current is DQ Perspective, need to refresh DQ Repository View.
+                IViewPart DqrepositoryView = RepositoryManagerHelper.getDQRepositoryView();
+                if (DqrepositoryView != null) {
+                    ((CommonNavigator) DqrepositoryView).getCommonViewer().refresh();
+                }
+                // TDQ-15627~
             }
         });
     }
@@ -873,8 +877,7 @@ class ReferenceProjectLabelProvider implements ILabelProvider {
         if (element instanceof ProjectReferenceBean) {
             ProjectReferenceBean pr = (ProjectReferenceBean) element;
             StringBuffer sb = new StringBuffer();
-            sb.append(ProjectRefSettingPage.getProjectDecription(pr.getReferenceProjectLabel(),
-                    pr.getReferenceBranch()));
+            sb.append(ProjectRefSettingPage.getProjectDecription(pr.getReferenceProjectLabel(), pr.getReferenceBranch()));
             return sb.toString();
         }
         return null;
@@ -884,8 +887,11 @@ class ReferenceProjectLabelProvider implements ILabelProvider {
 class ProjectReferenceBean {
 
     private boolean isValid = true;
+
     private String referenceBranch;
+
     private org.talend.core.model.properties.Project referenceProject;
+
     private String referenceProjectLabel;
 
     public String getReferenceBranch() {
@@ -895,29 +901,29 @@ class ProjectReferenceBean {
     public void setReferenceBranch(String referenceBranch) {
         this.referenceBranch = referenceBranch;
     }
-    
+
     public boolean isValid() {
         return isValid;
     }
-   
+
     public void setValid(boolean isValid) {
         this.isValid = isValid;
     }
-    
+
     public String getReferenceProjectLabel() {
         return referenceProjectLabel;
     }
- 
+
     public void setReferenceProjectLabel(String referenceProjectLabel) {
         this.referenceProjectLabel = referenceProjectLabel;
     }
-  
+
     public org.talend.core.model.properties.Project getReferenceProject() {
         return referenceProject;
     }
-  
+
     public void setReferenceProject(org.talend.core.model.properties.Project referenceProject) {
         this.referenceProject = referenceProject;
-    } 
-      
+    }
+
 }

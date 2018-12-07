@@ -36,6 +36,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryObject;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -115,17 +116,18 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
             PersistenceException {
         String jobId = launch.getAttribute(TalendDebugUIConstants.JOB_ID, (String) null);
         String jobVersion = launch.getAttribute(TalendDebugUIConstants.JOB_VERSION, (String) null);
+        String jobProjectLabel = launch.getAttribute(TalendDebugUIConstants.JOB_PROJECT_TECH_LABEL, (String) null);
         if (jobId != null) {
             if (allVersion != null && allVersion.length > 0) {
                 for (IRepositoryViewObject obj : allVersion) {
-                    if (obj.getVersion().equals(jobVersion)) {
+                    if (ProcessUtils.isInProject(jobProjectLabel, obj.getProperty()) && obj.getVersion().equals(jobVersion)) {
                         return true;
                     }
                 }
             } else {
                 List<IRepositoryViewObject> all = factory.getAllVersion(jobId);
                 for (IRepositoryViewObject obj : all) {
-                    if (obj.getProperty().getVersion().equals(jobVersion)) {
+                    if (ProcessUtils.isInProject(jobProjectLabel, obj.getProperty()) && obj.getProperty().getVersion().equals(jobVersion)) {
                         return true;
                     }
                 }
@@ -296,10 +298,11 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
             try {
                 String jobId = launch.getAttribute(TalendDebugUIConstants.JOB_ID, (String) null);
                 String jobVersion = launch.getAttribute(TalendDebugUIConstants.JOB_VERSION, (String) null);
+                String jobProjectLabel =  launch.getAttribute(TalendDebugUIConstants.JOB_PROJECT_TECH_LABEL, (String) null);
                 if (jobId != null) {
                     List<IRepositoryViewObject> all = factory.getAllVersion(jobId);
                     for (IRepositoryViewObject obj : all) {
-                        if (obj.getProperty().getVersion().equals(jobVersion)) {
+                        if (obj.getProperty().getVersion().equals(jobVersion) && ProcessUtils.isInProject(jobProjectLabel, obj.getProperty())) {
                             return RUN_LABEL + " " + obj.getProperty().getLabel();
                         }
                     }

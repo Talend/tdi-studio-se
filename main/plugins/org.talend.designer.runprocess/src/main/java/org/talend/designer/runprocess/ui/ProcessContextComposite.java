@@ -44,6 +44,7 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.ui.CoreUIPlugin;
+import org.talend.core.ui.context.nattableTree.ContextNatTableUtils;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.runprocess.i18n.Messages;
@@ -449,7 +450,13 @@ public class ProcessContextComposite extends Composite {
                     // in plaintext
                     text = "****"; //$NON-NLS-1$
                 } else {
-                    text = parameter.getValue();
+                    String displayValue = ContextNatTableUtils.getSpecialTypeDisplayValue(parameter.getType(),
+                            parameter.getValue());
+                    if (displayValue != null) {
+                        text = displayValue;
+                    } else {
+                        text = parameter.getValue();
+                    }
                 }
                 break;
             default:

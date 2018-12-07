@@ -58,7 +58,19 @@ imports="
 		public void createStatement(INode node) {
 			super.createStatement(node);
 			String enableStream = ElementParameterParser.getValue(node, "__ENABLE_STREAM__");
-			String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
+            boolean useExistMySQLConn = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+            String dbVersion = "";
+            if (useExistMySQLConn) {
+                List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
+                String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
+                for (INode ne : nodes) {
+                    if (connectionMySQL.equals(ne.getUniqueName())) {
+                        dbVersion = ElementParameterParser.getValue(ne, "__DB_VERSION__");
+                    }
+                }
+            } else {
+                dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
+            }
 		    if(("true").equals(enableStream)&&(!"MARIADB".equals(dbVersion))&&(!"MYSQL_8".equals(dbVersion))) {
 %>
 		        if(stmt_<%=cid %> instanceof com.mysql.jdbc.Statement){

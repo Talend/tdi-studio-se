@@ -19,7 +19,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_HEALTHCHECK;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_PARAMETERS;
@@ -46,14 +45,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
@@ -170,13 +167,12 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      * @param form Name of UI form
      * @return children names specified in ui::gridlayout metadata value
      */
-    Set<String> getChildrenNames(final String form) {
+    List<String> getChildrenNames(final String form) {
         if (hasGridLayout(form)) {
             final String gridLayout = getGridLayout(form);
-            final String[] names = gridLayout.split(GRIDLAYOUT_SEPARATOR);
-            return Stream.of(names).collect(toSet());
+            return asList(gridLayout.split(GRIDLAYOUT_SEPARATOR));
         }
-        return Collections.emptySet();
+        return Collections.emptyList();
     }
 
     /**
@@ -184,13 +180,13 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      *
      * @return children names specified in ui:optionsorder metadata value
      */
-    Set<String> getOptionsOrderNames() {
+    List<String> getOptionsOrderNames() {
         if (hasOptionsOrder()) {
             final String optionsOrder = delegate.getMetadata().get(UI_OPTIONS_ORDER);
             final String[] names = optionsOrder.split(ORDER_SEPARATOR);
-            return new HashSet<>(Arrays.asList(names));
+            return Arrays.asList(names);
         }
-        return Collections.emptySet();
+        return Collections.emptyList();
     }
 
     /**
@@ -200,7 +196,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      * @param form Name of UI form
      * @return order map or null, if there is no order for specified form
      */
-    HashMap<String, Integer> getChildrenOrder(final String form) {
+    Map<String, Integer> getChildrenOrder(final String form) {
         if (MAIN_FORM.equals(form)) {
             return getMainChildrenOrder();
         }
@@ -487,15 +483,11 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     Connection getConnection() {
         final String type = delegate.getMetadata().get(Metadatas.UI_STRUCTURE_TYPE);
         final String value = delegate.getMetadata().get(Metadatas.UI_STRUCTURE_VALUE);
+        final String discoverSchema = delegate.getMetadata().get(Metadatas.UI_STRUCTURE_DISCOVERSCHEMA);
         if (type == null || value == null) {
             throw new IllegalStateException("property has no structure");
         }
-        return new Connection(Connection.Type.valueOf(type), value);
-    }
-
-    String getSchemaName() {
-        final Connection.Type connectionType = getConnection().getType();
-        return connectionType + "$$" + getPath();
+        return new Connection(Connection.Type.valueOf(type), value, discoverSchema);
     }
 
     @Override
@@ -717,18 +709,23 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
     public static class Connection {
 
+        public static final String DEFAULT = "__default__";
+
         private final Type type;
 
         private final String value;
+
+        private final String discoverSchema;
 
         public enum Type {
             IN,
             OUT;
         }
 
-        public Connection(final Type type, final String value) {
+        public Connection(final Type type, final String value, final String discoverSchema) {
             this.type = type;
             this.value = value;
+            this.discoverSchema = discoverSchema;
         }
 
         public Type getType() {
@@ -739,45 +736,10 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             return this.value;
         }
 
-        @Override
-        public boolean equals(final Object o) {
-            if (o == this)
-                return true;
-            if (!(o instanceof Connection))
-                return false;
-            final Connection other = (Connection) o;
-            if (!other.canEqual(this))
-                return false;
-            final Object this$type = this.getType();
-            final Object other$type = other.getType();
-            if (this$type == null ? other$type != null : !this$type.equals(other$type))
-                return false;
-            final Object this$value = this.getValue();
-            final Object other$value = other.getValue();
-            if (this$value == null ? other$value != null : !this$value.equals(other$value))
-                return false;
-            return true;
+        public String getDiscoverSchema() {
+            return this.discoverSchema;
         }
 
-        protected boolean canEqual(final Object other) {
-            return other instanceof Connection;
-        }
-
-        @Override
-        public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            final Object $type = this.getType();
-            result = result * PRIME + ($type == null ? 43 : $type.hashCode());
-            final Object $value = this.getValue();
-            result = result * PRIME + ($value == null ? 43 : $value.hashCode());
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "PropertyDefinitionDecorator.Connection(type=" + this.getType() + ", value=" + this.getValue() + ")";
-        }
     }
 
     public static class Suggestions {

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.talend.core.GlobalServiceRegister;
@@ -122,7 +123,7 @@ public class XmlMapService implements IXmlMapService {
             if (oriInput.isActivateExpressionFilter() != testInput.isActivateExpressionFilter()) {
                 return true;
             }
-            if (oriInput.getExpressionFilter() != testInput.getExpressionFilter()) {
+            if (!StringUtils.equals(oriInput.getExpressionFilter(), testInput.getExpressionFilter())) {
                 return true;
             }
             if (oriInput.isMinimized() != testInput.isMinimized()) {
@@ -172,7 +173,7 @@ public class XmlMapService implements IXmlMapService {
             if (oriOutput.isActivateExpressionFilter() != testOutput.isActivateExpressionFilter()) {
                 return true;
             }
-            if (oriOutput.getExpressionFilter() != testOutput.getExpressionFilter()) {
+            if (!StringUtils.equals(oriOutput.getExpressionFilter(), testOutput.getExpressionFilter())) {
                 return true;
             }
             if (oriOutput.isMinimized() != testOutput.isMinimized()) {

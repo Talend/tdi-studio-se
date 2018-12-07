@@ -105,6 +105,7 @@ import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ISubjobContainer;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.process.UniqueNodeNameGenerator;
 import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
@@ -2414,7 +2415,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 processItem = ItemCacheManager.getProcessItem((String) processIdParam.getValue());
             }
             if (processItem != null) {
-                nc.setPropertyValue(processParam.getName(), processItem.getProperty().getLabel());
+                org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
+                String itemLabel = ProcessUtils.getProjectProcessLabel(project.getTechnicalLabel(),processItem.getProperty().getLabel());
+                nc.setPropertyValue(processParam.getName(), itemLabel);
             }
         }
         // nc.setData(nType.getBinaryData(), nType.getStringData());

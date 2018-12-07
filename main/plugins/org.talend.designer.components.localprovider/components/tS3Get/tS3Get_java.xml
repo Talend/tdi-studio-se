@@ -255,15 +255,18 @@
       NAME="FILE"
       FIELD="FILE"
       NUM_ROW="50"
+      NOT_SHOW_IF="(USE_SELECT == 'true')AND(GLOBALMAP_INPUTSTREAM == 'true')"
       REQUIRED="true"
     >
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/out.csv"</DEFAULT>
     </PARAMETER>
     
+    
+    
     <PARAMETER
       NAME="DIE_ON_ERROR"
       FIELD="CHECK"
-      NUM_ROW="121"
+      NUM_ROW="140"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -339,6 +342,148 @@
     >   	
     <DEFAULT>false</DEFAULT>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="USE_SELECT"
+      FIELD="CHECK"
+      NUM_ROW="60"
+      GROUP="SELECT_GROUP"
+    >   	
+    <DEFAULT>false</DEFAULT>
+    
+    </PARAMETER>
+
+	<PARAMETER NAME="FILE_TYPE" FIELD="CLOSED_LIST" NUM_ROW="65"
+		GROUP="SELECT_GROUP" SHOW_IF="USE_SELECT == 'true'">
+		<ITEMS DEFAULT="CSV">
+			<ITEM NAME="CSV" VALUE="CSV" />
+			<ITEM NAME="JSON" VALUE="JSON" />
+			<ITEM NAME="APACHE_PARQUET" VALUE="APACHE_PARQUET" />
+		</ITEMS>
+	</PARAMETER>
+	
+	    <PARAMETER
+      NAME="QUERY"
+      FIELD="TEXT"
+      NUM_ROW="67"
+      REQUIRED="true"
+      GROUP="SELECT_GROUP" SHOW_IF="USE_SELECT == 'true'"
+    >
+    <DEFAULT>"select s._1 from S3Object s"</DEFAULT>
+    </PARAMETER>
+
+	<PARAMETER NAME="COMPRESSED_TYPE" FIELD="CLOSED_LIST"
+		NUM_ROW="70" GROUP="SELECT_GROUP"
+		SHOW_IF="(USE_SELECT == 'true')">
+		<ITEMS DEFAULT="NONE">
+			<ITEM NAME="GZIP" VALUE="GZIP" NOT_SHOW_IF="FILE_TYPE == 'APACHE_PARQUET'"/>
+			<ITEM NAME="BZIP2" VALUE="BZIP2" NOT_SHOW_IF="FILE_TYPE == 'APACHE_PARQUET'"/>
+			<ITEM NAME="NONE" VALUE="NONE" />
+		</ITEMS>
+	</PARAMETER>
+
+	<PARAMETER NAME="JSON_TYPE" FIELD="CLOSED_LIST" NUM_ROW="75"
+		GROUP="SELECT_GROUP" SHOW_IF="(USE_SELECT == 'true')AND(FILE_TYPE == 'JSON')">
+		<ITEMS DEFAULT="LINES">
+			<ITEM NAME="DOCUMENT" VALUE="DOCUMENT" />
+			<ITEM NAME="LINES" VALUE="LINES" />
+		</ITEMS>
+	</PARAMETER>
+	
+	<PARAMETER NAME="HEADER_TYPE" FIELD="CLOSED_LIST" NUM_ROW="75"
+		GROUP="SELECT_GROUP" SHOW_IF="(USE_SELECT == 'true')AND(FILE_TYPE == 'CSV')">
+		<ITEMS DEFAULT="USE">
+			<ITEM NAME="NONE" VALUE="NONE" />
+			<ITEM NAME="USE" VALUE="USE" />
+			<ITEM NAME="IGNORE" VALUE="IGNORE" />
+		</ITEMS>
+	</PARAMETER>
+
+	<PARAMETER NAME="FIELD_SEPARATOR" FIELD="TEXT" NUM_ROW="75"
+		REQUIRED="true" 
+		SHOW_IF="(USE_SELECT == 'true')AND(FILE_TYPE == 'CSV')"
+		GROUP="SELECT_GROUP">
+		<DEFAULT>","</DEFAULT>
+	</PARAMETER>
+	
+	<PARAMETER NAME="ADVANCE_CSV" FIELD="CHECK" NUM_ROW="80"
+	    SHOW_IF="(USE_SELECT == 'true')AND(FILE_TYPE == 'CSV')"
+		GROUP="SELECT_GROUP">
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
+
+        <PARAMETER
+      NAME="CSV_CONFIGURATION"
+      FIELD="TABLE"
+      NUM_ROW="85"
+      NB_LINES="5"
+      REQUIRED="true"
+      GROUP="SELECT_GROUP"
+      SHOW_IF="(ADVANCE_CSV =='true') AND (USE_SELECT == 'true') AND (FILE_TYPE == 'CSV')"
+    >
+      <ITEMS>
+        <ITEM NAME="CSV_PARAMETER" FIELD="CLOSED_LIST">
+            <ITEMS DEFAULT="ALLOWQUOTEDRECORDDELIMITER">
+                <ITEM NAME="ALLOWQUOTEDRECORDDELIMITER" VALUE="AllowQuotedRecordDelimiter"/>
+                <ITEM NAME="COMMENTS" VALUE="Comments"/>
+                <ITEM NAME="QUOTECHARACTER" VALUE="QuoteCharacter"/>
+                <ITEM NAME="QUOTEESCAPECHARACTER" VALUE="QuoteEscapeCharacter"/>
+                <ITEM NAME="RECORDDELIMITER" VALUE="RecordDelimiter"/>
+            </ITEMS>
+        </ITEM>
+        <ITEM NAME="VALUE" />
+      </ITEMS>
+    </PARAMETER>
+    
+    <PARAMETER NAME="GLOBALMAP_INPUTSTREAM" FIELD="CHECK" NUM_ROW="120"
+	    SHOW_IF="(USE_SELECT == 'true')"
+		GROUP="SELECT_GROUP">
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
+	
+	<PARAMETER NAME="CONFIG_OUTPUT" FIELD="CHECK" NUM_ROW="100"
+	    SHOW_IF="(USE_SELECT == 'true')"
+		GROUP="SELECT_GROUP">
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
+	
+    <PARAMETER NAME="OUTPUT_TYPE" FIELD="CLOSED_LIST" NUM_ROW="105"
+		GROUP="SELECT_GROUP" SHOW_IF="(USE_SELECT == 'true') AND (CONFIG_OUTPUT == 'true')">
+		<ITEMS DEFAULT="CSV">
+			<ITEM NAME="CSV" VALUE="CSV" />
+			<ITEM NAME="JSON" VALUE="JSON" />
+		</ITEMS>
+	</PARAMETER>
+	
+	  <PARAMETER
+      NAME="OUTPUT_CSV_CONFIG"
+      FIELD="TABLE"
+      NUM_ROW="110"
+      NB_LINES="5"
+      REQUIRED="true"
+      GROUP="SELECT_GROUP"
+      SHOW_IF="(CONFIG_OUTPUT =='true') AND (USE_SELECT == 'true')AND (OUTPUT_TYPE == 'CSV')"
+    >
+      <ITEMS>
+        <ITEM NAME="CSV_PARAMETER" FIELD="CLOSED_LIST">
+            <ITEMS DEFAULT="FIELDDELIMITER">
+                <ITEM NAME="FIELDDELIMITER" VALUE="FieldDelimiter"/>
+                <ITEM NAME="QUOTEFIELDS" VALUE="QuoteFields"/>
+                <ITEM NAME="QUOTECHARACTER" VALUE="QuoteCharacter"/>
+                <ITEM NAME="QUOTEESCAPECHARACTER" VALUE="QuoteEscapeCharacter"/>
+                <ITEM NAME="RECORDDELIMITER" VALUE="RecordDelimiter"/>
+            </ITEMS>
+        </ITEM>
+        <ITEM NAME="VALUE" />
+      </ITEMS>
+    </PARAMETER>
+    
+    <PARAMETER NAME="JSON_RECORDDELIMITER" FIELD="TEXT" NUM_ROW="110"
+		REQUIRED="true" 
+		SHOW_IF="(USE_SELECT == 'true')AND(CONFIG_OUTPUT == 'true') AND (OUTPUT_TYPE == 'JSON')"
+		GROUP="SELECT_GROUP">
+		<DEFAULT>"\n"</DEFAULT>
+	</PARAMETER>
 
     </ADVANCED_PARAMETERS>
 
@@ -347,14 +492,14 @@
        <IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
 			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-core-2.9.4.jar" MODULE="jackson-core-2.9.4.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.4"
+		<IMPORT NAME="jackson-core-2.9.5.jar" MODULE="jackson-core-2.9.5.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.5"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-databind-2.9.4.jar" MODULE="jackson-databind-2.9.4.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.4"
+		<IMPORT NAME="jackson-databind-2.9.5.jar" MODULE="jackson-databind-2.9.5.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.5"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-annotations-2.9.4.jar" MODULE="jackson-annotations-2.9.4.jar"
-			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.4"
+		<IMPORT NAME="jackson-annotations-2.9.0.jar" MODULE="jackson-annotations-2.9.0.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		<IMPORT NAME="httpcore-4.4.9.jar" MODULE="httpcore-4.4.9.jar"
 			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"
@@ -376,5 +521,7 @@
     </IMPORTS>
    </CODEGENERATION>
 
-   <RETURNS/>
+       <RETURNS>
+        <RETURN NAME="RECORDS_INPUTSTREAM" TYPE="id_Object" AVAILABILITY="AFTER" />
+    </RETURNS>
 </COMPONENT>

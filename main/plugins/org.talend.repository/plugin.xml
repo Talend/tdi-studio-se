@@ -3105,11 +3105,11 @@
         <projecttask
               beforeLogon="false"
               breaks="7.1.0"
-              class="org.talend.repository.model.migration.UncheckMoveToRemoteDirSFTP"
-              description="Uncheck Move to current dir property when use sftp connection component"
-              id="org.talend.repository.model.migration.UncheckMoveToRemoteDirSFTP"
-              name="UncheckMoveToRemoteDirSFTP"
-              version="7.1.1">
+              class="org.talend.repository.model.migration.MySQLDefaultDBVersion"
+              description="If job doesn't have DB version, it will be set to v5"
+              id="org.talend.repository.model.migration.MySQLDefaultDBVersion"
+              name="MySQLDefaultDBVersion"
+              version="7.1.0">
         </projecttask>
         <projecttask
               beforeLogon="false"
@@ -3123,10 +3123,28 @@
         <projecttask
               beforeLogon="false"
               breaks="7.1.0"
+              class="org.talend.repository.model.migration.UseOracle11VersionInsteadOfRemoved"
+              description="Use oracle 11 version instead of removed"
+              id="org.talend.repository.model.migration.UseOracle11VersionInsteadOfRemoved"
+              name="UseOracle11VersionInsteadOfRemoved"
+              version="7.1.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.3.1"
+              class="org.talend.repository.model.migration.CheckS3AccessibilityMigrationTask"
+              description="Use the old behavior get bucket logging config to check connection"
+              id="org.talend.repository.model.migration.CheckS3AccessibilityMigrationTask"
+              name="CheckS3AccessibilityMigrationTask"
+              version="7.0.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
               class="org.talend.repository.model.migration.DecrementLimitTFileInputDelimitedTDI32185"
               id="org.talend.repository.model.migration.DecrementLimitTFileInputDelimitedTDI32185"
               name="DecrementLimitTFileInputDelimitedTDI32185"
-              version="7.1.1">
+              version="7.2.1">
         </projecttask>
    </extension>
 
@@ -3216,6 +3234,9 @@
       </initializer>
       <initializer
             class="org.talend.repository.preference.initializer.MavenVersionManagementProjectSettingPageInitializer">
+      </initializer>
+      <initializer
+            class="org.talend.repository.preference.initializer.ArtifactRepositoryShareSettingPageInitializer">
       </initializer>
    </extension>
    <extension
@@ -3337,6 +3358,14 @@
             title="%projectSetting.deploymentConfiguration">
          <tester
                class="org.talend.repository.preference.MavenDeploymentConfigurationProjectSettingPageTester">
+         </tester>
+      </page>
+      <page
+            class="org.talend.repository.preference.ArtifactRepositoryShareSettingPage"
+            id="projectsetting.RepositoryShare"
+            title="%projectsetting.RepositoryShare">
+         <tester
+               class="org.talend.repository.preference.ArtifactRepositoryShareSettingPageTester">
          </tester>
       </page>
    </extension>

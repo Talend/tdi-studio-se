@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
@@ -48,8 +49,11 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
+import org.talend.designer.joblet.model.JobletFactory;
+import org.talend.designer.joblet.model.JobletProcess;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.documentation.ERepositoryActionName;
@@ -66,11 +70,14 @@ public class ProcessChangeListenerTest {
 
     private String projectTechName;
 
+    private BuildCacheManager buildCacheManager;
+
     @Before
     public void setUp() throws Exception {
         factory = ProxyRepositoryFactory.getInstance();
         testJobs = new ArrayList<>();
         projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+        buildCacheManager = BuildCacheManager.getInstance();
     }
 
     @Test
@@ -112,6 +119,54 @@ public class ProcessChangeListenerTest {
         toAdd.add("jobs/process/testPropertiesChangeNewNameJob_0.1".toLowerCase());
         toAdd.add("jobs/process/testPropertiesChangeNewNameJob_0.2".toLowerCase());
         checkRootPomModules(toRemove, toAdd);
+    }
+
+    @Test
+    public void testPropertiesChange_Joblet_Label() throws Exception {
+        String id = factory.getNextId();
+        String oldJobletName = "testPropertiesChangeOldNameJoblet";
+        Property oldProperty1 = createJobletProperty(id, oldJobletName, "0.1", new Path(""), true);
+        TalendJavaProjectManager.generatePom(oldProperty1.getItem());
+        Property oldProperty2 = createJobletProperty(id, oldJobletName, "0.2", new Path(""), true);
+        TalendJavaProjectManager.generatePom(oldProperty2.getItem());
+
+        buildCacheManager.putJobletCache(oldProperty1);
+        buildCacheManager.putJobletCache(oldProperty2);
+
+        assertTrue(buildCacheManager.isInCurrentJobletCache(oldProperty1));
+        assertTrue(buildCacheManager.isInCurrentJobletCache(oldProperty1));
+
+        IProject project = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());
+        IFolder jobletsFolder = project.getFolder("joblets");
+        for (IResource resource : jobletsFolder.members()) {
+            if (resource instanceof IFile && resource.getName().startsWith(oldJobletName)) {
+                resource.delete(true, null);
+            }
+        }
+
+        String newJobletName = "testPropertiesChangeNewNameJoblet";
+        Property newProperty1 = createJobletProperty(id, newJobletName, "0.1", new Path(""), true);
+        Property newProperty2 = createJobletProperty(id, newJobletName, "0.2", new Path(""), true);
+
+        factory.fireRepositoryPropertyChange(ERepositoryActionName.PROPERTIES_CHANGE.getName(),
+                new String[] { oldJobletName, "0.2" }, newProperty2);
+
+        assertFalse(getItemPomFile(oldProperty1).exists());
+        assertFalse(getItemPomFile(oldProperty2).exists());
+
+        assertTrue(getItemPomFile(newProperty1).exists());
+        assertTrue(getItemPomFile(newProperty2).exists());
+
+        List<String> toRemove = new ArrayList<>();
+        List<String> toAdd = new ArrayList<>();
+        toRemove.add("jobs/joblets/testPropertiesChangeOldNameJoblet_0.1".toLowerCase());
+        toRemove.add("jobs/joblets/testPropertiesChangeOldNameJoblet_0.2".toLowerCase());
+        toAdd.add("jobs/joblets/testPropertiesChangeNewNameJoblet_0.1".toLowerCase());
+        toAdd.add("jobs/joblets/testPropertiesChangeNewNameJoblet_0.2".toLowerCase());
+        checkRootPomModules(toRemove, toAdd);
+
+        assertFalse(buildCacheManager.isInCurrentJobletCache(oldProperty1));
+        assertFalse(buildCacheManager.isInCurrentJobletCache(oldProperty2));
     }
 
     @Test
@@ -378,6 +433,27 @@ public class ProcessChangeListenerTest {
         return property;
     }
 
+    private Property createJobletProperty(String id, String label, String version, IPath path, boolean create) throws Exception {
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        property.setId(id);
+        property.setLabel(label);
+        property.setVersion(version);
+
+        JobletProcessItem item = PropertiesFactory.eINSTANCE.createJobletProcessItem();
+        item.setProperty(property);
+
+        JobletProcess jobletProcess = JobletFactory.eINSTANCE.createJobletProcess();
+        ParametersType parameterType = TalendFileFactory.eINSTANCE.createParametersType();
+        jobletProcess.setParameters(parameterType);
+        item.setJobletProcess(jobletProcess);
+
+        if (create) {
+            ProxyRepositoryFactory.getInstance().create(item, path);
+            testJobs.add(property);
+        }
+        return property;
+    }
+
     private void checkRootPomModules(List<String> toRemove, List<String> toAdd) throws Exception {
         File projectPomFile = new AggregatorPomsHelper().getProjectRootPom().getLocation().toFile();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -438,6 +514,7 @@ public class ProcessChangeListenerTest {
                 }
             }
             testJobs.clear();
+            buildCacheManager.clearAllCaches();
         }
     }
 

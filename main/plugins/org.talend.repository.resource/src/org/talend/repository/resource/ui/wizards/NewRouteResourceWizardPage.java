@@ -35,11 +35,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.talend.camel.model.CamelRepositoryNodeType;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.metadata.managment.ui.wizard.AbstractNamedWizardPage;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizardPage;
 import org.talend.repository.resource.i18n.Messages;
 
@@ -156,19 +156,21 @@ public class NewRouteResourceWizardPage extends PropertiesWizardPage {
 		if(!nameStatus.isOK()){
 			updatePageStatus();
 			return;
-		}
-		//Check name is existing or not
-		else if(!isValidResourceName(trimName)){
-			nameStatus = createStatus(IStatus.ERROR, Messages.getString("NewRouteResourceWizardPage.itemAlreadyExist")); //$NON-NLS-1$
-			updatePageStatus();
-			return;
-		}
-		//consider it's a valid name
-		else{
-			if (property != null && nameStatus.getSeverity() == IStatus.OK) {
-				property.setLabel(getPropertyLabel(trimName));
-				property.setDisplayName(trimName);
-				property.setModificationDate(new Date());
+		} else {
+			nameStatus = AbstractNamedWizardPage.createOkStatus();
+			// Check name is existing or not
+			if (!isValidResourceName(trimName)) {
+				nameStatus = createStatus(IStatus.ERROR, Messages.getString("NewRouteResourceWizardPage.itemAlreadyExist")); //$NON-NLS-1$
+				updatePageStatus();
+				return;
+			}
+			// consider it's a valid name
+			else {
+				if (property != null && nameStatus.getSeverity() == IStatus.OK) {
+					property.setLabel(getPropertyLabel(trimName));
+					property.setDisplayName(trimName);
+					property.setModificationDate(new Date());
+				}
 			}
 		}
 
@@ -239,7 +241,7 @@ public class NewRouteResourceWizardPage extends PropertiesWizardPage {
 	}
 
 	public ERepositoryObjectType getRepositoryObjectType() {
-		return CamelRepositoryNodeType.repositoryRouteResourceType;
+        return ERepositoryObjectType.RESOURCES;
 	}
 
 	public URL getUrl() {

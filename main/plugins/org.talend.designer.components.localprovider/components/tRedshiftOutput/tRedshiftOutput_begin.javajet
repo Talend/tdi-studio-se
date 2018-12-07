@@ -56,11 +56,13 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 
+	String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
+
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
     String batchSize = ElementParameterParser.getValue(node, "__BATCH_SIZE__");
 
     String rejectConnName = null;
-    List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
+    List< ? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
     if(rejectConns != null && rejectConns.size() > 0) {
         IConnection rejectConn = rejectConns.get(0);
         rejectConnName = rejectConn.getName();
@@ -209,37 +211,73 @@ if(("true").equals(useExistingConn)) {
 	String conn = "conn_" + connection;
 	%>
 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
-	<%dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");%>
+	
+<%
+	//Retrieve connection node and check if SSO was used for correct logging
+	List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tRedshiftConnection");
+	String connectionRedShift = ElementParameterParser.getValue(node,"__CONNECTION__");
+	for (INode ne : nodes) {
+		if (connectionRedShift.equals(ne.getUniqueName())) {
+			jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
+		}
+	}
+	if ("SSO".equals(jdbcUrl)){
+		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", null);
+	} else {
+		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");
+	}
+%>
 	<%
 } else {
 	%>
+    java.lang.Class.forName("com.amazon.redshift.jdbc42.Driver");
+    <%dbLog.conn().logJDBCDriver(dbLog.str("com.amazon.redshift.jdbc42.Driver"));%>
+    StringBuilder sbuilder_<%=cid%> = new StringBuilder();
+    sbuilder_<%=cid%>.append("jdbc:redshift:");
+<%
+    if ("SSO".equals(jdbcUrl)){
+%>
+        sbuilder_<%=cid%>.append("iam:");
+<%
+    }
+%>
+    sbuilder_<%=cid%>.append("//")
+                     .append(<%=dbhost%>)
+                     .append(":")
+                     .append(<%=dbport%>)
+                     .append("/")
+                     .append(<%=dbname%>);
+<%
+    if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
+%>
+        sbuilder_<%=cid%>.append("?").append(<%=dbproperties%>);
+<%
+    }
+%>
+    String url_<%=cid%> = sbuilder_<%=cid%>.toString();
+	
+	
+	
+	
+	
+	
+<%  if ("SSO".equals(jdbcUrl)){%>
+		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>);
+		<%dbLog.conn().connTry(dbLog.var("url"), null);%>
+		<%dbLog.conn().connDone(dbLog.var("url"));%>
+<%  } else {%>
+		String dbUser_<%=cid %> = <%=dbuser%>;
+		<%
+		String passwordFieldName = "__PASS__";
+		%>
 
-    java.lang.Class.forName("com.amazon.redshift.jdbc41.Driver");
-    <%dbLog.conn().logJDBCDriver(dbLog.str("com.amazon.redshift.jdbc41.Driver"));%>
-    
-    <%
-    if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
-	%>
-		String url_<%=cid %> = "jdbc:redshift://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
-	<%
-	} else {
-	%>
-		String url_<%=cid%> = "jdbc:redshift://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
-	<%
-	}
-    %>
-    
-    String dbUser_<%=cid %> = <%=dbuser%>;
-    <%
-    String passwordFieldName = "__PASS__";
-    %>
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-
-    String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
-    <%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>
-    conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
-	<%dbLog.conn().connDone(dbLog.var("url"));%>
+		String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
+		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
+		<%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>
+		<%dbLog.conn().connDone(dbLog.var("url"));%>
+<%  }%>
 	resourceMap.put("conn_<%=cid%>", conn_<%=cid%>);
     conn_<%=cid%>.setAutoCommit(false);
 	<%
@@ -349,7 +387,7 @@ if(columnList != null && columnList.size()>0) {
 			StringBuilder extendInsertValueStmt_<%=cid%> = new StringBuilder();
 			for(int i_<%=cid%>=0;i_<%=cid%> < numPerInsert_<%=cid%>;i_<%=cid%>++){
 				 extendInsertValueStmt_<%=cid%>.append(valueList_<%=cid%>);
-				 if (i_<%=cid%>!=numPerInsert_<%=cid%>-1) extendInsertValueStmt_<%=cid%>.append(",");
+				 if (i_<%=cid%> !=numPerInsert_<%=cid%>-1) extendInsertValueStmt_<%=cid%>.append(",");
 			}
 
 			String insert_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES " + extendInsertValueStmt_<%=cid%>.toString();

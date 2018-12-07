@@ -28,10 +28,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.talend.core.model.process.EParameterFieldType;
-
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
+
+import org.talend.core.model.process.EParameterFieldType;
 
 public class PropertyNode {
 
@@ -148,7 +148,7 @@ public class PropertyNode {
      * @return children of specified form
      */
     public List<PropertyNode> getChildren(final String form) {
-        final Set<String> childrenNames = getChildrenNames(form);
+        final Set<String> childrenNames = new HashSet<>(getChildrenNames(form));
         return children.stream().filter(node -> childrenNames.contains(node.property.getName())).collect(Collectors.toList());
     }
     
@@ -185,8 +185,8 @@ public class PropertyNode {
      * @param form Name or form
      * @return sorted list
      */
-    private List<PropertyNode> sortChildren(final List<PropertyNode> children, final String form) {
-        final HashMap<String, Integer> order = property.getChildrenOrder(form);
+    protected List<PropertyNode> sortChildren(final List<PropertyNode> children, final String form) {
+        final Map<String, Integer> order = property.getChildrenOrder(form);
         if (order != null) {
             children.sort((node1, node2) -> {
                 Integer i1 = order.get(node1.getProperty().getName());
@@ -199,6 +199,17 @@ public class PropertyNode {
     }
 
     /**
+     * Returns all children names
+     *
+     * Subclasses may override this method
+     *
+     * @return children names
+     */
+    protected List<String> getChildrenNames() {
+        return children.stream().map(n -> n.getProperty().getName()).collect(Collectors.toList());
+    }
+
+    /**
      * Returns children names for specified <code>form</code>.
      * If <code>form</code> is Main form its children may be specified by ui::gridlayout or ui:optionsorder.
      * If it has no both metadata, then all children are considered as Main children.
@@ -207,12 +218,11 @@ public class PropertyNode {
      * @param form Name of form
      * @return children names of specified <code>form</code>
      */
-    private Set<String> getChildrenNames(final String form) {
+    protected List<String> getChildrenNames(final String form) {
         if (MAIN_FORM.equals(form)) {
             return getMainChildrenNames();
-        } else {
-            return property.getChildrenNames(form);
         }
+        return property.getChildrenNames(form);
     }
 
     /**
@@ -222,21 +232,21 @@ public class PropertyNode {
      * If it has ui:optionsorder (and has no any ui:gridlayout), then names are retrieved from there
      * If it has no both metadatas, then all children belong to Main form
      *
+     * This implementation calls overridable {@link #getChildrenNames()} to get all children names
+     *
      * @return children names for Main form
      */
-    private Set<String> getMainChildrenNames() {
+    private List<String> getMainChildrenNames() {
         if (property.hasGridLayout(MAIN_FORM)) {
             return property.getChildrenNames(MAIN_FORM);
         }
         if (property.hasGridLayouts()) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
         if (property.hasOptionsOrder()) {
             return property.getOptionsOrderNames();
         }
-        final Set<String> names = new HashSet<>();
-        children.forEach(node -> names.add(node.getProperty().getName()));
-        return names;
+        return getChildrenNames();
     }
 
     public Layout getLayout(final String name) {
@@ -275,12 +285,7 @@ public class PropertyNode {
         }
 
         private void createLayout() {
-            final Layout layout;
-            if (current.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
-                layout = new Layout(current.getProperty().getSchemaName());
-            } else {
-                layout = new Layout(current.getId());
-            }
+            final Layout layout = new Layout(current.getId());
             if (!current.isLeaf()) {
                 if (current.getProperty().hasGridLayout(form)) {
                     fillGridLayout(layout, current.getProperty().getUpdatable());

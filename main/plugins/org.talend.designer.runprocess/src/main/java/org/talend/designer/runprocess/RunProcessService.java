@@ -452,6 +452,11 @@ public class RunProcessService implements IRunProcessService {
         delegateService.generatePom(item);
     }
 
+    @Override
+    public void generatePom(Item item, int option) {
+        delegateService.generatePom(item, option);
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -471,6 +476,12 @@ public class RunProcessService implements IRunProcessService {
     public void handleJobDependencyLoop(JobInfo mainJobInfo, List<JobInfo> listJobs, IProgressMonitor progressMonitor)
             throws Exception {
         delegateService.handleJobDependencyLoop(mainJobInfo, listJobs, progressMonitor);
+    }
+
+    @Override
+    public boolean isdebug() {
+        
+        return delegateService.isdebug();
     }
 
 }

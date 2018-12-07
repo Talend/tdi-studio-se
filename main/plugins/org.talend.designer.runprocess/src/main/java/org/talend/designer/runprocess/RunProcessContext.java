@@ -1478,7 +1478,9 @@ public class RunProcessContext {
                                     firePropertyChange(PREVIOUS_ROW, true, false);
                                 }
                                 lastIsRow = false;
-                                pred.writeObject(TraceStatusBean.STATUS_WAITING);
+                                if (!isBasicRun()) {
+                                    pred.writeObject(TraceStatusBean.STATUS_WAITING);
+                                }
                             }
                             continue;
                         } else if (data instanceof TraceDataBean && ((TraceDataBean) data).getData() != null) {
@@ -1937,7 +1939,8 @@ public class RunProcessContext {
                     endpoint = TalendTextUtils.removeQuotes(endpoint);
                     if (endpoint.startsWith("/"))
                         endpoint = endpoint.substring(1);
-                    url = defaultRestUri + endpoint;
+                    String fullURL = defaultRestUri + endpoint;
+                    url = fullURL.replaceAll("(?<!(http:|https:))//", "/");
                 }
                 if (url != null)
                     addMessage(new ProcessMessage(MsgType.CORE_OUT, "Endpoint deployed at: " + url));

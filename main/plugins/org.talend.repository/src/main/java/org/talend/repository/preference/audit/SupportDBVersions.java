@@ -26,15 +26,19 @@ public enum SupportDBVersions {
     JTDS(SupportDBUrlType.MSSQLDEFAULTURL, "Open source JTDS", "JTDS"), //$NON-NLS-1$ //$NON-NLS-2$
     MSSQL_PROP(SupportDBUrlType.MSSQLDEFAULTURL, "Microsoft", "MSSQL_PROP"), //$NON-NLS-1$ //$NON-NLS-2$
     MARIADB(SupportDBUrlType.MARIADBDEFAULTURL, "MariaDB", "MARIADB"), //$NON-NLS-1$ //$NON-NLS-2$
+    MYSQL_8(SupportDBUrlType.MYSQLDEFAULTURL, "MySQL 8", "MYSQL_8"), //$NON-NLS-1$ //$NON-NLS-2$
     MYSQL_5(SupportDBUrlType.MYSQLDEFAULTURL, "MySQL 5", "MYSQL_5"), //$NON-NLS-1$ //$NON-NLS-2$
     MYSQL_4(SupportDBUrlType.MYSQLDEFAULTURL, "MySQL 4", "MYSQL_4"), //$NON-NLS-1$ //$NON-NLS-2$
+    ORACLE_18(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 18", "ORACLE_18"),
     ORACLE_12(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 12", "ORACLE_12"), //$NON-NLS-1$ //$NON-NLS-2$
     ORACLE_11(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 11", "ORACLE_11"), //$NON-NLS-1$ //$NON-NLS-2$
     ORACLE_10(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 10", "ORACLE_10"), //$NON-NLS-1$ //$NON-NLS-2$
     ORACLE_9(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 9", "ORACLE_9"), //$NON-NLS-1$ //$NON-NLS-2$
     ORACLE_8(SupportDBUrlType.ORACLEDEFAULTURL, "Oracle 8", "ORACLE_8"), //$NON-NLS-1$ //$NON-NLS-2$
-    PSQL_PRIOR_TO_V9(SupportDBUrlType.POSTGRESQLEFAULTURL, "Prior to v9", "PRIOR_TO_V9"), //$NON-NLS-1$ //$NON-NLS-2$
-    PSQL_V9_X(SupportDBUrlType.POSTGRESQLEFAULTURL, "v9.X", "V9_X");//$NON-NLS-1$ //$NON-NLS-2$
+    PSQL_V9_X(SupportDBUrlType.POSTGRESQLEFAULTURL, "v9 and later", "V9_X"),
+    PSQL_PRIOR_TO_V9(SupportDBUrlType.POSTGRESQLEFAULTURL, "Prior to v9", "PRIOR_TO_V9"); //$NON-NLS-1$ //$NON-NLS-2$
+    //$NON-NLS-1$ //$NON-NLS-2$
+	
 
     private String versionDisplayName;
 

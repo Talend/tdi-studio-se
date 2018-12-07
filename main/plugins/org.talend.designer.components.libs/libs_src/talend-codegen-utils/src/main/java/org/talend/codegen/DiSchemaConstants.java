@@ -100,4 +100,12 @@ public interface DiSchemaConstants {
     /** The key will have this as a prefix, pointing to the value. */
     String TALEND6_DYNAMIC_ADDITIONAL_PROPERTIES = "di.dynamic.prop."; //$NON-NLS-1$
 
+    /** tell Avro converter how to process Original Avro logical type time
+     * if value is "TALEND_DATE", it mean use Talend Date, if not, will use Talend Integer like before
+     * we add this only one purpose : for the old job, we keep Talend Integer, for new job, we use Talend Date
+     * */
+    public static final String LOGICAL_TIME_TYPE_AS = "LOGICAL_TIME_TYPE_AS";
+
+    public static final String AS_TALEND_DATE = "TALEND_DATE";
+
 }

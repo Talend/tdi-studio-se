@@ -64,6 +64,7 @@ import org.talend.core.service.IESBMicroService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.repository.i18n.Messages;
@@ -860,7 +861,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             }
             shellLauncherButton.setSelection(settings.getBoolean(STORE_SHELL_LAUNCHER_ID));
             // TDQ-15391: when have tDqReportRun, must always export items.
-            if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+            if (EmfModelUtils.getComponentByName(getProcessItem(), "tDqReportRun") != null) { //$NON-NLS-1$
                 jobItemButton.setSelection(true);
             } else {
                 jobItemButton.setSelection(settings.getBoolean(STORE_JOB_ID));
@@ -1086,12 +1087,13 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     private Map<ExportChoice, Object> getExportChoiceMapForImage() {
         Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
         exportChoiceMap.put(ExportChoice.buildImage, Boolean.TRUE);
-        exportChoiceMap.put(ExportChoice.needLauncher, Boolean.FALSE);
+        exportChoiceMap.put(ExportChoice.needLauncher, Boolean.TRUE);
+        exportChoiceMap.put(ExportChoice.launcherName, JobScriptsManager.UNIX_ENVIRONMENT);
         exportChoiceMap.put(ExportChoice.needSystemRoutine, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needUserRoutine, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needTalendLibraries, Boolean.TRUE);
         // TDQ-15391: when have tDqReportRun, must always export items.
-        if (EmfModelUtils.getComponentByName(processItem, "tDqReportRun") != null) { //$NON-NLS-1$
+        if (EmfModelUtils.getComponentByName(getProcessItem(), "tDqReportRun") != null) { //$NON-NLS-1$
             exportChoiceMap.put(ExportChoice.needJobItem, Boolean.TRUE);
         } else {
             exportChoiceMap.put(ExportChoice.needJobItem, Boolean.FALSE);
@@ -1458,13 +1460,11 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     }
 
     private String getDefaultImageTag(ProcessItem procesItem) {
-        IFile pomFile = AggregatorPomsHelper.getItemPomFolder(procesItem.getProperty())
-                .getFile(TalendMavenConstants.POM_FILE_NAME);
-        return PomUtil.getPomProperty(pomFile, "talend.job.version"); //$NON-NLS-1$
+        return PomIdsHelper.getJobVersion(procesItem.getProperty());
     }
 
     private String getDefaultImageTagPattern() {
-        return "${talend.job.version}"; //$NON-NLS-1$
+        return "${talend.docker.tag}"; //$NON-NLS-1$
     }
 
     private boolean isOptionValid(Text text, String label) {

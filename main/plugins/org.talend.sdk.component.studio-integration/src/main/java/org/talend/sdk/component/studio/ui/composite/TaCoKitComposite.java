@@ -16,7 +16,7 @@
 package org.talend.sdk.component.studio.ui.composite;
 
 import static java.util.stream.Stream.of;
-import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
+import static org.talend.sdk.component.studio.model.parameter.SchemaElementParameter.guessButtonName;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -286,7 +286,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
      * @param parent    Composite on which widget will be added
      * @param parameter ElementParameter(Model) associated with widget
      */
-    private void addWidgetIfActive(final Composite parent, final IElementParameter parameter) {
+    protected void addWidgetIfActive(final Composite parent, final IElementParameter parameter) {
         if (doShow(parameter)) {
             if (EParameterFieldType.SCHEMA_TYPE.equals(parameter.getFieldType())) {
                 addSchemaWidget(parent, parameter);
@@ -296,7 +296,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         }
     }
 
-    private Control addWidget(final Composite parent, final IElementParameter parameter, final Control previous) {
+    protected Control addWidget(final Composite parent, final IElementParameter parameter, final Control previous) {
         final AbstractElementPropertySectionController controller =
                 generator.getController(parameter.getFieldType(), this);
         return controller.createControl(parent, parameter, 1, 1, 0, previous);
@@ -329,7 +329,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         return layoutData;
     }
 
-    private boolean doShow(final IElementParameter parameter) {
+    protected boolean doShow(final IElementParameter parameter) {
         return parameter != null && parameter.getCategory() == section
                 && parameter.getFieldType() != EParameterFieldType.TECHNICAL && parameter.isShow(parameters);
     }

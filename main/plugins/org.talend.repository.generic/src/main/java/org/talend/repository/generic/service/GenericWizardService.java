@@ -15,8 +15,10 @@ package org.talend.repository.generic.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -229,23 +231,45 @@ public class GenericWizardService implements IGenericWizardService {
     public void updateComponentSchema(INode node, IMetadataTable metadataTable) {
         SchemaUtils.updateComponentSchema(node, metadataTable, Boolean.FALSE);
     }
-
+    
     @Override
     public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel, boolean withEvaluator) {
+        return getAllComponentProperties(connection, tableLabel, withEvaluator, false, new HashMap<Object, Object>());
+    }
+
+    @Override
+    public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel, boolean withEvaluator,
+            boolean forComponentValue, Map<Object, Object> contextMap) {
         List<ComponentProperties> componentProperties = new ArrayList<>();
         Set<ComponentProperties> componentPropertiesSet = new HashSet<>();
+        if(contextMap == null){
+            contextMap = new HashMap<Object, Object>();
+        }
         if (isGenericConnection(connection)) {
             String compProperties = connection.getCompProperties();
-            ComponentProperties cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection,
-                    withEvaluator);
+            ComponentProperties cp = null;
+            if(contextMap.get(connection.getId()) != null){
+                cp = (ComponentProperties) contextMap.get(connection.getId());
+            }else{
+                cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection,
+                        withEvaluator);
+                if(cp != null){
+                    contextMap.put(connection.getId(), cp);
+                }
+            }
             if (cp != null) {
                 componentProperties.add(cp);
             }
             List<MetadataTable> metadataTables;
-            if (tableLabel == null) {
+            //"forComponentValue" is avoid to load all the metadataTables, 
+            //if just get the component value, totally no need to get hundreds of tables,  
+            if (tableLabel == null && !forComponentValue) {
                 metadataTables = SchemaUtils.getMetadataTables(connection, SubContainer.class);
             } else {
                 metadataTables = Arrays.asList(SchemaUtils.getMetadataTable(connection, tableLabel, SubContainer.class));
+            }
+            if(metadataTables == null){
+                return componentProperties;
             }
             for (MetadataTable metadataTable : metadataTables) {
                 if (metadataTable == null) {
@@ -253,8 +277,15 @@ public class GenericWizardService implements IGenericWizardService {
                 }
                 for (TaggedValue taggedValue : metadataTable.getTaggedValue()) {
                     if (IComponentConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
-                        ComponentProperties compPros = ComponentsUtils
-                                .getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, withEvaluator);
+                        ComponentProperties compPros = null;
+                        if(contextMap.get(metadataTable.getId()) != null){
+                            compPros = (ComponentProperties) contextMap.get(metadataTable.getId());
+                        }else{
+                            compPros = ComponentsUtils.getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, withEvaluator);
+                            if(compPros != null){
+                                contextMap.put(metadataTable.getId(), compPros);
+                            }
+                        }
                         if (compPros != null && !componentPropertiesSet.contains(compPros)) {
                             compPros.updateNestedProperties(cp);
                             componentProperties.add(compPros);

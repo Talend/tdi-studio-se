@@ -55,8 +55,13 @@ class BigQueryUtil_<%=cid%> {
 	}
 	
 	public com.google.api.services.bigquery.model.Job executeQuery(String query, boolean useLargeResult) throws Exception{
+		return executeQuery(query, useLargeResult, true);
+	}
+	
+	public com.google.api.services.bigquery.model.Job executeQuery(String query, boolean useLargeResult, boolean useLegacySql) throws Exception{
 		com.google.api.services.bigquery.model.JobConfigurationQuery queryConfig = new com.google.api.services.bigquery.model.JobConfigurationQuery();
 		queryConfig.setQuery(query);
+		queryConfig.setUseLegacySql(useLegacySql);
 		if(useLargeResult){
 			this.useLargeResult = true;
 			tempDataset = genTempName("dataset");

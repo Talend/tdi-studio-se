@@ -737,6 +737,12 @@ public class StatsAndLogsManager {
 
                         if (isGeneric) {// reset the show if
                             resetShowIf(connectionNode);
+                            if (checkUrlContainsAutoCommit(connectionNode)) {
+                                IElementParameter autoCommitParam = connectionNode.getElementParameter("autocommit");//$NON-NLS-1$
+                                if (autoCommitParam != null) {
+                                    autoCommitParam.setValue(Boolean.TRUE);
+                                }
+                            }
                         }
 
                         if (connectionComponentName.contains("Oracle")) {//$NON-NLS-1$
@@ -764,11 +770,42 @@ public class StatsAndLogsManager {
                 }
             }
         }
-        DataConnection dataConnec = createDataConnectionForSubJobOK(dataNode, commitNode);
-        ((List<IConnection>) dataNode.getOutgoingConnections()).add(dataConnec);
-        ((List<IConnection>) commitNode.getIncomingConnections()).add(dataConnec);
-
+        boolean noCommitNode = false;
+        if (checkUrlContainsAutoCommit(connectionNode)) {
+            IElementParameter autoCommitParam = connectionNode.getElementParameter("autocommit");//$NON-NLS-1$
+            if (autoCommitParam != null && autoCommitParam.getValue() != null) {
+                noCommitNode = Boolean.parseBoolean(autoCommitParam.getValue().toString());
+                if (noCommitNode && nodeList.contains(commitNode)) {
+                    nodeList.remove(commitNode);
+                }
+            }
+        }
+        if (!noCommitNode) {
+            DataConnection dataConnec = createDataConnectionForSubJobOK(dataNode, commitNode);
+            ((List<IConnection>) dataNode.getOutgoingConnections()).add(dataConnec);
+            ((List<IConnection>) commitNode.getIncomingConnections()).add(dataConnec);
+        }
         return connectionNode;
+    }
+
+    private static boolean checkUrlContainsAutoCommit(DataNode connectionNode) {
+        if (connectionNode != null) {
+            boolean isGeneric = connectionNode.getComponent().getComponentType() == EComponentType.GENERIC;
+            if (isGeneric) {
+                IElementParameter urlParam = connectionNode
+                        .getElementParameter(EConnectionParameterName.GENERIC_URL.getDisplayName());
+                if (urlParam != null) {
+                    Object obj = urlParam.getValue();
+                    if (obj != null && obj instanceof String) {
+                        String url = (String) obj;
+                        if (url != null && url.toLowerCase().contains("autocommit=true")) {//$NON-NLS-1$
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private static void resetShowIf(DataNode connectionNode) {
@@ -1411,7 +1448,7 @@ public class StatsAndLogsManager {
             param.setRepositoryValue("DB_VERSION"); //$NON-NLS-1$
             param.setRequired(true);
             param.setShowIf(
-                    "(ON_DATABASE_FLAG == 'true') and (DB_TYPE == 'POSTGRESQL' or DB_TYPE == 'OCLE' or DB_TYPE == 'ACCESS' or DB_TYPE == 'OCLE_OCI' or DB_TYPE == 'MSSQL' or  DB_TYPE == 'MYSQL') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+                    "(ON_DATABASE_FLAG == 'true') and (DB_TYPE == 'POSTGRESQL' or DB_TYPE == 'SYBASE' or DB_TYPE == 'OCLE' or DB_TYPE == 'ACCESS' or DB_TYPE == 'OCLE_OCI' or DB_TYPE == 'MSSQL' or  DB_TYPE == 'MYSQL') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
             paramList.add(param);
         }
 
