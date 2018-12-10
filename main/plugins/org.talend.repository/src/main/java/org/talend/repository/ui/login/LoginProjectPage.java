@@ -875,6 +875,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                         List<ConnectionBean> storedConnections = connectionsDialog.getConnections();
                         loginHelper.setStoredConnections(storedConnections);
                         loginHelper.saveConnections();
+                        loginHelper.saveLastConnectionBean(getConnection());
                         fillUIContentsWithBusyCursor();
                         final ConnectionBean connection = getConnection();
                         if (connection == null) {
