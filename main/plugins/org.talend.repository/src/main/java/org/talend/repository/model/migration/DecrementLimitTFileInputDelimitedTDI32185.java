@@ -12,10 +12,8 @@ import org.talend.core.model.components.ModifyComponentsAction;
 import org.talend.core.model.components.conversions.IComponentConversion;
 import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.components.filters.NameComponentFilter;
-import org.talend.core.model.metadata.types.TypesManager;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
-import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.designer.core.model.utils.emf.talendfile.ColumnType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.MetadataType;
@@ -26,7 +24,7 @@ public class DecrementLimitTFileInputDelimitedTDI32185 extends AbstractJobMigrat
 
 	@Override
 	public Date getOrder() {
-		GregorianCalendar gc = new GregorianCalendar(2018, 7, 17, 0, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2018, 12, 10, 0, 0, 0);
 		return gc.getTime();
 	}
 
@@ -68,9 +66,7 @@ public class DecrementLimitTFileInputDelimitedTDI32185 extends AbstractJobMigrat
         						}
         					} catch(NumberFormatException e) {
         						String sLimit = limit.getValue();
-        						if(ContextParameterUtils.isContainContextParam(sLimit)) {
-        							limit.setValue(sLimit + "-1");
-        						}
+                                limit.setValue(sLimit + "-1");
         					}
         				}
         			}));
