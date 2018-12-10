@@ -38,7 +38,7 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.talend.libraries</groupId>
-                  <artifactId>checkArchive-1.1-20171121</artifactId>
+                  <artifactId>checkArchive-1.1-20181130</artifactId>
                   <version>6.0.0</version>
                 </artifactItem>
               </artifactItems>
