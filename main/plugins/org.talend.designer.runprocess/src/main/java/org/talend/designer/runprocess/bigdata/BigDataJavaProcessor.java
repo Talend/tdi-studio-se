@@ -40,6 +40,7 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.repository.build.IMavenPomCreator;
+import org.talend.designer.core.utils.BigDataJobUtil;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IBigDataProcessor;
@@ -223,7 +224,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         // StringBuffer.
         boolean needAllLibJars = true;
         if (needsShade()) {
-            BigDataJobUtil bdUtil = new BigDataJobUtil((ProcessItem) this.getProperty().getItem());
+            BigDataJobUtil bdUtil = new BigDataJobUtil(process);
             if (bdUtil.isMRWithHDInsight()) {
                 needAllLibJars = false;
             }
@@ -409,7 +410,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
     @Override
     public boolean needsShade() {
         if (needsShade == null && property != null) {
-            needsShade = new BigDataJobUtil((ProcessItem) property.getItem()).needsShade();
+            needsShade = new BigDataJobUtil(process).needsShade();
         }
         return needsShade;
     }
@@ -429,7 +430,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
                     modulesNeeded);
         }
 
-        return new BigDataJobUtil((ProcessItem) property.getItem()).getShadedModulesExclude(modulesNeeded);
+        return new BigDataJobUtil(getProcess()).getShadedModulesExclude(modulesNeeded);
     }
 
 }
