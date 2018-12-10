@@ -10,27 +10,29 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.designer.runprocess.bigdata;
+package org.talend.designer.core.utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.emf.common.util.EList;
 import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.hadoop.version.EHadoopDistributions;
 import org.talend.core.model.general.ModuleNeeded;
-import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.properties.Property;
+import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 
 /**
  * created by nrousseau on Mar 24, 2018 Detailled comment
@@ -38,10 +40,10 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
  */
 public class BigDataJobUtil {
 
-    private ProcessItem processItem;
+    private IProcess process;
 
-    public BigDataJobUtil(ProcessItem processItem) {
-        this.processItem = processItem;
+    public BigDataJobUtil(IProcess process) {
+        this.process = process;
     }
 
     /**
@@ -68,11 +70,10 @@ public class BigDataJobUtil {
     public boolean isSparkWithHDInsight() {
         boolean isSparkWithHDInsight = false;
         if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_SPARK)
-                || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM,
-                        HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
-            EList<ElementParameterType> parameters = processItem.getProcess().getParameters().getElementParameter();
+                || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
+            List<? extends IElementParameter> parameters = process.getElementParametersWithChildrens();
             boolean modeParameterVisited = false;
-            for (ElementParameterType pt : parameters) {
+            for (IElementParameter pt : parameters) {
                 if (pt.getName().equals("SPARK_LOCAL_MODE")) { //$NON-NLS-1$
                     modeParameterVisited = true;
                     if ("true".equals(pt.getValue())) { //$NON-NLS-1$
@@ -96,11 +97,11 @@ public class BigDataJobUtil {
 
     public boolean isMRWithHDInsight() {
         Boolean isMRWithHDInsight = false;
-        if (processItem != null) {
+        if (process != null) {
             isMRWithHDInsight = false;
             if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_MAPREDUCE)) {
-                EList<ElementParameterType> parameters = processItem.getProcess().getParameters().getElementParameter();
-                for (ElementParameterType pt : parameters) {
+                List<? extends IElementParameter> parameters = process.getElementParametersWithChildrens();
+                for (IElementParameter pt : parameters) {
                     if (pt.getName().equals("DISTRIBUTION") //$NON-NLS-1$
                             && EHadoopDistributions.MICROSOFT_HD_INSIGHT.getName().equals(pt.getValue())) {
                         isMRWithHDInsight = true;
@@ -119,11 +120,10 @@ public class BigDataJobUtil {
         Boolean isSparkInYarnClusterMode = false;
         // Test if we are in Spark or Spark streaming
         if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_SPARK)
-                || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM,
-                        HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
+                || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
 
-            EList<ElementParameterType> parameters = processItem.getProcess().getParameters().getElementParameter();
-            for (ElementParameterType pt : parameters) {
+            List<? extends IElementParameter> parameters = process.getElementParametersWithChildrens();
+            for (IElementParameter pt : parameters) {
                 if (HadoopConstants.SPARK_MODE.equals(pt.getName())
                         && HadoopConstants.SPARK_MODE_YARN_CLUSTER.equals(pt.getValue())) {
                     isSparkInYarnClusterMode = true;
@@ -135,31 +135,23 @@ public class BigDataJobUtil {
     }
 
     private boolean isBDJobWithFramework(ERepositoryObjectType objectType, String frameworkName) {
-        if (processItem != null) {
-            // Storm/SparkStreaming(PROCESS_STORM), MR/Spark(PROCESS_MR)
-            if (ERepositoryObjectType.getItemType(processItem).equals(objectType)) { // have same type
-                Property property = processItem.getProperty();
-                if (property != null && property.getAdditionalProperties() != null
-                        && frameworkName.equals(property.getAdditionalProperties().get(HadoopConstants.FRAMEWORK))) {
-                    return true;
-                }
-            }
+        // Storm/SparkStreaming(PROCESS_STORM), MR/Spark(PROCESS_MR)
+        if (process != null && process instanceof IProcess2 && ((IProcess2) process).getAdditionalProperties() != null
+                && frameworkName.equals(((IProcess2) process).getAdditionalProperties().get(HadoopConstants.FRAMEWORK))) {
+            return true;
         }
         return false;
     }
 
     /** Find the distribution where the generated jar rquired to have the context files inside **/
     public boolean needsToHaveContextInsideJar() {
-        if (processItem.getProcess() != null && processItem.getProcess().getParameters() != null) {
-            EList<ElementParameterType> parameters = processItem.getProcess().getParameters().getElementParameter();
-            for (ElementParameterType pt : parameters) {
+        List<? extends IElementParameter> parameters = process.getElementParametersWithChildrens();
+
+        if (process != null && parameters != null) {
+
+            for (IElementParameter pt : parameters) {
                 if (pt.getName().equals("DISTRIBUTION")) { //$NON-NLS-1$
-                    String value = pt.getValue();
-                    if ("MICROSOFT_HD_INSIGHT".equals(value) //$NON-NLS-1$
-                            || "GOOGLE_CLOUD_DATAPROC".equals(value) //$NON-NLS-1$
-                            || "CLOUDERA_ALTUS".equals(value)) { //$NON-NLS-1$
-                        return true;
-                    }
+                    return true;
                 }
             }
             if (isSparkWithYarnClusterMode()) {
@@ -167,6 +159,27 @@ public class BigDataJobUtil {
             }
         }
         return false;
+    }
+
+    public void setExcludedModules(Collection<ModuleNeeded> modulesNeeded) {
+        if (isMRWithHDInsight() || isSparkWithHDInsight()) {
+            // we need to exclude every non-MR Required jars.
+            for (ModuleNeeded currentModule : modulesNeeded) {
+                if (currentModule.isMrRequired()) {
+                    currentModule.setExcluded(true);
+                }
+            }
+        }
+    }
+
+    public void removeExcludedModules(Collection<ModuleNeeded> modulesNeeded) {
+        Iterator<ModuleNeeded> itModules = modulesNeeded.iterator();
+        while (itModules.hasNext()) {
+            ModuleNeeded module = itModules.next();
+            if (module.isExcluded()) {
+                itModules.remove();
+            }
+        }
     }
 
     /**
@@ -182,6 +195,8 @@ public class BigDataJobUtil {
             for (ModuleNeeded currentModule : modulesNeeded) {
                 if (!currentModule.isMrRequired()) {
                     excludedModules.add(currentModule);
+                } else {
+                    currentModule.setExcluded(true);
                 }
             }
         }

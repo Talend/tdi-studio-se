@@ -72,6 +72,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.core.utils.BigDataJobUtil;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IRunProcessService;
@@ -104,7 +105,8 @@ public class JavaProcessorUtilities {
      * @return
      */
     public static Set<ModuleNeeded> extractLibsOnlyForMapperAndReducer(IProcess process) {
-        int options = TalendProcessOptionConstants.MODULES_WITH_CHILDREN | TalendProcessOptionConstants.MODULES_FOR_MR;
+        int options = TalendProcessOptionConstants.MODULES_WITH_CHILDREN | TalendProcessOptionConstants.MODULES_FOR_MR
+                | TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED;
         Set<ModuleNeeded> allModules = JavaProcessUtil.getNeededModules(process, options);
         return allModules;
     }
@@ -241,6 +243,11 @@ public class JavaProcessorUtilities {
                 }
             }
         }
+
+        if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED)) {
+            new BigDataJobUtil(process).removeExcludedModules(neededLibraries);
+        }
+
         // move high priority modules to front.
         Set<ModuleNeeded> highPriorityModuleNeeded = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded();
         if (!highPriorityModuleNeeded.isEmpty()) {
