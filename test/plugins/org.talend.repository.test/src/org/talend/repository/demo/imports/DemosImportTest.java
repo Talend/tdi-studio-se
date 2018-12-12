@@ -102,7 +102,6 @@ public abstract class DemosImportTest {
 		originalProject = repositoryContext.getProject();
 
 		EmfResourcesFactoryReader.INSTANCE.addOption(ResourceOption.DEMO_IMPORTATION, false);
-        System.setProperty("junit.test.import", "true");
 	}
 
 	@AfterClass
@@ -132,7 +131,6 @@ public abstract class DemosImportTest {
 	@After
 	public void afterTest() throws Exception {
 		removeTempDemoProject();
-        System.setProperty("junit.test.import", "false");
 		ProxyRepositoryFactory.getInstance().logOffProject();
 	}
 
