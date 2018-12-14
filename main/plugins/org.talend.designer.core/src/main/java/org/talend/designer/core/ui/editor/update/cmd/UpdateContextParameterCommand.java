@@ -38,6 +38,7 @@ import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.update.EUpdateItemType;
 import org.talend.core.model.update.EUpdateResult;
 import org.talend.core.model.update.UpdateResult;
+import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.ui.context.ContextManagerHelper;
 import org.talend.core.ui.process.UpdateRunJobComponentContextHelper;
 import org.talend.designer.core.DesignerPlugin;
@@ -302,7 +303,10 @@ public class UpdateContextParameterCommand extends Command {
             }
         }
 
-        ConnectionContextHelper.showContextGroupDialog(process, item, process.getContextManager(), names);
+        String remark = result.getRemark();
+        if (remark != null && remark.endsWith(UpdatesConstants.CONTEXT_MODE)) {
+            ConnectionContextHelper.showContextGroupDialog(process, item, process.getContextManager(), names);
+        }
     }
 
     /**
