@@ -33,6 +33,7 @@ import org.osgi.framework.Bundle;
 import org.talend.commons.runtime.model.expressionbuilder.Variable;
 import org.talend.commons.runtime.xml.XSDValidator;
 import org.talend.expressionbuilder.i18n.Messages;
+import org.talend.utils.files.FileUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -42,9 +43,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
@@ -132,14 +130,8 @@ public class ExpressionFileOperation {
 
         }
 
-        // use specific Xerces class to write DOM-data to a file:
-        XMLSerializer serializer = new XMLSerializer();
-        OutputFormat outputFormat = new OutputFormat();
-        outputFormat.setIndenting(true);
-        serializer.setOutputFormat(outputFormat);
         FileWriter writer = new FileWriter(file);
-        serializer.setOutputCharStream(writer);
-        serializer.serialize(document);
+        FileUtils.writeXMLFile(document, writer);
         writer.close();
         return true;
 

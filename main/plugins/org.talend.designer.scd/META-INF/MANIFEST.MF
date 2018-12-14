@@ -18,5 +18,6 @@ Require-Bundle: org.apache.commons.lang,
  org.talend.metadata.managment,
  org.talend.model,
  org.talend.libraries.apache,
- org.talend.components.api
+ org.talend.components.api,
+ org.talend.core.runtime
 Eclipse-LazyStart: true

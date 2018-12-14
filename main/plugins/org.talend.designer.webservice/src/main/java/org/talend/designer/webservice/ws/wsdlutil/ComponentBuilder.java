@@ -55,6 +55,8 @@ import org.talend.designer.webservice.ws.wsdlinfo.OperationInfo;
 import org.talend.designer.webservice.ws.wsdlinfo.ParameterInfo;
 import org.talend.designer.webservice.ws.wsdlinfo.PortNames;
 import org.talend.designer.webservice.ws.wsdlinfo.ServiceInfo;
+import org.w3c.dom.Element;
+
 
 /**
  * DOC gcui class global comment. Detailled comment
@@ -179,7 +181,7 @@ public class ComponentBuilder {
     protected Vector<XmlSchema> createSchemaFromTypes(List<Definition> wsdlDefinitions) throws WSDLException {
         Vector<XmlSchema> schemas = new Vector<XmlSchema>();
         Set<String> imports = new HashSet<String>();
-        org.w3c.dom.Element schemaElementt = null;
+        Element schemaElementt = null;
         Map importElement = null;
         List includeElement = null;
         for (Definition def : wsdlDefinitions) {
@@ -257,7 +259,7 @@ public class ComponentBuilder {
      * @throws WSDLException
      */
     private void findIncludesSchema(Definition wsdlDefinition, Vector schemas, List includeElement) throws WSDLException {
-        org.w3c.dom.Element schemaElementt;
+        Element schemaElementt;
         for (int i = 0; i < includeElement.size(); i++) {
 
             schemaElementt = ((com.ibm.wsdl.extensions.schema.SchemaReferenceImpl) includeElement.get(i)).getReferencedSchema()
@@ -276,7 +278,7 @@ public class ComponentBuilder {
 
     private void findImportSchema(Definition wsdlDefinition, Vector schemas, Map importElement, Set<String> imports)
             throws WSDLException {
-        org.w3c.dom.Element schemaElementt;
+        Element schemaElementt;
         List includeElement = null;
         Iterator keyIterator = importElement.keySet().iterator();
         Boolean isHaveImport = false;
@@ -358,7 +360,7 @@ public class ComponentBuilder {
         return elements;
     }
 
-    private XmlSchema createschemafromtype(org.w3c.dom.Element schemaElement, Definition wsdlDefinition, String documentBase)
+    private XmlSchema createschemafromtype(Element schemaElement, Definition wsdlDefinition, String documentBase)
             throws WSDLException {
         if (schemaElement == null) {
             throw new WSDLException(WSDLException.INVALID_WSDL, "Unable to find schema extensibility element in WSDL");

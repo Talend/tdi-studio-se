@@ -20,7 +20,9 @@ Require-Bundle: org.talend.core.repository,
  org.eclipse.draw2d,
  org.eclipse.gef,
  org.talend.designer.core,
- org.talend.libraries.sqlbuilder
+ org.talend.libraries.sqlbuilder,
+ org.talend.commons.runtime,
+ org.talend.core.runtime
 Eclipse-LazyStart: true
 Bundle-SymbolicName: org.talend.sqlbuilder; singleton:=true
 Export-Package: org.talend.sqlbuilder,

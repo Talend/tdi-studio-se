@@ -24,5 +24,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.core.repository,
  org.talend.repository,
  org.talend.commons.ui,
- org.talend.repository.items.importexport
+ org.talend.repository.items.importexport,
+ org.talend.commons.runtime,
+ org.talend.core.runtime
 Bundle-Vendor: .Talend SA.

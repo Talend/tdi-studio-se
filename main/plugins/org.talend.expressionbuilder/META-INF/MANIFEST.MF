@@ -19,7 +19,8 @@ Require-Bundle: org.talend.commons.runtime,
  org.talend.commons.ui,
  org.talend.metadata.managment,
  org.talend.libraries.apache,
- org.talend.components.api
+ org.talend.components.api,
+ org.talend.core.runtime
 Eclipse-LazyStart: true
 Export-Package: org.talend.expressionbuilder,
  org.talend.expressionbuilder.model,
@@ -28,3 +29,4 @@ Export-Package: org.talend.expressionbuilder,
  org.talend.expressionbuilder.ui,
  org.talend.expressionbuilder.ui.proposal
 Bundle-Vendor: .Talend SA.
+Import-Package: org.apache.xml.serializer.dom3

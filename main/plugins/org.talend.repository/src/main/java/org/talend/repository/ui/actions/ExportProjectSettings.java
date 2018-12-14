@@ -29,6 +29,7 @@ import org.talend.core.model.properties.ComponentSetting;
 import org.talend.core.model.properties.Status;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.repository.ProjectManager;
+import org.talend.utils.files.FileUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,8 +37,6 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 /**
  * wchen class global comment. Detailled comment
@@ -261,15 +260,8 @@ public class ExportProjectSettings {
         if (document == null || file == null) {
             return;
         }
-        XMLSerializer serializer = new XMLSerializer();
-        OutputFormat outputFormat = new OutputFormat();
-        outputFormat.setIndenting(true);
-        serializer.setOutputFormat(outputFormat);
-
         OutputStreamWriter output = new OutputStreamWriter(new FileOutputStream(file), "UTF-8"); //$NON-NLS-1$
-        serializer.setOutputCharStream(output);
-        serializer.serialize(document);
+        FileUtils.writeXMLFile(document, output);
         output.close();
-
     }
 }

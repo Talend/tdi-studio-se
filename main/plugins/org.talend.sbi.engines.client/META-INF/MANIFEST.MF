@@ -15,7 +15,8 @@ Require-Bundle: org.talend.core,
  org.talend.libraries.dom4j-jaxen,
  org.talend.model,
  org.talend.metadata.managment,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.talend.core.runtime
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Vendor: .Talend SA.

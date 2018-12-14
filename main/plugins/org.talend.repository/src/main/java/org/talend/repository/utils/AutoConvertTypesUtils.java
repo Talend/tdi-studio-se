@@ -33,6 +33,7 @@ import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.model.metadata.types.AutoConversionType;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.utils.files.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -42,8 +43,6 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 /**
  * 
@@ -147,13 +146,8 @@ public class AutoConvertTypesUtils {
 
             // save into file
             if (document != null) {
-                XMLSerializer serializer = new XMLSerializer();
-                OutputFormat outputFormat = new OutputFormat();
-                outputFormat.setIndenting(true);
-                serializer.setOutputFormat(outputFormat);
                 output = new OutputStreamWriter(new FileOutputStream(file));
-                serializer.setOutputCharStream(output);
-                serializer.serialize(document);
+                FileUtils.writeXMLFile(document, output);
                 // update
                 beanList = new ArrayList<>();
                 beanList.addAll(beans);
