@@ -1,0 +1,11 @@
+<%@ jet 
+%>
+if (System.getProperty("http.proxySet") != null) { <% /* HTTP proxy used */ %>
+	String httpProxyHost = System.getProperty("http.proxyHost");
+	int httpProxyPort = Integer.valueOf(System.getProperty("http.proxyPort"));
+	java.net.InetSocketAddress httpProxyAddress = new java.net.InetSocketAddress(httpProxyHost, httpProxyPort);
+	java.net.Proxy httpProxy =  new java.net.Proxy(java.net.Proxy.Type.HTTP, httpProxyAddress);
+	<% /* If proxy with authentication used - authenticator should be set in tSetProxy*/ %>
+
+	ftp_<%=cid %>.setProxy(httpProxy);
+}
