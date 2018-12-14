@@ -38,6 +38,7 @@ import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerUIService;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.core.model.utils.emf.component.ComponentFactory;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.repository.i18n.Messages;
@@ -72,6 +73,12 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
             message = Messages.getString("ImportExternalJarPage.pageMessage");//$NON-NLS-1$
         }
         this.setMessage(message);
+
+        /**
+         * Call this to make sure librariesListener is registed.<br>
+         * Please refer to MavenPomSynchronizer#addChangeLibrariesListener
+         */
+        CorePlugin.getDefault().getRunProcessService().getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
     }
 
     /*
