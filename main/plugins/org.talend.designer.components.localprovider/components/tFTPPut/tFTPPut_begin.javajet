@@ -359,6 +359,7 @@ int nb_file_<%=cid%> = 0;
 	                ftp_<%=cid %> = new it.sauronsoftware.ftp4j.FTPClient(); 
 	                ftp_<%=cid %>.setSSLSocketFactory(sslSocketFactory_<%=cid%>);
 	                ftp_<%=cid %>.setCharset(<%=encoding%>);
+					<%@ include file="../templates/FTP/ftpsProxy.javajet" %>
 					<% 
 				        if("IMPLICIT".equals(securityMode)){ 
 					%> 

@@ -224,6 +224,7 @@ if (!sftp && !ftps) { // *** ftp *** //
 		ftp_<%=cid %> = new it.sauronsoftware.ftp4j.FTPClient();
 		ftp_<%=cid %>.setSSLSocketFactory(sslSocketFactory);
 		ftp_<%=cid %>.setCharset(<%=sEncoding%>);
+		<%@ include file="../templates/FTP/ftpsProxy.javajet" %>
 <%
 		if("IMPLICIT".equals(securityMode)){
 %>

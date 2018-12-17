@@ -1,0 +1,12 @@
+<%@jet 
+%>
+
+if ("true".equals(System.getProperty("http.proxySet"))) { <% /* HTTP proxy used */ %>
+	String httpProxyHost = System.getProperty("http.proxyHost");
+	int httpProxyPort = Integer.valueOf(System.getProperty("http.proxyPort"));
+	String proxyUser = System.getProperty("http.proxyUser");
+	String proxyPassword = System.getProperty("http.proxyPassword");
+	it.sauronsoftware.ftp4j.connectors.HTTPTunnelConnector proxyConnector = new it.sauronsoftware.ftp4j.connectors.HTTPTunnelConnector(httpProxyHost, httpProxyPort, proxyUser, proxyPassword);
+	
+	ftp_<%=cid %>.setConnector(proxyConnector);
+}
