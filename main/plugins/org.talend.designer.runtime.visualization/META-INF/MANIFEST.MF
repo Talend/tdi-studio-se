@@ -18,7 +18,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.debug.ui,
  org.eclipse.jdt.launching,
  org.apache.commons.collections
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.talend.designer.runtime.visualization,
  org.talend.designer.runtime.visualization.MBean,
