@@ -1,6 +1,6 @@
 <%@ jet 
 %>
-if (System.getProperty("http.proxySet") != null) { <% /* HTTP proxy used */ %>
+if ("true".equals(System.getProperty("http.proxySet"))) { <% /* HTTP proxy used */ %>
 	String httpProxyHost = System.getProperty("http.proxyHost");
 	int httpProxyPort = Integer.valueOf(System.getProperty("http.proxyPort"));
 	java.net.InetSocketAddress httpProxyAddress = new java.net.InetSocketAddress(httpProxyHost, httpProxyPort);
