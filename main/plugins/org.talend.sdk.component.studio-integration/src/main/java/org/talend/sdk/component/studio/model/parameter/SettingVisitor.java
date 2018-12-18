@@ -229,6 +229,10 @@ public class SettingVisitor implements PropertyVisitor {
                 final TaCoKitElementParameter valueSelection = visitValueSelection(node);
                 settings.put(valueSelection.getName(), valueSelection);
                 break;
+            case PREV_COLUMN_LIST:
+                final TaCoKitElementParameter prevColumnList = visitPrevColumnList(node);
+                settings.put(prevColumnList.getName(), prevColumnList);
+                break;
             default:
                 final IElementParameter text;
                 if (node.getProperty().getPlaceholder() == null) {
@@ -380,6 +384,12 @@ public class SettingVisitor implements PropertyVisitor {
         parameter.setDefaultClosedListValue(defaultValue);
         parameter.setDefaultValue(defaultValue);
         parameter.setValue(defaultValue);
+        return parameter;
+    }
+
+    private TaCoKitElementParameter visitPrevColumnList(final PropertyNode node) {
+        final TaCoKitElementParameter parameter = new TaCoKitElementParameter(element);
+        commonSetup(parameter, node);
         return parameter;
     }
 
