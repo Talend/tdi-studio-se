@@ -1072,10 +1072,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // clearBeforeExec.setEnabled(processContext != null);
         // clearBeforeExec.setSelection(processContext != null && processContext.isClearBeforeExec());
         // contextComposite.setProcess(((processContext != null) && !disableAll ? processContext.getProcess() : null));
-
-        if (!lockConsoleTrace) {
-            fillConsole(processContext != null ? processContext.getMessages() : new ArrayList<IProcessMessage>());
-        }
+        lockConsoleTrace = false;
+        fillConsole(processContext != null ? processContext.getMessages() : new ArrayList<IProcessMessage>());
 
         // remove trace if basic run tab active
         if (processContext != null) {
