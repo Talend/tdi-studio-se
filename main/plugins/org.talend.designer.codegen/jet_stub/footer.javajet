@@ -528,106 +528,127 @@
             }
             <%
             String warningMessageFormat = "Null value will be used for context parameter %s: %s";
-            for (IContextParameter ctxParam :params)
-            {
-				%>
-				    context.setContextType("<%=ctxParam.getName()%>", "<%=ctxParam.getType()%>");
-				<%
-            	if (ctxParam.getType().equals("id_Password")) {
-            %>
-            		String pwd_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
-            		context.<%=ctxParam.getName()%> = null;
-            		if(pwd_<%=ctxParam.getName()%>_value!=null) {
-            			if(context_param.containsKey("<%=ctxParam.getName()%>")) {//no need to decrypt if it come from program argument or parent job runtime
-            				context.<%=ctxParam.getName()%> = pwd_<%=ctxParam.getName()%>_value;
-            			} else if (!pwd_<%=ctxParam.getName()%>_value.isEmpty()) {
-            				try {
-            					context.<%=ctxParam.getName()%> = routines.system.PasswordEncryptUtil.decryptPassword(pwd_<%=ctxParam.getName()%>_value);
-            					context.put("<%=ctxParam.getName()%>",context.<%=ctxParam.getName()%>);
-            				} catch (java.lang.RuntimeException e) {
-            					//do nothing
-            				}
-            			}
-            		}
-            <%
-            		continue;
-            	}
-                String typeToGenerate ="String";
-                if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value")))
-                {
-                   typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
-                }
-                if(typeToGenerate.equals("java.util.Date"))
-                {
-
-            %>
-            try{
-                String context_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
-                if (context_<%=ctxParam.getName()%>_value == null){
-                    context_<%=ctxParam.getName()%>_value = "";
-                }
-                int context_<%=ctxParam.getName()%>_pos = context_<%=ctxParam.getName()%>_value.indexOf(";");
-                String context_<%=ctxParam.getName()%>_pattern =  "yyyy-MM-dd HH:mm:ss";
-                if(context_<%=ctxParam.getName()%>_pos > -1){
-                    context_<%=ctxParam.getName()%>_pattern = context_<%=ctxParam.getName()%>_value.substring(0, context_<%=ctxParam.getName()%>_pos);
-                    context_<%=ctxParam.getName()%>_value = context_<%=ctxParam.getName()%>_value.substring(context_<%=ctxParam.getName()%>_pos + 1);
-                }
-
-                context.<%=ctxParam.getName()%>=(java.util.Date)(new java.text.SimpleDateFormat(context_<%=ctxParam.getName()%>_pattern).parse(context_<%=ctxParam.getName()%>_value));
-
-            }catch(ParseException e)
-            {
-<%
-                if (isLog4jEnabled) {
+            final int maxContextInOneMethodToProcess = 100;
+            int lastMethodNumber = 0;
 %>
-                    log.warn(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+            class ContextProcessing {
+                private void processContext_0() {
 <%
-                } else {
+                    for (int i = 1; i < params.size(); i++) {
+                        IContextParameter ctxParam = params.get(i-1);
+                        if (i % maxContextInOneMethodToProcess == 0) {
+                            /* close previous method and declare new */
+                            lastMethodNumber++;
 %>
-                    System.err.println(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+                        }
+
+                private void processContext_<%=lastMethodNumber%>() {
 <%
+                        } //endIf
+%>
+                        context.setContextType("<%=ctxParam.getName()%>", "<%=ctxParam.getType()%>");
+<%
+                        if (ctxParam.getType().equals("id_Password")) {
+%>
+                            String pwd_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
+                            context.<%=ctxParam.getName()%> = null;
+                            if(pwd_<%=ctxParam.getName()%>_value!=null) {
+                                if(context_param.containsKey("<%=ctxParam.getName()%>")) {//no need to decrypt if it come from program argument or parent job runtime
+                                    context.<%=ctxParam.getName()%> = pwd_<%=ctxParam.getName()%>_value;
+                                } else if (!pwd_<%=ctxParam.getName()%>_value.isEmpty()) {
+                                    try {
+                                        context.<%=ctxParam.getName()%> = routines.system.PasswordEncryptUtil.decryptPassword(pwd_<%=ctxParam.getName()%>_value);
+                                        context.put("<%=ctxParam.getName()%>",context.<%=ctxParam.getName()%>);
+                                    } catch (java.lang.RuntimeException e) {
+                                        //do nothing
+                                    }
+                                }
+                            }
+<%
+                            continue;
+                        }
+                        String typeToGenerate ="String";
+                        if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
+                           typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
+                        }
+                        if(typeToGenerate.equals("java.util.Date")) {
+%>
+                        try{
+                            String context_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
+                            if (context_<%=ctxParam.getName()%>_value == null){
+                                context_<%=ctxParam.getName()%>_value = "";
+                            }
+                            int context_<%=ctxParam.getName()%>_pos = context_<%=ctxParam.getName()%>_value.indexOf(";");
+                            String context_<%=ctxParam.getName()%>_pattern =  "yyyy-MM-dd HH:mm:ss";
+                            if(context_<%=ctxParam.getName()%>_pos > -1){
+                                context_<%=ctxParam.getName()%>_pattern = context_<%=ctxParam.getName()%>_value.substring(0, context_<%=ctxParam.getName()%>_pos);
+                                context_<%=ctxParam.getName()%>_value = context_<%=ctxParam.getName()%>_value.substring(context_<%=ctxParam.getName()%>_pos + 1);
+                            }
+
+                            context.<%=ctxParam.getName()%>=(java.util.Date)(new java.text.SimpleDateFormat(context_<%=ctxParam.getName()%>_pattern).parse(context_<%=ctxParam.getName()%>_value));
+
+                        } catch(ParseException e) {
+<%
+                            if (isLog4jEnabled) {
+%>
+                                log.warn(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+<%
+                            } else {
+%>
+                                System.err.println(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+<%
+                            }
+%>
+                            context.<%=ctxParam.getName()%>=null;
+                        }
+<%
+                        } else if(typeToGenerate.equals("Object")||typeToGenerate.equals("String")||typeToGenerate.equals("java.lang.String")) {
+%>
+                            context.<%=ctxParam.getName()%>=(<%=typeToGenerate%>) context.getProperty("<%=ctxParam.getName()%>");
+<%
+                        } else if(typeToGenerate.equals("Character")&&ctxParam.getName()!=null) {
+%>
+                            context.<%=ctxParam.getName()%>= new java.text.StringCharacterIterator(context.getProperty("<%=ctxParam.getName()%>")).first();
+<%
+                        } else {
+%>
+                            try{
+                                context.<%=ctxParam.getName()%>=routines.system.ParserUtils.parseTo_<%=typeToGenerate%> (context.getProperty("<%=ctxParam.getName()%>"));
+                            } catch(NumberFormatException e){
+<%
+                             if (isLog4jEnabled) {
+%>
+                                log.warn(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+<%
+                             } else {
+%>
+                                System.err.println(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+<%
+                             }
+%>
+                                context.<%=ctxParam.getName()%>=null;
+                            }
+<%
+                        }
+                    }
+%>
+                } <%/*close last method*/%>
+                public void processAllContext() {
+<%
+                    for (int i = 0; i <=lastMethodNumber; i++) {
+%>
+                        processContext_<%=i %>();
+<%
+                    }
+%>
                 }
-%>
-                context.<%=ctxParam.getName()%>=null;
             }
-              <%
-                }else if(typeToGenerate.equals("Object")||typeToGenerate.equals("String")||typeToGenerate.equals("java.lang.String") )
-                {
-                %>
-                context.<%=ctxParam.getName()%>=(<%=typeToGenerate%>) context.getProperty("<%=ctxParam.getName()%>");
-                <%
-                }else if(typeToGenerate.equals("Character")&&ctxParam.getName()!=null)
-                {
-             %>
-             context.<%=ctxParam.getName()%>= new java.text.StringCharacterIterator(context.getProperty("<%=ctxParam.getName()%>")).first();
-         <%
-                } else {
-             %>
-             try{
-                 context.<%=ctxParam.getName()%>=routines.system.ParserUtils.parseTo_<%=typeToGenerate%> (context.getProperty("<%=ctxParam.getName()%>"));
-             }catch(NumberFormatException e){
-<%
-                if (isLog4jEnabled) {
-%>
-                    log.warn(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
-<%
-                } else {
-%>
-                    System.err.println(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
-<%
-                }
-%>
-                 context.<%=ctxParam.getName()%>=null;
-              }
-             <%
-                }
-            }
-            %>
+
+            new ContextProcessing().processAllContext();
         } catch (java.io.IOException ie) {
             System.err.println("Could not load context "+contextStr);
             ie.printStackTrace();
         }
-
 
         // get context value from parent directly
         if (parentContextMap != null && !parentContextMap.isEmpty()) {
