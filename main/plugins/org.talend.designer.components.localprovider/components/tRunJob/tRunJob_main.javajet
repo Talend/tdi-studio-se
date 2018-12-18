@@ -311,16 +311,51 @@ String inputConnName = null;
 		}
 		%>
 		<%=localContext%>.synchronizeContext();
-		<%
+<%
 		List<IContextParameter> params = currentProcess.getContextManager().getDefaultContext().getContextParameterList();
-		for (IContextParameter ctxParam :params){
-			String ctxParamName = ctxParam.getName();
- 			%>
-			parentContextMap_<%=cid %>.put("<%=ctxParamName %>", <%=localContext%>.<%=ctxParamName %>);
-			paraList_<%=cid %>.add("--context_type " + "<%=ctxParam.getName()%>" + "=" + "<%=ctxParam.getType()%>");
-		<%
-		}
-		%> 
+        /*Create local class to avoid 64kB method problem when huge amount of context variables declared*/
+        if (!params.isEmpty()) {
+            final int defaultInnerMethodLenght = 500;
+            int lastMethodNumber = 0;
+%>
+            class ContextProcessor_<%=cid %> {
+                    private void transmitContext_0() {
+<%
+                for (int i = 1; i <= params.size(); i++) {
+                    IContextParameter ctxParam = params.get(i-1);
+                    String ctxParamName = ctxParam.getName();
+                    String ctxParameterType = ctxParam.getType();
+                    if (i % defaultInnerMethodLenght == 0) {
+                    /* close previous method and declare new */
+                        lastMethodNumber++;
+%>
+                        }
+
+                        private void transmitContext_<%=lastMethodNumber%>() {
+<%
+                    } //endIf
+%>
+                    parentContextMap_<%=cid %>.put("<%=ctxParamName %>", <%=localContext%>.<%=ctxParamName %>);
+                    paraList_<%=cid %>.add("--context_type " + "<%=ctxParamName%>" + "=" + "<%=ctxParam.getType()%>");
+<%
+                } //endFor
+%>
+                        <%/*close last method*/%>
+                        }
+                    public void transmitAllContext() {
+<%
+                    for (int i = 0; i <=lastMethodNumber; i++) {
+%>
+                        transmitContext_<%=i %>();
+<%
+                    }
+%>
+                    }
+            }
+            new ContextProcessor_<%=cid %>().transmitAllContext();
+<%
+        }
+%>
 		java.util.Enumeration<?> propertyNames_<%=cid %> = <%=localContext%>.propertyNames();
 		while (propertyNames_<%=cid %>.hasMoreElements()) {
 			String key_<%=cid %> = (String) propertyNames_<%=cid %>.nextElement();
