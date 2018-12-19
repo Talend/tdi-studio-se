@@ -619,6 +619,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     }
                     collectUpdateResult(contextResults, EUpdateItemType.CONTEXT, EUpdateResult.ADD, contextItem, names);
                 }
+                newParametersMap.clear();
             }
 
             // delete
