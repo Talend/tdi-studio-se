@@ -534,7 +534,7 @@
             class ContextProcessing {
                 private void processContext_0() {
 <%
-                    for (int i = 1; i < params.size(); i++) {
+                    for (int i = 1; i <= params.size(); i++) {
                         IContextParameter ctxParam = params.get(i-1);
                         if (i % maxContextInOneMethodToProcess == 0) {
                             /* close previous method and declare new */
