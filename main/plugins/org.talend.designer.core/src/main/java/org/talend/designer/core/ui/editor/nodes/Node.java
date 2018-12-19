@@ -4919,7 +4919,13 @@ public class Node extends Element implements IGraphicalNode {
                     if (targetParam != null) {
                         if (sourceParam.getName().equals(EParameterName.LABEL.getName())
                                 && (sourceParam.getValue() == null || "".equals(sourceParam.getValue()))) { //$NON-NLS-1$
-                            setPropertyValue(sourceParam.getName(), component.getProcess().getName());
+                            String name = null;
+                            if (EComponentType.JOBLET.equals(component.getComponentType())) {
+                                name = component.getName();
+                            } else {
+                                name = component.getProcess().getName();
+                            }
+                            setPropertyValue(sourceParam.getName(), name);
                         } else {
                             setPropertyValue(sourceParam.getName(), sourceParam.getValue());
                         }
