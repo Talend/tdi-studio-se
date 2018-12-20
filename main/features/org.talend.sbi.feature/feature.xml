@@ -1,44 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="org.talend.sbi.feature"
-      label="SBI Feature"
-      version="7.2.1.qualifier"
-      provider-name=".Talend SA.">
 
-   <description url="http://www.talend.com/online/featuresdescription.html#sbi-feature">
-      Complete description about this feature at http://www.talend.com/online/featuresdescription.html#sbi-feature
-   </description>
-
-   <copyright url="http://www.talend.com/online/copyright.txt">
-      Copyright Talend 2006, 2007
-   </copyright>
-
-   <license>
-      The licence are describe in branding feature
-   </license>
-
-   <url>
-      <discovery label="Talend web site" url="http://www.talend.com"/>
-   </url>
-
-   <plugin
-         id="org.talend.sbi.engines.client"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.sbi.engines.client.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.libraries.dom4j-jaxen"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
+<feature id="org.talend.sbi.feature" label="SBI Feature" version="7.2.1.qualifier" provider-name=".Talend SA."> 
+  <description url="http://www.talend.com/online/featuresdescription.html#sbi-feature">Complete description about this feature at http://www.talend.com/online/featuresdescription.html#sbi-feature</description>  
+  <copyright url="http://www.talend.com/online/copyright.txt">Copyright Talend 2006, 2007</copyright>  
+  <license>The licence are describe in branding feature</license>  
+  <url> 
+    <discovery label="Talend web site" url="http://www.talend.com"/> 
+  </url>  
+  <plugin id="org.talend.sbi.engines.client" download-size="0" install-size="0" version="0.0.0"/>
+  <plugin id="org.talend.sbi.engines.client.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
 </feature>

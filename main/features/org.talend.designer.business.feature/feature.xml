@@ -1,79 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="org.talend.designer.business.feature"
-      label="Business Feature"
-      version="7.2.1.qualifier"
-      provider-name=".Talend SA.">
 
-   <description url="http://www.talend.com/online/featuresdescription.html#business-feature">
-      Complete description about this feature at http://www.talend.com/online/featuresdescription.html#business-feature
-   </description>
-
-   <copyright url="http://www.talend.com/online/copyright.txt">
-      Copyright Talend 2006, 2007
-   </copyright>
-
-   <license>
-      The licence are describe in branding feature
-   </license>
-
-   <url>
-      <discovery label="Talend web site" url="http://www.talend.com"/>
-   </url>
-
-   <includes
-         id="org.eclipse.gmf"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.emf.workspace"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.emf.common"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.emf.ecore"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.emf.ecore.edit"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.emf.transaction"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.emf.validation"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.emf.edit"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.gef"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.gmf.runtime.notation"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.designer.business.diagram"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.business.diagram.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
+<feature id="org.talend.designer.business.feature" label="Business Feature" version="7.2.1.qualifier" provider-name=".Talend SA."> 
+  <description url="http://www.talend.com/online/featuresdescription.html#business-feature">Complete description about this feature at http://www.talend.com/online/featuresdescription.html#business-feature</description>  
+  <copyright url="http://www.talend.com/online/copyright.txt">Copyright Talend 2006, 2007</copyright>  
+  <license>The licence are describe in branding feature</license>  
+  <url> 
+    <discovery label="Talend web site" url="http://www.talend.com"/> 
+  </url>  
+  <requires>
+    <import feature="org.eclipse.emf.common" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.emf.ecore" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.emf.ecore.edit" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.emf.edit" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.emf.transaction" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.emf.validation" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.emf.workspace" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.gef" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.gmf" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.gmf.runtime.notation" version="0.0.0" match="greaterOrEqual"/>
+  </requires>
+  <plugin id="org.talend.designer.business.diagram" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.business.diagram.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
 </feature>

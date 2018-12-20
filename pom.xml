@@ -61,6 +61,7 @@
 		<module>i18n/plugins/org.talend.sqlbuilder.nl</module>
 		<module>main/features/org.talend.designer.feature</module>
 		<module>main/features/org.talend.designer.business.feature</module>
+        <module>main/features/org.talend.fragment.jars.di.feature</module>
 		<module>main/features/org.talend.rcp.branding.tos.feature</module>
 		<module>main/features/org.talend.rcp.branding.tos.test.feature</module>
 		<module>main/features/org.talend.repository.feature</module>
@@ -99,7 +100,6 @@
 		<module>main/plugins/org.talend.designer.xmlmap</module>
 		<module>main/plugins/org.talend.expressionbuilder</module>
 		<module>main/plugins/org.talend.libraries.asm</module>
-		<module>main/plugins/org.talend.libraries.bonita</module>
 		<module>main/plugins/org.talend.libraries.crm</module>
 		<module>main/plugins/org.talend.libraries.css</module>
 		<module>main/plugins/org.talend.libraries.custom</module>
@@ -110,13 +110,11 @@
 		<module>main/plugins/org.talend.libraries.groovy</module>
 		<module>main/plugins/org.talend.libraries.guava</module>
 		<module>main/plugins/org.talend.libraries.jax</module>
-		<module>main/plugins/org.talend.libraries.jersey</module>
 		<module>main/plugins/org.talend.libraries.jetty</module>
 		<module>main/plugins/org.talend.libraries.microsoft</module>
 		<module>main/plugins/org.talend.libraries.mondrian</module>
 		<module>main/plugins/org.talend.libraries.mozilla</module>
 		<module>main/plugins/org.talend.libraries.palo</module>
-		<module>main/plugins/org.talend.libraries.saaj</module>
 		<module>main/plugins/org.talend.libraries.salesforce</module>
 		<module>main/plugins/org.talend.libraries.servlet</module>
 		<module>main/plugins/org.talend.libraries.slf4j</module>

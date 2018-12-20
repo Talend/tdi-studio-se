@@ -1,280 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="org.talend.designer.feature"
-      label="Designer Feature"
-      version="7.2.1.qualifier"
-      provider-name=".Talend SA.">
 
-   <description url="http://www.talend.com/online/featuresdescription.html#designer-feature">
-      Complete description about this feature at http://www.talend.com/online/featuresdescription.html#designer-feature
-   </description>
-
-   <copyright url="http://www.talend.com/online/copyright.txt">
-      Copyright Talend 2006, 2007
-   </copyright>
-
-   <license>
-      The licence are describe in branding feature
-   </license>
-
-   <url>
-      <update label="CORE Talend update site for milestones" url="http://talendforge.org/core/updatesite/testing/"/>
-      <discovery label="Talend web site" url="http://www.talend.com"/>
-   </url>
-
-   <includes
-         id="org.eclipse.gef"
-         version="0.0.0"/>
-
-   <includes
-         id="org.talend.m2e.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.talend.utils.feature"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.designer.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.codegen"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.designer.runprocess"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.sqlbuilder"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.codegen.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.core.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.runprocess.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.sqlbuilder.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.libraries.apache"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.libraries.dom4j-jaxen"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.libraries.jackson"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.libraries.javacsv"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.libraries.csv"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.librariesmanager"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.librariesmanager.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.metadata.managment"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.model"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.libraries.jexcel"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.libraries.mozilla"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.datatools.xml"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.osgi.lib.loader"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.librariesmanager.ui.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.librariesmanager.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.themes.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.jeeeyul.eclipse.themes"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="net.jeeeyul.swtend"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.maven"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.runtime.visualization"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.runtime.visualization.tools"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.maven.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.maven.ui.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
-
-   <plugin
-         id="javax.xml.rpc"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.axis"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.libraries.sqlbuilder"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
+<feature id="org.talend.designer.feature" label="Designer Feature" version="7.2.1.qualifier" provider-name=".Talend SA."> 
+  <description url="http://www.talend.com/online/featuresdescription.html#designer-feature">Complete description about this feature at http://www.talend.com/online/featuresdescription.html#designer-feature</description>  
+  <copyright url="http://www.talend.com/online/copyright.txt">Copyright Talend 2006, 2007</copyright>  
+  <license>The licence are describe in branding feature</license>  
+  <url> 
+    <update label="CORE Talend update site for milestones" url="http://talendforge.org/core/updatesite/testing/"/>  
+    <discovery label="Talend web site" url="http://www.talend.com"/> 
+  </url>  
+  <requires>
+    <import feature="org.eclipse.gef" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.m2e.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import feature="org.talend.utils.feature" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="javax.xml.rpc" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="net.jeeeyul.eclipse.themes" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="net.jeeeyul.swtend" version="0.0.0" match="greaterOrEqual"/>
+    <import plugin="org.apache.axis" version="0.0.0" match="greaterOrEqual"/>
+  </requires>  
+  <plugin id="org.talend.designer.codegen" download-size="0" install-size="0" version="0.0.0"/>
+  <plugin id="org.talend.designer.codegen.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.core" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.core.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin download-size="0" install-size="0" version="0.0.0" unpack="false" id="org.talend.designer.dbmap.nl"/>
+  <plugin id="org.talend.designer.maven" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin download-size="0" install-size="0" version="0.0.0" unpack="false" id="org.talend.designer.maven.job"/>
+  <plugin download-size="0" install-size="0" version="0.0.0" unpack="false" id="org.talend.designer.maven.job.nl"/>
+  <plugin id="org.talend.designer.maven.ui" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.maven.ui.nl" download-size="0" install-size="0" version="0.0.0" fragment="true"/>
+  <plugin id="org.talend.designer.runprocess" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.runprocess.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.designer.runtime.visualization" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.designer.runtime.visualization.tools" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.libraries.mozilla" download-size="0" install-size="0" version="0.0.0"/>
+  <plugin id="org.talend.libraries.sqlbuilder" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.sqlbuilder" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  <plugin id="org.talend.sqlbuilder.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
 </feature>
