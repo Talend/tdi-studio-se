@@ -304,9 +304,8 @@ public class UpdateContextParameterCommand extends Command {
         }
 
         String remark = result.getRemark();
-        if (remark != null && remark.endsWith(UpdatesConstants.CONTEXT_MODE)) {
-            ConnectionContextHelper.showContextGroupDialog(process, item, process.getContextManager(), names);
-        }
+        ConnectionContextHelper.showContextGroupDialog(process, item, process.getContextManager(), names,
+                remark != null && remark.endsWith(UpdatesConstants.CONTEXT_MODE));
     }
 
     /**
