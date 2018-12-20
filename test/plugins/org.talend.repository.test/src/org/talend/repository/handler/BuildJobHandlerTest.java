@@ -22,11 +22,8 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.ui.internal.Workbench;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.CorePlugin;
@@ -155,14 +152,6 @@ public class BuildJobHandlerTest {
 
     @Test
     public void testBuildJobWithTDM() throws Exception {
-        // check initialize status
-        while (true) {
-            Job[] jobs = Job.getJobManager().find(Workbench.EARLY_STARTUP_FAMILY);
-            if (jobs.length == 0) {
-                break;
-            }
-            Thread.sleep(100);
-        }
         String destinationPath = getDestinationPath(jobWithTdmItem);
         destinationPaths.add(destinationPath);
         BuildJobManager.getInstance().buildJob(destinationPath, jobWithTdmItem, "0.1", "Default", exportChoiceMap,
