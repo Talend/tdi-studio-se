@@ -1959,8 +1959,6 @@ class RedshiftManager extends Manager {
     private String dbSchema;
     private boolean useExistingConnection;
     private String connection;       
-
-    private static final String SEPARATOR = "&";
     
     public RedshiftManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid, String additionalParams) {
         super(dbName, tableName, userName ,cid, additionalParams);
