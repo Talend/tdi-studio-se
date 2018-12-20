@@ -16,7 +16,6 @@
     <import plugin="org.talend.model.migration" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.talend.repository" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.talend.utils" version="0.0.0" match="greaterOrEqual"/>
-    <import plugin="test.all.test.suite" version="0.0.0" match="greaterOrEqual"/>
   </requires>  
   <plugin id="org.talend.commons.runtime.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.commons.ui.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
@@ -56,4 +55,5 @@
   <plugin id="org.talend.testutils" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.updates.runtime.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.utils.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="test.all.test.suite" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 </feature>
