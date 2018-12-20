@@ -70,7 +70,7 @@
 		<module>main/features/org.talend.tos.core.feature</module>
 		<module>main/features/org.talend.tos.feature</module>
 		<module>main/features/org.talend.tos.components.feature</module>
-		<!--<module>main/features/org.talend.tos.libraries.feature</module>-->
+		<module>main/features/org.talend.tos.libraries.feature</module>
 		<module>main/plugins/org.talend.designer.core.generic</module>
 		<module>main/plugins/org.talend.repository.generic</module>
 		<module>main/plugins/org.talend.designer.abstractmap</module>
@@ -99,30 +99,30 @@
 		<module>main/plugins/org.talend.designer.webservice</module>
 		<module>main/plugins/org.talend.designer.xmlmap</module>
 		<module>main/plugins/org.talend.expressionbuilder</module>
-		<!--<module>main/plugins/org.talend.libraries.asm</module>-->
-		<!--<module>main/plugins/org.talend.libraries.crm</module>-->
-		<!--<module>main/plugins/org.talend.libraries.css</module>-->
-		<!--<module>main/plugins/org.talend.libraries.custom</module>-->
+		<module>main/plugins/org.talend.libraries.asm</module>
+		<module>main/plugins/org.talend.libraries.crm</module>
+		<module>main/plugins/org.talend.libraries.css</module>
+		<module>main/plugins/org.talend.libraries.custom</module>
 		<module>main/plugins/org.talend.libraries.edifact</module>
-		<!--<module>main/plugins/org.talend.libraries.ehcache</module>-->
-		<!--<module>main/plugins/org.talend.libraries.excel</module>-->
+		<module>main/plugins/org.talend.libraries.ehcache</module>
+		<module>main/plugins/org.talend.libraries.excel</module>
 		<module>main/plugins/org.talend.libraries.ftp</module>
-		<!--<module>main/plugins/org.talend.libraries.groovy</module>-->
-		<!--<module>main/plugins/org.talend.libraries.guava</module>-->
-		<!--<module>main/plugins/org.talend.libraries.jax</module>-->
-		<!--<module>main/plugins/org.talend.libraries.jetty</module>-->
+		<module>main/plugins/org.talend.libraries.groovy</module>
+		<module>main/plugins/org.talend.libraries.guava</module>
+		<module>main/plugins/org.talend.libraries.jax</module>
+		<module>main/plugins/org.talend.libraries.jetty</module>
 		<module>main/plugins/org.talend.libraries.microsoft</module>
-		<!--<module>main/plugins/org.talend.libraries.mondrian</module>-->
+		<module>main/plugins/org.talend.libraries.mondrian</module>
 		<module>main/plugins/org.talend.libraries.mozilla</module>
-		<!--<module>main/plugins/org.talend.libraries.palo</module>-->
-		<!--<module>main/plugins/org.talend.libraries.salesforce</module>-->
-		<!--<module>main/plugins/org.talend.libraries.servlet</module>-->
-		<!--<module>main/plugins/org.talend.libraries.slf4j</module>-->
+		<module>main/plugins/org.talend.libraries.palo</module>
+		<module>main/plugins/org.talend.libraries.salesforce</module>
+		<module>main/plugins/org.talend.libraries.servlet</module>
+		<module>main/plugins/org.talend.libraries.slf4j</module>
 		<module>main/plugins/org.talend.libraries.uniserv</module>
 		<module>main/plugins/org.talend.libraries.w3c</module>
-		<!--<module>main/plugins/org.talend.libraries.xml</module>-->
-		<!--<module>main/plugins/org.talend.libraries.zmq</module>-->
-		<!--<module>main/plugins/org.talend.libraries.hadoop.mapr.5.0.0</module>-->
+		<module>main/plugins/org.talend.libraries.xml</module>
+		<module>main/plugins/org.talend.libraries.zmq</module>
+		<module>main/plugins/org.talend.libraries.hadoop.mapr.5.0.0</module>
 		<module>main/plugins/org.talend.presentation.onboarding.resource</module>
 		<module>main/plugins/org.talend.presentation.onboarding.resource.tos</module>
 		<module>main/plugins/org.talend.rcp.branding.tos</module>
@@ -156,89 +156,6 @@
 		<module>test/plugins/org.talend.designer.webservice.test</module>
 		<module>test/plugins/org.talend.designer.scd.test</module>
 		<module>test/plugins/org.talend.designer.unifiedcomponent.test</module>
-
-        <!-- modules from other repositories -->
-        <!-- tcommon-studio-se -->
-        <module>../tcommon-studio-se/i18n/plugins/org.talend.rcp.nl</module>
-        <module>../tcommon-studio-se/i18n/plugins/org.talend.repository.localprovider.nl</module>
-        <module>../tcommon-studio-se/i18n/plugins/org.talend.repository.mdm.nl</module>
-        <module>../tcommon-studio-se/i18n/plugins/org.talend.repository.metadata.nl</module>
-        <module>../tcommon-studio-se/main/features/org.talend.rcp.feature</module>
-        <module>../tcommon-studio-se/main/plugins/org.talend.rcp</module>
-        <module>../tcommon-studio-se/main/plugins/org.talend.repository.localprovider</module>
-        <module>../tcommon-studio-se/main/plugins/org.talend.repository.mdm</module>
-        <module>../tcommon-studio-se/main/plugins/org.talend.repository.metadata</module>
-        <module>../tcommon-studio-se/test/plugins/org.talend.repository.localprovider.test</module>
-        <module>../tcommon-studio-se/test/plugins/org.talend.repository.metadata.test</module>
-        <module>../tcommon-studio-se/test/plugins/org.talend.utils.test</module>
-        
-        <!-- tbd-studio-se -->
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.custom</module>
-        <module>../tbd-studio-se/main/features/org.talend.hadoop.distribution.feature</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.apache100</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh4mr1</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh4mr2</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh500mr2</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh510mr1</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh510mr2</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh540</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh550</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh570</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh580</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh580spark2</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh5100</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh5120</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.cdh5x</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.altus10</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.databricks</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.dataproc11</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.emr103</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.emr240</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.emr240hive0131</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.emr400</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.emr450</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.emr500</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.emr550</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.emr580</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.emr5150</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdinsight310</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdinsight320</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdinsight340</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdinsight360</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdp120</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdp130</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdp200</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdp210</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdp220</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdp230</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdp240</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdp250</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdp260</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.hdpx</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr200</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr212</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr213</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr301</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr310</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr401</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr410</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr500</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr510</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr520</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr600</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.mapr601</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.piv101</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.piv200</module>
-        <module>../tbd-studio-se/main/plugins/org.talend.hadoop.distribution.qubole</module>
-        
-        <!-- tesb-studio-se -->
-        <module>../tesb-studio-se/main/features/org.talend.esb.tooling.ws.consumer.feature</module>
-        <module>../tesb-studio-se/main/plugins/org.talend.designer.esb.components.rs.consumer</module>
-        <module>../tesb-studio-se/main/plugins/org.talend.designer.esb.components.ws.consumer</module>
-        <module>../tesb-studio-se/main/plugins/org.talend.designer.esb.routines</module>
-        <module>../tesb-studio-se/main/plugins/org.talend.libraries.esb</module>
-
 	</modules>
 	<build>
 		<plugins>
