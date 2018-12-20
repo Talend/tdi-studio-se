@@ -291,6 +291,9 @@ public class ChangeMetadataCommand extends Command {
     }
 
     public void execute(Boolean propagateP) {
+        if(propagateP && !node.getComponent().isSchemaAutoPropagated()){
+            return;
+        }
         this.propagate = propagateP;
         if (currentOutputMetadata == null && node != null) {
             currentOutputMetadata = node.getMetadataFromConnector(currentConnector);
