@@ -25,7 +25,7 @@ imports="
 		java.util.Enumeration<java.sql.Driver> drivers_<%=cid%> =  java.sql.DriverManager.getDrivers();
     while (drivers_<%=cid%>.hasMoreElements()) {
         java.sql.Driver d_<%=cid%> = drivers_<%=cid%>.nextElement();
-        java.util.List<String> driverList_<%=cid%> = java.util.Arrays.<String>asList("com.amazon.redshift.jdbc.Driver","com.amazon.redshift.jdbc41.Driver");
+        java.util.List<String> driverList_<%=cid%> = java.util.Arrays.<String>asList("com.amazon.redshift.jdbc.Driver","com.amazon.redshift.jdbc41.Driver","com.amazon.redshift.jdbc42.Driver");
         if (driverList_<%=cid%>.contains(d_<%=cid%>.getClass().getName())) {
             try {
                 java.sql.DriverManager.deregisterDriver(d_<%=cid%>);
