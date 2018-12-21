@@ -1974,9 +1974,6 @@ class RedshiftManager extends Manager {
     public String getSpecificConnectionURL() {
         return "\"jdbc:redshift://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
     }
-    public String getSeparator(){
-        return SEPARATOR;
-    }
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
