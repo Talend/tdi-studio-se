@@ -157,6 +157,7 @@ import org.talend.core.service.ISAPProviderService;
 import org.talend.core.ui.ICDCProviderService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.editor.JobEditorInput;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.core.ui.metadata.command.RepositoryChangeMetadataForEBCDICCommand;
@@ -173,7 +174,6 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.components.ExternalUtilities;
 import org.talend.designer.core.model.process.ConnectionManager;
-import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextParameterTypeImpl;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
@@ -198,7 +198,6 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerPart;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
-import org.talend.designer.core.ui.projectsetting.ElementParameter2ParameterType;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
@@ -210,6 +209,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
+
 import orgomg.cwm.objectmodel.core.ModelElement;
 
 /**
@@ -1977,6 +1977,15 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                     neededComponents.add(component);
                 }
             }
+        }
+        // special handle to add tCreateTable component for db , except hive/impala/JDBC
+        boolean isHive = EDatabaseTypeName.HIVE.getDisplayName().toUpperCase().equals(rcSetting.toString());
+        boolean isImpala = EDatabaseTypeName.IMPALA.getDisplayName().toUpperCase().equals(rcSetting.toString());
+        boolean isJDBC = EDatabaseTypeName.GENERAL_JDBC.name().toUpperCase().equals(rcSetting.toString());
+        if (item != null && item instanceof DatabaseConnectionItem && !isHive && !isImpala && !isJDBC) {
+            IComponent createTableComponent = ComponentsFactoryProvider.getInstance().get("tCreateTable", //$NON-NLS-1$
+                    ComponentCategory.CATEGORY_4_DI.getName());
+            neededComponents.add(createTableComponent);
         }
 
         neededComponents = (List<IComponent>) ComponentUtilities.filterVisibleComponents(neededComponents);
