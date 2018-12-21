@@ -2771,6 +2771,13 @@ public class Node extends Element implements IGraphicalNode {
                             param.getDisplayName());
                     Problems.add(ProblemStatus.WARNING, this, warnMessage);
                 }
+                // add a warning message on the component if the source key is empty
+                if (param.getName().equals("SOURCE_KEYS")) { //$NON-NLS-1$
+                    if (tableValues == null || tableValues.isEmpty()) {
+                        String warnMessage = Messages.getString("Node.hasMoreThenOneSourceKey"); //$NON-NLS-1$
+                        Problems.add(ProblemStatus.WARNING, this, warnMessage);
+                    }
+                }
             }
 
             if (param.getName().equals(EParameterName.COMMENT.getName())) {
