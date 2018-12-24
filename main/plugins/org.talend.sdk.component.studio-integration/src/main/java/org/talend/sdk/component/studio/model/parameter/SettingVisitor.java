@@ -214,6 +214,7 @@ public class SettingVisitor implements PropertyVisitor {
                 settings.put(closedList.getName(), closedList);
                 break;
             case TABLE:
+            case TACOKIT_SUGGESTABLE_TABLE:
                 final TaCoKitElementParameter table = visitTable((ListPropertyNode) node);
                 settings.put(table.getName(), table);
                 break;

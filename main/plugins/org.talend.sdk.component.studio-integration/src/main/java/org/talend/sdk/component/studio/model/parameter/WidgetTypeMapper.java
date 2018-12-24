@@ -29,6 +29,7 @@ import static org.talend.core.model.process.EParameterFieldType.PREV_COLUMN_LIST
 import static org.talend.core.model.process.EParameterFieldType.SCHEMA_TYPE;
 import static org.talend.core.model.process.EParameterFieldType.TABLE;
 import static org.talend.core.model.process.EParameterFieldType.TACOKIT_INPUT_SCHEMA;
+import static org.talend.core.model.process.EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE;
 import static org.talend.core.model.process.EParameterFieldType.TACOKIT_VALUE_SELECTION;
 import static org.talend.core.model.process.EParameterFieldType.TEXT;
 import static org.talend.core.model.process.EParameterFieldType.TEXT_AREA;
@@ -87,6 +88,8 @@ public class WidgetTypeMapper {
             return getOpenedListType();
         } else if (isPrevColumnList(property)) {
             return getPrevColumnListType();
+        } else if (isSuggestableTable(property)) {
+            return getSuggestableTableType();
         } else if (isFile(property)) {
             return getFileType();
         } else if (isTable(property)) {
@@ -132,6 +135,15 @@ public class WidgetTypeMapper {
 
     protected EParameterFieldType getPrevColumnListType() {
         return PREV_COLUMN_LIST;
+    }
+
+    private boolean isSuggestableTable(final SimplePropertyDefinition property) {
+        final String builtInSuggestable = property.getMetadata().get("action::built_in_suggestable");
+        return "INCOMING_SCHEMA_ENTRY_NAMES".equals(builtInSuggestable) && ARRAY.equals(property.getType());
+    }
+
+    protected EParameterFieldType getSuggestableTableType() {
+        return TACOKIT_SUGGESTABLE_TABLE;
     }
 
     protected EParameterFieldType getCodeType(final String codeStyle) {
