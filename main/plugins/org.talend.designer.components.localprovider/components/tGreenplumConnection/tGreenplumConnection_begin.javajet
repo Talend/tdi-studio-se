@@ -16,26 +16,24 @@ imports="
 			dbDriver = ElementParameterParser.getValue(node, "__DB_DRIVER__");
 %>
             String url_<%=cid%> = null;
+            String dbProperties_<%=cid%> = <%=dbproperties%>;
 <%
 			if (dbDriver.equals("POSTGRESQL")){
-                if(dbproperties == null ||  "\"\"".equals(dbproperties.trim())) {
 %>     
-                    url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
-<%              
-                } else {
-%>
-                    url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
-<%              
+                url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+                
+                if(dbProperties_<%=cid%> != null && !"".equals(dbProperties_<%=cid%>.trim())) {
+                    url_<%=cid %> = url_<%=cid%> + "?" + dbProperties_<%=cid%>;
                 }
+<%              
             } else {
-                if(dbproperties == null || "\"\"".equals(dbproperties.trim())) {
 %>  
-                    url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
+                url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
+
+                if(dbProperties_<%=cid%> != null && !"".equals(dbProperties_<%=cid%>.trim())) {
+                    url_<%=cid %> = url_<%=cid%> + ";" + dbProperties_<%=cid%>;
+                }
 <%
-                } else {
-%>
-                    url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%> + ";" + <%=dbproperties%>;
-<%              }
 			}
 		}
 		
