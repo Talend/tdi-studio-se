@@ -1446,8 +1446,6 @@ class SybaseManager extends Manager {
     private boolean useExistingConnection;
 	private String connection;
     
-    private static final String SEPARATOR = ";";
-    
     public SybaseManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, String cid, boolean useExistingConnection, String connection, String additionalParams) {
         super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
@@ -1483,9 +1481,6 @@ class SybaseManager extends Manager {
             return " null ";
         }
     } 
-    public String getSeparator(){
-        return SEPARATOR;
-    }
 	public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
