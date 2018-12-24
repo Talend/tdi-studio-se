@@ -11,15 +11,14 @@
 	
 		public void createURL(INode node) {
 			super.createURL(node);
-            if(dbproperties == null || "\"\"".equals(dbproperties.trim())) {
 %>
-                String url_<%=cid %> = "jdbc:interbase://"+<%=dbhost%>+"/"+<%=dbname%>;
-<%        
-            } else {
-%>
-                String url_<%=cid %> = "jdbc:interbase://"+<%=dbhost%>+"/"+<%=dbname%> + "?" + <%=dbproperties%>;
-<%      
-            }	
+        String dbProperties_<%=cid%> = <%=dbproperties%>;
+        String url_<%=cid %> = "jdbc:interbase://"+<%=dbhost%>+"/"+<%=dbname%>;
+        
+        if(dbProperties_<%=cid%> != null && !"".equals(dbProperties_<%=cid%>.trim())) {
+            url_<%=cid %> = url_<%=cid%> + "?" + dbProperties_<%=cid%>;
+        }
+<%
 		}
 		
 		public String getDirverClassName(INode node){

@@ -100,21 +100,16 @@ if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || (
 
 String jdbcDriver_<%=cid%> = null;
 String url_<%=cid%> = null;
+String dbProperties_<%=cid%> = <%=dbproperties%>;
+
+
 <%
 if(("EMBEDED").equals(frameworkType)) {
 	%>
 	jdbcDriver_<%=cid%> = "org.apache.derby.jdbc.EmbeddedDriver";
-<%
-                if(dbproperties == null || "\"\"".equals(dbproperties.trim())) {
-%>
-				url_<%=cid%> = "jdbc:derby:" + <%=dbname%>;
-<%
-                } else {
-%>
-                url_<%=cid%> = "jdbc:derby:" + <%=dbname%> + ";" + <%=dbproperties%>;
-<%
-                }
-%>
+    
+    url_<%=cid%> = "jdbc:derby:" + <%=dbname%>;
+
 	//set the root path of the database
 	System.setProperty("derby.system.home",<%=dbRootPath%>);
 	<%
@@ -122,34 +117,15 @@ if(("EMBEDED").equals(frameworkType)) {
 	if(("JCCJDBC").equals(frameworkType)) {
 		%>
 		jdbcDriver_<%=cid%> = "com.ibm.db2.jcc.DB2Driver";
-        
-        
+        url_<%=cid%> = "jdbc:derby:net://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+
 <%
-                if(dbproperties == null || "\"\"".equals(dbproperties.trim())) {
-%>
-                url_<%=cid%> = "jdbc:derby:net://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
-<%
-                } else {
-%>
-                url_<%=cid%> = "jdbc:derby:net://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + ";" + <%=dbproperties%>;
-<%
-                }
 	} else {
-		%>
-		jdbcDriver_<%=cid%> = "org.apache.derby.jdbc.ClientDriver";
-<%
-        if(dbproperties == null || "\"\"".equals(dbproperties.trim())) {
 %>
+		jdbcDriver_<%=cid%> = "org.apache.derby.jdbc.ClientDriver";
         url_<%=cid%> = "jdbc:derby://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
 <%
-        } else {
-%>
-        url_<%=cid%> = "jdbc:derby://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + ";" + <%=dbproperties%>;
-<%
-        }
 	}
-	%>
-	<%
 	String connectionFlag = ElementParameterParser.getValue(node, "__CONNECTION_FLAG__");
 	if(("false").equals(connectionFlag)) {
 	    %>
@@ -184,6 +160,10 @@ if(("EMBEDED").equals(frameworkType)) {
 	}
 }
 %>
+
+if(dbProperties_<%=cid%> != null && !"".equals(dbProperties_<%=cid%>.trim())) {
+    url_<%=cid %> = url_<%=cid%> + ";" + dbProperties_<%=cid%>;
+}
 
 int nb_line_<%=cid%> = 0;
 int nb_line_update_<%=cid%> = 0;
