@@ -181,7 +181,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
     public SQLPropertyDialog(Shell shell, List<String> existentNames) {
         super(shell);
         this.names = existentNames;
-        setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MIN | SWT.MAX);
+        setShellStyle(SWT.FILL | SWT.RESIZE);
     }
 
     /**
@@ -193,7 +193,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
     public SQLPropertyDialog(Shell shell, boolean showQueryProperty) {
         super(shell);
         this.showQueryProperty = showQueryProperty;
-        setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MIN | SWT.MAX);
+        setShellStyle(SWT.FILL | SWT.RESIZE);
     }
 
     /*
