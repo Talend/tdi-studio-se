@@ -208,31 +208,9 @@
       FIELD="TEXT" 
       NUM_ROW="85" 
       REPOSITORY_VALUE="PROPERTIES_STRING"
-      NOT_SHOW_IF="(DBTYPE=='SQLITE') OR ((DBTYPE=='DBORACLE') AND (CONNECTION_TYPE == 'ORACLE_WALLET'))"
+      NOT_SHOW_IF="(DBTYPE=='SQLITE') OR ((DBTYPE=='DBORACLE') AND (CONNECTION_TYPE == 'ORACLE_WALLET')) OR USE_EXISTING_CONNECTION == 'true'"
     >
-        <DEFAULT IF="(DBTYPE=='ACCESS') OR 
-                     (DBTYPE=='DB2') OR
-                     (DBTYPE=='EXASOL') OR
-                     (DBTYPE=='FIREBIRD') OR
-                     (DBTYPE=='GREENPLUM') OR
-                     (DBTYPE=='HSQLDB') OR
-                     (DBTYPE=='INFORMIX') OR
-                     (DBTYPE=='INGRES') OR
-                     (DBTYPE=='INTERBASE') OR
-                     (DBTYPE=='JAVADB') OR
-                     (DBTYPE=='MAXDB') OR
-                     (DBTYPE=='MYSQL') OR
-                     (DBTYPE=='NETEZZA') OR
-                     (DBTYPE=='ODBC') OR
-                     (DBTYPE=='DBORACLE') OR
-                     (DBTYPE=='POSTGREPLUS') OR
-                     (DBTYPE=='POSTGRE') OR
-                     (DBTYPE=='REDSHIFT') OR
-                     (DBTYPE=='SNOWFLAKE') OR
-                     (DBTYPE=='SQLITE') OR
-                     (DBTYPE=='SYBASE') OR
-                     (DBTYPE=='TERADATA') OR
-                     (DBTYPE=='VERTICA')">""</DEFAULT>
+        <DEFAULT IF="(DBTYPE!='AS400') OR (DBTYPE!='MSSQL')">""</DEFAULT>
         <DEFAULT IF="(DBTYPE=='AS400') OR (DBTYPE=='MSSQL')">"prompt=false"</DEFAULT>
     </PARAMETER>
 
