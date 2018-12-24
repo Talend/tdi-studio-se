@@ -14,11 +14,10 @@ imports="
 			String port = "";
 %>
         String dbProperties_<%=cid%> = <%=dbproperties%>;
-        String url_<%=cid%> = null;
-        if(dbProperties_<%=cid%> == null || dbProperties_<%=cid%>.trim().length() == 0) {
-            url_<%=cid %> = "jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=dbname%>;
-        } else {
-            url_<%=cid %> = "jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=dbname%> + "?" + <%=dbproperties%>;
+        String url_<%=cid%> = "jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=dbname%>;
+        
+        if(dbProperties_<%=cid%> != null && !("".equals(dbProperties_<%=cid%>.trim()))) {
+            url_<%=cid %> = url_<%=cid%> + "?" + <%=dbproperties%>;
         }
 <%	
 		}
