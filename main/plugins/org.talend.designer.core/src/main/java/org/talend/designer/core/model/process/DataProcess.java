@@ -3443,14 +3443,25 @@ public class DataProcess implements IGeneratingProcess {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
             jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
         }
+        boolean needReplaceForJoblet = false;
         for (INode node : orginalList) {
-            if (ProcessorUtilities.isGeneratePomOnly() && jobletService != null && jobletService.isJobletComponent(node)) {
+            if (jobletService != null && jobletService.isJobletComponent(node)) {
+                if (ProcessorUtilities.isGeneratePomOnly()) {
                 // skip any joblet contained during the pom generation
                 continue;
+                }
+                needReplaceForJoblet = true;
             }
             for (IReplaceNodeInProcess replaceProvider : ReplaceNodesInProcessProvider.findReplaceNodesProvider()) {
                 replaceProvider.rebuildGraphicProcessFromNode(node, graphicalNodeList);
             }
+        }
+
+        // All replace for Parallelization done by the start node, but joblet node maybe existed after
+        // for the new nodes that Joblet added to graphicalNodeList, also need to consider replace node
+        // such as ReplaceParallelization for Partition row in Joblet
+        if (needReplaceForJoblet) {
+            replaceNodeFromProviders(graphicalNodeList);
         }
     }
 
