@@ -36,7 +36,6 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.preview.ExcelSchemaBean;
 import org.talend.core.repository.model.preview.IProcessDescription;
 import org.talend.core.repository.model.preview.SalesforceSchemaBean;
-import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.utils.CsvArray;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.JobErrorsChecker;
@@ -373,12 +372,9 @@ public class ShadowProcess<T extends IProcessDescription> {
         processor.setContext(context);
         process = processor.run(IProcessor.NO_STATISTICS, IProcessor.NO_TRACES, null);
         IPath srcCodePath = processor.getSrcCodePath();
-        String filePath = srcCodePath.toString().substring(srcCodePath.toString().indexOf("java/") + 5);
-        ITalendProcessJavaProject talendJavaProject = processor.getTalendJavaProject();
-        IFile ShadowFileInputToDelimitedOutputFile = talendJavaProject.getSrcFolder()
-                .getFile(filePath);
+        IFile ShadowFileInputToDelimitedOutputFile = processor.getTalendJavaProject().getProject().getFile(srcCodePath);
         if (ShadowFileInputToDelimitedOutputFile.exists()) {
-            JobErrorsChecker.checkRoutinesCompilationError(ShadowFileInputToDelimitedOutputFile);
+            JobErrorsChecker.checkShadowFileError(ShadowFileInputToDelimitedOutputFile);
         }
         String error = ProcessStreamTrashReader.readErrorStream(process);
         if (error != null) {

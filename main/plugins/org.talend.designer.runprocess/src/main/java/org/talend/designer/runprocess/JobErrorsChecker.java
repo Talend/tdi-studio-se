@@ -428,7 +428,7 @@ public class JobErrorsChecker {
 
     }
 
-    public static void checkRoutinesCompilationError(IFile file) throws ProcessorException {
+    public static void checkShadowFileError(IFile file) throws ProcessorException {
         try {
             IMarker[] markers = file.findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
             for (IMarker marker : markers) {
