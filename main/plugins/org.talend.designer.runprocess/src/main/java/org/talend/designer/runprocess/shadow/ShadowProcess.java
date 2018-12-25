@@ -377,7 +377,9 @@ public class ShadowProcess<T extends IProcessDescription> {
         ITalendProcessJavaProject talendJavaProject = processor.getTalendJavaProject();
         IFile ShadowFileInputToDelimitedOutputFile = talendJavaProject.getSrcFolder()
                 .getFile(filePath);
-        JobErrorsChecker.checkRoutinesCompilationError(ShadowFileInputToDelimitedOutputFile);
+        if (ShadowFileInputToDelimitedOutputFile.exists()) {
+            JobErrorsChecker.checkRoutinesCompilationError(ShadowFileInputToDelimitedOutputFile);
+        }
         String error = ProcessStreamTrashReader.readErrorStream(process);
         if (error != null) {
             log.warn(error, new ProcessorException(error));
