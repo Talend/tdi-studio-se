@@ -41,6 +41,8 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.properties.Project;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.process.IGraphicalNode;
@@ -401,9 +403,15 @@ public class PropertyChangeCommand extends Command {
             }
             if (isJobletComponent) {
                 // 2.if it is a jobletcomponent,reload the component by the version
-                String id = service.getJobletComponentItem((Node) elem).getId();
+                Property jobletProperty = service.getJobletComponentItem((Node) elem);
+                Project project = ProjectManager.getInstance().getProject(jobletProperty);
+                String projTechLabel = null;
+                if (project != null) {
+                    projTechLabel = project.getTechnicalLabel();
+                }
+                String id = jobletProperty.getId();
                 String version = (String) newValue;
-                IComponent newComponent = service.setPropertyForJobletComponent(id, version);
+                IComponent newComponent = service.setPropertyForJobletComponent(projTechLabel, id, version);
                 reloadNode((Node) elem, newComponent);
             } else {
 

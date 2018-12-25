@@ -2280,8 +2280,16 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                                     IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
                                             .getService(IJobletProviderService.class);
                                     if (service != null) {
-                                        String componentProcessId = service.getJobletComponentItem(component).getId();
-                                        component = service.setPropertyForJobletComponent(componentProcessId, jobletVersion);
+                                        Property jobletProperty = service.getJobletComponentItem(component);
+                                        org.talend.core.model.properties.Project project = ProjectManager.getInstance()
+                                                .getProject(jobletProperty);
+                                        String projTechLabel = null;
+                                        if (project != null) {
+                                            projTechLabel = project.getTechnicalLabel();
+                                        }
+                                        String componentProcessId = jobletProperty.getId();
+                                        component = service.setPropertyForJobletComponent(projTechLabel, componentProcessId,
+                                                jobletVersion);
                                     }
                                 }
                                 break;
