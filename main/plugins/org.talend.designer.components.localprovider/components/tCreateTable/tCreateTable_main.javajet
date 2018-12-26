@@ -2021,6 +2021,8 @@ class SnowflaketManager extends Manager {
     private String connection;
     boolean enforceDelimitedIdentifiers;
     
+    private static final String SEPARATOR = "&";
+    
     public SnowflaketManager(String account,String dbName,String dbSchema, String userName,String role,String tableName, String connection, boolean useExistingConnection, String cid, boolean enforceDelimitedIdentifiers, String additionalParams) {
         super(dbName, tableName, userName , cid, additionalParams);
         this.account=account;
@@ -2033,6 +2035,11 @@ class SnowflaketManager extends Manager {
     protected String getDriver() {
         return "net.snowflake.client.jdbc.SnowflakeDriver";
     }
+    
+    public String getSeparator(){
+        return SEPARATOR;
+    }
+    
     public String getSpecificConnectionURL() {
         StringBuilder stringBuilder = new StringBuilder("\"jdbc:snowflake://\"");
 
