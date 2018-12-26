@@ -347,15 +347,14 @@
 
             <IMPORT
                 NAME="xalan"
-                MODULE="xalan-2.7.1.jar"
-                MVN="mvn:org.talend.libraries/xalan-2.7.1/6.0.0"
-                UrlPath="platform:/base/plugins/org.apache.xalan_2.7.1.v201005080400.jar"
+                MODULE="xalan-2.7.2.jar"
+                MVN="mvn:xalan/xalan/2.7.2"
                 REQUIRED="true"
             />
             <IMPORT
                 NAME="serializer"
-                MODULE="serializer-2.7.1.jar"
-                MVN="mvn:xalan/serializer/2.7.1"
+                MODULE="serializer-2.7.2.jar"
+                MVN="mvn:xalan/serializer/2.7.2"
                 REQUIRED="true"
             />
 
