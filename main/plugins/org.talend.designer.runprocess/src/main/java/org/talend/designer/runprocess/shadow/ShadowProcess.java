@@ -372,9 +372,9 @@ public class ShadowProcess<T extends IProcessDescription> {
         processor.setContext(context);
         process = processor.run(IProcessor.NO_STATISTICS, IProcessor.NO_TRACES, null);
         IPath srcCodePath = processor.getSrcCodePath();
-        IFile ShadowFileInputToDelimitedOutputFile = processor.getTalendJavaProject().getProject().getFile(srcCodePath);
-        if (ShadowFileInputToDelimitedOutputFile.exists()) {
-            JobErrorsChecker.checkShadowFileError(ShadowFileInputToDelimitedOutputFile);
+        IFile shadowFileInputToDelimitedOutputFile = processor.getTalendJavaProject().getProject().getFile(srcCodePath);
+        if (shadowFileInputToDelimitedOutputFile != null && shadowFileInputToDelimitedOutputFile.exists()) {
+            JobErrorsChecker.checkShadowFileError(shadowFileInputToDelimitedOutputFile);
         }
         String error = ProcessStreamTrashReader.readErrorStream(process);
         if (error != null) {
