@@ -62,6 +62,7 @@ import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.repository.ProjectManager;
 
 /**
  * Command that changes a given property. It will call the set or get property value in an element. This element can be
