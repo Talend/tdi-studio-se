@@ -342,6 +342,9 @@ public enum EParameterName {
     REPARTITIONER(Messages.getString("Connection.paral_repartitioner")), //$NON-NLS-1$
     NONE(Messages.getString("Connection.paral_none")), //$NON-NLS-1$
     QUEUE_SIZE(Messages.getString("Connection.paral_queuesize")), //$NON-NLS-1$
+    NUM_PARTITIONS("NUM_PARTITIONS"), //$NON-NLS-1$
+    DEPART_QUEUE_SIZE("DEPART_QUEUE_SIZE"), //$NON-NLS-1$
+    PART_QUEUE_SIZE("PART_QUEUE_SIZE"), //$NON-NLS-1$
 
     SUBTREE_START("SUBTREE_START"), //$NON-NLS-1$
     END_OF_FLOW("END_OF_FLOW"), //$NON-NLS-1$
