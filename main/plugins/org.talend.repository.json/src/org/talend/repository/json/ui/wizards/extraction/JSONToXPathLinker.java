@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ColorRegistry;
@@ -1005,6 +1007,11 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
             return null;
         }
         XPathFactory xpf = XPathFactory.newInstance();
+        try {
+            xpf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        } catch (XPathFactoryConfigurationException ex) {
+            ExceptionHandler.process(ex);
+        }
         XPath xpath = xpf.newXPath();
         try {
             xpath.compile(xpathExpression);
