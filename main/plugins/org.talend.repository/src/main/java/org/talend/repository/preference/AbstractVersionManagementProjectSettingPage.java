@@ -472,6 +472,43 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
         }
         return image;
     }
+    
+    private void processParentItems(List<ItemVersionObject> objects, RepositoryNode node){
+        ItemVersionObject parentObj = null;
+        if(node.getParent() == null){
+            return;
+        }
+        boolean parentChecked = false;
+        RepositoryNode parentNode = node.getParent();
+        for(Object obj : treeViewer.getCheckedElements()){
+            if(obj instanceof RepositoryNode && ((RepositoryNode)obj).getId().equals(parentNode.getId())){
+                parentChecked = true;
+                break;
+            }
+        }
+        if(!parentChecked){
+            return;
+        }
+        if (parentNode.getType() == ENodeType.REPOSITORY_ELEMENT) {
+            if (parentNode.getObject() != null) {
+                Property property = parentNode.getObject().getProperty();
+                Item item = property.getItem();
+                for(ItemVersionObject vObj : checkedObjects){
+                    if(vObj.getRepositoryNode().getId().equals(parentNode.getId())){
+                        return;
+                    }
+                }
+               
+                if (item != null && filterRepositoryNode(parentNode)) { // must be item
+                    parentObj = createItemVersionObject(parentNode, property);
+                }
+            }
+        }
+        if(parentObj != null){
+            objects.add(parentObj);
+        }
+        return;
+    }
 
     protected void processItems(List<ItemVersionObject> objects, RepositoryNode node) {
         if (node == null) {
@@ -486,34 +523,43 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
             if (node.getObject() != null) {
                 Property property = node.getObject().getProperty();
                 Item item = property.getItem();
+                boolean isTest = false;
+                ITestContainerProviderService testContainerService = null;
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+                    testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                            .getDefault().getService(ITestContainerProviderService.class);
+                    if (testContainerService != null) {
+                        isTest = testContainerService.isTestContainerItem(item);
+                        if(isTest){
+                            processParentItems(objects, node);
+                        }
+                    }
+                }
+                
                 if (item != null && filterRepositoryNode(node)) { // must be item
                     ItemVersionObject object = createItemVersionObject(node, property);
                     objects.add(object);
                 }
                 if(item instanceof ProcessItem){
-                	if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                        ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
-                                .getDefault().getService(ITestContainerProviderService.class);
-                        if (testContainerService != null) {
-                            List<ProcessItem> testsItems = testContainerService.getAllTestContainers((ProcessItem)item);
-                            List<String> testIDs = new ArrayList<String>();
-                            for(ProcessItem testItem : testsItems){
-                            	Property childProperty = testItem.getProperty();
-                            	if(testIDs.contains(childProperty.getId())){
-									continue;
-								}
-                            	IRepositoryViewObject testNode = null;
-								try {
-									testNode = ProxyRepositoryFactory.getInstance().getLastVersion(childProperty.getId());
-									testIDs.add(childProperty.getId());
-								} catch (PersistenceException e) {
-									ExceptionHandler.process(e);
-								}
-								if(testNode != null){
-									RepositoryNode nodeChild = new RepositoryNode(testNode, node, ENodeType.REPOSITORY_ELEMENT);
-									ItemVersionObject object = createItemVersionObject(nodeChild, testNode.getProperty());
-                                    objects.add(object);
-								}
+                    if (testContainerService != null && !isTest) {
+                        List<ProcessItem> testsItems = testContainerService.getAllTestContainers((ProcessItem)item);
+                        List<String> testIDs = new ArrayList<String>();
+                        for(ProcessItem testItem : testsItems){
+                            Property childProperty = testItem.getProperty();
+                            if(testIDs.contains(childProperty.getId())){
+                                continue;
+                            }
+                            IRepositoryViewObject testNode = null;
+                            try {
+                                testNode = ProxyRepositoryFactory.getInstance().getLastVersion(childProperty.getId());
+                                testIDs.add(childProperty.getId());
+                            } catch (PersistenceException e) {
+                                ExceptionHandler.process(e);
+                            }
+                            if(testNode != null){
+                                RepositoryNode nodeChild = new RepositoryNode(testNode, node, ENodeType.REPOSITORY_ELEMENT);
+                                ItemVersionObject object = createItemVersionObject(nodeChild, testNode.getProperty());
+                                objects.add(object);
                             }
                         }
                     }
