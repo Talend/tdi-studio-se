@@ -103,8 +103,8 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
                                  final int nbInRow, int top, final Control lastControlPrm) {
         this.curParameter = param;
         this.paramFieldType = param.getFieldType();
-        final Composite container = parentComposite;
 
+        // Create table widget
         PropertiesTableEditorModel<Map<String, Object>> tableEditorModel = new PropertiesTableEditorModel<Map<String, Object>>();
 
         tableEditorModel.setData(elem, param, getProcess(elem, part));
@@ -131,22 +131,14 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
                 }
             }
         });
-        final Composite mainComposite = tableEditorView.getMainComposite();
 
-        CLabel labelLabel2 = getWidgetFactory().createCLabel(container, param.getDisplayName());
-        FormData formData = new FormData();
-        if (lastControlPrm != null) {
-            formData.left = new FormAttachment(lastControlPrm, 0);
-        } else {
-            formData.left = new FormAttachment((((numInRow - 1) * MAX_PERCENT) / nbInRow), 0);
-        }
-        formData.top = new FormAttachment(0, top);
-        labelLabel2.setLayoutData(formData);
-        if (numInRow != 1) {
-            labelLabel2.setAlignment(SWT.RIGHT);
-        }
-        // *********************
-        formData = new FormData();
+
+        // Create property label which is displayed on the left side
+        CLabel labelLabel2 = getWidgetFactory().createCLabel(parentComposite, param.getDisplayName());
+        setupLabelLayout(labelLabel2, numInRow, nbInRow, top, lastControlPrm);
+
+        // Set table widget layout
+
         int currentLabelWidth2 = STANDARD_LABEL_WIDTH;
         GC gc2 = new GC(labelLabel2);
         Point labelSize2 = gc2.stringExtent(param.getDisplayName());
@@ -158,26 +150,28 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
             needOffset = false;
         }
 
+        final Composite tableComposite = tableEditorView.getMainComposite();
+        FormData tableFormData = new FormData();
         int tableHorizontalOffset = -5;
         if (numInRow == 1) {
             if (lastControlPrm != null) {
                 if (needOffset) {
-                    formData.left = new FormAttachment(lastControlPrm, currentLabelWidth2 + tableHorizontalOffset);
+                    tableFormData.left = new FormAttachment(lastControlPrm, currentLabelWidth2 + tableHorizontalOffset);
                 } else {
-                    formData.left = new FormAttachment(lastControlPrm, currentLabelWidth2);
+                    tableFormData.left = new FormAttachment(lastControlPrm, currentLabelWidth2);
                 }
             } else {
                 if (needOffset) {
-                    formData.left = new FormAttachment(0, currentLabelWidth2 + tableHorizontalOffset);
+                    tableFormData.left = new FormAttachment(0, currentLabelWidth2 + tableHorizontalOffset);
                 } else {
-                    formData.left = new FormAttachment(0, currentLabelWidth2);
+                    tableFormData.left = new FormAttachment(0, currentLabelWidth2);
                 }
             }
         } else {
-            formData.left = new FormAttachment(labelLabel2, 0 + tableHorizontalOffset, SWT.RIGHT);
+            tableFormData.left = new FormAttachment(labelLabel2, 0 + tableHorizontalOffset, SWT.RIGHT);
         }
-        formData.right = new FormAttachment((numInRow * MAX_PERCENT) / nbInRow, 0);
-        formData.top = new FormAttachment(0, top);
+        tableFormData.right = new FormAttachment((numInRow * MAX_PERCENT) / nbInRow, 0);
+        tableFormData.top = new FormAttachment(0, top);
 
         int toolbarSize = 0;
         if (!param.isBasedOnSchema()) {
@@ -191,8 +185,8 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
         int ySize2 = Math.max(currentHeightEditor, minHeightEditor);
 
         ySize2 = Math.min(ySize2, 500);
-        formData.bottom = new FormAttachment(0, top + ySize2);
-        mainComposite.setLayoutData(formData);
+        tableFormData.bottom = new FormAttachment(0, top + ySize2);
+        tableComposite.setLayoutData(tableFormData);
 
         hashCurControls.put(param.getName(), tableEditorView.getExtendedTableViewer().getTableViewerCreator());
         hashCurControls.put(TOOLBAR_NAME, tableEditorView.getToolBar());
@@ -200,24 +194,39 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
 
         this.dynamicProperty.setCurRowSize(ySize2 + ITabbedPropertyConstants.VSPACE);
 
+        // Set table widget layout in case of wizard
         if (isInWizard()) {
             labelLabel2.setAlignment(SWT.RIGHT);
             if (lastControlPrm != null) {
-                formData.right = new FormAttachment(lastControlPrm, 0);
+                tableFormData.right = new FormAttachment(lastControlPrm, 0);
             } else {
-                formData.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
+                tableFormData.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
             }
-            formData.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), currentLabelWidth2
+            tableFormData.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), currentLabelWidth2
                     + ITabbedPropertyConstants.HSPACE);
 
-            formData = (FormData) labelLabel2.getLayoutData();
-            formData.right = new FormAttachment(mainComposite, 0);
-            formData.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), 0);
+            tableFormData = (FormData) labelLabel2.getLayoutData();
+            tableFormData.right = new FormAttachment(tableComposite, 0);
+            tableFormData.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), 0);
 
             return labelLabel2;
         }
 
-        return mainComposite;
+        return tableComposite;
+    }
+
+    private void setupLabelLayout(final CLabel label, final int numInRow, final int nbInRow, final int top, final Control lastControl) {
+        final FormData data = new FormData();
+        if (lastControl != null) {
+            data.left = new FormAttachment(lastControl, 0);
+        } else {
+            data.left = new FormAttachment((((numInRow - 1) * MAX_PERCENT) / nbInRow), 0);
+        }
+        data.top = new FormAttachment(0, top);
+        label.setLayoutData(data);
+        if (numInRow != 1) {
+            label.setAlignment(SWT.RIGHT);
+        }
     }
 
     /*
