@@ -272,6 +272,7 @@ public class SOAPUtil {
     	
     	try {
 			TransformerFactory tf = TransformerFactory.newInstance();
+            tf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
 			Transformer t = tf.newTransformer();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			t.transform(reSoapPart.getContent(), new StreamResult(bos));
