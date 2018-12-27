@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.debug.ui,
  org.eclipse.jdt.launching,
- org.apache.commons.collections
+ org.apache.commons.collections,
+ org.talend.utils
 Bundle-ActivationPolicy: lazy
 Export-Package: org.talend.designer.runtime.visualization,
  org.talend.designer.runtime.visualization.MBean,

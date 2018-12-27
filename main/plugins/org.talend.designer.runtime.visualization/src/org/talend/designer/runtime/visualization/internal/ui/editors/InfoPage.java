@@ -14,8 +14,8 @@ import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -44,6 +44,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.talend.designer.runtime.visualization.Activator;
 import org.talend.designer.runtime.visualization.core.dump.IProfileInfo;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -134,7 +135,8 @@ public class InfoPage extends Composite {
 
             DOMSource source = new DOMSource(root);
             StreamResult result = new StreamResult(file);
-            TransformerFactory.newInstance().newTransformer().transform(source, result);
+            Transformer transformer = XmlUtils.getXmlSecureTransform();
+            transformer.transform(source, result);
 
             if (resourceFile != null) {
                 resourceFile.refreshLocal(0, monitor);
