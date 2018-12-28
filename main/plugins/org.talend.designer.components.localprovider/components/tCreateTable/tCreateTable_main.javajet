@@ -1857,7 +1857,7 @@ class RedshiftManager extends Manager {
         this.connection = connection;
     }
     protected String getDriver() {
-        return "com.amazon.redshift.jdbc41.Driver";
+        return "com.amazon.redshift.jdbc42.Driver";
     }
     public String getConnectionURL() {
         return "\"jdbc:redshift://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
