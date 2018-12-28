@@ -30,6 +30,14 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String table = ElementParameterParser.getValue(node,"__TABLE__");
 	String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
     String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+    
+    boolean isSpecifyIdentityField = ("true").equals(ElementParameterParser.getValue(node,"__SPECIFY_IDENTITY_FIELD__"));
+
+    String identityField = ElementParameterParser.getValue(node, "__IDENTITY_FIELD__");
+
+    int startValue = Integer.parseInt(ElementParameterParser.getValue(node, "__START_VALUE__"));
+
+    int step = Integer.parseInt(ElementParameterParser.getValue(node, "__STEP__"));
 
     //feature:2880
     getManager(dbmsId, cid, node);//register the MSSQLManager
@@ -99,7 +107,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		isDynamic = metadata.isDynamicSchema();
 	}
 
-	List<Column> stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, useFieldOptions, fieldOptions, addCols);
+	List<Column> stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, useFieldOptions, fieldOptions, addCols, isSpecifyIdentityField, identityField, startValue, step);
     isDynamic = isDynamic && !getManager(dbmsId, cid).isDynamicColumnReplaced();
 
     ////////////////////////////////////////////////////////////
@@ -121,10 +129,11 @@ skeleton="../templates/db_output_bulk.skeleton"
     }
     boolean isUseParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
 	boolean  isSpecifyIdentityKey = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_IDENTITY_FIELD__"));
-	if(isDynamic || isUseParallelize || identityInsert || (!"DROP_CREATE".equals(tableAction) && !"CREATE".equals(tableAction) && !"DROP_IF_EXISTS_AND_CREATE".equals(tableAction))){
+	if( isUseParallelize || identityInsert || (!"DROP_CREATE".equals(tableAction) && !"CREATE".equals(tableAction) && !"DROP_IF_EXISTS_AND_CREATE".equals(tableAction))){
 		isSpecifyIdentityKey = false;
 	}
     String identityKey = ElementParameterParser.getValue(node, "__IDENTITY_FIELD__");
+    getManager(dbmsId, cid, node).setIsSpecifyIdentityKey(isSpecifyIdentityKey);
 
     class SingleInsertQueryOperation{
         public String generateType(String typeToGenerate){
@@ -470,7 +479,20 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
         <%
     }
 }
-		%>
+    if(identityInsert ) {
+        if (useExistingConnection) {
+        %>
+	        if ( !isShareIdentity_<%=cid%> ) {
+	            stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
+	        }
+        <%
+        } else {
+     	%>
+            stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
+     	<%
+        }
+    }
+        %>
 		}
 	<%
 	} //end isDynamic
@@ -500,16 +522,8 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
 
 <%
 	}
-
-    if(incomingConnName != null && columnList != null){
-    	if(identityInsert && useExistingConnection ) {
-        %>
-		if ( isShareIdentity_<%=cid%> ) {
-        	stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
-        }
-        <%
-   		 }
-        %>
+if(incomingConnName != null && columnList != null){
+%>
         whetherReject_<%=cid%> = false;
         <%
         if(("INSERT").equals(dataAction)) {
