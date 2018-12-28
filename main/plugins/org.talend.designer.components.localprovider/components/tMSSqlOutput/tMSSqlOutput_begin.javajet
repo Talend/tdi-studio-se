@@ -133,9 +133,6 @@ if(isUseParallelize || identityInsert || (!"DROP_CREATE".equals(tableAction) && 
 }
 String identityKey = ElementParameterParser.getValue(node, "__IDENTITY_FIELD__");
 getManager(dbmsId, cid, node).setIsSpecifyIdentityKey(isSpecifyIdentityKey);
-%>
-//isSpecifyIdentityKey: <%=isSpecifyIdentityKey%>
-<%
 if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
     int updateKeyCount = 0;
     if(stmtStructure != null) {
