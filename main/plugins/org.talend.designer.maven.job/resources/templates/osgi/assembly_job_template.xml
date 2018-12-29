@@ -55,15 +55,4 @@
             </includes>
         </fileSet>
     </fileSets>
-    <dependencySets>
-        <!-- for all jobs -->
-        <dependencySet>
-            <includes>
-                <!--@JobIncludes@-->
-            </includes>
-            <outputFileNameMapping>${artifact.build.finalName}.${artifact.extension}</outputFileNameMapping>
-            <useProjectArtifact>true</useProjectArtifact>
-            <unpack>true</unpack>
-        </dependencySet>
-    </dependencySets>
 </assembly>
