@@ -738,6 +738,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
+    public void batchDeleteAllVersionTalendJobProject(List<String> idList) {
+        TalendJavaProjectManager.batchDeleteAllVersionTalendJobProject(idList);
+    }
+
+    @Override
     public boolean isExportConfig() {
         return ProcessorUtilities.isExportConfig();
     }

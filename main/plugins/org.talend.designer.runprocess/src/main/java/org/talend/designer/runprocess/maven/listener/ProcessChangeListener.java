@@ -42,6 +42,7 @@ import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.documentation.ERepositoryActionName;
 
@@ -179,7 +180,9 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     // FIXME testcase should regenerate pom to remove extra dependencies.
                 } else if (isNeedUpdateItem(property.getItem())) {
                     // delete all version old job projects physically, won't check to remove parent folder
-                    TalendJavaProjectManager.deleteAllVersionTalendJobProject(property.getId(), null, true);
+                    if (ProjectManager.getInstance().getCurrentProject().isLocal()) {
+                        TalendJavaProjectManager.deleteAllVersionTalendJobProject(property.getId(), null, true);
+                    }
                 }
                 // check ref-project if exist same label routine
                 checkCodesAfterDeleteForever(property);

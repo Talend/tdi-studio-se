@@ -12,7 +12,22 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.CLASSPATH_FILE_NAME;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_BEANS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_CODES;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS_SPARK;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS_SPARK_STREAMING;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PIGUDFS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_MR;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_ROUTES;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_SERVICES;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_STORM;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_ROUTELETS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_ROUTINES;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.PROJECT_FILE_NAME;
 
 import java.io.File;
 import java.util.HashMap;
@@ -342,6 +357,73 @@ public class TalendJavaProjectManager {
         }
     }
 
+    public static void doDeleteAllVersionTalendJobProject(String id, String oldName, boolean deleteContent, boolean avoidRefresh)
+            throws Exception {
+        List<IRepositoryViewObject> allVersionObjects = ProxyRepositoryFactory.getInstance().getAllVersion(id);
+        for (IRepositoryViewObject object : allVersionObjects) {
+            String realVersion = object.getVersion();
+            Property property = object.getProperty();
+            String currentName = property.getLabel();
+            try {
+                if (oldName != null) {
+                    property.setLabel(oldName);
+                }
+                if (property.getItem() instanceof JobletProcessItem) {
+                    BuildCacheManager.getInstance().removeJobletCache(property);
+                }
+                IFile pomFile = AggregatorPomsHelper.getItemPomFolder(property, realVersion)
+                        .getFile(TalendMavenConstants.POM_FILE_NAME);
+                AggregatorPomsHelper.removeFromParentModules(pomFile);
+            } finally {
+                if (oldName != null) {
+                    property.setLabel(currentName);
+                }
+            }
+        }
+        Set<String> removedVersions = new HashSet<>();
+        Iterator<String> iterator = talendJobJavaProjects.keySet().iterator();
+        // delete exist project
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            if (key.contains(id)) {
+                ITalendProcessJavaProject projectToDelete = talendJobJavaProjects.get(key);
+                projectToDelete.getProject().delete(deleteContent, true, null);
+                String version = key.split("\\|")[1]; //$NON-NLS-1$
+                removedVersions.add(version);
+                iterator.remove();
+            }
+        }
+        if (deleteContent) {
+            // for logically deleted project, delete the folder directly
+            AggregatorPomsHelper helper = new AggregatorPomsHelper();
+            for (IRepositoryViewObject object : allVersionObjects) {
+                String realVersion = object.getVersion();
+                Property property = object.getProperty();
+                String currentName = property.getLabel();
+                try {
+                    if (oldName != null) {
+                        property.setLabel(oldName);
+                    }
+                    IPath jobPath = AggregatorPomsHelper.getItemPomFolder(property, realVersion).getLocation();
+                    if (!removedVersions.contains(realVersion)) {
+                        File projectFolder = jobPath.toFile();
+                        if (projectFolder.exists()) {
+                            FilesUtils.deleteFolder(projectFolder, true);
+                        }
+                    }
+                } finally {
+                    if (oldName != null) {
+                        property.setLabel(currentName);
+                    }
+                }
+            }
+            if (!avoidRefresh) {
+                helper.getProjectPomsFolder().refreshLocal(IResource.DEPTH_INFINITE, null);
+            }
+        }
+
+    }
+
     public static void deleteAllVersionTalendJobProject(String id, String oldName, boolean deleteContent) {
 
         RepositoryWorkUnit workUnit = new RepositoryWorkUnit<Object>("Delete job projects") { //$NON-NLS-1$
@@ -349,66 +431,7 @@ public class TalendJavaProjectManager {
             @Override
             protected void run() {
                 try {
-                    List<IRepositoryViewObject> allVersionObjects = ProxyRepositoryFactory.getInstance().getAllVersion(id);
-                    for (IRepositoryViewObject object : allVersionObjects) {
-                        String realVersion = object.getVersion();
-                        Property property = object.getProperty();
-                        String currentName = property.getLabel();
-                        try {
-                            if (oldName != null) {
-                                property.setLabel(oldName);
-                            }
-                            if (property.getItem() instanceof JobletProcessItem) {
-                                BuildCacheManager.getInstance().removeJobletCache(property);
-                            }
-                            IFile pomFile = AggregatorPomsHelper.getItemPomFolder(property, realVersion)
-                                    .getFile(TalendMavenConstants.POM_FILE_NAME);
-                            AggregatorPomsHelper.removeFromParentModules(pomFile);
-                        } finally {
-                            if (oldName != null) {
-                                property.setLabel(currentName);
-                            }
-                        }
-                    }
-                    Set<String> removedVersions = new HashSet<>();
-                    Iterator<String> iterator = talendJobJavaProjects.keySet().iterator();
-                    // delete exist project
-                    while (iterator.hasNext()) {
-                        String key = iterator.next();
-                        if (key.contains(id)) {
-                            ITalendProcessJavaProject projectToDelete = talendJobJavaProjects.get(key);
-                            projectToDelete.getProject().delete(deleteContent, true, null);
-                            String version = key.split("\\|")[1]; //$NON-NLS-1$
-                            removedVersions.add(version);
-                            iterator.remove();
-                        }
-                    }
-                    if (deleteContent) {
-                        // for logically deleted project, delete the folder directly
-                        AggregatorPomsHelper helper = new AggregatorPomsHelper();
-                        for (IRepositoryViewObject object : allVersionObjects) {
-                            String realVersion = object.getVersion();
-                            Property property = object.getProperty();
-                            String currentName = property.getLabel();
-                            try {
-                                if (oldName != null) {
-                                    property.setLabel(oldName);
-                                }
-                                IPath jobPath = AggregatorPomsHelper.getItemPomFolder(property, realVersion).getLocation();
-                                if (!removedVersions.contains(realVersion)) {
-                                    File projectFolder = jobPath.toFile();
-                                    if (projectFolder.exists()) {
-                                        FilesUtils.deleteFolder(projectFolder, true);
-                                    }
-                                }
-                            } finally {
-                                if (oldName != null) {
-                                    property.setLabel(currentName);
-                                }
-                            }
-                        }
-                        helper.getProjectPomsFolder().refreshLocal(IResource.DEPTH_INFINITE, null);
-                    }
+                    doDeleteAllVersionTalendJobProject(id, oldName, deleteContent, false);
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
@@ -416,6 +439,19 @@ public class TalendJavaProjectManager {
         };
         workUnit.setAvoidUnloadResources(true);
         ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
+
+    }
+
+    public static void batchDeleteAllVersionTalendJobProject(List<String> idList) {
+        try {
+            for (String id : idList) {
+                doDeleteAllVersionTalendJobProject(id, null, true, true);
+            }
+            AggregatorPomsHelper helper = new AggregatorPomsHelper();
+            helper.getProjectPomsFolder().refreshLocal(IResource.DEPTH_INFINITE, null);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
     }
 
     public static void createAllVersionTalendJobProject(String id) {

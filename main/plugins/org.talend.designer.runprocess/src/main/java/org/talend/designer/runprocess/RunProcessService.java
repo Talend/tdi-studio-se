@@ -438,6 +438,11 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
+    public void batchDeleteAllVersionTalendJobProject(List<String> idList) {
+        delegateService.batchDeleteAllVersionTalendJobProject(idList);
+    }
+
+    @Override
     public boolean isExportConfig() {
         return delegateService.isExportConfig();
     }
