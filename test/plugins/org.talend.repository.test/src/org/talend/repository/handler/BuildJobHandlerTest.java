@@ -234,6 +234,8 @@ public class BuildJobHandlerTest {
 
             Properties jobInfoProp = new Properties();
             jobInfoProp.load(jobInfoStream);
+            jobInfoStream.close();
+
             assertEquals(property.getId(), jobInfoProp.getProperty("jobId"));
             assertEquals(jobName, jobInfoProp.getProperty("job"));
             assertEquals(jobVersion, jobInfoProp.getProperty("jobVersion"));
@@ -245,6 +247,14 @@ public class BuildJobHandlerTest {
 
             ZipEntry libEntry = zip.getEntry("lib");
             assertNotNull("No lib folder", libEntry);
+            if (jobItem == jobWithChildrenItem) {
+                String dependencyFromParent = "commons-lang-2.5.jar";
+                ZipEntry dependencyEntry = zip.getEntry("lib/" + dependencyFromParent);
+                assertNotNull("No parent job dependency in lib folder", dependencyEntry);
+                String dependencyFromChild = "commons-lang-2.6.jar";
+                dependencyEntry = zip.getEntry("lib/" + dependencyFromChild);
+                assertNotNull("No child job dependency in lib folder", dependencyEntry);
+            }
             if (jobItem == jobWithJobletItem) {
                 String dependencyFromJoblet = "commons-beanutils-1.9.2.jar";
                 ZipEntry dependencyEntry = zip.getEntry("lib/" + dependencyFromJoblet);
