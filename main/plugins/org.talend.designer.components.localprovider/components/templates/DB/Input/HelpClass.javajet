@@ -213,9 +213,8 @@ imports="
 	    
 	    public void generateOthersResultSet(String firstConnName, IMetadataColumn column, int currentColNo, String typeToGenerate) {
 %>
-            if(rs_<%=cid %>.getObject(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>) != null) {
-                <%=firstConnName%>.<%=column.getLabel()%> = rs_<%=cid %>.get<%=typeToGenerate%>(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
-            } else {
+            <%=firstConnName%>.<%=column.getLabel()%> = rs_<%=cid %>.get<%=typeToGenerate%>(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+            if(rs_<%=cid %>.wasNull()){
                 <%
                 if(column.isNullable()) {
                     %>
