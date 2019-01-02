@@ -2431,7 +2431,7 @@ if(columnList != null && columnList.size() > 0) {
                 String dbnameMySQL = "";
                 if (useExistMySQLConn) {
                     List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
-                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
+                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION_MYSQL__");
                     for (INode ne : nodes) {
                         if (connectionMySQL.equals(ne.getUniqueName())) {
                             dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
