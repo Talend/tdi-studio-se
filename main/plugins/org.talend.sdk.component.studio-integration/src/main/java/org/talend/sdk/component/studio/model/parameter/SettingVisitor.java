@@ -214,9 +214,12 @@ public class SettingVisitor implements PropertyVisitor {
                 settings.put(closedList.getName(), closedList);
                 break;
             case TABLE:
-            case TACOKIT_SUGGESTABLE_TABLE:
                 final TaCoKitElementParameter table = visitTable((ListPropertyNode) node);
                 settings.put(table.getName(), table);
+                break;
+            case TACOKIT_SUGGESTABLE_TABLE:
+                final TaCoKitElementParameter suggestableTable = visitSuggestableTable((ListPropertyNode) node);
+                settings.put(suggestableTable.getName(), suggestableTable);
                 break;
             case SCHEMA_TYPE:
                 final TaCoKitElementParameter outSchema = visitOutSchema(node);
@@ -397,11 +400,40 @@ public class SettingVisitor implements PropertyVisitor {
     /**
      * Creates {@link TaCoKitElementParameter} for Table field type
      * Sets special fields specific for Table parameter
-     * Based on schema field controls whether table toolbox (buttons under table) is shown
+     * Based on schema field controls whether table toolbox (buttons under table) is shown.
+     * If parameter is based on schema, then toolbox is not shown
      */
     private TaCoKitElementParameter visitTable(final ListPropertyNode tableNode) {
         final TaCoKitElementParameter parameter = createTableParameter(tableNode);
+        commonTableSetup(tableNode, parameter);
+        return parameter;
+    }
 
+    /**
+     * Creates {@link TaCoKitElementParameter} for TACOKIT_SUGGESTABLE_TABLE field type
+     * Sets special fields specific for Table parameter
+     * Based on schema field controls whether table toolbox (buttons under table) is shown.
+     * If parameter is based on schema, then toolbox is not shown
+     */
+    private TaCoKitElementParameter visitSuggestableTable(final ListPropertyNode tableNode) {
+        final TaCoKitElementParameter parameter = createSuggestableTableParameter(tableNode);
+        commonTableSetup(tableNode, parameter);
+        return parameter;
+    }
+
+    /**
+     * Creates {@link SuggestableTableParameter} and sets common state
+     *
+     * @param node Property tree node
+     * @return created {@link SuggestableTableParameter}
+     */
+    private SuggestableTableParameter createSuggestableTableParameter(final PropertyNode node) {
+        final SuggestableTableParameter parameter = new SuggestableTableParameter(element);
+        commonSetup(parameter, node);
+        return parameter;
+    }
+
+    private void commonTableSetup(final ListPropertyNode tableNode, final TaCoKitElementParameter parameter) {
         final List<IElementParameter> tableParameters = createTableParameters(tableNode);
         final List<String> codeNames = new ArrayList<>(tableParameters.size());
         final List<String> displayNames = new ArrayList<>(tableParameters.size());
@@ -413,9 +445,7 @@ public class SettingVisitor implements PropertyVisitor {
         parameter.setListItemsDisplayCodeName(codeNames.toArray(new String[0]));
         parameter.setListItemsValue(tableParameters.toArray(new ElementParameter[0]));
         parameter.updateValueOnly(new ArrayList<Map<String, Object>>());
-        // TODO change to real value
         parameter.setBasedOnSchema(false);
-        return parameter;
     }
 
     private TaCoKitElementParameter visitOutSchema(final PropertyNode node) {

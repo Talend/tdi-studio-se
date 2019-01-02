@@ -86,6 +86,7 @@ import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.Pr
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableToolbarEditorView;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.sdk.component.studio.i18n.Messages;
+import org.talend.sdk.component.studio.model.parameter.SuggestableTableParameter;
 import org.talend.sdk.component.studio.model.parameter.ValueSelectionParameter;
 
 public class SuggestableTableController extends AbstractElementPropertySectionController {
@@ -274,7 +275,7 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
                     protected IStatus run(IProgressMonitor monitor) {
                         monitor.subTask("Retrieve schema column names");
                         // TODO get schema column names here
-                        final Map<String, String> possibleValues = Collections.emptyMap();
+                        final Map<String, String> possibleValues = ((SuggestableTableParameter) parameter).getSuggestionValues();
                         if (monitor.isCanceled()) {
                             return Status.CANCEL_STATUS;
                         }
