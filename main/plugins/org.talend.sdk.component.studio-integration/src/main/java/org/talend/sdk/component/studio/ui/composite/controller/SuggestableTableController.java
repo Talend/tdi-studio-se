@@ -15,6 +15,7 @@ package org.talend.sdk.component.studio.ui.composite.controller;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,19 +23,31 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
+import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNotModifiable;
 import org.talend.commons.ui.swt.advanced.dataeditor.control.ExtendedPushButton;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
@@ -53,10 +66,12 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
@@ -70,6 +85,8 @@ import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.Pr
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableToolbarEditorView;
 import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.sdk.component.studio.i18n.Messages;
+import org.talend.sdk.component.studio.model.parameter.ValueSelectionParameter;
 
 public class SuggestableTableController extends AbstractElementPropertySectionController {
 
@@ -137,8 +154,11 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
         CLabel labelLabel2 = getWidgetFactory().createCLabel(parentComposite, param.getDisplayName());
         setupLabelLayout(labelLabel2, numInRow, nbInRow, top, lastControlPrm);
 
-        // Set table widget layout
+        // Create edit button
+        final Button button = createEditButton(parentComposite, param);
+        setupButtonLayout(button, numInRow, nbInRow, labelLabel2);
 
+        // Set table widget layout
         int currentLabelWidth2 = STANDARD_LABEL_WIDTH;
         GC gc2 = new GC(labelLabel2);
         Point labelSize2 = gc2.stringExtent(param.getDisplayName());
@@ -170,7 +190,7 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
         } else {
             tableFormData.left = new FormAttachment(labelLabel2, 0 + tableHorizontalOffset, SWT.RIGHT);
         }
-        tableFormData.right = new FormAttachment((numInRow * MAX_PERCENT) / nbInRow, 0);
+        tableFormData.right = new FormAttachment(button, 0);
         tableFormData.top = new FormAttachment(0, top);
 
         int toolbarSize = 0;
@@ -227,6 +247,82 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
         if (numInRow != 1) {
             label.setAlignment(SWT.RIGHT);
         }
+    }
+
+    private Button createEditButton(final Composite parent, final IElementParameter param) {
+        final Button editButton = getWidgetFactory().createButton(parent, "", SWT.PUSH);
+        editButton.setImage(ImageProvider.getImage(CoreUIPlugin.getImageDescriptor(DOTS_BUTTON)));
+        editButton.setEnabled(!param.isRepositoryValueUsed());
+        editButton.addSelectionListener(createOnButtonClickedListener(param));
+        return editButton;
+    }
+
+    /**
+     * TODO implement it
+     * @param parameter
+     * @return
+     */
+    private SelectionListener createOnButtonClickedListener(final IElementParameter parameter) {
+        return new SelectionAdapter() {
+
+            private final Job job;
+
+            {
+                job = new Job("Retrieve possible values") {
+
+                    @Override
+                    protected IStatus run(IProgressMonitor monitor) {
+                        monitor.subTask("Retrieve schema column names");
+                        // TODO get schema column names here
+                        final Map<String, String> possibleValues = Collections.emptyMap();
+                        if (monitor.isCanceled()) {
+                            return Status.CANCEL_STATUS;
+                        }
+                        monitor.subTask("Open Selection Dialog");
+                        Display.getDefault().asyncExec(new Runnable() {
+                            public void run() {
+                                final ValueSelectionDialog dialog = new ValueSelectionDialog(composite.getShell(), possibleValues);
+                                if (dialog.open() == IDialogConstants.OK_ID) {
+                                    // TODO set selected values here
+                                    parameter.setValue(getStubData(parameter));
+                                    refresh(parameter, false);
+                                }
+                            }
+                        });
+                        monitor.done();
+                        return Status.OK_STATUS;
+                    }
+
+                };
+                job.setUser(true);
+            }
+
+            @Override
+            public void widgetSelected(final SelectionEvent e) {
+                job.schedule();
+            }
+        };
+    }
+
+    // TODO remove it and replace with real code
+    private List<Map<String, Object>> getStubData(final IElementParameter parameter) {
+        final List<Map<String, Object>> newValue = new ArrayList<>();
+        final Map<String, Object> row1 = new LinkedHashMap<>();
+        row1.put(parameter.getListItemsDisplayCodeName()[0], "Hello");
+        newValue.add(row1);
+        final Map<String, Object> row2 = new LinkedHashMap<>();
+        row2.put(parameter.getListItemsDisplayCodeName()[0], "World");
+        newValue.add(row2);
+        return newValue;
+    }
+
+    private void setupButtonLayout(final Button button, final int numInRow, final int nbInRow, final CLabel label) {
+        final FormData data = new FormData();
+        data.left = new FormAttachment(((numInRow * MAX_PERCENT) / nbInRow), -STANDARD_BUTTON_WIDTH);
+        data.right = new FormAttachment(((numInRow * MAX_PERCENT) / nbInRow), 0);
+        data.top = new FormAttachment(label, 0, SWT.CENTER);
+        data.height = STANDARD_HEIGHT - 2;
+        button.setLayoutData(data);
     }
 
     /*
