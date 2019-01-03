@@ -50,7 +50,7 @@ public class TableElementParameterTest {
         row2.put("conf.table[].number", "number 1");
         value.add(row2);
 
-        TableElementParameter parameter = new TableElementParameter(null);
+        TableElementParameter parameter = new TableElementParameter(null, Collections.emptyList());
         parameter.setName("conf.table");
         parameter.setValue(value);
 
@@ -63,7 +63,7 @@ public class TableElementParameterTest {
     public void testCreateActionParameterNull() {
         List<Pair<String, String>> expected = new ArrayList<>();
 
-        TableElementParameter parameter = new TableElementParameter(null);
+        TableElementParameter parameter = new TableElementParameter(null, Collections.emptyList());
         parameter.setName("conf.table");
 
         IActionParameter actionParameter = parameter.createActionParameter("t");
@@ -74,7 +74,7 @@ public class TableElementParameterTest {
     public void testCreateActionParameterEmpty() {
         List<Pair<String, String>> expected = new ArrayList<>();
 
-        TableElementParameter parameter = new TableElementParameter(null);
+        TableElementParameter parameter = new TableElementParameter(null, Collections.emptyList());
         parameter.setName("conf.table");
         parameter.setValue(new ArrayList<>());
 
@@ -101,7 +101,7 @@ public class TableElementParameterTest {
         col2.setListItemsValue(col2PossibleValues);
         col2.setFieldType(EParameterFieldType.CLOSED_LIST);
 
-        TableElementParameter table = new TableElementParameter(null);
+        TableElementParameter table = new TableElementParameter(null, Collections.emptyList());
         Object[] tableColumns = new Object[]{col1, col2};
         table.setListItemsValue(tableColumns);
         table.setName("conf.table");
@@ -133,7 +133,7 @@ public class TableElementParameterTest {
         row2.put("conf.updatableConfig.table[].strColumn", "The best");
         expectedValue.add(row2);
 
-        final TableElementParameter table = new TableElementParameter(null);
+        final TableElementParameter table = new TableElementParameter(null, Collections.emptyList());
         table.setName("conf.updatableConfig.table");
         table.setFieldType(EParameterFieldType.TABLE);
         final TaCoKitElementParameter column1 = new TaCoKitElementParameter(null);

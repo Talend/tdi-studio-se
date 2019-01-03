@@ -118,7 +118,7 @@ class SuggestionsResolverTest {
         row2.put("conf.table[].strColumn", "The best");
         tableValue.add(row2);
 
-        final TableElementParameter tableParam = new TableElementParameter(null);
+        final TableElementParameter tableParam = new TableElementParameter(null, Collections.emptyList());
         tableParam.setName("conf.table");
         tableParam.setValue(tableValue);
         return tableParam;

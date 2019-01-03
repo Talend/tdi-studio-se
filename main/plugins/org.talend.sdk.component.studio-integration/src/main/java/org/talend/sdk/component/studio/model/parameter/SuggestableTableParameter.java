@@ -25,6 +25,7 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.ui.editor.nodes.Node;
 
 /**
@@ -33,8 +34,15 @@ import org.talend.designer.core.ui.editor.nodes.Node;
  */
 public class SuggestableTableParameter extends TableElementParameter {
 
-    public SuggestableTableParameter(final IElement element) {
-        super(element);
+    /**
+     * Constructor setups Table columns and sets empty list as initial value
+     *
+     * @param element represents persisted element, to which this parameter belongs (it can be component Node
+     *                or Connection instance)
+     * @param columns a list of parameters, which represents Table columns
+     */
+    public SuggestableTableParameter(final IElement element, final List<IElementParameter> columns) {
+        super(element, columns);
     }
 
     /**

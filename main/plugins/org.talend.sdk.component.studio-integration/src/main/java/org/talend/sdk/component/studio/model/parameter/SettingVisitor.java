@@ -404,8 +404,8 @@ public class SettingVisitor implements PropertyVisitor {
      * If parameter is based on schema, then toolbox is not shown
      */
     private TaCoKitElementParameter visitTable(final ListPropertyNode tableNode) {
-        final TaCoKitElementParameter parameter = createTableParameter(tableNode);
-        commonTableSetup(tableNode, parameter);
+        final TaCoKitElementParameter parameter = new TableElementParameter(element, createTableParameters(tableNode));
+        commonSetup(parameter, tableNode);
         return parameter;
     }
 
@@ -416,36 +416,9 @@ public class SettingVisitor implements PropertyVisitor {
      * If parameter is based on schema, then toolbox is not shown
      */
     private TaCoKitElementParameter visitSuggestableTable(final ListPropertyNode tableNode) {
-        final TaCoKitElementParameter parameter = createSuggestableTableParameter(tableNode);
-        commonTableSetup(tableNode, parameter);
+        final TaCoKitElementParameter parameter = new SuggestableTableParameter(element, createTableParameters(tableNode));
+        commonSetup(parameter, tableNode);
         return parameter;
-    }
-
-    /**
-     * Creates {@link SuggestableTableParameter} and sets common state
-     *
-     * @param node Property tree node
-     * @return created {@link SuggestableTableParameter}
-     */
-    private SuggestableTableParameter createSuggestableTableParameter(final PropertyNode node) {
-        final SuggestableTableParameter parameter = new SuggestableTableParameter(element);
-        commonSetup(parameter, node);
-        return parameter;
-    }
-
-    private void commonTableSetup(final ListPropertyNode tableNode, final TaCoKitElementParameter parameter) {
-        final List<IElementParameter> tableParameters = createTableParameters(tableNode);
-        final List<String> codeNames = new ArrayList<>(tableParameters.size());
-        final List<String> displayNames = new ArrayList<>(tableParameters.size());
-        for (final IElementParameter param : tableParameters) {
-            codeNames.add(param.getName());
-            displayNames.add(param.getDisplayName());
-        }
-        parameter.setListItemsDisplayName(displayNames.toArray(new String[0]));
-        parameter.setListItemsDisplayCodeName(codeNames.toArray(new String[0]));
-        parameter.setListItemsValue(tableParameters.toArray(new ElementParameter[0]));
-        parameter.updateValueOnly(new ArrayList<Map<String, Object>>());
-        parameter.setBasedOnSchema(false);
     }
 
     private TaCoKitElementParameter visitOutSchema(final PropertyNode node) {
@@ -492,18 +465,6 @@ public class SettingVisitor implements PropertyVisitor {
             final String discoverSchemaAction,
             final boolean show) {
         return new OutputSchemaParameter(getNode(), schemaName, connectionName, discoverSchemaAction, show);
-    }
-
-    /**
-     * Creates {@link TableElementParameter} and sets common state
-     *
-     * @param node Property tree node
-     * @return created {@link TableElementParameter}
-     */
-    private TableElementParameter createTableParameter(final PropertyNode node) {
-        final TableElementParameter parameter = new TableElementParameter(element);
-        commonSetup(parameter, node);
-        return parameter;
     }
 
     /**

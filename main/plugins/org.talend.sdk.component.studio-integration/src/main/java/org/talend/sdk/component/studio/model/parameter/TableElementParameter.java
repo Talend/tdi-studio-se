@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 
 /**
@@ -41,8 +42,26 @@ import org.talend.sdk.component.studio.model.action.IActionParameter;
  */
 public class TableElementParameter extends TaCoKitElementParameter {
 
-    public TableElementParameter(final IElement element) {
+    /**
+     * Constructor setups Table columns and sets empty list as initial value
+     *
+     * @param element represents persisted element, to which this parameter belongs (it can be component Node
+     *                or Connection instance)
+     * @param columns a list of parameters, which represents Table columns
+     */
+    public TableElementParameter(final IElement element, final List<IElementParameter> columns) {
         super(element);
+        final List<String> columnNames = new ArrayList<>(columns.size());
+        final List<String> displayNames = new ArrayList<>(columns.size());
+        for (final IElementParameter param : columns) {
+            columnNames.add(param.getName());
+            displayNames.add(param.getDisplayName());
+        }
+        setListItemsDisplayName(displayNames.toArray(new String[0]));
+        setListItemsDisplayCodeName(columnNames.toArray(new String[0]));
+        setListItemsValue(columns.toArray(new ElementParameter[0]));
+        updateValueOnly(new ArrayList<Map<String, Object>>());
+        setBasedOnSchema(false);
     }
 
     /**
