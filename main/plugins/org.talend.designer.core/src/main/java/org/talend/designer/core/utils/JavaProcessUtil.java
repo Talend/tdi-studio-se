@@ -186,10 +186,9 @@ public class JavaProcessUtil {
             Set<ModuleNeeded> nodeNeededModules = getNeededModules(node, searchItems, options);
             if (nodeNeededModules != null) {
                 modulesNeeded.addAll(nodeNeededModules);
-                if (node.getComponent().getName().equals("tLibraryLoad")) { //$NON-NLS-1$
-                    if (!isTestcaseProcess) {
-                        LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().addAll(nodeNeededModules);
-                    }
+                if (node.getComponent().getName().equals("tLibraryLoad") && !isTestcaseProcess) { //$NON-NLS-1$
+                    LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(),process.getVersion(),
+                            nodeNeededModules);
                 }
             }
         }
