@@ -12,10 +12,12 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -139,11 +141,13 @@ public class JavaProcessorUtilitiesTest {
         neededModules.add(moduleNeeded_C);
         neededModules.add(moduleNeeded_D);
 
-        Set<ModuleNeeded> highPriorityNeededModules = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded();
-        highPriorityNeededModules.clear();
-        highPriorityNeededModules.add(moduleNeeded_C);
-        highPriorityNeededModules.add(moduleNeeded_A);
-        highPriorityNeededModules.add(moduleNeeded_E);
+        LastGenerationInfo.getInstance().clearHighPriorityModuleNeeded();
+        Set<ModuleNeeded> highPriorityModuleNeeded = new LinkedHashSet<>();
+        highPriorityModuleNeeded.add(moduleNeeded_C);
+        highPriorityModuleNeeded.add(moduleNeeded_A);
+        highPriorityModuleNeeded.add(moduleNeeded_E);
+        LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(property.getId(), property.getVersion(),
+                highPriorityModuleNeeded);
 
         Set<ModuleNeeded> result = JavaProcessorUtilities.getNeededModulesForProcess(process);
         assertEquals(5, result.size());
