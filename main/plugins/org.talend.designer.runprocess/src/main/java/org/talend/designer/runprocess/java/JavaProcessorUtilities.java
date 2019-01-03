@@ -13,14 +13,11 @@
 package org.talend.designer.runprocess.java;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -246,7 +243,8 @@ public class JavaProcessorUtilities {
             }
         }
         // move high priority modules to front.
-        Set<ModuleNeeded> highPriorityModuleNeeded = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded();
+        Set<ModuleNeeded> highPriorityModuleNeeded = LastGenerationInfo.getInstance()
+                .getHighPriorityModuleNeeded(property.getId(), property.getVersion());
         if (!highPriorityModuleNeeded.isEmpty()) {
             Iterator<ModuleNeeded> iterator = highPriorityModuleNeeded.iterator();
             while (iterator.hasNext()) {
@@ -256,10 +254,8 @@ public class JavaProcessorUtilities {
                 }
             }
             // order should be main -> sub1 -> sub_sub1 -> normal modules
-            List<ModuleNeeded> tempList = new ArrayList<>(highPriorityModuleNeeded);
-            Collections.reverse(tempList);
             Set<ModuleNeeded> orderedNeededLibraries = new LinkedHashSet<>();
-            orderedNeededLibraries.addAll(tempList);
+            orderedNeededLibraries.addAll(highPriorityModuleNeeded);
             orderedNeededLibraries.addAll(neededLibraries);
             return orderedNeededLibraries;
         }

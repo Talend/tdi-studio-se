@@ -180,7 +180,8 @@ public class JavaProcessUtil {
             if (nodeNeededModules != null) {
                 modulesNeeded.addAll(nodeNeededModules);
                 if (node.getComponent().getName().equals("tLibraryLoad")) { //$NON-NLS-1$
-                    LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().addAll(nodeNeededModules);
+                    LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(),process.getVersion(),
+                            nodeNeededModules);
                 }
             }
         }
