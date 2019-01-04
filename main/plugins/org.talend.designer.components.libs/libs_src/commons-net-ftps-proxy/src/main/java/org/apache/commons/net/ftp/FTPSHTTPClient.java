@@ -20,17 +20,23 @@ import java.util.Locale;
 public class FTPSHTTPClient extends FTPSClient {
 
     private final String proxyHost;
+
     private final int proxyPort;
+
     private final String proxyUsername;
+
     private final String proxyPassword;
+
     private SSLContext context;
 
     private String tunnelHost; // Save the host when setting up a tunnel (needed for EPSV)
 
-    private static final byte[] CRLF = {'\r', '\n'};
+    private static final byte[] CRLF = { '\r', '\n' };
+
     private final Base64 base64 = new Base64();
 
-    public FTPSHTTPClient(boolean isImplicit, SSLContext context, String proxyHost, int proxyPort, String proxyUser, String proxyPass) {
+    public FTPSHTTPClient(boolean isImplicit, SSLContext context, String proxyHost, int proxyPort, String proxyUser,
+            String proxyPass) {
         super(isImplicit, context);
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
@@ -41,6 +47,7 @@ public class FTPSHTTPClient extends FTPSClient {
     }
 
     /**
+     * Open ssl socket using tunnel socket
      * @see org.apache.commons.net.ftp.FTPSClient#_openDataConnection_(java.lang.String, java.lang.String)
      */
     @Override
@@ -98,8 +105,7 @@ public class FTPSHTTPClient extends FTPSClient {
         tunnelHandshake(passiveHost, this.getPassivePort(), proxySocket.getInputStream(),
                 proxySocket.getOutputStream());
 
-        Socket socket = context.getSocketFactory().createSocket(proxySocket, passiveHost,
-                this.getPassivePort(), true);
+        Socket socket = context.getSocketFactory().createSocket(proxySocket, passiveHost, this.getPassivePort(), true);
         _prepareDataSocket_(socket);
 
         if (getReceiveDataSocketBufferSize() > 0) {
@@ -153,7 +159,7 @@ public class FTPSHTTPClient extends FTPSClient {
 
     @Override
     protected void _prepareDataSocket_(final Socket socket) {
-        if(socket instanceof SSLSocket) {
+        if (socket instanceof SSLSocket) {
             final SSLSession session = ((SSLSocket) _socket_).getSession();
             final SSLSessionContext context = session.getSessionContext();
             try {
@@ -165,9 +171,10 @@ public class FTPSHTTPClient extends FTPSClient {
                 final Method getHostMethod = socket.getClass().getDeclaredMethod("getHost");
                 getHostMethod.setAccessible(true);
                 Object host = getHostMethod.invoke(socket);
-                final String key = String.format("%s:%s", host, String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT);
+                final String key =
+                        String.format("%s:%s", host, String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT);
                 putMethod.invoke(cache, key, session);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -204,7 +211,8 @@ public class FTPSHTTPClient extends FTPSClient {
 
         if (proxyUsername != null && proxyPassword != null) {
             final String auth = proxyUsername + ":" + proxyPassword;
-            final String header = "Proxy-Authorization: Basic " + base64.encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+            final String header =
+                    "Proxy-Authorization: Basic " + base64.encodeToString(auth.getBytes(StandardCharsets.UTF_8));
             output.write(header.getBytes(StandardCharsets.UTF_8));
         }
 
