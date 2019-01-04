@@ -198,9 +198,9 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
 
         List<String> response = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(input, getCharset()));
-
-        for (String line = reader.readLine(); line != null && line.length() > 0; line = reader.readLine()) {
-            response.add(line);
+        String responseLine;
+        while ((responseLine = reader.readLine()) != null && responseLine.length() > 0) {
+            response.add(responseLine);
         }
 
         int size = response.size();
