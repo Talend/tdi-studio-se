@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class FTPSHTTPClient extends SSLSessionReuseFTPSClient {
+public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
 
     private final String proxyHost;
 
@@ -35,7 +35,7 @@ public class FTPSHTTPClient extends SSLSessionReuseFTPSClient {
 
     private final Base64 base64 = new Base64();
 
-    public FTPSHTTPClient(boolean isImplicit, SSLContext context, String proxyHost, int proxyPort, String proxyUser,
+    public HTTPProxyFTPSClient(boolean isImplicit, SSLContext context, String proxyHost, int proxyPort, String proxyUser,
             String proxyPass) {
         super(isImplicit, context);
         this.proxyHost = proxyHost;
