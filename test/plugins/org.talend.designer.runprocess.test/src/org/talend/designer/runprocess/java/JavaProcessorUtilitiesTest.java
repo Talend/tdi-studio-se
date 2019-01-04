@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.talend.commons.CommonsPlugin;
@@ -157,13 +158,13 @@ public class JavaProcessorUtilitiesTest {
             ModuleNeeded moduleNeeded = iterator.next();
             switch (i) {
             case 0:
-                assertEquals(moduleNeeded, moduleNeeded_E);
+                assertEquals(moduleNeeded, moduleNeeded_C);
                 break;
             case 1:
                 assertEquals(moduleNeeded, moduleNeeded_A);
                 break;
             case 2:
-                assertEquals(moduleNeeded, moduleNeeded_C);
+                assertEquals(moduleNeeded, moduleNeeded_E);
                 break;
             case 3:
                 assertEquals(moduleNeeded, moduleNeeded_B);
@@ -184,6 +185,11 @@ public class JavaProcessorUtilitiesTest {
             newColumn.setTalendType("id_String");
             table.getListColumns().add(newColumn);
         }
+    }
+
+    @After
+    public void afterTest() {
+        LastGenerationInfo.getInstance().clearHighPriorityModuleNeeded();
     }
 
 }
