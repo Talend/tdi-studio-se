@@ -91,8 +91,10 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         POJO(Messages.getString("JavaJobScriptsExportWSWizardPage.POJO"), false), //$NON-NLS-1$
         OSGI(Messages.getString("JavaJobScriptsExportWSWizardPage.OSGI"), false), //$NON-NLS-1$
         MSESB(Messages.getString("JavaJobScriptsExportWSWizardPage.MSESB"), false), //$NON-NLS-1$
-        IMAGE(Messages.getString("JavaJobScriptsExportWSWizardPage.IMAGE"), false); //$NON-NLS-1$
-
+        IMAGE(Messages.getString("JavaJobScriptsExportWSWizardPage.IMAGE"), false), //$NON-NLS-1$
+        ROUTE(Messages.getString("JavaJobScriptsExportWSWizardPage.ROUTE"), false), //$NON-NLS-1$
+        SERVICE(Messages.getString("JavaJobScriptsExportWSWizardPage.SERVICE"), false); //$NON-NLS-1$
+        
         public final String label;
 
         public final boolean deprecate;
