@@ -71,15 +71,6 @@
  	       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/database.ib"</DEFAULT>
  	    </PARAMETER>
         
-        <PARAMETER 
-          NAME="PROPERTIES" 
-          FIELD="TEXT" 
-          NUM_ROW="45" 
-          REPOSITORY_VALUE="PROPERTIES_STRING"
-        >
-            <DEFAULT>""</DEFAULT>
-        </PARAMETER>
- 	
  	    <PARAMETER
  	      NAME="USER"
  	      FIELD="TEXT"
@@ -122,17 +113,26 @@
  	   </PARAMETERS>
  	   
  	   <ADVANCED_PARAMETERS>
+        <PARAMETER 
+          NAME="PROPERTIES" 
+          FIELD="TEXT" 
+          NUM_ROW="10" 
+          REPOSITORY_VALUE="PROPERTIES_STRING"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+        
  	   <PARAMETER
       		NAME="ENCODING"
       		FIELD="ENCODING_TYPE"
-     		NUM_ROW="1"
+     		NUM_ROW="20"
       		REQUIRED="true"
       		SHOW="false"
     	>
          <DEFAULT>"ISO-8859-15"</DEFAULT>
         </PARAMETER>
         
-		<PARAMETER NAME="AUTO_COMMIT" FIELD="CHECK" NUM_ROW="10">  
+		<PARAMETER NAME="AUTO_COMMIT" FIELD="CHECK" NUM_ROW="30">  
 			<DEFAULT>false</DEFAULT>    
     	</PARAMETER>
 		

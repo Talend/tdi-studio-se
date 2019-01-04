@@ -83,15 +83,6 @@
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
     
-    <PARAMETER 
-      NAME="PROPERTIES" 
-      FIELD="TEXT" 
-      NUM_ROW="35" 
-      REPOSITORY_VALUE="PROPERTIES_STRING"
-    >
-        <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
@@ -133,6 +124,14 @@
    </PARAMETERS>
 
 	<ADVANCED_PARAMETERS>
+        <PARAMETER 
+          NAME="PROPERTIES" 
+          FIELD="TEXT" 
+          NUM_ROW="5" 
+          REPOSITORY_VALUE="PROPERTIES_STRING"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
 		<PARAMETER NAME="AUTO_COMMIT" FIELD="CHECK" NUM_ROW="10">
 			<DEFAULT>false</DEFAULT>
     	</PARAMETER>

@@ -105,15 +105,6 @@
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
     
-    <PARAMETER 
-      NAME="PROPERTIES" 
-      FIELD="TEXT" 
-      NUM_ROW="40" 
-      REPOSITORY_VALUE="PROPERTIES_STRING"
-    >
-        <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-    
     <PARAMETER
       NAME="TABLE"
       FIELD="DBTABLE"
@@ -193,6 +184,14 @@
     </PARAMETER>    
   </PARAMETERS>
   <ADVANCED_PARAMETERS>
+    <PARAMETER 
+      NAME="PROPERTIES" 
+      FIELD="TEXT" 
+      NUM_ROW="3" 
+      REPOSITORY_VALUE="PROPERTIES_STRING"
+    >
+        <DEFAULT>""</DEFAULT>
+    </PARAMETER>
     <PARAMETER
       NAME="ENCODING"
       FIELD="TEXT"
