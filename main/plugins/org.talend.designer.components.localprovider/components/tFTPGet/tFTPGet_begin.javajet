@@ -693,7 +693,7 @@ if (sftp) { // *** sftp *** //
 	if ("false".equals(useExistingConn)){
 %>
 		<% /* create connection */ %>
-		<%@ include file="../templates/FTP/ftpstlsResumption.javajet"%>
+		<%@ include file="../templates/FTP/ftpsTrust.javajet"%>
 
 		javax.net.ssl.SSLContext sslContext_<%=cid%> = null;
 		javax.net.ssl.TrustManager[] trustManager_<%=cid%> = null;

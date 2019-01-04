@@ -198,7 +198,7 @@ if (sftp) { // *** sftp *** //
 		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
 		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 %>
-		<%@ include file="../templates/FTP/ftpstlsResumption.javajet"%>
+		<%@ include file="../templates/FTP/ftpsTrust.javajet"%>
 		javax.net.ssl.SSLContext sslContext_<%=cid %> = null;
 		javax.net.ssl.TrustManager[] trustManager_<%=cid %> = null;
 		javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid %> = null;

@@ -190,7 +190,7 @@ if (!sftp && !ftps) { // *** ftp *** //
 } else {  // *** ftps *** //
 %>
 
-	<%@ include file="../templates/FTP/ftpstlsResumption.javajet"%>
+	<%@ include file="../templates/FTP/ftpsTrust.javajet"%>
 	javax.net.ssl.SSLContext sslContext_<%=cid %> = null;
 	javax.net.ssl.TrustManager[] trustManager_<%=cid %> = null;
 	javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid %> = null;
