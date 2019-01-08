@@ -230,14 +230,23 @@ if (sftp) {  // *** sftp *** //
 			trustManager_<%=cid %> = myTrust_<%=cid%>.getTrustManagers();
 			sslContext_<%=cid %>.init(null, trustManager_<%=cid %>, new java.security.SecureRandom());
 			sslSocketFactory_<%=cid %> = sslContext_<%=cid %>.getSocketFactory();
-			ftp_<%=cid %> = new org.apache.commons.net.ftp.SSLSessionReuseFTPSClient(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
+			boolean isHTTPProxyUsed = "true".equals(System.getProperty("http.proxySet"));
+			if (isHTTPProxyUsed) {
+				String httpProxyHost = System.getProperty("http.proxyHost");
+				int httpProxyPort = Integer.getInteger("http.proxyPort");
+				String httpProxyUser = System.getProperty("http.proxyUser");
+				String httpProxyPass = System.getProperty("http.proxyPassword");
+
+				ftp_<%=cid %> = new org.apache.commons.net.ftp.HTTPProxyFTPSClient(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>, httpProxyHost, httpProxyPort, httpProxyUser, httpProxyPass);
+			} else {
+				ftp_<%=cid %> = new org.apache.commons.net.ftp.SSLSessionReuseFTPSClient(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
+			}
 			ftp_<%=cid %>.setControlEncoding(<%=encoding%>);
 
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> -FTPS security Mode is <%=securityMode%>.");
 				log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
 			<%}%>
-			<%@ include file="../templates/FTP/ftpsHTTPProxySetter.javajet"%>
 			ftp_<%=cid %>.connect(<%=host %>,<%=ftpsPort %>);
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
