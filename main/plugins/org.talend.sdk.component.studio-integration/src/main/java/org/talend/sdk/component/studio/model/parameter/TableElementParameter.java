@@ -101,6 +101,18 @@ public class TableElementParameter extends TaCoKitElementParameter {
         }
     }
 
+    @Override
+    public void updateValueOnly(final Object newValue) {
+        if (newValue == null || newValue instanceof String) {
+            final List<Map<String, Object>> tableValue = ValueConverter.toTable((String) newValue);
+            super.updateValueOnly(fromRepository(tableValue));
+        } else if (newValue instanceof List) {
+            super.updateValueOnly(fixClosedListColumn((List<Map<String, Object>>) newValue));
+        } else {
+            throw new IllegalArgumentException("wrong type on new value: " + newValue.getClass().getName());
+        }
+    }
+
     /*
         Provides quickfix for Closed List column. For some reason, when new row is added Studio sets index of possible
         value instead of String value. This fix converts index back to String value
