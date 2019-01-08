@@ -29,6 +29,8 @@ import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.swt.cursor.CursorHelper;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.components.IODataComponent;
+import org.talend.core.model.components.IODataComponentContainer;
 import org.talend.core.model.genhtml.HTMLDocUtils;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.BlockCode;
@@ -906,5 +908,29 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         }
         return routinesToAdd;
 
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.process.AbstractExternalNode#getIODataComponents()
+     */
+    @Override
+    public IODataComponentContainer getIODataComponents() {
+        // if metadata exist in IO + metadatalist, just update the instance of the one in IO.
+        // check if there is some table added / deleted as well. (correct one is in metadatalist)
+        List<IODataComponent> listOutput = super.getIODataComponents().getOuputs();
+        List<IMetadataTable> metadataTableList = getMetadataList();
+        for (IODataComponent ioComponent : listOutput) {
+            String tableName = ioComponent.getNewMetadataTable().getTableName();
+            for (IMetadataTable table : metadataTableList) {
+                if (tableName != null && tableName.equals(table.getTableName())) {
+                    ioComponent.setNewMetadataTable(table);
+                    break;
+                }
+            }
+        }
+        // TODO Auto-generated method stub
+        return super.getIODataComponents();
     }
 }
