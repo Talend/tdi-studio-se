@@ -29,10 +29,13 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.ui.editor.nodes.Node;
 
 /**
- * Table Element Parameter, which rows can be chosen from multiple provided suggestions.
+ * Table Element Parameter with single column, which rows can be chosen from multiple provided suggestions.
  * Suggested values are schema column names.
+ * It represents parameter for multi choice from defined list of suggested values
  */
 public class SuggestableTableParameter extends TableElementParameter {
+
+    private final String columnKey;
 
     /**
      * Constructor setups Table columns and sets empty list as initial value
@@ -43,6 +46,11 @@ public class SuggestableTableParameter extends TableElementParameter {
      */
     public SuggestableTableParameter(final IElement element, final List<IElementParameter> columns) {
         super(element, columns);
+        final String[] columnNames = getListItemsDisplayCodeName();
+        if (columnNames.length != 1) {
+            throw new IllegalArgumentException("SuggestableTableParameter can have only 1 column");
+        }
+        this.columnKey = columnNames[0];
     }
 
     /**
@@ -51,19 +59,21 @@ public class SuggestableTableParameter extends TableElementParameter {
      *
      * @return suggestions for parameter value
      */
-    public Map<String, String> getSuggestionValues() {
+    public List<Map<String, Object>> getSuggestionValues() {
         return getMetadatas().stream()
                 .flatMap(m -> m.getListColumns().stream())
                 .map(IMetadataColumn::getLabel)
                 .distinct()
-                .collect(Collectors.toMap(
-                        Function.identity(),
-                        Function.identity(),
-                        (u, v) -> {
-                            throw new IllegalStateException(String.format("Duplicate key %s", u));
-                        },
-                        LinkedHashMap::new
-                ));
+                .map(columnLabel -> {
+                    final Map<String, Object> row = new LinkedHashMap<>();
+                    row.put(columnKey, columnLabel);
+                    return row;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public String getColumnKey() {
+        return this.columnKey;
     }
 
     /**

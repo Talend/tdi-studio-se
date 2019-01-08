@@ -91,9 +91,6 @@ import org.talend.sdk.component.studio.model.parameter.ValueSelectionParameter;
 
 public class SuggestableTableController extends AbstractElementPropertySectionController {
 
-    /**
-     *
-     */
     private static final int MIN_NUMBER_ROWS = 1;
 
     private static final String TOOLBAR_NAME = "_TABLE_VIEW_TOOLBAR_NAME_"; //$NON-NLS-1$
@@ -259,9 +256,10 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
     }
 
     /**
-     * TODO implement it
-     * @param parameter
-     * @return
+     * Creates listener, which opens value selection dialog each time, when user pushes a "..." button near table
+     *
+     * @param parameter SuggestableTableParameter
+     * @return listener
      */
     private SelectionListener createOnButtonClickedListener(final IElementParameter parameter) {
         return new SelectionAdapter() {
@@ -274,18 +272,22 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
                     @Override
                     protected IStatus run(IProgressMonitor monitor) {
                         monitor.subTask("Retrieve schema column names");
-                        // TODO get schema column names here
-                        final Map<String, String> possibleValues = ((SuggestableTableParameter) parameter).getSuggestionValues();
+                        final List<Map<String, Object>> suggestedValues = ((SuggestableTableParameter) parameter).getSuggestionValues();
                         if (monitor.isCanceled()) {
                             return Status.CANCEL_STATUS;
                         }
                         monitor.subTask("Open Selection Dialog");
                         Display.getDefault().asyncExec(new Runnable() {
                             public void run() {
-                                final ValueSelectionDialog dialog = new ValueSelectionDialog(composite.getShell(), possibleValues);
+                                final String labelsColumn = ((SuggestableTableParameter) parameter).getColumnKey();
+                                final List<Map<String, Object>> chosenValues = (List<Map<String, Object>>) parameter.getValue();
+                                final TableValueSelectionDialog dialog = new TableValueSelectionDialog(composite.getShell(),
+                                        labelsColumn,
+                                        suggestedValues,
+                                        chosenValues);
+
                                 if (dialog.open() == IDialogConstants.OK_ID) {
-                                    // TODO set selected values here
-                                    parameter.setValue(getStubData(parameter));
+                                    parameter.setValue(dialog.getChosenValues());
                                     refresh(parameter, false);
                                 }
                             }
@@ -303,18 +305,6 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
                 job.schedule();
             }
         };
-    }
-
-    // TODO remove it and replace with real code
-    private List<Map<String, Object>> getStubData(final IElementParameter parameter) {
-        final List<Map<String, Object>> newValue = new ArrayList<>();
-        final Map<String, Object> row1 = new LinkedHashMap<>();
-        row1.put(parameter.getListItemsDisplayCodeName()[0], "Hello");
-        newValue.add(row1);
-        final Map<String, Object> row2 = new LinkedHashMap<>();
-        row2.put(parameter.getListItemsDisplayCodeName()[0], "World");
-        newValue.add(row2);
-        return newValue;
     }
 
     private void setupButtonLayout(final Button button, final int numInRow, final int nbInRow, final CLabel label) {
