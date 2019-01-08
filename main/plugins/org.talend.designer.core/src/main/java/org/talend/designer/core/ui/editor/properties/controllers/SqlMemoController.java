@@ -190,8 +190,8 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
      * @return
      */
     private String removeStrInQuery(String input) {
-        String out = removeSlash(input);
-        return TalendTextUtils.removeQuotes(out);
+//        String out = removeSlash(input);
+        return TalendTextUtils.removeQuotes(input);
     }
 
     /**
