@@ -224,7 +224,7 @@ public class DeploymentComposite extends AbstractTabComposite {
 
         groupIdText = new Text(composite, SWT.BORDER);
         GridData groupIdTextData = new GridData(GridData.FILL_HORIZONTAL);
-        groupIdTextData.widthHint = 200;
+        groupIdTextData.widthHint = 600;
         groupIdText.setLayoutData(groupIdTextData);
 
         versionCheckbox = widgetFactory.createButton(composite, Messages.getString("DeploymentComposite.versionLabel"), //$NON-NLS-1$
