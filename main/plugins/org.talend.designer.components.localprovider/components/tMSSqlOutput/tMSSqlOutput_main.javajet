@@ -479,10 +479,18 @@ if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("t
         <%
     }
 }
-    if(identityInsert && !useExistingConnection) {
+    if(identityInsert) {
+            if (useExistingConnection) {
+        %>
+	        if ( !isShareIdentity_<%=cid%> ) {
+	            stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
+	        }
+        <%
+            } else {
      	%>
             stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
      	<%
+            }
     }
 %>
 		}
