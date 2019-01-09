@@ -236,7 +236,8 @@ public class JavaProcessUtil {
         if (isSetHighPriorityForJDBCCustomizeDriver()) {
             highPriorityLinkedSet.addAll(descendingOrderModuleList(jdbcCustomizeModulesSet));
         }
-        LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().addAll(highPriorityLinkedSet);
+        LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(), process.getVersion(),
+                highPriorityLinkedSet);
 
         if (hadoopItemId == null) { // Incase it is a bigdata process.
             IElementParameter propertyParam = process.getElementParameter("MR_PROPERTY"); //$NON-NLS-1$
@@ -258,7 +259,7 @@ public class JavaProcessUtil {
     private static boolean isSetHighPriorityForJDBCCustomizeDriver() {
         return Boolean.getBoolean("talend.JDBC.setHighPriorityForDriverJar"); //$NON-NLS-1$
     }
-
+    
     public static List<ModuleNeeded> descendingOrderModuleList(Set<ModuleNeeded> moduleList) {
         List<ModuleNeeded> orderedList = new ArrayList<ModuleNeeded>();
         Map<String, List<ModuleNeeded>> multipleVersionHM = new HashMap<String, List<ModuleNeeded>>();

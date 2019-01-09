@@ -543,7 +543,7 @@ public class TalendJavaProjectManager {
                 IProcessor processor = ProcessorUtilities.getProcessor(process, item.getProperty(), context);
                 if (processor instanceof MavenJavaProcessor) {
                     LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
-                    LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().clear();
+                    LastGenerationInfo.getInstance().clearHighPriorityModuleNeeded();
                     ((MavenJavaProcessor) processor).generatePom(option);
                 }
                 AggregatorPomsHelper.addToParentModules(
