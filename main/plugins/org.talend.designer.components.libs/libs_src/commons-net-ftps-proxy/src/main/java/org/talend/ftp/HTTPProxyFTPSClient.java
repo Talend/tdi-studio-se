@@ -1,21 +1,22 @@
-package org.apache.commons.net.ftp;
+package org.talend.ftp;
 
-import org.apache.commons.net.util.Base64;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSessionContext;
-import javax.net.ssl.SSLSocket;
-import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+
+import org.apache.commons.net.ftp.FTPReply;
+import org.apache.commons.net.util.Base64;
 
 public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
 

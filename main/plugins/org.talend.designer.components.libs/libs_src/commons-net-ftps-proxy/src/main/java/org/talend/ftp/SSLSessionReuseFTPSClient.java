@@ -1,13 +1,16 @@
-package org.apache.commons.net.ftp;
+package org.talend.ftp;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.Socket;
+import java.util.Locale;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSessionContext;
 import javax.net.ssl.SSLSocket;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.Socket;
-import java.util.Locale;
+
+import org.apache.commons.net.ftp.FTPSClient;
 
 public class SSLSessionReuseFTPSClient extends FTPSClient {
 
