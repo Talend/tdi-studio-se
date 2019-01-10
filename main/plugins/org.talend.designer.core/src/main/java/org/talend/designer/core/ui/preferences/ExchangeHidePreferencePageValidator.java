@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.ui.preferences;
 
+import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.utils.TalendPropertiesUtil;
 import org.talend.core.ui.preference.hidden.IHidePreferencePageValidator;
@@ -34,7 +35,7 @@ public class ExchangeHidePreferencePageValidator implements IHidePreferencePageV
      */
     @Override
     public boolean validate() {
-        return !PluginChecker.isExchangeSystemLoaded() || TalendPropertiesUtil.isHideExchange();
+        return !PluginChecker.isExchangeSystemLoaded() || TalendPropertiesUtil.isHideExchange() || !NetworkUtil.isNetworkValid();
     }
 
 }

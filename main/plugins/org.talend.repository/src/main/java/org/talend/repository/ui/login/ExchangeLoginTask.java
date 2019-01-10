@@ -22,6 +22,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.general.Project;
@@ -48,7 +49,7 @@ public class ExchangeLoginTask extends AbstractLoginTask  implements IRunnableWi
      */
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-        if (!PluginChecker.isExchangeSystemLoaded() || TalendPropertiesUtil.isHideExchange()) {
+        if (!PluginChecker.isExchangeSystemLoaded() || TalendPropertiesUtil.isHideExchange() || !NetworkUtil.isNetworkValid()) {
             return;
         }
         Job job = new Job("Check Exchange") { //$NON-NLS-1$

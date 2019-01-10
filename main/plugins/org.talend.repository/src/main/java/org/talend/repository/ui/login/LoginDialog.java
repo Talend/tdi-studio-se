@@ -47,6 +47,7 @@ import org.talend.commons.exception.OperationCancelException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
+import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
@@ -293,7 +294,7 @@ public class LoginDialog extends TrayDialog {
         prefManipulator.setLastProject(project.getTechnicalLabel());
         saveLastConnBean(connBean);
         // check for Talendforge
-        if (PluginChecker.isExchangeSystemLoaded() && !TalendPropertiesUtil.isHideExchange()) {
+        if (PluginChecker.isExchangeSystemLoaded() && !TalendPropertiesUtil.isHideExchange() && NetworkUtil.isNetworkValid()) {
             IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
             boolean checkTisVersion = prefStore.getBoolean(ITalendCorePrefConstants.EXCHANGE_CHECK_TIS_VERSION);
             IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
