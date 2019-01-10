@@ -140,11 +140,13 @@ public class ComplexSAXLooper implements ISAXLooper {
         Reader reader = null;
         try {
             DefaultHandler hd = null;
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+            spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             SAXParser saxParser = null;
             if(!ignoreDTD) { //orginal code
-            	saxParser = SAXParserFactory.newInstance().newSAXParser();
+            	saxParser = spf.newSAXParser();
             } else {
-	            SAXParserFactory spf = SAXParserFactory.newInstance();
 	            spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 				saxParser = spf.newSAXParser();
             }
@@ -185,7 +187,10 @@ public class ComplexSAXLooper implements ISAXLooper {
         Reader reader = null;
         try {
             DefaultHandler hd = null;
-            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+            spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            SAXParser saxParser = spf.newSAXParser();
             if (rootPath == null || rootPath.equals("")) {
                 hd = newHandler();
             } else {

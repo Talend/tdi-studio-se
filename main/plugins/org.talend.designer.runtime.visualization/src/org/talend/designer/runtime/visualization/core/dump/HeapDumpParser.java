@@ -51,7 +51,10 @@ public class HeapDumpParser extends AbstractDumpParser {
      * @throws IOException if parsing input fails
      */
     public void parse() throws ParserConfigurationException, SAXException, IOException {
-        parser = SAXParserFactory.newInstance().newSAXParser();
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+        spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        parser = spf.newSAXParser();
         HeapDumpSaxEventHandler handler = new HeapDumpSaxEventHandler(heapListElements, monitor);
 
         parser.parse(file, handler);

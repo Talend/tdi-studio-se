@@ -105,7 +105,10 @@ private static class SaxHandler extends DefaultHandler {
 public RFH2Area parse(String stringToParse) {
         SAXParser parser;
         try {
-                parser = SAXParserFactory.newInstance().newSAXParser();
+                SAXParserFactory spf = SAXParserFactory.newInstance();
+                spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+                spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                parser = spf.newSAXParser();
         } catch (Exception e) {
                 throw new RuntimeException("Failed to create XML parser, can not parse RFH2 areas", e);
         }

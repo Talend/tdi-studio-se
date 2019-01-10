@@ -217,10 +217,12 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
 		    }
 		    
             SAXParser saxParser = null;
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+            spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             if(!ignoreDTD) { //orginal code
-            	saxParser = SAXParserFactory.newInstance().newSAXParser();
+            	saxParser = spf.newSAXParser();
             } else {
-	            SAXParserFactory spf = SAXParserFactory.newInstance();
 	            spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 				saxParser = spf.newSAXParser();
             }
