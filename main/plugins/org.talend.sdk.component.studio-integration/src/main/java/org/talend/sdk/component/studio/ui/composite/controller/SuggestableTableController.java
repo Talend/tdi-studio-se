@@ -287,7 +287,9 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
                                         chosenValues);
 
                                 if (dialog.open() == IDialogConstants.OK_ID) {
-                                    parameter.setValue(dialog.getChosenValues());
+                                    final PropertyChangeCommand command = new PropertyChangeCommand(elem, parameter.getName(),
+                                            dialog.getChosenValues());
+                                    executeCommand(command);
                                     refresh(parameter, false);
                                 }
                             }

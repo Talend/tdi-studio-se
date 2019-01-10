@@ -1153,7 +1153,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             pType.setContextMode(param.isContextMode());
         }
         Object value = param.getValue();
-        if (param.getFieldType().equals(EParameterFieldType.TABLE) && value != null) {
+        if (isTable(param) && value != null) {
             List<Map<String, Object>> tableValues = (List<Map<String, Object>>) value;
             for (Map<String, Object> currentLine : tableValues) {
                 for (int i = 0; i < param.getListItemsDisplayCodeName().length; i++) {
@@ -1239,6 +1239,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         }
         pType.setShow(param.isShow(paramList));
         listParamType.add(pType);
+    }
+
+    private boolean isTable(final IElementParameter parameter) {
+        return parameter.getFieldType().equals(EParameterFieldType.TABLE) ||
+                parameter.getFieldType().equals(EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE);
     }
 
     protected boolean isNeedConvertToHex(String value) {
@@ -1457,7 +1462,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                             .getExtraParameterName(EParameterName.SCHEMA_DB.getName()));
                     DesignerUtilities.setSchemaDB(elementParameter2, param.getValue());
                 }
-            } else if (param.getFieldType().equals(EParameterFieldType.TABLE)) {
+            } else if (isTable(param)) {
                 List<Map<String, Object>> tableValues = new ArrayList<Map<String, Object>>();
                 String[] codeList = param.getListItemsDisplayCodeName();
                 Map<String, Object> lineValues = null;
