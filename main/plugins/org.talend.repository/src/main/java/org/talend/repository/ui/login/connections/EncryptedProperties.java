@@ -14,7 +14,7 @@ package org.talend.repository.ui.login.connections;
 
 import java.util.Properties;
 
-import org.talend.utils.security.CryptoHelper;
+import org.talend.daikon.security.CryptoHelper;
 
 /**
  * DOC hwang class global comment. Detailled comment
