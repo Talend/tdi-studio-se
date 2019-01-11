@@ -62,6 +62,25 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
     }
 
     /**
+     * @see org.apache.commons.net.SocketClient#connect(java.lang.String, int)
+     */
+    @Override
+    public void connect(String host, int port) throws IOException {
+
+        _socket_ = new Socket(proxyHost, proxyPort);
+        _input_ = _socket_.getInputStream();
+        _output_ = _socket_.getOutputStream();
+
+        try {
+            tunnelHandshake(host, port, _input_, _output_);
+        } catch (Exception e) {
+            throw new IOException("Could not connect to " + host + " using port " + port, e);
+        }
+
+        super._connectAction_();
+    }
+
+    /**
      * Open ssl socket using tunnel socket
      *
      * @see org.apache.commons.net.ftp.FTPSClient#_openDataConnection_(java.lang.String, java.lang.String)
@@ -139,6 +158,47 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
         return socket;
     }
 
+    private Socket createTunnelSocket() throws IOException {
+        Socket proxySocket = new Socket();
+
+        configureDataSocket(proxySocket);
+
+        return proxySocket;
+    }
+
+    private void configureSSLDataSocket(SSLSocket sslSocket) {
+        sslSocket.setUseClientMode(getUseClientMode());
+        sslSocket.setEnableSessionCreation(getEnableSessionCreation());
+
+        // server mode
+        if (!getUseClientMode()) {
+            sslSocket.setNeedClientAuth(getNeedClientAuth());
+            sslSocket.setWantClientAuth(getWantClientAuth());
+        }
+
+        if (getEnabledCipherSuites() != null) {
+            sslSocket.setEnabledCipherSuites(getEnabledCipherSuites());
+        }
+
+        if (getEnabledProtocols() != null) {
+            sslSocket.setEnabledProtocols(getEnabledProtocols());
+        }
+    }
+
+    private void configureDataSocket(Socket socket) throws IOException {
+        if (getReceiveDataSocketBufferSize() > 0) {
+            socket.setReceiveBufferSize(getReceiveDataSocketBufferSize());
+        }
+
+        if (getSendDataSocketBufferSize() > 0) {
+            socket.setSendBufferSize(getSendDataSocketBufferSize());
+        }
+
+        if (getPassiveLocalIPAddress() != null) {
+            socket.bind(new InetSocketAddress(getPassiveLocalIPAddress(), 0));
+        }
+    }
+
     private Socket openPlainDataConnection(String passiveHost, String command, String arg) throws IOException {
         Socket socket = preparePlainDataTunnelSocket(passiveHost);
 
@@ -155,23 +215,13 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
         return socket;
     }
 
-    /**
-     * @see org.apache.commons.net.SocketClient#connect(java.lang.String, int)
-     */
-    @Override
-    public void connect(String host, int port) throws IOException {
+    private Socket preparePlainDataTunnelSocket(String passiveHost) throws IOException {
+        Socket socket = _socketFactory_.createSocket(proxyHost, proxyPort);
+        InputStream is = socket.getInputStream();
+        OutputStream os = socket.getOutputStream();
+        tunnelHandshake(passiveHost, this.getPassivePort(), is, os);
 
-        _socket_ = new Socket(proxyHost, proxyPort);
-        _input_ = _socket_.getInputStream();
-        _output_ = _socket_.getOutputStream();
-
-        try {
-            tunnelHandshake(host, port, _input_, _output_);
-        } catch (Exception e) {
-            throw new IOException("Could not connect to " + host + " using port " + port, e);
-        }
-
-        super._connectAction_();
+        return socket;
     }
 
     private void tunnelHandshake(String host, int port, InputStream input, OutputStream output) throws IOException {
@@ -228,56 +278,6 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
 
             throw new IOException(msg.toString());
         }
-    }
-
-    private Socket createTunnelSocket() throws IOException {
-        Socket proxySocket = new Socket();
-
-        configureDataSocket(proxySocket);
-
-        return proxySocket;
-    }
-
-    private void configureSSLDataSocket(SSLSocket sslSocket) {
-        sslSocket.setUseClientMode(getUseClientMode());
-        sslSocket.setEnableSessionCreation(getEnableSessionCreation());
-
-        // server mode
-        if (!getUseClientMode()) {
-            sslSocket.setNeedClientAuth(getNeedClientAuth());
-            sslSocket.setWantClientAuth(getWantClientAuth());
-        }
-
-        if (getEnabledCipherSuites() != null) {
-            sslSocket.setEnabledCipherSuites(getEnabledCipherSuites());
-        }
-
-        if (getEnabledProtocols() != null) {
-            sslSocket.setEnabledProtocols(getEnabledProtocols());
-        }
-    }
-
-    private void configureDataSocket(Socket socket) throws IOException {
-        if (getReceiveDataSocketBufferSize() > 0) {
-            socket.setReceiveBufferSize(getReceiveDataSocketBufferSize());
-        }
-
-        if (getSendDataSocketBufferSize() > 0) {
-            socket.setSendBufferSize(getSendDataSocketBufferSize());
-        }
-
-        if (getPassiveLocalIPAddress() != null) {
-            socket.bind(new InetSocketAddress(getPassiveLocalIPAddress(), 0));
-        }
-    }
-
-    private Socket preparePlainDataTunnelSocket(String passiveHost) throws IOException {
-        Socket socket = _socketFactory_.createSocket(proxyHost, proxyPort);
-        InputStream is = socket.getInputStream();
-        OutputStream os = socket.getOutputStream();
-        tunnelHandshake(passiveHost, this.getPassivePort(), is, os);
-
-        return socket;
     }
 
     private boolean isRestartOffsetIncorrect() throws IOException {
