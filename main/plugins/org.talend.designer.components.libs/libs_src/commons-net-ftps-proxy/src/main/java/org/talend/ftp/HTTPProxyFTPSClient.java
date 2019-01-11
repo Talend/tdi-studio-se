@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.commons.net.ftp.FTPReply;
@@ -29,6 +30,8 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
     private final String proxyPassword;
 
     private SSLContext context;
+
+    private String protectionLevel;
 
     private String tunnelHost; // Save the host when setting up a tunnel (needed for EPSV)
 
@@ -48,7 +51,19 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
     }
 
     /**
+     * Call execPROT from Parent class and stores current protection level
+     *
+     * @see org.apache.commons.net.ftp.FTPSClient#execPROT(String)
+     */
+    @Override
+    public void execPROT(String prot) throws SSLException, IOException {
+        super.execPROT(prot);
+        this.protectionLevel = prot;
+    }
+
+    /**
      * Open ssl socket using tunnel socket
+     *
      * @see org.apache.commons.net.ftp.FTPSClient#_openDataConnection_(java.lang.String, java.lang.String)
      */
     @Override
@@ -87,41 +102,23 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
             passiveHost = this.getPassiveHost();
         }
 
-        Socket proxySocket = new Socket();
+        return "C".equals(protectionLevel) ?
+                openPlainDataConnection(passiveHost, command, arg) : openEncryptedDataConnection(passiveHost, command, arg);
+    }
 
-        if (getReceiveDataSocketBufferSize() > 0) {
-            proxySocket.setReceiveBufferSize(getReceiveDataSocketBufferSize());
-        }
-
-        if (getSendDataSocketBufferSize() > 0) {
-            proxySocket.setSendBufferSize(getSendDataSocketBufferSize());
-        }
-
-        if (getPassiveLocalIPAddress() != null) {
-            proxySocket.bind(new InetSocketAddress(getPassiveLocalIPAddress(), 0));
-        }
+    private Socket openEncryptedDataConnection(String passiveHost, String command, String arg) throws IOException {
+        Socket proxySocket = createTunnelSocket();
 
         proxySocket.connect(new InetSocketAddress(proxyHost, proxyPort), getConnectTimeout());
 
         tunnelHandshake(passiveHost, this.getPassivePort(), proxySocket.getInputStream(),
                 proxySocket.getOutputStream());
-
         Socket socket = context.getSocketFactory().createSocket(proxySocket, passiveHost, this.getPassivePort(), true);
         _prepareDataSocket_(socket);
 
-        if (getReceiveDataSocketBufferSize() > 0) {
-            socket.setReceiveBufferSize(getReceiveDataSocketBufferSize());
-        }
+        configureDataSocket(socket);
 
-        if (getSendDataSocketBufferSize() > 0) {
-            socket.setSendBufferSize(getSendDataSocketBufferSize());
-        }
-
-        if (getPassiveLocalIPAddress() != null) {
-            socket.bind(new InetSocketAddress(getPassiveLocalIPAddress(), 0));
-        }
-
-        if ((getRestartOffset() > 0) && !restart(getRestartOffset())) {
+        if (isRestartOffsetIncorrect()) {
             proxySocket.close();
             socket.close();
             return null;
@@ -135,24 +132,24 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
 
         if (socket instanceof SSLSocket) {
             SSLSocket sslSocket = (SSLSocket) socket;
-
-            sslSocket.setUseClientMode(getUseClientMode());
-            sslSocket.setEnableSessionCreation(getEnableSessionCreation());
-
-            // server mode
-            if (!getUseClientMode()) {
-                sslSocket.setNeedClientAuth(getNeedClientAuth());
-                sslSocket.setWantClientAuth(getWantClientAuth());
-            }
-
-            if (getEnabledCipherSuites() != null) {
-                sslSocket.setEnabledCipherSuites(getEnabledCipherSuites());
-            }
-
-            if (getEnabledProtocols() != null) {
-                sslSocket.setEnabledProtocols(getEnabledProtocols());
-            }
+            configureSSLDataSocket(sslSocket);
             sslSocket.startHandshake();
+        }
+
+        return socket;
+    }
+
+    private Socket openPlainDataConnection(String passiveHost, String command, String arg) throws IOException {
+        Socket socket = preparePlainDataTunnelSocket(passiveHost);
+
+        if (isRestartOffsetIncorrect()) {
+            socket.close();
+            return null;
+        }
+
+        if (!FTPReply.isPositivePreliminary(sendCommand(command, arg))) {
+            socket.close();
+            return null;
         }
 
         return socket;
@@ -233,4 +230,57 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
         }
     }
 
+    private Socket createTunnelSocket() throws IOException {
+        Socket proxySocket = new Socket();
+
+        configureDataSocket(proxySocket);
+
+        return proxySocket;
+    }
+
+    private void configureSSLDataSocket(SSLSocket sslSocket) {
+        sslSocket.setUseClientMode(getUseClientMode());
+        sslSocket.setEnableSessionCreation(getEnableSessionCreation());
+
+        // server mode
+        if (!getUseClientMode()) {
+            sslSocket.setNeedClientAuth(getNeedClientAuth());
+            sslSocket.setWantClientAuth(getWantClientAuth());
+        }
+
+        if (getEnabledCipherSuites() != null) {
+            sslSocket.setEnabledCipherSuites(getEnabledCipherSuites());
+        }
+
+        if (getEnabledProtocols() != null) {
+            sslSocket.setEnabledProtocols(getEnabledProtocols());
+        }
+    }
+
+    private void configureDataSocket(Socket socket) throws IOException {
+        if (getReceiveDataSocketBufferSize() > 0) {
+            socket.setReceiveBufferSize(getReceiveDataSocketBufferSize());
+        }
+
+        if (getSendDataSocketBufferSize() > 0) {
+            socket.setSendBufferSize(getSendDataSocketBufferSize());
+        }
+
+        if (getPassiveLocalIPAddress() != null) {
+            socket.bind(new InetSocketAddress(getPassiveLocalIPAddress(), 0));
+        }
+    }
+
+    private Socket preparePlainDataTunnelSocket(String passiveHost) throws IOException {
+        Socket socket = _socketFactory_.createSocket(proxyHost, proxyPort);
+        InputStream is = socket.getInputStream();
+        OutputStream os = socket.getOutputStream();
+        tunnelHandshake(passiveHost, this.getPassivePort(), is, os);
+
+        return socket;
+    }
+
+    private boolean isRestartOffsetIncorrect() throws IOException {
+        return (getRestartOffset() > 0) && !restart(getRestartOffset());
+    }
 }
