@@ -127,7 +127,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
                 .filter(p -> EParameterFieldType.CLOSED_LIST.equals(p.getFieldType()))
                 .forEach(p -> {
                     if (lastRow.get(p.getName()) instanceof Integer) {
-                        Object newValue = p.getListItemsValue()[(Integer) lastRow.get(p.getName())];
+                        final Object newValue = p.getListItemsValue()[(Integer) lastRow.get(p.getName())];
                         lastRow.put(p.getName(), newValue);
                     }
                 });
@@ -148,8 +148,8 @@ public class TableElementParameter extends TaCoKitElementParameter {
         for (final Object row : table) {
             final Map<String, Object> convertedRow = new LinkedHashMap<>();
             final List<TaCoKitElementParameter> columnParams = getColumnParameters();
-            for (TaCoKitElementParameter columnParam : columnParams) {
-                Object columnValue = null;
+            for (final TaCoKitElementParameter columnParam : columnParams) {
+                Object columnValue;
                 if (row instanceof Map) {
                     final String key = columnParam.getName().replaceFirst(Pattern.quote(getName() + "[]."), "");
                     columnValue = ((Map<String, Object>) row).get(key);
@@ -182,7 +182,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
      * @return converted table value, if incoming value retrieved from repository;
      * If it is not from repository, then returns incoming value unchanged
      */
-    private List<Map<String, Object>> fromRepository(List<Map<String, Object>> table) {
+    private List<Map<String, Object>> fromRepository(final List<Map<String, Object>> table) {
         final Optional<String> repositoryKey = getRepositoryKey(table);
         if (!repositoryKey.isPresent()) {
             return table;
@@ -205,7 +205,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
      * @param tableValue table value
      * @return repository key
      */
-    private Optional<String> getRepositoryKey(List<Map<String, Object>> tableValue) {
+    private Optional<String> getRepositoryKey(final List<Map<String, Object>> tableValue) {
         if (tableValue.isEmpty()) {
             return Optional.empty();
         }
