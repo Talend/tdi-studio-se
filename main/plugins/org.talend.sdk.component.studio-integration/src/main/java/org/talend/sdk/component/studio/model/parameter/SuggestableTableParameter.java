@@ -17,7 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.talend.core.model.metadata.IMetadataColumn;
@@ -35,6 +34,10 @@ import org.talend.designer.core.ui.editor.nodes.Node;
  */
 public class SuggestableTableParameter extends TableElementParameter {
 
+    /**
+     * Name (path) of column ElementParameter.
+     * It is used to get row values in {@link org.talend.sdk.component.studio.ui.composite.controller.TableValueSelectionDialog}
+     */
     private final String columnKey;
 
     /**
@@ -51,6 +54,10 @@ public class SuggestableTableParameter extends TableElementParameter {
             throw new IllegalArgumentException("SuggestableTableParameter can have only 1 column");
         }
         this.columnKey = columnNames[0];
+    }
+
+    public String getColumnKey() {
+        return this.columnKey;
     }
 
     /**
@@ -70,10 +77,6 @@ public class SuggestableTableParameter extends TableElementParameter {
                     return row;
                 })
                 .collect(Collectors.toList());
-    }
-
-    public String getColumnKey() {
-        return this.columnKey;
     }
 
     /**
