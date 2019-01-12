@@ -35,7 +35,6 @@ import org.talend.core.ui.composite.ElementsSelectionComposite;
 /**
  * Dialog implementation to choose multiple values from suggested values.
  * This dialog may be used together with TABLE ElementParameter
- *
  */
 public class TableValueSelectionDialog extends Dialog {
 
@@ -122,7 +121,7 @@ public class TableValueSelectionDialog extends Dialog {
                      * @return null as no image should be displayed
                      */
                     @Override
-                    public Image getImage(Object obj) {
+                    public Image getImage(final Object obj) {
                         return null;
                     }
                 };
@@ -152,8 +151,8 @@ public class TableValueSelectionDialog extends Dialog {
     @Override
     protected void initializeBounds() {
         super.initializeBounds();
-        Point size = getShell().getSize();
-        Point location = getInitialLocation(size);
+        final Point size = getShell().getSize();
+        final Point location = getInitialLocation(size);
         getShell().setBounds(getConstrainedShellBounds(new Rectangle(location.x, location.y, size.x, size.y)));
     }
 
