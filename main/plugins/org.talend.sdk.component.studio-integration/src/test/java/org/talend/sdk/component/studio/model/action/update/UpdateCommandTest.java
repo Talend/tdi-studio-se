@@ -58,7 +58,6 @@ public class UpdateCommandTest {
         expectedValue.add(row2);
 
         final ButtonParameter button = new ButtonParameter(null);
-        final ArrayList<TaCoKitElementParameter> parameters = new ArrayList<>();
 
         final List<IElementParameter> columns = new ArrayList<>();
         final TaCoKitElementParameter column1 = new TaCoKitElementParameter(null);
@@ -171,7 +170,6 @@ public class UpdateCommandTest {
         final List<String> expectedValue = Arrays.asList("col1", "col2", "col3");
 
         final ButtonParameter button = new ButtonParameter(null);
-        final ArrayList<TaCoKitElementParameter> parameters = new ArrayList<>();
         final TaCoKitElementParameter schema = new TaCoKitElementParameter(null);
         schema.setName("conf.updatableConfig.schema");
         schema.setFieldType(EParameterFieldType.SCHEMA_TYPE);
@@ -192,7 +190,7 @@ public class UpdateCommandTest {
 
         private boolean fireCalled = false;
 
-        public ButtonParameterMock(IElement element) {
+        public ButtonParameterMock(final IElement element) {
             super(element);
         }
 

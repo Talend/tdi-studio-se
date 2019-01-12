@@ -43,7 +43,7 @@ public class SuggestableTableGenerator implements IControllerGenerator {
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IControllerGenerator#setDynamicProperty(org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty)
      */
     @Override
-    public void setDynamicProperty(IDynamicProperty dp) {
+    public void setDynamicProperty(final IDynamicProperty dp) {
         this.dp = dp;
     }
 }
