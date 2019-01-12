@@ -124,7 +124,7 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
 
         tableEditorModel.setData(elem, param, getProcess(elem, part));
         PropertiesTableEditorView<Map<String, Object>> tableEditorView = new PropertiesTableEditorView<Map<String, Object>>(
-                parentComposite, SWT.NONE, tableEditorModel, !param.isBasedOnSchema(), false);
+                parentComposite, SWT.NONE, tableEditorModel, false, false);
         tableEditorView.getExtendedTableViewer().setCommandStack(getCommandStack());
         boolean editable = !param.isReadOnly() && (elem instanceof FakeElement || !param.isRepositoryValueUsed());
         tableEditorView.setReadOnly(!editable);
@@ -192,10 +192,6 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
         tableFormData.top = new FormAttachment(0, top);
 
         int toolbarSize = 0;
-        if (!param.isBasedOnSchema()) {
-            Point size = tableEditorView.getExtendedToolbar().getToolbar().computeSize(SWT.DEFAULT, SWT.DEFAULT);
-            toolbarSize = size.y + 5;
-        }
         int currentHeightEditor = table.getHeaderHeight() + ((List) param.getValue()).size() * table.getItemHeight()
                 + table.getItemHeight() + toolbarSize;
         int minHeightEditor = table.getHeaderHeight() + getNumberLines(param) * table.getItemHeight() + table.getItemHeight()
@@ -333,15 +329,11 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
 
         tableEditorModel.setData(elem, param, part.getProcess());
         PropertiesTableEditorView<Map<String, Object>> tableEditorView = new PropertiesTableEditorView<Map<String, Object>>(
-                subComposite, SWT.NONE, tableEditorModel, !param.isBasedOnSchema(), false);
+                subComposite, SWT.NONE, tableEditorModel, false, false);
         tableEditorView.getExtendedTableViewer().setCommandStack(getCommandStack());
         tableEditorView.setReadOnly(param.isReadOnly());
         final Table table = tableEditorView.getTable();
         int toolbarSize = 0;
-        if (!param.isBasedOnSchema()) {
-            Point size = tableEditorView.getExtendedToolbar().getToolbar().computeSize(SWT.DEFAULT, SWT.DEFAULT);
-            toolbarSize = size.y + 5;
-        }
         int currentHeightEditor = table.getHeaderHeight() + ((List) param.getValue()).size() * table.getItemHeight()
                 + table.getItemHeight() + toolbarSize;
         int minHeightEditor = table.getHeaderHeight() + getNumberLines(param) * table.getItemHeight() + table.getItemHeight()
