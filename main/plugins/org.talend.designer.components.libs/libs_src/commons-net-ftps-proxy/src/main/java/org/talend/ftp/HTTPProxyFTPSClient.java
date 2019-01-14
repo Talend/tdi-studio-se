@@ -16,10 +16,14 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocket;
 
+import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.util.Base64;
 
 public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
+
+    /** Default PROT Command */
+    private static final String DEFAULT_PROT = "C";
 
     private final String proxyHost;
 
@@ -48,6 +52,7 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
         this.proxyPassword = proxyPass;
         this.tunnelHost = null;
         this.context = context;
+        this.protectionLevel = DEFAULT_PROT;
     }
 
     /**
@@ -81,7 +86,7 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
     }
 
     /**
-     * Open ssl socket using tunnel socket
+     * Open ssl socket (if private protection level selected) using tunnel socket
      *
      * @see org.apache.commons.net.ftp.FTPSClient#_openDataConnection_(java.lang.String, java.lang.String)
      */
@@ -121,10 +126,18 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
             passiveHost = this.getPassiveHost();
         }
 
-        return "C".equals(protectionLevel) ?
+        return DEFAULT_PROT.equals(protectionLevel) ?
                 openPlainDataConnection(passiveHost, command, arg) : openEncryptedDataConnection(passiveHost, command, arg);
     }
 
+    /**
+     * Create, configure and open SSLSocket via plain tunnel Socket
+     * @param passiveHost host returned from ftp server after sending PASV command
+     * @param command to execute
+     * @param arg for command
+     * @return SSLSocket using to Data transmit
+     * @throws IOException
+     */
     private Socket openEncryptedDataConnection(String passiveHost, String command, String arg) throws IOException {
         Socket proxySocket = createTunnelSocket();
 
@@ -199,6 +212,10 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
         }
     }
 
+    /**
+     * @see org.apache.commons.net.ftp.FTPHTTPClient#_openDataConnection_(FTPCmd, String)
+     * @return Plain Socket using HTTP proxy
+     */
     private Socket openPlainDataConnection(String passiveHost, String command, String arg) throws IOException {
         Socket socket = preparePlainDataTunnelSocket(passiveHost);
 
@@ -215,6 +232,9 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
         return socket;
     }
 
+    /**
+     * Create, prepare and connect plain data transmit socket via tunnel proxy
+     */
     private Socket preparePlainDataTunnelSocket(String passiveHost) throws IOException {
         Socket socket = _socketFactory_.createSocket(proxyHost, proxyPort);
         InputStream is = socket.getInputStream();
@@ -224,6 +244,9 @@ public class HTTPProxyFTPSClient extends SSLSessionReuseFTPSClient {
         return socket;
     }
 
+    /**
+     * HTTP handshake for proxy
+     */
     private void tunnelHandshake(String host, int port, InputStream input, OutputStream output) throws IOException {
         final String connectString = "CONNECT " + host + ":" + port + " HTTP/1.1";
         final String hostString = "Host: " + host + ":" + port;
