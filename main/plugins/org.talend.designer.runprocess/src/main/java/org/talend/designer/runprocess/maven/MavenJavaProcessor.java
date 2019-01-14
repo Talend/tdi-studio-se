@@ -242,7 +242,7 @@ public class MavenJavaProcessor extends JavaProcessor {
      * .Java/src/main/assemblies/assembly_TestJob_0.1.xml
      */
     protected IFile getAssemblyFile() {
-        if (isStandardJob() && !ProcessorUtilities.isGeneratePomOnly()) {
+        if (isStandardJob() && !ProcessorUtilities.isGeneratePomOnly() && isMainJob) {
             String assemblyFileName = TalendMavenConstants.ASSEMBLY_FILE_NAME;
             return this.getTalendJavaProject().getAssembliesFolder().getFile(assemblyFileName);
         } else { // not standard job, won't have assembly file.

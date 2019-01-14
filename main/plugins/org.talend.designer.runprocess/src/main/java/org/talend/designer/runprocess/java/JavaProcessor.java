@@ -1229,7 +1229,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         libsStr = StringUtils.replace(libsStr, " ", "%20"); //$NON-NLS-1$ //$NON-NLS-2$
 
         // create classpath.jar
-        if (!isExportConfig() && !isSkipClasspathJar()) {
+        if (!isExportConfig() && !isSkipClasspathJar() && isCorrespondingOS()) {
             try {
                 libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator);
             } catch (Exception e) {
@@ -1238,6 +1238,16 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         }
 
         return libsStr;
+    }
+
+    private boolean isCorrespondingOS() {
+        if (Platform.getOS().equals(Platform.OS_WIN32) && isWinTargetPlatform()) {
+            return true;
+        }
+        if (!Platform.getOS().equals(Platform.OS_WIN32) && !isWinTargetPlatform()) {
+            return true;
+        }
+        return false;
     }
 
     protected String getBasePathClasspath() throws ProcessorException {
