@@ -54,7 +54,9 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
     private String rootPath;
 
     private String[] arrLoopPath;
-    
+
+    private final String DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl"; //$NON-NLS-1$
+
     private List<XMLNodes> nodesList = new ArrayList<XMLNodes>();
     
     public SimpleSAXLooper(String loopPath, String[] nodePaths, boolean[] asXMLs) {
@@ -219,7 +221,7 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
             SAXParser saxParser = null;
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
             if(!ignoreDTD) { //orginal code
             	saxParser = spf.newSAXParser();
             } else {

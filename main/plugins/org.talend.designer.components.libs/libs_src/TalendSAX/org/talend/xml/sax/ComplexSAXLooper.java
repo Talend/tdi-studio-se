@@ -144,7 +144,7 @@ public class ComplexSAXLooper implements ISAXLooper {
             DefaultHandler hd = null;
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            spf.setFeature(, true);
+            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
             SAXParser saxParser = null;
             if(!ignoreDTD) { //orginal code
             	saxParser = spf.newSAXParser();

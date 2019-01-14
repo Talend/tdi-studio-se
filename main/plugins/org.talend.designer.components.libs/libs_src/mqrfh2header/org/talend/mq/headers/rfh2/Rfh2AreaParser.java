@@ -23,7 +23,8 @@ private static class SaxHandler extends DefaultHandler {
         
         private RFH2Area area;
         private Property currentProperty;
-        
+        private final String DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl"; //$NON-NLS-1$
+
         public RFH2Area getArea() {
                 return area;
         }
@@ -107,7 +108,7 @@ public RFH2Area parse(String stringToParse) {
         try {
                 SAXParserFactory spf = SAXParserFactory.newInstance();
                 spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-                spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
                 parser = spf.newSAXParser();
         } catch (Exception e) {
                 throw new RuntimeException("Failed to create XML parser, can not parse RFH2 areas", e);
