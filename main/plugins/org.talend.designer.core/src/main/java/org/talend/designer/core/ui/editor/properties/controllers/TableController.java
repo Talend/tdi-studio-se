@@ -77,7 +77,7 @@ public class TableController extends AbstractElementPropertySectionController {
      */
     private static final int MIN_NUMBER_ROWS = 1;
 
-    private static final String TOOLBAR_NAME = "_TABLE_VIEW_TOOLBAR_NAME_"; //$NON-NLS-1$
+    protected static final String TOOLBAR_NAME = "_TABLE_VIEW_TOOLBAR_NAME_"; //$NON-NLS-1$
 
     private ITDQPatternService dqPatternService = null;
 
@@ -260,7 +260,7 @@ public class TableController extends AbstractElementPropertySectionController {
      * @param param
      * @return
      */
-    private int getNumberLines(IElementParameter param) {
+    protected final int getNumberLines(IElementParameter param) {
         int numlines = param.getNbLines();
         return numlines < MIN_NUMBER_ROWS ? MIN_NUMBER_ROWS : numlines;
     }
@@ -416,7 +416,7 @@ public class TableController extends AbstractElementPropertySectionController {
         return service;
     }
 
-    private void updateTableValues(IElementParameter param) {
+    protected final void updateTableValues(IElementParameter param) {
         if (elem instanceof Node) {
             DbTypeListController.updateDbTypeList((Node) elem, null);
             ModuleListController.updateModuleList((Node) elem);
