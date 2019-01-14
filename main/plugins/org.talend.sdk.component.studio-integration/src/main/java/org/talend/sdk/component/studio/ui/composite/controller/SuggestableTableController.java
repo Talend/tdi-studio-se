@@ -12,15 +12,11 @@
 // ============================================================================
 package org.talend.sdk.component.studio.ui.composite.controller;
 
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -51,7 +47,6 @@ import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
 import org.talend.core.CorePlugin;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQPatternService;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IContext;
@@ -67,25 +62,23 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.editor.properties.controllers.ColumnListController;
 import org.talend.designer.core.ui.editor.properties.controllers.ComponentListController;
 import org.talend.designer.core.ui.editor.properties.controllers.ConnectionListController;
 import org.talend.designer.core.ui.editor.properties.controllers.DbTypeListController;
 import org.talend.designer.core.ui.editor.properties.controllers.ModuleListController;
+import org.talend.designer.core.ui.editor.properties.controllers.TableController;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableToolbarEditorView;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.sdk.component.studio.model.parameter.SuggestableTableParameter;
 
-public class SuggestableTableController extends AbstractElementPropertySectionController {
+public class SuggestableTableController extends TableController {
 
     private static final int MIN_NUMBER_ROWS = 1;
 
     private static final String TOOLBAR_NAME = "_TABLE_VIEW_TOOLBAR_NAME_"; //$NON-NLS-1$
-
-    private ITDQPatternService dqPatternService = null;
 
     /**
      * DOC yzhang TableController constructor comment.
@@ -344,157 +337,6 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
     private int getNumberLines(IElementParameter param) {
         int numlines = param.getNbLines();
         return numlines < MIN_NUMBER_ROWS ? MIN_NUMBER_ROWS : numlines;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
-     */
-    @Override
-    public void propertyChange(PropertyChangeEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void refresh(IElementParameter param, boolean check) {
-        TableViewerCreator tableViewerCreator = (TableViewerCreator) hashCurControls.get(param.getName());
-        if (tableViewerCreator == null || tableViewerCreator.getTable() == null || tableViewerCreator.getTable().isDisposed()) {
-            return;
-        }
-        updateContextList(param);
-        Object value = param.getValue();
-        if (value instanceof List) {
-            // updateTableValues(param);
-            // (bug 5365)
-            checkAndSetDefaultValue(param);
-            if (tableViewerCreator != null) {
-                if (!tableViewerCreator.getInputList().equals(value)) {
-                    tableViewerCreator.init((List) value);
-                }
-                tableViewerCreator.getTableViewer().refresh();
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void checkAndSetDefaultValue(IElementParameter param) {
-        if (param != null && param.getFieldType() == EParameterFieldType.TABLE) {
-            updateColumnList(param);
-
-            Object[] itemsValue = param.getListItemsValue();
-            if (itemsValue != null && param.getValue() != null && param.getValue() instanceof List) {
-                List<Map<String, Object>> values = (List<Map<String, Object>>) param.getValue();
-                for (Object element : itemsValue) {
-                    if (element instanceof IElementParameter) {
-                        IElementParameter columnParam = (IElementParameter) element;
-                        if (columnParam.getFieldType() == EParameterFieldType.COLUMN_LIST
-                                || columnParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
-                                || columnParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
-                            for (Map<String, Object> columnMap : values) {
-                                Object column = columnMap.get(columnParam.getName());
-                                if (column == null || "".equals(column)) { //$NON-NLS-1$
-                                    columnMap.put(columnParam.getName(), columnParam.getDefaultClosedListValue());
-                                }
-                                if (columnParam.getListItemsValue() != null) {
-                                    // @see bug 5433(Display and value is not match.)
-                                    if (!Arrays.asList(columnParam.getListItemsValue()).contains(column)) {
-                                        columnMap.put(columnParam.getName(), columnParam.getDefaultClosedListValue());
-                                    }
-                                }
-                            }
-                        }
-
-                        if (columnParam.getFieldType() == EParameterFieldType.CLOSED_LIST) {
-                            overideDQPatternList(columnParam);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Overide default pattern list value by them which comes from DQ repository view
-     *
-     * @param param            the element parameter
-     * @param dqPatternService extended service for DQ pattern retrievement.
-     * @return
-     */
-    private void overideDQPatternList(IElementParameter param) {
-        // For dq patterns
-        if (isDQPatternList(param)) {
-            if (dqPatternService == null) { // get pattern service
-                dqPatternService = getDQPatternService();
-            }
-            if (dqPatternService != null && elem instanceof Node) {
-                Node node = (Node) elem;
-                IElementParameter typeParam = node.getElementParameter("TYPE"); //$NON-NLS-1$
-                // Customized value
-                Object[] customizedValue = param.getListItemsValue();
-                String[] customizedDisplayCodeName = param.getListItemsDisplayCodeName();
-                String[] customizedDisplayName = param.getListItemsDisplayName();
-                String[] customizedNotShowIfs = param.getListItemsNotShowIf();
-                String[] customizedShowIfs = param.getListItemsShowIf();
-                dqPatternService.overridePatternList(typeParam, param);
-                // Add the customized value:
-                param.setListItemsValue(mergeWithoutDuplicate(param.getListItemsValue(), customizedValue));
-                param.setListItemsDisplayCodeName((String[]) mergeWithoutDuplicate(param.getListItemsDisplayCodeName(),
-                        customizedDisplayCodeName));
-                param.setListItemsDisplayName((String[]) mergeWithoutDuplicate(param.getListItemsDisplayName(),
-                        customizedDisplayName));
-                param.setListItemsNotShowIf(mergeWithDuplicate(new String[param.getListItemsShowIf().length],
-                        customizedNotShowIfs));
-                param.setListItemsShowIf(mergeWithDuplicate(new String[param.getListItemsShowIf().length], customizedShowIfs));
-            }
-        }
-    }
-
-    /**
-     * Adds all the elements of "b" arrays into "a" array without the duplicate one in "a", and return "a".
-     *
-     * @param a
-     * @param b
-     * @return
-     */
-    private Object[] mergeWithoutDuplicate(Object[] a, Object[] b) {
-        if (b == null || b.length == 0) {
-            return a;
-        }
-        for (Object valueB : b) {
-            if (!ArrayUtils.contains(a, valueB)) {
-                a = ArrayUtils.add(a, valueB);
-            }
-        }
-        return a;
-    }
-
-    private String[] mergeWithDuplicate(String[] a, String[] b) {
-        if (b == null || b.length == 0) {
-            return a;
-        }
-        for (String valueB : b) {
-            a = (String[]) ArrayUtils.add(a, valueB);
-        }
-        return a;
-    }
-
-    private boolean isDQPatternList(IElementParameter param) {
-        String paramName = param.getName();
-        boolean isPatternList = StringUtils.equals(paramName, "DEFAULT_PATTERN"); //$NON-NLS-1$
-        return isPatternList;
-
-    }
-
-    private ITDQPatternService getDQPatternService() {
-        ITDQPatternService service = null;
-        try {
-            service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
-        } catch (RuntimeException e) {
-            // nothing to do
-        }
-        return service;
     }
 
     private void updateTableValues(IElementParameter param) {
