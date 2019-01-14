@@ -64,19 +64,19 @@ public class SuggestableTableController extends TableController {
     /**
      * Creates Suggestable Table Control which consists of following parts:
      * <ol>
-     *     <li>parameter label</li>
-     *     <li>table with disabled toolbar</li>
-     *     <li>"..." button, which opens value selection dialog </li>
+     * <li>parameter label</li>
+     * <li>table with disabled toolbar</li>
+     * <li>"..." button, which opens value selection dialog </li>
      * </ol>
      *
      * @param parentComposite parent composite on which all created controls will be located
-     * @param param ElementParameter
-     * @param numInRow number of control to be created in current row
-     * @param nbInRow total number of all controls in the current row
-     * @param top offset from top of the composite. It is computed as row size of all previously added controls + spaces
-     *            between controls
-     * @param lastControlPrm previously added control in the current row. If it is null, then current control will be
-     *                       the first control in the row
+     * @param param           ElementParameter
+     * @param numInRow        number of control to be created in current row
+     * @param nbInRow         total number of all controls in the current row
+     * @param top             offset from top of the composite. It is computed as row size of all previously added controls + spaces
+     *                        between controls
+     * @param lastControlPrm  previously added control in the current row. If it is null, then current control will be
+     *                        the first control in the row
      * @return Suggestable Table Control
      */
     @Override
@@ -113,16 +113,13 @@ public class SuggestableTableController extends TableController {
             }
         });
 
-
-        // Create property label which is displayed on the left side
         final CLabel labelLabel2 = getWidgetFactory().createCLabel(parentComposite, param.getDisplayName());
         setupLabelLayout(labelLabel2, numInRow, nbInRow, top, lastControlPrm);
 
-        // Create edit button
         final Button button = createEditButton(parentComposite, param);
         setupButtonLayout(button, numInRow, nbInRow, labelLabel2);
 
-        // Set table widget layout
+        // Setup table widget layout
         int currentLabelWidth2 = STANDARD_LABEL_WIDTH;
         final GC gc2 = new GC(labelLabel2);
         final Point labelSize2 = gc2.stringExtent(param.getDisplayName());
