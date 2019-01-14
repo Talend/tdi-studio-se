@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -191,68 +190,77 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             public void widgetSelected(SelectionEvent e) {
                 final Map<String, String> results = new HashMap<String, String>();
                 final TypedReturnCode<java.sql.Connection> dbResults = new TypedReturnCode<java.sql.Connection>(Boolean.FALSE);
+                boolean dbChecked = savedInDBButton.getSelection();
+                if (dbChecked) {
+                    TypedReturnCode<java.sql.Connection> rc = getConnectionReturnCode();
+                    dbResults.setOk(rc.isOk());
+                    dbResults.setObject(rc.getObject());
+                    dbResults.setMessage(rc.getMessage());
+                }
+                String url = urlText.getText();
+                String driver = driverText.getText();
+                String username = usernameText.getText();
+                String password = passwordText.getText();
                 // select a foder as the generate path
                 if (selectGeneratePath()) {
-
+                    final Thread t[] = new Thread[1];
                     ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(
-                            PlatformUI.getWorkbench().getDisplay().getActiveShell());
+                            PlatformUI.getWorkbench().getDisplay().getActiveShell()) {
+
+                        @Override
+                        protected void cancelPressed() {
+                            if (t[0] != null) {
+                                t[0].interrupt();
+                            }
+                        }
+                    };
                     IRunnableWithProgress runnable = new IRunnableWithProgress() {
 
                         @Override
-                        public void run(IProgressMonitor monitor) {
+                        public void run(IProgressMonitor monitor) throws InterruptedException {
+                            t[0] = Thread.currentThread();
                             monitor.beginTask(Messages.getString("AuditProjectSettingPage.generateAuditReportProgressBar"), //$NON-NLS-1$
                                     IProgressMonitor.UNKNOWN);
-                            Display.getDefault().syncExec(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    ICommandLineService service = getCommandLineService();
-                                    if (service != null) {
-                                        if (savedInDBButton.getSelection()) {
-                                            TypedReturnCode<java.sql.Connection> rc = getConnectionReturnCode();
-                                            dbResults.setOk(rc.isOk());
-                                            dbResults.setObject(rc.getObject());
-                                            dbResults.setMessage(rc.getMessage());
-                                            if (dbResults.isOk()) {
-                                                try {
-                                                    service.populateAudit(urlText.getText(), driverText.getText(),
-                                                            usernameText.getText(), passwordText.getText());
-                                                    Map<String, String> returnResult = service.generateAuditReport(generatePath);
-                                                    results.putAll(returnResult);
-                                                } catch (Exception e) {
-                                                    results.put(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION,
-                                                            ExceptionUtils.getFullStackTrace(e));
-                                                }
-                                            }
-                                        } else {
-                                            String path = "";//$NON-NLS-1$
-                                            File tempFolder = null;
-                                            try {
-                                                File createTempFile = File.createTempFile("AuditReport", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                                                path = createTempFile.getPath();
-                                                createTempFile.delete();
-                                                tempFolder = new File(path);
-                                                tempFolder.mkdir();
-                                                path = path.replace("\\", "/");//$NON-NLS-1$//$NON-NLS-2$
-
-                                                // Just use the h2 as default if no check
-                                                service.populateAudit(
-                                                        "jdbc:h2:" + path + "/database/audit;AUTO_SERVER=TRUE;lock_timeout=15000", //$NON-NLS-1$ //$NON-NLS-2$
-                                                        "org.h2.Driver", "tisadmin", "tisadmin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                                Map<String, String> returnResult = service.generateAuditReport(generatePath);
-                                                results.putAll(returnResult);
-                                            } catch (IOException e) {
-                                                ExceptionHandler.process(e);
-                                            } catch (Exception e) {
-                                                results.put(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION,
-                                                        ExceptionUtils.getFullStackTrace(e));
-                                            } finally {
-                                                FilesUtils.deleteFile(tempFolder, true);
-                                            }
+                            ICommandLineService service = getCommandLineService();
+                            if (service != null) {
+                                if (dbChecked) {
+                                    if (dbResults.isOk()) {
+                                        try {
+                                            service.populateAudit(url, driver, username, password);
+                                            Map<String, String> returnResult = service.generateAuditReport(generatePath);
+                                            results.putAll(returnResult);
+                                        } catch (Exception e) {
+                                            results.put(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION,
+                                                    ExceptionUtils.getFullStackTrace(e));
                                         }
                                     }
+                                } else {
+                                    String path = "";//$NON-NLS-1$
+                                    File tempFolder = null;
+                                    try {
+                                        File createTempFile = File.createTempFile("AuditReport", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                                        path = createTempFile.getPath();
+                                        createTempFile.delete();
+                                        tempFolder = new File(path);
+                                        tempFolder.mkdir();
+                                        path = path.replace("\\", "/");//$NON-NLS-1$//$NON-NLS-2$
+
+                                        // Just use the h2 as default if no check
+                                        service.populateAudit(
+                                                "jdbc:h2:" + path + "/database/audit;AUTO_SERVER=TRUE;lock_timeout=15000", //$NON-NLS-1$ //$NON-NLS-2$
+                                                "org.h2.Driver", "tisadmin", "tisadmin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                        Map<String, String> returnResult = service.generateAuditReport(generatePath);
+                                        results.putAll(returnResult);
+                                    } catch (IOException e) {
+                                        ExceptionHandler.process(e);
+                                    } catch (Exception e) {
+                                        results.put(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION,
+                                                ExceptionUtils.getFullStackTrace(e));
+                                    } finally {
+                                        FilesUtils.deleteFile(tempFolder, true);
+                                    }
                                 }
-                            });
+                            }
                             monitor.done();
                         }
                     };
@@ -378,41 +386,50 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             public void widgetSelected(SelectionEvent e) {
                 final Map<String, String> results = new HashMap<String, String>();
                 final TypedReturnCode<java.sql.Connection> dbResults = new TypedReturnCode<java.sql.Connection>(Boolean.FALSE);
+                boolean dbChecked = savedInDBButton.getSelection();
+                if (dbChecked) {
+                    TypedReturnCode<java.sql.Connection> rc = getConnectionReturnCode();
+                    dbResults.setOk(rc.isOk());
+                    dbResults.setObject(rc.getObject());
+                    dbResults.setMessage(rc.getMessage());
+                }
+                String url = urlText.getText();
+                String driver = driverText.getText();
+                String username = usernameText.getText();
+                String password = passwordText.getText();
                 // select a foder as the generate path
                 if (selectGeneratePath()) {
-
+                    final Thread t[] = new Thread[1];
                     ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(
-                            PlatformUI.getWorkbench().getDisplay().getActiveShell());
+                            PlatformUI.getWorkbench().getDisplay().getActiveShell()) {
+
+                        @Override
+                        protected void cancelPressed() {
+                            if (t[0] != null) {
+                                t[0].interrupt();
+                            }
+                        }
+                    };
                     IRunnableWithProgress runnable = new IRunnableWithProgress() {
 
                         @Override
-                        public void run(IProgressMonitor monitor) {
+                        public void run(IProgressMonitor monitor) throws InterruptedException {
+                            t[0] = Thread.currentThread();
                             monitor.beginTask(Messages.getString("AuditProjectSettingPage.generateAuditReportProgressBar"), //$NON-NLS-1$
                                     IProgressMonitor.UNKNOWN);
-                            Display.getDefault().syncExec(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    ICommandLineService service = getCommandLineService();
-                                    if (service != null && savedInDBButton.getSelection()) {
-                                        TypedReturnCode<java.sql.Connection> rc = getConnectionReturnCode();
-                                        dbResults.setOk(rc.isOk());
-                                        dbResults.setObject(rc.getObject());
-                                        dbResults.setMessage(rc.getMessage());
-                                        if (dbResults.isOk()) {
-                                            try {
-                                                service.populateHistoryAudit(selectedAuditId, urlText.getText(),
-                                                        driverText.getText(), usernameText.getText(), passwordText.getText());
-                                                Map<String, String> returnResult = service.generateAuditReport(generatePath);
-                                                results.putAll(returnResult);
-                                            } catch (Exception e) {
-                                                results.put(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION,
-                                                        ExceptionUtils.getFullStackTrace(e));
-                                            }
-                                        }
+                            ICommandLineService service = getCommandLineService();
+                            if (service != null && dbChecked) {
+                                if (dbResults.isOk()) {
+                                    try {
+                                        service.populateHistoryAudit(selectedAuditId, url, driver, username, password);
+                                        Map<String, String> returnResult = service.generateAuditReport(generatePath);
+                                        results.putAll(returnResult);
+                                    } catch (Exception e) {
+                                        results.put(AuditManager.AUDIT_GENERATE_REPORT_EXCEPTION,
+                                                ExceptionUtils.getFullStackTrace(e));
                                     }
                                 }
-                            });
+                            }
                             monitor.done();
                         }
                     };
