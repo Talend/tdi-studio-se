@@ -15,9 +15,7 @@ package org.talend.sdk.component.studio.ui.composite.controller;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +43,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNotModifiable;
@@ -56,16 +53,12 @@ import org.talend.commons.utils.data.list.ListenableListEvent;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQPatternService;
-import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
-import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.IDesignerCoreService;
@@ -80,14 +73,11 @@ import org.talend.designer.core.ui.editor.properties.controllers.ComponentListCo
 import org.talend.designer.core.ui.editor.properties.controllers.ConnectionListController;
 import org.talend.designer.core.ui.editor.properties.controllers.DbTypeListController;
 import org.talend.designer.core.ui.editor.properties.controllers.ModuleListController;
-import org.talend.designer.core.ui.editor.properties.controllers.TableController;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableToolbarEditorView;
 import org.talend.designer.runprocess.ItemCacheManager;
-import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.parameter.SuggestableTableParameter;
-import org.talend.sdk.component.studio.model.parameter.ValueSelectionParameter;
 
 public class SuggestableTableController extends AbstractElementPropertySectionController {
 
@@ -521,51 +511,6 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
         // updateSubjobStarts(elem, param);
     }
 
-    /**
-     * DOC nrousseau Comment method "updateSubjobStarts".
-     *
-     * @param param
-     */
-    public static void updateSubjobStarts(IElement element, IElementParameter param) {
-        if (!param.isBasedOnSubjobStarts() || !(element instanceof Node)) {
-            return;
-        }
-        // Each time one link of the type SUBJOB_START_ORDER will be connected or disconnected
-        // it will update the value of this table.
-
-        List<String> uniqueNameStarts = new ArrayList<String>();
-
-        Node node = (Node) element;
-        List<IConnection> incomingSubjobStartsConn = (List<IConnection>) node.getIncomingConnections(EConnectionType.SYNCHRONIZE);
-        for (IConnection connection : incomingSubjobStartsConn) {
-            uniqueNameStarts.add(connection.getSource().getUniqueName());
-        }
-
-        List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
-        List<Map<String, Object>> newParamValues = new ArrayList<Map<String, Object>>();
-        String[] codes = param.getListItemsDisplayCodeName();
-        for (String currentUniqueNameStart : uniqueNameStarts) {
-            Map<String, Object> newLine = null;
-            boolean found = false;
-            for (int k = 0; k < paramValues.size() && !found; k++) {
-                Map<String, Object> currentLine = paramValues.get(k);
-                if (currentLine.get(codes[0]).equals(currentUniqueNameStart)) {
-                    found = true;
-                    newLine = currentLine;
-                }
-            }
-
-            if (!found) {
-                newLine = TableController.createNewLine(param);
-                newLine.put(codes[0], currentUniqueNameStart);
-            }
-            newParamValues.add(newLine);
-        }
-
-        paramValues.clear();
-        paramValues.addAll(newParamValues);
-    }
-
     private void updateColumnList(IElementParameter param) {
         if (elem instanceof Node) {
             ColumnListController.updateColumnList((Node) elem, null);
@@ -866,63 +811,6 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
 
     }
 
-    public static Map<String, Object> createNewLine(IElementParameter param) {
-        Map<String, Object> line = new LinkedHashMap<String, Object>();
-        String[] items = param.getListItemsDisplayCodeName();
-        Object[] itemsValue = param.getListItemsValue();
-        IElementParameter tmpParam;
-        if (itemsValue.length == 0) {
-            return line;
-        }
-
-        tmpParam = (IElementParameter) itemsValue[0];
-        switch (tmpParam.getFieldType()) {
-            case CONTEXT_PARAM_NAME_LIST:
-                line.put(items[0], tmpParam.getDefaultClosedListValue());
-                break;
-            case CLOSED_LIST:
-            case COLUMN_LIST:
-            case COMPONENT_LIST:
-            case CONNECTION_LIST:
-            case DBTYPE_LIST:
-            case LOOKUP_COLUMN_LIST:
-            case PREV_COLUMN_LIST:
-                line.put(items[0], new Integer(tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue())));
-                break;
-            case SCHEMA_TYPE:
-            case SAP_SCHEMA_TYPE:
-            case COLOR:
-            case CHECK:
-                line.put(items[0], tmpParam.getValue());
-                break;
-            default: // TEXT
-                if ((tmpParam.getValue() == null) || (tmpParam.getValue().equals(""))) { //$NON-NLS-1$
-                    line.put(items[0], new String(TalendTextUtils.addQuotes("newLine"))); //$NON-NLS-1$
-                } else {
-                    line.put(items[0], tmpParam.getValue());
-                }
-        }
-
-        for (int i = 1; i < items.length; i++) {
-            tmpParam = (IElementParameter) itemsValue[i];
-            switch (tmpParam.getFieldType()) {
-                case CONTEXT_PARAM_NAME_LIST:
-                case CLOSED_LIST:
-                case DBTYPE_LIST:
-                case COLUMN_LIST:
-                case COMPONENT_LIST:
-                case CONNECTION_LIST:
-                case LOOKUP_COLUMN_LIST:
-                case PREV_COLUMN_LIST:
-                    line.put(items[i], new Integer(tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue())));
-                    break;
-                default: // TEXT or CHECK or COLOR (means String or Boolean)
-                    line.put(items[i], tmpParam.getValue());
-            }
-        }
-        return line;
-    }
-
     /**
      * ggu Comment method "revertAllButton".
      * <p>
@@ -942,30 +830,4 @@ public class SuggestableTableController extends AbstractElementPropertySectionCo
         }
     }
 
-    /**
-     * DOC YeXiaowei Comment method "isNeedAddAllButton".
-     *
-     * @param param
-     * @return
-     */
-    public static boolean isNeedAddAllButton(IElementParameter param) {
-        Object[] itemsValue = param.getListItemsValue();
-        IElementParameter tmpParam;
-        // enable the "add all" button works when the COLUMN_LIST in the table no matter its position is the first or
-        // not
-        if (itemsValue.length > 0) {
-            boolean b = false;
-            for (Object element : itemsValue) {
-                tmpParam = (IElementParameter) element;
-                if (tmpParam != null) {
-                    b = tmpParam.getFieldType() == EParameterFieldType.COLUMN_LIST;
-                    if (b) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-
-    }
 }
