@@ -43,6 +43,8 @@ public class ComplexSAXLooper implements ISAXLooper {
     // node paths special which tab will be read as the row value
     private String[] nodePaths;
 
+    private final String DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl"; //$NON-NLS-1$
+
     // add to support node.asXML()
     private boolean[] asXMLs;
 
@@ -142,7 +144,7 @@ public class ComplexSAXLooper implements ISAXLooper {
             DefaultHandler hd = null;
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            spf.setFeature(, true);
             SAXParser saxParser = null;
             if(!ignoreDTD) { //orginal code
             	saxParser = spf.newSAXParser();
@@ -189,7 +191,7 @@ public class ComplexSAXLooper implements ISAXLooper {
             DefaultHandler hd = null;
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
             SAXParser saxParser = spf.newSAXParser();
             if (rootPath == null || rootPath.equals("")) {
                 hd = newHandler();
