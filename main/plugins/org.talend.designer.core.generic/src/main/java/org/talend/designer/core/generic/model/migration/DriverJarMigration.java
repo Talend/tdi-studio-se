@@ -30,6 +30,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.migration.IMigrationTask.ExecutionResult;
+import org.talend.utils.security.CryptoHelper;
 
 /**
  * DOC hwang  class global comment. Detailled comment

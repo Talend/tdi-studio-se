@@ -19,8 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
-import org.talend.daikon.security.CryptoHelper;
 import org.talend.repository.RepositoryPlugin;
+import org.talend.utils.security.CryptoHelper;
 
 /**
  * DOC ggu class global comment. Detailled comment

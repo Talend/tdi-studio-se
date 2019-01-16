@@ -15,10 +15,10 @@ package org.talend.designer.core.generic.utils;
 import java.util.List;
 
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.daikon.security.CryptoHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
+import org.talend.utils.security.CryptoHelper;
 
 /**
  * UtilTool to handle NodeType.

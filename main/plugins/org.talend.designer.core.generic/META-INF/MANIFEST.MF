@@ -23,8 +23,7 @@ Require-Bundle: org.eclipse.ui,
  org.talend.metadata.managment,
  org.talend.metadata.managment.ui,
  org.slf4j.api,
- org.eclipse.swt,
- org.talend.daikon.exception;bundle-version="1.0.0"
+ org.eclipse.swt
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: .Talend SA.
 Export-Package: org.talend.designer.core.generic.constants,
