@@ -184,6 +184,7 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
         <%
     }
     %>    
+    conn_<%=cid%>.rollback();
     if(lookUpValue_<%=cid%> == null) {
         <%
         if(!isEnableSaveMemMode) {
@@ -612,8 +613,10 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
         }
         %>
     }
-    
+    conn_<%=cid%>.commit();
 	} catch (java.lang.Exception e) {//catch
+        conn_<%=cid%>.rollback();
+
   		<%
         if (dieOnError) {
             %>

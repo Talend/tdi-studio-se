@@ -764,6 +764,7 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
 %>
     <%@ include file="../templates/tMSSql/_tMSSqlConnection.javajet"%>
 
+    conn_<%=cid%>.setAutoCommit(false);
     if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
         tableName_<%=cid%> = <%=dbtable%>;
     } else {
