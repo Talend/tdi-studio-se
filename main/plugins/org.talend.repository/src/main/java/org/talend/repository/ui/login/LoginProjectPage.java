@@ -219,7 +219,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         super.init();
         finishButtonAction = FINISH_ACTION_OPEN_PROJECT;
         loginHelper = LoginHelper.getInstance();
-        loginFetchLicenseHelper = new LoginFetchLicenseHelper();
+        loginFetchLicenseHelper = LoginFetchLicenseHelper.getInstance();
     }
 
     @Override

@@ -35,13 +35,22 @@ import org.talend.utils.json.JSONObject;
  */
 public class LoginFetchLicenseHelper {
 
+    private static LoginFetchLicenseHelper instance;
+
     private LoginHelper loginHelper;
 
     private Map<Project, Job> fetchLicenseJobMap;
 
     private IRemoteService remoteService;
 
-    public LoginFetchLicenseHelper() {
+    public static LoginFetchLicenseHelper getInstance() {
+        if (instance == null) {
+            instance = new LoginFetchLicenseHelper();
+        }
+        return instance;
+    }
+
+    private LoginFetchLicenseHelper() {
         loginHelper = LoginHelper.getInstance();
         fetchLicenseJobMap = new HashMap<Project, Job>();
     }

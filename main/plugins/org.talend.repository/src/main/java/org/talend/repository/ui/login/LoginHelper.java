@@ -474,7 +474,7 @@ public class LoginHelper {
         if (connBean == null || project == null || project.getLabel() == null) {
             return false;
         }
-        LoginFetchLicenseHelper loginFetchLicenseHelper = new LoginFetchLicenseHelper();
+        LoginFetchLicenseHelper loginFetchLicenseHelper = LoginFetchLicenseHelper.getInstance();
         loginFetchLicenseHelper.fetchLicenseIfNeeded(project);
         setCurrentSelectedConnBean(connBean);
         try {
