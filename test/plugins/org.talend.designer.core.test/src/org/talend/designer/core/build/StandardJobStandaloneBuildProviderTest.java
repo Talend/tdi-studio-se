@@ -130,6 +130,10 @@ public class StandardJobStandaloneBuildProviderTest extends AbstractStandardJobB
 
         parameters.put(IBuildPomCreatorParameters.PROCESSOR, processor);
 
+        Field field = processorClazz.getDeclaredField("isMainJob");
+        field.setAccessible(true);
+        field.setBoolean(processor, true);
+
         final Method getPomFileMethod = processorClazz.getDeclaredMethod("getPomFile");
         getPomFileMethod.setAccessible(true);
         final Object getPomFile = getPomFileMethod.invoke(processor);
