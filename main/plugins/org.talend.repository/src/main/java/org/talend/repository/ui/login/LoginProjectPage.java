@@ -15,9 +15,7 @@ package org.talend.repository.ui.login;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
@@ -27,7 +25,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
@@ -101,7 +98,6 @@ import org.talend.core.repository.model.provider.LoginConnectionManager;
 import org.talend.core.repository.services.ILoginConnectionService;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.runtime.CoreRuntimePlugin;
-import org.talend.core.service.IRemoteService;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.TalendBrowserLaunchHelper;
@@ -206,9 +202,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
     protected LoginHelper loginHelper;
 
-    protected Map<Project, Job> fetchLicenseJobMap;
-
-    protected IRemoteService remoteService;
+    protected LoginFetchLicenseHelper loginFetchLicenseHelper;
 
     public LoginProjectPage(Composite parent, LoginDialogV2 dialog, int style) {
         super(parent, dialog, style);
@@ -225,12 +219,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         super.init();
         finishButtonAction = FINISH_ACTION_OPEN_PROJECT;
         loginHelper = LoginHelper.getInstance();
-        // boolean isSVNProviderPluginLoaded = PluginChecker.isSVNProviderPluginLoaded();
-
-        // if (!isSVNProviderPluginLoaded) {
-        // initConnection();
-        // }
-        fetchLicenseJobMap = new HashMap<Project, Job>();
+        loginFetchLicenseHelper = new LoginFetchLicenseHelper();
     }
 
     @Override
@@ -678,7 +667,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     } else {
                         loginHelper.setCurrentSelectedConnBean(connection);
                     }
-                    cancelAndClearFetchJobs();
+                    loginFetchLicenseHelper.cancelAndClearFetchJobs();
                     errorManager.clearAllMessages();
                     // beforeConnBean = connection;
                     updateServerFields();
@@ -829,7 +818,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
                     // last used project will be saved when click finish
                     // loginHelper.getPrefManipulator().setLastProject(project.getLabel());
-                    fetchLicenseIfNeeded(project);
+                    loginFetchLicenseHelper.fetchLicenseIfNeeded(project);
                     try {
                         fillUIBranches(project, false);
                     } catch (JSONException e) {
@@ -910,7 +899,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                cancelAndClearFetchJobs();
+                loginFetchLicenseHelper.cancelAndClearFetchJobs();
                 LoginProjectPage.this.selectedProjectBeforeRefresh = getProject() == null ? null : getProject().getLabel();
                 // Validate data
                 if (validateFields()) {
@@ -1035,7 +1024,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 LoginHelper.setAlwaysAskAtStartup(alwaysAsk.getSelection());
                 loginDialog.okPressed();
                 loginHelper.clearLicenseMap();
-                cancelAndClearFetchJobs();
+                loginFetchLicenseHelper.cancelAndClearFetchJobs();
             } else {
                 fillUIProjectListWithBusyCursor();
                 revertUpdateStatus();
@@ -1051,17 +1040,17 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         ConnectionBean conn = loginHelper.getCurrentSelectedConnBean();
         Project proj = getProject();
         if (LoginHelper.isRemotesConnection(conn)) {
-            String url = getAdminURL();
+            String url = loginFetchLicenseHelper.getAdminURL();
             String projLabel = proj.getLabel();
             String userId = conn.getUser();
             try {
                 String key = loginHelper.getLicenseMapKey(url, projLabel, userId);
                 String license = loginHelper.getLicense(key);
                 if (license == null || license.isEmpty()) {
-                    Job fetchJob = fetchLicenseJobMap.get(proj);
+                    Job fetchJob = loginFetchLicenseHelper.getFetchLicenseJobMap().get(proj);
                     if (fetchJob == null || fetchJob.getResult() != null) {
                         // if result is not null, means fetchJob has already finished but no license fetched
-                        fetchJob = fetchLicense(proj);
+                        fetchJob = loginFetchLicenseHelper.fetchLicense(proj);
                     }
                     final Job fJob = fetchJob;
                     if (fJob != null) {
@@ -1163,10 +1152,6 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         return null;
     }
 
-    protected String getAdminURL() {
-        return LoginHelper.getAdminURL(loginHelper.getCurrentSelectedConnBean());
-    }
-
     protected void updateStudio() {
         // install and update all patches;
         try {
@@ -1175,7 +1160,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                         ICoreTisService.class);
                 afterUpdate = false;
                 if (tisService != null) {
-                    tisService.downLoadAndInstallUpdates(getConnection().getUser(), getConnection().getPassword(), getAdminURL());
+                    tisService.downLoadAndInstallUpdates(getConnection().getUser(), getConnection().getPassword(),
+                            loginFetchLicenseHelper.getAdminURL());
                     afterUpdate = true;
                     tisService.setNeedResartAfterUpdate(afterUpdate);
                 }
@@ -1882,7 +1868,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     private void selectProject(Project goodProject) throws JSONException {
         projectViewer.setSelection(new StructuredSelection(new Object[] { goodProject }), true);
         selectedProjectBeforeRefresh = goodProject.getLabel();
-        fetchLicenseIfNeeded(goodProject);
+        loginFetchLicenseHelper.fetchLicenseIfNeeded(goodProject);
         fillUIBranches(goodProject, true);
         // if (PluginChecker.isTIS()) {
         // }
@@ -2313,93 +2299,5 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             }
             return hasError || super.hasError();
         }
-    }
-
-    private IRemoteService getRemoteService() {
-        if (remoteService == null) {
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(IRemoteService.class)) {
-                remoteService = (IRemoteService) GlobalServiceRegister.getDefault().getService(IRemoteService.class);
-            }
-        }
-        return remoteService;
-    }
-
-    private void fetchLicenseIfNeeded(Project proj) {
-        if (LoginHelper.isRemotesConnection(loginHelper.getCurrentSelectedConnBean())) {
-            fetchLicense(proj);
-        }
-    }
-
-    private Job fetchLicense(Project proj) {
-        String url = getAdminURL();
-        String userId = loginHelper.getCurrentSelectedConnBean().getUser();
-        String key = loginHelper.getLicenseMapKey(url, proj.getLabel(), userId);
-        String license = null;
-        try {
-            license = loginHelper.getLicense(key);
-        } catch (PersistenceException e) {
-            ExceptionHandler.process(e);
-        }
-        Job fetchJob = null;
-        if (license == null || license.isEmpty()) {
-            fetchJob = fetchLicenseJobMap.get(proj);
-            boolean createJob = true;
-            if (fetchJob != null) {
-                if (fetchJob.getResult() == null) {
-                    // just wait finish, click refresh may clear all running jobs
-                    createJob = false;
-                } else {
-                    createJob = true;
-                }
-            }
-            if (createJob) {
-                fetchJob = createFetchLicenseJob(proj);
-                fetchJob.setUser(false);
-                fetchJob.schedule();
-            }
-        }
-        return fetchJob;
-    }
-
-    private Job createFetchLicenseJob(Project proj) {
-        final String projLabel = proj.getLabel();
-        Job fetchJob = new Job(Messages.getString("LoginProjectPage.fetchLicense.job", proj.getLabel())) { //$NON-NLS-1$
-
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-                ConnectionBean cBean = loginHelper.getCurrentSelectedConnBean();
-                try {
-                    String userId = cBean.getUser();
-                    String url = getAdminURL();
-                    JSONObject jsonObj = getRemoteService().getLicenseKey(userId, cBean.getPassword(), url, projLabel);
-                    String fetchedLicense = jsonObj.getString("customerName") + "_" + jsonObj.getString("licenseKey"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    String key = loginHelper.getLicenseMapKey(url, projLabel, userId);
-                    loginHelper.putLicense(key, fetchedLicense);
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
-                }
-                return Status.OK_STATUS;
-            }
-
-            @Override
-            protected void canceling() {
-                Thread thread = this.getThread();
-                try {
-                    // to interrupt the slow network connection
-                    thread.interrupt();
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
-                }
-            }
-        };
-        fetchLicenseJobMap.put(proj, fetchJob);
-        return fetchJob;
-    }
-
-    private void cancelAndClearFetchJobs() {
-        for (Job job : fetchLicenseJobMap.values()) {
-            job.cancel();
-        }
-        fetchLicenseJobMap.clear();
     }
 }
