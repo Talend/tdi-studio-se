@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EParameterFieldType;
@@ -155,6 +156,17 @@ public class GenericTableUtils {
             return null;
         }
         return jars.toString();
+    }
+
+    public static List<String> getPathList(String jarsString) {
+        String[] split = jarsString.split(";");
+        List<String> list = new ArrayList<String>();
+        for (String p : split) {
+            if (!StringUtils.isEmpty(p)) {
+                list.add(p);
+            }
+        }
+        return list;
     }
     
     public static String getDriverJarPath(String mvnPath){

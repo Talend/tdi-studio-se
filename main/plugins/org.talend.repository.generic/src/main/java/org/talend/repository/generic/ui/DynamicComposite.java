@@ -16,6 +16,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Color;
@@ -36,6 +38,7 @@ import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
+import org.talend.core.model.metadata.builder.connection.impl.DatabaseConnectionImpl;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
@@ -58,6 +61,7 @@ import org.talend.designer.core.generic.constants.IElementParameterEventProperti
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.context.ComponentContextPropertyValueEvaluator;
 import org.talend.designer.core.generic.model.GenericElementParameter;
+import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.designer.core.model.FakeElement;
@@ -110,7 +114,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         if (drivedByForm) {
             internalService.getComponentService().makeFormCancelable(form.getProperties(), form.getName());
         }
-        resetParameters();
+        resetParameters(true);
     }
 
     public DynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element,
@@ -125,7 +129,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         if (drivedByForm) {
             internalService.getComponentService().makeFormCancelable(form.getProperties(), form.getName());
         }
-        resetParameters();
+        resetParameters(true);
     }
 
     private void resetComponentProperties() {
@@ -135,7 +139,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         }
     }
 
-    public List<ElementParameter> resetParameters() {
+    public List<ElementParameter> resetParameters(boolean isFirst) {
         final List<ElementParameter> newParameters = new ArrayList<>();
         List<ElementParameter> currentParameters = (List<ElementParameter>) element.getElementParameters();
         List<ElementParameter> parameters = new ArrayList<>();
@@ -179,10 +183,45 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
             addUpdateParameterIfNotExist(parameters);
             properties.setValueEvaluator(evaluator);
         }
-
+        DatabaseConnectionImpl dbConnection = (DatabaseConnectionImpl) theConnection;
         for (ElementParameter parameter : parameters) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
+                if (isFirst && dbConnection != null && "JDBC".equalsIgnoreCase(dbConnection.getDatabaseType())) {
+                    if (genericElementParameter.getDisplayName().equals("JDBC URL")) {
+                        genericElementParameter
+                                .setValue(StringUtils.isEmpty(dbConnection.getURL()) ? "jdbc:" : dbConnection.getURL());
+                    }
+                    if (genericElementParameter.getDisplayName().equals("Drivers")) {
+
+                        if (!StringUtils.isEmpty(dbConnection.getURL())
+                                && !StringUtils.isEmpty(dbConnection.getDriverJarPath())) {
+                            String driverJarPath = dbConnection.getDriverJarPath();
+                            List<String> pathList = GenericTableUtils.getPathList(driverJarPath);
+                            List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+                            for (String jar : pathList) {
+                                Map<String, String> map = new HashMap<String, String>();
+                                map.put("drivers", jar);
+                                list.add(map);
+                            }
+                            genericElementParameter.setValue(list);
+                        }
+                    }
+                    if (genericElementParameter.getDisplayName().equals("Driver Class")) {
+                        genericElementParameter.setValue(dbConnection.getDriverClass());
+                    }
+                    if (genericElementParameter.getDisplayName().equals("User Id")) {
+                        genericElementParameter.setValue(dbConnection.getUsername());
+                    }
+                    if (genericElementParameter.getDisplayName().equals("Password")) {
+                        genericElementParameter.setValue(dbConnection.getRawPassword());
+                    }
+                    if (genericElementParameter.getDisplayName().equals("Mapping file")
+                            && !StringUtils.isEmpty(dbConnection.getDbmsId())) {
+                        genericElementParameter.setValue(dbConnection.getDbmsId());
+                    }
+                }
+
                 genericElementParameter.setComponentService(componentService);
                 genericElementParameter.setDrivedByForm(drivedByForm);
                 genericElementParameter.callBeforePresent();
@@ -418,7 +457,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
     }
 
     private void reset(boolean refresh) {
-        resetParameters();
+        resetParameters(false);
         if (refresh) {
             Display.getDefault().asyncExec(new Runnable() {
 
