@@ -43,8 +43,6 @@ public class ComplexSAXLooper implements ISAXLooper {
     // node paths special which tab will be read as the row value
     private String[] nodePaths;
 
-    private final String DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl"; //$NON-NLS-1$
-
     // add to support node.asXML()
     private boolean[] asXMLs;
 
@@ -142,13 +140,11 @@ public class ComplexSAXLooper implements ISAXLooper {
         Reader reader = null;
         try {
             DefaultHandler hd = null;
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
             SAXParser saxParser = null;
             if(!ignoreDTD) { //orginal code
-            	saxParser = spf.newSAXParser();
+            	saxParser = SAXParserFactory.newInstance().newSAXParser();
             } else {
+	            SAXParserFactory spf = SAXParserFactory.newInstance();
 	            spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 				saxParser = spf.newSAXParser();
             }
@@ -189,10 +185,7 @@ public class ComplexSAXLooper implements ISAXLooper {
         Reader reader = null;
         try {
             DefaultHandler hd = null;
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
-            SAXParser saxParser = spf.newSAXParser();
+            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
             if (rootPath == null || rootPath.equals("")) {
                 hd = newHandler();
             } else {

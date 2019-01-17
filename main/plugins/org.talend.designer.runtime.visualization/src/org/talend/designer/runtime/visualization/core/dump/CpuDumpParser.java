@@ -34,7 +34,6 @@ public class CpuDumpParser extends AbstractDumpParser {
     /** The input type. */
     private InputType inputType;
 
-    private final String DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl"; //$NON-NLS-1$
     /**
      * The constructor.
      * 
@@ -87,10 +86,7 @@ public class CpuDumpParser extends AbstractDumpParser {
      */
     public void parse() throws ParserConfigurationException, SAXException, IOException {
 
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-        spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
-        parser = spf.newSAXParser();
+        parser = SAXParserFactory.newInstance().newSAXParser();
         CpuDumpSaxEventHandler handler = new CpuDumpSaxEventHandler(cpuModel, monitor);
 
         if (inputType == InputType.FILE) {
