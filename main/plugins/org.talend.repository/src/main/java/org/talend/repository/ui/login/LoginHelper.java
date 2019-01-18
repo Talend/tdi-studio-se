@@ -475,7 +475,7 @@ public class LoginHelper {
             return false;
         }
         LoginFetchLicenseHelper loginFetchLicenseHelper = LoginFetchLicenseHelper.getInstance();
-        loginFetchLicenseHelper.fetchLicenseIfNeeded(project);
+        loginFetchLicenseHelper.refreshLicenseIfNeeded(project);
         setCurrentSelectedConnBean(connBean);
         try {
             if (!project.getEmfProject().isLocal() && factory.isLocalConnectionProvider()) {

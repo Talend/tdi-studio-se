@@ -12,11 +12,9 @@
 // ============================================================================
 package org.talend.repository.ui.login;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,8 +28,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -1014,7 +1010,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         if (LoginHelper.isRestart) {
             loginDialog.okPressed();
         } else {
-            if (!refreshLicenseIfNeeded()) {
+            if (!loginFetchLicenseHelper.refreshLicenseIfNeeded(getProject())) {
                 return;
             }
             // should save before login, since svn related codes will read them
@@ -1030,81 +1026,6 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 revertUpdateStatus();
             }
         }
-    }
-
-    /**
-     * 
-     * @return if false: user cancel login
-     */
-    private boolean refreshLicenseIfNeeded() {
-        ConnectionBean conn = loginHelper.getCurrentSelectedConnBean();
-        Project proj = getProject();
-        if (LoginHelper.isRemotesConnection(conn)) {
-            String url = loginFetchLicenseHelper.getAdminURL();
-            String projLabel = proj.getLabel();
-            String userId = conn.getUser();
-            try {
-                String key = loginHelper.getLicenseMapKey(url, projLabel, userId);
-                String license = loginHelper.getLicense(key);
-                if (license == null || license.isEmpty()) {
-                    Job fetchJob = loginFetchLicenseHelper.getFetchLicenseJobMap().get(proj);
-                    if (fetchJob == null || fetchJob.getResult() != null) {
-                        // if result is not null, means fetchJob has already finished but no license fetched
-                        fetchJob = loginFetchLicenseHelper.fetchLicense(proj);
-                    }
-                    final Job fJob = fetchJob;
-                    if (fJob != null) {
-                        final AtomicBoolean isInterupted = new AtomicBoolean(false);
-                        ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
-                        dialog.run(true, true, new IRunnableWithProgress() {
-
-                            @Override
-                            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                                monitor.setTaskName(fJob.getName());
-                                while (true) {
-                                    if (monitor.isCanceled()) {
-                                        /**
-                                         * If network is slow, maybe just wait the fetch job finish, but still can click
-                                         * the Refresh button to cancel all fetch jobs
-                                         */
-                                        // fJob.cancel();
-
-                                        isInterupted.set(true);
-                                        break;
-                                    }
-                                    IStatus result = fJob.getResult();
-                                    if (result != null) {
-                                        break;
-                                    }
-                                    try {
-                                        Thread.sleep(250);
-                                    } catch (Exception e) {
-                                        // nothing to do
-                                    }
-                                }
-                            }
-                        });
-                        if (isInterupted.get()) {
-                            return false;
-                        }
-                    }
-                    license = loginHelper.getLicense(key);
-                }
-                if (license == null || license.isEmpty()) {
-                    throw new Exception(Messages.getString("LoginProjectPage.fetchLicense.error.failed")); //$NON-NLS-1$
-                }
-                // will do save in CoreTisService if needed
-                // ICoreTisService tisService = (ICoreTisService) GlobalServiceRegister.getDefault()
-                // .getService(ICoreTisService.class);
-                // File remoteLicense = tisService.getRemoteLicenseFile();
-                // tisService.storeLicenseFile(remoteLicense, license);
-            } catch (Exception e) {
-                ExceptionMessageDialog.openError(getShell(), Messages.getString("LoginProjectPage.fetchLicense.error.title"), //$NON-NLS-1$
-                        Messages.getString("LoginProjectPage.fetchLicense.error.msg"), e); //$NON-NLS-1$
-                return false;
-            }
-        }
-        return true;
     }
 
     private void revertUpdateStatus() {

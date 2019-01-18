@@ -12,15 +12,24 @@
 // ============================================================================
 package org.talend.repository.ui.login;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.talend.commons.ui.runtime.exception.ExceptionMessageDialog;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.ConnectionBean;
 import org.talend.core.model.general.Project;
@@ -149,5 +158,84 @@ public class LoginFetchLicenseHelper {
 
     public Map<Project, Job> getFetchLicenseJobMap() {
         return this.fetchLicenseJobMap;
+    }
+
+    /**
+     * 
+     * @return if false: user cancel login
+     */
+    public boolean refreshLicenseIfNeeded(Project proj) {
+        if (CommonsPlugin.isHeadless()) {
+            return false;
+        }
+        ConnectionBean conn = loginHelper.getCurrentSelectedConnBean();
+        if (LoginHelper.isRemotesConnection(conn)) {
+            String url = getAdminURL();
+            String projLabel = proj.getLabel();
+            String userId = conn.getUser();
+            try {
+                String key = loginHelper.getLicenseMapKey(url, projLabel, userId);
+                String license = loginHelper.getLicense(key);
+                if (license == null || license.isEmpty()) {
+                    Job fetchJob = getFetchLicenseJobMap().get(proj);
+                    if (fetchJob == null || fetchJob.getResult() != null) {
+                        // if result is not null, means fetchJob has already finished but no license fetched
+                        fetchJob = fetchLicense(proj);
+                    }
+                    final Job fJob = fetchJob;
+                    if (fJob != null) {
+                        final AtomicBoolean isInterupted = new AtomicBoolean(false);
+                        final Shell shell = new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
+                        ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell);
+                        dialog.run(true, true, new IRunnableWithProgress() {
+
+                            @Override
+                            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                                monitor.setTaskName(fJob.getName());
+                                while (true) {
+                                    if (monitor.isCanceled()) {
+                                        /**
+                                         * If network is slow, maybe just wait the fetch job finish, but still can click
+                                         * the Refresh button to cancel all fetch jobs
+                                         */
+                                        // fJob.cancel();
+
+                                        isInterupted.set(true);
+                                        break;
+                                    }
+                                    IStatus result = fJob.getResult();
+                                    if (result != null) {
+                                        break;
+                                    }
+                                    try {
+                                        Thread.sleep(250);
+                                    } catch (Exception e) {
+                                        // nothing to do
+                                    }
+                                }
+                            }
+                        });
+                        if (isInterupted.get()) {
+                            return false;
+                        }
+                    }
+                    license = loginHelper.getLicense(key);
+                }
+                if (license == null || license.isEmpty()) {
+                    throw new Exception(Messages.getString("LoginProjectPage.fetchLicense.error.failed")); //$NON-NLS-1$
+                }
+                // will do save in CoreTisService if needed
+                // ICoreTisService tisService = (ICoreTisService) GlobalServiceRegister.getDefault()
+                // .getService(ICoreTisService.class);
+                // File remoteLicense = tisService.getRemoteLicenseFile();
+                // tisService.storeLicenseFile(remoteLicense, license);
+            } catch (Exception e) {
+                final Shell shell = new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
+                ExceptionMessageDialog.openError(shell, Messages.getString("LoginProjectPage.fetchLicense.error.title"), //$NON-NLS-1$
+                        Messages.getString("LoginProjectPage.fetchLicense.error.msg"), e); //$NON-NLS-1$
+                return false;
+            }
+        }
+        return true;
     }
 }
