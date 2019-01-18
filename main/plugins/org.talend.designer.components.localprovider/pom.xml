@@ -14,6 +14,7 @@
 		<bulkload.dir>${project.basedir}/components/tMDMBulkLoad</bulkload.dir>
 		<soap.dir>${project.basedir}/components/tSOAP</soap.dir>
 		<webservice.dir>${project.basedir}/components/tWebServiceInput</webservice.dir>
+		<webservicecore.dir>${project.basedir}/components/tWebService</webservicecore.dir>
 		<thashfile.dir>${project.basedir}/components/tHashInput</thashfile.dir>
 		<thashfile.version>3.0-20170711</thashfile.version>
 		<ftpProxy.dir>${project.basedir}/components/tFTPConnection</ftpProxy.dir>
@@ -44,6 +45,12 @@
 							<directory>${thashfile.dir}</directory>
 							<includes>
 								<include>thashfile*.jar</include>
+							</includes>
+						</fileset>
+						<fileset>
+							<directory>${webservicecore.dir}</directory>
+							<includes>
+								<include>talend-ws*.jar</include>
 							</includes>
 						</fileset>
 					</filesets>
@@ -77,6 +84,14 @@
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${webservice.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.libraries</groupId>
+									<artifactId>talend-ws</artifactId>
+									<version>1.0.1-20190117</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${webservicecore.dir}</outputDirectory>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.talend.libraries</groupId>
