@@ -1010,17 +1010,12 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         if (LoginHelper.isRestart) {
             loginDialog.okPressed();
         } else {
-            if (!loginFetchLicenseHelper.refreshLicenseIfNeeded(getProject())) {
-                return;
-            }
             // should save before login, since svn related codes will read them
             saveLastUsedProjectAndBranch();
             boolean isLogInOk = loginHelper.logIn(getConnection(), getProject());
             if (isLogInOk) {
                 LoginHelper.setAlwaysAskAtStartup(alwaysAsk.getSelection());
                 loginDialog.okPressed();
-                loginHelper.clearLicenseMap();
-                loginFetchLicenseHelper.cancelAndClearFetchJobs();
             } else {
                 fillUIProjectListWithBusyCursor();
                 revertUpdateStatus();

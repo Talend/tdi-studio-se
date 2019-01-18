@@ -166,7 +166,7 @@ public class LoginFetchLicenseHelper {
      */
     public boolean refreshLicenseIfNeeded(Project proj) {
         if (CommonsPlugin.isHeadless()) {
-            return false;
+            return true;
         }
         ConnectionBean conn = loginHelper.getCurrentSelectedConnBean();
         if (LoginHelper.isRemotesConnection(conn)) {
