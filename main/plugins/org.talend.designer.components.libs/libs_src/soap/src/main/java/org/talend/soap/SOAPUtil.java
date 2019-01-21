@@ -34,7 +34,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.jdom.input.DOMBuilder;
 import org.jdom.output.XMLOutputter;
 import org.talend.soap.sun.SunNtlmAuthenticationUpdater;
-import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -208,7 +207,7 @@ public class SOAPUtil {
 
     private Document extractContentAsDocument(SOAPHeader header) throws ParserConfigurationException, TransformerException {
         Document document;
-        DocumentBuilderFactory factory = XmlUtils.getSecureDocumentBuilderFactory(true);
+        DocumentBuilderFactory factory = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         document = builder.newDocument();
