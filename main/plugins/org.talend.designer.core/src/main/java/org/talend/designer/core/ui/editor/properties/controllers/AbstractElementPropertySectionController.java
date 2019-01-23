@@ -1715,7 +1715,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
                     driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
                 }
             }
-            if (!EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(dbType)) {
+            if (EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(dbType)) {
+                connParameters.setDriverClass(driverClass);// tJDBCSCDELT
+            } else {
                 connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(dbType));
             }
             connParameters.setDriverJar(TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
