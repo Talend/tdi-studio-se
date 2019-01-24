@@ -809,7 +809,8 @@
       NAME="NOTE"
       FIELD="LABEL"
       NUM_ROW="20"
-      SHOW_IF="(DBTYPE=='DBORACLE') AND (CONNECTION_TYPE == 'ORACLE_SID' OR
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false' AND
+               (DBTYPE=='DBORACLE') AND (CONNECTION_TYPE == 'ORACLE_SID' OR
                                          CONNECTION_TYPE == 'ORACLE_SERVICE_NAME' OR
                                          CONNECTION_TYPE == 'ORACLE_OCI' OR
                                          CONNECTION_TYPE == 'ORACLE_RAC')">

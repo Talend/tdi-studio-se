@@ -1160,11 +1160,12 @@ class OracleManager extends Manager {
     }
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
-        if (additionalParams == null || "\"\"".equals(additionalParams.trim())){
-            if(useExistingConnection) {
-                javaCode.append(retrieveTable());
-                javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"conn_" + connection + "\");");
-            } else if (("ORACLE_WALLET").equals(connectionType)) {
+        
+        if(useExistingConnection) {
+            javaCode.append(retrieveTable());
+            javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"conn_" + connection + "\");");
+        } else if (additionalParams == null || "\"\"".equals(additionalParams.trim())){
+             if (("ORACLE_WALLET").equals(connectionType)) {
                 javaCode.append(retrieveTable());
                 javaCode.append("java.lang.Class.forName(\"" + getDriver()+ "\");\r\n");
                 log4jCodeGenerateUtil.connect_begin_noUser();
@@ -1189,7 +1190,7 @@ class OracleManager extends Manager {
             javaCode.append("java.sql.Connection conn_" + cid + " = java.sql.DriverManager.getConnection(url_" + cid + ", atnParamsPrope_" + cid + ");\r\n");
         }
         return javaCode.toString();
-    }        
+    }     
     protected String getDBMSId() {
         return "oracle_id";
     }
