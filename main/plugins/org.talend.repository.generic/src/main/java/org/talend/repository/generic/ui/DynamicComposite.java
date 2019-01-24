@@ -35,10 +35,12 @@ import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.service.ComponentService;
+import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.metadata.builder.connection.impl.DatabaseConnectionImpl;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
@@ -187,12 +189,16 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         for (ElementParameter parameter : parameters) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
-                if (isFirst && dbConnection != null && "JDBC".equalsIgnoreCase(dbConnection.getDatabaseType())) {
-                    if (genericElementParameter.getDisplayName().equals("JDBC URL")) {
+
+                if (isFirst && dbConnection != null
+                        && EDatabaseTypeName.GENERAL_JDBC.getProduct().equalsIgnoreCase(dbConnection.getDatabaseType())) {
+                    if (genericElementParameter.getDisplayName()
+                            .equals(EConnectionParameterName.GENERIC_JDBCURL.getDisplayName())) {
                         genericElementParameter
                                 .setValue(StringUtils.isEmpty(dbConnection.getURL()) ? "jdbc:" : dbConnection.getURL());
                     }
-                    if (genericElementParameter.getDisplayName().equals("Drivers")) {
+                    if (genericElementParameter.getDisplayName()
+                            .equals(EConnectionParameterName.GENERIC_DRIVERS.getDisplayName())) {
 
                         if (!StringUtils.isEmpty(dbConnection.getURL())
                                 && !StringUtils.isEmpty(dbConnection.getDriverJarPath())) {
@@ -207,16 +213,19 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                             genericElementParameter.setValue(list);
                         }
                     }
-                    if (genericElementParameter.getDisplayName().equals("Driver Class")) {
+                    if (genericElementParameter.getDisplayName()
+                            .equalsIgnoreCase(EConnectionParameterName.DRIVER_CLASS.getDisplayName())) {
                         genericElementParameter.setValue(dbConnection.getDriverClass());
                     }
-                    if (genericElementParameter.getDisplayName().equals("User Id")) {
+                    if (genericElementParameter.getDisplayName()
+                            .equals(EConnectionParameterName.GENERIC_USERID.getDisplayName())) {
                         genericElementParameter.setValue(dbConnection.getUsername());
                     }
-                    if (genericElementParameter.getDisplayName().equals("Password")) {
+                    if (genericElementParameter.getDisplayName().equals(EConnectionParameterName.PASSWORD.getDisplayName())) {
                         genericElementParameter.setValue(dbConnection.getRawPassword());
                     }
-                    if (genericElementParameter.getDisplayName().equals("Mapping file")
+                    if (genericElementParameter.getDisplayName()
+                            .equals(EConnectionParameterName.GENERIC_MAPPING_FILE.getDisplayName())
                             && !StringUtils.isEmpty(dbConnection.getDbmsId())) {
                         genericElementParameter.setValue(dbConnection.getDbmsId());
                     }
