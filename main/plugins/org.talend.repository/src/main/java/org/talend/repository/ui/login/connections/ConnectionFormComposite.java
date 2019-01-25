@@ -753,8 +753,8 @@ public class ConnectionFormComposite extends Composite {
             nameText.setText((connection.getName() == null ? "" : connection.getName())); //$NON-NLS-1$
             descriptionText.setText((connection.getDescription() == null ? "" : connection.getDescription())); //$NON-NLS-1$
             userText.setText((connection.getUser() == null ? "" : connection.getUser())); //$NON-NLS-1$
-            passwordText.setText(TalendTextUtils.hidePassword(connection.getPassword())); // $NON-NLS-1$
-            password = connection.getPassword() == null ? "" : connection.getPassword();
+            passwordText.setText(TalendTextUtils.hidePassword(connection.getPassword()));
+            password = connection.getPassword() == null ? "" : connection.getPassword(); // $NON-NLS-1$
             workSpaceText
                     .setText(("".equals(connection.getWorkSpace()) || connection.getWorkSpace() == null) ? getRecentWorkSpace() : connection.getWorkSpace());//$NON-NLS-1$
             addListeners();
