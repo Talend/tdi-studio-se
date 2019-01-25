@@ -13,7 +13,6 @@
 package org.talend.designer.core.generic.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,11 +157,6 @@ public class GenericTableUtils {
         return jars.toString();
     }
 
-    public static List<String> getPathList(String jarsString) {
-        String[] split = jarsString.split(";");
-        return Arrays.asList(split);
-    }
-    
     public static String getDriverJarPath(String mvnPath){
         String mvnUrl = TalendQuoteUtils.removeQuotesIfExist(mvnPath);
         if (MavenUrlHelper.isMvnUrl(mvnUrl)) {

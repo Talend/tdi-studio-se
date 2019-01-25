@@ -63,7 +63,6 @@ import org.talend.designer.core.generic.constants.IElementParameterEventProperti
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.context.ComponentContextPropertyValueEvaluator;
 import org.talend.designer.core.generic.model.GenericElementParameter;
-import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.designer.core.model.FakeElement;
@@ -192,39 +191,40 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
 
                 if (isFirst && dbConnection != null
                         && EDatabaseTypeName.GENERAL_JDBC.getProduct().equalsIgnoreCase(dbConnection.getDatabaseType())) {
-                    if (genericElementParameter.getDisplayName()
-                            .equals(EConnectionParameterName.GENERIC_JDBCURL.getDisplayName())) {
+                    if (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_URL.getDisplayName())) {
                         genericElementParameter
                                 .setValue(StringUtils.isEmpty(dbConnection.getURL()) ? "jdbc:" : dbConnection.getURL());
                     }
-                    if (genericElementParameter.getDisplayName()
-                            .equals(EConnectionParameterName.GENERIC_DRIVERS.getDisplayName())) {
+                    if (genericElementParameter.getName()
+                            .equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())) {
 
                         if (!StringUtils.isEmpty(dbConnection.getURL())
                                 && !StringUtils.isEmpty(dbConnection.getDriverJarPath())) {
                             String driverJarPath = dbConnection.getDriverJarPath();
-                            List<String> pathList = GenericTableUtils.getPathList(driverJarPath);
                             List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-                            for (String jar : pathList) {
-                                Map<String, String> map = new HashMap<String, String>();
-                                map.put("drivers", jar);
-                                list.add(map);
+                            String[] split = driverJarPath.split(";");
+                            for (String jar : split) {
+                                if (!StringUtils.isEmpty(jar)) {
+                                    Map<String, String> map = new HashMap<String, String>();
+                                    map.put("drivers", jar);
+                                    list.add(map);
+                                }
+
                             }
                             genericElementParameter.setValue(list);
                         }
                     }
-                    if (genericElementParameter.getDisplayName()
-                            .equalsIgnoreCase(EConnectionParameterName.DRIVER_CLASS.getDisplayName())) {
+                    if (genericElementParameter.getName()
+                            .equalsIgnoreCase(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName())) {
                         genericElementParameter.setValue(dbConnection.getDriverClass());
                     }
-                    if (genericElementParameter.getDisplayName()
-                            .equals(EConnectionParameterName.GENERIC_USERID.getDisplayName())) {
+                    if (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_USERNAME.getDisplayName())) {
                         genericElementParameter.setValue(dbConnection.getUsername());
                     }
-                    if (genericElementParameter.getDisplayName().equals(EConnectionParameterName.PASSWORD.getDisplayName())) {
+                    if (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_PASSWORD.getDisplayName())) {
                         genericElementParameter.setValue(dbConnection.getRawPassword());
                     }
-                    if (genericElementParameter.getDisplayName()
+                    if (genericElementParameter.getName()
                             .equals(EConnectionParameterName.GENERIC_MAPPING_FILE.getDisplayName())
                             && !StringUtils.isEmpty(dbConnection.getDbmsId())) {
                         genericElementParameter.setValue(dbConnection.getDbmsId());
