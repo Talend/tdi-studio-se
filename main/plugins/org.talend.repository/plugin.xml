@@ -3146,6 +3146,15 @@
               name="DecrementLimitTFileInputDelimitedTDI32185"
               version="7.2.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.ResetAdditionalJDBCParamsForCreateTable"
+              description="If AS400 or MSSQL dbs had additional JDBC parameters, it will keep them for others set default"
+              id="org.talend.repository.model.migration.ResetAdditionalJDBCParamsForCreateTable"
+              name="ResetAdditionalJDBCParamsForCreateTable"
+              version="7.2.1">
+        </projecttask>
    </extension>
 
    <extension

@@ -17,12 +17,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import static org.talend.model.bridge.ReponsitoryContextBridge.getProject;
-
 public class ResetAdditionalJDBCParamsForCreateTable extends AbstractJobMigrationTask{
+	
     @Override
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2018, 9, 25, 10, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2019, 1, 24, 12, 0, 0);
         return gc.getTime();
     }
 
@@ -33,57 +32,26 @@ public class ResetAdditionalJDBCParamsForCreateTable extends AbstractJobMigratio
             return ExecutionResult.NOTHING_TO_DO;
         }
 
-        String [] componentsNameToAffect = new String [] {
-                "tCreateTable",
-                "tMysqlCDC",
-                "tELTMysqlMap",
-                "tMysqlBulkExec",
-                "tMysqlConnection",
-                "tMysqlInput",
-                "tMysqlOutput",
-                "tMysqlOutputBulkExec",
-                "tMysqlRow",
-                "tMysqlSCD",
-                "tMysqlSCDELT",
-                "tMysqlSP"
-        };
-
-        IComponentConversion defaultDBVersion = new IComponentConversion() {
+        String componentName = "tCreateTable";
+        IComponentConversion resetAdditionalParameter = new IComponentConversion() {
 
             @Override
             public void transform(NodeType node) {
-                boolean useExistConnection = "true".equals(ComponentUtilities.getNodePropertyValue(node, "USE_EXISTING_CONNECTION"));
-                if (useExistConnection) return;
-
-                String componentName = node.getComponentName();
-                String dbVersion = "";
-
-                if ("tCreateTable".equals(componentName)) {
-                    String dbType = ComponentUtilities.getNodePropertyValue(node, "DBTYPE");
-                    if (!"MYSQL".equals(dbType)) return;
-                    dbVersion = ComponentUtilities.getNodePropertyValue(node, "DB_MYSQL_VERSION");
-                    if (dbVersion==null) {
-                        ComponentUtilities.addNodeProperty(node, "DB_MYSQL_VERSION", "CLOSED_LIST");
-                        ComponentUtilities.setNodeValue(node, "DB_MYSQL_VERSION", "MYSQL_5");
-                    }
-                } else {
-                    dbVersion = ComponentUtilities.getNodePropertyValue(node, "DB_VERSION");
-                    if (dbVersion==null) {
-                        ComponentUtilities.addNodeProperty(node, "DB_VERSION", "CLOSED_LIST");
-                        ComponentUtilities.setNodeValue(node, "DB_VERSION", "MYSQL_5");
-                    }
-                }
+            	String dbType = ComponentUtilities.getNodePropertyValue(node, "DBTYPE");
+            	if ("AS400".equals(dbType) || "MSSQL".equals(dbType)) {
+            		return;
+            	} else {
+            		ComponentUtilities.setNodeValue(node, "PROPERTIES", "\"\"");
+            	}
             }
         };
 
-        for (String componentName : componentsNameToAffect) {
-            IComponentFilter componentFilter = new NameComponentFilter(componentName);
-            try {
-                ModifyComponentsAction.searchAndModify(item, processType, componentFilter, Collections.singletonList(defaultDBVersion));
-            } catch (PersistenceException e) {
-                ExceptionHandler.process(e);
-                return ExecutionResult.FAILURE;
-            }
+        IComponentFilter componentFilter = new NameComponentFilter(componentName);
+        try {
+            ModifyComponentsAction.searchAndModify(item, processType, componentFilter, Collections.singletonList(resetAdditionalParameter));
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+            return ExecutionResult.FAILURE;
         }
         return ExecutionResult.SUCCESS_NO_ALERT;
     }
