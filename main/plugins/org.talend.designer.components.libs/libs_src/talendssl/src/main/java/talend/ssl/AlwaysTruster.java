@@ -1,7 +1,8 @@
 package talend.ssl;
 
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import com.sun.net.ssl.X509TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 public class AlwaysTruster implements X509TrustManager {
 
@@ -9,11 +10,13 @@ public class AlwaysTruster implements X509TrustManager {
         return null;
     }
 
-    public boolean isClientTrusted(X509Certificate[] arg0) {
-        return true;
-    }
+	@Override
+	public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		// no implementation required
+	}
 
-    public boolean isServerTrusted(X509Certificate[] arg0) {
-        return true;
-    }
+	@Override
+	public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		// no implementation required
+	}
 }

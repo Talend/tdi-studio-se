@@ -12,10 +12,11 @@ import java.net.URLConnection;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import com.sun.net.ssl.TrustManagerFactory;
-import com.sun.net.ssl.X509TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 public class Truster implements X509TrustManager {
 
@@ -59,15 +60,6 @@ public class Truster implements X509TrustManager {
             password.toCharArray();
         }
         init();
-    }
-
-    private boolean deleteCert(String id) {
-        try {
-            ks.deleteEntry(id);
-        } catch (KeyStoreException _ex) {
-            return false;
-        }
-        return true;
     }
 
     public X509Certificate[] getAcceptedIssuers() {
@@ -132,9 +124,9 @@ public class Truster implements X509TrustManager {
 
     private X509TrustManager initTrustManager(KeyStore ks) throws NoSuchAlgorithmException, KeyStoreException {
         TrustManagerFactory trustManagerFactory = null;
-        trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         trustManagerFactory.init(ks);
-        com.sun.net.ssl.TrustManager trusts[] = trustManagerFactory.getTrustManagers();
+        javax.net.ssl.TrustManager trusts[] = trustManagerFactory.getTrustManagers();
         return (X509TrustManager) trusts[0];
     }
 
@@ -149,50 +141,14 @@ public class Truster implements X509TrustManager {
         return false;
     }
 
-    public boolean isClientTrusted(X509Certificate chain[]) {
-        if (trustManager == null)
-            return false;
+    @Override
+	public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+    	if (trustManager == null)
+            throw new CertificateException("Trust manager is not initialized");
         else
-            return trustManager.isClientTrusted(chain);
-    }
+            trustManager.checkClientTrusted(chain, authType);		
+	}
 
-    public boolean isServerTrusted(X509Certificate chain[]) {
-        if (trustManager != null) {
-            boolean rs = trustManager.isServerTrusted(chain);
-            if (rs)
-                return rs;
-        }
-        X509Certificate ca = getCACert(chain);
-        if (ca != null) {
-            if (isAccepted(ca)) {
-                System.err.println("SSL Error:Server certificate chain verification failed.");
-                return false;
-            }
-            String id = String.valueOf(System.currentTimeMillis());
-            X509TrustManager tmpTrustManager = null;
-            try {
-                ks.setCertificateEntry(id, ca);
-                tmpTrustManager = initTrustManager(ks);
-            } catch (Exception e) {
-                System.err.println("ASF Truster: Failed to create tmp trust store : " + e.getMessage());
-                return false;
-            }
-            if (tmpTrustManager.isServerTrusted(chain)) {
-                if (this.isSaveCA) {
-                    saveStore();
-                    trustManager = tmpTrustManager;
-                }
-                return true;
-            } else {
-                System.err.println("SSL Error:Server certificate chain verification failed and \\nthe CA is missing.");
-                return false;
-            }
-        } else {
-            System.err
-                    .println("SSL Error:CA certificate is not in the server certificate chain.\nPlease use the keytool command to import the server certificate.");
-            return false;
-        }
-    }
 
     private boolean saveStore() {
         OutputStream out = null;
@@ -220,4 +176,46 @@ public class Truster implements X509TrustManager {
                 }
         }
     }
+
+	@Override
+	public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		if (trustManager != null) {
+			try {
+				trustManager.checkServerTrusted(chain, authType);
+				return;
+			} catch(Exception e) {
+			}
+		}
+        X509Certificate ca = getCACert(chain);
+        if (ca != null) {
+            if (!isAccepted(ca)) {
+                System.err.println("SSL Error:Server certificate chain verification failed.");
+                throw new CertificateException("Server certificate chain verification failed.");
+            }
+            String id = String.valueOf(System.currentTimeMillis());
+            X509TrustManager tmpTrustManager = null;
+            try {
+                ks.setCertificateEntry(id, ca);
+                tmpTrustManager = initTrustManager(ks);
+            } catch (Exception e) {
+                System.err.println("ASF Truster: Failed to create tmp trust store : " + e.getMessage());
+                throw new CertificateException(e);
+            }
+            try{
+            	tmpTrustManager.checkServerTrusted(chain, authType);
+                if (this.isSaveCA) {
+                    saveStore();
+                    trustManager = tmpTrustManager;
+                }
+                return;
+            } catch(CertificateException e) {
+                System.err.println("SSL Error:Server certificate chain verification failed and \\nthe CA is missing.");
+                throw e;
+            }
+        } else {
+            System.err
+                    .println("SSL Error:CA certificate is not in the server certificate chain.\nPlease use the keytool command to import the server certificate.");
+            throw new CertificateException("CA certificate is not in the server certificate chain.\\nPlease use the keytool command to import the server certificate.");
+        }
+	}
 }
