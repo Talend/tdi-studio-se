@@ -289,14 +289,23 @@
 						typeToGenerate = "timestamp";
 					}
 					%>
+					<%
+						String modeType = null;
+						if (!column.isNullable()) { 
+							modeType = "REQUIRED";
+						} else {
+							modeType = "NULLABLE";
+						}
+					%>
 					com.google.api.services.bigquery.model.TableFieldSchema <%=columnName%>_<%=cid%> = new com.google.api.services.bigquery.model.TableFieldSchema();
 					<%=columnName%>_<%=cid%>.setName("<%=columnName%>");
 					<%=columnName%>_<%=cid%>.setType("<%=typeToGenerate%>");
+					<%=columnName%>_<%=cid%>.setMode("<%=modeType%>");
 					fields_<%=cid%>.add(<%=columnName%>_<%=cid%>);		
 					<%
 					if(isLog4jEnabled){
 					%>
-						log.debug("<%=cid%> - Field index[<%=i%>] {\"name\":\"<%=columnName%>\",\"type\":\"<%=typeToGenerate%>\"}");
+						log.debug("<%=cid%> - Field index[<%=i%>] {\"name\":\"<%=columnName%>\",\"type\":\"<%=typeToGenerate%>\,\"mode\":\"<%=modeType%>\"}");
 					<%
 					}
 				}
