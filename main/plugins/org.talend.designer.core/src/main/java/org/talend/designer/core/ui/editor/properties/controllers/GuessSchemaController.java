@@ -86,6 +86,7 @@ import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.core.ui.services.ISQLBuilderService;
 import org.talend.core.utils.CsvArray;
 import org.talend.core.utils.KeywordsValidator;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
@@ -805,7 +806,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                 dialog.getShell().setText(CONTEXT_CHOOSE_DIALOG_TITLE);
                 IContext selectContext = null;
                 // job only have defoult context,or the query isn't context mode
-                if (allcontexts.size() == 1 || TalendTextUtils.isCommonString(tmpMemoSql)) {
+                if (allcontexts.size() == 1 || TalendQuoteUtils.isCommonString(tmpMemoSql)) {
                     selectContext = inputNode.getProcess().getContextManager().getDefaultContext();
                 } else if (Window.OK == dialog.open()) {
                     selectContext = dialog.getSelectedContext();
