@@ -14,6 +14,9 @@ package org.talend.repository.ftp.ui.wizards.pags;
 
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.metadata.managment.ui.wizard.AbstractForm;
@@ -54,7 +57,13 @@ public class FTPPage extends WizardPage {
 
     @Override
     public void createControl(Composite parent) {
-        ftpForm = new FTPForm(parent, connectionItem, existingNames, this);
+        ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.VERTICAL);
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+        ftpForm = new FTPForm(scrolledComposite, connectionItem, existingNames, this);
+        scrolledComposite.setContent(ftpForm);
+        scrolledComposite.setMinSize(ftpForm.computeSize(SWT.DEFAULT, 550));
         ftpForm.setReadOnly(!isRepositoryObjectEditable);
 
         AbstractForm.ICheckListener listener = new AbstractForm.ICheckListener() {
