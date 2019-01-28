@@ -16,7 +16,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Color;
@@ -35,12 +33,9 @@ import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.service.ComponentService;
-import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
-import org.talend.core.model.metadata.builder.connection.impl.DatabaseConnectionImpl;
-import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
@@ -85,19 +80,19 @@ import org.talend.repository.generic.util.GenericConnectionUtil;
  */
 public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite implements PropertyChangeListener {
 
-    private Element element;
+    protected Element element;
 
-    private Form form;
+    protected Form form;
 
-    private IChecker checker;
+    protected IChecker checker;
 
-    private ConnectionItem connectionItem;
+    protected ConnectionItem connectionItem;
 
-    private IGenericWizardInternalService internalService;
+    protected IGenericWizardInternalService internalService;
 
-    private boolean drivedByForm;
+    protected boolean drivedByForm;
 
-    private PropertyChangeListener wizardPropertyChangeListener;
+    protected PropertyChangeListener wizardPropertyChangeListener;
 
     public DynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element,
             boolean isCompactView, Color backgroundColor, Form form) {
@@ -140,7 +135,11 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         }
     }
 
-    public List<ElementParameter> resetParameters(boolean isFirst) {
+    protected void editJDBCParameter(boolean isforEditor, Connection dbConnection,
+            GenericElementParameter genericElementParameter) {
+    }
+
+    public List<ElementParameter> resetParameters(boolean isforEditor) {
         final List<ElementParameter> newParameters = new ArrayList<>();
         List<ElementParameter> currentParameters = (List<ElementParameter>) element.getElementParameters();
         List<ElementParameter> parameters = new ArrayList<>();
@@ -184,53 +183,10 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
             addUpdateParameterIfNotExist(parameters);
             properties.setValueEvaluator(evaluator);
         }
-        DatabaseConnectionImpl dbConnection = (DatabaseConnectionImpl) theConnection;
         for (ElementParameter parameter : parameters) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
-
-                if (isFirst && dbConnection != null
-                        && EDatabaseTypeName.GENERAL_JDBC.getProduct().equalsIgnoreCase(dbConnection.getDatabaseType())) {
-                    if (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_URL.getDisplayName())) {
-                        genericElementParameter
-                                .setValue(StringUtils.isEmpty(dbConnection.getURL()) ? "jdbc:" : dbConnection.getURL());
-                    }
-                    if (genericElementParameter.getName()
-                            .equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())) {
-
-                        if (!StringUtils.isEmpty(dbConnection.getURL())
-                                && !StringUtils.isEmpty(dbConnection.getDriverJarPath())) {
-                            String driverJarPath = dbConnection.getDriverJarPath();
-                            List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-                            String[] split = driverJarPath.split(";");
-                            for (String jar : split) {
-                                if (!StringUtils.isEmpty(jar)) {
-                                    Map<String, String> map = new HashMap<String, String>();
-                                    map.put("drivers", jar);
-                                    list.add(map);
-                                }
-
-                            }
-                            genericElementParameter.setValue(list);
-                        }
-                    }
-                    if (genericElementParameter.getName()
-                            .equalsIgnoreCase(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName())) {
-                        genericElementParameter.setValue(dbConnection.getDriverClass());
-                    }
-                    if (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_USERNAME.getDisplayName())) {
-                        genericElementParameter.setValue(dbConnection.getUsername());
-                    }
-                    if (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_PASSWORD.getDisplayName())) {
-                        genericElementParameter.setValue(dbConnection.getRawPassword());
-                    }
-                    if (genericElementParameter.getName()
-                            .equals(EConnectionParameterName.GENERIC_MAPPING_FILE.getDisplayName())
-                            && !StringUtils.isEmpty(dbConnection.getDbmsId())) {
-                        genericElementParameter.setValue(dbConnection.getDbmsId());
-                    }
-                }
-
+                editJDBCParameter(isforEditor, theConnection, genericElementParameter);
                 genericElementParameter.setComponentService(componentService);
                 genericElementParameter.setDrivedByForm(drivedByForm);
                 genericElementParameter.callBeforePresent();
@@ -319,7 +275,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         return newParameters;
     }
 
-    private List<ElementParameter> reverseParameters(List<ElementParameter> parameters) {
+    protected List<ElementParameter> reverseParameters(List<ElementParameter> parameters) {
         List<ElementParameter> reversedParameters = new ArrayList<>();
         Map<Integer, List<ElementParameter>> paramMap = new LinkedHashMap<>();
         for (ElementParameter parameter : parameters) {
@@ -344,7 +300,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         return reversedParameters;
     }
 
-    private boolean isRepository(Element element) {
+    protected boolean isRepository(Element element) {
         IElementParameter property = element.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE, section);
         if (property != null) {
             Map<String, IElementParameter> childParameters = property.getChildParameters();
@@ -356,7 +312,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         return false;
     }
 
-    private void addUpdateParameterIfNotExist(List<ElementParameter> parameters) {
+    protected void addUpdateParameterIfNotExist(List<ElementParameter> parameters) {
         boolean isExist = false;
         for (ElementParameter elementParameter : parameters) {
             if (EParameterName.UPDATE_COMPONENTS.getName().equals(elementParameter.getName())) {
