@@ -259,7 +259,7 @@ public class FTPForm extends AbstractForm {
         gridData.minimumWidth = 300;
         gridData.minimumHeight = 120;
         gridData.widthHint = 300;
-        gridData.heightHint = 90;
+        gridData.heightHint = 120;
         ftpsChildCom.setLayoutData(ftpsChildComGridData);
         keyFileText = new LabelledFileField(ftpsChildCom, Messages.getString("FTPForm_keyFileText"), extensions); //$NON-NLS-1$
         keyPasswordText = new LabelledText(ftpsChildCom,
