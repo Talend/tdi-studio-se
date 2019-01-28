@@ -51,7 +51,6 @@ import org.eclipse.ui.internal.wizards.datatransfer.TarEntry;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
-import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage;
 import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.talend.commons.exception.PersistenceException;
@@ -80,7 +79,7 @@ import org.w3c.dom.Node;
 /**
  * DOC zhangchao.wang class global comment. Detailled comment
  */
-public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
+public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImportPage {
 
     public TalendWizardProjectsImportPage() {
 
@@ -238,10 +237,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
 
         try {
             // hide 'search for nested projects'
-            Field nestedProjectsCheckboxField = WizardProjectsImportPage.class.getDeclaredField("nestedProjectsCheckbox"); //$NON-NLS-1$
-            nestedProjectsCheckboxField.setAccessible(true);
-            Object nestedProjectsCheckboxObj = nestedProjectsCheckboxField.get(this);
-            Button nestedProjectsCheckbox = (Button) nestedProjectsCheckboxObj;
+            Button nestedProjectsCheckbox = super.getNestedProjectsCheckbox();
             Object gridDataObj = nestedProjectsCheckbox.getLayoutData();
             GridData gridData = null;
             if (gridDataObj == null) {
@@ -253,9 +249,8 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
             gridData.exclude = true;
 
             // hide 'Working sets'
-            Field workingSetGroupField = WizardProjectsImportPage.class.getDeclaredField("workingSetGroup"); //$NON-NLS-1$
-            workingSetGroupField.setAccessible(true);
-            Object workingSetGroupObj = workingSetGroupField.get(this);
+            WorkingSetGroup workingSetGroupObj = super.getWorkingSetGroup();
+
             Field workingSetBlockField = WorkingSetGroup.class.getDeclaredField("workingSetBlock"); //$NON-NLS-1$
             workingSetBlockField.setAccessible(true);
             Object workingSetBlockObj = workingSetBlockField.get(workingSetGroupObj);

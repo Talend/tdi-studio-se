@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -53,7 +52,7 @@ public class ImportProjectAsWizard extends Wizard {
 
     private String name;
 
-    private WizardProjectsImportPage manyProjectsPage;
+    private TalendWizardProjectsImportPage manyProjectsPage;
 
     protected boolean isImportedSeveralProject;
 
