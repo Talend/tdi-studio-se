@@ -80,6 +80,8 @@ public class SetupProcessDependenciesRoutinesAction extends AContextualAction {
                     canWork = true;
                 } else if (ERepositoryObjectType.SPARK_STREAMING_JOBLET != null && node.getObjectType().equals(ERepositoryObjectType.SPARK_STREAMING_JOBLET)) {
                     canWork = true;
+                } else if (ERepositoryObjectType.TEST_CONTAINER != null && node.getObjectType().equals(ERepositoryObjectType.TEST_CONTAINER)) {
+                    canWork = true;
                 } else if (node.getObjectType() != ERepositoryObjectType.PROCESS
                         && node.getObjectType() != ERepositoryObjectType.JOBLET
                         && node.getObjectType() != ERepositoryObjectType.PROCESS_ROUTE) {

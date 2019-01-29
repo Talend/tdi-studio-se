@@ -302,8 +302,8 @@ COMPATIBILITY="ALL"
        <IMPORT NAME="Java-SFTP" MODULE="jsch-0.1.53.jar" MVN="mvn:org.talend.libraries/jsch-0.1.53/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/jsch-0.1.53.jar" REQUIRED_IF="(SFTP == 'true') AND (USE_EXISTING_CONNECTION == 'false')"/>
        <IMPORT NAME="jakarta-oro" MODULE="jakarta-oro-2.0.8.jar" MVN="mvn:org.talend.libraries/jakarta-oro-2.0.8/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/jakarta-oro-2.0.8.jar" REQUIRED="true" />
        <IMPORT NAME="Java-FTPS" MODULE="commons-net-3.6.jar" MVN="mvn:commons-net/commons-net/3.6" REQUIRED_IF="(FTPS == 'true') AND (USE_EXISTING_CONNECTION == 'false')"/>
-       <IMPORT NAME="Java-FTPS-talend" MODULE="commons-net-ftps-proxy-3.6.1-talend.jar" 
-        MVN="mvn:org.talend.libraries/commons-net-ftps-proxy/3.6.1-talend" UrlPath="platform:/plugin/org.talend.designer.components.localprovider/components/tFTPConnection/commons-net-ftps-proxy-3.6.1-talend.jar" 
+       <IMPORT NAME="Java-FTPS-talend" MODULE="commons-net-ftps-proxy-3.6.1-talend-20190128.jar" 
+        MVN="mvn:org.talend.libraries/commons-net-ftps-proxy/3.6.1-talend-20190128" UrlPath="platform:/plugin/org.talend.designer.components.localprovider/components/tFTPConnection/commons-net-ftps-proxy-3.6.1-talend-20190128.jar" 
         REQUIRED_IF="(FTPS == 'true') AND (USE_EXISTING_CONNECTION == 'false')" />
      </IMPORTS>
    </CODEGENERATION>

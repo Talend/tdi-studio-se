@@ -54,6 +54,7 @@ import org.talend.commons.ui.swt.formtools.LabelText;
 import org.talend.commons.ui.swt.formtools.LabelledCombo;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.ConnectionBean;
+import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.DynamicButtonBean;
 import org.talend.core.repository.model.DynamicChoiceBean;
 import org.talend.core.repository.model.DynamicFieldBean;
@@ -91,6 +92,8 @@ public class ConnectionFormComposite extends Composite {
     private Text userText;
 
     private Text passwordText;
+
+    private String password;
 
     private Text workSpaceText;
 
@@ -429,6 +432,7 @@ public class ConnectionFormComposite extends Composite {
                 passwordText.setBackground(LoginDialogV2.WHITE_COLOR);
             } else {
                 passwordText.setText(""); //$NON-NLS-1$
+                password = ""; //$NON-NLS-1$
                 passwordText.setBackground(LoginDialogV2.GREY_COLOR);
             }
             passwordText.setEnabled(enablePasswordField);
@@ -480,7 +484,7 @@ public class ConnectionFormComposite extends Composite {
     }
 
     private String getPassword() {
-        return passwordText.getText();
+        return password;
     }
 
     private String getWorkspace() {
@@ -749,7 +753,8 @@ public class ConnectionFormComposite extends Composite {
             nameText.setText((connection.getName() == null ? "" : connection.getName())); //$NON-NLS-1$
             descriptionText.setText((connection.getDescription() == null ? "" : connection.getDescription())); //$NON-NLS-1$
             userText.setText((connection.getUser() == null ? "" : connection.getUser())); //$NON-NLS-1$
-            passwordText.setText((connection.getPassword() == null ? "" : connection.getPassword())); //$NON-NLS-1$
+            passwordText.setText(TalendTextUtils.hidePassword(connection.getPassword()));
+            password = connection.getPassword() == null ? "" : connection.getPassword(); // $NON-NLS-1$
             workSpaceText
                     .setText(("".equals(connection.getWorkSpace()) || connection.getWorkSpace() == null) ? getRecentWorkSpace() : connection.getWorkSpace());//$NON-NLS-1$
             addListeners();

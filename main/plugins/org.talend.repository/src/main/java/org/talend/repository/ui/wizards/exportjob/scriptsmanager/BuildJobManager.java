@@ -302,7 +302,7 @@ public class BuildJobManager {
             String causeMsg = Messages.getString("BuildJobManager.mavenErrorMessage", mvnLogFilePath); //$NON-NLS-1$
             String logMsg = getLogErrorMsg(mvnLogFile);
 
-            if (jobExportType != JobExportType.IMAGE) {
+            if (jobExportType != JobExportType.IMAGE && jobExportType != JobExportType.MSESB_IMAGE) {
                 IFile targetFile = buildJobHandler.getJobTargetFile();
                 if (targetFile != null && targetFile.exists()) {
                     File jobZipFile = targetFile.getLocation().toFile();

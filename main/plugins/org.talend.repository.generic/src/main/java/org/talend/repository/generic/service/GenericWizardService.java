@@ -229,7 +229,7 @@ public class GenericWizardService implements IGenericWizardService {
     @Override
     public void refreshDynamicComposite(Composite composite) {
         if (composite instanceof DynamicComposite) {
-            ((DynamicComposite) composite).resetParameters();
+            ((DynamicComposite) composite).resetParameters(false);
         }
     }
 

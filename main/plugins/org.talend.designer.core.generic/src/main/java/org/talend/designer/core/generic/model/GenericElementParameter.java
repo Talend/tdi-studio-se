@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.avro.Schema;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -28,9 +29,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.properties.ComponentProperties;
-import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
@@ -61,6 +62,7 @@ import org.talend.daikon.properties.runtime.RuntimeContext;
 import org.talend.designer.core.generic.constants.IElementParameterEventProperties;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
+import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -91,6 +93,8 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
 
     private Boolean askPropagate;
 
+    private InvocationTargetException exceptionResult;
+    
     public GenericElementParameter(IElement element, ComponentProperties rootProperties, Form form, Widget widget,
             ComponentService componentService) {
         super(element);
@@ -147,6 +151,11 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
 	            boolean calledAfter = callAfter();
 	            if (calledAfter) {
 	                fireValueChangedEvent();
+                } else if (exceptionResult != null) {
+                    String mainMsg = Messages.getString("DatabaseForm.checkFailure") + " "
+                            + Messages.getString("DatabaseForm.checkFailureTip");
+                    new ErrorDialogWidthDetailArea(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+                            "org.talend.metadata.management.ui", mainMsg, ExceptionUtils.getFullStackTrace(exceptionResult));
 	            }
             }
         }
@@ -488,10 +497,12 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
                 public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(taskName, IProgressMonitor.UNKNOWN);
                     try {
+                        exceptionResult = null;
                         toDo();
                     } catch (Throwable e) {
                         result.set(false);
-                        throw new InvocationTargetException(e);
+                        exceptionResult = new InvocationTargetException(e);
+                        throw exceptionResult;
                     }
                     result.set(true);
                 }

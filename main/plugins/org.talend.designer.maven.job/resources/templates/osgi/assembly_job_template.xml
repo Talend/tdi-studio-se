@@ -55,4 +55,5 @@
             </includes>
         </fileSet>
     </fileSets>
+    <dependencySets></dependencySets>
 </assembly>
