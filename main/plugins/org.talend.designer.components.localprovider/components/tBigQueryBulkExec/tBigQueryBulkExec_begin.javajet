@@ -283,6 +283,8 @@
 						typeToGenerate = "float";
 					} else if("id_Integer".equals(column.getTalendType())) {
 						typeToGenerate = "integer";
+					} else if("id_BigDecimal".equals(column.getTalendType())) {
+						typeToGenerate = "numeric";					
 					} else if("id_Boolean".equals(column.getTalendType())) {
 						typeToGenerate = "boolean";
 					} else if("id_Date".equals(column.getTalendType())) {
@@ -484,6 +486,8 @@
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.FLOAT";
 						} else if ("id_Short".equals(column.getTalendType()) || "id_Integer".equals(column.getTalendType()) || "id_Long".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.INTEGER";
+						} else if ("id_BigDecimal".equals(column.getTalendType())) {
+							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.NUMERIC";						
 						} else if ("id_Boolean".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.BOOLEAN";
 						} else if ("id_Date".equals(column.getTalendType())) {
