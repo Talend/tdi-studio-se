@@ -80,8 +80,6 @@ if(("false").equals(ElementParameterParser.getValue(node,"__ADVANCED_USE__"))) {
 				<% 
 				if (needSSLtoTrustServer) {
 				%>   
-			        System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
-			
 					System.setProperty("javax.net.ssl.trustStore", <%=trustStoreFile %>);
 					
                     <%

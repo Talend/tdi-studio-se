@@ -89,8 +89,6 @@ if(needAuth || useNTLM){
 }
 if (needSSLtoTrustServer) {
 %>
-    System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
-
 	System.setProperty("javax.net.ssl.trustStore", <%=trustStoreFile %>);
 
     <%

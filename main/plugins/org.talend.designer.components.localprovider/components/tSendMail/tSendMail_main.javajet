@@ -113,7 +113,6 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 	}
 	if (ifSSL){
 %>  
-		java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 		props_<%=cid %>.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 		props_<%=cid %>.put("mail.smtp.socketFactory.fallback", "false");
 		props_<%=cid %>.put("mail.smtp.socketFactory.port", smtpPort_<%=cid %>);
