@@ -222,4 +222,7 @@ public abstract class GenericWizardPage extends AbstractNamedWizardPage {
         return connectionItem.getProperty();
     }
 
+    public boolean nameModifiedByUser() {
+        return this.nameModifiedByUser;
+    }
 }
