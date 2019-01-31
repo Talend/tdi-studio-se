@@ -171,10 +171,8 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
             // return new PropertyChangeCommand(elem, propertyName, contextSql);
             // }
             // return null;
-        } else {
-            // if the input query isn't contextmode or it's a standard query in perl
-            query = this.removeStrInQuery(query);
         }
+        query = this.removeStrInQuery(query);
         initConnectionParametersWithContext(elem, part == null ? new EmptyContextManager().getDefaultContext() : part
                 .getProcess().getContextManager().getDefaultContext());
         String sql = openSQLBuilder(repositoryType, propertyName, query);
@@ -192,19 +190,8 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
      * @return
      */
     private String removeStrInQuery(String input) {
-//        String out = removeSlash(input);
-        return TalendTextUtils.removeQuotes(input);
-    }
-
-    /**
-     * DOC ftang Comment method "removeSlash".
-     * 
-     * @param input
-     * @return
-     */
-    private String removeSlash(String input) {
-        String out = input.replaceAll("\\\\", ""); //$NON-NLS-1$ //$NON-NLS-2$
-        return out;
+        String out = TalendTextUtils.removeSlashForSpecialChar(input);
+        return TalendTextUtils.removeQuotes(out);
     }
 
     /*
@@ -462,7 +449,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
             connParameters.setRepositoryId(item.getProperty().getId());
         }
         connParameters.setQueryObject(query);
-        connParameters.setQuery(query.getValue());
+        connParameters.setQuery(query.getValue(), true);
 
         TextUtil.setDialogTitle(TextUtil.SQL_BUILDER_TITLE_REP);
 
@@ -485,7 +472,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
 
         if (Window.OK == sqlBuilder.open()) {
             sql = connParameters.getQuery();
-
+            sql = TalendTextUtils.addQuotes(sql);
         }
         if (sql != null && !queryText.isDisposed()) {
             queryText.setText(sql);

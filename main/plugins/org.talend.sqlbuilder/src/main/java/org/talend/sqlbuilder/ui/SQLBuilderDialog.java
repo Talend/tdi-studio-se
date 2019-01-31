@@ -65,8 +65,10 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryElementDelta;
 import org.talend.core.model.update.RepositoryUpdateManager;
+import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.core.sqlbuilder.util.TextUtil;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.metadata.managment.ui.wizard.metadata.ContextSetsSelectionDialog;
 import org.talend.repository.IRepositoryChangedListener;
@@ -605,8 +607,9 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
             // }
 
             // sql = QueryUtil.checkAndAddQuotes(sql);
-
-            connParameters.setQuery(sql);
+            sql = TalendTextUtils.addQuotes(sql, TalendQuoteUtils.SQL_SCRIPT);
+            sql = TalendTextUtils.convertSlashForSpecialChar(sql);
+            connParameters.setQuery(sql, true);
 
             if (connParameters.isFromRepository() && !connParameters.isNodeReadOnly()) {
                 List<Query> qs = new ArrayList<Query>();
