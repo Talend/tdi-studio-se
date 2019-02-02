@@ -172,7 +172,8 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
             // }
             // return null;
         }
-        query = this.removeStrInQuery(query);
+
+        query = TalendTextUtils.removeStrInQuery(query);
         initConnectionParametersWithContext(elem, part == null ? new EmptyContextManager().getDefaultContext() : part
                 .getProcess().getContextManager().getDefaultContext());
         String sql = openSQLBuilder(repositoryType, propertyName, query);
@@ -181,17 +182,6 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
             return new PropertyChangeCommand(elem, propertyName, sql);
         }
         return null;
-    }
-
-    /**
-     * DOC ftang Comment method "removeStrInQuery".
-     * 
-     * @param input
-     * @return
-     */
-    private String removeStrInQuery(String input) {
-        String out = TalendTextUtils.removeSlashForSpecialChar(input);
-        return TalendTextUtils.removeQuotes(out);
     }
 
     /*
