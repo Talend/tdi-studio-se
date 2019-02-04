@@ -98,6 +98,7 @@ import org.talend.designer.runprocess.ProcessorException;
 import org.talend.metadata.managment.connection.manager.HiveConnectionManager;
 import org.talend.metadata.managment.connection.manager.ImpalaConnectionManager;
 import org.talend.metadata.managment.ui.dialog.MappingFileSelectDialog;
+import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.ui.utils.ColumnNameValidator;
 
 /**
@@ -419,7 +420,11 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                         oneColum.setTalendType(talendType);
                         if (dbmsId != null) {
                             if (!TypesManager.checkDBType(dbmsId, oneColum.getTalendType(), oneColum.getType())) {
-                                oneColum.setType(TypesManager.getDBTypeFromTalendType(dbmsId, oneColum.getTalendType()));
+                                String dbType = MetadataConnectionUtils.getDBType(schemaContent.get(4)[i - 1], dbmsId);
+                                if(dbType == null || dbType.length() <= 0){
+                                    dbType = TypesManager.getDBTypeFromTalendType(dbmsId, oneColum.getTalendType());
+                                }
+                                oneColum.setType(dbType);
                             }
                         }
                         // oneColum.setTalendType(JavaTypesManager.STRING.getId());
