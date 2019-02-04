@@ -142,13 +142,12 @@ public class Truster implements X509TrustManager {
     }
 
     @Override
-	public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-    	if (trustManager == null)
+    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+        if (trustManager == null)
             throw new CertificateException("Trust manager is not initialized");
         else
-            trustManager.checkClientTrusted(chain, authType);		
-	}
-
+            trustManager.checkClientTrusted(chain, authType);
+    }
 
     private boolean saveStore() {
         OutputStream out = null;
@@ -177,15 +176,15 @@ public class Truster implements X509TrustManager {
         }
     }
 
-	@Override
-	public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-		if (trustManager != null) {
-			try {
-				trustManager.checkServerTrusted(chain, authType);
-				return;
-			} catch(Exception e) {
-			}
-		}
+    @Override
+    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+        if (trustManager != null) {
+            try {
+                trustManager.checkServerTrusted(chain, authType);
+                return;
+            } catch (Exception e) {
+            }
+        }
         X509Certificate ca = getCACert(chain);
         if (ca != null) {
             if (!isAccepted(ca)) {
@@ -201,21 +200,23 @@ public class Truster implements X509TrustManager {
                 System.err.println("ASF Truster: Failed to create tmp trust store : " + e.getMessage());
                 throw new CertificateException(e);
             }
-            try{
-            	tmpTrustManager.checkServerTrusted(chain, authType);
+            try {
+                tmpTrustManager.checkServerTrusted(chain, authType);
                 if (this.isSaveCA) {
                     saveStore();
                     trustManager = tmpTrustManager;
                 }
                 return;
-            } catch(CertificateException e) {
+            } catch (CertificateException e) {
                 System.err.println("SSL Error:Server certificate chain verification failed and \\nthe CA is missing.");
                 throw e;
             }
         } else {
             System.err
-                    .println("SSL Error:CA certificate is not in the server certificate chain.\nPlease use the keytool command to import the server certificate.");
-            throw new CertificateException("CA certificate is not in the server certificate chain.\\nPlease use the keytool command to import the server certificate.");
+                    .println(
+                            "SSL Error:CA certificate is not in the server certificate chain.\nPlease use the keytool command to import the server certificate.");
+            throw new CertificateException(
+                    "CA certificate is not in the server certificate chain.\\nPlease use the keytool command to import the server certificate.");
         }
-	}
+    }
 }

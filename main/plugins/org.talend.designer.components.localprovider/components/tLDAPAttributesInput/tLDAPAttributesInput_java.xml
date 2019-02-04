@@ -177,7 +177,7 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="ldap" MODULE="talendssl.jar" MVN="mvn:org.talend.libraries/talendssl/6.0.0"  REQUIRED="true" />
+			<IMPORT NAME="ldap" MODULE="talendssl-1.0-20190118.jar" MVN="mvn:org.talend.libraries/talendssl/1.0-20190118"  REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
 

@@ -19,6 +19,7 @@
 		<thashfile.version>3.0-20170711</thashfile.version>
 		<ftpProxy.dir>${project.basedir}/components/tFTPConnection</ftpProxy.dir>
 		<ftpProxy.version>3.6.1-talend-20190128</ftpProxy.version>
+		<tldapinput.dir>${project.basedir}/components/tLDAPInput</tldapinput.dir>
 	</properties>
 
 	<build>
@@ -51,6 +52,12 @@
 							<directory>${webservicecore.dir}</directory>
 							<includes>
 								<include>talend-ws*.jar</include>
+							</includes>
+						</fileset>
+						<fileset>
+							<directory>${tldapinput.dir}</directory>
+							<includes>
+								<include>talend-ssl*.jar</include>
 							</includes>
 						</fileset>
 					</filesets>
@@ -108,6 +115,14 @@
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${ftpProxy.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.libraries</groupId>
+									<artifactId>talend-ssl</artifactId>
+									<version>1.0-20190118</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${tldapinput.dir}</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>

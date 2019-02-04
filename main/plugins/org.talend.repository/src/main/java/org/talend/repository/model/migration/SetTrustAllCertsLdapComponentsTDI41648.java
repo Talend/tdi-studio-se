@@ -59,7 +59,7 @@ public class SetTrustAllCertsLdapComponentsTDI41648 extends AbstractJobMigration
             }
         }
 
-        return ExecutionResult.SUCCESS_WITH_ALERT;
+        return ExecutionResult.SUCCESS_NO_ALERT;
 	}
 
 }
