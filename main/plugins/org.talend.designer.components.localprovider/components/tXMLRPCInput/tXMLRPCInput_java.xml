@@ -88,39 +88,6 @@
       <DEFAULT>"Calculator.add"</DEFAULT>
     </PARAMETER>
 
-      <PARAMETER
-       NAME="RETURN_CLASS"
-      FIELD="CLOSED_LIST"
-      NUM_ROW="4"
-    >
-          <ITEMS DEFAULT="String">
-            <ITEM NAME="Integer" VALUE="java.lang.Integer.class"/>
-            <ITEM NAME="Short" VALUE="java.lang.Short.class"/>
-            <ITEM NAME="Boolean" VALUE="java.lang.Boolean.class"/>
-            <ITEM NAME="Byte" VALUE="java.lang.Byte.class"/>
-            <ITEM NAME="Long" VALUE="java.lang.Long.class"/>
-            <ITEM NAME="Double" VALUE="java.lang.Double.class"/>
-            <ITEM NAME="Float" VALUE="java.lang.Float.class"/>
-            <ITEM NAME="Character" VALUE="java.lang.Character.class"/>
-            <ITEM NAME="String" VALUE="java.lang.String.class"/>
-            <ITEM NAME="Date" VALUE="java.util.Date.class"/>
-            <ITEM NAME="Map" VALUE="java.util.Map.class"/>
-            <ITEM NAME="Object" VALUE="java.lang.Object.class"/>
-            <ITEM NAME="Integer[]" VALUE="java.lang.Integer[].class"/>
-            <ITEM NAME="Short[]" VALUE="java.lang.Short[].class"/>
-            <ITEM NAME="Boolean[]" VALUE="java.lang.Boolean[].class"/>
-            <ITEM NAME="Byte[]" VALUE="java.lang.Byte[].class"/>
-            <ITEM NAME="Long[]" VALUE="java.lang.Long[].class"/>
-            <ITEM NAME="Double[]" VALUE="java.lang.Double[].class"/>
-            <ITEM NAME="Float[]" VALUE="java.lang.Float[].class"/>
-            <ITEM NAME="Character[]" VALUE="java.lang.Character[].class"/>
-            <ITEM NAME="String[]" VALUE="java.lang.String[].class"/>
-            <ITEM NAME="Date[]" VALUE="java.util.Date[].class"/>
-            <ITEM NAME="Map[]" VALUE="java.util.Map[].class"/>
-            <ITEM NAME="Object[]" VALUE="java.lang.Object[].class"/>
-          </ITEMS>
-    </PARAMETER>
-
      <PARAMETER
       NAME="PARAMS"
       FIELD="TABLE"
