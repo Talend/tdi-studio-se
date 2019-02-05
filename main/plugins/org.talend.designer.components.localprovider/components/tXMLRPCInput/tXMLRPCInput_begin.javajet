@@ -73,7 +73,7 @@ org.apache.xmlrpc.client.XmlRpcClient client<%=cid%> = new org.apache.xmlrpc.cli
         <%log.debug(log.str("Invoke the method "), method, log.str(" has succeeded."));%>
         
         Object[] tempArray_<%=cid %> = null;
-        if (reValue<%=cid %>.getClass().isArray()) {
+        if (reValue<%=cid %> != null && reValue<%=cid %>.getClass().isArray()) {
             int arrayLength = java.lang.reflect.Array.getLength(reValue<%=cid %>);
             tempArray_<%=cid %> = new Object[arrayLength];
             for (int i = 0; i < arrayLength; i++) {
