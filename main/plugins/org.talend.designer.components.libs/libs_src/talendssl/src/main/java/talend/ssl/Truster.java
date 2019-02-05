@@ -188,7 +188,6 @@ public class Truster implements X509TrustManager {
         X509Certificate ca = getCACert(chain);
         if (ca != null) {
             if (!isAccepted(ca)) {
-                System.err.println("SSL Error:Server certificate chain verification failed.");
                 throw new CertificateException("Server certificate chain verification failed.");
             }
             String id = String.valueOf(System.currentTimeMillis());
@@ -197,8 +196,7 @@ public class Truster implements X509TrustManager {
                 ks.setCertificateEntry(id, ca);
                 tmpTrustManager = initTrustManager(ks);
             } catch (Exception e) {
-                System.err.println("ASF Truster: Failed to create tmp trust store : " + e.getMessage());
-                throw new CertificateException(e);
+                throw new CertificateException("ASF Truster: Failed to create tmp trust store", e);
             }
             try {
                 tmpTrustManager.checkServerTrusted(chain, authType);
@@ -208,15 +206,12 @@ public class Truster implements X509TrustManager {
                 }
                 return;
             } catch (CertificateException e) {
-                System.err.println("SSL Error:Server certificate chain verification failed and \\nthe CA is missing.");
-                throw e;
+                throw new CertificateException(
+                        "SSL Error:Server certificate chain verification failed and \nthe CA is missing.", e);
             }
         } else {
-            System.err
-                    .println(
-                            "SSL Error:CA certificate is not in the server certificate chain.\nPlease use the keytool command to import the server certificate.");
             throw new CertificateException(
-                    "CA certificate is not in the server certificate chain.\\nPlease use the keytool command to import the server certificate.");
+                    "CA certificate is not in the server certificate chain.\nPlease use the keytool command to import the server certificate.");
         }
     }
 }
