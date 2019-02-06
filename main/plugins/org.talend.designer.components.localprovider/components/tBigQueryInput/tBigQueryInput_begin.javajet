@@ -228,7 +228,7 @@
 				.getService();
 				
 		com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>).build();
-		com.google.cloud.bigquery.JobId jobId_tBigQueryInput_1 = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
+		com.google.cloud.bigquery.JobId jobId_<%=cid%> = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
 		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>).setJobId(jobId_<%=cid%>).build());
 
 		<%
