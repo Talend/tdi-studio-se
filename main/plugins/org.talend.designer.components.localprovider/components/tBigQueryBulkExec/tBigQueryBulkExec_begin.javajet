@@ -465,8 +465,8 @@
 				throw new RuntimeException("Unable to delete table " + tableId_<%=cid%>);
 			}
 		}
-		boolean tableNotExist = table_<%=cid%> == null;
-		if (<%=ElementParameterParser.getBooleanValue(node, "__DROP__")%> || tableNotExist) {
+		boolean tableNotExist_<%cid%> = table_<%=cid%> == null;
+		if (<%=ElementParameterParser.getBooleanValue(node, "__DROP__")%> || tableNotExist_<%cid%>) {
 			boolean typeSupported = true;
 			java.util.List<com.google.cloud.bigquery.Field> fields_<%=cid%> = new java.util.ArrayList<>();
 			<%
