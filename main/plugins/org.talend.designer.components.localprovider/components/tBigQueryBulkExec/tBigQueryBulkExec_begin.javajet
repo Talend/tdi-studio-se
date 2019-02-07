@@ -386,10 +386,10 @@
 		}
 		if (jobExec_<%=cid%>.getStatus().getState().equals("RUNNING")
 				|| jobExec_<%=cid%>.getStatus().getState().equals("PENDING")) {
-			com.google.api.services.bigquery.model.Job pollJob_<%=cid%> = bigqueryclient_<%=cid%>.jobs().get(PROJECT_ID_<%=cid%>,jobExec_<%=cid%>.getJobReference().getJobId()).execute();
+            		com.google.api.services.bigquery.model.Job pollJob_<%=cid%> = bigqueryclient_<%=cid%>.jobs().get(PROJECT_ID_<%=cid%>,jobExec_<%=cid%>.getJobReference().getJobId()).setLocation(jobExec_<%=cid%>.getJobReference().getLocation()).execute();
 			while (pollJob_<%=cid%>.getStatus().getState().equals("RUNNING") || pollJob_<%=cid%>.getStatus().getState().equals("PENDING")) {
 				Thread.sleep(1000);
-				pollJob_<%=cid%> = bigqueryclient_<%=cid%>.jobs().get(PROJECT_ID_<%=cid%>,jobExec_<%=cid%>.getJobReference().getJobId()).execute();
+				pollJob_<%=cid%> = bigqueryclient_<%=cid%>.jobs().get(PROJECT_ID_<%=cid%>,jobExec_<%=cid%>.getJobReference().getJobId()).setLocation(jobExec_<%=cid%>.getJobReference().getLocation()).execute();
 				System.out.println(String.format(
 						"Waiting on job %s ... Current status: %s", jobExec_<%=cid%>
 								.getJobReference().getJobId(), pollJob_<%=cid%>
