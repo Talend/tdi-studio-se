@@ -38,6 +38,13 @@
                 <include>**</include>
             </includes>
         </fileSet>
+        <fileSet> <!-- add xmlMappings -->
+            <directory>${current.bundle.resources.dir}/xmlMappings</directory>
+            <outputDirectory>xmlMappings</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>        
         
         <fileSet> <!-- add metadata -->
             <directory>${basedir}/src/main/resources</directory>
