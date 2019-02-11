@@ -187,7 +187,18 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 getJobScriptsUncompressed(jobScriptResource, processItem);
 
                 // dynamic DB XML mapping
-                addXmlMapping(process, isOptionChoosed(ExportChoice.needSourceCode));
+                addXmlMapping(process, true);// isOptionChoosed(ExportChoice.needSourceCode)
+
+                if (CollectionUtils.isNotEmpty(process.getAllResources())) {
+                    ExportFileResource xm = new ExportFileResource(null, JavaUtils.JAVA_XML_MAPPING);
+                    Set<URL> urls = process
+                            .getResourcesByRelativePath(JOB_SOURCE_FOLDER_NAME + PATH_SEPARATOR + JavaUtils.JAVA_XML_MAPPING);
+
+                    if (CollectionUtils.isNotEmpty(urls)) {
+                        xm.addResources(new ArrayList<URL>(urls));
+                        list.add(xm);
+                    }
+                }
 
                 generateConfig(osgiResource, processItem, iProcess);
 
