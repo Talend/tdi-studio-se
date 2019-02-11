@@ -113,6 +113,8 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
             folder = talendProcessJavaProject.getSrcSubFolder(monitor, sub);
         } else if (path.startsWith("META-INF")) {
             folder = talendProcessJavaProject.createSubFolder(monitor, talendProcessJavaProject.getBundleResourcesFolder(), path);
+        } else if (path.startsWith("xmlMappings")) {
+            folder = talendProcessJavaProject.createSubFolder(monitor, talendProcessJavaProject.getBundleResourcesFolder(), path);
         }
         return folder == null ? null : folder.getFile(fileName);
     }
