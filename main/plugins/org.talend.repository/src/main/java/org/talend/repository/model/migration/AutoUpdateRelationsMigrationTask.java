@@ -57,7 +57,9 @@ public class AutoUpdateRelationsMigrationTask extends AbstractJobMigrationTask {
                 Resource processResource = ((ProcessItem) item).getProcess().eResource();
                 Resource propertyResource = item.eResource();
                 if (processResource != null && processResource.isLoaded() && (processResource instanceof XMIResource)) {
-                    propertyResource.unload();
+                    if (propertyResource != null) {
+                        propertyResource.unload();
+                    }
                     processResource.unload();
                     rM.resourceSet.getResources().remove(propertyResource);
                     rM.resourceSet.getResources().remove(processResource);
