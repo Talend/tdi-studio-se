@@ -36,4 +36,3 @@
 		}
 	}
 %>
-globalMap.put("<%=cid %>_EXIT_VALUE", ps_<%=cid %>.exitValue());

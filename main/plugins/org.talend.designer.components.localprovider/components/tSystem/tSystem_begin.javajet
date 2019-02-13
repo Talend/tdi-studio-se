@@ -253,6 +253,7 @@ if(ps_<%=cid %>.getOutputStream()!=null){
 ps_<%=cid %>.waitFor();
 normal_<%=cid %>.join(10000);
 error_<%=cid %>.join(10000);
+globalMap.put("<%=cid %>_EXIT_VALUE", ps_<%=cid %>.exitValue());
 
 <%
 if(("NORMAL_OUTPUT").equals(outputAction)||("NORMAL_OUTPUT").equals(errorOuput)){
