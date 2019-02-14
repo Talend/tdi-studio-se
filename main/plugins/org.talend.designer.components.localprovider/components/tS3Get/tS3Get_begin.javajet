@@ -33,6 +33,7 @@ imports="
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
 	<%if(!use_select){%>
+	com.amazonaws.services.s3.transfer.TransferManager tm_<%=cid%> = null;
 	try{
 		<%
 		if(isLog4jEnabled){
@@ -42,7 +43,7 @@ imports="
 		}
 		%>
 		
-		com.amazonaws.services.s3.transfer.TransferManager tm_<%=cid%> = com.amazonaws.services.s3.transfer.TransferManagerBuilder
+		tm_<%=cid%> = com.amazonaws.services.s3.transfer.TransferManagerBuilder
     			.standard()
     			.withS3Client(conn_<%=cid%>)
     			.build();
@@ -87,6 +88,9 @@ imports="
 		if(conn_<%=cid%> !=null){
 			conn_<%=cid%>.shutdown();
 		}
+		if(tm_<%=cid%> != null){
+	         tm_<%=cid%>.shutdownNow(false);
+	    }
 		<%
 		}
 		%>

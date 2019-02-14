@@ -38,6 +38,8 @@ imports="
 	boolean useStream_<%=cid%> = false;
 	java.io.InputStream uploadStream_<%=cid%> = null;
 	
+	com.amazonaws.services.s3.transfer.TransferManager tm_<%=cid%> = null;
+	
 	try{
 		<%
 		if(isLog4jEnabled){
@@ -75,7 +77,7 @@ imports="
 				
 				long multipart_upload_threshold_<%=cid%> = 5 * 1024 * 1024;
 				
-    		com.amazonaws.services.s3.transfer.TransferManager tm_<%=cid%> = com.amazonaws.services.s3.transfer.TransferManagerBuilder
+    		tm_<%=cid%> = com.amazonaws.services.s3.transfer.TransferManagerBuilder
     			.standard()
     			.withMinimumUploadPartSize((long)partSizeInBytes_<%=cid%>)
     			.withMultipartUploadThreshold(multipart_upload_threshold_<%=cid%>)
@@ -89,6 +91,7 @@ imports="
   			com.amazonaws.services.s3.transfer.Upload upload_<%=cid%> = tm_<%=cid%>.upload(putRequest_<%=cid%>);
   		
   			upload_<%=cid%>.waitForCompletion();
+  			
 		} else {
 				java.io.InputStream sourceStream_<%=cid%> = ((java.io.InputStream)fileOrStream_<%=cid%>);
 				
@@ -192,6 +195,10 @@ imports="
 	}finally{
 		if(useStream_<%=cid%> && uploadStream_<%=cid%>!=null){
     	uploadStream_<%=cid%>.close();
+    }
+    
+    if(tm_<%=cid%> != null){
+        tm_<%=cid%>.shutdownNow(false);
     }
 	    
 		<%
