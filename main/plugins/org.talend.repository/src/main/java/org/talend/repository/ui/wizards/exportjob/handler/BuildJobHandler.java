@@ -376,6 +376,26 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                     if (templateFolder.exists() && templateFolder.isDirectory()) {
                         FilesUtils.copyDirectory(templateFolder, itemsFolderDir);
                     }
+                    // TDQ-10842 msjian: consider user defined report template files
+                    String reportTemplateFolderName = "JRXML Template"; //$NON-NLS-1$
+                    String reportTemplateFolderPath = defIdxFolderName + PATH_SEPARATOR + reportTemplateFolderName;
+                    IFolder reportFolder = project.getFolder(reportTemplateFolderPath);
+                    if (reportFolder.exists()) {
+                        File reportFileSource = new File(project
+                                .getLocation()
+                                .makeAbsolute()
+                                .append(defIdxFolderName)
+                                .append(reportTemplateFolderName)
+                                .toFile()
+                                .toURI());
+                        File reportFileTarget = new File(itemsProjectFolder
+                                .getFile(defIdxFolderName)
+                                .getLocation()
+                                .toFile()
+                                .getAbsolutePath());
+                        FilesUtils.copyDirectory(reportFileSource, reportFileTarget);
+                    }
+                    // TDQ-10842~
                 }
             }
         }
