@@ -4,7 +4,7 @@
 
 	<groupId>org.talend</groupId>
 	<artifactId>talendMQConnectionUtil</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-20190215</version>
 	<packaging>jar</packaging>
 
 	<name>talendMQConnectionUtil</name>
@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>org.talend</groupId>
 			<artifactId>talendMQRFH2</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-20190206</version>
 		</dependency>
 	</dependencies>
 	<build>
