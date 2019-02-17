@@ -109,6 +109,8 @@ public class Connection extends Element implements IConnection, IPerformance, IA
     private boolean monitorConnection = false;
 
     public boolean setNullColumn = false;
+    
+    private Map<EParameterName, Object> paramValues = new HashMap<EParameterName, Object>();
 
     /**
      * Tells if this connection has a subjob source or not instead of a node.
@@ -132,6 +134,13 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         this.uniqueName = uniqueName;
         init(source, target, lineStyle, connectorName, metaName, linkName, monitorConnection);
     }
+    
+    public Connection(INode source, INode target, EConnectionType lineStyle, String connectorName, String metaName,
+            String linkName, String uniqueName, final boolean monitorConnection, final Map<EParameterName, Object> paramValues) {
+        this.uniqueName = uniqueName;
+        this.paramValues = paramValues;
+        init(source, target, lineStyle, connectorName, metaName, linkName, monitorConnection);
+    }    
 
     // used only in ConnectionManager to test if we can connect or not.
     public Connection(INode source, INode target, EConnectionType lineStyle, final boolean monitorConnection) {
@@ -265,7 +274,13 @@ public class Connection extends Element implements IConnection, IPerformance, IA
             param.setListItemsDisplayCodeName(strList);
             param.setNbLines(1);
             param.setFieldType(EParameterFieldType.CLOSED_LIST);
-            param.setValue(supportedLanguages.getValue());
+            
+            if (supportedLanguages != null) {
+                param.setValue(supportedLanguages.getValue());	
+            } else {
+                param.setValue("");
+            }
+            
             param.setShow(true);
             param.setNumRow(1);
             addElementParameter(param);
@@ -524,9 +539,24 @@ public class Connection extends Element implements IConnection, IPerformance, IA
                 }
             }
         }
+        updateParametersValues();
         updateInputConnection();
     }
 
+    private void updateParametersValues() {
+    	
+    	if (paramValues == null) {
+    		return;
+    	}
+    	
+        for (Map.Entry<EParameterName, Object> param : paramValues.entrySet()) {
+        	if (param.getValue() != null) {
+        		setPropertyValue(param.getKey().getName(), param.getValue());
+        	}
+			
+		}        
+    }
+    
     private void updateInputConnection() {
         IComponent component = null;
         if (this.target != null) {
