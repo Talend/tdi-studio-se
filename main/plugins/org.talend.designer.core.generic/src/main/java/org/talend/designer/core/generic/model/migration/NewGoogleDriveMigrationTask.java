@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Properties;
 
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.generic.utils.ParameterUtilTool;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
@@ -33,6 +34,18 @@ public class NewGoogleDriveMigrationTask extends org.talend.designer.core.generi
 
     @Override
     protected ElementParameterType getParameterType(NodeType node, String paramName) {
+        // sanitize inexistent props
+        ElementParameterType oAuthMethod = ParameterUtilTool.findParameterType(node, "oAuthMethod");
+        if (oAuthMethod == null) {
+            ParameterUtilTool.addParameterType(node, "TEXT", "OAUTH_METHOD", "AccessToken");
+        }
+        ElementParameterType dsPath = ParameterUtilTool.findParameterType(node, "datastorePath");
+        if (dsPath == null) {
+            String datastorePath = (System.getProperty("user.home", ".") + "/.credentials/talend-googledrive")
+                    .replace("\\", "/");
+            ParameterUtilTool.addParameterType(node, "TEXT", "DATASTORE_PATH",
+                    TalendQuoteUtils.addQuotesIfNotExist(datastorePath));
+        }
         ElementParameterType paramType = ParameterUtilTool.findParameterType(node, paramName);
         if (node != null && paramType != null) {
             Object value = ParameterUtilTool.convertParameterValue(paramType);
