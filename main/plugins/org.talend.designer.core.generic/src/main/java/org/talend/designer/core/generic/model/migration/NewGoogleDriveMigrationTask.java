@@ -35,11 +35,11 @@ public class NewGoogleDriveMigrationTask extends org.talend.designer.core.generi
     @Override
     protected ElementParameterType getParameterType(NodeType node, String paramName) {
         // sanitize inexistent props
-        ElementParameterType oAuthMethod = ParameterUtilTool.findParameterType(node, "oAuthMethod");
+        ElementParameterType oAuthMethod = ParameterUtilTool.findParameterType(node, "OAUTH_METHOD");
         if (oAuthMethod == null) {
             ParameterUtilTool.addParameterType(node, "TEXT", "OAUTH_METHOD", "AccessToken");
         }
-        ElementParameterType dsPath = ParameterUtilTool.findParameterType(node, "datastorePath");
+        ElementParameterType dsPath = ParameterUtilTool.findParameterType(node, "DATASTORE_PATH");
         if (dsPath == null) {
             String datastorePath = (System.getProperty("user.home", ".") + "/.credentials/talend-googledrive")
                     .replace("\\", "/");
