@@ -57,7 +57,7 @@
 						<fileset>
 							<directory>${tldapinput.dir}</directory>
 							<includes>
-								<include>talend-ssl*.jar</include>
+								<include>talendssl*.jar</include>
 							</includes>
 						</fileset>
 					</filesets>
@@ -118,7 +118,7 @@
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.talend.libraries</groupId>
-									<artifactId>talend-ssl</artifactId>
+									<artifactId>talendssl</artifactId>
 									<version>1.0-20190118</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
