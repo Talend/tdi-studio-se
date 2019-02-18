@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.avro.Schema;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.components.IComponentConstants;
@@ -91,9 +92,14 @@ public class NewSalesforceWizardMigrationTask extends NewGenericWizardMigrationT
             ComponentWizard componentWizard = service.getComponentWizard(TYPE_NAME, genericConnectionItem.getProperty().getId());
             ComponentProperties componentProperties = (ComponentProperties) componentWizard.getForms().get(0).getProperties();
             String itemName = item.getProperty().getDisplayName();
-            connection.setName(itemName);
+            if (!StringUtils.equals(connection.getName(), itemName)) {
+                connection.setName(itemName);
+                modify = true;
+            }
             // Update
-            modify = updateComponentProperties(connection, componentProperties, props);
+            if (updateComponentProperties(connection, componentProperties, props)) {
+                modify = true;
+            }
             NamedThing nt = componentProperties.getProperty("loginType"); //$NON-NLS-1$
             if (nt instanceof Property) {
                 Property property = (Property) nt;
