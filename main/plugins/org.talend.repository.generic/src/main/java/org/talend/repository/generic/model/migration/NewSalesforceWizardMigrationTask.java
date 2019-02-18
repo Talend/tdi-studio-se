@@ -90,7 +90,8 @@ public class NewSalesforceWizardMigrationTask extends NewGenericWizardMigrationT
 
             ComponentWizard componentWizard = service.getComponentWizard(TYPE_NAME, genericConnectionItem.getProperty().getId());
             ComponentProperties componentProperties = (ComponentProperties) componentWizard.getForms().get(0).getProperties();
-
+            String itemName = item.getProperty().getDisplayName();
+            connection.setName(itemName);
             // Update
             modify = updateComponentProperties(connection, componentProperties, props);
             NamedThing nt = componentProperties.getProperty("loginType"); //$NON-NLS-1$
