@@ -11,7 +11,31 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
 	</properties>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>talend_nexus_deployment</id>
+			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</snapshotRepository>
+		<repository>
+			<id>talend_nexus_deployment</id>
+			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</distributionManagement>
 
 	<dependencies>
 		<dependency>
@@ -26,14 +50,14 @@
 			<version>5.10.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ibm</groupId>
+			<groupId>com.ibm.mq</groupId>
 			<artifactId>com.ibm.mq</artifactId>
-			<version>x</version>
+			<version>8.0.0.9</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ibm</groupId>
+			<groupId>com.ibm.mq</groupId>
 			<artifactId>com.ibm.mqjms</artifactId>
-			<version>x</version>
+			<version>8.0.0.9</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.resource</groupId>
@@ -45,12 +69,76 @@
 			<artifactId>talendMQRFH2</artifactId>
 			<version>1.0.1-20190206</version>
 		</dependency>
+		<dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+          <version>2.22.0</version>
+          <scope>test</scope>
+      </dependency>
 	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>talend_open</id>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+		</repository>
+		<repository>
+			<id>talend_open_snapshots</id>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+		</repository>
+		<repository>
+			<id>releases</id>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<url>https://artifacts-zl.talend.com/nexus/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>snapshots</id>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<url>https://artifacts-zl.talend.com/nexus/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
+			<id>talend-update</id>
+			<url>https://talend-update.talend.com/nexus/content/repositories/libraries/</url>
+		</repository>
+	</repositories>
+	
 	<build>
 		<resources>
 			<resource>
 				<directory>src/main/java</directory>
 			</resource>
 		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 </project>
