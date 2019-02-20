@@ -780,14 +780,8 @@ public class ConnectionFormComposite extends Composite {
             connection.setName(nameText.getText());
             connection.setDescription(descriptionText.getText());
             connection.setUser(userText.getText());
-            // if token...
-            if (tokenButton.getSelection()) {
-                connection.setPassword(tokenText.getText());
-                connection.setToken(true);
-            } else {
-                connection.setPassword(passwordText.getText());
-                connection.setToken(false);
-            }
+            connection.setPassword(getPassword());
+            connection.setToken(tokenButton.getSelection());
 
             connection.setWorkSpace(workSpaceText.getText());
 
@@ -876,17 +870,13 @@ public class ConnectionFormComposite extends Composite {
             descriptionText.setText((connection.getDescription() == null ? "" : connection.getDescription())); //$NON-NLS-1$
             userText.setText((connection.getUser() == null ? "" : connection.getUser())); //$NON-NLS-1$
             String passwordStr = TalendTextUtils.hidePassword(connection.getPassword());
+            tokenButton.setSelection(connection.isToken());
+            tokenText.setEnabled(connection.isToken());
+            passwordButton.setSelection(!connection.isToken());
+            passwordText.setEnabled(!connection.isToken());
             if (connection.isToken()) {
-                tokenButton.setSelection(true);
-                passwordButton.setSelection(false);
-                passwordText.setEnabled(false);
-                tokenText.setEnabled(true);
                 tokenText.setText(passwordStr);
             } else {
-                passwordButton.setSelection(true);
-                tokenButton.setSelection(false);
-                tokenText.setEnabled(false);
-                passwordText.setEnabled(true);
                 passwordText.setText(passwordStr);
             }
             password = connection.getPassword() == null ? "" : connection.getPassword(); // $NON-NLS-1$
