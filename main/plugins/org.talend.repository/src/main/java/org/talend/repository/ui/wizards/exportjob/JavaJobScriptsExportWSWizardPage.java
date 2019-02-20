@@ -131,6 +131,10 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             }
         }
 
+        public static boolean isImageType(JobExportType type) {
+            return type == IMAGE || type == MSESB_IMAGE;
+        }
+
     }
 
     public static final String ESBTYPE_JBOSS_MQ = "JBoss MQ"; //$NON-NLS-1$
