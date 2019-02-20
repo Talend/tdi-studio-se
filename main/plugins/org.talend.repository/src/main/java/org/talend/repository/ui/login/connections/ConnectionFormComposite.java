@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.ColorConstants;
@@ -780,7 +781,15 @@ public class ConnectionFormComposite extends Composite {
             connection.setName(nameText.getText());
             connection.setDescription(descriptionText.getText());
             connection.setUser(userText.getText());
-            connection.setPassword(getPassword());
+            String password = getPassword(); // $NON-NLS-1$
+            if (StringUtils.isEmpty(password)) {
+                if (tokenButton.getSelection()) {
+                    password = tokenText.getText();
+                } else {
+                    password = passwordText.getText();
+                }
+            }
+            connection.setPassword(password);
             connection.setToken(tokenButton.getSelection());
 
             connection.setWorkSpace(workSpaceText.getText());
