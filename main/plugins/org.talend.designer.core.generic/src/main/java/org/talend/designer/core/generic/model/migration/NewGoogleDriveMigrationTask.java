@@ -48,42 +48,29 @@ public class NewGoogleDriveMigrationTask extends org.talend.designer.core.generi
         }
         ElementParameterType paramType = ParameterUtilTool.findParameterType(node, paramName);
         if (node != null && paramType != null) {
-            Object value = ParameterUtilTool.convertParameterValue(paramType);
             String componentName = node.getComponentName();
-            //
             if ("tGoogleDriveCopy".equals(componentName)) {
-                if ("FILE_MODE".equals(paramName)) {
-                    if ("true".equals(String.valueOf(value))) {
-                        paramType.setValue("File");
-                    } else {
-                        paramType.setValue("Folder");
-                    }
-                }
-                if ("FILE_NAME".equals(paramName)) {
-                    ElementParameterType fileMode = ParameterUtilTool.findParameterType(node, "FILE_MODE");
-                    Object fileModeValue = ParameterUtilTool.convertParameterValue(fileMode);
-                    if ("true".equals(String.valueOf(fileModeValue))) {
-                        paramType.setValue(String.valueOf(value));
-                    } else {
-                        ElementParameterType folderName = ParameterUtilTool.findParameterType(node, "FOLDER_NAME");
-                        Object folderNameValue = ParameterUtilTool.convertParameterValue(folderName);
-                        paramType.setValue(String.valueOf(folderNameValue));
-                    }
+                Object copyModeParam = ParameterUtilTool.findParameterType(node, "COPY_MODE");
+                if (copyModeParam == null) {
+                    Object fileMode = ParameterUtilTool.getParameterValue(node, "FILE_MODE");
+                    Object fileName = ParameterUtilTool.getParameterValue(node, "FILE_NAME");
+                    Object folderName = ParameterUtilTool.getParameterValue(node, "FOLDER_NAME");
+                    String copyMode = "true".equals(fileMode) ? "File" : "Folder";
+                    String source = "File".equals(copyMode) ? String.valueOf(fileName) : String.valueOf(folderName);
+                    ParameterUtilTool.addParameterType(node, "TEXT", "COPY_MODE", copyMode);
+                    ParameterUtilTool.addParameterType(node, "TEXT", "SOURCE", source);
                 }
             }
             if ("tGoogleDrivePut".equals(componentName)) {
-                if ("READ_CONTENT_FROM_INPUT".equals(paramName)) {
-                    if ("true".equals(String.valueOf(value))) {
-                        paramType.setValue("READ_CONTENT_FROM_INPUT");
-                    } else {
-                        ElementParameterType upl = ParameterUtilTool.findParameterType(node, "UPLOAD_LOCAL_FILE");
-                        Object uplv = ParameterUtilTool.convertParameterValue(upl);
-                        if ("true".equals(String.valueOf(uplv))) {
-                            paramType.setValue("UPLOAD_LOCAL_FILE");
-                        } else {
-                            paramType.setValue("EXPOSE_OUTPUT_STREAM");
-                        }
+                Object uploadModeParam = ParameterUtilTool.findParameterType(node, "UPLOAD_MODE");
+                if (uploadModeParam == null) {
+                    Object isReadContentFromInput = ParameterUtilTool.getParameterValue(node, "READ_CONTENT_FROM_INPUT");
+                    Object uploadLocalFile = ParameterUtilTool.getParameterValue(node, "UPLOAD_LOCAL_FILE");
+                    String uploadMode = "READ_CONTENT_FROM_INPUT";
+                    if (!"true".equals(isReadContentFromInput)) {
+                        uploadMode = "true".equals(uploadLocalFile) ? "UPLOAD_LOCAL_FILE" : "EXPOSE_OUTPUT_STREAM";
                     }
+                    ParameterUtilTool.addParameterType(node, "TEXT", "UPLOAD_MODE", uploadMode);
                 }
             }
         }
