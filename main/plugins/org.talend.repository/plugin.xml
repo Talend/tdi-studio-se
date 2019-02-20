@@ -3155,6 +3155,15 @@
               name="ResetAdditionalJDBCParamsForCreateTable"
               version="7.2.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.5.1"
+              class="org.talend.repository.model.migration.RedshiftLogFileMigrationTask"
+              description="If Redshift in 6.5.1 or 7.0.1 using log file, check the useLogFile option"
+              id="org.talend.repository.model.migration.RedshiftLogFileMigrationTask"
+              name="RedshiftLogFileMigrationTask"
+              version="7.2.1">
+        </projecttask>
    </extension>
 
    <extension

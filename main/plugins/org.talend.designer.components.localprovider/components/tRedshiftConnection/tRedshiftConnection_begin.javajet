@@ -12,11 +12,12 @@ imports="
 		public void createURL(INode node) {
 			super.createURL(node);
 
+            boolean useLogFile= "true".equals(ElementParameterParser.getValue(node, "__USE_LOG_FILE__"));
 			String logLevel= ElementParameterParser.getValue(node, "__LOG_LEVEL__");
 			String logFile= ElementParameterParser.getValue(node, "__LOG_FILE__");
 			String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
-
-			if (!logLevel.equals("0")) {
+			
+			if (useLogFile && !logLevel.equals("0")) {
 %>
 				java.io.Writer output_<%=cid %> = new java.io.FileWriter(<%= logFile %>, true);
 				java.io.PrintWriter logWriter_<%=cid %> = new java.io.PrintWriter(output_<%=cid %>,true);
