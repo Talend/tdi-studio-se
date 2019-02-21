@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -356,6 +357,10 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
                 if (TalendMavenConstants.GOAL_PACKAGE.equals(goals) || TalendMavenConstants.GOAL_INSTALL.equals(goals)
                         || TalendMavenConstants.GOAL_DEPLOY.equals(goals)) {
                     PomUtil.restorePomFile(this);
+                    // in case of there has modified joblet's pom for loop dependencies
+                    if (StringUtils.isNotBlank(this.id) && StringUtils.isNotBlank(this.version)) {
+                        PomUtil.restoreJobletPoms(this.getPropery());
+                    }
                 }
             }
         } else {
