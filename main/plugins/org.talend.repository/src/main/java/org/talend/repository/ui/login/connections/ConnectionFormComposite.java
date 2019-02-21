@@ -93,6 +93,10 @@ public class ConnectionFormComposite extends Composite {
 
     private Text userText;
 
+    private Label tpPlaceHolder;
+
+    private Composite tpCompo;
+
     private Button tokenButton;
 
     private Composite tokenCompo;
@@ -187,11 +191,22 @@ public class ConnectionFormComposite extends Composite {
         userText = toolkit.createText(formBody, "", SWT.BORDER); //$NON-NLS-1$
         formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(userText);
 
+        passwordLabel = toolkit.createLabel(formBody, Messages.getString("connections.form.field.password")); //$NON-NLS-1$
+        formDefaultFactory.copy().applyTo(passwordLabel);
+
+        tpPlaceHolder = new Label(formBody, SWT.NONE);
+        tpCompo = toolkit.createComposite(formBody);
+        GridLayout tCompoLayout = new GridLayout(3, false);
+        tCompoLayout.marginHeight = 0;
+        tCompoLayout.marginWidth = 0;
+        tpCompo.setLayout(tCompoLayout);
+        formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(tpCompo);
+
         // Token
-        tokenButton = toolkit.createButton(formBody, Messages.getString("connections.form.field.token"), SWT.RADIO); //$NON-NLS-1$
+        tokenButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.token"), SWT.RADIO); //$NON-NLS-1$
         formDefaultFactory.copy().applyTo(tokenButton);
 
-        tokenCompo = toolkit.createComposite(formBody);
+        tokenCompo = toolkit.createComposite(tpCompo);
         GridLayout tokenCompoLayout = new GridLayout(3, false);
         tokenCompoLayout.marginHeight = 0;
         tokenCompoLayout.marginWidth = 0;
@@ -207,13 +222,10 @@ public class ConnectionFormComposite extends Composite {
         GridDataFactory.fillDefaults().applyTo(tokenBrowseButton);
 
         // Password
-        passwordLabel = toolkit.createLabel(formBody, Messages.getString("connections.form.field.password")); //$NON-NLS-1$
-        formDefaultFactory.copy().applyTo(passwordLabel);
-
-        passwordButton = toolkit.createButton(formBody, Messages.getString("connections.form.field.password"), SWT.RADIO); //$NON-NLS-1$
+        passwordButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.password"), SWT.RADIO); //$NON-NLS-1$
         formDefaultFactory.copy().applyTo(passwordButton);
 
-        passwordText = toolkit.createText(formBody, "", SWT.PASSWORD | SWT.BORDER); //$NON-NLS-1$
+        passwordText = toolkit.createText(tpCompo, "", SWT.PASSWORD | SWT.BORDER); //$NON-NLS-1$
         formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(passwordText);
 
         Label workSpaceLabel = toolkit.createLabel(formBody, Messages.getString("ConnectionFormComposite.WORKSPACE")); //$NON-NLS-1$
@@ -476,38 +488,45 @@ public class ConnectionFormComposite extends Composite {
         }
 
         // password
+        boolean hidePasswordLabel = !enablePasswordField || enableTokenField;
+        boolean enablePasswordText = passwordButton.getSelection() || !hidePasswordLabel;
         if (passwordText != null && !passwordText.isDisposed()) {
-            if (enablePasswordField && !token) {
+            if (enablePasswordField && enablePasswordText) {
                 passwordText.setBackground(LoginDialogV2.WHITE_COLOR);
             } else {
                 passwordText.setText(""); //$NON-NLS-1$
                 password = ""; //$NON-NLS-1$
                 passwordText.setBackground(LoginDialogV2.GREY_COLOR);
             }
-            passwordText.setEnabled(enablePasswordField && !token);
-            passwordText.setEditable(enablePasswordField && !token);
+            passwordText.setEnabled(enablePasswordField && enablePasswordText);
+            passwordText.setEditable(enablePasswordField && enablePasswordText);
             hideControl(passwordText, !enablePasswordField, false);
-            hideControl(passwordLabel, !enablePasswordField || enableTokenField, false);
+            hideControl(passwordLabel, hidePasswordLabel, false);
             hideControl(passwordButton, !(enablePasswordField && enableTokenField), false);
-
             passwordText.getParent().layout();
+            passwordText.getParent().getParent().layout();
         }
         // token
         if (tokenText != null && !tokenText.isDisposed()) {
-            if (enableTokenField && token) {
+            if (enableTokenField && tokenButton.getSelection()) {
                 tokenText.setBackground(LoginDialogV2.WHITE_COLOR);
             } else {
                 tokenText.setText(""); //$NON-NLS-1$
                 password = ""; //$NON-NLS-1$
                 tokenText.setBackground(LoginDialogV2.GREY_COLOR);
             }
-            tokenText.setEnabled(enableTokenField && token);
-            tokenText.setEditable(enableTokenField && token);
-            tokenBrowseButton.setEnabled(enableTokenField && token);
+            tokenText.setEnabled(enableTokenField && tokenButton.getSelection());
+            tokenText.setEditable(enableTokenField && tokenButton.getSelection());
+            tokenBrowseButton.setEnabled(enableTokenField && tokenButton.getSelection());
             hideControl(tokenButton, !enableTokenField, false);
             hideControl(tokenCompo, !enableTokenField, false);
             tokenText.getParent().getParent().layout();
+            tokenText.getParent().getParent().getParent().layout();
         }
+
+        hideControl(tpPlaceHolder, !enableTokenField, false);
+        hideControl(tpCompo, !enablePasswordField, false);
+        tpCompo.getParent().layout();
     }
 
     private void hideControl(Control control, boolean hide, boolean autoLayout) {
