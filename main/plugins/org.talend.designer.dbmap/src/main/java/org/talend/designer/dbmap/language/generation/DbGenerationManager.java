@@ -1139,7 +1139,7 @@ public abstract class DbGenerationManager {
                                         expression = expression.replaceFirst(tableValue + "\\." + co.getLabel(), //$NON-NLS-1$
                                         		tableValue + "\\." + oriName); //$NON-NLS-1$
                                         if(TalendQuoteUtils.QUOTATION_MARK.equals(quote)){
-                                        	expression = expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
+                                        	expression = replaceAuotes(expression, quoParser, quote);
                                         }
                                     }
                                 }
@@ -1153,6 +1153,33 @@ public abstract class DbGenerationManager {
         }
 
         return expression;
+    }
+    
+    protected String replaceAuotes(String expression, String quoParser, String quote){
+        if(!expression.contains("'")){
+            return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
+        }
+        StringBuffer result = new StringBuffer();
+        String[] subExps = expression.split("'");
+        if(subExps.length <= 1){
+            return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
+        }
+        for(int i = 0; i<subExps.length; i++){
+            if(i % 2 != 0){
+                continue;
+            }else{
+                result.append("'");
+            }
+            
+            if(i+2 == subExps.length){
+                result.append(subExps[i+1].replaceAll(quoParser,"\\\\" +quote)); //$NON-NLS-1$
+            }else if(i+2 > subExps.length){
+                result.append(subExps[i].replaceAll(quoParser,"\\\\" +quote)); //$NON-NLS-1$
+            }else{
+                result.append(subExps[i+1]);
+            }
+        }
+        return result.toString();
     }
     
     private String getQuote(DbMapComponent component){
