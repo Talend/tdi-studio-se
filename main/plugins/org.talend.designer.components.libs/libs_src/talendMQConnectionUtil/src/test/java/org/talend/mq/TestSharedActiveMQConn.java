@@ -26,7 +26,7 @@ public class TestSharedActiveMQConn extends TestCase {
         Connection connection2 =
                 SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn", provider);
 
-        assertTrue(connection1 == connection2);
+        assertSame(connection1, connection2);
     }
 
     @Test
@@ -38,7 +38,7 @@ public class TestSharedActiveMQConn extends TestCase {
         Connection connection2 =
                 SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn2", provider);
 
-        assertFalse(connection1 == connection2);
+        assertNotSame(connection1, connection2);
     }
 
     private ActiveMQConnectionFactoryProvider createConnectionFactoryProvider() {

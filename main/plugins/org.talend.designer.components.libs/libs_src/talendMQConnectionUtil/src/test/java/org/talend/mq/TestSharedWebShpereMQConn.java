@@ -38,7 +38,7 @@ public class TestSharedWebShpereMQConn extends TestCase {
         MQQueueManager mqConnection2 =
                 SharedWebSphereMQConnection.getMQConnection("TALEND", properties, "conn", factoryMock);
 
-        assertTrue(mqConnection1 == mqConnection2);
+        assertSame(mqConnection1, mqConnection2);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class TestSharedWebShpereMQConn extends TestCase {
         MQQueueManager mqConnection2 =
                 SharedWebSphereMQConnection.getMQConnection("TALEND", properties, "conn2", factoryMock);
 
-        assertTrue(mqConnection1 != mqConnection2);
+        assertNotSame(mqConnection1, mqConnection2);
     }
 
     private MQQueueManagerFactory createQueueFactory() throws MQException {
