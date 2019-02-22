@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,55 +26,51 @@ import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
-import org.talend.core.model.properties.Project;
-import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
- * DOC hcyi class global comment. Detailled comment
+ * Redshift set use log file to true when import from 6.5.1 and 7.0.1
  */
 public class RedshiftLogFileMigrationTask extends AbstractJobMigrationTask {
 
+    @Override
+    public ExecutionResult execute(final Item item) {
+        ProcessType processType = getProcessType(item);
+        if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
+            return ExecutionResult.NOTHING_TO_DO;
+        }
+        String[] comps = { "tRedshiftConnection", "tRedshiftInput" };
 
-	@Override
-	public ExecutionResult execute(final Item item) {
-		ProcessType processType = getProcessType(item);
-		if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
-			return ExecutionResult.NOTHING_TO_DO;
-		}
-		String[] comps = { "tRedshiftConnection", "tRedshiftInput" };
+        for (String component : comps) {
+            IComponentFilter filter = new NameComponentFilter(component); // $NON-NLS-1$
+            try {
+                ModifyComponentsAction.searchAndModify(item, processType, filter,
+                        Arrays.<IComponentConversion>asList(new IComponentConversion() {
 
-		for (String component : comps) {
-			IComponentFilter filter = new NameComponentFilter(component); // $NON-NLS-1$
-			try {
-				ModifyComponentsAction.searchAndModify(item, processType, filter,
-						Arrays.<IComponentConversion>asList(new IComponentConversion() {
+                            @Override
+                            public void transform(NodeType node) {
+                                if (ComponentUtilities.getNodeProperty(node, "USE_LOG_FILE") == null) {//$NON-NLS-1$
+                                    ComponentUtilities.addNodeProperty(node, "USE_LOG_FILE", "CHECK");//$NON-NLS-1$ //$NON-NLS-2$
+                                    ComponentUtilities.setNodeValue(node, "USE_LOG_FILE", "true");//$NON-NLS-1$ //$NON-NLS-2$
+                                }
+                            }
 
-							@Override
-							public void transform(NodeType node) {
-								if (ComponentUtilities.getNodeProperty(node, "USE_LOG_FILE") == null) {//$NON-NLS-1$
-									ComponentUtilities.addNodeProperty(node, "USE_LOG_FILE", "CHECK");//$NON-NLS-1$ //$NON-NLS-2$
-									ComponentUtilities.setNodeValue(node, "USE_LOG_FILE", "true");//$NON-NLS-1$ //$NON-NLS-2$
-								}
-							}
-							
-						}));
+                        }));
 
-			} catch (PersistenceException e) {
-				ExceptionHandler.process(e);
-				return ExecutionResult.FAILURE;
-			}
-		}
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+                return ExecutionResult.FAILURE;
+            }
+        }
 
-		return ExecutionResult.SUCCESS_NO_ALERT;
+        return ExecutionResult.SUCCESS_NO_ALERT;
 
-	}
+    }
 
-	@Override
-	public Date getOrder() {
-		GregorianCalendar gc = new GregorianCalendar(2019, 01, 20, 10, 0, 0);
-		return gc.getTime();
-	}
+    @Override
+    public Date getOrder() {
+        GregorianCalendar gc = new GregorianCalendar(2019, 01, 20, 10, 0, 0);
+        return gc.getTime();
+    }
 }
