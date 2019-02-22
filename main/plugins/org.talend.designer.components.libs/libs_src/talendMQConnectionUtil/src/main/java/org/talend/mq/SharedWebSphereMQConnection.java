@@ -43,8 +43,7 @@ public class SharedWebSphereMQConnection {
     }
 
     private synchronized com.ibm.mq.MQQueueManager getConnection(String queueManager,
-            java.util.Hashtable<String, Object> properties, String mqConnectionName, MQQueueManagerFactory queueFactory)
-            throws MQException {
+            java.util.Hashtable<String, Object> properties, String mqConnectionName) throws MQException {
         if (DEBUG) {
             Set<String> keySet = sharedConnections.keySet();
             System.out.print("SharedMQConnection, current shared connections list is:"); //$NON-NLS-1$
@@ -60,7 +59,7 @@ public class SharedWebSphereMQConnection {
                         .println("SharedMQConnection, can't find the key:" + mqConnectionName + " " //$NON-NLS-1$ //$NON-NLS-2$
                                 + "so create a new one and share it."); //$NON-NLS-1$
             }
-            connection = queueFactory.createQueueManager(queueManager, properties);
+            connection = new MQQueueManager(queueManager, properties);
             sharedConnections.put(mqConnectionName, connection);
         } else if (!connection.isConnected()) {
             if (DEBUG) {
@@ -68,7 +67,7 @@ public class SharedWebSphereMQConnection {
                         .println("SharedMQConnection, find the key: " + mqConnectionName + " " //$NON-NLS-1$ //$NON-NLS-2$
                                 + "But it is closed. So create a new one and share it."); //$NON-NLS-1$
             }
-            connection = queueFactory.createQueueManager(queueManager, properties);
+            connection = new MQQueueManager(queueManager, properties);
             sharedConnections.put(mqConnectionName, connection);
         } else {
             if (DEBUG) {
@@ -89,24 +88,8 @@ public class SharedWebSphereMQConnection {
      */
     public static com.ibm.mq.MQQueueManager getMQConnection(String queueManager,
             java.util.Hashtable<String, Object> properties, String mqConnectionName) throws MQException {
-        return getMQConnection(queueManager, properties, mqConnectionName, MQQueueManager::new);
-    }
-
-    /**
-     * If there don't exist the connection or it is closed, create and store it.
-     * 
-     * @param queueManager
-     * @param properties
-     * @param mqConnectionName
-     * @return
-     * @throws MQException
-     */
-    public static com.ibm.mq.MQQueueManager getMQConnection(String queueManager,
-            java.util.Hashtable<String, Object> properties, String mqConnectionName, MQQueueManagerFactory queueFactory)
-            throws MQException {
         SharedWebSphereMQConnection instanceLocal = getInstance();
-        com.ibm.mq.MQQueueManager connection =
-                instanceLocal.getConnection(queueManager, properties, mqConnectionName, queueFactory);
+        com.ibm.mq.MQQueueManager connection = instanceLocal.getConnection(queueManager, properties, mqConnectionName);
         return connection;
     }
 

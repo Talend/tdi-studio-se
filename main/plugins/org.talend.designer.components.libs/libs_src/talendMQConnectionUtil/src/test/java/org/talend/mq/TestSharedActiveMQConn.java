@@ -1,15 +1,21 @@
 package org.talend.mq;
 
 import javax.jms.Connection;
-import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import junit.framework.TestCase;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(SharedActiveMQConnection.class)
 public class TestSharedActiveMQConn extends TestCase {
 
     @After
@@ -18,38 +24,30 @@ public class TestSharedActiveMQConn extends TestCase {
     }
 
     @Test
-    public void testSameConnName() throws JMSException {
-        ActiveMQConnectionFactoryProvider provider = createConnectionFactoryProvider();
-
-        Connection connection1 =
-                SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn", provider);
-        Connection connection2 =
-                SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn", provider);
+    public void testSameConnName() throws Exception {
+        Connection connection1 = SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn");
+        Connection connection2 = SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn");
 
         assertSame(connection1, connection2);
     }
 
     @Test
-    public void testDiffConnName() throws JMSException {
-        ActiveMQConnectionFactoryProvider provider = createConnectionFactoryProvider();
-
-        Connection connection1 =
-                SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn1", provider);
-        Connection connection2 =
-                SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn2", provider);
+    public void testDiffConnName() throws Exception {
+        Connection connection1 = SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn1");
+        Connection connection2 = SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn2");
 
         assertNotSame(connection1, connection2);
     }
 
-    private ActiveMQConnectionFactoryProvider createConnectionFactoryProvider() {
-        ActiveMQConnectionFactoryProvider factoryMock = Mockito.mock(ActiveMQConnectionFactoryProvider.class);
-        Mockito.when(factoryMock.createConnectionFactory(Mockito.anyString())).thenAnswer((o) -> {
-            // we need to return new queue manager on every call of createQueueManager
-            ActiveMQConnectionFactory queueManagerMock = Mockito.mock(ActiveMQConnectionFactory.class);
-            Mockito.when(queueManagerMock.createConnection()).thenReturn(Mockito.mock(Connection.class));
-            return queueManagerMock;
+    @Before
+    public void prepare() throws Exception {
+        ActiveMQConnectionFactory connectionFactory = Mockito.mock(ActiveMQConnectionFactory.class);
+        Mockito.when(connectionFactory.createConnection()).thenAnswer((o) -> {
+            return Mockito.mock(Connection.class);
         });
-        return factoryMock;
+
+        PowerMockito.whenNew(ActiveMQConnectionFactory.class).withAnyArguments().thenReturn(connectionFactory);
+        PowerMockito.whenNew(ActiveMQConnectionFactory.class).withNoArguments().thenReturn(connectionFactory);
     }
 
 }

@@ -45,7 +45,7 @@ public class SharedActiveMQConnection {
     }
 
     private synchronized javax.jms.Connection getConnection(String url, String userName, String password,
-            String mqConnectionName, ActiveMQConnectionFactoryProvider factoryProvider) throws JMSException {
+            String mqConnectionName) throws JMSException {
         if (DEBUG) {
             Set<String> keySet = sharedConnections.keySet();
             System.out.print("SharedMQConnection, current shared connections list is:"); //$NON-NLS-1$
@@ -61,7 +61,7 @@ public class SharedActiveMQConnection {
                         .println("SharedMQConnection, can't find the key:" + mqConnectionName + " " //$NON-NLS-1$ //$NON-NLS-2$
                                 + "so create a new one and share it."); //$NON-NLS-1$
             }
-            ActiveMQConnectionFactory factory = factoryProvider.createConnectionFactory(url);
+            ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(url);
             if (userName == null || ("").equals(userName)) {
                 connection = factory.createConnection();
             } else {
@@ -81,7 +81,7 @@ public class SharedActiveMQConnection {
                             .println("SharedMQConnection, find the key: " + mqConnectionName + " " //$NON-NLS-1$ //$NON-NLS-2$
                                     + "But it is closed. So create a new one and share it."); //$NON-NLS-1$
                 }
-                ActiveMQConnectionFactory factory = factoryProvider.createConnectionFactory(url);
+                ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(url);
                 if (userName == null || ("").equals(userName)) {
                     connection = factory.createConnection();
                 } else {
@@ -103,24 +103,10 @@ public class SharedActiveMQConnection {
      * @throws JMSException
      */
     public static javax.jms.Connection getMQConnection(String url, String userName, String password,
-            String mqConnectionName, ActiveMQConnectionFactoryProvider factoryProvider) throws JMSException {
-        SharedActiveMQConnection instanceLocal = getInstance();
-        javax.jms.Connection connection =
-                instanceLocal.getConnection(url, userName, password, mqConnectionName, factoryProvider);
-        return connection;
-    }
-
-    /**
-     * If there don't exist the connection or it is closed, create and store it.
-     * 
-     * @param url
-     * @param mqConnectionName
-     * @return
-     * @throws JMSException
-     */
-    public static javax.jms.Connection getMQConnection(String url, String userName, String password,
             String mqConnectionName) throws JMSException {
-        return getMQConnection(url, userName, password, mqConnectionName, ActiveMQConnectionFactory::new);
+        SharedActiveMQConnection instanceLocal = getInstance();
+        javax.jms.Connection connection = instanceLocal.getConnection(url, userName, password, mqConnectionName);
+        return connection;
     }
 
     /**
