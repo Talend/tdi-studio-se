@@ -30,19 +30,27 @@ public class TestSharedWebShpereMQConn extends TestCase {
     }
 
     @Test
-    public void testSameConnNAme() throws JMSException, MQException {
+    public void testSameConnName() throws JMSException, MQException {
         MQQueueManagerFactory factoryMock = createQueueFactory();
-        assertTrue(SharedWebSphereMQConnection
-                .getMQConnection("TALEND", properties, "conn", factoryMock) == SharedWebSphereMQConnection
-                        .getMQConnection("TALEND", properties, "conn", factoryMock));
+
+        MQQueueManager mqConnection1 =
+                SharedWebSphereMQConnection.getMQConnection("TALEND", properties, "conn", factoryMock);
+        MQQueueManager mqConnection2 =
+                SharedWebSphereMQConnection.getMQConnection("TALEND", properties, "conn", factoryMock);
+
+        assertTrue(mqConnection1 == mqConnection2);
     }
 
     @Test
-    public void testDiffConnNAme() throws JMSException, MQException {
+    public void testDiffConnName() throws JMSException, MQException {
         MQQueueManagerFactory factoryMock = createQueueFactory();
-        assertTrue(SharedWebSphereMQConnection
-                .getMQConnection("TALEND", properties, "conn1", factoryMock) != SharedWebSphereMQConnection
-                        .getMQConnection("TALEND", properties, "conn2", factoryMock));
+
+        MQQueueManager mqConnection1 =
+                SharedWebSphereMQConnection.getMQConnection("TALEND", properties, "conn1", factoryMock);
+        MQQueueManager mqConnection2 =
+                SharedWebSphereMQConnection.getMQConnection("TALEND", properties, "conn2", factoryMock);
+
+        assertTrue(mqConnection1 != mqConnection2);
     }
 
     private MQQueueManagerFactory createQueueFactory() throws MQException {

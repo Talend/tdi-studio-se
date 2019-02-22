@@ -4,6 +4,7 @@ import javax.jms.Connection;
 import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -11,20 +12,33 @@ import junit.framework.TestCase;
 
 public class TestSharedActiveMQConn extends TestCase {
 
-    @Test
-    public void testSameConnNAme() throws JMSException {
-        ActiveMQConnectionFactoryProvider provider = createConnectionFactoryProvider();
-        assertTrue(SharedActiveMQConnection
-                .getMQConnection("tcp://localhost:61616", "", "", "conn", provider) == SharedActiveMQConnection
-                        .getMQConnection("tcp://localhost:61616", "", "", "conn", provider));
+    @After
+    public void clear() {
+        SharedActiveMQConnection.clear();
     }
 
     @Test
-    public void testDiffConnNAme() throws JMSException {
+    public void testSameConnName() throws JMSException {
         ActiveMQConnectionFactoryProvider provider = createConnectionFactoryProvider();
-        assertFalse(SharedActiveMQConnection
-                .getMQConnection("tcp://localhost:61616", "", "", "conn1", provider) == SharedActiveMQConnection
-                        .getMQConnection("tcp://localhost:61616", "", "", "conn2", provider));
+
+        Connection connection1 =
+                SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn", provider);
+        Connection connection2 =
+                SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn", provider);
+
+        assertTrue(connection1 == connection2);
+    }
+
+    @Test
+    public void testDiffConnName() throws JMSException {
+        ActiveMQConnectionFactoryProvider provider = createConnectionFactoryProvider();
+
+        Connection connection1 =
+                SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn1", provider);
+        Connection connection2 =
+                SharedActiveMQConnection.getMQConnection("tcp://localhost:61616", "", "", "conn2", provider);
+
+        assertFalse(connection1 == connection2);
     }
 
     private ActiveMQConnectionFactoryProvider createConnectionFactoryProvider() {

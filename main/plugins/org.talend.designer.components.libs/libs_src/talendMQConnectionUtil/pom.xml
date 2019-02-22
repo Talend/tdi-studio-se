@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -11,13 +12,15 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
+		<talend.nexus.oss.url>https://artifacts-oss.talend.com</talend.nexus.oss.url>
+		<talend.nexus.zl.url>https://artifacts-zl.talend.com</talend.nexus.zl.url>
+		<talend.update.nexus.url>https://talend-update.talend.com</talend.update.nexus.url>
 	</properties>
-	
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>talend_nexus_deployment</id>
-			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+			<url>${talend.nexus.oss.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
@@ -27,7 +30,7 @@
 		</snapshotRepository>
 		<repository>
 			<id>talend_nexus_deployment</id>
-			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<url>${talend.nexus.oss.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -70,13 +73,13 @@
 			<version>1.0.1-20190206</version>
 		</dependency>
 		<dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-core</artifactId>
-          <version>2.22.0</version>
-          <scope>test</scope>
-      </dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>2.22.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
-	
+
 	<repositories>
 		<repository>
 			<id>talend_open</id>
@@ -86,7 +89,7 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<url>${talend.nexus.oss.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
 		</repository>
 		<repository>
 			<id>talend_open_snapshots</id>
@@ -96,7 +99,7 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+			<url>${talend.nexus.oss.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
 		</repository>
 		<repository>
 			<id>releases</id>
@@ -106,7 +109,7 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<url>https://artifacts-zl.talend.com/nexus/content/repositories/releases/</url>
+			<url>${talend.nexus.zl.url}/nexus/content/repositories/releases/</url>
 		</repository>
 		<repository>
 			<id>snapshots</id>
@@ -116,14 +119,14 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-			<url>https://artifacts-zl.talend.com/nexus/content/repositories/snapshots/</url>
+			<url>${talend.nexus.zl.url}/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
 			<id>talend-update</id>
-			<url>https://talend-update.talend.com/nexus/content/repositories/libraries/</url>
+			<url>${talend.update.nexus.url}/nexus/content/repositories/libraries/</url>
 		</repository>
 	</repositories>
-	
+
 	<build>
 		<resources>
 			<resource>
