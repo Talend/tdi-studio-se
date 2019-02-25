@@ -390,22 +390,38 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 			try {
 				String[] envp = null;
-				String[] cmds = new String[] {<%=nzloadExePath%> <%
-						for (int i=0; i < parametersList.size(); i++) {
-							%>,<%=parametersList.get(i)%><%
+
+				List<String> commands_<%=cid %> = new java.util.ArrayList<>();
+				commands_<%=cid %>.add(<%=nzloadExePath%>);
+<%
+				if (printCommand) {
+%>
+					System.out.println("INFO: executing nzload command:");
+					System.out.print(<%=nzloadExePath%> + " ");
+<%
+				}
+
+				for (int i=0; i < parametersList.size(); i++) {
+					String parameterFromList = parametersList.get(i);
+%>
+					commands_<%=cid %>.add(<%=parameterFromList %>);
+<%
+					if (printCommand) {
+						if (parameterFromList.equals("decryptedPwd_" + cid)) {
+%>
+							System.out.print(<%=parameterFromList%>.replaceAll(".", "*") + " ");
+<%
+						} else {
+%>
+							System.out.print(<%=parameterFromList %> + " ");
+<%
 						}
-						%>};
-				
-				// added "print command" feature
-				<% if (printCommand == true) { %>
-				    System.out.println("INFO: executing nzload command:");
-				    for( String cmd : cmds ) {
-					       System.out.print(cmd + " ");
-					 }
-				<% } %>
-				
+					}
+				}
+%>
+
 				Runtime rt = Runtime.getRuntime();
-				final Process ps = rt.exec(cmds, envp);
+				final Process ps = rt.exec(commands_<%=cid %>.toArray(new String[]{}), envp);
 				
 				ps.waitFor();
 				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getInputStream()));
