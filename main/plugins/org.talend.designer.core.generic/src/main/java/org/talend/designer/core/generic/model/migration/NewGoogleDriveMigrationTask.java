@@ -6,12 +6,38 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Properties;
 
+import org.talend.core.model.properties.Item;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.generic.utils.ParameterUtilTool;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 public class NewGoogleDriveMigrationTask extends org.talend.designer.core.generic.model.migration.NewComponentFrameworkMigrationTask {
+
+    public static final String GOOGLE_DRIVE_PREFIX = "tGoogleDrive";
+
+    public static final String JAVAJET_VERSION = "0.102";
+
+    @Override
+    public ExecutionResult execute(Item item) {
+        ProcessType processType = getProcessType(item);
+        if (processType != null) {
+            for (Object obj : processType.getNode()) {
+                if (obj != null && obj instanceof NodeType) {
+                    String componentName = ((NodeType) obj).getComponentName();
+                    String version = ((NodeType) obj).getComponentVersion();
+                    if (componentName != null && componentName.startsWith(GOOGLE_DRIVE_PREFIX)) {
+                        if (!JAVAJET_VERSION.equals(version)) {
+                            // not a javajet component (tcompv0), we skip this migration for not corrupting comps.
+                            return ExecutionResult.NOTHING_TO_DO;
+                        }
+                    }
+                }
+            }
+        }
+        return super.execute(item);
+    }
 
     @Override
     public Date getOrder() {
