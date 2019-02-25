@@ -175,7 +175,7 @@ public class DataProcess implements IGeneratingProcess {
         shortUniqueNameList = new ArrayList<String>();
     }
 
-    private void copyElementParametersValue(IElement sourceElement, IElement targetElement) {
+    protected void copyElementParametersValue(IElement sourceElement, IElement targetElement) {
         if (IAdditionalInfo.class.isInstance(sourceElement) && IAdditionalInfo.class.isInstance(targetElement)) {
             IAdditionalInfo.class.cast(sourceElement).cloneAddionalInfoTo((IAdditionalInfo) targetElement);
         }
