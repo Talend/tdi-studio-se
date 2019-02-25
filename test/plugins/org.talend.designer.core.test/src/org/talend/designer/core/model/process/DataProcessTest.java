@@ -97,7 +97,6 @@ public class DataProcessTest {
     public void before() {
         process = new Process(TestUtils.createDefaultProperty());
         dataProcess = new DataProcess(process);
-        testDataProcess = new TestDataProcess(process);
         testNode = new Node(testComponent, process);
 
         testDataProcess = new TestDataProcess(process_1);
