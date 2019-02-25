@@ -119,7 +119,7 @@ class="MomConnection"
 			<%
 			}
 			%>
-		
+		    globalMap.put("connection_<%=cid%>", connection_<%=cid %>);
 		    connection_<%=cid %>.start();
 		    <%
 			if(isLog4jEnabled){
@@ -135,7 +135,6 @@ class="MomConnection"
 		}
 		%>
 		
-	    globalMap.put("connection_<%=cid%>", connection_<%=cid %>);
 	    javax.jms.Session session_<%=cid %> = connection_<%=cid %>.createSession(<%=transacted%>, javax.jms.Session.<%=acknowledgmentMode%>);
 	    globalMap.put("session_<%=cid %>", session_<%=cid %>);
 		<%
