@@ -86,7 +86,12 @@
                 			        }
                 			        %>                			    
                 			    } else {
-                                    row_<%=cid%>[<%=i%>] = null;
+                			    	if (<%=column.isNullable() %>) { 
+										row_<%=cid%>[<%=i%>] = null;
+									} else {
+										row_<%=cid%>[<%=i%>] = "";
+									}	
+                                    
                                 }
                 		 	<% 
                 			}
