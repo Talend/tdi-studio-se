@@ -13,6 +13,8 @@
 package org.talend.repository.ui.login.connections;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -130,14 +132,6 @@ public class ConnectionFormComposite extends Composite {
     private Map<IRepositoryFactory, Map<String, LabelledCombo>> dynamicChoices = new HashMap<IRepositoryFactory, Map<String, LabelledCombo>>();
 
     public static final String URL_FIELD_NAME = "url"; //$NON-NLS-1$
-
-    private static final String US_BASE_URL = "https://us.cloud.talend.com"; //$NON-NLS-1$
-
-    private static final String EU_BASE_URL = "https://eu.cloud.talend.com"; //$NON-NLS-1$
-
-    private static final String AP_BASE_URL = "https://ap.cloud.talend.com"; //$NON-NLS-1$
-
-    private static final String CUSTOM_BASE_URL = "https://int.cloud.talend.com"; //$NON-NLS-1$
 
     private static final String TOKEN_URL_SUFFIX = "/user/access-tokens"; //$NON-NLS-1$
 
@@ -721,22 +715,39 @@ public class ConnectionFormComposite extends Composite {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String repositoryId = getRepository().getId();
-                switch (repositoryId) {
-                case RepositoryConstants.REPOSITORY_CLOUD_US_ID:
-                    openBrower(US_BASE_URL + TOKEN_URL_SUFFIX);
-                    break;
-                case RepositoryConstants.REPOSITORY_CLOUD_EU_ID:
-                    openBrower(EU_BASE_URL + TOKEN_URL_SUFFIX);
-                    break;
-                case RepositoryConstants.REPOSITORY_CLOUD_APAC_ID:
-                    openBrower(AP_BASE_URL + TOKEN_URL_SUFFIX);
-                    break;
-                case RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID:
-                    openBrower(CUSTOM_BASE_URL + TOKEN_URL_SUFFIX);
+                String currentUrl = "";
+                if (getRepository() != null) {
+                    for (LabelText currentUrlLabel : dynamicRequiredControls.get(getRepository()).values()) {
+                        if (currentUrlLabel.getText().length() != 0) {
+                            currentUrl = currentUrlLabel.getText();
+                        }
+                    }
+                }
+                if (StringUtils.isNotBlank(currentUrl)) {
+                    String tokenUrl = getTokenUrl(currentUrl,
+                            RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID.equals(getRepository().getId()));
+                    openBrower(tokenUrl);
                 }
             }
         });
+    }
+
+    private String getTokenUrl(String serverUrlStr, boolean isCustom) {
+        String tokenUrlStr = "";
+        try {
+            URL serverUrl = new URL(serverUrlStr);
+            String host = "";
+            if (isCustom) {
+                host = serverUrl.getHost().replace("tmc.", "int.");
+            } else {
+                host = serverUrl.getHost().replace("tmc.", "");
+            }
+            URL tokenUrl = new URL(serverUrl.getProtocol(), host, TOKEN_URL_SUFFIX);
+            tokenUrlStr = tokenUrl.toString();
+        } catch (MalformedURLException e) {
+            CommonExceptionHandler.process(e);
+        }
+        return tokenUrlStr;
     }
 
     private void openBrower(String url) {
