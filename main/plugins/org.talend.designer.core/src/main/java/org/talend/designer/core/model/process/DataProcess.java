@@ -191,13 +191,15 @@ public class DataProcess implements IGeneratingProcess {
 
                 targetParam.setContextMode(sourceParam.isContextMode());
                 if (sourceElement instanceof INode && sourceParam instanceof IGenericElementParameter) {
-                    IComponent component = ((INode)sourceElement).getComponent();
-                    if (component instanceof AbstractBasicComponent && EComponentType.GENERIC.equals(component.getComponentType())) {
-                        if (sourceParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST)) {
-                            org.talend.daikon.properties.property.Property property = ((IGenericElementParameter)sourceParam).getProperty();
+                    IComponent component = ((INode) sourceElement).getComponent();
+                    if (component instanceof AbstractBasicComponent
+                            && EComponentType.GENERIC.equals(component.getComponentType())) {
+                        org.talend.daikon.properties.property.Property property = ((IGenericElementParameter) sourceParam)
+                                .getProperty();
+                        if (sourceParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST) && property != null) {
                             PropertyValueEvaluator evaluator = property.getValueEvaluator();
                             targetParam.setValue(evaluator.evaluate(property, sourceParam.getValue()));
-                        }else {
+                        } else {
                             targetParam.setValue(sourceParam.getValue());
                         }
                     }
