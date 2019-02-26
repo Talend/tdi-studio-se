@@ -38,7 +38,10 @@ public class ResetAdditionalJDBCParamsForCreateTable extends AbstractJobMigratio
             @Override
             public void transform(NodeType node) {
             	String dbType = ComponentUtilities.getNodePropertyValue(node, "DBTYPE");
-            	if ("AS400".equals(dbType) || "MSSQL".equals(dbType)) {
+            	if (ComponentUtilities.getNodePropertyValue(node, "PROPERTIES") == null) {
+            		ComponentUtilities.addNodeProperty(node, "PROPERTIES", "TEXT");
+            		ComponentUtilities.setNodeValue(node, "PROPERTIES", "\"\"");
+            	} else if ("AS400".equals(dbType) || "MSSQL".equals(dbType)){
             		return;
             	} else {
             		ComponentUtilities.setNodeValue(node, "PROPERTIES", "\"\"");
