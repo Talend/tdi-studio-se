@@ -131,7 +131,15 @@ public class ConnectionFormComposite extends Composite {
 
     public static final String URL_FIELD_NAME = "url"; //$NON-NLS-1$
 
-    private static final String TOKEN_URL = "https://portal.int.cloud.talend.com/user/access-tokens"; //$NON-NLS-1$
+    private static final String US_BASE_URL = "https://us.cloud.talend.com"; //$NON-NLS-1$
+
+    private static final String EU_BASE_URL = "https://eu.cloud.talend.com"; //$NON-NLS-1$
+
+    private static final String AP_BASE_URL = "https://ap.cloud.talend.com"; //$NON-NLS-1$
+
+    private static final String CUSTOM_BASE_URL = "https://int.cloud.talend.com"; //$NON-NLS-1$
+
+    private static final String TOKEN_URL_SUFFIX = "/user/access-tokens"; //$NON-NLS-1$
 
     Label passwordLabel = null;
     /**
@@ -713,7 +721,20 @@ public class ConnectionFormComposite extends Composite {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                openBrower(TOKEN_URL);
+                String repositoryId = getRepository().getId();
+                switch (repositoryId) {
+                case RepositoryConstants.REPOSITORY_CLOUD_US_ID:
+                    openBrower(US_BASE_URL + TOKEN_URL_SUFFIX);
+                    break;
+                case RepositoryConstants.REPOSITORY_CLOUD_EU_ID:
+                    openBrower(EU_BASE_URL + TOKEN_URL_SUFFIX);
+                    break;
+                case RepositoryConstants.REPOSITORY_CLOUD_APAC_ID:
+                    openBrower(AP_BASE_URL + TOKEN_URL_SUFFIX);
+                    break;
+                case RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID:
+                    openBrower(CUSTOM_BASE_URL + TOKEN_URL_SUFFIX);
+                }
             }
         });
     }
