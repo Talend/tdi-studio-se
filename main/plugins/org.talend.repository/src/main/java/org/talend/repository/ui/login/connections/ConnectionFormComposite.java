@@ -135,6 +135,8 @@ public class ConnectionFormComposite extends Composite {
 
     private static final String TOKEN_URL_SUFFIX = "/user/access-tokens"; //$NON-NLS-1$
 
+    private static final String CUSTOM_BASE_URL = "https://int.cloud.talend.com"; //$NON-NLS-1$
+
     Label passwordLabel = null;
     /**
      * DOC smallet ConnectionsComposite constructor comment.
@@ -733,15 +735,13 @@ public class ConnectionFormComposite extends Composite {
     }
 
     private String getTokenUrl(String serverUrlStr, boolean isCustom) {
+        if (isCustom) {
+            return CUSTOM_BASE_URL + TOKEN_URL_SUFFIX;
+        }
         String tokenUrlStr = "";
         try {
             URL serverUrl = new URL(serverUrlStr);
-            String host = "";
-            if (isCustom) {
-                host = serverUrl.getHost().replace("tmc.", "int.");
-            } else {
-                host = serverUrl.getHost().replace("tmc.", "");
-            }
+            String host = serverUrl.getHost().replace("tmc.", "");
             URL tokenUrl = new URL(serverUrl.getProtocol(), host, TOKEN_URL_SUFFIX);
             tokenUrlStr = tokenUrl.toString();
         } catch (MalformedURLException e) {
