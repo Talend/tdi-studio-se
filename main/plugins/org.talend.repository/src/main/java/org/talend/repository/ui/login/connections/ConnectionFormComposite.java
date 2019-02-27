@@ -13,7 +13,6 @@
 package org.talend.repository.ui.login.connections;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -134,8 +134,6 @@ public class ConnectionFormComposite extends Composite {
     public static final String URL_FIELD_NAME = "url"; //$NON-NLS-1$
 
     private static final String TOKEN_URL_SUFFIX = "/user/access-tokens"; //$NON-NLS-1$
-
-    private static final String CUSTOM_BASE_URL = "https://int.cloud.talend.com"; //$NON-NLS-1$
 
     Label passwordLabel = null;
     /**
@@ -726,28 +724,23 @@ public class ConnectionFormComposite extends Composite {
                     }
                 }
                 if (StringUtils.isNotBlank(currentUrl)) {
-                    String tokenUrl = getTokenUrl(currentUrl,
-                            RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID.equals(getRepository().getId()));
-                    openBrower(tokenUrl);
+                    try {
+                        String tokenUrl = getTokenUrl(currentUrl);
+                        openBrower(tokenUrl);
+                    } catch (Exception exception) {
+                        MessageDialog.openError(getShell(), getShell().getText(),
+                                Messages.getString("connections.form.getTokenUrl.failed"));
+                    }
                 }
             }
         });
     }
 
-    private String getTokenUrl(String serverUrlStr, boolean isCustom) {
-        if (isCustom) {
-            return CUSTOM_BASE_URL + TOKEN_URL_SUFFIX;
-        }
-        String tokenUrlStr = "";
-        try {
-            URL serverUrl = new URL(serverUrlStr);
-            String host = serverUrl.getHost().replace("tmc.", "");
-            URL tokenUrl = new URL(serverUrl.getProtocol(), host, TOKEN_URL_SUFFIX);
-            tokenUrlStr = tokenUrl.toString();
-        } catch (MalformedURLException e) {
-            CommonExceptionHandler.process(e);
-        }
-        return tokenUrlStr;
+    private String getTokenUrl(String serverUrlStr) throws Exception {
+        URL serverUrl = new URL(serverUrlStr);
+        String host = serverUrl.getHost().replace("tmc.", "");
+        URL tokenUrl = new URL(serverUrl.getProtocol(), host, TOKEN_URL_SUFFIX);
+        return tokenUrl.toString();
     }
 
     private void openBrower(String url) {
