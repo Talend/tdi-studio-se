@@ -398,14 +398,14 @@ skeleton="../templates/db_output_bulk.skeleton"
 				
 				// added "print command" feature
 				<% if (printCommand == true) { %>
-				    System.out.println("INFO: executing nzload command:");
-				    for(int i = 0; i < cmds.length; i++) {
+					System.out.println("INFO: executing nzload command:");
+					for(int i = 0; i < cmds.length; i++) {
 						if ("-pw".equals(cmds[i]) && decryptedPwd_<%=cid %>.equals(cmds[i+1])) {
-                            System.out.print(cmds[i] + " " + cmds[++i].replaceAll(".", "*") + " ");
-                        } else {
-                            System.out.print(cmds[i] + " ");
-                        }
-					 }
+							System.out.print(cmds[i] + " " + cmds[++i].replaceAll(".", "*") + " ");
+						} else {
+							System.out.print(cmds[i] + " ");
+						}
+					}
 				<% } %>
 				
 				Runtime rt = Runtime.getRuntime();
