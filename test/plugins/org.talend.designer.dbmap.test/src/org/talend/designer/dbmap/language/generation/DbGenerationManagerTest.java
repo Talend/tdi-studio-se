@@ -175,6 +175,15 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         expect = "'\"" +"+"+"context.param1"+"+"+ "\"'aaa";
         
         assertEquals(expect.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        
+        expression = "'context.param1'";
+        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        
+        expression = "table1.name = 'context.param2'";
+        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        
+        expression = "table1.name = 'context.param2' aa";
+        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
     }
     
     private void testWithQuote(){
