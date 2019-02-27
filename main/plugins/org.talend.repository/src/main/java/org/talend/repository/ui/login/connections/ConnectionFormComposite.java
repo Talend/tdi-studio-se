@@ -13,6 +13,8 @@
 package org.talend.repository.ui.login.connections;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -131,7 +133,7 @@ public class ConnectionFormComposite extends Composite {
 
     public static final String URL_FIELD_NAME = "url"; //$NON-NLS-1$
 
-    private static final String TOKEN_URL = "https://portal.int.cloud.talend.com/user/access-tokens"; //$NON-NLS-1$
+    private static final String TOKEN_URL_SUFFIX = "/user/access-tokens"; //$NON-NLS-1$
 
     Label passwordLabel = null;
     /**
@@ -713,9 +715,39 @@ public class ConnectionFormComposite extends Composite {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                openBrower(TOKEN_URL);
+                String currentUrl = "";
+                if (getRepository() != null) {
+                    for (LabelText currentUrlLabel : dynamicRequiredControls.get(getRepository()).values()) {
+                        if (currentUrlLabel.getText().length() != 0) {
+                            currentUrl = currentUrlLabel.getText();
+                        }
+                    }
+                }
+                if (StringUtils.isNotBlank(currentUrl)) {
+                    String tokenUrl = getTokenUrl(currentUrl,
+                            RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID.equals(getRepository().getId()));
+                    openBrower(tokenUrl);
+                }
             }
         });
+    }
+
+    private String getTokenUrl(String serverUrlStr, boolean isCustom) {
+        String tokenUrlStr = "";
+        try {
+            URL serverUrl = new URL(serverUrlStr);
+            String host = "";
+            if (isCustom) {
+                host = serverUrl.getHost().replace("tmc.", "int.");
+            } else {
+                host = serverUrl.getHost().replace("tmc.", "");
+            }
+            URL tokenUrl = new URL(serverUrl.getProtocol(), host, TOKEN_URL_SUFFIX);
+            tokenUrlStr = tokenUrl.toString();
+        } catch (MalformedURLException e) {
+            CommonExceptionHandler.process(e);
+        }
+        return tokenUrlStr;
     }
 
     private void openBrower(String url) {
