@@ -72,7 +72,6 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
-import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
@@ -307,21 +306,8 @@ public class DefaultRunProcessService implements IRunProcessService {
                         break;
                     }
                 }
-
-                JobInfo mainJobInfo = LastGenerationInfo.getInstance().getLastMainJob();
-
-                boolean needOSGIProcessor = true;
-
-                if (mainJobInfo == null) {
-                    needOSGIProcessor = false;
-                } else {
-                    if (mainJobInfo.getJobId().equals(property.getId())) {
-                        needOSGIProcessor = false;
-                    }
-                }
-
                 if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))
-                        || servicePart || needOSGIProcessor) {
+                        || servicePart) {
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
                         soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
                         return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
