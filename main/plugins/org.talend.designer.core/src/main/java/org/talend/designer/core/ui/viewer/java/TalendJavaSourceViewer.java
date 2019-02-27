@@ -234,10 +234,9 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         }
         // End of https://jira.talendforge.org/browse/TESB-7615
 
-        int documentOffset = buff.toString().length();
         buff.append("){\n\t}"); //$NON-NLS-1$
         buff.append("\n\t\n}\n}"); //$NON-NLS-1$
-
+        int documentOffset = buff.toString().length();
         IDocument document = new Document();
         document.set(buff.toString());
         return initializeViewer(composite, process, styles, checkCode, document, documentOffset);
