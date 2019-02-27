@@ -1266,7 +1266,10 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         }
 
         if (newStyle) {
-            consoleText.setStyleRanges(styles.toArray(new StyleRange[0]));
+            StyleRange[] StyleRanges = styles.toArray(new StyleRange[0]);
+            for (StyleRange styleRange : StyleRanges) {
+                consoleText.setStyleRange(styleRange);
+            }
         }
     }
 
