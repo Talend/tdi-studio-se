@@ -390,38 +390,26 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 			try {
 				String[] envp = null;
-
-				List<String> commands_<%=cid %> = new java.util.ArrayList<>();
-				commands_<%=cid %>.add(<%=nzloadExePath%>);
-<%
-				if (printCommand) {
-%>
-					System.out.println("INFO: executing nzload command:");
-					System.out.print(<%=nzloadExePath%> + " ");
-<%
-				}
-
-				for (int i=0; i < parametersList.size(); i++) {
-					String parameterFromList = parametersList.get(i);
-%>
-					commands_<%=cid %>.add(<%=parameterFromList %>);
-<%
-					if (printCommand) {
-						if (parameterFromList.equals("decryptedPwd_" + cid)) {
-%>
-							System.out.print(<%=parameterFromList%>.replaceAll(".", "*") + " ");
-<%
-						} else {
-%>
-							System.out.print(<%=parameterFromList %> + " ");
-<%
+				String[] cmds = new String[] {<%=nzloadExePath%> <%
+						for (int i=0; i < parametersList.size(); i++) {
+							%>,<%=parametersList.get(i)%><%
 						}
-					}
-				}
-%>
-
+						%>};
+				
+				// added "print command" feature
+				<% if (printCommand == true) { %>
+				    System.out.println("INFO: executing nzload command:");
+				    for(int i = 0; i < cmds.length; i++) {
+						if ("-pw".equals(cmds[i]) && decryptedPwd_<%=cid %>.equals(cmds[i+1])) {
+                            System.out.print(cmds[i] + " " + cmds[++i].replaceAll(".", "*") + " ");
+                        } else {
+                            System.out.print(cmds[i] + " ");
+                        }
+					 }
+				<% } %>
+				
 				Runtime rt = Runtime.getRuntime();
-				final Process ps = rt.exec(commands_<%=cid %>.toArray(new String[]{}), envp);
+				final Process ps = rt.exec(cmds, envp);
 				
 				ps.waitFor();
 				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getInputStream()));
