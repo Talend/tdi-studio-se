@@ -1159,24 +1159,30 @@ public abstract class DbGenerationManager {
         if(!expression.contains("'")){
             return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
         }
-        StringBuffer result = new StringBuffer();
-        String[] subExps = expression.split("'");
-        if(subExps.length <= 1){
-            return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
-        }
-        for(int i = 0; i<subExps.length; i++){
-            if(i % 2 != 0){
-                continue;
-            }else{
-                result.append("'");
+        
+        List<Integer> indexs = new ArrayList<>();
+        for(int i=0;i<expression.length();i++){
+            if("'".equals(String.valueOf(expression.charAt(i)))){
+                indexs.add(i);
             }
-            
-            if(i+2 == subExps.length){
-                result.append(subExps[i+1].replaceAll(quoParser,"\\\\" +quote)); //$NON-NLS-1$
-            }else if(i+2 > subExps.length){
-                result.append(subExps[i].replaceAll(quoParser,"\\\\" +quote)); //$NON-NLS-1$
-            }else{
-                result.append(subExps[i+1]);
+        }
+        StringBuffer result = new StringBuffer();
+        int start = 0;
+        for(int i=0;i<indexs.size();i++){
+            if(i == 0){
+                if(indexs.size() == 1 && indexs.get(i) == 0){
+                    result.append(expression.substring(0, indexs.get(i)+1)); 
+                }else{
+                    String exp = expression.substring(start, indexs.get(i));
+                    result.append(exp.replaceAll(quoParser,"\\\\" +quote)); //$NON-NLS-1$
+                }
+            }
+            if(i % 2 == 0 && i != indexs.size() - 1){
+                result.append(expression.substring(indexs.get(i), indexs.get(i+1)+1));
+                start = indexs.get(i+1)+1;
+            }else if(i == indexs.size() - 1){
+                String exp = expression.substring(indexs.get(i)+1, expression.length());
+                result.append(exp.replaceAll(quoParser,"\\\\" +quote)); //$NON-NLS-1$
             }
         }
         return result.toString();
