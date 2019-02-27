@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
-import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.StringUtils;
 
@@ -396,7 +395,7 @@ public class JetBean {
 
     public String getFullTemplatePath() {
         try {
-            return CommonsPlugin.getBundleRealURL(getJetPluginRepository()).toString() + getTemplateRelativeUri();
+            return TemplateUtil.getPlatformUrlOfBundle(getJetPluginRepository()) + getTemplateRelativeUri();
         } catch (Throwable e) {
             ExceptionHandler.process(e);
         }
