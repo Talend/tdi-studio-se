@@ -308,15 +308,14 @@ public class DefaultRunProcessService implements IRunProcessService {
                     }
                 }
 
+                boolean needOSGIProcessor = false;
                 JobInfo mainJobInfo = LastGenerationInfo.getInstance().getLastMainJob();
-
-                boolean needOSGIProcessor = true;
-
-                if (mainJobInfo == null) {
-                    needOSGIProcessor = false;
-                } else {
-                    if (mainJobInfo.getJobId().equals(property.getId())) {
-                        needOSGIProcessor = false;
+                if (mainJobInfo != null && mainJobInfo.getProcessor() != null) {
+                    boolean isBuildRoute = ComponentCategory.CATEGORY_4_CAMEL.getName().equals(
+                            mainJobInfo.getProcessor().getProcess().getComponentsType()) && ProcessorUtilities.isExportConfig();
+                    
+                    if (isBuildRoute && !mainJobInfo.getJobId().equals(property.getId())) {
+                        needOSGIProcessor = true;
                     }
                 }
 
