@@ -198,7 +198,11 @@ public class DataProcess implements IGeneratingProcess {
                                 .getProperty();
                         if (sourceParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST) && property != null) {
                             PropertyValueEvaluator evaluator = property.getValueEvaluator();
-                            targetParam.setValue(evaluator.evaluate(property, sourceParam.getValue()));
+                            if(evaluator != null) {
+                                targetParam.setValue(evaluator.evaluate(property, sourceParam.getValue()));
+                            } else {
+                                targetParam.setValue(sourceParam.getValue());
+                            }
                         } else {
                             targetParam.setValue(sourceParam.getValue());
                         }
