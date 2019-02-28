@@ -294,45 +294,49 @@ public class DefaultRunProcessService implements IRunProcessService {
 
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
-            // If OSGI contains new processor, need to add built type in args map
-
             if (property != null) {
-                boolean servicePart = false;
-                List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
-                        property.getVersion(), RelationshipItemBuilder.JOB_RELATION);
+                if (!ProcessorUtilities.isGeneratePomOnly()) {
+                    // for esb items
+                    boolean servicePart = false;
+                    List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
+                            property.getVersion(), RelationshipItemBuilder.JOB_RELATION);
 
-                for (Relation relation : relations) {
-                    if (RelationshipItemBuilder.SERVICES_RELATION.equals(relation.getType())) {
-                        servicePart = true;
-                        break;
+                    for (Relation relation : relations) {
+                        if (RelationshipItemBuilder.SERVICES_RELATION.equals(relation.getType())) {
+                            servicePart = true;
+                            break;
+                        }
+                    }
+
+                    JobInfo lastMainJob = LastGenerationInfo.getInstance().getLastMainJob();
+                    boolean isBuildFromRoute = lastMainJob != null && ComponentCategory.CATEGORY_4_CAMEL.getName()
+                            .equals(lastMainJob.getProcessor().getProcess().getComponentsType());
+                    boolean isRouteReferenceJob = false;
+                    if (isBuildFromRoute) {
+                        List<Relation> relation = RelationshipItemBuilder.getInstance().getItemsHaveRelationWith(property.getId(),
+                                property.getVersion());
+                        IProcess routeProcess = lastMainJob.getProcessor().getProcess();
+                        if (!relation.isEmpty()) {
+                            for (Relation r : relation) {
+                                if (r.getId().equals(routeProcess.getId())) {
+                                    isRouteReferenceJob = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))
+                            || servicePart || isRouteReferenceJob) {
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+                            soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                            return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
+                        }
                     }
                 }
-
-                boolean needOSGIProcessor = false;
-                JobInfo mainJobInfo = LastGenerationInfo.getInstance().getLastMainJob();
-                if (mainJobInfo != null && mainJobInfo.getProcessor() != null) {
-                    boolean isBuildRoute = ComponentCategory.CATEGORY_4_CAMEL.getName().equals(
-                            mainJobInfo.getProcessor().getProcess().getComponentsType()) && ProcessorUtilities.isExportConfig();
-                    
-                    if (isBuildRoute && !mainJobInfo.getJobId().equals(property.getId())) {
-                        needOSGIProcessor = true;
-                    }
-                }
-
-                if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))
-                        || servicePart || needOSGIProcessor) {
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-                        soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
-                        return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
-                    }
-                }
-
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
-
             } else {
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
             }
-
         }
     }
 
