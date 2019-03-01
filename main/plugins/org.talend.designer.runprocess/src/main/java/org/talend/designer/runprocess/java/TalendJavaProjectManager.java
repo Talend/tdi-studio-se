@@ -360,6 +360,8 @@ public class TalendJavaProjectManager {
                             }
                             if (property.getItem() instanceof JobletProcessItem) {
                                 BuildCacheManager.getInstance().removeJobletCache(property);
+                            } else {
+                                BuildCacheManager.getInstance().preRemoveJobCache(property);
                             }
                             IFile pomFile = AggregatorPomsHelper.getItemPomFolder(property, realVersion)
                                     .getFile(TalendMavenConstants.POM_FILE_NAME);
