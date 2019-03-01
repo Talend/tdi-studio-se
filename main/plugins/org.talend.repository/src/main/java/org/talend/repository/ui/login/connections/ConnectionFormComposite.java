@@ -731,14 +731,12 @@ public class ConnectionFormComposite extends Composite {
                         }
                     }
                 }
-                if (StringUtils.isNotBlank(currentUrl)) {
-                    try {
-                        String tokenUrl = getTokenUrl(currentUrl);
-                        openBrower(tokenUrl);
-                    } catch (Exception exception) {
-                        MessageDialog.openError(getShell(), getShell().getText(),
-                                Messages.getString("connections.form.getTokenUrl.failed"));
-                    }
+                try {
+                    String tokenUrl = getTokenUrl(currentUrl);
+                    openBrower(tokenUrl);
+                } catch (Exception exception) {
+                    MessageDialog.openError(getShell(), getShell().getText(),
+                            Messages.getString("connections.form.getTokenUrl.failed")); //$NON-NLS-1$
                 }
             }
         });
