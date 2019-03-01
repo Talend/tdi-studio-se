@@ -84,9 +84,15 @@
                 			            row_<%=cid%>[<%=i%>] = String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>);
                 			            <%
                 			        }
-                			        %>                			    
-                			    } else {
-                                    row_<%=cid%>[<%=i%>] = null;
+                			        %>  
+                			    //empty value may not be NULL in BigQuery "REQUIRED" mode              			    
+                			    } else { 
+                			    	if (<%=column.isNullable() %>) { 
+										row_<%=cid%>[<%=i%>] = null;
+									} else {
+										row_<%=cid%>[<%=i%>] = "";
+									}	
+                                    
                                 }
                 		 	<% 
                 			}
