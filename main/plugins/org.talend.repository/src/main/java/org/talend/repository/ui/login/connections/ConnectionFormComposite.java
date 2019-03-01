@@ -204,6 +204,15 @@ public class ConnectionFormComposite extends Composite {
         tpCompo.setLayout(tCompoLayout);
         formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(tpCompo);
 
+        // Password
+        passwordButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.password"), SWT.RADIO); //$NON-NLS-1$
+        formDefaultFactory.copy().applyTo(passwordButton);
+
+        passwordText = toolkit.createText(tpCompo, "", SWT.PASSWORD | SWT.BORDER); //$NON-NLS-1$
+        formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(passwordText);
+
+        Label workSpaceLabel = toolkit.createLabel(formBody, Messages.getString("ConnectionFormComposite.WORKSPACE")); //$NON-NLS-1$
+        formDefaultFactory.copy().applyTo(workSpaceLabel);
         // Token
         tokenButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.token"), SWT.RADIO); //$NON-NLS-1$
         formDefaultFactory.copy().applyTo(tokenButton);
@@ -222,16 +231,6 @@ public class ConnectionFormComposite extends Composite {
         tokenBrowseButton.setToolTipText(Messages.getString("connections.form.field.token.browse")); //$NON-NLS-1$
         tokenBrowseButton.setImage(ImageProvider.getImage(EImage.THREE_DOTS_ICON));
         GridDataFactory.fillDefaults().applyTo(tokenBrowseButton);
-
-        // Password
-        passwordButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.password"), SWT.RADIO); //$NON-NLS-1$
-        formDefaultFactory.copy().applyTo(passwordButton);
-
-        passwordText = toolkit.createText(tpCompo, "", SWT.PASSWORD | SWT.BORDER); //$NON-NLS-1$
-        formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(passwordText);
-
-        Label workSpaceLabel = toolkit.createLabel(formBody, Messages.getString("ConnectionFormComposite.WORKSPACE")); //$NON-NLS-1$
-        formDefaultFactory.copy().applyTo(workSpaceLabel);
 
         Composite wsCompo = toolkit.createComposite(formBody);
         GridLayout wsCompoLayout = new GridLayout(2, false);
