@@ -107,4 +107,11 @@
                   talendPerspectiveId="org.talend.rcp.DesignPerspective">
             </TalendPerspective>
          </extension>
+          <extension
+               point="org.eclipse.ui.commands">
+            <command
+                  id="org.talend.rcp.show.about.command"
+                  name="About Talend Studio">
+            </command>
+         </extension>
 </plugin>
