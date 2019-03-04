@@ -1139,7 +1139,7 @@ public abstract class DbGenerationManager {
                                         expression = expression.replaceFirst(tableValue + "\\." + co.getLabel(), //$NON-NLS-1$
                                         		tableValue + "\\." + oriName); //$NON-NLS-1$
                                         if(TalendQuoteUtils.QUOTATION_MARK.equals(quote)){
-                                        	expression = expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
+                                        	expression = replaceAuotes(expression, quoParser, quote);
                                         }
                                     }
                                 }
@@ -1153,6 +1153,39 @@ public abstract class DbGenerationManager {
         }
 
         return expression;
+    }
+    
+    protected String replaceAuotes(String expression, String quoParser, String quote){
+        if(!expression.contains("'")){
+            return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
+        }
+        
+        List<Integer> indexs = new ArrayList<>();
+        for(int i=0;i<expression.length();i++){
+            if("'".equals(String.valueOf(expression.charAt(i)))){
+                indexs.add(i);
+            }
+        }
+        StringBuffer result = new StringBuffer();
+        int start = 0;
+        for(int i=0;i<indexs.size();i++){
+            if(i == 0){
+                if(indexs.size() == 1 && indexs.get(i) == 0){
+                    result.append(expression.substring(0, indexs.get(i)+1)); 
+                }else{
+                    String exp = expression.substring(start, indexs.get(i));
+                    result.append(exp.replaceAll(quoParser,"\\\\" +quote)); //$NON-NLS-1$
+                }
+            }
+            if(i % 2 == 0 && i != indexs.size() - 1){
+                result.append(expression.substring(indexs.get(i), indexs.get(i+1)+1));
+                start = indexs.get(i+1)+1;
+            }else if(i == indexs.size() - 1){
+                String exp = expression.substring(indexs.get(i)+1, expression.length());
+                result.append(exp.replaceAll(quoParser,"\\\\" +quote)); //$NON-NLS-1$
+            }
+        }
+        return result.toString();
     }
     
     private String getQuote(DbMapComponent component){
