@@ -152,8 +152,12 @@ for (int i=0;i<mapping.size();i++) {
         		} else if(javaType == JavaTypesManager.LIST && splitList){
         		%>
         		    <%=firstConnName%>.<%=column.getLabel() %> = ParserUtils.parseTo_List(value_<%=cid%>.toString(),",");
-        		<%
-        		} else {
+<%
+                } else if (javaType == JavaTypesManager.BYTE_ARRAY) {
+%>
+                    <%=firstConnName%>.<%=column.getLabel() %> = value_<%=cid%>.toString().getBytes();
+<%
+                } else {
 %>
 					<%=firstConnName%>.<%=column.getLabel() %> = ParserUtils.parseTo_<%=typeToGenerate %>(value_<%=cid%>.toString());
 <%

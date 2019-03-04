@@ -287,9 +287,13 @@ if(outConns!=null){
 									if (javaType == JavaTypesManager.DATE) {
 									%>
 										<%=firstConnName%>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(str_<%= cid %>, <%= patternValue %>);
-									<%
+<%
+									} else if (javaType == JavaTypesManager.BYTE_ARRAY){
+%>
+										<%=firstConnName%>.<%=column.getLabel() %> = str_<%= cid %>.toString().getBytes();
+<%
 									} else {
-									%>
+%>
 										<%=firstConnName%>.<%=column.getLabel() %> = ParserUtils.parseTo_<%= typeToGenerate %>(str_<%= cid %>);
 									<%
 									}
