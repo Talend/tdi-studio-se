@@ -4,7 +4,7 @@
 	<groupId>org.talend</groupId>
 	<artifactId>talend-httputil</artifactId>
 	<name>talend-httputil</name>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 
 	<properties>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
