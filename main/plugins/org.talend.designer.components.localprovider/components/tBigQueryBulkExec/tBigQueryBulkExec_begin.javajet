@@ -279,16 +279,25 @@
 					IMetadataColumn column = columns.get(i);
 					String columnName = column.getLabel();
 					String typeToGenerate = "string";
-					if("id_Float".equals(column.getTalendType())) {
+					if("id_Float".equals(column.getTalendType()) || "id_Double".equals(column.getTalendType())) {
 						typeToGenerate = "float";
-					} else if("id_Integer".equals(column.getTalendType())) {
+					}else if("id_Integer".equals(column.getTalendType()) || "id_Long".equals(column.getTalendType()) || "id_Short".equals(column.getTalendType())) {
 						typeToGenerate = "integer";
+					} else if("id_Character".equals(column.getTalendType())) {
+						typeToGenerate = "string";
 					} else if("id_BigDecimal".equals(column.getTalendType())) {
 						typeToGenerate = "numeric";					
 					} else if("id_Boolean".equals(column.getTalendType())) {
 						typeToGenerate = "boolean";
 					} else if("id_Date".equals(column.getTalendType())) {
-						typeToGenerate = "timestamp";
+						String pattern = column.getPattern();
+					    if(pattern.length() == 12 || pattern.isEmpty() || "\"\"".equals(pattern)) {
+					        typeToGenerate = "date";
+					    }else if(pattern.length() > 12){
+					        typeToGenerate = "timestamp";
+					    }else{
+					        typeToGenerate = "string";
+					    }
 					}
 					%>
 					<%
@@ -467,7 +476,6 @@
 		}
 		boolean tableNotExist_<%=cid%> = table_<%=cid%> == null;
 		if (<%=ElementParameterParser.getBooleanValue(node, "__DROP__")%> || tableNotExist_<%=cid%>) {
-			boolean typeSupported = true;
 			java.util.List<com.google.cloud.bigquery.Field> fields_<%=cid%> = new java.util.ArrayList<>();
 			<%
 			List<IMetadataTable> metadatas = node.getMetadataList();
@@ -479,8 +487,8 @@
 					for (int i = 0; i < nbColumns; i++ ) {
 						IMetadataColumn column = columns.get(i);
 						String columnName = column.getLabel();
-						String typeToGenerate = null;
-						if("id_String".equals(column.getTalendType())) {
+						String typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.STRING";
+						if("id_String".equals(column.getTalendType()) || "id_Character".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.STRING";
 						} else if ("id_Float".equals(column.getTalendType()) || "id_Double".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.FLOAT";
@@ -490,17 +498,17 @@
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.NUMERIC";						
 						} else if ("id_Boolean".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.BOOLEAN";
-						} else if ("id_Date".equals(column.getTalendType())) {
-							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.TIMESTAMP";
-						} else {
-						%>
-							typeSupported = false;
-						<%
+						} else if ("id_Date".equals(column.getTalendType())) {							
+							String pattern = column.getPattern();
+						    if(pattern.length() == 12 || pattern.isEmpty() || "\"\"".equals(pattern)) {
+						        typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.DATE";
+						    }else if(pattern.length() > 12){
+						        typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.TIMESTAMP";
+						    }else{
+						        typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.STRING";
+						    }
 						}
 						%>
-						if (!typeSupported) {
-							throw new IllegalArgumentException("unsupported type for column [<%=columnName%>]: " + "<%=column.getTalendType()%>");
-						}
 						com.google.cloud.bigquery.Field field_<%=i%> = com.google.cloud.bigquery.Field.of("<%=columnName%>", <%=typeToGenerate%>);
 						fields_<%=cid%>.add(field_<%=i%>);		
 						<%
