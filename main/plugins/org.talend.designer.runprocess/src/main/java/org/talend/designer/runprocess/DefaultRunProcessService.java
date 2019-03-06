@@ -890,8 +890,8 @@ public class DefaultRunProcessService implements IRunProcessService {
                 true);
         if (mainJobObject != null && mainJobObject.getProperty() != null) {
             Set<Property> itemChecked = new HashSet<>();
-            PomUtil.checkJobRelatedJobletDependencies(mainJobObject.getProperty(), mainJobObject.getProperty(),
-                    RelationshipItemBuilder.JOB_RELATION, childJobDependencies, itemChecked, progressMonitor);
+            PomUtil.checkJobRelatedJobletDependencies(mainJobObject.getProperty(), RelationshipItemBuilder.JOB_RELATION,
+                    childJobDependencies, itemChecked, progressMonitor);
         }
     }
 
