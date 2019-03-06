@@ -3153,7 +3153,7 @@ public class Node extends Element implements IGraphicalNode {
         }
         if (isSelectUseDynamic) {
             ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(process.getProperty().getItem());
-            if (ERepositoryObjectType.JOBLET.equals(itemType)) {
+            if (ERepositoryObjectType.getAllTypesOfJoblet().contains(itemType)) {
                 String warningMessage = Messages.getString("Node.checkDynamicJobUsageWarning");
                 Problems.add(ProblemStatus.WARNING, this, warningMessage);
             }
