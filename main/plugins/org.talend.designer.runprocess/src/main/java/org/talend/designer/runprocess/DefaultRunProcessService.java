@@ -878,6 +878,18 @@ public class DefaultRunProcessService implements IRunProcessService {
         }
 
         PomUtil.updateMainJobDependencies(mainJobInfo.getPomFile(), childPoms, childJobDependencies, progressMonitor);
+
+        // since all the dependencies of subJob already added to mainJob
+        // need to clean job dependencies of joblet
+        IRepositoryViewObject mainJobObject = factory.getSpecificVersion(mainJobInfo.getJobId(), mainJobInfo.getJobVersion(),
+                true);
+        if (mainJobObject != null && mainJobObject.getProperty() != null) {
+            Set<Property> itemChecked = new HashSet<>();
+            // clear bak cache
+            PomUtil.clearBakJobletCache();
+            PomUtil.checkJobRelatedJobletDependencies(mainJobObject.getProperty(), RelationshipItemBuilder.JOB_RELATION,
+                    childJobDependencies, itemChecked, progressMonitor);
+        }
     }
 
 }

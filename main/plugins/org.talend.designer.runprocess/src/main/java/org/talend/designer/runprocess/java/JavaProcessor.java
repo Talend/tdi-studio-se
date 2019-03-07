@@ -1146,6 +1146,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         tmpParams.add(JavaUtils.JAVA_CP);
         tmpParams.add(getLibsClasspath()); // libs
 
+        // in case of loop dependency caused mainClass not settled yet
+        if (getMainClass() == null) {
+            getSrcCodePath();
+        }
         tmpParams.add(getMainClass()); // main class
 
         //
