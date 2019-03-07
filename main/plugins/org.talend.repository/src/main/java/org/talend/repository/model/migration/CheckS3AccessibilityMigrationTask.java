@@ -49,13 +49,8 @@ public class CheckS3AccessibilityMigrationTask extends AbstractJobMigrationTask 
                         public void transform(NodeType node) {
                             if (ComponentUtilities.getNodeProperty(node, "CHECK_ACCESSIBILITY") == null) {//$NON-NLS-1$
                                 ComponentUtilities.addNodeProperty(node, "CHECK_ACCESSIBILITY", "CHECK");//$NON-NLS-1$ //$NON-NLS-2$
-                                ComponentUtilities.setNodeValue(node, "CHECK_ACCESSIBILITY", "true");//$NON-NLS-1$ //$NON-NLS-2$
+                                ComponentUtilities.setNodeValue(node, "CHECK_ACCESSIBILITY", "false");//$NON-NLS-1$ //$NON-NLS-2$
                             }
-                            if (ComponentUtilities.getNodeProperty(node, "CHECK_METHOD") == null) {//$NON-NLS-1$
-                                ComponentUtilities.addNodeProperty(node, "CHECK_METHOD", "CLOSED_LIST");//$NON-NLS-1$ //$NON-NLS-2$
-                                ComponentUtilities.setNodeValue(node, "CHECK_METHOD", "BUCKET_CONFIGURATION");//$NON-NLS-1$ //$NON-NLS-2$
-                            }
-                       
                         }
                     }));
         } catch (PersistenceException e) {

@@ -3131,7 +3131,6 @@
         </projecttask>
         <projecttask
               beforeLogon="false"
-              breaks="6.3.1"
               class="org.talend.repository.model.migration.CheckS3AccessibilityMigrationTask"
               description="Use the old behavior get bucket logging config to check connection"
               id="org.talend.repository.model.migration.CheckS3AccessibilityMigrationTask"
