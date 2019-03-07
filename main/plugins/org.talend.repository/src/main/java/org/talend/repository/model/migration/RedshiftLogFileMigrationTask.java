@@ -50,7 +50,8 @@ public class RedshiftLogFileMigrationTask extends AbstractJobMigrationTask {
 
                             @Override
                             public void transform(NodeType node) {
-                                if (ComponentUtilities.getNodeProperty(node, "USE_LOG_FILE") == null) {//$NON-NLS-1$
+                                if (ComponentUtilities.getNodeProperty(node, "USE_LOG_FILE") == null 
+                                		&& ComponentUtilities.getNodeProperty(node, "LOG_FILE") != null) {//$NON-NLS-1$
                                     ComponentUtilities.addNodeProperty(node, "USE_LOG_FILE", "CHECK");//$NON-NLS-1$ //$NON-NLS-2$
                                     ComponentUtilities.setNodeValue(node, "USE_LOG_FILE", "true");//$NON-NLS-1$ //$NON-NLS-2$
                                 }
