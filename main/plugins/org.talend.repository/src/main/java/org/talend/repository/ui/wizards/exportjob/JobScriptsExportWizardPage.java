@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -1399,7 +1401,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             };
 
             try {
-                getContainer().run(false, true, worker);
+                getContainer().run(true, true, worker);
             } catch (InvocationTargetException e) {
                 MessageBoxExceptionHandler.process(e.getCause(), getShell());
                 return false;
@@ -1480,22 +1482,49 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
     }
 
     protected boolean buildJobWithMaven(JobExportType jobExportType, IProgressMonitor monitor) {
-        String context = (contextCombo == null || contextCombo.isDisposed()) ? processItem.getProcess().getDefaultContext()
-                : contextCombo.getText();
+        StringBuilder context = new StringBuilder();
         try {
-            String destination = getDestinationValue();
+            StringBuilder destination = new StringBuilder();
+
+            Map<ExportChoice, Object> exportChoiceMap = new HashMap<>();
+            List<RepositoryNode> checkedNodes = new ArrayList<>();
+            Display.getDefault().syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    String contextTemp = (contextCombo == null || contextCombo.isDisposed())
+                            ? processItem.getProcess().getDefaultContext()
+                            : contextCombo.getText();
+                    context.append(contextTemp);
+                    String destinationValue = getDestinationValue();
+                    destination.append(destinationValue);
+
+                    exportChoiceMap.putAll(getExportChoiceMap());
+                    checkedNodes.addAll(Arrays.asList(getCheckNodes()));
+                }
+
+            });
             int separatorIndex = destination.lastIndexOf(File.separator);
+            String destinationStr = destination.toString();
             if (separatorIndex == -1) {
                 String userDir = System.getProperty("user.dir"); //$NON-NLS-1$
-                destination = userDir + File.separator + destination;
+                StringBuilder newDes = new StringBuilder();
+                newDes.append(userDir + File.separator + destinationStr);
+                destinationStr = newDes.toString();
             }
-            Map<ExportChoice, Object> exportChoiceMap = getExportChoiceMap();
             exportChoiceMap.put(ExportChoice.addStatistics, Boolean.TRUE);
-            return BuildJobManager.getInstance().buildJobs(destination, Arrays.asList(getCheckNodes()), getDefaultFileName(),
-                    getSelectedJobVersion(), context, exportChoiceMap, jobExportType, monitor);
+            return BuildJobManager.getInstance().buildJobs(destinationStr, checkedNodes,
+                    getDefaultFileName(), getSelectedJobVersion(), context.toString(), exportChoiceMap, jobExportType, monitor);
 
         } catch (Exception e) {
-            MessageBoxExceptionHandler.process(e, getShell());
+            Display.getDefault().asyncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    MessageBoxExceptionHandler.process(e, getShell());
+                }
+                
+            });
             return false;
         }
     }
