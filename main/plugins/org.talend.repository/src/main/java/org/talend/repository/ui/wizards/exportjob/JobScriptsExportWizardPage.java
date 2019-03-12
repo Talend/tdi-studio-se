@@ -1513,8 +1513,8 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                 destinationStr = newDes.toString();
             }
             exportChoiceMap.put(ExportChoice.addStatistics, Boolean.TRUE);
-            return BuildJobManager.getInstance().buildJobs(destinationStr, checkedNodes,
-                    getDefaultFileName(), getSelectedJobVersion(), context.toString(), exportChoiceMap, jobExportType, monitor);
+            return BuildJobManager.getInstance().buildJobs(destinationStr, checkedNodes, getDefaultFileName(),
+                    getSelectedJobVersion(), context.toString(), exportChoiceMap, jobExportType, monitor);
 
         } catch (Exception e) {
             Display.getDefault().asyncExec(new Runnable() {
@@ -1523,7 +1523,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                 public void run() {
                     MessageBoxExceptionHandler.process(e, getShell());
                 }
-                
+
             });
             return false;
         }
