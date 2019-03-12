@@ -104,7 +104,7 @@
        </projecttask>
 		<projecttask
              beforeLogon="false"
-               breaks="7.0.1"
+               breaks="7.0.0"
                class="org.talend.designer.core.generic.model.migration.NewGoogleDriveMigrationTask"
                description="Migration task for jobs using Google Drive components to TCOMP"
                id="org.talend.designer.core.generic.model.migration.NewGoogleDriveMigrationTask"

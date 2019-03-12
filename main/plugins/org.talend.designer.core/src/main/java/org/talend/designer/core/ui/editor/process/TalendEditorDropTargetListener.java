@@ -58,7 +58,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
@@ -67,6 +66,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.gmf.draw2d.AnimatableZoomManager;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageUtils.ICON_SIZE;
 import org.talend.core.CorePlugin;
@@ -542,8 +542,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             } else if (getTargetEditPart() instanceof JobletContainerPart) {
                 JobletContainerPart jobletPart = (JobletContainerPart) getTargetEditPart();
                 if (isLock(jobletPart)) {
-                    Shell shell = Display.getCurrent().getActiveShell();
-                    ChooseJobletDialog dialog = new ChooseJobletDialog(new Shell(shell), getDropLocation());
+                    ChooseJobletDialog dialog = new ChooseJobletDialog(DisplayUtils.getDefaultShell(false), getDropLocation());
                     if (dialog.open() == dialog.OK) {
                         EditPart part = getTargetEditPart();
                         if (dialog.addToJoblet()) {

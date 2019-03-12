@@ -25,11 +25,12 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.tomcat.websocket.Constants;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.talend.commons.CommonsPlugin;
 import org.talend.osgi.hook.maven.MavenResolver;
 import org.talend.sdk.component.studio.debounce.DebounceManager;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
@@ -102,18 +103,13 @@ public class ServerManager extends AbstractUIPlugin {
         services.add(ctx.registerService(TaCoKitCache.class.getName(), new TaCoKitCache(), new Hashtable<>()));
     }
 
-    private void extractFiles() throws IOException {
-        final TemplatesExtractor stubExtractor = new TemplatesExtractor("jet_stub/generic",
-                Platform
-                        .asLocalURL(Platform.getPlugin("org.talend.designer.codegen").getDescriptor().getInstallURL())
-                        .getFile(),
-                "tacokit/jet_stub");
+    private void extractFiles() throws Exception {
+        final String codeGenBundleId = "org.talend.designer.codegen"; //$NON-NLS-1$
+        final TemplatesExtractor stubExtractor = new TemplatesExtractor("jet_stub/generic", //$NON-NLS-1$
+                CommonsPlugin.getBundleRealURL(codeGenBundleId).getFile(), "tacokit/jet_stub"); //$NON-NLS-1$
         stubExtractor.extract();
-        final TemplatesExtractor guessSchemaExtractor = new TemplatesExtractor("components/tTaCoKitGuessSchema",
-                Platform
-                        .asLocalURL(Platform.getPlugin("org.talend.designer.codegen").getDescriptor().getInstallURL())
-                        .getFile(),
-                "tacokit/components");
+        final TemplatesExtractor guessSchemaExtractor = new TemplatesExtractor("components/tTaCoKitGuessSchema", //$NON-NLS-1$
+                CommonsPlugin.getBundleRealURL(codeGenBundleId).getFile(), "tacokit/components"); //$NON-NLS-1$
         guessSchemaExtractor.extract();
     }
 

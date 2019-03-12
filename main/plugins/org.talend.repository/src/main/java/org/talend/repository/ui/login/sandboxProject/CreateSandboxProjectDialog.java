@@ -251,6 +251,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
                             RepositoryContext repositoryContext = new RepositoryContext();
                             repositoryContext.setFields(new HashMap<String, String>());
                             repositoryContext.setClearPassword(originRepCtx.getClearPassword());
+                            repositoryContext.setToken(bean != null ? bean.isToken() : false);
                             repositoryContext.setUser(originRepCtx.getUser());
                             repositoryContext.getFields().put(RepositoryConstants.REPOSITORY_URL, urlText.getText());
                             ctx.putProperty(Context.REPOSITORY_CONTEXT_KEY, repositoryContext);

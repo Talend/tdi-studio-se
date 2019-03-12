@@ -12,13 +12,12 @@
 // ============================================================================
 package org.talend.repository.ui.actions.importexport;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
@@ -45,7 +44,7 @@ public class ExportItemWizard extends Wizard implements IImportWizard {
         super.addPages();
         mainPage = new ExportItemWizardPage(getWindowTitle(), selection, baseViewId);
         addPage(mainPage);
-        AbstractUIPlugin plugin = (AbstractUIPlugin) Platform.getPlugin(PlatformUI.PLUGIN_ID);
+        AbstractUIPlugin plugin = WorkbenchPlugin.getDefault();
         IDialogSettings workbenchSettings = plugin.getDialogSettings();
         IDialogSettings section = workbenchSettings.getSection("ExportItemWizard"); //$NON-NLS-1$
         if (section == null) {

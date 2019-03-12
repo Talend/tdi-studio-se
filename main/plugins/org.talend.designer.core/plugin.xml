@@ -694,10 +694,10 @@
          <action
                id="org.eclipse.debug.internal.ui.actions.RunDropDownAction"
                toolbarPath="debug"
-               hoverIcon="platform:/plugin/org.eclipse.debug.ui/icons/full/etool16/run_exc.gif"
+               hoverIcon="platform:/plugin/org.eclipse.debug.ui/icons/full/etool16/run_exc.png"
                class="org.talend.designer.core.debug.TalendLaunchToolbarAction"
-               disabledIcon="platform:/plugin/org.eclipse.debug.ui/icons/full/dtool16/run_exc.gif"
-               icon="platform:/plugin/org.eclipse.debug.ui/icons/full/etool16/run_exc.gif"
+               disabledIcon="platform:/plugin/org.eclipse.debug.ui/icons/full/dtool16/run_exc.png"
+               icon="platform:/plugin/org.eclipse.debug.ui/icons/full/etool16/run_exc.png"
                helpContextId="run_action_context"
                label="%RunDropDownAction.label"
                style="pulldown">

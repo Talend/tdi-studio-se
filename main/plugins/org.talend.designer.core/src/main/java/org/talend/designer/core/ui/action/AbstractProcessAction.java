@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.ui.editor.JobEditorInput;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
@@ -65,7 +66,7 @@ public abstract class AbstractProcessAction extends AContextualAction {
                                 if (tmpDis != null) {
                                     shell = tmpDis.getActiveShell();
                                 } else {
-                                    shell = new Shell();
+                                    shell = DisplayUtils.getDefaultShell(false);
                                 }
                             }
                             MessageDialog.openWarning(shell, "Warning", tmpMess);

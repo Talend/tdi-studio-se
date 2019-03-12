@@ -38,7 +38,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
@@ -47,6 +46,7 @@ import org.osgi.framework.ServiceReference;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.CorePlugin;
@@ -67,6 +67,7 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.metadata.MetadataToolAvroHelper;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.types.JavaType;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.metadata.types.PerlTypesManager;
 import org.talend.core.model.metadata.types.TypesManager;
@@ -1473,8 +1474,8 @@ public class Node extends Element implements IGraphicalNode {
                         } else { // add for feature TDI-17358
                             IMetadataTable sourceTable = connection.getMetadataTable();
                             if (sourceTable != null) {
-                                MetadataDialog dialog = new MetadataDialog(new Shell(), sourceTable.clone(),
-                                        connection.getSource(), null);
+                                MetadataDialog dialog = new MetadataDialog(DisplayUtils.getDefaultShell(false),
+                                        sourceTable.clone(), connection.getSource(), null);
                                 dialog.setInputReadOnly(false);
                                 dialog.setOutputReadOnly(false);
                                 if (dialog.open() == MetadataDialog.OK) {
@@ -1507,7 +1508,7 @@ public class Node extends Element implements IGraphicalNode {
     }
 
     private boolean getTakeSchema() {
-        return MessageDialog.openQuestion(new Shell(), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
+        return MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
@@ -3017,6 +3018,7 @@ public class Node extends Element implements IGraphicalNode {
 
             checktAggregateRow(param);
 
+            checkDynamicJobUsage(param);
         }
 
         checkJobletConnections();
@@ -3138,6 +3140,25 @@ public class Node extends Element implements IGraphicalNode {
                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
             }
         }
+    }
+
+    private void checkDynamicJobUsage(IElementParameter param) {
+        if (!EParameterName.USE_DYNAMIC_JOB.getName().equals(param.getName())) {
+            return;
+        }
+        boolean isSelectUseDynamic = false;
+        Object paramValue = param.getValue();
+        if (paramValue != null && paramValue instanceof Boolean) {
+            isSelectUseDynamic = (Boolean) paramValue;
+        }
+        if (isSelectUseDynamic) {
+            ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(process.getProperty().getItem());
+            if (ERepositoryObjectType.getAllTypesOfJoblet().contains(itemType)) {
+                String warningMessage = Messages.getString("Node.checkDynamicJobUsageWarning");
+                Problems.add(ProblemStatus.WARNING, this, warningMessage);
+            }
+        }
+
     }
 
     private void checkJobletConnections() {
@@ -3962,6 +3983,24 @@ public class Node extends Element implements IGraphicalNode {
                                 String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
                             }
+                            // just check the case:(javaType's primitiveClass is not null,
+                            // ex:int|integer,char|Character,*|*,which input is not nullable and output is nullable.
+                            if (inputMeta != null && column.isNullable()) {
+                                if (i < inputMeta.getListColumns().size()) {
+                                    IMetadataColumn columnInput = inputMeta.getListColumns().get(i);
+                                    if (!columnInput.isNullable()) {
+                                        String typevalueInput = columnInput.getTalendType();
+                                        JavaType javaType = JavaTypesManager.getJavaTypeFromId(typevalueInput);
+                                        Class primitiveClass = javaType.getPrimitiveClass();
+                                        if (StringUtils.equals(typevalue, typevalueInput) && primitiveClass != null) {
+                                            String errorMessage = "the schema's nullable not correct for this component"; //$NON-NLS-1$
+                                            Problems.add(ProblemStatus.WARNING, this, errorMessage);
+                                        }
+                                    }
+                                }
+
+                            }
+
                         }
                     }
                 }

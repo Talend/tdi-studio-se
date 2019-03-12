@@ -71,6 +71,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.PasswordEncryptUtil;
@@ -985,7 +986,8 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                     }
                     if (property.equals(contextParameterName)) {
                         if (value == null || "".equals(value) || nameList.contains(value)) {
-                            MessageDialog.openError(new Shell(), Messages.getString("ContextProcessSection.errorTitle"), //$NON-NLS-1$
+                            MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                                    Messages.getString("ContextProcessSection.errorTitle"), //$NON-NLS-1$
                                     Messages.getString("ContextProcessSection.ParameterNameIsNotValid")); //$NON-NLS-1$
                         } else {
                             contextParamType.setName((String) value);

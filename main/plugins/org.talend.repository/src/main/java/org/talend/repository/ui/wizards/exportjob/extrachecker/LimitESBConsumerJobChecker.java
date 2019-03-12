@@ -26,12 +26,12 @@ public class LimitESBConsumerJobChecker extends AbstractJobNodeChecker {
 
 	@Override
 	String checkNode(JobExportType exportType, NodeType nodeType) {
-		if (exportType == JobExportType.OSGI || exportType == JobExportType.MSESB) {
+        if (exportType == JobExportType.OSGI || exportType == JobExportType.MSESB || exportType == JobExportType.MSESB_IMAGE) {
 			return null;
 		}
 		String componentName = nodeType.getComponentName();
 		if (isESBConsumerComponent(componentName)) {
-			if (exportType != JobExportType.POJO) {
+			if (exportType != JobExportType.POJO && exportType != JobExportType.IMAGE) {
 				return Messages.getString("LimitESBConsumerJobChecker.limit_tRESTClient_tESBConsumer", componentName);
 			}
 			return checkLimitFeaturesWhenBuildStandalone(nodeType);

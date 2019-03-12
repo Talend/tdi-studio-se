@@ -198,12 +198,21 @@
    </PARAMETERS>
 
    <ADVANCED_PARAMETERS>
+   
+     <PARAMETER
+          NAME="USE_LOG_FILE"
+	      FIELD="CHECK"
+          NUM_ROW="10"
+          SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        >
+    </PARAMETER>
+    
 	<PARAMETER
       NAME="LOG_FILE"
       FIELD="FILE"
       NUM_ROW="10"
       REQUIRED="true"
-      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (USE_LOG_FILE == 'true')"
     >
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/redshift-jdbc.log"</DEFAULT>
     </PARAMETER>

@@ -39,9 +39,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.swt.colorstyledtext.ColorStyledText;
 import org.talend.commons.utils.system.EnvironmentUtils;
@@ -486,7 +486,7 @@ public class ComboController extends AbstractElementPropertySectionController {
 
                 // repositoryMetadata = repositoryTableMap.get(schemaSelected);
             } else if (newRepositoryMetadata == null) {
-                MessageDialog.openWarning(new Shell(),
+                MessageDialog.openWarning(DisplayUtils.getDefaultShell(false),
                         Messages.getString("ComboController.alert"), Messages.getString("ComboController.nothingGuess")); //$NON-NLS-1$ //$NON-NLS-2$
                 return cmd;
             }

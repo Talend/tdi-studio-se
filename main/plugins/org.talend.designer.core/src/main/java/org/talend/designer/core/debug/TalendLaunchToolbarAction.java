@@ -35,6 +35,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -242,7 +243,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
 
     private Shell getShell() {
         if (window == null) {
-            return new Shell();
+            return DisplayUtils.getDefaultShell(false);
         } else {
             return window.getShell();
         }
