@@ -16,8 +16,6 @@ import org.talend.xml.sax.commons.ISAXLooper;
 import org.talend.xml.sax.function.inter.Function;
 import org.talend.xml.sax.io.UnicodeReader;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.helpers.DefaultHandler;
 
 // ============================================================================
