@@ -67,6 +67,7 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.metadata.MetadataToolAvroHelper;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.types.JavaType;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.metadata.types.PerlTypesManager;
 import org.talend.core.model.metadata.types.TypesManager;
@@ -3962,6 +3963,21 @@ public class Node extends Element implements IGraphicalNode {
                                 String errorMessage = "the schema's dbType not correct for this component"; //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
                             }
+                            // just check the case:(javaType's primitiveClass is not null,
+                            // ex:int|integer,char|Character,*|*,which input is not nullable and output is nullable.
+                            if (inputMeta != null && column.isNullable()) {
+                                IMetadataColumn columnInput = inputMeta.getListColumns().get(i);
+                                if (!columnInput.isNullable()) {
+                                    String typevalueInput = columnInput.getTalendType();
+                                    JavaType javaType = JavaTypesManager.getJavaTypeFromId(typevalueInput);
+                                    Class primitiveClass = javaType.getPrimitiveClass();
+                                    if (StringUtils.equals(typevalue, typevalueInput) && primitiveClass != null) {
+                                        String errorMessage = "the schema's nullable not correct for this component"; //$NON-NLS-1$
+                                        Problems.add(ProblemStatus.WARNING, this, errorMessage);
+                                    }
+                                }
+                            }
+
                         }
                     }
                 }

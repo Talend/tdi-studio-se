@@ -26,30 +26,28 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         List<IMetadataColumn> listColumns = metadata.getListColumns(); 
         String needAuth = ElementParameterParser.getValue(node, "__NEED_AUTH__");
         String authUsername = ElementParameterParser.getValue(node, "__AUTH_USERNAME__");
-		String authPassword = ElementParameterParser.getValue(node, "__AUTH_PASSWORD__");
+        String authPassword = ElementParameterParser.getValue(node, "__AUTH_PASSWORD__");
         List<Map<String, String>> params = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__PARAMS__");
         String  url=ElementParameterParser.getValue(node,"__SERVER-URL__");
         String  method=ElementParameterParser.getValue(node,"__METHOD__");
 %>
 org.apache.xmlrpc.client.XmlRpcClientConfigImpl config<%=cid%>= new org.apache.xmlrpc.client.XmlRpcClientConfigImpl();
 config<%=cid%>.setServerURL(new java.net.URL(<%=url%>));
-config<%=cid%>.setEnabledForExtensions(true);  
+config<%=cid%>.setEnabledForExtensions(true);
 config<%=cid%>.setConnectionTimeout(60 * 1000);
 config<%=cid%>.setReplyTimeout(60 * 1000);
 <%
  if ("true".equals(needAuth)) {
  %>
-	config<%=cid%>.setBasicUserName(<%=authUsername%>);
-	
-    <%
+    config<%=cid%>.setBasicUserName(<%=authUsername%>);
+<%
     String passwordFieldName = "__AUTH_PASSWORD__";
-    %>
-    
+%>
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>	
 	
 	config<%=cid%>.setBasicPassword(decryptedPassword_<%=cid%>);
- <%
-}
+<%
+ }
 %>
 org.apache.xmlrpc.client.XmlRpcClient client<%=cid%> = new org.apache.xmlrpc.client.XmlRpcClient();
 // use Commons HttpClient as transport
@@ -58,55 +56,57 @@ org.apache.xmlrpc.client.XmlRpcClient client<%=cid%> = new org.apache.xmlrpc.cli
         // set configuration
 		client<%=cid%>.setConfig(config<%=cid%>);
         // make the a regular call
-        Object[] params_<%=cid %> = new Object[] {         
-	  <%
-	        for (int i = 0; i < params.size(); i++) {
-	            Map<String, String> line = params.get(i);
-	  %>
-	        	<%= line.get("VALUE") %>,
-		    <%
-	        }
-		    %>      
-        };  
+        Object[] params_<%=cid %> = new Object[] {
+<%
+            for (int i = 0; i < params.size(); i++) {
+                Map<String, String> line = params.get(i);
+%>
+                <%= line.get("VALUE") %>,
+<%
+            }
+%>
+        };
         Object[] results_<%=cid %> = null;
-	    int nb_line_<%=cid %> = 0;	 
-	    <%log.debug(log.str("Invoking the method "), method, log.str("."));%>
+        int nb_line_<%=cid %> = 0;
+        <%log.debug(log.str("Invoking the method "), method, log.str("."));%>
         Object reValue<%=cid%> = client<%=cid%>.execute(<%=method%>, params_<%=cid %>);
         <%log.debug(log.str("Invoke the method "), method, log.str(" has succeeded."));%>
         
         Object[] tempArray_<%=cid %> = null;
-		if (reValue<%=cid%> instanceof Object[]) {			
-			tempArray_<%=cid %> = (Object[]) reValue<%=cid%>;
-		} else {
-			tempArray_<%=cid %> = new Object[1];
-			tempArray_<%=cid %>[0] = reValue<%=cid%>;
-		}
+        if (reValue<%=cid %> != null && reValue<%=cid %>.getClass().isArray()) {
+            int arrayLength = java.lang.reflect.Array.getLength(reValue<%=cid %>);
+            tempArray_<%=cid %> = new Object[arrayLength];
+            for (int i = 0; i < arrayLength; i++) {
+                tempArray_<%=cid %>[i] = java.lang.reflect.Array.get(reValue<%=cid %>, i);
+            }
+        } else {
+            tempArray_<%=cid %> = new Object[1];
+            tempArray_<%=cid %>[0] = reValue<%=cid%>;
+    }
+
         for (int i_<%=cid %> = 0; i_<%=cid %> < tempArray_<%=cid %>.length; i_<%=cid %>++) {
-		    results_<%=cid %> = new Object[<%=listColumns.size() %>];		    
-			
-			if (tempArray_<%=cid %>[i_<%=cid %>] instanceof java.util.Map) {
-				java.util.Map map_<%=cid %> = (java.util.Map)tempArray_<%=cid %>[i_<%=cid %>];
+            results_<%=cid %> = new Object[<%=listColumns.size() %>];
+
+            if (tempArray_<%=cid %>[i_<%=cid %>] instanceof java.util.Map) {
+                java.util.Map map_<%=cid %> = (java.util.Map)tempArray_<%=cid %>[i_<%=cid %>];
                 java.util.Collection values_<%=cid %> = map_<%=cid %>.values();
                 int len_<%=cid %> = Math.min(values_<%=cid %>.size(), results_<%=cid %>.length);
                 int k_<%=cid %> = 0;
                 for (java.util.Iterator iter_<%=cid %> = values_<%=cid %>.iterator(); iter_<%=cid %>.hasNext() && k_<%=cid %> < len_<%=cid %>; k_<%=cid %>++) {
                     results_<%=cid %>[k_<%=cid %>] =iter_<%=cid %>.next();
                     if(results_<%=cid %>[k_<%=cid %>] instanceof Object[] ){
-                    	java.util.List<Object> val_<%=cid%> = new java.util.ArrayList<Object>();
-                    	//results_<%=cid %> = org.talend.rpc.util.ArrayUtilities.dumpMapInArray((Object[])results_<%=cid %>[k_<%=cid %>], val_<%=cid%>).toArray();
-                    	results_<%=cid %>[k_<%=cid %>] = org.talend.rpc.util.ArrayUtilities.dumpMapInArray((Object[])results_<%=cid %>[k_<%=cid %>], val_<%=cid%>).toArray();
+                        java.util.List<Object> val_<%=cid%> = new java.util.ArrayList<>();
+                        results_<%=cid %>[k_<%=cid %>] = org.talend.rpc.util.ArrayUtilities.dumpMapInArray((Object[])results_<%=cid %>[k_<%=cid %>], val_<%=cid%>).toArray();
 
+                    } else {
+                        results_<%=cid %>[k_<%=cid %>] =String.valueOf(results_<%=cid %>[k_<%=cid %>]);
                     }
-                    else 
-                     results_<%=cid %>[k_<%=cid %>] =String.valueOf(results_<%=cid %>[k_<%=cid %>]);
-                    	
-                }				
+                }
 			} else {
 				results_<%=cid %>[0] = String.valueOf(tempArray_<%=cid %>[i_<%=cid %>]);
 			}
-			
         nb_line_<%=cid %>++;
-	       
+
 // for output
 <%
 	List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
@@ -114,7 +114,7 @@ org.apache.xmlrpc.client.XmlRpcClient client<%=cid%> = new org.apache.xmlrpc.cli
 	if (conns!=null) {//1
 		if (conns.size()>0) {//2
 			IConnection conn = conns.get(0); //the first connection
-			firstConnName = conn.getName();			
+			firstConnName = conn.getName();
 			if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//3
     			List<IMetadataColumn> columns=metadata.getListColumns();
     			int columnSize = columns.size();
@@ -125,24 +125,23 @@ org.apache.xmlrpc.client.XmlRpcClient client<%=cid%> = new org.apache.xmlrpc.cli
     				String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
 			%>
 			
-			if(<%=i %> < results_<%=cid %>.length && results_<%=cid %>[<%=i %>]!=null){				
+			if(<%=i %> < results_<%=cid %>.length && results_<%=cid %>[<%=i %>]!=null){
 <%
 					if(javaType == JavaTypesManager.STRING || javaType == JavaTypesManager.OBJECT) { //String or Object
 %>
-					<%=conn.getName() %>.<%=column.getLabel() %> = results_<%=cid %>[<%=i %>].toString();
+						<%=conn.getName() %>.<%=column.getLabel() %> = results_<%=cid %>[<%=i %>].toString();
 <%
 					} else if(javaType == JavaTypesManager.DATE) { //Date
 %>
-					<%=conn.getName() %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(results_<%=cid %>[<%=i %>], <%= patternValue %>);
+						<%=conn.getName() %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(results_<%=cid %>[<%=i %>], <%= patternValue %>);
 <%
 					} else if(javaType == JavaTypesManager.BYTE_ARRAY) { //byte[]
 %>
-					<%=conn.getName() %>.<%=column.getLabel() %> = results_<%=cid %>[<%=i %>].getBytes();
-	
+						<%=conn.getName() %>.<%=column.getLabel() %> = results_<%=cid %>[<%=i %>].getBytes();
 <%
 					} else  { //other
 %>						
-					<%=conn.getName() %>.<%=column.getLabel() %> = ParserUtils.parseTo_<%= typeToGenerate %>(results_<%=cid %>[<%=i %>]);
+					<%=conn.getName() %>.<%=column.getLabel() %> = ParserUtils.parseTo_<%= typeToGenerate %>(String.valueOf(results_<%=cid %>[<%=i %>]));
 <%
 					}
 %>

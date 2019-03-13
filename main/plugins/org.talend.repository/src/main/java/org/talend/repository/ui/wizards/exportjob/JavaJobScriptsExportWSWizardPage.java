@@ -1240,7 +1240,11 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             createOptionsForMSESB(left, font);
             createDockerOptions();
             restoreWidgetValuesForImage();
-            addDockerOptionsListener();
+
+            if (checkExport()) {
+                addDockerOptionsListener();
+            }
+
             contextButton.setSelection(false);
             break;
         case IMAGE:
