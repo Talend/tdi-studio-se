@@ -88,13 +88,13 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
      */
     public static enum JobExportType {
 
-    POJO(Messages.getString("JavaJobScriptsExportWSWizardPage.POJO"), false), //$NON-NLS-1$
-    OSGI(Messages.getString("JavaJobScriptsExportWSWizardPage.OSGI"), false), //$NON-NLS-1$
-    MSESB(Messages.getString("JavaJobScriptsExportWSWizardPage.MSESB"), false), //$NON-NLS-1$
-    MSESB_IMAGE(Messages.getString("JavaJobScriptsExportWSWizardPage.MSESB_IMAGE"), false), //$NON-NLS-1$
-    IMAGE(Messages.getString("JavaJobScriptsExportWSWizardPage.IMAGE"), false), //$NON-NLS-1$
-    ROUTE(Messages.getString("JavaJobScriptsExportWSWizardPage.ROUTE"), false), //$NON-NLS-1$
-    SERVICE(Messages.getString("JavaJobScriptsExportWSWizardPage.SERVICE"), false); //$NON-NLS-1$
+        POJO(Messages.getString("JavaJobScriptsExportWSWizardPage.POJO"), false), //$NON-NLS-1$
+        OSGI(Messages.getString("JavaJobScriptsExportWSWizardPage.OSGI"), false), //$NON-NLS-1$
+        MSESB(Messages.getString("JavaJobScriptsExportWSWizardPage.MSESB"), false), //$NON-NLS-1$
+        MSESB_IMAGE(Messages.getString("JavaJobScriptsExportWSWizardPage.MSESB_IMAGE"), false), //$NON-NLS-1$
+        IMAGE(Messages.getString("JavaJobScriptsExportWSWizardPage.IMAGE"), false), //$NON-NLS-1$
+        ROUTE(Messages.getString("JavaJobScriptsExportWSWizardPage.ROUTE"), false), //$NON-NLS-1$
+        SERVICE(Messages.getString("JavaJobScriptsExportWSWizardPage.SERVICE"), false); //$NON-NLS-1$
 
         public final String label;
 
@@ -209,6 +209,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     private Text hostText, imageText, tagText;
 
     private Label hostLabel, imageLabel, tagLabel;
+
+    private boolean isValid;
 
     public JavaJobScriptsExportWSWizardPage(IStructuredSelection selection, String exportType) {
         super(selection);
@@ -1297,7 +1299,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     @Override
     protected boolean validateOptionsGroup() {
         setErrorMessage(null);
-        boolean isValid = super.validateOptionsGroup();
+        isValid = super.validateOptionsGroup();
 
         // TESB-13867 Export limitations for ESB 'Jobs'
         // add extra checks.
@@ -1305,7 +1307,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             String errorMsg = presenter.extraCheck(getCurrentExportType1(), getCheckNodes());
             if (errorMsg != null) {
                 setErrorMessage(errorMsg);
-                return false;
+                isValid = false;
+                // return false;
             }
         }
         setPageComplete(isValid);
@@ -1554,20 +1557,21 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     }
 
     private boolean isOptionValid(Text text, String label) {
-        boolean isValid = false;
+        boolean isDockerValid = false;
+
         // If no error message is already displayed
-        if (StringUtils.isBlank(getErrorMessage())) {
+        if (isValid) {
             if (StringUtils.isBlank(text.getText())) {
                 setErrorMessage(Messages.getString("JavaJobScriptsExportWSWizardPage.DOCKER.errorMsg", label)); //$NON-NLS-1$
                 setPageComplete(false);
-                isValid = false;
+                isDockerValid = false;
             } else {
                 setErrorMessage(null);
                 setPageComplete(true);
-                isValid = true;
+                isDockerValid = true;
             }
         }
-        return isValid;
+        return isDockerValid;
     }
 
     protected void createOptionsForWS(Composite optionsGroup, Font font) {
@@ -1700,7 +1704,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             String errorMsg = presenter.extraCheck(getCurrentExportType1(), getCheckNodes());
             if (errorMsg != null) {
                 setErrorMessage(errorMsg);
-                return false;
+                noError = false;
             }
         }
 
