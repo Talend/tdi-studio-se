@@ -90,6 +90,9 @@ public class ConnectionCreateCommand extends Command {
         this.metaName = (String) listArgs.get(0);
         this.connectionName = (String) listArgs.get(1);
         newMetadata = (IMetadataTable) listArgs.get(2);
+        if (listArgs.size() >= 4) {
+            connectionParameters = (Map<EParameterName, Object>) listArgs.get(3);
+        }        
     }
 
     public ConnectionCreateCommand(Node nodeSource, String connectorName, List<Object> listArgs, boolean insertTMap) {
@@ -100,9 +103,6 @@ public class ConnectionCreateCommand extends Command {
         this.connectionName = (String) listArgs.get(1);
         this.insertTMap = insertTMap;
         newMetadata = (IMetadataTable) listArgs.get(2);
-        if (listArgs.size() >= 4) {
-        	connectionParameters = (Map<EParameterName, Object>) listArgs.get(3);
-        }        
     }
 
     /**

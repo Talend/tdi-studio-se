@@ -529,6 +529,22 @@ public class Connection extends Element implements IConnection, IPerformance {
                 }
             }
         }
+        
+        updateParametersValues();
+    }
+    
+    private void updateParametersValues() {
+    	
+    	if (paramValues == null) {
+    		return;
+    	}
+    	
+        for (Map.Entry<EParameterName, Object> param : paramValues.entrySet()) {
+        	if (param.getValue() != null) {
+        		setPropertyValue(param.getKey().getName(), param.getValue());
+        	}
+			
+		}        
     }
 
     private void createParallelizeParameters() {
@@ -653,22 +669,6 @@ public class Connection extends Element implements IConnection, IPerformance {
         tmpParam.setShowIf("(DEPARTITIONER == 'true' or REPARTITIONER=='true')");
         tmpParam.setDefaultValue(tmpParam.getValue());
         addElementParameter(tmpParam);
-        
-        updateParametersValues();
-    }
-    
-    private void updateParametersValues() {
-    	
-    	if (paramValues == null) {
-    		return;
-    	}
-    	
-        for (Map.Entry<EParameterName, Object> param : paramValues.entrySet()) {
-        	if (param.getValue() != null) {
-        		setPropertyValue(param.getKey().getName(), param.getValue());
-        	}
-			
-		}        
     }
 
     /**
