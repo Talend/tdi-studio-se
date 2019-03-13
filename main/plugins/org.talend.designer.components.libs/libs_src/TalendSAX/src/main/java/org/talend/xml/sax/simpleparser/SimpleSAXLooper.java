@@ -225,8 +225,8 @@ public class SimpleSAXLooper implements ISAXLooper, Callable {
             SAXParser saxParser = null;
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
             if (ignoreDTD) { // orginal code
+                spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
                 spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             }
             saxParser = spf.newSAXParser();

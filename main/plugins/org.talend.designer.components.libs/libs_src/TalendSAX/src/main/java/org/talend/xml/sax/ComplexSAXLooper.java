@@ -16,6 +16,8 @@ import org.talend.xml.sax.commons.ISAXLooper;
 import org.talend.xml.sax.function.inter.Function;
 import org.talend.xml.sax.io.UnicodeReader;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.helpers.DefaultHandler;
 
 // ============================================================================
@@ -142,14 +144,7 @@ public class ComplexSAXLooper implements ISAXLooper {
         Reader reader = null;
         try {
             DefaultHandler hd = null;
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
-            SAXParser saxParser = null;
-            if (ignoreDTD) {
-                spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            }
-            saxParser = spf.newSAXParser();
+            SAXParser saxParser = createSaxParser();
             if (rootPath == null || rootPath.equals("")) {
                 hd = newHandler();
             } else {
@@ -187,10 +182,7 @@ public class ComplexSAXLooper implements ISAXLooper {
         Reader reader = null;
         try {
             DefaultHandler hd = null;
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
-            SAXParser saxParser = spf.newSAXParser();
+            SAXParser saxParser = createSaxParser();
             if (rootPath == null || rootPath.equals("")) {
                 hd = newHandler();
             } else {
@@ -217,6 +209,22 @@ public class ComplexSAXLooper implements ISAXLooper {
                 }
             }
         }
+    }
+
+    /**
+     * Create Sax parser and set required security features to it
+     * @return sax parser with required security features set
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
+    private SAXParser createSaxParser() throws ParserConfigurationException, SAXException {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+        if (ignoreDTD) {
+            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
+            spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        }
+        return spf.newSAXParser();
     }
 
     /**
