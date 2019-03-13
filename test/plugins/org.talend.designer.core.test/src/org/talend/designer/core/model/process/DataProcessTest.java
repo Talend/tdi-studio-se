@@ -17,15 +17,28 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.talend.core.context.Context;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.context.JobContextManager;
+import org.talend.core.model.context.JobContextParameter;
 import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.process.IContext;
+import org.talend.core.model.process.IContextManager;
+import org.talend.core.model.process.IContextParameter;
+import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IGenericElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
+import org.talend.core.model.properties.Property;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.test.util.NodeTestCreator;
+import org.talend.designer.core.test.util.SimpleInputComponent;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.TestUtils;
@@ -38,17 +51,45 @@ public class DataProcessTest {
 
     private static final String TEST_COMPONENT_NAME = "tSalesforceInput"; //$NON-NLS-1$
 
+    private static final String TEST_SALESFORCE_CONNECTION_NAME = "tSalesforceConnection"; //$NON-NLS-1$
+
     private static IComponent testComponent;
+
+    private static IComponent testComponent_1;
 
     private Process process;
 
+    private Process process_1;
+
+    private Process process_2;
+
     private DataProcess dataProcess;
 
+    private TestDataProcess testDataProcess;
+
     private INode testNode;
+
+    private Node sourceNode;
+
+    private Node targetNode;
+
+    private static class TestDataProcess extends DataProcess {
+
+        public TestDataProcess(IProcess process) {
+            super(process);
+        }
+
+        @Override
+        protected void copyElementParametersValue(IElement sourceElement, IElement targetElement) {
+            super.copyElementParametersValue(sourceElement, targetElement);
+        }
+    }
 
     @BeforeClass
     public static void beforeClass() {
         testComponent = ComponentsFactoryProvider.getInstance().get(TEST_COMPONENT_NAME,
+                ComponentCategory.CATEGORY_4_DI.getName());
+        testComponent_1 = ComponentsFactoryProvider.getInstance().get(TEST_SALESFORCE_CONNECTION_NAME,
                 ComponentCategory.CATEGORY_4_DI.getName());
     }
 
@@ -57,6 +98,51 @@ public class DataProcessTest {
         process = new Process(TestUtils.createDefaultProperty());
         dataProcess = new DataProcess(process);
         testNode = new Node(testComponent, process);
+
+        testDataProcess = new TestDataProcess(process_1);
+        process_1 = new Process(TestUtils.createDefaultProperty());
+        process_2 = new Process(TestUtils.createDefaultProperty());
+        process_1.addUniqueNodeName("testProcess1"); //$NON-NLS-1$
+        process_2.addUniqueNodeName("testProcess2"); //$NON-NLS-1$
+
+        sourceNode = new Node(testComponent_1, process_1);
+        targetNode = new Node(testComponent_1, process_2);
+
+        IContextManager cm = process_1.getContextManager();
+        if (cm == null) {
+            cm = new JobContextManager();
+        }
+
+        for (IElementParameter param : sourceNode.getElementParameters()) {
+            if (param.getClass().getName().equals("org.talend.designer.core.generic.model.GenericElementParameter")) //$NON-NLS-1$
+            {
+                if (param.getName().equals("loginType")) { //$NON-NLS-1$
+                    param.setFieldType(EParameterFieldType.CLOSED_LIST);
+                    param.setContextMode(true);
+                    param.setName("context.salesForce_Connection_loginType"); //$NON-NLS-1$
+                    param.setValue("OAuth"); //$NON-NLS-1$
+                } else if (param.getName().equals("oauth2FlowType")) { //$NON-NLS-1$
+                    param.setFieldType(EParameterFieldType.CLOSED_LIST);
+                    param.setContextMode(true);
+                    param.setName("context.salesForce_Connection_oauth2FlowType"); //$NON-NLS-1$
+                    param.setValue("JWT_Flow"); //$NON-NLS-1$
+                }
+            }
+        }
+
+        IContext context = cm.getDefaultContext();
+        context.setName("test"); //$NON-NLS-1$
+        JobContextParameter connTypeParam = new JobContextParameter();
+        connTypeParam.setName("context.salesForce_Connection_loginType"); //$NON-NLS-1$
+        connTypeParam.setValue("OAuth"); //$NON-NLS-1$
+        connTypeParam.setSource(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+        IContextParameter toAdd = connTypeParam.clone();
+        context.getContextParameterList().add(toAdd);
+        JobContextParameter oauth2FlowTypeParam = new JobContextParameter();
+        oauth2FlowTypeParam.setName("context.salesForce_Connection_oauth2FlowType"); //$NON-NLS-1$
+        oauth2FlowTypeParam.setValue("JWT_Flow"); //$NON-NLS-1$
+        toAdd = oauth2FlowTypeParam.clone();
+        context.getContextParameterList().add(toAdd);
     }
 
     @Test
@@ -88,6 +174,27 @@ public class DataProcessTest {
         propertyElementParameter.getChildParameters().get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName()).setValue(null);
         TestUtils.invokePrivateMethod(dataProcess, "checkUseHadoopConfs", new Object[] { simpleInputNode }, INode.class); //$NON-NLS-1$
         assertFalse(containsHadoopConfsNode());
+    }
+
+    @Test
+    public void testCopyElementParametersValue() {
+        testDataProcess.copyElementParametersValue(sourceNode, targetNode);
+        for (IElementParameter sourceParameter : sourceNode.getElementParameters()) {
+            IElementParameter targetParam = targetNode.getElementParameter(sourceParameter.getName());
+            if (!sourceParameter.getFieldType().equals(EParameterFieldType.CLOSED_LIST)) {
+                assertEquals(sourceParameter.getValue(), targetParam.getValue());
+            } else {
+                if (sourceParameter.getName().equals("context.salesForce_Connection_loginType")) { //$NON-NLS-1$
+                    assertEquals(targetParam.getName(), "context.salesForce_Connection_loginType"); //$NON-NLS-1$
+                    assertEquals(targetParam.getValue(), "OAuth"); //$NON-NLS-1$
+                }
+
+                if (sourceParameter.getName().equals("context.salesForce_Connection_oauth2FlowType")) { //$NON-NLS-1$
+                    assertEquals(targetParam.getName(), "context.salesForce_Connection_oauth2FlowType"); //$NON-NLS-1$
+                    assertEquals(targetParam.getValue(), "JWT_Flow"); //$NON-NLS-1$
+                }
+            }
+        }
     }
 
     private boolean containsHadoopConfsNode() {
