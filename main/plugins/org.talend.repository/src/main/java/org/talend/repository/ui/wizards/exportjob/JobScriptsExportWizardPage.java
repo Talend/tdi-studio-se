@@ -1508,9 +1508,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             String destinationStr = destination.toString();
             if (separatorIndex == -1) {
                 String userDir = System.getProperty("user.dir"); //$NON-NLS-1$
-                StringBuilder newDes = new StringBuilder();
-                newDes.append(userDir + File.separator + destinationStr);
-                destinationStr = newDes.toString();
+                destinationStr = userDir + File.separator + destinationStr;
             }
             exportChoiceMap.put(ExportChoice.addStatistics, Boolean.TRUE);
             return BuildJobManager.getInstance().buildJobs(destinationStr, checkedNodes, getDefaultFileName(),
