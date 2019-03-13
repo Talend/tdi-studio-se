@@ -66,6 +66,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalData;
 import org.talend.core.model.process.IExternalNode;
+import org.talend.core.model.process.IGenericElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
@@ -89,6 +90,7 @@ import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesVisitor;
+import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
@@ -173,7 +175,7 @@ public class DataProcess implements IGeneratingProcess {
         shortUniqueNameList = new ArrayList<String>();
     }
 
-    private void copyElementParametersValue(IElement sourceElement, IElement targetElement) {
+    protected void copyElementParametersValue(IElement sourceElement, IElement targetElement) {
         if (IAdditionalInfo.class.isInstance(sourceElement) && IAdditionalInfo.class.isInstance(targetElement)) {
             IAdditionalInfo.class.cast(sourceElement).cloneAddionalInfoTo((IAdditionalInfo) targetElement);
         }
@@ -188,7 +190,24 @@ public class DataProcess implements IGeneratingProcess {
                 }
 
                 targetParam.setContextMode(sourceParam.isContextMode());
-                targetParam.setValue(sourceParam.getValue());
+                if (sourceElement instanceof INode && sourceParam instanceof IGenericElementParameter) {
+                    IComponent component = ((INode) sourceElement).getComponent();
+                    if (component instanceof AbstractBasicComponent
+                            && EComponentType.GENERIC.equals(component.getComponentType())) {
+                        org.talend.daikon.properties.property.Property property = ((IGenericElementParameter) sourceParam)
+                                .getProperty();
+                        if (sourceParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST) && property != null) {
+                            PropertyValueEvaluator evaluator = property.getValueEvaluator();
+                            if(evaluator != null) {
+                                targetParam.setValue(evaluator.evaluate(property, sourceParam.getValue()));
+                            } else {
+                                targetParam.setValue(sourceParam.getValue());
+                            }
+                        } else {
+                            targetParam.setValue(sourceParam.getValue());
+                        }
+                    }
+                }
                 if (sourceParam.getValue() instanceof List) {
                     List sourceList = (List) sourceParam.getValue();
                     List targetList = new ArrayList();
