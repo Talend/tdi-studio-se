@@ -6,6 +6,7 @@ imports="
         org.talend.core.model.metadata.IMetadataColumn
         org.talend.core.model.process.IProcess
         org.talend.core.model.process.INode
+        org.talend.core.model.utils.TalendTextUtils
         java.io.File
         java.io.BufferedWriter
         java.io.FileOutputStream
@@ -139,7 +140,7 @@ imports="
                                                                            }
                                                                             if(imetadataColumn.getComment() != null && !"".equals(imetadataColumn.getComment())){
                                                                       %>
-                                                                      .comment("<%= imetadataColumn.getComment()%>")
+                                                                      .comment("<%= TalendTextUtils.escapeJavaText(imetadataColumn.getComment())%>")
                                                                       <%
                                                                             }
                                                                       %>

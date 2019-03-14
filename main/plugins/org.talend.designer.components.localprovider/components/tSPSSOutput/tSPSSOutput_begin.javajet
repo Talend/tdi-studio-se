@@ -9,6 +9,7 @@ imports="
     org.talend.designer.codegen.config.CodeGeneratorArgument
     org.talend.core.model.metadata.types.JavaTypesManager
     org.talend.core.model.metadata.types.JavaType
+    org.talend.core.model.utils.TalendTextUtils
     java.util.List
 "
 %>
@@ -82,7 +83,7 @@ if (inputConnName != null){
 				}
 				if(column.getComment()!=null || column.getComment().length()>0){
 %>
-					spVar_<%=i%>.setLabel("<%=column.getComment()%>");
+					spVar_<%=i%>.setLabel("<%=TalendTextUtils.escapeJavaText(column.getComment())%>");
 <%
 				}
 %>
