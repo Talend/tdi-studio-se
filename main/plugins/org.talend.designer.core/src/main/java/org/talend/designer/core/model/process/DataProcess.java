@@ -190,6 +190,7 @@ public class DataProcess implements IGeneratingProcess {
                 }
 
                 targetParam.setContextMode(sourceParam.isContextMode());
+                targetParam.setValue(sourceParam.getValue());
                 if (sourceElement instanceof INode && sourceParam instanceof IGenericElementParameter) {
                     IComponent component = ((INode) sourceElement).getComponent();
                     if (component instanceof AbstractBasicComponent
@@ -198,13 +199,9 @@ public class DataProcess implements IGeneratingProcess {
                                 .getProperty();
                         if (sourceParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST) && property != null) {
                             PropertyValueEvaluator evaluator = property.getValueEvaluator();
-                            if(evaluator != null) {
+                            if (evaluator != null) {
                                 targetParam.setValue(evaluator.evaluate(property, sourceParam.getValue()));
-                            } else {
-                                targetParam.setValue(sourceParam.getValue());
                             }
-                        } else {
-                            targetParam.setValue(sourceParam.getValue());
                         }
                     }
                 }
