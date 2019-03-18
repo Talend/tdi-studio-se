@@ -826,7 +826,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         
         // TESB-24730 set specific version for "javax.annotation"
         ImportedPackageRangeReplacer r = new ImportedPackageRangeReplacer();
-        r.addRange("javax.annotation", "[1.3,2]");
+        r.addRange("javax.annotation", "[1.3,2)");
         analyzer.addBasicPlugin(r);
 
         return analyzer;
