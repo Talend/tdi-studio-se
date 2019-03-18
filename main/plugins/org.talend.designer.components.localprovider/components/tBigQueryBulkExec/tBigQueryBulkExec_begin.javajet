@@ -356,7 +356,7 @@
 		queryLoad_<%=cid%>.setDestinationTable(destinationTable_<%=cid%>);
 		queryLoad_<%=cid%>.setSourceUris(java.util.Arrays.asList(<%=ElementParameterParser.getValue(node, "__GS_FILE__")%>));
 		queryLoad_<%=cid%>.setSkipLeadingRows(<%=ElementParameterParser.getValue(node, "__GS_FILE_HEADER__")%>);
-	
+		queryLoad_<%=cid%>.setNullMarker("\\N");
 		config_<%=cid%>.setLoad(queryLoad_<%=cid%>);
 		
 		job_<%=cid%>.setConfiguration(config_<%=cid%>);
@@ -460,6 +460,7 @@
 		/* ----START-CREATING-JOB (Cloud API)---- */
 		com.google.cloud.bigquery.TableId tableId_<%=cid%> = com.google.cloud.bigquery.TableId.of(<%=projectId%>, <%=dataset%>, <%=table%>);
 		com.google.cloud.bigquery.Table table_<%=cid%> = bigquery_<%=cid%>.getTable(tableId_<%=cid%>);
+		com.google.cloud.bigquery.LoadJobConfiguration.Builder loadJobBuilder_<%=cid%> = com.google.cloud.bigquery.LoadJobConfiguration.newBuilder(tableId_<%=cid%>, <%=gsFile%>);
 		if (<%=ElementParameterParser.getBooleanValue(node, "__DROP__")%> && table_<%=cid%> != null) {
 			boolean deleted = bigquery_<%=cid%>.delete(tableId_<%=cid%>);	
 			if (deleted) {
@@ -521,11 +522,18 @@
 				}
 			}
 			%>
+			
 			com.google.cloud.bigquery.Schema schema_<%=cid%> = com.google.cloud.bigquery.Schema.of(fields_<%=cid%>);
 			com.google.cloud.bigquery.TableInfo tableInfo_<%=cid%> = com.google.cloud.bigquery.TableInfo.newBuilder(tableId_<%=cid%>, com.google.cloud.bigquery.StandardTableDefinition.of(schema_<%=cid%>)).build();
 			table_<%=cid%> = bigquery_<%=cid%>.create(tableInfo_<%=cid%>);
+			loadJobBuilder_<%=cid%>.setSchema(schema_<%=cid%>);
+			
 		}
-		com.google.cloud.bigquery.Job job_<%=cid%> = table_<%=cid%>.load(com.google.cloud.bigquery.FormatOptions.csv(), <%=gsFile%>);
+		
+		com.google.cloud.bigquery.LoadJobConfiguration configuration_<%=cid%> = loadJobBuilder_<%=cid%>.setNullMarker("\\N")
+																				.setFormatOptions(com.google.cloud.bigquery.FormatOptions.csv())
+																				.build();
+		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(configuration_<%=cid%>));
 		job_<%=cid%> = job_<%=cid%>.waitFor(com.google.cloud.RetryOption.initialRetryDelay(org.threeten.bp.Duration.ofSeconds(1)), com.google.cloud.RetryOption.totalTimeout(org.threeten.bp.Duration.ofSeconds(30)));
 		if (job_<%=cid%> != null && job_<%=cid%>.getStatus().getError() == null) {
 			<%
