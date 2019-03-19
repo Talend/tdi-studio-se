@@ -26,7 +26,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.dialog.mergeorder.ErrorMessageDialog;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
@@ -184,9 +184,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
         if (request.getType().equals("open")) { //$NON-NLS-1$
             Node node = ((NodeContainer) ((NodeContainerPart) getParent()).getModel()).getNode();
             if (node.isErrorFlag()) {
-                Shell shell = getViewer().getControl().getShell();
-
-                ErrorMessageDialog dialog = new ErrorMessageDialog(new Shell(shell), node);
+                ErrorMessageDialog dialog = new ErrorMessageDialog(DisplayUtils.getDefaultShell(false), node);
                 dialog.open();
             }
         }

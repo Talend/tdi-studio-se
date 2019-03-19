@@ -308,9 +308,6 @@ public class AllTypeDialog extends Dialog {
 
     private class AllTypeLabelProvider extends LabelProvider {
 
-        /**
-         * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
-         */
         @Override
         public String getText(Object element) {
             ParameterInfo info = (ParameterInfo) element;

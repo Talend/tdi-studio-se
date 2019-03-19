@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.talend.designer.core
 Bundle-ManifestVersion: 2
 Bundle-Name: Designer Core Plug-in
 Bundle-SymbolicName: org.talend.designer.core;singleton:=true
@@ -8,7 +9,6 @@ Bundle-ClassPath: .
 Bundle-Activator: org.talend.designer.core.DesignerPlugin
 Require-Bundle: org.talend.model,
  org.eclipse.osgi.services,
- org.eclipse.core.runtime.compatibility,
  org.eclipse.jface.text,
  org.eclipse.ui.ide,
  org.eclipse.ui.editors,

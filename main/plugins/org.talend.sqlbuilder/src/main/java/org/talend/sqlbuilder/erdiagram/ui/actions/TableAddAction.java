@@ -18,8 +18,8 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.sqlbuilder.Messages;
 import org.talend.sqlbuilder.erdiagram.ui.AddTablesDialog;
@@ -83,7 +83,7 @@ public class TableAddAction extends SelectionAction {
     public void run() {
         ErdiagramDiagramEditor erdiagramDiagramEditor = (ErdiagramDiagramEditor) part;
         Control control = erdiagramDiagramEditor.getGraphicalControl();
-        AddTablesDialog dialog = new AddTablesDialog(new Shell(control.getShell()));
+        AddTablesDialog dialog = new AddTablesDialog(DisplayUtils.getDefaultShell(false));
         if (control.getParent() instanceof ErDiagramComposite) {
             if (EMFRepositoryNodeManager.getInstance().getRoot() == null) {
                 return;

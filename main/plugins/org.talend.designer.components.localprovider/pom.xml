@@ -23,6 +23,7 @@
 		<talendMQRFH2.version>1.0.1-20190206</talendMQRFH2.version>
 		<talendMQConnectionUtil.dir>${project.basedir}/components/tMomConnection</talendMQConnectionUtil.dir>
 		<talendMQConnectionUtil.version>1.0.1-20190215</talendMQConnectionUtil.version>
+		<tldapinput.dir>${project.basedir}/components/tLDAPInput</tldapinput.dir>
 	</properties>
 
 	<build>
@@ -69,6 +70,12 @@
 								<include>talendMQConnectionUtil*.jar</include>
 							</includes>
 						</fileset>
+						<fileset>
+							<directory>${tldapinput.dir}</directory>
+							<includes>
+								<include>talendssl*.jar</include>
+							</includes>
+						</fileset>
 					</filesets>
 				</configuration>
 			</plugin>
@@ -104,7 +111,7 @@
 								<artifactItem>
 									<groupId>org.talend.libraries</groupId>
 									<artifactId>talend-ws</artifactId>
-									<version>1.0.1-20190117</version>
+									<version>1.0.1-20190204</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${webservicecore.dir}</outputDirectory>
@@ -140,6 +147,14 @@
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${talendMQConnectionUtil.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.libraries</groupId>
+									<artifactId>talendssl</artifactId>
+									<version>1.0-20190118</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${tldapinput.dir}</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>

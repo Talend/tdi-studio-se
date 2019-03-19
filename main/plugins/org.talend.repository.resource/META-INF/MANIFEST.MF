@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.jface.text,
  org.talend.repository,
  org.talend.designer.core,
  org.talend.repository.items.importexport,
- org.talend.core.ui
+ org.talend.core.ui,
+ org.talend.core.runtime
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.commons.io

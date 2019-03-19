@@ -14,8 +14,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.utils.workbench.gef.SimpleHtmlFigure;
@@ -295,10 +294,9 @@ public class JobletContainer extends AbstractJobletContainer {
             needchangeLock = true;
             refreshJobletNodes(false, (Boolean) value);
             if (!canCollapse()) {
-                Shell shell = Display.getCurrent().getActiveShell();
-
-                MessageDialog dlg = new MessageDialog(new Shell(shell), "ERROR", null, "Please attach connection correctly!",
-                        MessageDialog.QUESTION, new String[] { IDialogConstants.OK_LABEL, IDialogConstants.CANCEL_LABEL }, 0);
+                MessageDialog dlg = new MessageDialog(DisplayUtils.getDefaultShell(false), "ERROR", null,
+                        "Please attach connection correctly!", MessageDialog.QUESTION,
+                        new String[] { IDialogConstants.OK_LABEL, IDialogConstants.CANCEL_LABEL }, 0);
                 dlg.open();
                 return;
             }

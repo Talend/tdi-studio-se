@@ -52,6 +52,9 @@ public class DBDynamicComposite extends DynamicComposite{
     @Override
     protected void editJDBCParameter(boolean isForEdite, Connection dbConnection,
             GenericElementParameter genericElementParameter) {
+        if (dbConnection != null && dbConnection.isContextMode()) {
+            return;
+        }
         if (isForEdite && dbConnection != null && dbConnection instanceof DatabaseConnectionImpl && EDatabaseTypeName.GENERAL_JDBC
                 .getProduct().equalsIgnoreCase(((DatabaseConnectionImpl) dbConnection).getDatabaseType())) {
             if (genericElementParameter.getName().equals(EConnectionParameterName.GENERIC_URL.getDisplayName())) {

@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.TaCoKitGenericProvider;
 
@@ -31,7 +31,7 @@ public class ReloadAction extends AbstractHandler {
     public Object execute(final ExecutionEvent executionEvent) {
         Display.getDefault().asyncExec(() -> {
             final String status = reload(new NullProgressMonitor());
-            MessageDialog.openInformation(new Shell(), "Reload ended", status);
+            MessageDialog.openInformation(DisplayUtils.getDefaultShell(false), "Reload ended", status);
         });
         return null;
     }

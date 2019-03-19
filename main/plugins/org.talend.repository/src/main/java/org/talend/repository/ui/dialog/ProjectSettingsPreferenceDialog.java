@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.PluginChecker;
@@ -217,7 +218,7 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
     }
 
     private void showErrorMessage() {
-        MessageBox message = new MessageBox(new Shell(getShell()), SWT.ICON_ERROR | SWT.OK);
+        MessageBox message = new MessageBox(DisplayUtils.getDefaultShell(false), SWT.ICON_ERROR | SWT.OK);
         message.setMessage(Messages.getString("ImportProjectSettings.Error")); //$NON-NLS-1$
         message.open();
     }

@@ -14,7 +14,6 @@ package org.talend.designer.xmlmap.editor.actions;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.SelectionAction;
@@ -34,7 +33,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.talend.datatools.xml.utils.XSDPopulationUtil2;
 import org.talend.designer.xmlmap.model.emf.xmlmap.Connection;
@@ -94,7 +93,7 @@ public class SetSubstitutionAction extends SelectionAction {
         }
 
         if (canContinue) {
-            AbstractUIPlugin plugin = (AbstractUIPlugin) Platform.getPlugin(PlatformUI.PLUGIN_ID);
+            AbstractUIPlugin plugin = WorkbenchPlugin.getDefault();
             IDialogSettings workbenchSettings = plugin.getDialogSettings();
             IDialogSettings section = workbenchSettings.getSection("SetSubstitutionAction.SubsMessageDialog"); //$NON-NLS-1$
             if (section == null) {

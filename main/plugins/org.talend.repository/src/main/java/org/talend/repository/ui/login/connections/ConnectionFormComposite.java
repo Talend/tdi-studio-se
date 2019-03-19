@@ -13,15 +13,18 @@
 package org.talend.repository.ui.login.connections;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -39,6 +42,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -91,6 +95,20 @@ public class ConnectionFormComposite extends Composite {
 
     private Text userText;
 
+    private Label tpPlaceHolder;
+
+    private Composite tpCompo;
+
+    private Button tokenButton;
+
+    private Composite tokenCompo;
+
+    private Text tokenText;
+
+    private Button tokenBrowseButton;
+
+    private Button passwordButton;
+
     private Text passwordText;
 
     private String password;
@@ -115,8 +133,9 @@ public class ConnectionFormComposite extends Composite {
 
     public static final String URL_FIELD_NAME = "url"; //$NON-NLS-1$
 
-    Label passwordLabel = null;
+    private static final String TOKEN_URL_SUFFIX = "/user/access-tokens"; //$NON-NLS-1$
 
+    Label passwordLabel = null;
     /**
      * DOC smallet ConnectionsComposite constructor comment.
      * 
@@ -174,15 +193,44 @@ public class ConnectionFormComposite extends Composite {
         userText = toolkit.createText(formBody, "", SWT.BORDER); //$NON-NLS-1$
         formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(userText);
 
-        // Password
         passwordLabel = toolkit.createLabel(formBody, Messages.getString("connections.form.field.password")); //$NON-NLS-1$
         formDefaultFactory.copy().applyTo(passwordLabel);
 
-        passwordText = toolkit.createText(formBody, "", SWT.PASSWORD | SWT.BORDER); //$NON-NLS-1$
+        tpPlaceHolder = new Label(formBody, SWT.NONE);
+        tpCompo = toolkit.createComposite(formBody);
+        GridLayout tCompoLayout = new GridLayout(3, false);
+        tCompoLayout.marginHeight = 0;
+        tCompoLayout.marginWidth = 0;
+        tpCompo.setLayout(tCompoLayout);
+        formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(tpCompo);
+
+        // Password
+        passwordButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.password"), SWT.RADIO); //$NON-NLS-1$
+        formDefaultFactory.copy().applyTo(passwordButton);
+
+        passwordText = toolkit.createText(tpCompo, "", SWT.PASSWORD | SWT.BORDER); //$NON-NLS-1$
         formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(passwordText);
 
         Label workSpaceLabel = toolkit.createLabel(formBody, Messages.getString("ConnectionFormComposite.WORKSPACE")); //$NON-NLS-1$
         formDefaultFactory.copy().applyTo(workSpaceLabel);
+        // Token
+        tokenButton = toolkit.createButton(tpCompo, Messages.getString("connections.form.field.token"), SWT.RADIO); //$NON-NLS-1$
+        formDefaultFactory.copy().applyTo(tokenButton);
+
+        tokenCompo = toolkit.createComposite(tpCompo);
+        GridLayout tokenCompoLayout = new GridLayout(3, false);
+        tokenCompoLayout.marginHeight = 0;
+        tokenCompoLayout.marginWidth = 0;
+        tokenCompo.setLayout(tokenCompoLayout);
+        formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(tokenCompo);
+
+        tokenText = toolkit.createText(tokenCompo, "", SWT.PASSWORD | SWT.BORDER); //$NON-NLS-1$
+        formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(tokenText);
+
+        tokenBrowseButton = toolkit.createButton(tokenCompo, null, SWT.PUSH);
+        tokenBrowseButton.setToolTipText(Messages.getString("connections.form.field.token.browse")); //$NON-NLS-1$
+        tokenBrowseButton.setImage(ImageProvider.getImage(EImage.THREE_DOTS_ICON));
+        GridDataFactory.fillDefaults().applyTo(tokenBrowseButton);
 
         Composite wsCompo = toolkit.createComposite(formBody);
         GridLayout wsCompoLayout = new GridLayout(2, false);
@@ -278,6 +326,7 @@ public class ConnectionFormComposite extends Composite {
         deleteProjectsButton.setLayoutData(deleteButtonGridData);
 
         addListeners();
+        addTokenBrowseListener();
         addWorkSpaceListener();
         fillLists();
         showHideDynamicsControls();
@@ -417,33 +466,68 @@ public class ConnectionFormComposite extends Composite {
     }
 
     private void showHideTexts() {
-        if (passwordText != null && !passwordText.isDisposed()) {
-            boolean enablePasswordField = false;
-            if (connection != null) {
-                IRepositoryFactory factory = RepositoryFactoryProvider.getRepositoriyById(connection.getRepositoryId());
-                if (factory != null && factory.isAuthenticationNeeded()) {
-                    enablePasswordField = true;
-                }
-            } else if (getRepository() != null && LoginHelper.isRemotesRepository(getRepository().getId())) {
+        boolean token = false;
+        if (connection != null && tokenText != null && !tokenText.isDisposed()) {
+            token = connection.isToken();
+        }
+        // Check enable field or not
+        boolean enablePasswordField = false;
+        boolean enableTokenField = false;
+        if (connection != null) {
+            IRepositoryFactory factory = RepositoryFactoryProvider.getRepositoriyById(connection.getRepositoryId());
+            if (factory != null && factory.isAuthenticationNeeded()) {
                 enablePasswordField = true;
+                if (LoginHelper.isCloudConnection(connection)) {
+                    enableTokenField = true;
+                }
             }
+        } else if (getRepository() != null && LoginHelper.isRemotesRepository(getRepository().getId())) {
+            enablePasswordField = true;
+            if (LoginHelper.isCloudRepository(getRepository().getId())) {
+                enableTokenField = true;
+            }
+        }
 
-            if (enablePasswordField) {
+        // password
+        boolean hidePasswordLabel = !enablePasswordField || enableTokenField;
+        boolean enablePasswordText = passwordButton.getSelection() || !hidePasswordLabel;
+        if (passwordText != null && !passwordText.isDisposed()) {
+            if (enablePasswordField && enablePasswordText) {
                 passwordText.setBackground(LoginDialogV2.WHITE_COLOR);
             } else {
                 passwordText.setText(""); //$NON-NLS-1$
                 password = ""; //$NON-NLS-1$
                 passwordText.setBackground(LoginDialogV2.GREY_COLOR);
             }
-            passwordText.setEnabled(enablePasswordField);
-            passwordText.setEditable(enablePasswordField);
-
+            passwordText.setEnabled(enablePasswordField && enablePasswordText);
+            passwordText.setEditable(enablePasswordField && enablePasswordText);
             hideControl(passwordText, !enablePasswordField, false);
-            hideControl(passwordLabel, !enablePasswordField, false);
-
+            hideControl(passwordLabel, hidePasswordLabel, false);
+            hideControl(passwordButton, !(enablePasswordField && enableTokenField), false);
             passwordText.getParent().layout();
-
+            passwordText.getParent().getParent().layout();
         }
+        // token
+        if (tokenText != null && !tokenText.isDisposed()) {
+            if (enableTokenField && tokenButton.getSelection()) {
+                tokenText.setBackground(LoginDialogV2.WHITE_COLOR);
+            } else {
+                tokenText.setText(""); //$NON-NLS-1$
+                password = ""; //$NON-NLS-1$
+                tokenText.setBackground(LoginDialogV2.GREY_COLOR);
+            }
+            tokenText.setEnabled(enableTokenField && tokenButton.getSelection());
+            tokenText.setEditable(enableTokenField && tokenButton.getSelection());
+            tokenBrowseButton.setEnabled(enableTokenField && tokenButton.getSelection());
+            hideControl(tokenButton, !enableTokenField, false);
+            hideControl(tokenCompo, !enableTokenField, false);
+            tokenText.getParent().getParent().layout();
+            tokenText.getParent().getParent().getParent().layout();
+        }
+
+        hideControl(tpPlaceHolder, !enableTokenField, false);
+        hideControl(tpCompo, !enablePasswordField, false);
+        tpCompo.getParent().layout();
     }
 
     private void hideControl(Control control, boolean hide, boolean autoLayout) {
@@ -505,7 +589,16 @@ public class ConnectionFormComposite extends Composite {
                     userText.setSelection(selection);
                 }
             }
-            fillBean(false);
+            fillBean(false, false);
+            validateFields();
+        }
+    };
+
+    ModifyListener standardTokenPasswordTextListener = new ModifyListener() {
+
+        @Override
+        public void modifyText(ModifyEvent e) {
+            fillBean(false, true);
             validateFields();
         }
     };
@@ -516,7 +609,7 @@ public class ConnectionFormComposite extends Composite {
         public void selectionChanged(SelectionChangedEvent e) {
             showHideDynamicsControls();
             validateFields();
-            fillBean(true);
+            fillBean(true, true);
             showHideTexts();
             changeUserLabel();
         }
@@ -540,12 +633,45 @@ public class ConnectionFormComposite extends Composite {
         }
     };
 
+    SelectionListener passwordClickListener = new SelectionListener() {
+
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            tokenButton.setSelection(!passwordButton.getSelection());
+            passwordButton.setSelection(passwordButton.getSelection());
+            passwordText.setEnabled(passwordButton.getSelection());
+            showHideTexts();
+        }
+
+        @Override
+        public void widgetDefaultSelected(SelectionEvent e) {
+            // nothing need to do
+        }
+    };
+
+    SelectionListener tokenClickListener = new SelectionListener() {
+
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            passwordButton.setSelection(!tokenButton.getSelection());
+            tokenButton.setSelection(tokenButton.getSelection());
+            tokenText.setEnabled(tokenButton.getSelection());
+            showHideTexts();
+        }
+
+        @Override
+        public void widgetDefaultSelected(SelectionEvent e) {
+            // nothing need to do
+        }
+    };
+
     private void addListeners() {
         repositoryCombo.addPostSelectionChangedListener(repositoryListener);
         nameText.addModifyListener(standardTextListener);
         descriptionText.addModifyListener(standardTextListener);
         userText.addModifyListener(standardTextListener);
-        passwordText.addModifyListener(standardTextListener);
+        passwordText.addModifyListener(standardTokenPasswordTextListener);
+        tokenText.addModifyListener(standardTokenPasswordTextListener);
         workSpaceText.addModifyListener(standardTextListener);
 
         for (IRepositoryFactory f : dynamicControls.keySet()) {
@@ -559,7 +685,8 @@ public class ConnectionFormComposite extends Composite {
                 control.getCombo().addModifyListener(standardTextListener);
             }
         }
-
+        passwordButton.addSelectionListener(passwordClickListener);
+        tokenButton.addSelectionListener(tokenClickListener);
         deleteProjectsButton.addSelectionListener(deleteProjectClickListener);
     }
 
@@ -591,12 +718,48 @@ public class ConnectionFormComposite extends Composite {
         });
     }
 
+    private void addTokenBrowseListener() {
+        tokenBrowseButton.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String currentUrl = "";
+                if (getRepository() != null) {
+                    for (LabelText currentUrlLabel : dynamicRequiredControls.get(getRepository()).values()) {
+                        if (currentUrlLabel.getText().length() != 0) {
+                            currentUrl = currentUrlLabel.getText();
+                        }
+                    }
+                }
+                try {
+                    String tokenUrl = getTokenUrl(currentUrl);
+                    openBrower(tokenUrl);
+                } catch (Exception exception) {
+                    MessageDialog.openError(getShell(), getShell().getText(),
+                            Messages.getString("connections.form.getTokenUrl.failed")); //$NON-NLS-1$
+                }
+            }
+        });
+    }
+
+    private String getTokenUrl(String serverUrlStr) throws Exception {
+        URL serverUrl = new URL(serverUrlStr);
+        String host = serverUrl.getHost().replace("tmc.", "");
+        URL tokenUrl = new URL(serverUrl.getProtocol(), host, TOKEN_URL_SUFFIX);
+        return tokenUrl.toString();
+    }
+
+    private void openBrower(String url) {
+        Program.launch(url);
+    }
+
     private void removeListeners() {
         repositoryCombo.removePostSelectionChangedListener(repositoryListener);
         nameText.removeModifyListener(standardTextListener);
         descriptionText.removeModifyListener(standardTextListener);
         userText.removeModifyListener(standardTextListener);
-        passwordText.removeModifyListener(standardTextListener);
+        passwordText.removeModifyListener(standardTokenPasswordTextListener);
+        tokenText.removeModifyListener(standardTokenPasswordTextListener);
         workSpaceText.removeModifyListener(standardTextListener);
 
         for (IRepositoryFactory f : dynamicControls.keySet()) {
@@ -610,10 +773,12 @@ public class ConnectionFormComposite extends Composite {
                 control.getCombo().removeModifyListener(standardTextListener);
             }
         }
+        passwordButton.removeSelectionListener(passwordClickListener);
+        tokenButton.removeSelectionListener(tokenClickListener);
         deleteProjectsButton.removeSelectionListener(deleteProjectClickListener);
     }
 
-    private void fillBean(boolean cleanDynamicValue) {
+    private void fillBean(boolean cleanDynamicValue, boolean enableHidePassword) {
         if (connection != null) {
             IRepositoryFactory repository = getRepository();
             if (repository != null) {
@@ -666,7 +831,18 @@ public class ConnectionFormComposite extends Composite {
             connection.setName(nameText.getText());
             connection.setDescription(descriptionText.getText());
             connection.setUser(userText.getText());
-            connection.setPassword(passwordText.getText());
+            if (enableHidePassword) {
+                String password = getPassword(); // $NON-NLS-1$
+                if (StringUtils.isEmpty(password)) {
+                    if (tokenButton.getSelection()) {
+                        password = tokenText.getText();
+                    } else {
+                        password = passwordText.getText();
+                    }
+                }
+                connection.setPassword(password);
+                connection.setToken(tokenButton.getSelection());
+            }
             connection.setWorkSpace(workSpaceText.getText());
 
             connectionsListComposite.refresh(connection);
@@ -753,7 +929,16 @@ public class ConnectionFormComposite extends Composite {
             nameText.setText((connection.getName() == null ? "" : connection.getName())); //$NON-NLS-1$
             descriptionText.setText((connection.getDescription() == null ? "" : connection.getDescription())); //$NON-NLS-1$
             userText.setText((connection.getUser() == null ? "" : connection.getUser())); //$NON-NLS-1$
-            passwordText.setText(TalendTextUtils.hidePassword(connection.getPassword()));
+            String passwordStr = TalendTextUtils.hidePassword(connection.getPassword());
+            tokenButton.setSelection(connection.isToken());
+            tokenText.setEnabled(connection.isToken());
+            passwordButton.setSelection(!connection.isToken());
+            passwordText.setEnabled(!connection.isToken());
+            if (connection.isToken()) {
+                tokenText.setText(passwordStr);
+            } else {
+                passwordText.setText(passwordStr);
+            }
             password = connection.getPassword() == null ? "" : connection.getPassword(); // $NON-NLS-1$
             workSpaceText
                     .setText(("".equals(connection.getWorkSpace()) || connection.getWorkSpace() == null) ? getRecentWorkSpace() : connection.getWorkSpace());//$NON-NLS-1$

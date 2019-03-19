@@ -61,6 +61,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.utils.ControlUtils;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog;
@@ -2081,7 +2082,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             if (schemaSelected != null) {
                 // repositoryMetadata = repositoryTableMap.get(schemaSelected);
             } else if (newRepositoryMetadata == null) {
-                MessageDialog.openWarning(new Shell(), Messages.getString("QueryTypeController.alert"), //$NON-NLS-1$
+                MessageDialog.openWarning(DisplayUtils.getDefaultShell(false), Messages.getString("QueryTypeController.alert"), //$NON-NLS-1$
                         Messages.getString("QueryTypeController.nothingToGuess")); //$NON-NLS-1$
                 return cmd;
             }
@@ -2369,7 +2370,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             }
             // add for bug TDI-20335
             if (part == null) {
-                Shell parentShell = new Shell(composite.getShell().getDisplay());
+                Shell parentShell = DisplayUtils.getDefaultShell(false);
                 ISQLBuilderService service = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(
                         ISQLBuilderService.class);
                 Dialog sqlBuilder = service.openSQLBuilderDialog(parentShell, "", connParameters);
@@ -2457,7 +2458,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 if (repositoryId != null) {
                     connParameters.setRepositoryId(repositoryId);
                 }
-                Shell parentShell = new Shell(composite.getShell().getDisplay());
+                Shell parentShell = DisplayUtils.getDefaultShell(false);
                 String nodeLabel = null;
                 if (elem instanceof Node) {
                     nodeLabel = (String) ((Node) elem).getElementParameter(EParameterName.LABEL.getName()).getValue();

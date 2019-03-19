@@ -72,6 +72,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
@@ -293,33 +294,53 @@ public class DefaultRunProcessService implements IRunProcessService {
 
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
-            // If OSGI contains new processor, need to add built type in args map
-
             if (property != null) {
-                boolean servicePart = false;
-                List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
-                        property.getVersion(), RelationshipItemBuilder.JOB_RELATION);
+                if (!ProcessorUtilities.isGeneratePomOnly()) {
+                    // for esb items
+                    boolean servicePart = false;
+                    List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
+                            property.getVersion(), RelationshipItemBuilder.JOB_RELATION);
 
-                for (Relation relation : relations) {
-                    if (RelationshipItemBuilder.SERVICES_RELATION.equals(relation.getType())) {
-                        servicePart = true;
-                        break;
+                    for (Relation relation : relations) {
+                        if (RelationshipItemBuilder.SERVICES_RELATION.equals(relation.getType())) {
+                            servicePart = true;
+                            break;
+                        }
+                    }
+
+                    JobInfo lastMainJob = LastGenerationInfo.getInstance().getLastMainJob();
+                    boolean isBuildFromRoute = lastMainJob != null && ComponentCategory.CATEGORY_4_CAMEL.getName()
+                            .equals(lastMainJob.getProcessor().getProcess().getComponentsType());
+                    boolean isRouteReferenceJob = false;
+                    if (isBuildFromRoute) {
+                        List<Relation> relation = RelationshipItemBuilder.getInstance().getItemsHaveRelationWith(property.getId(),
+                                property.getVersion());
+                        IProcess routeProcess = lastMainJob.getProcessor().getProcess();
+                        if (!relation.isEmpty()) {
+                            for (Relation r : relation) {
+                                if (r.getId().equals(routeProcess.getId())) {
+                                    isRouteReferenceJob = true;
+                                }
+                            }
+                        }
+                    }
+                    
+                    boolean isOSGI = "OSGI"
+                            .equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
+                    // TESB-25116 The microservice jar which is built from route with ctalendjob is only 2kb
+                    boolean isMicroservice = "ROUTE_MICROSERVICE".equals(lastMainJob.getProcessor().getProperty()
+                            .getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
+                    if (isOSGI || servicePart || (isRouteReferenceJob && !isMicroservice)) {
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+                            soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                            return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
+                        }
                     }
                 }
-                if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))
-                        || servicePart) {
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-                        soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
-                        return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
-                    }
-                }
-
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
-
             } else {
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
             }
-
         }
     }
 
@@ -883,6 +904,18 @@ public class DefaultRunProcessService implements IRunProcessService {
         }
 
         PomUtil.updateMainJobDependencies(mainJobInfo.getPomFile(), childPoms, childJobDependencies, progressMonitor);
+
+        // since all the dependencies of subJob already added to mainJob
+        // need to clean job dependencies of joblet
+        IRepositoryViewObject mainJobObject = factory.getSpecificVersion(mainJobInfo.getJobId(), mainJobInfo.getJobVersion(),
+                true);
+        if (mainJobObject != null && mainJobObject.getProperty() != null) {
+            Set<Property> itemChecked = new HashSet<>();
+            // clear bak cache
+            PomUtil.clearBakJobletCache();
+            PomUtil.checkJobRelatedJobletDependencies(mainJobObject.getProperty(), RelationshipItemBuilder.JOB_RELATION,
+                    childJobDependencies, itemChecked, progressMonitor);
+        }
     }
 
 }

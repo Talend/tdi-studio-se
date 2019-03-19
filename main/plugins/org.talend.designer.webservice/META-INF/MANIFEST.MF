@@ -19,7 +19,9 @@ Require-Bundle: org.apache.commons.beanutils,
  org.talend.metadata.managment.ui,
  javax.wsdl;bundle-version="1.6.2",
  org.apache.commons.httpclient,
- org.talend.components.api
+ org.talend.components.api,
+ org.talend.commons.runtime,
+ org.talend.core.runtime
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/talend-ws-1.0.jar,

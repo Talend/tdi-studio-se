@@ -52,7 +52,12 @@ public abstract class AbstractLoginActionPage extends AbstractActionPage {
 
     protected StackLayout stackLayout;
 
-    protected Color backgroundColor;
+    /**
+     * Background color for radio button
+     */
+    protected Color backgroundRadioColor;
+
+    protected Color backgroundBtnColor;
 
     protected ErrorManager errorManager;
 
@@ -71,7 +76,8 @@ public abstract class AbstractLoginActionPage extends AbstractActionPage {
         stackLayout = (StackLayout) parent.getLayout();
         this.loginDialog = dialog;
         this.setFont(JFaceResources.getFont(LoginDialogV2.FONT_TALEND_FOR_LOGIN_UI));
-        this.backgroundColor = JFaceResources.getColorRegistry().get(LoginDialogV2.COLOR_LOGON_DIALOG_BACKGROUND);
+        this.backgroundRadioColor = JFaceResources.getColorRegistry().get(LoginDialogV2.COLOR_LOGON_DIALOG_BACKGROUND);
+        // this.backgroundBtnColor = JFaceResources.getColorRegistry().get(LoginDialogV2.COLOR_LOGON_DIALOG_BACKGROUND);
     }
 
     @Override
@@ -126,16 +132,16 @@ public abstract class AbstractLoginActionPage extends AbstractActionPage {
         navigatorSeperatorLine = new Label(navigateArea, SWT.SEPARATOR | SWT.HORIZONTAL);
         alwaysAsk = new Button(navigateArea, SWT.CHECK);
         alwaysAsk.setFont(LoginDialogV2.fixedFont);
-        alwaysAsk.setBackground(backgroundColor);
+        alwaysAsk.setBackground(backgroundRadioColor);
         alwaysAsk.setText(Messages.getString("LoginProjectPage.alwaysAskMe")); //$NON-NLS-1$
         alwaysAsk.setToolTipText(Messages.getString("LoginProjectPage.alwaysAskMe.toolTip")); //$NON-NLS-1$
         previousButton = new Button(navigateArea, SWT.NONE);
         previousButton.setFont(LoginDialogV2.fixedFont);
-        previousButton.setBackground(backgroundColor);
+        previousButton.setBackground(backgroundBtnColor);
         previousButton.setText(Messages.getString("LoginProjectPage.previous")); //$NON-NLS-1$
         finishButton = new Button(navigateArea, SWT.NONE);
         finishButton.setFont(LoginDialogV2.fixedFont);
-        finishButton.setBackground(backgroundColor);
+        finishButton.setBackground(backgroundBtnColor);
         finishButton.setText(Messages.getString("LoginProjectPage.finish")); //$NON-NLS-1$
     }
 

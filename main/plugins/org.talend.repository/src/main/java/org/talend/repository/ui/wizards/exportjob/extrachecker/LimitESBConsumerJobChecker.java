@@ -31,7 +31,7 @@ public class LimitESBConsumerJobChecker extends AbstractJobNodeChecker {
 		}
 		String componentName = nodeType.getComponentName();
 		if (isESBConsumerComponent(componentName)) {
-			if (exportType != JobExportType.POJO) {
+			if (exportType != JobExportType.POJO && exportType != JobExportType.IMAGE) {
 				return Messages.getString("LimitESBConsumerJobChecker.limit_tRESTClient_tESBConsumer", componentName);
 			}
 			return checkLimitFeaturesWhenBuildStandalone(nodeType);

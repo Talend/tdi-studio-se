@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.designer.xmlmap.model.emf.xmlmap.AbstractInOutTree;
 import org.talend.designer.xmlmap.model.emf.xmlmap.AbstractNode;
 import org.talend.designer.xmlmap.model.emf.xmlmap.Connection;
@@ -173,7 +173,7 @@ public class XmlMapConnectionBuilder {
                             }
                             return true;
                         } else {
-                            PrefixChangeDialog dialog = new PrefixChangeDialog(new Shell());
+                            PrefixChangeDialog dialog = new PrefixChangeDialog(DisplayUtils.getDefaultShell(false));
                             dialog.setPrefix(prefix);
                             dialog.setRootNodeName(nodeName);
                             dialog.setSourceExpression(sourceLocation.toString());
