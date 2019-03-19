@@ -509,8 +509,16 @@
 						        typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.STRING";
 						    }
 						}
+						
+						String modeType = "NULLABLE";
+						if (!column.isNullable()) { 
+							modeType = "REQUIRED";
+						}
 						%>
-						com.google.cloud.bigquery.Field field_<%=i%> = com.google.cloud.bigquery.Field.of("<%=columnName%>", <%=typeToGenerate%>);
+						
+						com.google.cloud.bigquery.Field field_<%=i%> = com.google.cloud.bigquery.Field.newBuilder("<%=columnName%>", <%=typeToGenerate%>)
+																									  .setMode(com.google.cloud.bigquery.Field.Mode.valueOf("<%=modeType%>"))
+																									  .build();
 						fields_<%=cid%>.add(field_<%=i%>);		
 						<%
 						if(isLog4jEnabled){
