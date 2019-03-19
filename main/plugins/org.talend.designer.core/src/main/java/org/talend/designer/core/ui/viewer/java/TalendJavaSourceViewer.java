@@ -272,7 +272,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         buff.append("\t  if( \n"); //$NON-NLS-1$
 
         buff.append("){\n\t}"); //$NON-NLS-1$
-        buff.append("\n\t\n}\n}"); //$NON-NLS-1$
+        buff.append("\n\t\n}\n}\n"); //$NON-NLS-1$
         int documentOffset = buff.toString().length();
         IDocument document = new Document();
         document.set(buff.toString());
