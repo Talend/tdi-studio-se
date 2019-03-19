@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -28,38 +29,41 @@ import org.talend.xml.sax.commons.ISAXLooper;
 import org.talend.xml.sax.io.UnicodeReader;
 import org.talend.xml.sax.simpleparser.model.XMLNode;
 import org.talend.xml.sax.simpleparser.model.XMLNodes;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * DOC Administrator class global comment. Detailled comment
  */
-public class SimpleSAXLooper implements ISAXLooper,Callable {
+public class SimpleSAXLooper implements ISAXLooper, Callable {
 
     private XMLNodes nodes = new XMLNodes();
 
     private DataBufferCache bcache;
-    
+
     private DataBufferCache2 multiCache;
 
     private Thread task;
-    
+
     private FutureTask futureTask;
-    
+
     private boolean ignoreDTD = false;
-    
+
     SimpleSAXLoopHandler hd = null;
-    
+
     private String[] arrOrigLoopPath;
 
     private String rootPath;
 
     private String[] arrLoopPath;
-    
+
+    private final String DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl"; //$NON-NLS-1$
+
     private List<XMLNodes> nodesList = new ArrayList<XMLNodes>();
-    
+
     public SimpleSAXLooper(String loopPath, String[] nodePaths, boolean[] asXMLs) {
-    	futureTask = new FutureTask(this);
-    	task = new Thread(futureTask);
+        futureTask = new FutureTask(this);
+        task = new Thread(futureTask);
         for (int i = 0; i < nodePaths.length; i++) {
             nodes.addNode(new XMLNode(loopPath, nodePaths[i], null, asXMLs[i]));
         }
@@ -69,7 +73,7 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
     public SimpleSAXLooper(String rootPath, String[] arrLoopPath, String[][] arrNodePaths) {
         futureTask = new FutureTask(this);
         task = new Thread(futureTask);
-        
+
         this.arrOrigLoopPath = arrLoopPath;
 
         String tmpRootPath = rootPath;
@@ -80,19 +84,19 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
         this.rootPath = tmpRootPath;
 
         this.arrLoopPath = getLoopPaths(arrLoopPath);
-        
-        for(int j = 0;j<arrNodePaths.length;j++) {
+
+        for (int j = 0; j < arrNodePaths.length; j++) {
             String[] nodePaths = arrNodePaths[j];
             XMLNodes ns = new XMLNodes();
             for (int i = 0; i < nodePaths.length; i++) {
-                ns.addNode(new XMLNode(this.arrOrigLoopPath[j], this.arrLoopPath[j],nodePaths[i], null));
+                ns.addNode(new XMLNode(this.arrOrigLoopPath[j], this.arrLoopPath[j], nodePaths[i], null));
             }
             nodesList.add(ns);
         }
-        
+
         initLoopEntries();
     }
-    
+
     private String[] getLoopPaths(String[] arrLoops) {
 
         String[] loopPaths = new String[arrLoops.length];
@@ -115,14 +119,16 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
 
         return loopPaths;
     }
-    
+
     /**
      * handle the exception in task.
-     * FutureTask.get() is a block method waiting for the Task over and it can throw the exception in Task(Callable,Thread,Runnable)
+     * FutureTask.get() is a block method waiting for the Task over and it can throw the exception in
+     * Task(Callable,Thread,Runnable)
+     * 
      * @throws Exception
      */
     public void handleException() throws Exception {
-		futureTask.get();
+        futureTask.get();
     }
 
     private void initLoopEntry() {
@@ -149,11 +155,11 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
     }
 
     private void initLoopEntries() {
-        
+
         multiCache = DataBufferCache2.getInstance();
-        
-        for(XMLNodes ns : nodesList) {
-            
+
+        for (XMLNodes ns : nodesList) {
+
             for (XMLNode node : ns.getNodes().values()) {
                 String column = node.originPath;
                 String resultCol = node.loopPath;
@@ -168,10 +174,10 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
                         resultCol += "/" + tmp;
                     }
                 }
-                
+
                 node.nodePath = resultCol;
             }
-            
+
         }
     }
 
@@ -199,59 +205,59 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
         this.charset = charset;
         task.start();
     }
-    
+
     public Object call() throws Exception {
         Reader reader = null;
-		try {
-		    DefaultHandler handler = null;
-		    if(nodesList.size() > 0) {
-		        SAXLoopCompositeHandler chd = new SAXLoopCompositeHandler();
-		        for(int i=0;i<nodesList.size();i++) {
+        try {
+            DefaultHandler handler = null;
+            if (nodesList.size() > 0) {
+                SAXLoopCompositeHandler chd = new SAXLoopCompositeHandler();
+                for (int i = 0; i < nodesList.size(); i++) {
                     XMLNodes ns = nodesList.get(i);
                     chd.register(new SimpleSAXLoopHandler(ns, multiCache));
                 }
                 handler = chd;
-		    } else {
-		        hd = new SimpleSAXLoopHandler(nodes, bcache);
-                handler = hd;
-		    }
-		    
-            SAXParser saxParser = null;
-            if(!ignoreDTD) { //orginal code
-            	saxParser = SAXParserFactory.newInstance().newSAXParser();
             } else {
-	            SAXParserFactory spf = SAXParserFactory.newInstance();
-	            spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-				saxParser = spf.newSAXParser();
+                hd = new SimpleSAXLoopHandler(nodes, bcache);
+                handler = hd;
             }
+
+            SAXParser saxParser = null;
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+            if (ignoreDTD) { // orginal code
+                spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
+                spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            }
+            saxParser = spf.newSAXParser();
             saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
             if (fileURL != null) {
-            	// routines.system.UnicodeReader.java is used to ignore the BOM of the source file.
-                reader = new UnicodeReader(new java.io.FileInputStream(fileURL),this.charset);
+                // routines.system.UnicodeReader.java is used to ignore the BOM of the source file.
+                reader = new UnicodeReader(new java.io.FileInputStream(fileURL), this.charset);
                 org.xml.sax.InputSource inSource = new org.xml.sax.InputSource(reader);
                 saxParser.parse(inSource, handler);
             } else {
-                reader = new UnicodeReader(is,this.charset);
+                reader = new UnicodeReader(is, this.charset);
                 org.xml.sax.InputSource inSource = new org.xml.sax.InputSource(reader);
                 saxParser.parse(inSource, handler);
             }
         } finally {
             try {
-                if(reader!=null) {
+                if (reader != null) {
                     reader.close();
                 }
             } finally {
-                if(multiCache!=null) {
+                if (multiCache != null) {
                     multiCache.notifyErrorOccurred();
                 }
-                if(bcache!=null) {
+                if (bcache != null) {
                     bcache.notifyErrorOccurred();
                 }
-                
+
             }
         }
-		return null;
-	}
+        return null;
+    }
 
     public static void main(String[] args) {
         try {
@@ -263,7 +269,8 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
 
             String file = "C:/Documents and Settings/Administrator/æ¡Œé�¢/in.xml";
             // String file = "D:/test/outMain.xml";
-            String[] query = new String[] { "cust-vendor-num", "cust-vendor-num" + "/@xsi:nil", "cust", "cust" + "/@xsi:nil" };
+            String[] query =
+                    new String[] { "cust-vendor-num", "cust-vendor-num" + "/@xsi:nil", "cust", "cust" + "/@xsi:nil" };
             boolean[] asXMLs = new boolean[] { false, false, false, false };
             String loopPath = "/orderdata/order/header";
 
@@ -310,14 +317,14 @@ public class SimpleSAXLooper implements ISAXLooper,Callable {
         return new SimpleSAXMultiLoopIterator(multiCache);
     }
 
-	public void setIgnoreDTD(boolean ignoreDTD) {
-		
-		this.ignoreDTD=ignoreDTD;
-		
-	}
+    public void setIgnoreDTD(boolean ignoreDTD) {
+
+        this.ignoreDTD = ignoreDTD;
+
+    }
 
     public void stopRead() {
-        if(hd != null) {
+        if (hd != null) {
             hd.stopRead();
         }
     }

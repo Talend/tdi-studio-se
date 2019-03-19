@@ -43,14 +43,16 @@ public class ComplexSAXLooper implements ISAXLooper {
     // node paths special which tab will be read as the row value
     private String[] nodePaths;
 
+    private final String DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl"; //$NON-NLS-1$
+
     // add to support node.asXML()
     private boolean[] asXMLs;
 
     private LoopEntry entry;
 
     private SAXLoopCompositeHandler result;
-    
-    private boolean ignoreDTD=false;
+
+    private boolean ignoreDTD = false;
 
     /**
      * DOC xzhang SAXLooper constructor comment.
@@ -140,21 +142,14 @@ public class ComplexSAXLooper implements ISAXLooper {
         Reader reader = null;
         try {
             DefaultHandler hd = null;
-            SAXParser saxParser = null;
-            if(!ignoreDTD) { //orginal code
-            	saxParser = SAXParserFactory.newInstance().newSAXParser();
-            } else {
-	            SAXParserFactory spf = SAXParserFactory.newInstance();
-	            spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-				saxParser = spf.newSAXParser();
-            }
+            SAXParser saxParser = createSaxParser();
             if (rootPath == null || rootPath.equals("")) {
                 hd = newHandler();
             } else {
                 hd = newHandler2();
             }
             saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", hd);
-            reader = new UnicodeReader(new java.io.FileInputStream(fileURL),this.charset);
+            reader = new UnicodeReader(new java.io.FileInputStream(fileURL), this.charset);
             org.xml.sax.InputSource inSource = new org.xml.sax.InputSource(reader);
             saxParser.parse(inSource, hd);
 
@@ -165,10 +160,10 @@ public class ComplexSAXLooper implements ISAXLooper {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if(reader!=null) {
+            if (reader != null) {
                 try {
                     reader.close();
-                } catch(IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -185,7 +180,7 @@ public class ComplexSAXLooper implements ISAXLooper {
         Reader reader = null;
         try {
             DefaultHandler hd = null;
-            SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+            SAXParser saxParser = createSaxParser();
             if (rootPath == null || rootPath.equals("")) {
                 hd = newHandler();
             } else {
@@ -193,7 +188,7 @@ public class ComplexSAXLooper implements ISAXLooper {
             }
             saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", hd);
             // routines.system.UnicodeReader.java is used to ignore the BOM of the source file.
-            reader = new UnicodeReader(is,this.charset);
+            reader = new UnicodeReader(is, this.charset);
             org.xml.sax.InputSource inSource = new org.xml.sax.InputSource(reader);
             saxParser.parse(inSource, hd);
 
@@ -204,14 +199,30 @@ public class ComplexSAXLooper implements ISAXLooper {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if(reader!=null) {
+            if (reader != null) {
                 try {
                     reader.close();
-                } catch(IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    /**
+     * Create Sax parser and set required security features to it
+     * @return sax parser with required security features set
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
+    private SAXParser createSaxParser() throws ParserConfigurationException, SAXException {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+        if (ignoreDTD) {
+            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
+            spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        }
+        return spf.newSAXParser();
     }
 
     /**
@@ -292,7 +303,7 @@ public class ComplexSAXLooper implements ISAXLooper {
             String column = nodePaths[m];
             String resultCol = this.loopPath;
             boolean isAsXML = this.asXMLs[m];
-            boolean isDot = false;//fix for TDI-19435
+            boolean isDot = false;// fix for TDI-19435
             String tmpLoopPath = null;
             String[] splits = column.split("/");
             for (String tmp : splits) {
@@ -451,7 +462,7 @@ public class ComplexSAXLooper implements ISAXLooper {
             tmpentry.setOriginalLoopPath(this.arrOrigLoopPath[i]);
             // =======================bug7632 end=============================
 
-        }// for(int i=0;i<length;i++)
+        } // for(int i=0;i<length;i++)
 
     }
 
@@ -485,12 +496,13 @@ public class ComplexSAXLooper implements ISAXLooper {
             long timeStart = System.currentTimeMillis();
 
             String file = "./src/org/talend/xml/sax/in.xml";
-            String[] query = new String[] { "cust-vendor-num", "cust-vendor-num" + "/@xsi:nil", "cust", "cust" + "/@xsi:nil" };
+            String[] query =
+                    new String[] { "cust-vendor-num", "cust-vendor-num" + "/@xsi:nil", "cust", "cust" + "/@xsi:nil" };
             boolean[] asXMLs = new boolean[] { true, false, true, false };
             String loopPath = "/orderdata/order/header";
 
             ComplexSAXLooper looper = new ComplexSAXLooper(loopPath, query, asXMLs);
-            looper.parse(file,"UTF-8");
+            looper.parse(file, "UTF-8");
 
             java.util.Iterator<java.util.Map<String, String>> iter = looper.iterator();
 
@@ -518,9 +530,9 @@ public class ComplexSAXLooper implements ISAXLooper {
         }
     }
 
-	public void setIgnoreDTD(boolean ignoreDTD) {
-		
-		this.ignoreDTD=ignoreDTD;
-		
-	}
+    public void setIgnoreDTD(boolean ignoreDTD) {
+
+        this.ignoreDTD = ignoreDTD;
+
+    }
 }

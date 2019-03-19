@@ -2,26 +2,20 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<groupId>org.talend</groupId>
-	<artifactId>talendMQConnectionUtil</artifactId>
-	<version>1.0.1-20190215</version>
+	<artifactId>talendMQRFH2</artifactId>
+	<version>1.0.1-20190206</version>
 	<packaging>jar</packaging>
-
-	<name>talendMQConnectionUtil</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<powermock.version>1.7.4</powermock.version>
-		<talend.nexus.oss.url>https://artifacts-oss.talend.com</talend.nexus.oss.url>
-		<talend.nexus.zl.url>https://artifacts-zl.talend.com</talend.nexus.zl.url>
-		<talend.update.nexus.url>https://talend-update.talend.com</talend.update.nexus.url>
+		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
 	</properties>
 
 	<distributionManagement>
 		<snapshotRepository>
 			<id>talend_nexus_deployment</id>
-			<url>${talend.nexus.oss.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
@@ -31,7 +25,7 @@
 		</snapshotRepository>
 		<repository>
 			<id>talend_nexus_deployment</id>
-			<url>${talend.nexus.oss.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -43,17 +37,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.activemq</groupId>
-			<artifactId>activemq-all</artifactId>
-			<version>5.10.0</version>
-		</dependency>
-		<dependency>
 			<groupId>com.ibm.mq</groupId>
 			<artifactId>com.ibm.mq</artifactId>
 			<version>8.0.0.9</version>
@@ -64,32 +47,29 @@
 			<version>8.0.0.9</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.resource</groupId>
-			<artifactId>connector-api</artifactId>
-			<version>1.5</version>
+			<groupId>com.ibm.mq</groupId>
+			<artifactId>com.ibm.mq.allclient</artifactId>
+			<version>8.0.0.9</version>
 		</dependency>
 		<dependency>
-			<groupId>org.talend</groupId>
-			<artifactId>talendMQRFH2</artifactId>
-			<version>1.0.1-20190206</version>
+			<groupId>org.talend.libraries</groupId>
+			<artifactId>jnp-client</artifactId>
+			<version>6.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>2.8.9</version>
-			<scope>test</scope>
+			<groupId>org.talend.libraries</groupId>
+			<artifactId>websphere-connector-1_5</artifactId>
+			<version>6.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>${powermock.version}</version>
-			<scope>test</scope>
+			<groupId>org.talend.libraries</groupId>
+			<artifactId>trove</artifactId>
+			<version>6.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito2</artifactId>
-			<version>${powermock.version}</version>
-			<scope>test</scope>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
 		</dependency>
 	</dependencies>
 
@@ -102,7 +82,7 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<url>${talend.nexus.oss.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
 		</repository>
 		<repository>
 			<id>talend_open_snapshots</id>
@@ -112,7 +92,7 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-			<url>${talend.nexus.oss.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+			<url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
 		</repository>
 		<repository>
 			<id>releases</id>
@@ -122,7 +102,7 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<url>${talend.nexus.zl.url}/nexus/content/repositories/releases/</url>
+			<url>https://artifacts-zl.talend.com/nexus/content/repositories/releases/</url>
 		</repository>
 		<repository>
 			<id>snapshots</id>
@@ -132,11 +112,11 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-			<url>${talend.nexus.zl.url}/nexus/content/repositories/snapshots/</url>
+			<url>https://artifacts-zl.talend.com/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
 			<id>talend-update</id>
-			<url>${talend.update.nexus.url}/nexus/content/repositories/libraries/</url>
+			<url>https://talend-update.talend.com/nexus/content/repositories/libraries/</url>
 		</repository>
 	</repositories>
 
