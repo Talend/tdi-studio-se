@@ -983,7 +983,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         try {
-            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn", new PrintWriter(out),
+            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn -maxProblems 100000 ", new PrintWriter(out),
                     new PrintWriter(err), null);
             String errString = new String(err.toByteArray());
             String[] errBlocks = errString.split("----------");
