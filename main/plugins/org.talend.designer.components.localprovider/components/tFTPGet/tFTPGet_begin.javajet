@@ -743,14 +743,15 @@ if (sftp) { // *** sftp *** //
 
 			ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE);
 <%
-			if (protectionLevel != null && !protectionLevel.isEmpty()) {
-%>
-				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
-<%
-			}
 			if (protectionBufferSize != null && !protectionBufferSize.isEmpty() ) {
 %>
 				ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
+<%
+			}
+
+			if (protectionLevel != null && !protectionLevel.isEmpty()) {
+%>
+				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
 <%
 			}
 %>
