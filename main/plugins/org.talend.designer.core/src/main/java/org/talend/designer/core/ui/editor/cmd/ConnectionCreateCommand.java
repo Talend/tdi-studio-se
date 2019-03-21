@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,6 +37,7 @@ import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.utils.KeywordsValidator;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.process.ConnectionManager;
 import org.talend.designer.core.ui.dialog.mergeorder.ConnectionTableAndSchemaNameDialog;
 import org.talend.designer.core.ui.editor.connections.Connection;
@@ -72,6 +73,8 @@ public class ConnectionCreateCommand extends Command {
     private static boolean creatingConnection = false;
 
     private boolean insertTMap;
+    
+    private Map<EParameterName, Object> connectionParameters;    
 
     /**
      * Initialisation of the creation of the connection with a source and style of connection.
@@ -87,6 +90,9 @@ public class ConnectionCreateCommand extends Command {
         this.metaName = (String) listArgs.get(0);
         this.connectionName = (String) listArgs.get(1);
         newMetadata = (IMetadataTable) listArgs.get(2);
+        if (listArgs.size() >= 4) {
+            connectionParameters = (Map<EParameterName, Object>) listArgs.get(3);
+        }        
     }
 
     public ConnectionCreateCommand(Node nodeSource, String connectorName, List<Object> listArgs, boolean insertTMap) {
@@ -411,7 +417,7 @@ public class ConnectionCreateCommand extends Command {
                         monitorConnection);
             } else {
                 this.connection = new Connection(source, target, newLineStyle, connectorName, metaName, connectionName, metaName,
-                        monitorConnection);
+                        monitorConnection, this.connectionParameters);
             }
         } else { // in case of redo, reuse the same instance
             if (newMetadata != null) {
