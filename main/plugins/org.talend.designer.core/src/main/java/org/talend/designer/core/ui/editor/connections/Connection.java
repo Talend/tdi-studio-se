@@ -108,6 +108,8 @@ public class Connection extends Element implements IConnection, IPerformance {
     private boolean monitorConnection = false;
 
     public boolean setNullColumn = false;
+    
+    private Map<EParameterName, Object> paramValues = new HashMap<EParameterName, Object>();    
 
     /**
      * Tells if this connection has a subjob source or not instead of a node.
@@ -122,6 +124,13 @@ public class Connection extends Element implements IConnection, IPerformance {
             String linkName, final boolean monitorConnection) {
         init(source, target, lineStyle, connectorName, metaName, linkName, monitorConnection);
     }
+    
+    public Connection(INode source, INode target, EConnectionType lineStyle, String connectorName, String metaName,
+            String linkName, String uniqueName, final boolean monitorConnection, final Map<EParameterName, Object> paramValues) {
+        this.uniqueName = uniqueName;
+        this.paramValues = paramValues;
+        init(source, target, lineStyle, connectorName, metaName, linkName, monitorConnection);
+    }    
 
     // used only when loading a process && connection creation
     public Connection(INode source, INode target, EConnectionType lineStyle, String connectorName, String metaName,
@@ -518,6 +527,21 @@ public class Connection extends Element implements IConnection, IPerformance {
                 }
             }
         }
+
+        updateParametersValues();
+    }
+
+    private void updateParametersValues() {
+
+        if (paramValues == null) {
+            return;
+        }
+
+        for (Map.Entry<EParameterName, Object> param : paramValues.entrySet()) {
+            if (param.getValue() != null) {
+                setPropertyValue(param.getKey().getName(), param.getValue());
+            }
+        }        
     }
 
     private void createParallelizeParameters() {
