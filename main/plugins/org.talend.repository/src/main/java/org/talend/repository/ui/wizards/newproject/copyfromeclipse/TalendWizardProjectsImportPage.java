@@ -48,7 +48,6 @@ import org.eclipse.ui.internal.wizards.datatransfer.TarEntry;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
-import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
@@ -61,6 +60,7 @@ import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
+import org.talend.repository.items.importexport.ui.managers.TalendZipLeveledStructureProvider;
 import org.talend.repository.model.migration.ChangeProjectTechinicalNameMigrationTask;
 import org.talend.repository.ui.actions.importproject.ImportProjectBean;
 import org.talend.repository.ui.actions.importproject.ImportProjectHelper;
@@ -401,7 +401,7 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
                 if (sourceFile == null) {
                     return new ProjectRecord[0];
                 }
-                structureProvider = new ZipLeveledStructureProvider(sourceFile);
+                structureProvider = new TalendZipLeveledStructureProvider(sourceFile);
                 Object child = structureProvider.getRoot();
                 collectProjectFilesFromProvider(files, child, 0);
                 selected = new ProjectRecord[files.size()];

@@ -72,6 +72,7 @@ import org.talend.core.repository.utils.URIHelper;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.repository.item.ItemProductValuesHelper;
 import org.talend.repository.i18n.Messages;
+import org.talend.repository.items.importexport.ui.managers.TalendZipLeveledStructureProvider;
 import org.talend.repository.ui.utils.AfterImportProjectUtil;
 
 /**
@@ -206,7 +207,7 @@ public class ImportProjectHelper {
         Object source;
 
         if (ArchiveFileManipulations.isZipFile(sourcePath)) {
-            ZipLeveledStructureProvider zipProvider = new ZipLeveledStructureProvider(new ZipFile(sourcePath));
+            TalendZipLeveledStructureProvider zipProvider = new TalendZipLeveledStructureProvider(new ZipFile(sourcePath));
             source = zipProvider.getRoot();
             boolean ok = true;
             for (Object o : zipProvider.getChildren(source)) {

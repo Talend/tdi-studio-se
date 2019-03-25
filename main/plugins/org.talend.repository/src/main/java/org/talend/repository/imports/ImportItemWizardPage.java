@@ -74,7 +74,6 @@ import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
-import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
@@ -98,6 +97,7 @@ import org.talend.repository.i18n.Messages;
 import org.talend.repository.imports.TreeBuilder.IContainerNode;
 import org.talend.repository.imports.TreeBuilder.ProjectNode;
 import org.talend.repository.imports.TreeBuilder.TypeNode;
+import org.talend.repository.items.importexport.ui.managers.TalendZipLeveledStructureProvider;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.RepositoryNode;
@@ -559,7 +559,7 @@ class ImportItemWizardPage extends WizardPage {
 
                     archivePathField.setEditable(false);
 
-                    IExchangeService service = (IExchangeService) GlobalServiceRegister.getDefault().getService(
+                    IExchangeService service = GlobalServiceRegister.getDefault().getService(
                             IExchangeService.class);
 
                     selectedArchive = service.openExchangeDialog();
@@ -768,7 +768,7 @@ class ImportItemWizardPage extends WizardPage {
                         if (sourceFile == null) {
                             return;
                         }
-                        ZipLeveledStructureProvider provider = new ZipLeveledStructureProvider(sourceFile);
+                        TalendZipLeveledStructureProvider provider = new TalendZipLeveledStructureProvider(sourceFile);
                         manager = ResourcesManagerFactory.getInstance().createResourcesManager(provider);
 
                         if (!manager.collectPath2Object(provider.getRoot())) {
