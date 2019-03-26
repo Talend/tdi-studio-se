@@ -492,10 +492,18 @@ public class ProcessManager implements AutoCloseable {
         paths.add(mvnResolver.apply("org.slf4j:slf4j-jdk14:jar:" + GAV.INSTANCE.getSlf4jVersion()).toURI().toURL());
         // server
         paths.add(serverJar.toURI().toURL());
-        Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
+        final int originalPaths = paths.size();
+        // only available in 1.1.8
+        Mvn.withDependencies(serverJar, "TALEND-INF/server/dependencies.txt", false, deps -> {
             aggregateDeps(paths, deps);
             return null;
         });
+        if (paths.size() == originalPaths) { // < 1.1.8
+            Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
+                aggregateDeps(paths, deps);
+                return null;
+            });
+        }
         // beam if needed
         if (Boolean.getBoolean("components.server.beam.active")) {
             final File beamModule = mvnResolver.apply(groupId + ":component-runtime-beam:" + GAV.INSTANCE.getComponentRuntimeVersion());
