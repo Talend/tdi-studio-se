@@ -57,7 +57,11 @@ public class SimpleSAXLooper implements ISAXLooper, Callable {
 
     private String[] arrLoopPath;
 
-    private final String DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl"; //$NON-NLS-1$
+    private final String LOAD_EXTERNAL_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+
+    private final String EXTERNAL_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
+
+    private final String EXTERNAL_PARAMETER_ENTITIES = "http://xml.org/sax/features/external-parameter-entities";
 
     private List<XMLNodes> nodesList = new ArrayList<XMLNodes>();
 
@@ -226,8 +230,9 @@ public class SimpleSAXLooper implements ISAXLooper, Callable {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
             if (ignoreDTD) { // orginal code
-                spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
-                spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                spf.setFeature(LOAD_EXTERNAL_DTD, false);
+                spf.setFeature(EXTERNAL_GENERAL_ENTITIES, false);
+                spf.setFeature(EXTERNAL_PARAMETER_ENTITIES, false);
             }
             saxParser = spf.newSAXParser();
             saxParser.setProperty("http://xml.org/sax/properties/lexical-handler", handler);

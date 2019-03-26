@@ -47,7 +47,7 @@
                             <artifactItem>
                                 <groupId>org.talend.libraries</groupId>
                                 <artifactId>TalendSAX</artifactId>
-                                <version>1.0.1-20190313</version>
+                                <version>1.0.1-20190326</version>
                                 <type>jar</type>
                                 <overWrite>true</overWrite>
                                 <outputDirectory>${libs.dir}</outputDirectory>

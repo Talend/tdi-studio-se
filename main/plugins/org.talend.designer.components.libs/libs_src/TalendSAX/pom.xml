@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>TalendSAX</artifactId>
-	<version>1.0.1-20190313</version>
+	<version>1.0.1-20190326</version>
 	<packaging>jar</packaging>
 
 	<properties>

@@ -145,7 +145,7 @@
 			<IMPORT NAME="Java_xercesImpl" MODULE="xercesImpl.jar" MVN="mvn:org.talend.libraries/xercesImpl/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.xml/lib/xercesImpl.jar"
 				REQUIRED_IF="(GENERATION_MODE == 'XERCES') OR (GENERATION_MODE == 'SAX')" BundleID="" />
 			<IMPORT NAME="Java_xalan" MODULE="xalan-2.7.2.jar" MVN="mvn:xalan/xalan/2.7.2" REQUIRED_IF="GENERATION_MODE == 'XERCES'" BundleID="" />
-			<IMPORT NAME="Java_talendSAX" MODULE="TalendSAX-1.0.1-20190313.jar" MVN="mvn:org.talend.libraries/TalendSAX/1.0.1-20190313"  UrlPath="platform:/plugin/org.talend.libraries.xml/lib/TalendSAX-1.0.1-20190313.jar"
+			<IMPORT NAME="Java_talendSAX" MODULE="TalendSAX-1.0.1-20190326.jar" MVN="mvn:org.talend.libraries/TalendSAX/1.0.1-20190326"  UrlPath="platform:/plugin/org.talend.libraries.xml/lib/TalendSAX-1.0.1-20190326.jar"
 				REQUIRED_IF="GENERATION_MODE == 'SAX'" />
 			<IMPORT NAME="xpathutil" MODULE="xpathutil-1.0.0.jar" MVN="mvn:org.talend.libraries/xpathutil-1.0.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.xml/lib/xpathutil-1.0.0.jar"
 				REQUIRED_IF="(GENERATION_MODE == 'DOM4J') OR (GENERATION_MODE == 'XERCES')" />

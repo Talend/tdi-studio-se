@@ -43,7 +43,11 @@ public class ComplexSAXLooper implements ISAXLooper {
     // node paths special which tab will be read as the row value
     private String[] nodePaths;
 
-    private final String DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl"; //$NON-NLS-1$
+    private final String LOAD_EXTERNAL_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+
+    private final String EXTERNAL_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
+
+    private final String EXTERNAL_PARAMETER_ENTITIES = "http://xml.org/sax/features/external-parameter-entities";
 
     // add to support node.asXML()
     private boolean[] asXMLs;
@@ -211,6 +215,7 @@ public class ComplexSAXLooper implements ISAXLooper {
 
     /**
      * Create Sax parser and set required security features to it
+     * 
      * @return sax parser with required security features set
      * @throws ParserConfigurationException
      * @throws SAXException
@@ -219,8 +224,9 @@ public class ComplexSAXLooper implements ISAXLooper {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
         if (ignoreDTD) {
-            spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
-            spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            spf.setFeature(LOAD_EXTERNAL_DTD, false);
+            spf.setFeature(EXTERNAL_GENERAL_ENTITIES, false);
+            spf.setFeature(EXTERNAL_PARAMETER_ENTITIES, false);
         }
         return spf.newSAXParser();
     }
