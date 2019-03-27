@@ -98,6 +98,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.commands.ActionHandler;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -1344,8 +1345,13 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
             getGraphicalViewer().getRootEditPart().removeNotify();
         }
         getGraphicalViewer().setEditPartFactory(null);
-        getGraphicalViewer().setContextMenu(null);
         getGraphicalViewer().setContents(null);
+        MenuManager contextMenu = getGraphicalViewer().getContextMenu();
+        if (contextMenu != null) {
+            contextMenu.dispose();
+        }
+        // can't set null dirrectly since it will throw NPE
+        // getGraphicalViewer().setContextMenu(null);
 
         // rulerComp.dispose();
 
@@ -1369,7 +1375,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         // rootEditPart.deactivate();
 
         super.dispose();
-        if (!getParent().isKeepPropertyLocked()) {
+        AbstractMultiPageTalendEditor parentEditor = getParent();
+        if (parentEditor != null && !parentEditor.isKeepPropertyLocked()) {
             ((Process) getProcess()).dispose();
         }
         // process = null;
