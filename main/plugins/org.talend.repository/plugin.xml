@@ -3154,6 +3154,15 @@
               name="ResetAdditionalJDBCParamsForCreateTable"
               version="7.2.1">
         </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.2.0"
+               class="org.talend.repository.model.migration.SafelyCreateTemporaryFileMigrationTask"
+               description="Force old behaviour for existing jobs, for create temporary files"
+               id="org.talend.repository.model.migration.SafelyCreateTemporaryFileMigrationTask"
+               name="SafelyCreateTemporaryFileMigrationTask"
+               version="7.2.1">
+       </projecttask>
         <projecttask
               beforeLogon="false"
               class="org.talend.repository.model.migration.RedshiftLogFileMigrationTask"
