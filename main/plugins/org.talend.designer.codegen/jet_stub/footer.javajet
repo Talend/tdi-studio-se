@@ -339,7 +339,7 @@
             String lineSeparator = (String) java.security.AccessController.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
             String fileContentEnCodeStr = "";
             try {
-                fileContentEnCodeStr = (new sun.misc.BASE64Encoder()).encode(path.getBytes("UTF-8"));
+                fileContentEnCodeStr = java.util.Base64.getMimeEncoder().encodeToString(path.getBytes("UTF-8"));
             } catch (java.io.UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -351,7 +351,7 @@
             String testDataValue = result.toString();
             %>
                 try {
-                    instance_<%=testData%> = new String((new sun.misc.BASE64Decoder()).decodeBuffer("<%=testDataValue%>"), utf8Charset);
+                    instance_<%=testData%> = new String(java.util.Base64.getMimeDecoder().decode("<%=testDataValue%>"), utf8Charset);
                 } catch (java.lang.Exception e) {
                     e.printStackTrace();
                 }
