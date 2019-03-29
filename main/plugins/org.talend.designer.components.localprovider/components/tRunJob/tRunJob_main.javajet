@@ -468,7 +468,8 @@ String inputConnName = null;
 	  
 			<%if (dieOnError) { %> 
 				if (childJob_<%=cid %>.getErrorCode() != null || ("failure").equals(childJob_<%=cid %>.getStatus())) {
-	        		throw new RuntimeException("Child job running failed.\n"+childJob_<%=cid %>.getException().getClass().getName() + ": " + childJob_<%=cid %>.getException().getMessage());
+					java.lang.Exception ce_<%=cid%> = childJob_<%=cid %>.getException();
+					throw new RuntimeException("Child job running failed.\n" + ((ce_<%=cid%>!=null) ? (ce_<%=cid%>.getClass().getName() + ": " + ce_<%=cid%>.getMessage()) : ""));
 				}
 			<%}
 		}%>
