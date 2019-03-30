@@ -336,7 +336,7 @@
             String instance_<%=testData%>=null;
             <%
             if(ProcessUtils.isSpark(process)){
-            String lineSeparator = (String) java.security.AccessController.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
+            String lineSeparator = "\r\n";
             String fileContentEnCodeStr = "";
             try {
                 fileContentEnCodeStr = java.util.Base64.getMimeEncoder().encodeToString(path.getBytes("UTF-8"));

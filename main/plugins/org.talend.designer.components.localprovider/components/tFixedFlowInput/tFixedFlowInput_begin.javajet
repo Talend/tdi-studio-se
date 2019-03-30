@@ -144,8 +144,7 @@ imports="
 	
 	String fileContent = ElementParameterParser.getValue(node,"__INLINECONTENT__");
 	
-	String lineSeparator = (String) java.security.AccessController.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
-	//lineSeparator.replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n")
+	String lineSeparator = "\r\n";
 	
 	String fileContentEnCodeStr = "";
 	try {
