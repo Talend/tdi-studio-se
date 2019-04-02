@@ -296,7 +296,7 @@ public class DefaultRunProcessService implements IRunProcessService {
         } else {
             if (property != null) {
                 if (!ProcessorUtilities.isGeneratePomOnly()) {
-                    // for esb items
+                    // for esb type only
                     boolean servicePart = false;
                     List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
                             property.getVersion(), RelationshipItemBuilder.JOB_RELATION);
@@ -328,8 +328,9 @@ public class DefaultRunProcessService implements IRunProcessService {
                     boolean isOSGI = "OSGI"
                             .equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
                     // TESB-25116 The microservice jar which is built from route with ctalendjob is only 2kb
-                    boolean isMicroservice = lastMainJob != null && "ROUTE_MICROSERVICE".equals(lastMainJob.getProcessor()
-                            .getProperty().getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
+                    boolean isMicroservice = lastMainJob != null && lastMainJob.getProcessor().getProperty() != null
+                            && "ROUTE_MICROSERVICE".equals(lastMainJob.getProcessor().getProperty().getAdditionalProperties()
+                                    .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
                     if (isOSGI || servicePart || (isRouteReferenceJob && !isMicroservice)) {
                         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
                             soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
