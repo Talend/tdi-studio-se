@@ -3517,7 +3517,7 @@ public class WebServiceUI implements AbstractWebService {
                         String sourseName = ((OutPutMappingData) items[i].getData()).getParameterName();
                         // int m = sourseName.lastIndexOf(".");
                         // sourseName = sourseName.substring(m + 1);
-                        if (sourseName.equals(source)) {
+                        if (sourseName != null && sourseName.equals(source)) {
                             sourceItem = items[i];
                             sourceData = items[i].getData();
                             if (sourceItem == null) {
