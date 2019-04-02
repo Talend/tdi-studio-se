@@ -250,7 +250,9 @@ public class BuildJobManager {
                 @Override
                 public void run(IProgressMonitor wrMonitor) throws CoreException {
                     try {
-                        SubMonitor subMonitor = SubMonitor.convert(wrMonitor, scale * total);
+                        SubMonitor subMonitor = SubMonitor.convert(wrMonitor,
+                                Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType),
+                                scale * total);
                         Map<String, Object> prepareParams = new HashMap<>();
                         prepareParams.put(IBuildResourceParametes.OPTION_ITEMS, true);
                         prepareParams.put(IBuildResourceParametes.OPTION_ITEMS_DEPENDENCIES, true);
