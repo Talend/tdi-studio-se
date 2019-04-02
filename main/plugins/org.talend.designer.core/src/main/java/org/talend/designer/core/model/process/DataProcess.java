@@ -3081,6 +3081,10 @@ public class DataProcess implements IGeneratingProcess {
             return;
         }
         INode refNode = buildCheckMap.get(graphicalNode);
+        // for joblet node not active => not included in buildCheckMap
+        if (refNode == null) {
+            return;
+        }
         List<? extends IConnection> connections = refNode.getIncomingConnections(EConnectionType.FLOW_MAIN);
         if (connections.size() == 0) {
             return;
