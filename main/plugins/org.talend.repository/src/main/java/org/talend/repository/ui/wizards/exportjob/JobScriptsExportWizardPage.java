@@ -72,6 +72,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -1257,6 +1258,28 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
         }
 
         return ensureTargetIsValid(new File(fullPathname.substring(0, separatorIndex)));
+    }
+
+    /**
+     * Displays a Yes/No question to the user with the specified message and returns the user's response.
+     *
+     * @param message the question to ask
+     * @return <code>true</code> for Yes, and <code>false</code> for No
+     */
+    @Override
+    protected boolean queryYesNoQuestion(String message) {
+        MessageDialog dialog = new MessageDialog(getContainer().getShell(), IDEWorkbenchMessages.Question, (Image) null, message,
+                MessageDialog.NONE, 0, Messages.getString("JobScriptsExportWizardPage_yes_button_label"),
+                IDialogConstants.CANCEL_LABEL) { // $NON-NLS-1$
+
+            @Override
+            protected int getShellStyle() {
+                return super.getShellStyle() | SWT.SHEET;
+            }
+        };
+        // ensure yes is the default
+
+        return dialog.open() == 0;
     }
 
     /**
