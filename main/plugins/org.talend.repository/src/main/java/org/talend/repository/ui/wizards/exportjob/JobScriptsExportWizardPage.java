@@ -1269,7 +1269,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
     @Override
     protected boolean queryYesNoQuestion(String message) {
         MessageDialog dialog = new MessageDialog(getContainer().getShell(), IDEWorkbenchMessages.Question, (Image) null, message,
-                MessageDialog.NONE, 0, Messages.getString("JobScriptsExportWizardPage_yes_button_label"),
+                MessageDialog.NONE, 0, IDialogConstants.YES_LABEL,
                 IDialogConstants.CANCEL_LABEL) { // $NON-NLS-1$
 
             @Override
