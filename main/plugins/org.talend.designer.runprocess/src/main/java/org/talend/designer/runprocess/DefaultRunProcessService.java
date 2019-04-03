@@ -712,7 +712,19 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     @Override
     public ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, String projectTechName) {
-        return TalendJavaProjectManager.getTalendCodeJavaProject(type, projectTechName);
+        ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getTalendCodeJavaProject(type, projectTechName);
+        if (codeProject == null) {
+            // try to recover from any damage of pom.
+            try {
+                AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
+                IFile pomFile = helper.getCodeFolder(type).getFile(TalendMavenConstants.POM_FILE_NAME);
+                helper.updateCodeProjectPom(new NullProgressMonitor(), type, pomFile);
+                codeProject = TalendJavaProjectManager.getTalendCodeJavaProject(type, projectTechName);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        return codeProject;
     }
 
     @Override
