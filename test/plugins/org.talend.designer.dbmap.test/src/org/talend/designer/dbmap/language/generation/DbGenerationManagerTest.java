@@ -186,6 +186,22 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
     }
     
+    @Test
+    public void testReplaceMultipleAuotes() {
+        String quote = "\"";
+        String quoParser = "[\\\\]?\\" + quote; //$NON-NLS-1$
+        DbGenerationManager dbManager = new GenericDbGenerationManager();
+
+        String expression = "case when upper(a.rate_type)='FLOAT' then 'D001' else 'AMAT' end";
+        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+
+        expression = "case when upper(a.rate_type)='FLOAT'";
+        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+
+        expression = "'context.jobName'";
+        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+    }
+
     private void testWithQuote(){
     	dbManager.setUseDelimitedIdentifiers(true);
     	List<IConnection> incomingConnections = new ArrayList<IConnection>();
