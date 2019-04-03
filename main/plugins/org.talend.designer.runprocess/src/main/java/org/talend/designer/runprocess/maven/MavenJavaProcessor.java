@@ -211,8 +211,16 @@ public class MavenJavaProcessor extends JavaProcessor {
                     continue;
                 }
                 String childJarName = JavaResourcesHelper.getJobJarName(jobInfo.getJobName(), jobInfo.getJobVersion());
-                exportJar += classPathSeparator + libPrefixPath + childJarName + FileExtensions.JAR_FILE_SUFFIX;
+                if (!childJarName.equals(jarName)) {
+                    exportJar += classPathSeparator + libPrefixPath + childJarName + FileExtensions.JAR_FILE_SUFFIX;
+                }
             }
+        }
+        // for loop dependency, add main classPath
+        JobInfo mainJobInfo = ProcessorUtilities.getMainJobInfo();
+        if (!isMainJob && ProcessorUtilities.hasLoopDependency() && mainJobInfo != null) {
+            String mainJobName = JavaResourcesHelper.getJobJarName(mainJobInfo.getJobName(), mainJobInfo.getJobVersion());
+            exportJar += classPathSeparator + libPrefixPath + mainJobName + FileExtensions.JAR_FILE_SUFFIX;
         }
         return exportJar;
     }
