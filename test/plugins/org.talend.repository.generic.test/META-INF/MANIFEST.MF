@@ -7,7 +7,6 @@ Bundle-Vendor: .Talend SA.
 Fragment-Host: org.talend.repository.generic
 Require-Bundle: org.junit,
  org.talend.testutils,
- com.cedarsoftware.json-io,
  org.talend.components.common,
  org.talend.components.salesforce.definition
 Import-Package: org.talend.designer.core.ui.editor.update.cmd

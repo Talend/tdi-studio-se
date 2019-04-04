@@ -57,7 +57,8 @@ public class SpagicPreferencePage extends FieldEditorPreferencePage implements I
     /*
      * @Override protected IPreferenceStore doGetPreferenceStore() { // SpagoPreferenceStore preferenceStore = new
      * SpagoPreferenceStore(ProxyRepositoryFactory.getInstance()); // try { // preferenceStore.load(); // } catch
-     * (PersistenceException e) { // String detailError = e.getMessage(); // new ErrorDialogWidthDetailArea(new Shell(),
+     * (PersistenceException e) { // String detailError = e.getMessage(); // new
+     * ErrorDialogWidthDetailArea(DisplayUtils.getDefaultShell(false),
      * RepositoryPlugin.PLUGIN_ID, Messages // .getString("CommonWizard.persistenceException"), detailError);
      * //$NON-NLS-1$ // log.error(Messages.getString("CommonWizard.persistenceException") + "\n" + detailError);
      * //$NON-NLS-1$ // //$NON-NLS-2$ // } // return preferenceStore; return

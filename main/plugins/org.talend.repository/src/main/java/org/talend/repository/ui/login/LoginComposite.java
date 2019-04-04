@@ -81,6 +81,7 @@ import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.exception.WarningException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
@@ -2121,7 +2122,7 @@ public class LoginComposite extends Composite {
                 String warnings = e.getMessage();
                 if (warnings != null && !warnings.equals(lastWarnings)) {
                     lastWarnings = warnings;
-                    final Shell shell = new Shell(getDisplay(), SWT.ON_TOP | SWT.TOP);
+                    final Shell shell = DisplayUtils.getDefaultShell(false);
                     MessageDialog.openWarning(shell, Messages.getString("LoginComposite.warningTitle"), warnings); //$NON-NLS-1$
                 }
             }
@@ -2148,7 +2149,7 @@ public class LoginComposite extends Composite {
             initialized = true;
         } catch (Exception e) {
             projects = new Project[0];
-            final Shell shell = new Shell(getDisplay(), SWT.ON_TOP | SWT.TOP);
+            final Shell shell = DisplayUtils.getDefaultShell(false);
             MessageDialog.openError(shell, Messages.getString("LoginComposite.warningTitle"), //$NON-NLS-1$
                     Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
         }

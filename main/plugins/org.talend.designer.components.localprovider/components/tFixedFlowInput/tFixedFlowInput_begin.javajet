@@ -144,12 +144,11 @@ imports="
 	
 	String fileContent = ElementParameterParser.getValue(node,"__INLINECONTENT__");
 	
-	String lineSeparator = (String) java.security.AccessController.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
-	//lineSeparator.replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n")
+	String lineSeparator = "\r\n";
 	
 	String fileContentEnCodeStr = "";
 	try {
-		fileContentEnCodeStr = (new sun.misc.BASE64Encoder()).encode(fileContent.getBytes("UTF-8"));
+		fileContentEnCodeStr = java.util.Base64.getMimeEncoder().encodeToString(fileContent.getBytes("UTF-8"));
 	} catch (java.io.UnsupportedEncodingException e) {
 		e.printStackTrace();
 	}	
@@ -164,7 +163,7 @@ for(String item : arrayStr){
 <%}%>
 String originalFileContent_<%=cid %> = "";
 try {
-    originalFileContent_<%=cid %> = new String((new sun.misc.BASE64Decoder()).decodeBuffer(result_<%=cid %>.toString()), utf8Charset);
+    originalFileContent_<%=cid %> = new String(java.util.Base64.getMimeDecoder().decode(result_<%=cid %>.toString()), utf8Charset);
 } catch (java.lang.Exception e) {
     e.printStackTrace();
 }

@@ -124,7 +124,7 @@ public class ServiceHelperConfiguration {
                 try {
                     KeyStore trustStore = KeyStore.getInstance(trustStoreType);
                     trustStore.load(new FileInputStream(trustStoreFile), trustStorePwd.toCharArray());
-                    String alg = KeyManagerFactory.getDefaultAlgorithm();
+                    String alg = TrustManagerFactory.getDefaultAlgorithm();
                     TrustManagerFactory fac = TrustManagerFactory.getInstance(alg);
                     fac.init(trustStore);
                     TrustManager[] myTrustStoreKeyManagers = fac.getTrustManagers();

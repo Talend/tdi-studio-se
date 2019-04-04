@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.IElementParameter;
@@ -204,6 +205,11 @@ public class WebServiceDialog extends Dialog implements WebServiceEventListener 
                 nextButton.setEnabled(false);
             }
             webServiceUI.refreshTableView();
+            // for lazy load, the virtual table will load data after nextPress refresh tableViewe
+            // should re-initial those links
+            if (TableViewerCreator.getRecommandLazyLoad()) {
+                webServiceUI.reInitLinks();
+            }
         }
     }
 

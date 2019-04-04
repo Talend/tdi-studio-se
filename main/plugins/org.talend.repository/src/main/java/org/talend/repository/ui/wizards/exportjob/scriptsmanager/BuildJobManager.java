@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.m2e.core.MavenPlugin;
@@ -249,33 +250,33 @@ public class BuildJobManager {
                 @Override
                 public void run(IProgressMonitor wrMonitor) throws CoreException {
                     try {
-                        wrMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), //$NON-NLS-1$
-                                scale * 3);
-
+                        SubMonitor subMonitor = SubMonitor.convert(wrMonitor,
+                                Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType),
+                                scale * total);
                         Map<String, Object> prepareParams = new HashMap<>();
                         prepareParams.put(IBuildResourceParametes.OPTION_ITEMS, true);
                         prepareParams.put(IBuildResourceParametes.OPTION_ITEMS_DEPENDENCIES, true);
 
-                        buildJobHandler.prepare(new SubProgressMonitor(wrMonitor, scale), prepareParams);
-
-                        wrMonitor.worked(scale);
+                        buildJobHandler.prepare(subMonitor.split(scale * 2), prepareParams);
+                        subMonitor.worked(scale * 2);
                         TimeMeasure.step(timeMeasureId, "prepare to build job"); //$NON-NLS-1$
-                        if (wrMonitor.isCanceled()) {
+                        if (subMonitor.isCanceled()) {
                             throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled")); //$NON-NLS-1$
                         }
 
                         if (jobExportType == JobExportType.IMAGE) {
                             IFile logFile = talendJavaProject.getProject().getFile("lastGenerated.log");
                             if (logFile.exists()) {
-                                logFile.delete(true, false, wrMonitor);
+                                logFile.delete(true, false, subMonitor);
                             }
                         }
-                        buildJobHandler.build(new SubProgressMonitor(wrMonitor, scale));
+
+                        buildJobHandler.build(subMonitor.split(scale * 2));
                         TimeMeasure.step(timeMeasureId, "build and package"); //$NON-NLS-1$
-                        if (wrMonitor.isCanceled()) {
+                        if (subMonitor.isCanceled()) {
                             throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled")); //$NON-NLS-1$
                         }
-                        wrMonitor.done();
+                        subMonitor.worked(scale * 2);
                     } catch (Exception e) {
                         throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, FrameworkUtil.getBundle(
                                 this.getClass()).getSymbolicName(), "Error", e)); //$NON-NLS-1$
@@ -547,7 +548,7 @@ public class BuildJobManager {
     private IRunProcessService getRunProcessService() {
         IRunProcessService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            service = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
         }
         return service;
     }

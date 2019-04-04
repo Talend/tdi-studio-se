@@ -39,7 +39,7 @@
     >
       <DEFAULT>true</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="USE_DEFAULT_DIR"
       FIELD="CHECK"
@@ -56,21 +56,42 @@
     >
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__"</DEFAULT>
     </PARAMETER>
+
+    <PARAMETER
+            NAME="USE_PREFIX"
+            FIELD="CHECK"
+            NUM_ROW="30"
+    >
+      <DEFAULT>true</DEFAULT>
+    </PARAMETER>
+
+
     <PARAMETER
       NAME="INFO_RANGE"
       FIELD="LABEL"
       REQUIRED="false"
       NUM_ROW="40"
+      SHOW_IF="USE_PREFIX == 'false'"
      >
-      <DEFAULT>the temporary file name should include template "XXXX".</DEFAULT>
+      <DEFAULT>The temporary file name should include template "XXXX". Template is deprecated. Use Prefix instead.</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
       NAME="TEMPLATE"
       FIELD="TEXT"
       NUM_ROW="50"
+      SHOW_IF="USE_PREFIX == 'false'"
     >
       <DEFAULT>"talend_XXXX"</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+            NAME="PREFIX"
+            FIELD="TEXT"
+            NUM_ROW="50"
+            SHOW_IF="USE_PREFIX == 'true'"
+    >
+      <DEFAULT>"talend_"</DEFAULT>
     </PARAMETER>
 
     <PARAMETER

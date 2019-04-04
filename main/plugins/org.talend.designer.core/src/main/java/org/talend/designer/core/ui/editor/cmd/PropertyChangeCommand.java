@@ -22,7 +22,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.utils.threading.ExecutionLimiter;
 import org.talend.commons.utils.threading.ExecutionLimiterImproved;
 import org.talend.core.GlobalServiceRegister;
@@ -1052,7 +1052,7 @@ public class PropertyChangeCommand extends Command {
     }
 
     private boolean getTakeSchema() {
-        return MessageDialog.openQuestion(new Shell(), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
+        return MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

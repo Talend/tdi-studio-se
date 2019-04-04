@@ -1469,9 +1469,11 @@ public class Component extends AbstractBasicComponent {
         }
         if (GenericTypeUtils.isStringType(property)
                 && property.getTaggedValue(IGenericConstants.LINE_SEPARATOR_REPLACED_TO) != null) {
-            String replacedTo = String.valueOf(property.getTaggedValue(IGenericConstants.LINE_SEPARATOR_REPLACED_TO));
-            // "Win", "Linux/Unix", "Mac"
-            return value.replaceAll("\r\n", replacedTo).replaceAll("\n", replacedTo).replaceAll("\r", replacedTo);
+            //process for the sql field for jdbc, snowflake, salesforce, LINE_SEPARATOR_REPLACED_TO key can tell us which a sql type field,
+            //as sql type value may have newline and return characters, which make compiler issue in java code, 
+            //so have to convert the newline characters to visible "\r", "\n" for pass the compiler issue and can't only convert them to white space as TDI-41898
+            //jdbc drivers, salesforce driver can work like that sql : select * \nfrom Account, so it is ok 
+            return NodeUtil.replaceCRLFInMEMO_SQL(value);
         }
         if (GenericTypeUtils.isSchemaType(property)) {
             // Handles embedded escaped quotes which might occur

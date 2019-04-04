@@ -37,6 +37,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.internal.services.INestable;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.services.IServiceLocator;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.metadata.builder.connection.Query;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.repository.model.IRepositoryNode;
@@ -395,7 +396,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
             if (isModified()) {
                 Boolean iskeep = null;
                 if (connParam.isNeedTakePrompt()) {
-                    iskeep = MessageDialog.openQuestion(new Shell(),
+                    iskeep = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false),
                             Messages.getString("MultiPageSqlBuilderEditor.AddComment.Title"), //$NON-NLS-1$
                             Messages.getString("MultiPageSqlBuilderEditor.AddComment.Info")); //$NON-NLS-1$
                 }

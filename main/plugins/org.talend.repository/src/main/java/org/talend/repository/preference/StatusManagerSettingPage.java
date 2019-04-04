@@ -56,7 +56,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -64,6 +63,7 @@ import org.eclipse.ui.internal.navigator.NavigatorContentServiceContentProvider;
 import org.eclipse.ui.internal.navigator.NavigatorDecoratingLabelProvider;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.IImage;
@@ -588,7 +588,7 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
             preferenceStore.load();
         } catch (PersistenceException e) {
             String detailError = e.getMessage();
-            new ErrorDialogWidthDetailArea(new Shell(), RepositoryPlugin.PLUGIN_ID,
+            new ErrorDialogWidthDetailArea(DisplayUtils.getDefaultShell(false), RepositoryPlugin.PLUGIN_ID,
                     Messages.getString("CommonWizard.persistenceException"), detailError); //$NON-NLS-1$
         }
         return preferenceStore;

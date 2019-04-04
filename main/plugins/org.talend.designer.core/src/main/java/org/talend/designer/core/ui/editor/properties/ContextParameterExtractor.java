@@ -19,8 +19,8 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.context.JobContextParameter;
@@ -159,7 +159,8 @@ public final class ContextParameterExtractor {
 
         String value = nameProposal;
         if (ContextParameterUtils.containContextVariables(value)) {
-            MessageDialog.openError(new Shell(), Messages.getString("ContextParameterExtractor.ExistedTitle"), //$NON-NLS-1$
+            MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                    Messages.getString("ContextParameterExtractor.ExistedTitle"), //$NON-NLS-1$
                     Messages.getString("ContextParameterExtractor.ExistedMessages")); //$NON-NLS-1$
             return null;
         }

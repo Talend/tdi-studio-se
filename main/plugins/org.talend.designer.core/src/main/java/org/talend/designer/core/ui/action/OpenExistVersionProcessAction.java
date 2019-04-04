@@ -30,6 +30,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
@@ -158,7 +159,7 @@ public class OpenExistVersionProcessAction extends EditPropertiesAction {
                                 if (tmpDis != null) {
                                     shell = tmpDis.getActiveShell();
                                 } else {
-                                    shell = new Shell();
+                                    shell = DisplayUtils.getDefaultShell(false);
                                 }
                             }
                             MessageDialog.openWarning(shell, "Warning", tmpMess);

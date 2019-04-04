@@ -193,10 +193,10 @@
       <IMPORT NAME="WEBSPHERE MQ LIB" MODULE="com.ibm.mq.allclient-8.0.0.9.jar" MVN="mvn:com.ibm.mq/com.ibm.mq.allclient/8.0.0.9"  REQUIRED_IF="(SERVER == 'WEBSPHERE')" />
 	  <IMPORT NAME="WEBSPHERE JMS LIB" MODULE="com.ibm.mqjms-8.0.0.9.jar" MVN="mvn:com.ibm.mq/com.ibm.mqjms/8.0.0.9"  REQUIRED_IF="(SERVER == 'WEBSPHERE')" />
 	  <IMPORT NAME="WEBSPHERE CONNECTOR" MODULE="websphere-connector-1_5.jar" MVN="mvn:org.talend.libraries/websphere-connector-1_5/6.0.0"  REQUIRED_IF="(SERVER == 'WEBSPHERE')" />
-	  <IMPORT NAME="TALENDMQRFH2" MODULE="talendMQRFH2.jar" MVN="mvn:org.talend.libraries/talendMQRFH2/6.0.0"  REQUIRED_IF="(SERVER == 'WEBSPHERE')" />
+	  <IMPORT NAME="TALENDMQRFH2" MODULE="talendMQRFH2-1.0.1-20190206.jar" MVN="mvn:org.talend.libraries/talendMQRFH2/1.0.1-20190206"  REQUIRED_IF="(SERVER == 'WEBSPHERE')" />
 	  <IMPORT NAME="Java Message Service" MODULE="jms.jar" MVN="mvn:org.talend.libraries/jms/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.esb.ext/lib/jms.jar" REQUIRED_IF="(SERVER == 'WEBSPHERE')" />
 	  
-	  <IMPORT NAME="SharedConnectionUtil" MODULE="talendMQConnectionUtil-1.0.0.jar" MVN="mvn:org.talend.libraries/talendMQConnectionUtil-1.0.0/6.0.0"   REQUIRED_IF="(USE_SHARED_CONNECTION == 'true')" />
+	  <IMPORT NAME="SharedConnectionUtil" MODULE="talendMQConnectionUtil-1.0.1-20190215.jar" MVN="mvn:org.talend.libraries/talendMQConnectionUtil/1.0.1-20190215"   REQUIRED_IF="(USE_SHARED_CONNECTION == 'true')" />
 	  
     </IMPORTS>
   </CODEGENERATION>

@@ -234,28 +234,29 @@ if (sftp) { // *** sftp *** //
 			<%}%>
 			ftp_<%=cid %>.setRemoteVerificationEnabled(<%=useRemoteVerification %>);
 <%
-				passwordFieldName = "__PASSWORD__";
+			passwordFieldName = "__PASSWORD__";
 %>
 
-				<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-				boolean isLoginSuccessful_<%=cid %> = ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
+			boolean isLoginSuccessful_<%=cid %> = ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
 
-				if (!isLoginSuccessful_<%=cid %>) {
-					throw new RuntimeException("Login failed");
-				}
+			if (!isLoginSuccessful_<%=cid %>) {
+				throw new RuntimeException("Login failed");
+			}
 
 <%
-				if (protectionLevel != null && !protectionLevel.isEmpty()) {
+			if (protectionBufferSize != null && !protectionBufferSize.isEmpty() ) {
 %>
-					ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
+				ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
 <%
-				}
-				if (protectionBufferSize != null && !protectionBufferSize.isEmpty() ) {
+			}
+
+			if (protectionLevel != null && !protectionLevel.isEmpty()) {
 %>
-					ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
+				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
 <%
-				}
+			}
 %>
 		} catch (Exception e) {
 			<%if(isLog4jEnabled){%>

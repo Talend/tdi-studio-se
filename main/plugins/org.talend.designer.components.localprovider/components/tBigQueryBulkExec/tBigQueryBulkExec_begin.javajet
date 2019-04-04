@@ -24,7 +24,7 @@
 	String dataset = ElementParameterParser.getValue(node, "__DATASET__");
 	String table = ElementParameterParser.getValue(node, "__TABLE__");
 	String gsFile = ElementParameterParser.getValue(node, "__GS_FILE__");
-
+	String fieldDelimiter = ElementParameterParser.getValue(node, "__FIELD_DELIMITER__");
 	String actionOnData = ElementParameterParser.getValue(node, "__ACTION_ON_DATA__");
 	boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
 
@@ -279,16 +279,25 @@
 					IMetadataColumn column = columns.get(i);
 					String columnName = column.getLabel();
 					String typeToGenerate = "string";
-					if("id_Float".equals(column.getTalendType())) {
+					if("id_Float".equals(column.getTalendType()) || "id_Double".equals(column.getTalendType())) {
 						typeToGenerate = "float";
-					} else if("id_Integer".equals(column.getTalendType())) {
+					}else if("id_Integer".equals(column.getTalendType()) || "id_Long".equals(column.getTalendType()) || "id_Short".equals(column.getTalendType())) {
 						typeToGenerate = "integer";
+					} else if("id_Character".equals(column.getTalendType())) {
+						typeToGenerate = "string";
 					} else if("id_BigDecimal".equals(column.getTalendType())) {
 						typeToGenerate = "numeric";					
 					} else if("id_Boolean".equals(column.getTalendType())) {
 						typeToGenerate = "boolean";
 					} else if("id_Date".equals(column.getTalendType())) {
-						typeToGenerate = "timestamp";
+						String pattern = column.getPattern();
+					    if(pattern.length() == 12 || pattern.isEmpty() || "\"\"".equals(pattern)) {
+					        typeToGenerate = "date";
+					    }else if(pattern.length() > 12){
+					        typeToGenerate = "timestamp";
+					    }else{
+					        typeToGenerate = "string";
+					    }
 					}
 					%>
 					<%
@@ -332,7 +341,7 @@
 	
 		if("true".equals(ElementParameterParser.getValue(node, "__SET_FIELD_DELIMITER__"))) {
 		%>
-			queryLoad_<%=cid%>.setFieldDelimiter(<%=ElementParameterParser.getValue(node, "__FIELD_DELIMITER__")%>);
+			queryLoad_<%=cid%>.setFieldDelimiter(<%=fieldDelimiter%>);
 		<%
 		}
 		%>
@@ -347,7 +356,7 @@
 		queryLoad_<%=cid%>.setDestinationTable(destinationTable_<%=cid%>);
 		queryLoad_<%=cid%>.setSourceUris(java.util.Arrays.asList(<%=ElementParameterParser.getValue(node, "__GS_FILE__")%>));
 		queryLoad_<%=cid%>.setSkipLeadingRows(<%=ElementParameterParser.getValue(node, "__GS_FILE_HEADER__")%>);
-	
+		queryLoad_<%=cid%>.setNullMarker("\\N");
 		config_<%=cid%>.setLoad(queryLoad_<%=cid%>);
 		
 		job_<%=cid%>.setConfiguration(config_<%=cid%>);
@@ -451,6 +460,7 @@
 		/* ----START-CREATING-JOB (Cloud API)---- */
 		com.google.cloud.bigquery.TableId tableId_<%=cid%> = com.google.cloud.bigquery.TableId.of(<%=projectId%>, <%=dataset%>, <%=table%>);
 		com.google.cloud.bigquery.Table table_<%=cid%> = bigquery_<%=cid%>.getTable(tableId_<%=cid%>);
+		com.google.cloud.bigquery.LoadJobConfiguration.Builder loadJobBuilder_<%=cid%> = com.google.cloud.bigquery.LoadJobConfiguration.newBuilder(tableId_<%=cid%>, <%=gsFile%>);
 		if (<%=ElementParameterParser.getBooleanValue(node, "__DROP__")%> && table_<%=cid%> != null) {
 			boolean deleted = bigquery_<%=cid%>.delete(tableId_<%=cid%>);	
 			if (deleted) {
@@ -467,7 +477,6 @@
 		}
 		boolean tableNotExist_<%=cid%> = table_<%=cid%> == null;
 		if (<%=ElementParameterParser.getBooleanValue(node, "__DROP__")%> || tableNotExist_<%=cid%>) {
-			boolean typeSupported = true;
 			java.util.List<com.google.cloud.bigquery.Field> fields_<%=cid%> = new java.util.ArrayList<>();
 			<%
 			List<IMetadataTable> metadatas = node.getMetadataList();
@@ -479,8 +488,8 @@
 					for (int i = 0; i < nbColumns; i++ ) {
 						IMetadataColumn column = columns.get(i);
 						String columnName = column.getLabel();
-						String typeToGenerate = null;
-						if("id_String".equals(column.getTalendType())) {
+						String typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.STRING";
+						if("id_String".equals(column.getTalendType()) || "id_Character".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.STRING";
 						} else if ("id_Float".equals(column.getTalendType()) || "id_Double".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.FLOAT";
@@ -490,18 +499,26 @@
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.NUMERIC";						
 						} else if ("id_Boolean".equals(column.getTalendType())) {
 							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.BOOLEAN";
-						} else if ("id_Date".equals(column.getTalendType())) {
-							typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.TIMESTAMP";
-						} else {
-						%>
-							typeSupported = false;
-						<%
+						} else if ("id_Date".equals(column.getTalendType())) {							
+							String pattern = column.getPattern();
+						    if(pattern.length() == 12 || pattern.isEmpty() || "\"\"".equals(pattern)) {
+						        typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.DATE";
+						    }else if(pattern.length() > 12){
+						        typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.TIMESTAMP";
+						    }else{
+						        typeToGenerate = "com.google.cloud.bigquery.LegacySQLTypeName.STRING";
+						    }
+						}
+						
+						String modeType = "NULLABLE";
+						if (!column.isNullable()) { 
+							modeType = "REQUIRED";
 						}
 						%>
-						if (!typeSupported) {
-							throw new IllegalArgumentException("unsupported type for column [<%=columnName%>]: " + "<%=column.getTalendType()%>");
-						}
-						com.google.cloud.bigquery.Field field_<%=i%> = com.google.cloud.bigquery.Field.of("<%=columnName%>", <%=typeToGenerate%>);
+						
+						com.google.cloud.bigquery.Field field_<%=i%> = com.google.cloud.bigquery.Field.newBuilder("<%=columnName%>", <%=typeToGenerate%>)
+																									  .setMode(com.google.cloud.bigquery.Field.Mode.valueOf("<%=modeType%>"))
+																									  .build();
 						fields_<%=cid%>.add(field_<%=i%>);		
 						<%
 						if(isLog4jEnabled){
@@ -513,11 +530,24 @@
 				}
 			}
 			%>
+			
 			com.google.cloud.bigquery.Schema schema_<%=cid%> = com.google.cloud.bigquery.Schema.of(fields_<%=cid%>);
 			com.google.cloud.bigquery.TableInfo tableInfo_<%=cid%> = com.google.cloud.bigquery.TableInfo.newBuilder(tableId_<%=cid%>, com.google.cloud.bigquery.StandardTableDefinition.of(schema_<%=cid%>)).build();
 			table_<%=cid%> = bigquery_<%=cid%>.create(tableInfo_<%=cid%>);
+			loadJobBuilder_<%=cid%>.setSchema(schema_<%=cid%>);
+			
 		}
-		com.google.cloud.bigquery.Job job_<%=cid%> = table_<%=cid%>.load(com.google.cloud.bigquery.FormatOptions.csv(), <%=gsFile%>);
+		
+																				
+		<%if("true".equals(ElementParameterParser.getValue(node, "__SET_FIELD_DELIMITER__"))) {
+        %>
+         	loadJobBuilder_<%=cid%>.setFormatOptions(com.google.cloud.bigquery.CsvOptions.newBuilder().setFieldDelimiter(<%=fieldDelimiter%>).build());
+        <%
+        }
+         %>		
+		
+		loadJobBuilder_<%=cid%>.setNullMarker("\\N");																
+		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(loadJobBuilder_<%=cid%>.build()));
 		job_<%=cid%> = job_<%=cid%>.waitFor(com.google.cloud.RetryOption.initialRetryDelay(org.threeten.bp.Duration.ofSeconds(1)), com.google.cloud.RetryOption.totalTimeout(org.threeten.bp.Duration.ofSeconds(30)));
 		if (job_<%=cid%> != null && job_<%=cid%>.getStatus().getError() == null) {
 			<%

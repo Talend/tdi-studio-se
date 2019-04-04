@@ -392,7 +392,7 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="Driver-Redshift" MODULE="redshiftJDBC42-no-awssdk-1.2.16.1027.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.16.1027" REQUIRED="true" />
+			<IMPORT NAME="Driver-Redshift" MODULE="redshift-jdbc42-no-awssdk-1.2.20.1043.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.20.1043" REQUIRED="true" />
 			<IMPORT NAME="aws-java-sdk-1.11.406.jar" MODULE="aws-java-sdk-1.11.406.jar"
 				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.406" 
 				REQUIRED_IF="(JDBC_URL == 'SSO') AND (USE_EXISTING_CONNECTION == 'false')" />

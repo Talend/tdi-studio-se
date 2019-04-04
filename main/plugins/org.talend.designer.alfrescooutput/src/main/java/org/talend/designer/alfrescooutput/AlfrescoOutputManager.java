@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.AbstractNode;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
@@ -92,7 +93,7 @@ public class AlfrescoOutputManager {
         try {
 			modelManager.load(); // NB. or when modelManager is created
 		} catch (AlfrescoOutputException aoex) {
-			MessageDialog.openError(new Shell(Display.getCurrent(), SWT.APPLICATION_MODAL),
+            MessageDialog.openError(DisplayUtils.getDefaultShell(false),
 					Messages.getString("AlfrescoOutputManager.failedLoadModel"), aoex.getMessage()); //$NON-NLS-1$
 			modelManager.clear();
 		}

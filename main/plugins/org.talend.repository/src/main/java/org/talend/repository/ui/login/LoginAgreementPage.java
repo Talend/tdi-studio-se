@@ -76,7 +76,7 @@ public class LoginAgreementPage extends AbstractLoginActionPage {
         titleLabel.setLayoutData(titleLabelFormData);
 
         acceptButton = new Button(container, SWT.CENTER);
-        acceptButton.setBackground(backgroundColor);
+        acceptButton.setBackground(backgroundBtnColor);
         acceptButton.setFont(LoginDialogV2.fixedFont);
         acceptButton.setText(Messages.getString("LoginAgreementPage.accept")); //$NON-NLS-1$
 

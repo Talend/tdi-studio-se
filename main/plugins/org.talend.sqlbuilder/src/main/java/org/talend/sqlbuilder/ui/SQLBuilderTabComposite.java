@@ -23,8 +23,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Query;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
@@ -178,7 +178,8 @@ public class SQLBuilderTabComposite extends Composite {
             try {
                 nodesSel = EMFRepositoryNodeManager.getInstance().parseSqlStatement(queryStr, node);
             } catch (Exception e) {
-                MessageDialog.openError(new Shell(), Messages.getString("SQLBuilderTabComposite.Notice.title"), Messages //$NON-NLS-1$
+                MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                        Messages.getString("SQLBuilderTabComposite.Notice.title"), Messages //$NON-NLS-1$
                         .getString("SQLBuilderTabComposite.Notice.Info")); //$NON-NLS-1$
             }
         }
