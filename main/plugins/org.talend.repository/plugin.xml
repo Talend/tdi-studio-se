@@ -3179,6 +3179,15 @@
               name="SetTrustAllCertsLdapComponentsTDI41648"
               version="7.2.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.MigrateTDataMaskingGuiTDQ16376"
+              description="migrate tDataMasking UI with function categories"
+              id="org.talend.repository.model.migration.MigrateTDataMaskingGuiTDQ16376"
+              name="MigrateTDataMaskingGuiTDQ16376"
+              version="7.2.1">
+        </projecttask>
    </extension>
 
    <extension
