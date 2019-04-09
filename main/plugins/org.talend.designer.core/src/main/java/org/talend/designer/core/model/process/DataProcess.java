@@ -1275,8 +1275,15 @@ public class DataProcess implements IGeneratingProcess {
                 String uniqueName = null;
                 IComponent component = null;
                 String hashComponent = null;
+                
+                //TODO remove the two statements as we can call getTargetNodeConnector directly
                 String baseConnector = connection.getSource().getConnectorFromName(connection.getConnectorName()).getBaseSchema();
                 INodeConnector connector = connection.getTarget().getConnectorFromName(baseConnector);
+                
+                if(connector == null) {
+                	connector = connection.getTargetNodeConnector();
+                }
+                
                 if (connector != null) {
                     hashComponent = connector.getConnectionProperty(EConnectionType.FLOW_REF).getLinkedComponent();
                 }
