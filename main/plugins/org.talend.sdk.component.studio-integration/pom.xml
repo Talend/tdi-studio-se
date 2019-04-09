@@ -14,7 +14,7 @@
   <description>Studio integration of the Talend Component Kit framework.</description>
 
   <properties>
-    <component-runtime.version>1.1.4</component-runtime.version>
+    <component-runtime.version>1.1.9-SNAPSHOT</component-runtime.version>
     <commons-lang3.version>3.6</commons-lang3.version>
     <mockito.version>2.23.0</mockito.version>
     <oro.version>2.0.8</oro.version>
@@ -24,10 +24,7 @@
     <commons-lang.version>2.6</commons-lang.version>
     <commons-cli.version>1.4</commons-cli.version>
     <slf4j.version>1.7.25</slf4j.version>
-    <junit5.version>5.1.0-RC1</junit5.version>
-
-    <!-- plugins -->
-    <junit-platform-surefire-provider.version>1.1.0-RC1</junit-platform-surefire-provider.version>
+    <junit5.version>5.4.2</junit5.version>
   </properties>
 
   <dependencyManagement>
@@ -245,7 +242,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.0</version>
+        <version>3.0.0-M3</version>
         <executions>
           <execution>
             <id>unit-tests</id>
@@ -265,23 +262,6 @@
             <java.version>${java.version}</java.version>
           </systemPropertyVariables>
         </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-surefire-provider</artifactId>
-            <version>${junit-platform-surefire-provider.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit5.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit5.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>

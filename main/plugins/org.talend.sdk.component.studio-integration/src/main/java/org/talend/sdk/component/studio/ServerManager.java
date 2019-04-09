@@ -27,7 +27,6 @@ import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.tomcat.websocket.Constants;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.talend.commons.CommonsPlugin;
@@ -104,12 +103,12 @@ public class ServerManager extends AbstractUIPlugin {
     }
 
     private void extractFiles() throws Exception {
-        final String codeGenBundleId = "org.talend.designer.codegen"; //$NON-NLS-1$
+        final String codegenUrl = CommonsPlugin.getBundleRealURL("org.talend.designer.codegen").getFile();
         final TemplatesExtractor stubExtractor = new TemplatesExtractor("jet_stub/generic", //$NON-NLS-1$
-                CommonsPlugin.getBundleRealURL(codeGenBundleId).getFile(), "tacokit/jet_stub"); //$NON-NLS-1$
+                codegenUrl, "tacokit/jet_stub"); //$NON-NLS-1$
         stubExtractor.extract();
         final TemplatesExtractor guessSchemaExtractor = new TemplatesExtractor("components/tTaCoKitGuessSchema", //$NON-NLS-1$
-                CommonsPlugin.getBundleRealURL(codeGenBundleId).getFile(), "tacokit/components"); //$NON-NLS-1$
+                codegenUrl, "tacokit/components"); //$NON-NLS-1$
         guessSchemaExtractor.extract();
     }
 
