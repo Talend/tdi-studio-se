@@ -189,6 +189,8 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
 
     private class MigrateDataMaskingParameters implements IComponentConversion {
 
+        private static final String MASKING_PARAM_TABLE_NAME = "MODIF_TABLE";
+
         @Override
         public void transform(NodeType node) {
 
@@ -196,11 +198,10 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
                 return;
             }
 
-            ExceptionHandler.process(new RuntimeException("----------2-----------------"));
             List<ElementValueType> maskingParams = new ArrayList<ElementValueType>();
             TalendFileFactory fileFactory = TalendFileFactory.eINSTANCE;
 
-            ElementParameterType parameter = ComponentUtilities.getNodeProperty(node, "MODIF_TABLE"); //$NON-NLS-1$
+            ElementParameterType parameter = ComponentUtilities.getNodeProperty(node, MASKING_PARAM_TABLE_NAME); //$NON-NLS-1$
 
             if (parameter != null) {
 
@@ -224,15 +225,11 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
                     }
                 }
 
-                ExceptionHandler.process(new RuntimeException("----------3-----------------" + inputCols.size()));
-
                 for (int i = 0; i < inputCols.size(); i++) {
                     final String oldFunction = functions.get(i);
                     final String[] newParams = MASKING_PARAM_MIGRATION.get(oldFunction);
 
                     if (newParams == null) {
-                        System.err.println("no need to migration" + oldFunction);
-                        ExceptionHandler.process(new RuntimeException("no need to migrate: " + oldFunction));
                         continue; // no need to migrate
                     }
 
@@ -274,14 +271,11 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
                     elementValue7.setElementRef("KEEP_FORMAT");
                     elementValue7.setValue(keepFormatSelections.get(i));
                     maskingParams.add(elementValue7);
-
-                    ExceptionHandler.process(new RuntimeException("migrated: " + oldFunction));
                 }
 
-                ExceptionHandler.process(new RuntimeException("----------4-----------------" + maskingParams.size()));
-                ComponentUtilities.removeNodeProperty(node, "MODIF_TABLE");
-                ComponentUtilities.addNodeProperty(node, "MODIF_TABLE", "TABLE");
-                ComponentUtilities.setNodeProperty(node, "MODIF_TABLE", maskingParams);
+                ComponentUtilities.removeNodeProperty(node, MASKING_PARAM_TABLE_NAME);
+                ComponentUtilities.addNodeProperty(node, MASKING_PARAM_TABLE_NAME, "TABLE");
+                ComponentUtilities.setNodeProperty(node, MASKING_PARAM_TABLE_NAME, maskingParams);
             }
         }
     }
