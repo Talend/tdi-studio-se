@@ -53,8 +53,10 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
         toReturn.add(ERepositoryObjectType.PROCESS);
         toReturn.add(ERepositoryObjectType.JOBLET);
         toReturn.add(ERepositoryObjectType.TEST_CONTAINER);
-        toReturn.add(ERepositoryObjectType.PROCESS_SPARK);
-        toReturn.add(ERepositoryObjectType.PROCESS_SPARKSTREAMING);
+        // PROCESS_MR stands for Map/Reduce and Spark.
+        toReturn.add(ERepositoryObjectType.PROCESS_MR);
+        // PROCESS_STORM stands for Storm and Spark Streaming.
+        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
         return toReturn;
     }
 
@@ -102,10 +104,10 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
             put("GENERATE_FROM_PATTERN", new String[] { "DATA_GENERATION", null, "EMPTY" });
             put("GENERATE_UUID", new String[] { "DATA_GENERATION", null, "EMPTY" });
             put("GENERATE_SEQUENCE", new String[] { "DATA_GENERATION", null, "EMPTY" });
-            put("GENERATE_FROM_LIST", new String[] { "DATA_GENERATION", null, "RANDOM" });
-            put("GENERATE_FROM_FILE", new String[] { "DATA_GENERATION", null, "RANDOM" });
-            put("GENERATE_FROM_LIST_HASH", new String[] { "DATA_GENERATION", null, "CONSISTENT" });
-            put("GENERATE_FROM_FILE_HASH", new String[] { "DATA_GENERATION", null, "CONSISTENT" });
+            put("GENERATE_FROM_LIST", new String[] { "DATA_GENERATION", "GENERATE_FROM_LIST_OR_FILE", "RANDOM" });
+            put("GENERATE_FROM_FILE", new String[] { "DATA_GENERATION", "GENERATE_FROM_LIST_OR_FILE", "RANDOM" });
+            put("GENERATE_FROM_LIST_HASH", new String[] { "DATA_GENERATION", "GENERATE_FROM_LIST_OR_FILE", "CONSISTENT" });
+            put("GENERATE_FROM_FILE_HASH", new String[] { "DATA_GENERATION", "GENERATE_FROM_LIST_OR_FILE", "CONSISTENT" });
 
             put("GENERATE_PHONE_NUMBER_FRENCH", new String[] { "PHONE_GENERATION", null, "EMPTY" });
             put("GENERATE_PHONE_NUMBER_GERMANY", new String[] { "PHONE_GENERATION", null, "EMPTY" });
@@ -126,6 +128,7 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
              */
             put("MASK_ADDRESS", new String[] { "ADDRESS_MASKING", null, "EMPTY" });
 
+            put("MASK_EMAIL", new String[] { "EMAIL_MASKING", "MASK_EMAIL_LOCALPART", "MASK_BY_CHARACTER" });
             put("MASK_EMAIL_LOCALPART_BY_X", new String[] { "EMAIL_MASKING", "MASK_EMAIL_LOCALPART", "MASK_BY_CHARACTER" });
             put("MASK_EMAIL_LOCALPART_RANDOMLY", new String[] { "EMAIL_MASKING", "MASK_EMAIL_LOCALPART", "MASK_FROM_LIST" });
             put("MASK_FULL_EMAIL_DOMAIN_BY_X", new String[] { "EMAIL_MASKING", "MASK_FULL_EMAIL_DOMAIN", "MASK_BY_CHARACTER" });
@@ -201,7 +204,7 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
             List<ElementValueType> maskingParams = new ArrayList<ElementValueType>();
             TalendFileFactory fileFactory = TalendFileFactory.eINSTANCE;
 
-            ElementParameterType parameter = ComponentUtilities.getNodeProperty(node, MASKING_PARAM_TABLE_NAME); //$NON-NLS-1$
+            ElementParameterType parameter = ComponentUtilities.getNodeProperty(node, MASKING_PARAM_TABLE_NAME);
 
             if (parameter != null) {
 
@@ -229,13 +232,18 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
                     final String oldFunction = functions.get(i);
                     final String[] newParams = MASKING_PARAM_MIGRATION.get(oldFunction);
 
-                    if (newParams == null) {
-                        continue; // no need to migrate
+                    String category;
+                    String newFunction;
+                    String method;
+                    if (newParams == null) { // keep old function name
+                        category = "";
+                        newFunction = oldFunction;
+                        method = "EMPTY";
+                    } else {
+                        category = newParams[0];
+                        newFunction = newParams[1] == null ? oldFunction : newParams[1];
+                        method = newParams[2];
                     }
-
-                    final String category = newParams[0];
-                    final String newFunction = newParams[1] == null ? oldFunction : newParams[1];
-                    final String method = newParams[2];
 
                     ElementValueType elementValue = fileFactory.createElementValueType();
                     elementValue.setElementRef("INPUT_COLUMN");
