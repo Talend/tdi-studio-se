@@ -411,7 +411,13 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                     buildDelegate(monitor);
                 } catch (Exception e) {
                     if (!CommonUIPlugin.isFullyHeadless() && isOptionChoosed(ExportChoice.buildImage)) {
-                        MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                        Display.getDefault().syncExec(new Runnable() {
+                            
+                            @Override
+                            public void run() {
+                                MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                            }
+                        });
                     } else {
                         ExceptionHandler.process(e);
                     }
