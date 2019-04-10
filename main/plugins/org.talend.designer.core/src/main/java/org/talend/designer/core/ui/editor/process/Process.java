@@ -2793,9 +2793,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         continue;
                     }
                 }
-                EConnectionType type = EConnectionType.getTypeFromId(lineStyleId);
-                connec = new Connection(source, target, type, source.getConnectorFromType(type).getName(), metaname,
-                        cType.getLabel(), cType.getMetaname(), monitorConnection);
+                if (!ConnectionManager.checkCircle(source, target)) {
+                    EConnectionType type = EConnectionType.getTypeFromId(lineStyleId);
+                    connec = new Connection(source, target, type, source.getConnectorFromType(type).getName(), metaname,
+                            cType.getLabel(), cType.getMetaname(), monitorConnection);
+                } else {
+                    ExceptionHandler.process(new Exception(Messages.getString("Process.errorCircleConnectionDetected", //$NON-NLS-1$
+                            cType.getLabel(), source.getLabel(), target.getLabel())));
+                }
             }
             if (connec == null) {
                 continue;
