@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -308,7 +309,7 @@ public class PropertyChangeCommand extends Command {
                 String componentName = targetNode.getComponent().getName();
                 if (componentName.matches("tELT.+Map")) { //$NON-NLS-1$
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IDbMapDesignerService.class)) {
-                        IDbMapDesignerService service = (IDbMapDesignerService) GlobalServiceRegister.getDefault().getService(
+                        IDbMapDesignerService service = GlobalServiceRegister.getDefault().getService(
                                 IDbMapDesignerService.class);
                         updateELTMapComponentCommand = service.getUpdateELTMapComponentCommand(targetNode, connection,
                                 oldELTValue, newELTValue);
@@ -396,7 +397,7 @@ public class PropertyChangeCommand extends Command {
             // Node jobletNode = null;
             IJobletProviderService service = null;
             if (PluginChecker.isJobLetPluginLoaded()) {
-                service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
+                service = GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
             }
             if (elem instanceof Node) {
                 // jobletNode = (Node) elem;
@@ -474,6 +475,17 @@ public class PropertyChangeCommand extends Command {
         if (schemaParameter != null && !schemaParameter.isShow(elem.getElementParameters())
                 && !schemaParameter.getValue().equals("")) {
             schemaParameter.setValue("");
+        }
+        // if the distribution with the version doesn't exist,NameNode URI field should not be reset default value.
+        if (currentParam.getName().equals(EParameterName.DB_VERSION.getName())
+                && currentParam.getFieldType() == EParameterFieldType.CLOSED_LIST) {
+            Object[] values = currentParam.getListItemsValue();
+            if (values != null) {
+                List<Object> valuesList = Arrays.asList(values);
+                if (!valuesList.contains(oldValue)) {
+                    toUpdate = true;
+                }
+            }
         }
         if (!toUpdate
                 && (currentParam.getFieldType().equals(EParameterFieldType.RADIO)
