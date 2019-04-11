@@ -12,7 +12,11 @@
 // ============================================================================
 package org.talend.designer.core.model.process;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.junit.After;
@@ -360,6 +364,63 @@ public class ConnectionManagerTest {
                 EConnectionType.FLOW_MAIN.getName(), "test");
         Assert.assertFalse(canConnect);
 
+    }
+
+    @Test
+    public void testCheckCircle() {
+        IComponent component = ComponentsFactoryProvider.getInstance().get("tJava", ComponentCategory.CATEGORY_4_DI.getName());
+        Node sourceNode = new Node(componentSource, sourceProcess);
+        Node targetNode = new Node(componentTarget, sourceProcess);
+        Node middleNode_1 = new Node(component, sourceProcess);
+        Node middleNode_2 = new Node(component, sourceProcess);
+        Node middleNode_3 = new Node(component, sourceProcess);
+
+        // sourceNode -> middleNode_1 -> targetNode
+        resetNodeConnection(sourceNode);
+        resetNodeConnection(middleNode_1);
+        resetNodeConnection(targetNode);
+        ((List<Connection>) middleNode_1.getIncomingConnections()).add(new Connection(sourceNode, middleNode_1,
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+        ((List<Connection>) targetNode.getIncomingConnections()).add(new Connection(middleNode_1, targetNode,
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+        Assert.assertFalse(ConnectionManager.checkCircle(middleNode_1, targetNode));
+
+        // TUP-22620 source==target, no incomming connections
+        Assert.assertTrue(ConnectionManager.checkCircle(sourceNode, sourceNode));
+
+        // for circle connection, test checkCircle by canConnectToTrget
+        // sourceNode -> targetNode -> sourceNode
+        resetNodeConnection(sourceNode);
+        resetNodeConnection(middleNode_1);
+        resetNodeConnection(targetNode);
+        ((List<Connection>) targetNode.getIncomingConnections()).add(new Connection(source, target, EConnectionType.FLOW_MAIN,
+                EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+        Assert.assertFalse(ConnectionManager.canConnectToTarget(target, null, source, EConnectionType.FLOW_MAIN,
+                EConnectionType.FLOW_MAIN.getName(), "test"));
+
+
+        // sourceNode -> middleNode_1 -> middleNode_2 -> middleNode_3 -> middleNode_1 -> targetNode
+        resetNodeConnection(sourceNode);
+        resetNodeConnection(targetNode);
+        ((List<Connection>) middleNode_1.getIncomingConnections()).add(new Connection(sourceNode, middleNode_1,
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+        ((List<Connection>) middleNode_2.getIncomingConnections()).add(new Connection(middleNode_1, middleNode_2,
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+
+        ((List<Connection>) middleNode_1.getIncomingConnections()).add(new Connection(middleNode_3, middleNode_1,
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+        ((List<Connection>) targetNode.getIncomingConnections()).add(new Connection(middleNode_1, targetNode,
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+        Assert.assertFalse(ConnectionManager.canConnectToTarget(middleNode_2, null, middleNode_3, EConnectionType.FLOW_MAIN,
+                EConnectionType.FLOW_MAIN.getName(), "test"));
+
+    }
+
+    private static void resetNodeConnection(Node node) {
+        List<Connection> inconnections = new ArrayList<Connection>();
+        node.setIncomingConnections(inconnections);
+        List<Connection> outconnections = new ArrayList<Connection>();
+        node.setOutgoingConnections(outconnections);
     }
 
 }
