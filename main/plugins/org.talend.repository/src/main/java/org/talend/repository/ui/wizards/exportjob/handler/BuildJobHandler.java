@@ -191,7 +191,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
             return;
         }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+            ITestContainerProviderService testContainerService = GlobalServiceRegister
                     .getDefault().getService(ITestContainerProviderService.class);
             if (testContainerService != null) {
                 List<IFile> reports = new ArrayList<IFile>();
@@ -259,7 +259,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
     private void addTDMDependencies(IFolder itemsFolder, List<Item> items) {
         ITransformService tdmService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITransformService.class)) {
-            tdmService = (ITransformService) GlobalServiceRegister.getDefault().getService(ITransformService.class);
+            tdmService = GlobalServiceRegister.getDefault().getService(ITransformService.class);
         }
         if (tdmService == null) {
             return;
@@ -345,7 +345,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
 
     private void addDQDependencies(IFolder parentFolder, List<Item> items) throws Exception {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQItemService.class)) {
-            ITDQItemService tdqItemService = (ITDQItemService) GlobalServiceRegister.getDefault().getService(
+            ITDQItemService tdqItemService = GlobalServiceRegister.getDefault().getService(
                     ITDQItemService.class);
             for (Item item : items) {
                 if (tdqItemService != null && tdqItemService.hasProcessItemDependencies(Arrays.asList(new Item[] { item }))) {
@@ -411,7 +411,12 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                     buildDelegate(monitor);
                 } catch (Exception e) {
                     if (!CommonUIPlugin.isFullyHeadless() && isOptionChoosed(ExportChoice.buildImage)) {
-                        MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                        Display.getDefault().asyncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                            }
+                        });
                     } else {
                         ExceptionHandler.process(e);
                     }
