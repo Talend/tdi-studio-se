@@ -368,21 +368,22 @@ public class ConnectionManagerTest {
 
     @Test
     public void testCheckCircle() {
+        Process process = new Process(createProperty());
         IComponent component = ComponentsFactoryProvider.getInstance().get("tJava", ComponentCategory.CATEGORY_4_DI.getName());
-        Node sourceNode = new Node(componentSource, sourceProcess);
-        Node targetNode = new Node(componentTarget, sourceProcess);
-        Node middleNode_1 = new Node(component, sourceProcess);
-        Node middleNode_2 = new Node(component, sourceProcess);
-        Node middleNode_3 = new Node(component, sourceProcess);
+        Node sourceNode = new Node(componentSource, process);
+        Node targetNode = new Node(componentTarget, process);
+        Node middleNode_1 = new Node(component, process);
+        Node middleNode_2 = new Node(component, process);
+        Node middleNode_3 = new Node(component, process);
 
         // sourceNode -> middleNode_1 -> targetNode
         resetNodeConnection(sourceNode);
         resetNodeConnection(middleNode_1);
         resetNodeConnection(targetNode);
         ((List<Connection>) middleNode_1.getIncomingConnections()).add(new Connection(sourceNode, middleNode_1,
-                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "testRow", "testRow", "testRow", false));
         ((List<Connection>) targetNode.getIncomingConnections()).add(new Connection(middleNode_1, targetNode,
-                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "testRow", "testRow", "testRow", false));
         Assert.assertFalse(ConnectionManager.checkCircle(middleNode_1, targetNode));
 
         // TUP-22620 source==target, no incomming connections
@@ -393,26 +394,25 @@ public class ConnectionManagerTest {
         resetNodeConnection(sourceNode);
         resetNodeConnection(middleNode_1);
         resetNodeConnection(targetNode);
-        ((List<Connection>) targetNode.getIncomingConnections()).add(new Connection(source, target, EConnectionType.FLOW_MAIN,
-                EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
-        Assert.assertFalse(ConnectionManager.canConnectToTarget(target, null, source, EConnectionType.FLOW_MAIN,
-                EConnectionType.FLOW_MAIN.getName(), "test"));
-
+        ((List<Connection>) targetNode.getIncomingConnections()).add(new Connection(sourceNode, targetNode,
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "testRow", "testRow", "testRow", false));
+        Assert.assertFalse(ConnectionManager.canConnectToTarget(targetNode, null, sourceNode, EConnectionType.FLOW_MAIN,
+                EConnectionType.FLOW_MAIN.getName(), "testRow"));
 
         // sourceNode -> middleNode_1 -> middleNode_2 -> middleNode_3 -> middleNode_1 -> targetNode
         resetNodeConnection(sourceNode);
         resetNodeConnection(targetNode);
         ((List<Connection>) middleNode_1.getIncomingConnections()).add(new Connection(sourceNode, middleNode_1,
-                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "testRow", "testRow", "testRow", false));
         ((List<Connection>) middleNode_2.getIncomingConnections()).add(new Connection(middleNode_1, middleNode_2,
-                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "testRow", "testRow", "testRow", false));
 
         ((List<Connection>) middleNode_1.getIncomingConnections()).add(new Connection(middleNode_3, middleNode_1,
-                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "testRow", "testRow", "testRow", false));
         ((List<Connection>) targetNode.getIncomingConnections()).add(new Connection(middleNode_1, targetNode,
-                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test", "test", "test", false));
+                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "testRow", "testRow", "testRow", false));
         Assert.assertFalse(ConnectionManager.canConnectToTarget(middleNode_2, null, middleNode_3, EConnectionType.FLOW_MAIN,
-                EConnectionType.FLOW_MAIN.getName(), "test"));
+                EConnectionType.FLOW_MAIN.getName(), "testRow"));
 
     }
 
