@@ -558,7 +558,8 @@
 			}
 			%>
 		} else {
-			throw new RuntimeException("Job failed: " + job_<%=cid%>.getStatus().getError());
+			List<com.google.cloud.bigquery.BigQueryError> errorList = job_<%=cid%>.getStatus().getExecutionErrors();
+			throw new RuntimeException("Job failed: " + errorList.get(errorList.size() - 1));
 		}
 		
 		/* ----END-CREATING-JOB (Cloud API)---- */
