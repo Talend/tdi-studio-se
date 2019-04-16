@@ -3,6 +3,7 @@
 		org.talend.core.model.process.INode
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		org.talend.core.model.process.ElementParameterParser
+		org.talend.core.model.process.IConnection
 		java.util.List
 		java.util.Map
 	"
@@ -14,9 +15,17 @@
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();	
+	String connName = null;
+	
+	if (node.getIncomingConnections().size() == 1){
+		IConnection conn = node.getIncomingConnections().get(0);
+		connName = conn.getName();
+	}
 
 	String directory = ElementParameterParser.getValue(node, "__SOURCE__");
+	directory=  directory.replace("input_row", connName);
 	String zipFile = ElementParameterParser.getValue(node, "__TARGET__");
+	zipFile = zipFile.replace("input_row", connName);
 	String level = ElementParameterParser.getValue(node, "__LEVEL__");
 	boolean mkDir = ("true").equals(ElementParameterParser.getValue(node, "__MKDIR__"));
 	boolean isAllFile = ("true").equals(ElementParameterParser.getValue(node, "__ALL_FILES__"));
