@@ -320,7 +320,7 @@
 							
 								String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
 								JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
-								String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern(); 
+								 
 								if (authMode.equals("OAUTH")) {
 								%>
 								value_<%=cid%> = field_<%=cid %>.get(<%=i%>).getV();
@@ -347,7 +347,15 @@
 									<%		
 									} else if(javaType == JavaTypesManager.DATE) {						
 									%>					
-										<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString());				
+										
+										java.text.SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+										java.util.Date date = formatter.parse(value_<%=cid%>.toString(), new java.text.ParsePosition(0));
+										if (date == null) {
+										  <%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString());
+										} else {
+											<%=connName%>.<%=columnName%> = date;
+										}
+										
 									<%		
 									} else if(advancedSeparator && JavaTypesManager.isNumberType(javaType)) { 
 									%>
