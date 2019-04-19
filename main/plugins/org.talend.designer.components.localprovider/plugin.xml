@@ -2960,10 +2960,10 @@
             uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/slf4j-log4j12-1.6.1.jar">
         </libraryNeeded>
         <libraryNeeded
-            id="commons-lang3-3.8.1.jar"
-            name="commons-lang3-3.8.1.jar" mvn_uri="mvn:org.apache.commons/commons-lang3/3.8.1"
+            id="commons-lang3-3.0.jar"
+            name="commons-lang3-3.0.jar" mvn_uri="mvn:org.talend.libraries/commons-lang3-3.0/6.0.0"
             context="plugin:org.talend.libraries.apache.common"
-            uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.8.1.jar">
+            uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.0.jar">
         </libraryNeeded>
 
         <!-- group of spark hive libraries -->
@@ -7569,7 +7569,7 @@
                 id="tez-tests-0.4.0.2.1.1.0-385.jar">
             </library>
             <library
-                  id="commons-lang3-3.8.1.jar">
+                  id="commons-lang3-3.0.jar">
             </library>
         </libraryNeededGroup>
         <libraryNeededGroup
