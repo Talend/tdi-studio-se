@@ -209,6 +209,11 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
             if (parameter != null) {
 
                 EList<ElementValueType> list = parameter.getElementValue();
+                for (ElementValueType e : list) {
+                    if (e.getElementRef().equals("CATEGORY")) {
+                        return; // nothing to do
+                    }
+                }
 
                 List<String> inputCols = new ArrayList<String>();
                 List<String> functions = new ArrayList<String>();
