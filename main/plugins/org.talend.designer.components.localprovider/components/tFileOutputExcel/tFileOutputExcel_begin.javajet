@@ -777,12 +777,13 @@ if(!hasDynamic && isIncludeHeader){
 		xlsxTool_<%=cid%>.setRecalculateFormula(<%=recalculateFormula%>);
 		xlsxTool_<%=cid%>.setXY(<%=firstCellYAbsolute%>,<%=firstCellXStr%>,<%=firstCellYStr%>,<%=keepCellFormating%>);
 		<%if(!useStream){%>
-		 java.util.concurrent.ConcurrentHashMap chm =
-					(java.util.concurrent.ConcurrentHashMap) globalMap.get("concurrentHashMap");
-        chm.computeIfAbsent("EXCEL_OUTPUT_LOCK_OBJ", k -> new Object());
-        java.lang.Object lockObj = chm.get("EXCEL_OUTPUT_LOCK_OBJ");
-        synchronized (chm) {
-    	    xlsxTool_<%=cid%>.prepareXlsxFile(fileName_<%=cid%>);
+        java.util.concurrent.ConcurrentHashMap chm_<%=cid%> = (java.util.concurrent.ConcurrentHashMap) globalMap.get("concurrentHashMap");
+
+        chm_<%=cid%>.computeIfAbsent("EXCEL_OUTPUT_LOCK_OBJ_<%=cid%>", k -> new Object());
+
+        java.lang.Object lockObj_<%=cid%> = chm_<%=cid%>.get("EXCEL_OUTPUT_LOCK_OBJ_<%=cid%>");
+        synchronized (lockObj_<%=cid%>) {
+            xlsxTool_<%=cid%>.prepareXlsxFile(fileName_<%=cid%>);
         }
 		<%}else{%>
 		xlsxTool_<%=cid%>.prepareStream();
