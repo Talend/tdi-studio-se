@@ -506,11 +506,14 @@
             if (inContext == null) {
                 inContext = <%=className%>.class.getClassLoader().getResourceAsStream("config/contexts/" + contextStr + ".properties");
             }
-            if (inContext != null && context != null && context.isEmpty()) {
+            if (inContext != null) {
                 //defaultProps is in order to keep the original context value
-                defaultProps.load(inContext);
+                if(context != null && context.isEmpty()) {
+	                defaultProps.load(inContext);
+	                context = new ContextProperties(defaultProps);
+                }
+                
                 inContext.close();
-                context = new ContextProperties(defaultProps);
             } else if (!isDefaultContext) {
                 //print info and job continue to run, for case: context_param is not empty.
                 System.err.println("Could not find the context " + contextStr);
