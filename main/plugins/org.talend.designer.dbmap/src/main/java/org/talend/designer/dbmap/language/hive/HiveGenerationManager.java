@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.hive;
 
+import java.util.List;
+import java.util.Set;
+
 import org.talend.designer.dbmap.DbMapComponent;
 import org.talend.designer.dbmap.external.data.ExternalDbMapData;
 import org.talend.designer.dbmap.external.data.ExternalDbMapTable;
@@ -52,5 +55,37 @@ public class HiveGenerationManager extends DbGenerationManager {
             }
         }
         return query;
+    }
+    
+    @Override
+    protected String replaceVariablesForExpression(DbMapComponent component, String expression) {
+        if (expression == null) {
+            return null;
+        }
+
+            List<String> contextList = getContextList(component);
+            boolean haveReplace = false;
+            for (String context : contextList) {
+                if (expression.contains(context)) {
+                    expression = expression.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                    haveReplace = true;
+                }
+            }
+            if (!haveReplace) {
+                List<String> connContextList = getConnectionContextList(component);
+                for (String context : connContextList) {
+                    if (expression.contains(context)) {
+                        expression = expression.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                    }
+                }
+            }
+            Set<String> globalMapList = getGlobalMapList(component, expression);
+            for (String globalMapStr : globalMapList) {
+                String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
+                String replacement = parser.getGlobalMapReplacement(globalMapStr);
+                expression = expression.replaceAll(regex, "\" +" + replacement + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ 
+            }
+        
+        return expression;
     }
 }
