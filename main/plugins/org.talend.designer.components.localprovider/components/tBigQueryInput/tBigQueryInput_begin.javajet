@@ -347,7 +347,13 @@
 									<%		
 									} else if(javaType == JavaTypesManager.DATE) {						
 									%>					
-										<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString());				
+										
+										if (value_<%=cid%>.toString().contains("-")) {
+											<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString(),<%=patternValue%>);						
+										} else {						
+											<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString());
+										}
+										
 									<%		
 									} else if(advancedSeparator && JavaTypesManager.isNumberType(javaType)) { 
 									%>
