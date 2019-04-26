@@ -76,8 +76,11 @@ imports="
 		}
 %>
 				String driverClass_<%=cid%> = "<%=this.getDirverClassName(node) %>";
-			    java.lang.Class.forName(driverClass_<%=cid%>);
-<%              if (needUserAndPassword){%>
+			    java.lang.Class jdbcclazz_<%=cid%> = java.lang.Class.forName(driverClass_<%=cid%>);
+<%
+				newInstance(node);
+				
+				if (needUserAndPassword){%>
 					String dbUser_<%=cid %> = <%=dbuser%>;
 					<%
 					String passwordFieldName = "__PASS__";
@@ -115,6 +118,11 @@ imports="
 		    }
 <%
 			}
+		}
+		
+		protected void newInstance(INode node) {
+			//do nothing as default
+			//for sybase jdbc in java 11, we have to call jdbcclazz.newInstance method
 		}
 		
 		public String getQueryString(INode node) {
