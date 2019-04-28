@@ -192,10 +192,12 @@ public class TalendJavaProjectManager {
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
                 AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IFolder codeProjectFolder = helper.getProjectPomsFolder().getFolder(type.getFolder());
+                if (codeProjectFolder.exists()) {
+                    codeProjectFolder.delete(true, monitor);
+                }
                 IProject codeProject = root.getProject((projectTechName + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
                 IJavaProject javaProject = JavaCore.create(codeProject);
                 talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
-                talendCodeJavaProject.cleanMavenFiles(monitor);
                 BuildCacheManager.getInstance().clearCodesCache(type);
 
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
@@ -574,7 +576,7 @@ public class TalendJavaProjectManager {
             } else {
                 // SOAP service, when the process is null
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-                    IESBService soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                    IESBService soapService = GlobalServiceRegister.getDefault().getService(IESBService.class);
                     if (item != null && soapService.isServiceItem(item.eClass().getClassifierID())) {
                         IProcessor processor = ProcessorUtilities.getProcessor(process, item.getProperty());
                         generatePom(item, option, processor);
