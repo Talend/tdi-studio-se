@@ -46,10 +46,16 @@
 		public void classForName(INode node){
 		%>
 			String driverClass_<%=cid%> = "<%=this.getDirverClassName(node) %>";
-		    java.lang.Class.forName(driverClass_<%=cid%>);
+		    java.lang.Class jdbcclazz_<%=cid%> = java.lang.Class.forName(driverClass_<%=cid%>);
 		<%
+			newInstance(node);
 		}
-
+		
+		protected void newInstance(INode node) {
+			//do nothing as default
+			//for sybase jdbc in java 11, we have to call jdbcclazz.newInstance method
+		}
+		
 		public void newConnection(){
 		%>
 			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
