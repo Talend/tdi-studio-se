@@ -12,7 +12,22 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.CLASSPATH_FILE_NAME;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_BEANS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_CODES;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS_SPARK;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS_SPARK_STREAMING;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PIGUDFS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_MR;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_ROUTES;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_SERVICES;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_STORM;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_ROUTELETS;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_ROUTINES;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.PROJECT_FILE_NAME;
 
 import java.io.File;
 import java.util.HashMap;
@@ -63,6 +78,7 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.IDesignerCoreService;
+import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
@@ -192,9 +208,7 @@ public class TalendJavaProjectManager {
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
                 AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IFolder codeProjectFolder = helper.getProjectPomsFolder().getFolder(type.getFolder());
-                if (codeProjectFolder.exists()) {
-                    codeProjectFolder.delete(true, monitor);
-                }
+                cleanMavenFiles(monitor, codeProjectFolder);
                 IProject codeProject = root.getProject((projectTechName + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
                 IJavaProject javaProject = JavaCore.create(codeProject);
                 talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
@@ -218,6 +232,21 @@ public class TalendJavaProjectManager {
         MavenPomSynchronizer.addChangeLibrariesListener();
 
         return talendCodeJavaProject;
+    }
+
+    private static void cleanMavenFiles(IProgressMonitor monitor, IFolder codeProjectFolder) throws CoreException {
+        IFolder srcFolder = codeProjectFolder.getFolder(MavenSystemFolders.SRC.getPath());
+        IFolder targetFolder = codeProjectFolder.getFolder(MavenSystemFolders.TARGET.getPath());
+        IFolder testFolder = codeProjectFolder.getFolder(MavenSystemFolders.TEST_REPORTS.getPath());
+        if (srcFolder.exists()) {
+            srcFolder.delete(true, monitor);
+        }
+        if (targetFolder.exists()) {
+            targetFolder.delete(true, monitor);
+        }
+        if (testFolder.exists()) {
+            testFolder.delete(true, monitor);
+        }
     }
 
     public static ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
