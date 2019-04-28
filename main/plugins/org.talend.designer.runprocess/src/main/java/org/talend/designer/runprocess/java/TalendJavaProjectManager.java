@@ -193,18 +193,20 @@ public class TalendJavaProjectManager {
                 AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IFolder codeProjectFolder = helper.getProjectPomsFolder().getFolder(type.getFolder());
                 IProject codeProject = root.getProject((projectTechName + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
+                IJavaProject javaProject = JavaCore.create(codeProject);
+                talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
+                talendCodeJavaProject.cleanMavenFiles(monitor);
+                BuildCacheManager.getInstance().clearCodesCache(type);
+
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
                     // always enable maven nature for code projects.
                     createMavenJavaProject(monitor, codeProject, null, codeProjectFolder, true);
                 }
-                IJavaProject javaProject = JavaCore.create(codeProject);
                 if (!javaProject.isOpen()) {
                     javaProject.open(monitor);
                 }
                 helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
-                talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
-                talendCodeJavaProject.cleanMavenFiles(monitor);
-                BuildCacheManager.getInstance().clearCodesCache(type);
+
                 talendCodeJavaProjects.put(codeProjectId, talendCodeJavaProject);
             } catch (Exception e) {
                 ExceptionHandler.process(e);
