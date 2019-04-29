@@ -65,7 +65,7 @@ if (metadatas != null && metadatas.size() > 0) {
 %>
 
 java.util.Map<<%=lookup %>Struct, <%=lookup %>Struct>  tMap_<%=lookup%>_<%=cid %> = (java.util.Map<<%=lookup %>Struct, <%=lookup %>Struct>) globalMap.get("tHash_<%=lookup %>");
-java.util.Map<<%=typeToGenerate_lookup%>,<%=typeToGenerate_replacement%>> replace_<%=cid%> = new java.util.HashMap<<%=typeToGenerate_lookup%>,<%=typeToGenerate_replacement%>>();
+java.util.Map<<%=typeToGenerate_lookup%>,<%=typeToGenerate_replacement%>> replace_<%=cid%> = new java.util.LinkedHashMap<<%=typeToGenerate_lookup%>,<%=typeToGenerate_replacement%>>();
 
 for (Object o : tMap_<%=lookup%>_<%=cid %>.keySet()) {
     

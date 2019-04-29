@@ -56,7 +56,6 @@ import org.eclipse.gef.commands.CommandStackEventListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -66,6 +65,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.ImageUtils;
 import org.talend.commons.utils.Hex;
 import org.talend.commons.utils.VersionUtils;
@@ -2793,9 +2793,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         continue;
                     }
                 }
-                EConnectionType type = EConnectionType.getTypeFromId(lineStyleId);
-                connec = new Connection(source, target, type, source.getConnectorFromType(type).getName(), metaname,
-                        cType.getLabel(), cType.getMetaname(), monitorConnection);
+                if (!ConnectionManager.checkCircle(source, target)) {
+                    EConnectionType type = EConnectionType.getTypeFromId(lineStyleId);
+                    connec = new Connection(source, target, type, source.getConnectorFromType(type).getName(), metaname,
+                            cType.getLabel(), cType.getMetaname(), monitorConnection);
+                } else {
+                    ExceptionHandler.process(new Exception(Messages.getString("Process.errorCircleConnectionDetected", //$NON-NLS-1$
+                            cType.getLabel(), source.getLabel(), target.getLabel())));
+                }
             }
             if (connec == null) {
                 continue;
@@ -2890,7 +2895,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
                     @Override
                     public void run() {
-                        MessageBox mb = new MessageBox(new Shell(display), SWT.ICON_ERROR);
+                        MessageBox mb = new MessageBox(DisplayUtils.getDefaultShell(false), SWT.ICON_ERROR);
                         mb.setText(getLabel() + ":" + Messages.getString("Process.errorLoadingConnectionTitle")); //$NON-NLS-1$
                         mb.setMessage(message2);
                         mb.open();

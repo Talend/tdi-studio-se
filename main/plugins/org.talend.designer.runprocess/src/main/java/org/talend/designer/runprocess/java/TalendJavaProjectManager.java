@@ -78,6 +78,7 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.IDesignerCoreService;
+import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
@@ -207,6 +208,7 @@ public class TalendJavaProjectManager {
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
                 AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IFolder codeProjectFolder = helper.getProjectPomsFolder().getFolder(type.getFolder());
+                cleanUpCodeProject(monitor, codeProjectFolder);
                 IProject codeProject = root.getProject((projectTechName + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
                     // always enable maven nature for code projects.
@@ -218,7 +220,6 @@ public class TalendJavaProjectManager {
                 }
                 helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
                 talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
-                talendCodeJavaProject.cleanMavenFiles(monitor);
                 BuildCacheManager.getInstance().clearCodesCache(type);
                 talendCodeJavaProjects.put(codeProjectId, talendCodeJavaProject);
             } catch (Exception e) {
@@ -229,6 +230,21 @@ public class TalendJavaProjectManager {
         MavenPomSynchronizer.addChangeLibrariesListener();
 
         return talendCodeJavaProject;
+    }
+
+    private static void cleanUpCodeProject(IProgressMonitor monitor, IFolder codeProjectFolder) throws CoreException {
+        IFolder srcFolder = codeProjectFolder.getFolder(MavenSystemFolders.SRC.getPath());
+        IFolder targetFolder = codeProjectFolder.getFolder(MavenSystemFolders.TARGET.getPath());
+        IFolder testFolder = codeProjectFolder.getFolder(MavenSystemFolders.TEST_REPORTS.getPath());
+        if (srcFolder.exists()) {
+            srcFolder.delete(true, monitor);
+        }
+        if (targetFolder.exists()) {
+            targetFolder.delete(true, monitor);
+        }
+        if (testFolder.exists()) {
+            testFolder.delete(true, monitor);
+        }
     }
 
     public static ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
@@ -244,7 +260,7 @@ public class TalendJavaProjectManager {
         }
         boolean isService = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-            IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            IESBService service = GlobalServiceRegister.getDefault().getService(IESBService.class);
             isService = service.isServiceItem(property.getItem().eClass().getClassifierID());
         }
         if (!(property.getItem() instanceof ProcessItem) && !isService) {
@@ -253,7 +269,7 @@ public class TalendJavaProjectManager {
         ITalendProcessJavaProject talendJobJavaProject = null;
         try {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                ITestContainerProviderService testContainerService = GlobalServiceRegister
                         .getDefault().getService(ITestContainerProviderService.class);
                 if (testContainerService.isTestContainerItem(property.getItem())) {
                     property = testContainerService.getParentJobItem(property.getItem()).getProperty();
@@ -370,6 +386,8 @@ public class TalendJavaProjectManager {
                 }
                 if (property.getItem() instanceof JobletProcessItem) {
                     BuildCacheManager.getInstance().removeJobletCache(property);
+                } else {
+                    BuildCacheManager.getInstance().preRemoveJobCache(property);
                 }
                 IFile pomFile = AggregatorPomsHelper.getItemPomFolder(property, realVersion)
                         .getFile(TalendMavenConstants.POM_FILE_NAME);
@@ -585,7 +603,7 @@ public class TalendJavaProjectManager {
             } else {
                 // SOAP service, when the process is null
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-                    IESBService soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                    IESBService soapService = GlobalServiceRegister.getDefault().getService(IESBService.class);
                     if (item != null && soapService.isServiceItem(item.eClass().getClassifierID())) {
                         IProcessor processor = ProcessorUtilities.getProcessor(process, item.getProperty());
                         generatePom(item, option, processor);

@@ -16,6 +16,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.ImageUtils.ICON_SIZE;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.ui.images.CoreImageProvider;
@@ -69,7 +70,7 @@ public class MultiSchemasMain {
     }
 
     public void createUI(Display display) {
-        Shell shell = new Shell(display, ExternalMultiSchemasUIProperties.DIALOG_STYLE);
+        Shell shell = DisplayUtils.getDefaultShell(false);
         createDialog(shell);
     }
 

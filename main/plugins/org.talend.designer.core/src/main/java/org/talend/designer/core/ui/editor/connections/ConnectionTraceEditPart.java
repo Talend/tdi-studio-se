@@ -26,7 +26,7 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.TraceData;
@@ -181,8 +181,8 @@ public class ConnectionTraceEditPart extends AbstractGraphicalEditPart implement
     public void performRequest(Request req) {
         if (req.getType().equals(RequestConstants.REQ_OPEN)) {
             ConnectionTrace a = ((ConnectionTrace) this.getModel());
-            FilterColumnDialog dialog = new FilterColumnDialog(new Shell(), a.getConnection(), this.getViewer().getEditDomain()
-                    .getCommandStack());
+            FilterColumnDialog dialog = new FilterColumnDialog(DisplayUtils.getDefaultShell(false), a.getConnection(),
+                    this.getViewer().getEditDomain().getCommandStack());
             dialog.open();
         }
     }

@@ -25,7 +25,7 @@ public interface ProcessorConstants {
 
     String CMD_KEY_WORD_FILEEMNCODING = "-Dfile.encoding";//$NON-NLS-1$
 
-    String CMD_KEY_WORD_ROOTPATH = "$ROOT_PATH";//$NON-NLS-1$
+    String CMD_KEY_WORD_ROOTPATH = "\"$ROOT_PATH\"";//$NON-NLS-1$
 
     String CMD_KEY_WORD_LIB = "lib";//$NON-NLS-1$
 

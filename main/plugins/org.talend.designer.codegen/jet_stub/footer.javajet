@@ -336,10 +336,10 @@
             String instance_<%=testData%>=null;
             <%
             if(ProcessUtils.isSpark(process)){
-            String lineSeparator = (String) java.security.AccessController.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
+            String lineSeparator = "\r\n";
             String fileContentEnCodeStr = "";
             try {
-                fileContentEnCodeStr = (new sun.misc.BASE64Encoder()).encode(path.getBytes("UTF-8"));
+                fileContentEnCodeStr = java.util.Base64.getMimeEncoder().encodeToString(path.getBytes("UTF-8"));
             } catch (java.io.UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -351,7 +351,7 @@
             String testDataValue = result.toString();
             %>
                 try {
-                    instance_<%=testData%> = new String((new sun.misc.BASE64Decoder()).decodeBuffer("<%=testDataValue%>"), utf8Charset);
+                    instance_<%=testData%> = new String(java.util.Base64.getMimeDecoder().decode("<%=testDataValue%>"), utf8Charset);
                 } catch (java.lang.Exception e) {
                     e.printStackTrace();
                 }
@@ -506,11 +506,14 @@
             if (inContext == null) {
                 inContext = <%=className%>.class.getClassLoader().getResourceAsStream("config/contexts/" + contextStr + ".properties");
             }
-            if (inContext != null && context != null && context.isEmpty()) {
+            if (inContext != null) {
                 //defaultProps is in order to keep the original context value
-                defaultProps.load(inContext);
+                if(context != null && context.isEmpty()) {
+	                defaultProps.load(inContext);
+	                context = new ContextProperties(defaultProps);
+                }
+                
                 inContext.close();
-                context = new ContextProperties(defaultProps);
             } else if (!isDefaultContext) {
                 //print info and job continue to run, for case: context_param is not empty.
                 System.err.println("Could not find the context " + contextStr);
@@ -1161,8 +1164,12 @@ if (execStat) {
 			if(conn_<%=hbaseComponent.getUniqueName()%> != null )
 	        {
 			<%
-				if((isCustom && isHadoop2) || (!isCustom && hbaseDistrib.doSupportNewHBaseAPI())) {%>
-		        org.apache.hadoop.hbase.client.HConnection hConnection_<%=hbaseComponent.getUniqueName() %> = org.apache.hadoop.hbase.client.HConnectionManager.getConnection(conn_<%=hbaseComponent.getUniqueName() %>);
+		        if((isCustom && isHadoop2) || (!isCustom && hbaseDistrib.doSupportNewHBaseAPI())) {
+		            if (!hbaseDistrib.doSupportHBase2x()) {%>
+                                org.apache.hadoop.hbase.client.HConnection hConnection_<%=hbaseComponent.getUniqueName() %> = org.apache.hadoop.hbase.client.HConnectionManager.getConnection(conn_<%=hbaseComponent.getUniqueName() %>);
+                         <% } else {%>
+                                org.apache.hadoop.hbase.client.Connection hConnection_<%=hbaseComponent.getUniqueName() %> = org.apache.hadoop.hbase.client.ConnectionFactory.createConnection(conn_<%=hbaseComponent.getUniqueName() %>);
+                         <% }%>
 		        if ((hConnection_<%=hbaseComponent.getUniqueName() %> != null) && (!hConnection_<%=hbaseComponent.getUniqueName() %>.isClosed())) {
 				    hConnection_<%=hbaseComponent.getUniqueName() %>.close();
 			}

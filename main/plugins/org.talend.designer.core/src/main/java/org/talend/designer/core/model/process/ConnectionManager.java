@@ -808,6 +808,9 @@ public class ConnectionManager {
         if (list.contains(newTarget)) {
             return true;
         }
+        if (source.equals(newTarget)) {
+            return true;
+        }
         return false;
     }
 

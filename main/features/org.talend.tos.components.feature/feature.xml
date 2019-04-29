@@ -10,7 +10,8 @@
     <import plugin="javax.wsdl" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="joda-time" version="0.0.0" match="greaterOrEqual"/>
     <import plugin="org.eclipse.help.ui" version="0.0.0" match="greaterOrEqual"/>
-  </requires>  
+    <import plugin="jaxb-api" version="0.0.0" match="greaterOrEqual"/>
+  </requires>
   <plugin id="org.talend.components.api" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.components.api.service.osgi" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.components.azurestorage" download-size="0" install-size="0" version="0.0.0" unpack="false"/>

@@ -32,7 +32,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
@@ -347,7 +346,8 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
                         @Override
                         public void run() {
-                            MessageDialog.openError(new Shell(), Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
+                            MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                                    Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
                                     Messages.getString("DownloadComponenentsAction_failureMessage", extension.getLabel())); //$NON-NLS-1$
                         }
                     });

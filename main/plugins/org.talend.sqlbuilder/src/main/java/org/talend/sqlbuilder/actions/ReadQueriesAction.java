@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.database.EDatabaseTypeName;
@@ -34,8 +35,8 @@ import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.core.sqlbuilder.util.TextUtil;
 import org.talend.metadata.managment.ui.wizard.metadata.ContextSetsSelectionDialog;
 import org.talend.repository.model.IProxyRepositoryFactory;
-import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.IRepositoryNode.EProperties;
+import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.actions.AContextualAction;
 import org.talend.sqlbuilder.Messages;
 import org.talend.sqlbuilder.ui.SQLBuilderDialog;
@@ -87,7 +88,7 @@ public class ReadQueriesAction extends AContextualAction {
         if (display == null) {
             display = Display.getDefault();
         }
-        Shell parentShell = new Shell(display);
+        Shell parentShell = DisplayUtils.getDefaultShell(false);
         TextUtil.setDialogTitle(TextUtil.SQL_BUILDER_TITLE_REP);
         Connection connection = dbConnectionItem.getConnection();
         String selectedContext = null;

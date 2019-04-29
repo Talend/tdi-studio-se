@@ -262,14 +262,15 @@ if (sftp) {// *** sftp *** //
 				throw new RuntimeException("Login failed");
 			}
 <%
-			if (protectionLevel != null && !protectionLevel.isEmpty()) {
-%>
-				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
-<%
-			}
 			if (protectionBufferSize != null && !protectionBufferSize.isEmpty() ) {
 %>
 				ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
+<%
+			}
+
+			if (protectionLevel != null && !protectionLevel.isEmpty()) {
+%>
+				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
 <%
 			}
 %>

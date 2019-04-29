@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -70,7 +72,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.PasswordEncryptUtil;
@@ -985,7 +989,8 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                     }
                     if (property.equals(contextParameterName)) {
                         if (value == null || "".equals(value) || nameList.contains(value)) {
-                            MessageDialog.openError(new Shell(), Messages.getString("ContextProcessSection.errorTitle"), //$NON-NLS-1$
+                            MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                                    Messages.getString("ContextProcessSection.errorTitle"), //$NON-NLS-1$
                                     Messages.getString("ContextProcessSection.ParameterNameIsNotValid")); //$NON-NLS-1$
                         } else {
                             contextParamType.setName((String) value);
@@ -1256,6 +1261,27 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
     }
 
     /**
+     * Displays a Yes/No question to the user with the specified message and returns the user's response.
+     *
+     * @param message the question to ask
+     * @return <code>true</code> for Yes, and <code>false</code> for No
+     */
+    @Override
+    protected boolean queryYesNoQuestion(String message) {
+        MessageDialog dialog = new MessageDialog(getContainer().getShell(), IDEWorkbenchMessages.Question, (Image) null, message,
+                MessageDialog.NONE, 0, IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL) {
+
+            @Override
+            protected int getShellStyle() {
+                return super.getShellStyle() | SWT.SHEET;
+            }
+        };
+        // ensure yes is the default
+
+        return dialog.open() == 0;
+    }
+
+    /**
      * Returns a boolean indicating whether the passed File handle is is valid and available for use.
      */
     protected boolean ensureTargetFileIsValid(File targetFile) {
@@ -1269,7 +1295,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
         if (targetFile.exists()) {
             if (targetFile.canWrite()) {
                 // if (!queryYesNoQuestion(DataTransferMessages.ZipExport_alreadyExists)) {
-                if (!queryYesNoQuestion(Messages.getString("DataTransferMessages.ZipExport_alreadyExists"))) { //$NON-NLS-1$
+                if (!super.queryYesNoQuestion(Messages.getString("DataTransferMessages.ZipExport_alreadyExists"))) { //$NON-NLS-1$
                     // displayErrorDialog("Please enter another destination zip file.");
                     giveFocusToDestination();
                     return false;
@@ -1397,7 +1423,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             };
 
             try {
-                getContainer().run(false, true, worker);
+                getContainer().run(true, true, worker);
             } catch (InvocationTargetException e) {
                 MessageBoxExceptionHandler.process(e.getCause(), getShell());
                 return false;
@@ -1478,22 +1504,47 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
     }
 
     protected boolean buildJobWithMaven(JobExportType jobExportType, IProgressMonitor monitor) {
-        String context = (contextCombo == null || contextCombo.isDisposed()) ? processItem.getProcess().getDefaultContext()
-                : contextCombo.getText();
+        StringBuilder context = new StringBuilder();
         try {
-            String destination = getDestinationValue();
+            StringBuilder destination = new StringBuilder();
+
+            Map<ExportChoice, Object> exportChoiceMap = new HashMap<>();
+            List<RepositoryNode> checkedNodes = new ArrayList<>();
+            Display.getDefault().syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    String contextTemp = (contextCombo == null || contextCombo.isDisposed())
+                            ? processItem.getProcess().getDefaultContext()
+                            : contextCombo.getText();
+                    context.append(contextTemp);
+                    String destinationValue = getDestinationValue();
+                    destination.append(destinationValue);
+
+                    exportChoiceMap.putAll(getExportChoiceMap());
+                    checkedNodes.addAll(Arrays.asList(getCheckNodes()));
+                }
+
+            });
             int separatorIndex = destination.lastIndexOf(File.separator);
+            String destinationStr = destination.toString();
             if (separatorIndex == -1) {
                 String userDir = System.getProperty("user.dir"); //$NON-NLS-1$
-                destination = userDir + File.separator + destination;
+                destinationStr = userDir + File.separator + destinationStr;
             }
-            Map<ExportChoice, Object> exportChoiceMap = getExportChoiceMap();
             exportChoiceMap.put(ExportChoice.addStatistics, Boolean.TRUE);
-            return BuildJobManager.getInstance().buildJobs(destination, Arrays.asList(getCheckNodes()), getDefaultFileName(),
-                    getSelectedJobVersion(), context, exportChoiceMap, jobExportType, monitor);
+            return BuildJobManager.getInstance().buildJobs(destinationStr, checkedNodes, getDefaultFileName(),
+                    getSelectedJobVersion(), context.toString(), exportChoiceMap, jobExportType, monitor);
 
         } catch (Exception e) {
-            MessageBoxExceptionHandler.process(e, getShell());
+            Display.getDefault().asyncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    MessageBoxExceptionHandler.process(e, getShell());
+                }
+
+            });
             return false;
         }
     }

@@ -1,5 +1,7 @@
 package org.talend.sdk.component.studio.model.parameter;
 
+import static java.util.Optional.ofNullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -97,18 +99,27 @@ public abstract class SchemaElementParameter extends TaCoKitElementParameter {
     @Override
     public void setValue(final Object newValue) {
         if (newValue != null && newValue instanceof List) {
+            final Optional<IMetadataTable> metadata = getMetadata();
+            if (!metadata.isPresent()) {
+                return;
+            }
+
+            final IMetadataTable table = metadata.orElseThrow(IllegalStateException::new);
             final List<String> schema = (List<String>) newValue;
 
             final List<IMetadataColumn> columns = new ArrayList<>();
             for (final String columnName : schema) {
-                final MetadataColumn column = new MetadataColumn();
-                column.setLabel(columnName);
-                column.setOriginalDbColumnName(columnName);
-                column.setTalendType(STRING);
+                final IMetadataColumn column = ofNullable(table.getColumn(columnName))
+                        .orElseGet(() -> {
+                            final IMetadataColumn tmp = new MetadataColumn();
+                            tmp.setLabel(columnName);
+                            tmp.setOriginalDbColumnName(columnName);
+                            tmp.setTalendType(STRING);
+                            return tmp;
+                        });
                 columns.add(column);
             }
-            final Optional<IMetadataTable> metadata = getMetadata();
-            metadata.ifPresent(m -> m.setListColumns(columns));
+            table.setListColumns(columns);
         }
     }
 

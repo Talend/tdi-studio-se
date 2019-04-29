@@ -44,7 +44,9 @@ if(useExistingConn){
 	 }
 	 else if("SYBSEIQ_16".equals(dbVersion)){
 	    dbLog.conn().logJDBCDriver(dbLog.str("com.sybase.jdbc4.jdbc.SybDriver"));%>
-		java.lang.Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
+		java.lang.Class jdbcclazz_<%=cid%> = java.lang.Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
+		jdbcclazz_<%=cid%>.newInstance();
+		
 	<%}else{
 	    dbLog.conn().logJDBCDriver(dbLog.str("com.sybase.jdbc3.jdbc.SybDriver"));%>
 	    java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");

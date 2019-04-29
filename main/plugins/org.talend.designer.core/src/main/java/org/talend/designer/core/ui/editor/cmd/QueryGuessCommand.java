@@ -53,6 +53,7 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.utils.sql.metadata.constants.GetTable;
+
 import orgomg.cwm.objectmodel.core.ModelElement;
 import orgomg.cwm.resource.relational.Catalog;
 import orgomg.cwm.resource.relational.Schema;
@@ -284,6 +285,8 @@ public class QueryGuessCommand extends Command {
             }
         }
         // hywang add for bug 7575
+        String jdbcDriverClassName = null;
+        String jdbcDriverJarName = null;
         if (dbType != null && dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
             isJdbc = true;
             boolean isGeneralJDBC = dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName());
@@ -372,11 +375,21 @@ public class QueryGuessCommand extends Command {
                     dbType = extractMeta.getDbTypeByClassName(driverClassName);
                 }
             }
+
+            jdbcDriverJarName = driverJarName;
+            jdbcDriverClassName = driverClassName;
+
             if (dbType == null) {
-                // if we can not get the DB Type from the existing driver list, just set back the type to ORACLE
-                // since it's one DB unknown from Talend.
-                // it might not work directly for all DB, but it will generate a standard query.
-                dbType = EDatabaseTypeName.ORACLE_OCI.getDisplayName();
+                // TDQ-15039: for the unknown JDBC type connection, make sure we can generate the correct query.
+                // at least for BigQuery, the QUOTATION_MARK is the same with mysql.
+                if (driverJarName.contains("BigQuery") || driverClassName.contains("BigQuery")) {
+                    dbType = EDatabaseTypeName.MYSQL.getDisplayName();
+                } else {
+                    // if we can not get the DB Type from the existing driver list, just set back the type to ORACLE
+                    // since it's one DB unknown from Talend.
+                    // it might not work directly for all DB, but it will generate a standard query.
+                    dbType = EDatabaseTypeName.ORACLE_OCI.getDisplayName();
+                }
             }
             // data view， conn=null
             // need add code here for dbtype(oracle)
@@ -471,6 +484,17 @@ public class QueryGuessCommand extends Command {
         if (whereClause != null) {// the where clause is inputted by the user, so no need to modify it.
             newQuery = newQuery.substring(0, newQuery.length() - 1) + whereClause + "\"";//$NON-NLS-1$
         }// ~
+
+        // TDQ-15039: support bigQuery can generate correct query
+        if ((jdbcDriverJarName != null && jdbcDriverJarName.contains("BigQuery"))
+                || (jdbcDriverClassName != null && jdbcDriverClassName.contains("BigQuery"))) {
+            // remove the first schema. from the select
+            newQuery = "\"SELECT " + newQuery
+                    .substring(newQuery
+                            .indexOf(TalendTextUtils.ANTI_QUOTE + realTableName + TalendTextUtils.ANTI_QUOTE
+                                    + TalendTextUtils.JAVA_END_STRING));
+        }
+        // TDQ-15039~
 
         return TalendTextUtils.addSQLQuotes(newQuery);
     }

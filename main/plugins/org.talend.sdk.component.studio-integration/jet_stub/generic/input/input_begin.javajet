@@ -44,6 +44,11 @@ final String version = (String)node.getElementParameter(EParameterName.VERSION.g
 %>
 
 final org.talend.sdk.component.runtime.manager.ComponentManager mgr_<%=cid%> = org.talend.sdk.component.runtime.manager.ComponentManager.instance();
+if (mgr_<%=cid%>.getContainer().findAll().isEmpty()) {
+    mgr_<%=cid%>.autoDiscoverPlugins(false, true);
+}
+
+final org.talend.sdk.component.runtime.record.RecordConverters.MappingMetaRegistry registry_<%=cid%> = new org.talend.sdk.component.runtime.record.RecordConverters.MappingMetaRegistry();
 
 <%@include file="../configuration.javajet"%>
 
@@ -100,8 +105,17 @@ while ((data_<%=cid%> = input_<%=cid%>.next()) != null) {
     if (javax.json.JsonValue.class.isInstance(data_<%=cid%>)) {
         jsonValueMapper_<%=cid%> = javax.json.JsonValue.class.cast(data_<%=cid%>).toString();
     } else if (org.talend.sdk.component.api.record.Record.class.isInstance(data_<%=cid%>)) {
-        jsonValueMapper_<%=cid%> = converters_<%=cid%>.toType(converters_<%=cid%>.toRecord(data_<%=cid%>, () -> jsonb_<%=cid%>, () -> recordBuilderMapper_<%=cid%>),
-                                  javax.json.JsonObject.class, () -> jsonBuilderFactory_<%=cid%>, () -> jsonProvider_<%=cid%>, () -> jsonb_<%=cid%>).toString();
+        jsonValueMapper_<%=cid%> = converters_<%=cid%>.toType(registry_<%=cid%>, converters_<%=cid%>.toRecord(
+            registry_<%=cid%>,
+            data_<%=cid%>,
+            () -> jsonb_<%=cid%>,
+            () -> recordBuilderMapper_<%=cid%>),
+            javax.json.JsonObject.class,
+            () -> jsonBuilderFactory_<%=cid%>,
+            () -> jsonProvider_<%=cid%>,
+            () -> jsonb_<%=cid%>,
+            () -> recordBuilderMapper_<%=cid%>)
+            .toString();
     } else {
         jsonValueMapper_<%=cid%> = jsonb_<%=cid%>.toJson(data_<%=cid%>);
     }

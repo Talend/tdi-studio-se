@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.GlobalServiceRegister;
@@ -97,7 +98,8 @@ public class EditQueriesAction extends AContextualAction {
 
                 @Override
                 public void run() {
-                    MessageDialog dialog = new MessageDialog(new Shell(), title, null, message, MessageDialog.ERROR,
+                    MessageDialog dialog = new MessageDialog(DisplayUtils.getDefaultShell(false), title, null, message,
+                            MessageDialog.ERROR,
                             new String[] { IDialogConstants.OK_LABEL }, 0);
                     dialog.open();
                 }
@@ -141,7 +143,7 @@ public class EditQueriesAction extends AContextualAction {
                 display = Display.getDefault();
             }
         }
-        Shell parentShell = new Shell(display);
+        Shell parentShell = DisplayUtils.getDefaultShell(false);
         TextUtil.setDialogTitle(TextUtil.SQL_BUILDER_TITLE_REP);
 
         Connection connection = dbConnectionItem.getConnection();

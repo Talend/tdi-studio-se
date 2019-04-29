@@ -3131,7 +3131,6 @@
         </projecttask>
         <projecttask
               beforeLogon="false"
-              breaks="6.3.1"
               class="org.talend.repository.model.migration.CheckS3AccessibilityMigrationTask"
               description="Use the old behavior get bucket logging config to check connection"
               id="org.talend.repository.model.migration.CheckS3AccessibilityMigrationTask"
@@ -3155,13 +3154,38 @@
               name="ResetAdditionalJDBCParamsForCreateTable"
               version="7.2.1">
         </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.2.0"
+               class="org.talend.repository.model.migration.SafelyCreateTemporaryFileMigrationTask"
+               description="Force old behaviour for existing jobs, for create temporary files"
+               id="org.talend.repository.model.migration.SafelyCreateTemporaryFileMigrationTask"
+               name="SafelyCreateTemporaryFileMigrationTask"
+               version="7.2.1">
+       </projecttask>
         <projecttask
               beforeLogon="false"
-              breaks="6.5.1"
               class="org.talend.repository.model.migration.RedshiftLogFileMigrationTask"
               description="If Redshift in 6.5.1 or 7.0.1 using log file, check the useLogFile option"
               id="org.talend.repository.model.migration.RedshiftLogFileMigrationTask"
               name="RedshiftLogFileMigrationTask"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.SetTrustAllCertsLdapComponentsTDI41648"
+              id="org.talend.repository.model.migration.SetTrustAllCertsLdapComponentsTDI41648"
+              name="SetTrustAllCertsLdapComponentsTDI41648"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.MigrateTDataMaskingGuiTDQ16376"
+              description="migrate tDataMasking UI with function categories"
+              id="org.talend.repository.model.migration.MigrateTDataMaskingGuiTDQ16376"
+              name="MigrateTDataMaskingGuiTDQ16376"
               version="7.2.1">
         </projecttask>
    </extension>

@@ -2685,7 +2685,7 @@ public class CLASS {
             } else if(typeToGenerate.equals("Date")) {
                 setStmt.append("if(" + incomingConnName + "." + column.getName() + " != null) {\r\n");
                 boolean isTSWithTZ = dbType.matches("TIMESTAMP WITH TIME ZONE");
-                if(isTSWithTZ && ("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_10".equals(dbVersion))){
+                if(isTSWithTZ && ("ORACLE_10".equals(dbVersion) || "ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion))){
                     setStmt.append("if("+ incomingConnName + "." + column.getName() + " instanceof TalendTimestampWithTZ){\r\n");
                     setStmt.append("((oracle.jdbc.OraclePreparedStatement)" + prefix + cid + ").setTIMESTAMPTZ(" + index + dynamic +  ", new oracle.sql.TIMESTAMPTZ(conn_" + cid + ", ((TalendTimestampWithTZ)"+ incomingConnName + "." + column.getName() +").getTimestamp(),((TalendTimestampWithTZ)"+ incomingConnName + "." + column.getName() +").getCalendar()));\r\n");
                     setStmt.append("}else{");

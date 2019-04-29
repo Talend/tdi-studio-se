@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.runtime.xml.XmlUtil;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQPatternService;
@@ -1133,7 +1133,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     private boolean getTake() {
         if (take == null) {
-            take = MessageDialog.openQuestion(new Shell(), "", Messages //$NON-NLS-1$
+            take = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), "", Messages //$NON-NLS-1$
                     .getString("ChangeValuesFromRepository.messageDialog.takeMessage")); //$NON-NLS-1$
         }
         return take;

@@ -236,14 +236,14 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         connectionsViewer.getControl().setFont(LoginDialogV2.fixedFont);
         manageButton = new Button(connectionManageArea, SWT.NONE);
         manageButton.setFont(LoginDialogV2.fixedFont);
-        manageButton.setBackground(backgroundColor);
+        manageButton.setBackground(backgroundBtnColor);
         manageButton.setText(Messages.getString("LoginProjectPage.manage")); //$NON-NLS-1$
         // Project Operation Area
         projectOperationArea = new Composite(container, SWT.NONE);
         // Existing Project Area
         selectExistingProject = new Button(projectOperationArea, SWT.RADIO);
         selectExistingProject.setFont(LoginDialogV2.fixedFont);
-        selectExistingProject.setBackground(backgroundColor);
+        selectExistingProject.setBackground(backgroundRadioColor);
         selectExistingProject.setText(Messages.getString("LoginProjectPage.selectProject")); //$NON-NLS-1$
         projectListArea = new Composite(projectOperationArea, SWT.NONE);
         projectViewer = new ListViewer(projectListArea, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
@@ -262,50 +262,50 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         branchesViewer.setLabelProvider(new LabelProvider());
         refreshProjectButton = new Button(branchArea, SWT.NONE);
         refreshProjectButton.setFont(LoginDialogV2.fixedFont);
-        refreshProjectButton.setBackground(backgroundColor);
+        refreshProjectButton.setBackground(backgroundBtnColor);
         refreshProjectButton.setImage(ImageProvider.getImage(EImage.REFRESH_ICON));
         // Create New Project
         createNewProject = new Button(projectOperationArea, SWT.RADIO);
         createNewProject.setFont(LoginDialogV2.fixedFont);
-        createNewProject.setBackground(backgroundColor);
+        createNewProject.setBackground(backgroundRadioColor);
         createNewProject.setText(Messages.getString("LoginProjectPage.createNewProject")); //$NON-NLS-1$
         newProjectName = new Text(projectOperationArea, SWT.BORDER);
         newProjectName.setFont(LoginDialogV2.fixedFont);
-        newProjectName.setBackground(backgroundColor);
+        newProjectName.setBackground(backgroundBtnColor);
         executeCreateNewProject = new Button(projectOperationArea, SWT.NONE);
         executeCreateNewProject.setFont(LoginDialogV2.fixedFont);
         executeCreateNewProject.setText(Messages.getString("LoginProjectPage.create")); //$NON-NLS-1$
-        executeCreateNewProject.setBackground(backgroundColor);
+        executeCreateNewProject.setBackground(backgroundBtnColor);
         // Import Demo Project
         importDemoProject = new Button(projectOperationArea, SWT.RADIO);
         importDemoProject.setFont(LoginDialogV2.fixedFont);
-        importDemoProject.setBackground(backgroundColor);
+        importDemoProject.setBackground(backgroundRadioColor);
         importDemoProject.setText(Messages.getString("LoginProjectPage.importDemoProject")); //$NON-NLS-1$
         executeImportDemoProject = new Button(projectOperationArea, SWT.NONE);
         executeImportDemoProject.setFont(LoginDialogV2.fixedFont);
         // executeImportDemoProject.setImage(openImage);
         executeImportDemoProject.setText(execute);
-        executeImportDemoProject.setBackground(backgroundColor);
+        executeImportDemoProject.setBackground(backgroundBtnColor);
         // Import Local Project
         importLocalProject = new Button(projectOperationArea, SWT.RADIO);
         importLocalProject.setFont(LoginDialogV2.fixedFont);
-        importLocalProject.setBackground(backgroundColor);
+        importLocalProject.setBackground(backgroundRadioColor);
         importLocalProject.setText(Messages.getString("LoginProjectPage.importLocalProject")); //$NON-NLS-1$
         executeImportLocalProject = new Button(projectOperationArea, SWT.NONE);
         executeImportLocalProject.setFont(LoginDialogV2.fixedFont);
         // executeImportLocalProject.setImage(openImage);
         executeImportLocalProject.setText(execute);
-        executeImportLocalProject.setBackground(backgroundColor);
+        executeImportLocalProject.setBackground(backgroundBtnColor);
         // Create SandBox Project
         createSandBoxProject = new Button(projectOperationArea, SWT.RADIO);
         createSandBoxProject.setFont(LoginDialogV2.fixedFont);
-        createSandBoxProject.setBackground(backgroundColor);
+        createSandBoxProject.setBackground(backgroundRadioColor);
         createSandBoxProject.setText(Messages.getString("LoginProjectPage.createSandBoxProject.title")); //$NON-NLS-1$
         executeCreateSandBoxProject = new Button(projectOperationArea, SWT.NONE);
         executeCreateSandBoxProject.setFont(LoginDialogV2.fixedFont);
         // executeCreateSandBoxProject.setImage(openImage);
         executeCreateSandBoxProject.setText(execute);
-        executeCreateSandBoxProject.setBackground(backgroundColor);
+        executeCreateSandBoxProject.setBackground(backgroundBtnColor);
 
         super.instantiateControl(container);
     }

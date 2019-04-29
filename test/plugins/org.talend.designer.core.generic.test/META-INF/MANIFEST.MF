@@ -6,5 +6,4 @@ Bundle-Version: 7.2.1.qualifier
 Fragment-Host: org.talend.designer.core.generic
 Require-Bundle: org.junit,
  org.talend.testutils,
- com.cedarsoftware.json-io,
  org.talend.components.common

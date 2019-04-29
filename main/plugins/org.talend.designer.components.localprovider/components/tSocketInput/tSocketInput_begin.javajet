@@ -118,7 +118,7 @@ while (done<%=cid%>) {
     <% if(uncompress){%>
         //decoding
         for(int i =0;i<row<%=cid%>.length;i++){
-           row<%=cid%>[i] = new String(com<%=cid%>.unzip(new sun.misc.BASE64Decoder().decodeBuffer(row<%=cid%>[i])), <%=encoding%>);           
+           row<%=cid%>[i] = new String(com<%=cid%>.unzip(java.util.Base64.getMimeDecoder().decode(row<%=cid%>[i])), <%=encoding%>);           
         }
     <% } %>   
         if(row<%=cid %>.length == 1 && ("\015").equals(row<%=cid %>[0])){//empty line when row separator is '\n'

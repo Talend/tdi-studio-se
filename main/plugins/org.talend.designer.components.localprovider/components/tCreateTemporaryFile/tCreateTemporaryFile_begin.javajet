@@ -14,9 +14,11 @@ INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 boolean rmSuccess = ("true").equals(ElementParameterParser.getValue(node, "__REMOVE__"));
 boolean useDefault = ("true").equals(ElementParameterParser.getValue(node, "__USE_DEFAULT_DIR__"));
+boolean usePrefix = ("true").equals(ElementParameterParser.getValue(node, "__USE_PREFIX__"));
 String dir = ElementParameterParser.getValue(node, "__DIRECTORY__");
 String filename = ElementParameterParser.getValue(node, "__TEMPLATE__");
 String suffix = ElementParameterParser.getValue(node, "__SUFFIX__");
+String prefix = ElementParameterParser.getValue(node, "__PREFIX__");
 
 final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 log4jFileUtil.componentStartInfo(node);
@@ -31,11 +33,19 @@ if(!useDefault){
 }
 %>
 dir_<%=cid%>.mkdirs();
+java.io.File file_<%=cid%>;
+<%if(usePrefix) {%>
+String name_<%=cid%> = <%=prefix%>;
+String suffix_<%=cid%> = ("".equals(<%=suffix%>)) ? null : "." + <%=suffix%>.replaceAll("\\.", "");
+file_<%=cid%> = java.io.File.createTempFile(name_<%=cid%>, suffix_<%=cid%>, dir_<%=cid%>);
+<%}else{%>
 String name_<%=cid%> = <%=filename%>.replaceAll("XXXX", routines.TalendString.getAsciiRandomString(4).toUpperCase());
 String suffix_<%=cid%> = (<%=suffix%>.replaceAll("\\.", "").length() == 0) ? "tmp" : <%=suffix%>.replaceAll("\\.", "");
-java.io.File file_<%=cid%> = new java.io.File(dir_<%=cid%>, name_<%=cid%> + "." + suffix_<%=cid%>);
-if (file_<%=cid%>.createNewFile()){
-  <%if(rmSuccess){%> 
+file_<%=cid%> = new java.io.File(dir_<%=cid%>, name_<%=cid%> + "." + suffix_<%=cid%>);
+<%}%>
+
+if (<%=usePrefix%> || file_<%=cid%>.createNewFile()){
+  <%if(rmSuccess){%>
     file_<%=cid%>.deleteOnExit();
   <%}%>
 }

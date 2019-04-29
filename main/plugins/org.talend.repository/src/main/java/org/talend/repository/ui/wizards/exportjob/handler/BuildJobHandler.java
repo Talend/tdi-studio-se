@@ -105,6 +105,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         //
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_STATS, isOptionChoosed(ExportChoice.addStatistics));
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_TRACS, isOptionChoosed(ExportChoice.addTracs));
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_AVOID_BRANCH_NAME, isOptionChoosed(ExportChoice.avoidBranchName));
         Properties prop = (Properties) exportChoice.get(ExportChoice.properties);
         if (prop != null) { // add all properties for arugment map.
             Enumeration<Object> keys = prop.keys();
@@ -411,7 +412,13 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                     buildDelegate(monitor);
                 } catch (Exception e) {
                     if (!CommonUIPlugin.isFullyHeadless() && isOptionChoosed(ExportChoice.buildImage)) {
-                        MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                        Display.getDefault().syncExec(new Runnable() {
+                            
+                            @Override
+                            public void run() {
+                                MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                            }
+                        });
                     } else {
                         ExceptionHandler.process(e);
                     }

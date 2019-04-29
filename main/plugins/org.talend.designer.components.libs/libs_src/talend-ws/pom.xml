@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>talend-ws</artifactId>
-	<version>1.0.1-20190117</version>
+	<version>1.0.1-20190204</version>
 	<packaging>jar</packaging>
 
 	<properties>

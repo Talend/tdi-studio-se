@@ -11,16 +11,13 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
-import java.security.Security;
-import java.util.Hashtable;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.sun.net.ssl.KeyManagerFactory;
-import com.sun.net.ssl.SSLContext;
-import com.sun.net.ssl.TrustManager;
-import com.sun.net.ssl.internal.ssl.Provider;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 
 public class AdvancedSocketFactory extends SSLSocketFactory {
 
@@ -29,8 +26,6 @@ public class AdvancedSocketFactory extends SSLSocketFactory {
     private static TrustManager trustManagers[] = null;
 
     private static AdvancedSocketFactory default_factory = null;
-
-    private static Hashtable factories = null;
 
     private static String certStorePath = null;
 
@@ -58,15 +53,6 @@ public class AdvancedSocketFactory extends SSLSocketFactory {
     protected AdvancedSocketFactory(String keyStore, String passphrase) {
         factory = null;
         init(null, null);
-    }
-
-    private static void closeStream(InputStream in) {
-        if (in == null)
-            return;
-        try {
-            in.close();
-        } catch (Exception _ex) {
-        }
     }
 
     public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
@@ -130,12 +116,12 @@ public class AdvancedSocketFactory extends SSLSocketFactory {
 
     private void init(KeyStore ks, char password[]) {
         SSLContext ctx = null;
-        com.sun.net.ssl.KeyManager keyManagers[] = null;
+        javax.net.ssl.KeyManager keyManagers[] = null;
         TrustManager trustManagers[] = null;
         try {
             if (ks != null) {
                 KeyManagerFactory kmf = null;
-                kmf = KeyManagerFactory.getInstance("SunX509");
+                kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
                 kmf.init(ks, password);
                 keyManagers = kmf.getKeyManagers();
             }
@@ -149,10 +135,6 @@ public class AdvancedSocketFactory extends SSLSocketFactory {
         }
     }
 
-    static {
-        Security.addProvider(new Provider());
-    }
-    
     public static void alwaysTrust() {
         trustManagers = ALWAYS_TRUST_MANAGER;
     }

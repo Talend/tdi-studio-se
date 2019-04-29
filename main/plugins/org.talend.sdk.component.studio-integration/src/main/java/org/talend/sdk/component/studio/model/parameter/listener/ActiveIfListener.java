@@ -126,7 +126,7 @@ public class ActiveIfListener implements PropertyChangeListener {
                             }
                         }
                     }
-                    if (TextElementParameter.class.isInstance(targetParam)) {
+                    if (TaCoKitElementParameter.class.isInstance(targetParam)) {
                         return ofNullable(preprocessor.apply(targetParam.getStringValue()))
                                 .map(it -> it.contains(value))
                                 .orElse(false);

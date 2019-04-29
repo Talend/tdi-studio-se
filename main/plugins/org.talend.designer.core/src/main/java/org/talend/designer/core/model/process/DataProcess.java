@@ -66,6 +66,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalData;
 import org.talend.core.model.process.IExternalNode;
+import org.talend.core.model.process.IGenericElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
@@ -89,6 +90,7 @@ import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesVisitor;
+import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
@@ -173,7 +175,7 @@ public class DataProcess implements IGeneratingProcess {
         shortUniqueNameList = new ArrayList<String>();
     }
 
-    private void copyElementParametersValue(IElement sourceElement, IElement targetElement) {
+    protected void copyElementParametersValue(IElement sourceElement, IElement targetElement) {
         if (IAdditionalInfo.class.isInstance(sourceElement) && IAdditionalInfo.class.isInstance(targetElement)) {
             IAdditionalInfo.class.cast(sourceElement).cloneAddionalInfoTo((IAdditionalInfo) targetElement);
         }
@@ -189,6 +191,20 @@ public class DataProcess implements IGeneratingProcess {
 
                 targetParam.setContextMode(sourceParam.isContextMode());
                 targetParam.setValue(sourceParam.getValue());
+                if (sourceElement instanceof INode && sourceParam instanceof IGenericElementParameter) {
+                    IComponent component = ((INode) sourceElement).getComponent();
+                    if (component instanceof AbstractBasicComponent
+                            && EComponentType.GENERIC.equals(component.getComponentType())) {
+                        org.talend.daikon.properties.property.Property property = ((IGenericElementParameter) sourceParam)
+                                .getProperty();
+                        if (sourceParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST) && property != null) {
+                            PropertyValueEvaluator evaluator = property.getValueEvaluator();
+                            if (evaluator != null) {
+                                targetParam.setValue(evaluator.evaluate(property, sourceParam.getValue()));
+                            }
+                        }
+                    }
+                }
                 if (sourceParam.getValue() instanceof List) {
                     List sourceList = (List) sourceParam.getValue();
                     List targetList = new ArrayList();
@@ -1259,8 +1275,15 @@ public class DataProcess implements IGeneratingProcess {
                 String uniqueName = null;
                 IComponent component = null;
                 String hashComponent = null;
+                
+                //TODO remove the two statements as we can call getTargetNodeConnector directly
                 String baseConnector = connection.getSource().getConnectorFromName(connection.getConnectorName()).getBaseSchema();
                 INodeConnector connector = connection.getTarget().getConnectorFromName(baseConnector);
+                
+                if(connector == null) {
+                	connector = connection.getTargetNodeConnector();
+                }
+                
                 if (connector != null) {
                     hashComponent = connector.getConnectionProperty(EConnectionType.FLOW_REF).getLinkedComponent();
                 }
@@ -3065,6 +3088,10 @@ public class DataProcess implements IGeneratingProcess {
             return;
         }
         INode refNode = buildCheckMap.get(graphicalNode);
+        // for joblet node not active => not included in buildCheckMap
+        if (refNode == null) {
+            return;
+        }
         List<? extends IConnection> connections = refNode.getIncomingConnections(EConnectionType.FLOW_MAIN);
         if (connections.size() == 0) {
             return;

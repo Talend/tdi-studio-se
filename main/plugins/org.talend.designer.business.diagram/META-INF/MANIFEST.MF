@@ -36,5 +36,7 @@ Require-Bundle: org.eclipse.ui.ide,
  com.ibm.icu,
  org.talend.libraries.apache,
  org.talend.repository.items.importexport,
- org.talend.repository.view.di
+ org.talend.repository.view.di,
+ org.talend.commons.runtime,
+ org.talend.core.runtime
 Eclipse-LazyStart: true

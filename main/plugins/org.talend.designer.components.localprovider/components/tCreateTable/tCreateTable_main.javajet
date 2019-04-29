@@ -73,7 +73,10 @@ abstract class Manager {
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
         javaCode.append(retrieveTable());
-        javaCode.append("java.lang.Class.forName(\"" + getDriver()+ "\");\r\n");
+        javaCode.append("java.lang.Class jdbcclazz_" + cid + "= java.lang.Class.forName(\"" + getDriver()+ "\");\r\n");
+        
+        newInstance(javaCode);
+        
         log4jCodeGenerateUtil.connect_begin();
         String passwordFieldName = "__PASS__";
         if(ElementParameterParser.canEncrypt(node, passwordFieldName)) {
@@ -85,6 +88,12 @@ abstract class Manager {
         javaCode.append("java.sql.Connection conn_" + cid + "= java.sql.DriverManager.getConnection(url_" + cid + ",dbUser_" + cid + ", decryptedPassword_" + cid + ");\r\n");
         return javaCode.toString();
     }
+    
+    protected void newInstance(StringBuilder javaCode) {
+		//do nothing as default
+		//for sybase jdbc in java 11, we have to call jdbcclazz.newInstance method
+	}
+    
     public String closeConnection() {
         StringBuilder javaCode = new StringBuilder();
         javaCode.append("if(conn_" + cid + " != null && !conn_" + cid + ".isClosed()) {\r\n");
@@ -1491,7 +1500,15 @@ class SybaseManager extends Manager {
             javaCode.append(super.getConnection());
         }
         return javaCode.toString();
-    }  
+    }
+    
+    public void newInstance(StringBuilder javaCode) {
+    	String dbVersion = ElementParameterParser.getValue(node, "__DB_SYBASE_VERSION__");
+		if("SYBSEIQ_16".equals(dbVersion)){
+			javaCode.append("jdbcclazz_" + cid + ".newInstance();\r\n");
+		}
+	}
+	
     public String closeConnection() {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {

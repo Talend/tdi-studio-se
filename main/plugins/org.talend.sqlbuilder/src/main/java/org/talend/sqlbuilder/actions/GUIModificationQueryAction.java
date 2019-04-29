@@ -19,7 +19,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
@@ -123,17 +123,18 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
         // }
         // }
         // if (queryStrings.size() < 1) {
-        // MessageDialog.openError(new Shell(), "Notice", "You must input one Sql Statement!");
+        // MessageDialog.openError(DisplayUtils.getDefaultShell(false), "Notice", "You must input one Sql Statement!");
         // return;
         // }
         // if (queryStrings.size() > 1) {
-        // isForce = MessageDialog.openQuestion(new Shell(), "Notice",
+        // isForce = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), "Notice",
         // "You only modify first Sql Statement by GUI, Would you like to continue?");
         // }
         // String string = queryStrings.get(0).toLowerCase().replaceAll("\n", " ");
         // string.replaceAll("\t", " ");
         // if (!string.startsWith("select ")) {
-        // MessageDialog.openError(new Shell(), "Notice", "GUI Sql Editor only use for 'select' Statement !");
+        // MessageDialog.openError(DisplayUtils.getDefaultShell(false), "Notice", "GUI Sql Editor only use for 'select'
+        // Statement !");
         // return;
         // }
         // if (isForce != null && !isForce.booleanValue()) {
@@ -169,7 +170,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
             } catch (Exception e) {
                 MessageDialog
                         .openError(
-                                new Shell(),
+                                DisplayUtils.getDefaultShell(false),
                                 Messages.getString("GUIModificationQueryAction.Error.Notice"), Messages.getString("GUIModificationQueryAction.SqlStatement.ErrorMsg")); //$NON-NLS-1$ //$NON-NLS-2$
             }
             if (selectedNodes == null) {
@@ -177,7 +178,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
             }
 
             // String info = Messages.getString("MultiPageSqlBuilderEditor.Notice.InformationNotFull");
-            // MessageDialog.openInformation(new Shell(),
+            // MessageDialog.openInformation(DisplayUtils.getDefaultShell(false),
             // Messages.getString("GUIModificationQueryAction.Information.Msg"), info); //$NON-NLS-1$
 
             ErDiagramDialog erDiagramDialog = new ErDiagramDialog(dialog.getShell(), Messages

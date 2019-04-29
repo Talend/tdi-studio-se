@@ -1156,6 +1156,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         tmpParams.add(JavaUtils.JAVA_CP);
         tmpParams.add(getLibsClasspath()); // libs
 
+        // in case of loop dependency caused mainClass not settled yet
+        if (getMainClass() == null) {
+            getSrcCodePath();
+        }
         tmpParams.add(getMainClass()); // main class
 
         //
@@ -1336,12 +1340,35 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 IFolder subjobClassesFolder = subjobPrject.getOutputFolder();
                 String subjobOutputPath = subjobClassesFolder.getLocation().toPortableString();
                 subjobOutputPath += classPathSeparator;
+                // if equals to main classPath, no need to add again
+                if (subjobOutputPath.equals(outputPath)) {
+                    continue;
+                }
                 basePath.append(subjobOutputPath);
 
                 // add sub job src/main/resource folder as ext-resources
                 String subjobExternalResourcePath = subjobPrject.getExternalResourcesFolder().getLocation().toPortableString();
                 subjobExternalResourcePath += classPathSeparator;
                 basePath.append(subjobExternalResourcePath);
+            }
+
+            // for loop dependency, add main classPath
+            if (ProcessorUtilities.hasLoopDependency() && ProcessorUtilities.getMainJobInfo() != null) {
+                // add main job classes folder
+                ITalendProcessJavaProject mainjobPrject = TalendJavaProjectManager
+                        .getTalendJobJavaProject(ProcessorUtilities.getMainJobInfo().getProcessor().getProperty());
+                IFolder mainjobClassesFolder = mainjobPrject.getOutputFolder();
+                String mainjobOutputPath = mainjobClassesFolder.getLocation().toPortableString();
+                mainjobOutputPath += classPathSeparator;
+                if (!mainjobOutputPath.equals(outputPath)) {
+                    basePath.append(mainjobOutputPath);
+
+                    // add main job src/main/resource folder as ext-resources
+                    String mainjobExternalResourcePath = mainjobPrject.getExternalResourcesFolder().getLocation()
+                            .toPortableString();
+                    mainjobExternalResourcePath += classPathSeparator;
+                    basePath.append(mainjobExternalResourcePath);
+                }
             }
 
             ITalendProcessJavaProject routineProject = TalendJavaProjectManager
@@ -1411,10 +1438,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         } else {
             for (ModuleNeeded neededModule : neededModules) {
                 MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(neededModule.getMavenUri());
-                if ("sapjco3".equals(artifact.getArtifactId())) { //$NON-NLS-1$
-                    String jarPath = JavaProcessorUtilities.getJavaProjectLibFolder2().getFile("sapjco3.jar").getLocation() //$NON-NLS-1$
+                boolean isSapidoc3 = "sapidoc3".equals(artifact.getArtifactId());
+                if ("sapjco3".equals(artifact.getArtifactId()) || isSapidoc3) { //$NON-NLS-1$ //$NON-NLS-2$
+                    String jarPath = JavaProcessorUtilities.getJavaProjectLibFolder2().getFile(artifact.getArtifactId() + ".jar") //$NON-NLS-1$
+                            .getLocation()
                             .toPortableString();
-                    if (compareSapjco3Version(jarPath) > 0) {
+                    if (compareSapjco3Version(jarPath) > 0 || isSapidoc3) {
                         libPath.append(jarPath).append(classPathSeparator);
                     } else {
                         libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);

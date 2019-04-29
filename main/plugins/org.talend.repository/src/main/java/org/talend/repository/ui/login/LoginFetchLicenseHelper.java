@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
@@ -185,7 +184,7 @@ public class LoginFetchLicenseHelper {
                     final Job fJob = fetchJob;
                     if (fJob != null) {
                         final AtomicBoolean isInterupted = new AtomicBoolean(false);
-                        final Shell shell = new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
+                        final Shell shell = DisplayUtils.getDefaultShell(false);
                         ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell);
                         dialog.run(true, true, new IRunnableWithProgress() {
 
@@ -230,7 +229,7 @@ public class LoginFetchLicenseHelper {
                 // File remoteLicense = tisService.getRemoteLicenseFile();
                 // tisService.storeLicenseFile(remoteLicense, license);
             } catch (Exception e) {
-                final Shell shell = new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
+                final Shell shell = DisplayUtils.getDefaultShell(false);
                 ExceptionMessageDialog.openError(shell, Messages.getString("LoginProjectPage.fetchLicense.error.title"), //$NON-NLS-1$
                         Messages.getString("LoginProjectPage.fetchLicense.error.msg"), e); //$NON-NLS-1$
                 return false;

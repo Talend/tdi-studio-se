@@ -461,7 +461,7 @@ pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
 	StringBuilder mergeInsertName = new StringBuilder() ;
 	StringBuilder mergeInsertValue = new StringBuilder() ;
 	%>
-	String mergeQuery = "MERGE INTO "+ tableName_<%=cid%> +" target"  + " USING (" + select_query_<%=cid %> + ") source ON (" +
+	String mergeQuery_<%=cid %> = "MERGE INTO "+ tableName_<%=cid%> +" target"  + " USING (" + select_query_<%=cid %> + ") source ON (" +
 
 		"<%=mergeCondition%>" + ")" ;
 
@@ -484,28 +484,28 @@ pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
 				}
 			}
 		%>
-			mergeQuery += " WHEN MATCHED THEN UPDATE SET <%=mergeUpdate%> " ;
+			mergeQuery_<%=cid %> += " WHEN MATCHED THEN UPDATE SET <%=mergeUpdate%> " ;
 			<%if (useUpdateWhere) {
 				String useUpdateWhereString = ElementParameterParser.getValue(node,"__MERGE_UPDATE_WHERE_STRING__");
 				if(useUpdateWhereString == null || useUpdateWhereString.length() == 0){
 
 			%>
-				mergeQuery += "WHERE " + "";
+				mergeQuery_<%=cid %> += "WHERE " + "";
 			<%
 				}
 				else {%>
-					mergeQuery += "WHERE " + <%=useUpdateWhereString %>;
+					mergeQuery_<%=cid %> += "WHERE " + <%=useUpdateWhereString %>;
 			<%	}
 			}%>
 			<%if (useUpdateDeleteWhere) {
 				String useUpdateDeleteWhereString = ElementParameterParser.getValue(node,"__MERGE_UPDATE_DELETE_WHERE_STRING__");
 				if(useUpdateDeleteWhereString == null || useUpdateDeleteWhereString.length() == 0){
 			%>
-					mergeQuery += " DELETE WHERE " + "" ;
+					mergeQuery_<%=cid %> += " DELETE WHERE " + "" ;
 			<%
 				}
 				else {%>
-					mergeQuery += " DELETE WHERE " + <%=useUpdateDeleteWhereString%> ;
+					mergeQuery_<%=cid %> += " DELETE WHERE " + <%=useUpdateDeleteWhereString%> ;
 		  <%	}
 			}%>
 		<%
@@ -531,21 +531,21 @@ pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
 				}
 			}
 			%>
-				mergeQuery += " WHEN NOT MATCHED THEN INSERT ( <%=mergeInsertName%>) VALUES ( <%=mergeInsertValue%>) ";
+				mergeQuery_<%=cid %> += " WHEN NOT MATCHED THEN INSERT ( <%=mergeInsertName%>) VALUES ( <%=mergeInsertValue%>) ";
 			<%
 			}
 			if (useInsertWhere) {
 			String useInsertWhereString = ElementParameterParser.getValue(node,"__MERGE_INSERT_WHERE_STRING__");
 			if(useInsertWhereString == null || useInsertWhereString.length() == 0){
 			%>
-				mergeQuery += " WHERE " + "";
+				mergeQuery_<%=cid %> += " WHERE " + "";
 			<%
 			} else {%>
-				mergeQuery += " WHERE " + <%=useInsertWhereString%> ;
+				mergeQuery_<%=cid %> += " WHERE " + <%=useInsertWhereString%> ;
 			<%}
 			}
 			%>
- 			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(mergeQuery);
+ 			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(mergeQuery_<%=cid %>);
 	<%
 	}
 	%>
@@ -588,8 +588,17 @@ nb_line_updated_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 		<%
 	}else if (("MERGE").equals(dataAction)){
 	%>
-	<%if(!isLog4jEnabled){%>System.out.println("Merge with : \n" + mergeQuery +"\n");<%}%>
-		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+mergeQuery+\"");%>
+<%
+    if(!isLog4jEnabled){
+%>
+        System.out.println("Merge with : \n" + mergeQuery_<%=cid %> +"\n");
+<%
+    } else {
+%>
+        log.info("<%=cid %> - Executing SQL: " + mergeQuery_<%=cid %>);
+<%
+    }
+%>
 	    nb_line_merged_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
 	<%if(!isLog4jEnabled){%>System.out.println("--> " + nb_line_merged_<%=cid%> + " rows merged. \n");<%}%>

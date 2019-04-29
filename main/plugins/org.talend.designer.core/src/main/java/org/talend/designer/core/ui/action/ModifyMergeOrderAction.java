@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.INode;
@@ -100,13 +100,15 @@ public class ModifyMergeOrderAction extends SelectionAction {
                 if (connection.getSource().isStart()
                         && (connection.getSource().getOutgoingConnections(EConnectionType.ON_SUBJOB_ERROR).size() != 0 || connection
                                 .getSource().getOutgoingConnections(EConnectionType.ON_SUBJOB_OK).size() != 0)) {
-                    MessageDialog.openError(new Shell(), Messages.getString("ModifyMergeOrderAction.ERROE"), //$NON-NLS-1$
+                    MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                            Messages.getString("ModifyMergeOrderAction.ERROE"), //$NON-NLS-1$
                             Messages.getString("ModifyMergeOrderAction.ConnectionModifyError")); //$NON-NLS-1$
                     return;
                 }
                 if (connection.getSource().getIncomingConnections(EConnectionType.ON_SUBJOB_ERROR).size() != 0
                         || connection.getSource().getIncomingConnections(EConnectionType.ON_SUBJOB_OK).size() != 0) {
-                    MessageDialog.openError(new Shell(), Messages.getString("ModifyMergeOrderAction.ERROE"), //$NON-NLS-1$
+                    MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                            Messages.getString("ModifyMergeOrderAction.ERROE"), //$NON-NLS-1$
                             Messages.getString("ModifyMergeOrderAction.ConnectionModifyError")); //$NON-NLS-1$
                     return;
                 }

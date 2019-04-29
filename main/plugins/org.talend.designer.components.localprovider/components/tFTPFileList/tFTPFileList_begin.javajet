@@ -328,14 +328,15 @@ if (sftp) {// *** sftp *** //
 			}
 
 <%
-			if (protectionLevel != null && !protectionLevel.isEmpty()) {
-%>
-				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
-<%
-			}
 			if (protectionBufferSize != null && !protectionBufferSize.isEmpty() ) {
 %>
 				ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
+<%
+			}
+
+			if (protectionLevel != null && !protectionLevel.isEmpty()) {
+%>
+				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
 <%
 			}
 %>
