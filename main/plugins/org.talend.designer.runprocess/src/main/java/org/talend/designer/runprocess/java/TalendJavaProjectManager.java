@@ -208,21 +208,19 @@ public class TalendJavaProjectManager {
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
                 AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IFolder codeProjectFolder = helper.getProjectPomsFolder().getFolder(type.getFolder());
-                cleanMavenFiles(monitor, codeProjectFolder);
+                cleanUpCodeProject(monitor, codeProjectFolder);
                 IProject codeProject = root.getProject((projectTechName + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
-                IJavaProject javaProject = JavaCore.create(codeProject);
-                talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
-                BuildCacheManager.getInstance().clearCodesCache(type);
-
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
                     // always enable maven nature for code projects.
                     createMavenJavaProject(monitor, codeProject, null, codeProjectFolder, true);
                 }
+                IJavaProject javaProject = JavaCore.create(codeProject);
                 if (!javaProject.isOpen()) {
                     javaProject.open(monitor);
                 }
                 helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
-
+                talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
+                BuildCacheManager.getInstance().clearCodesCache(type);
                 talendCodeJavaProjects.put(codeProjectId, talendCodeJavaProject);
             } catch (Exception e) {
                 ExceptionHandler.process(e);
@@ -234,7 +232,7 @@ public class TalendJavaProjectManager {
         return talendCodeJavaProject;
     }
 
-    private static void cleanMavenFiles(IProgressMonitor monitor, IFolder codeProjectFolder) throws CoreException {
+    private static void cleanUpCodeProject(IProgressMonitor monitor, IFolder codeProjectFolder) throws CoreException {
         IFolder srcFolder = codeProjectFolder.getFolder(MavenSystemFolders.SRC.getPath());
         IFolder targetFolder = codeProjectFolder.getFolder(MavenSystemFolders.TARGET.getPath());
         IFolder testFolder = codeProjectFolder.getFolder(MavenSystemFolders.TEST_REPORTS.getPath());
@@ -262,7 +260,7 @@ public class TalendJavaProjectManager {
         }
         boolean isService = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-            IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            IESBService service = GlobalServiceRegister.getDefault().getService(IESBService.class);
             isService = service.isServiceItem(property.getItem().eClass().getClassifierID());
         }
         if (!(property.getItem() instanceof ProcessItem) && !isService) {
@@ -271,7 +269,7 @@ public class TalendJavaProjectManager {
         ITalendProcessJavaProject talendJobJavaProject = null;
         try {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                ITestContainerProviderService testContainerService = GlobalServiceRegister
                         .getDefault().getService(ITestContainerProviderService.class);
                 if (testContainerService.isTestContainerItem(property.getItem())) {
                     property = testContainerService.getParentJobItem(property.getItem()).getProperty();
