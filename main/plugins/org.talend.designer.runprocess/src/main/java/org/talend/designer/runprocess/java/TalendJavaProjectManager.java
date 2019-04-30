@@ -536,7 +536,7 @@ public class TalendJavaProjectManager {
             public void run(IProgressMonitor monitor) throws CoreException {
                 IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
                 for (IProject project : projects) {
-                    if ("Builtin".equals(project.getName()) && project.hasNature("com.oaklandsw.transform.runtime.nature")) { //$NON-NLS-1$ //$NON-NLS-2$
+                    if (project.hasNature("com.oaklandsw.transform.runtime.nature")) { //$NON-NLS-1$
                         // never delete TDM Builtin project ref com.oaklandsw.data.transform.builtin
                         continue;
                     }
@@ -549,6 +549,7 @@ public class TalendJavaProjectManager {
                         project.open(monitor);
                     }
                     if (project.hasNature(natureId)) {
+                        project.delete(false, true, monitor);
                         IFile eclipseClasspath = project.getFile(CLASSPATH_FILE_NAME);
                         if (eclipseClasspath.exists()) {
                             eclipseClasspath.delete(true, monitor);
@@ -557,7 +558,6 @@ public class TalendJavaProjectManager {
                         if (projectFile.exists()) {
                             projectFile.delete(true, monitor);
                         }
-                        project.delete(false, true, monitor);
                     }
                 }
                 talendCodeJavaProjects.clear();
