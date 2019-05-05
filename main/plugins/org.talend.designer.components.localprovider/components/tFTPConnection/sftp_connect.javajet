@@ -3,13 +3,13 @@
 
 boolean retry_<%=cid%> = false;
 int retry_count_<%=cid%> = 0;
-int retry_max_<%=cid%> = 10;
+int retry_max_<%=cid%> = 5;
 
 com.jcraft.jsch.Session session_<%=cid%> = null;
 com.jcraft.jsch.Channel channel_<%=cid%> = null;
 
 do {
-		retry_<%=cid%> = false;
+	retry_<%=cid%> = false;
 		
     com.jcraft.jsch.JSch jsch_<%=cid%> = new com.jcraft.jsch.JSch(); 
     
@@ -49,23 +49,39 @@ do {
     	log.info("<%=cid%> - Attempt to connect to  '" + <%=host %> + "' with username '" + <%=user%> + "'.");
     <%}%>
 
+	channel_<%=cid%> = null;
   	try {
       	session_<%=cid%>.connect();
-      	channel_<%=cid%> = session_<%=cid%>.openChannel("sftp"); 
+      	channel_<%=cid%> = session_<%=cid%>.openChannel("sftp");
       	channel_<%=cid%>.connect();
       	<%if(isLog4jEnabled){%>
       		log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
       	<%}%>
   	} catch (com.jcraft.jsch.JSchException e_<%=cid%>) {
-  			if(new TalendException(null, null, null).getExceptionCauseMessage(e_<%=cid%>).contains("Signature length not correct")) {
-  					retry_<%=cid%> = true;
-  					retry_count_<%=cid%>++;
-  					<%if(isLog4jEnabled){%>
-          		log.info("<%=cid%> - connect: java.security.SignatureException: Signature length not correct, so retry, retry time : " + retry_count_<%=cid%>);
-          	<%}%>
-  			} else {
-  					throw e_<%=cid%>;
-  			}
+  		try {
+	  		if(channel_<%=cid%>!=null) {
+	  			channel_<%=cid%>.disconnect();
+	  		}
+	  		
+	  		if(session_<%=cid%>!=null) {
+	  			session_<%=cid%>.disconnect();
+	  		}
+  		} catch(java.lang.Exception ce_<%=cid%>) {
+  			<%if(isLog4jEnabled){%>
+      		log.warn("<%=cid%> - close sftp connection failed : " + ce_<%=cid%>.getClass() + " : " + ce_<%=cid%>.getMessage());
+      		<%}%>
+  		}
+		
+		String message_<%=cid%> = new TalendException(null, null, null).getExceptionCauseMessage(e_<%=cid%>);
+		if(message_<%=cid%>.contains("Signature length not correct") || message_<%=cid%>.contains("connection is closed by foreign host")) {
+			retry_<%=cid%> = true;
+			retry_count_<%=cid%>++;
+			<%if(isLog4jEnabled){%>
+      		log.info("<%=cid%> - connect: Signature length not correct or connection is closed by foreign host, so retry, retry time : " + retry_count_<%=cid%>);
+      		<%}%>
+		} else {
+			throw e_<%=cid%>;
+		}
   	}
 } while(retry_<%=cid%> && (retry_count_<%=cid%> < retry_max_<%=cid%>));
 
