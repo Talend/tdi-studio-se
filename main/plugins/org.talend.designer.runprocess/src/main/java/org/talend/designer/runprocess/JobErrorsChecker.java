@@ -427,7 +427,32 @@ public class JobErrorsChecker {
         }
 
     }
-    
+
+    public static void checkShadowFileError(IFile file) throws ProcessorException {
+        try {
+            IMarker[] markers = file.findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
+            for (IMarker marker : markers) {
+                Integer lineNr = (Integer) marker.getAttribute(IMarker.LINE_NUMBER);
+                String message = (String) marker.getAttribute(IMarker.MESSAGE);
+                Integer severity = (Integer) marker.getAttribute(IMarker.SEVERITY);
+                Integer start = (Integer) marker.getAttribute(IMarker.CHAR_START);
+                Integer end = (Integer) marker.getAttribute(IMarker.CHAR_END);
+                if (lineNr != null && message != null && severity != null && start != null && end != null) {
+                    switch (severity) {
+                    case IMarker.SEVERITY_ERROR:
+                        throw new ProcessorException(Messages.getString("JobErrorsChecker_compile_error_errormessage") + ": " //$NON-NLS-1$
+                                + message);
+                    default:
+                        break;
+                    }
+                }
+            }
+        } catch (CoreException e) {
+            ExceptionHandler.process(e);
+        }
+
+    }
+
     protected static void checkSubJobMultipleVersionsError() throws ProcessorException {
     	if(LastGenerationInfo.getInstance() == null  || LastGenerationInfo.getInstance().getLastGeneratedjobs() == null) {
     		return;

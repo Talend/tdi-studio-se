@@ -27,12 +27,9 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.talend.core.CorePlugin;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ILibraryManagerService;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
 import org.talend.core.model.general.ModuleNeeded;
-import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
@@ -106,6 +103,10 @@ public class JavaProcessUtil {
             }
         }
 
+        if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED)) {
+            new BigDataJobUtil(process).removeExcludedModules(modulesNeeded);
+        }
+
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
@@ -117,6 +118,14 @@ public class JavaProcessUtil {
             libsNeeded.add(module.getModuleName());
         }
 
+        return libsNeeded;
+    }
+
+    public static Map<String, ModuleNeeded> getNeededLibrariesMap(List<ModuleNeeded> modulesNeeded) {
+        Map<String, ModuleNeeded> libsNeeded = new HashMap<String, ModuleNeeded>();
+        for (ModuleNeeded module : modulesNeeded) {
+            libsNeeded.put(module.getModuleName(), module);
+        }
         return libsNeeded;
     }
 
@@ -185,11 +194,20 @@ public class JavaProcessUtil {
 
             Set<ModuleNeeded> nodeNeededModules = getNeededModules(node, searchItems, options);
             if (nodeNeededModules != null) {
+                Map<String, ModuleNeeded> libsNeededMap = getNeededLibrariesMap(modulesNeeded);
                 modulesNeeded.addAll(nodeNeededModules);
-                if (node.getComponent().getName().equals("tLibraryLoad")) { //$NON-NLS-1$
-                    if (!isTestcaseProcess) {
-                        LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().addAll(nodeNeededModules);
+                if (node.getComponent().getName().equals("tLibraryLoad") && !isTestcaseProcess) { //$NON-NLS-1$
+                    Set<ModuleNeeded> highPriorityModuleNeeded = new HashSet<ModuleNeeded>();
+                    for (ModuleNeeded moduleNeeded : nodeNeededModules) {
+                        ModuleNeeded existModuleNeeded = libsNeededMap.get(moduleNeeded.getModuleName());
+                        if (existModuleNeeded != null) {
+                            highPriorityModuleNeeded.add(existModuleNeeded);
+                        } else {
+                            highPriorityModuleNeeded.add(moduleNeeded);
+                        }
                     }
+                    LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(), process.getVersion(),
+                            highPriorityModuleNeeded);
                 }
             }
         }
@@ -208,6 +226,7 @@ public class JavaProcessUtil {
         if (hadoopItemId != null) {
             useCustomConfsJarIfNeeded(modulesNeeded, hadoopItemId);
         }
+        new BigDataJobUtil(process).setExcludedModules(modulesNeeded);
     }
 
     public static String getHadoopClusterItemId(INode node) {

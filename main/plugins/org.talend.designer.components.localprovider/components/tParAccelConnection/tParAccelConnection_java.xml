@@ -40,14 +40,14 @@
       NAME="PROPERTY"
       FIELD="PROPERTY_TYPE"
       SHOW="true"
-      NUM_ROW="1"
+      NUM_ROW="10"
       REPOSITORY_VALUE="DATABASE:PARACCEL"
     />
 
     <PARAMETER
       NAME="HOST"
       FIELD="TEXT"
-      NUM_ROW="2"
+      NUM_ROW="20"
       REPOSITORY_VALUE="SERVER_NAME"
       REQUIRED="true"
     >
@@ -57,7 +57,7 @@
 	<PARAMETER
       NAME="TYPE"
       FIELD="TEXT"
-      NUM_ROW="2"
+      NUM_ROW="20"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
@@ -67,7 +67,7 @@
     <PARAMETER
       NAME="PORT"
       FIELD="TEXT"
-      NUM_ROW="2"
+      NUM_ROW="20"
       REPOSITORY_VALUE="PORT"
       REQUIRED="true"
     >
@@ -77,7 +77,7 @@
     <PARAMETER
       NAME="DBNAME"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="30"
       REPOSITORY_VALUE="SID"
       REQUIRED="true"
     >
@@ -87,7 +87,7 @@
     <PARAMETER
       NAME="SCHEMA_DB"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="30"
       REPOSITORY_VALUE="SCHEMA"
     >
       <DEFAULT>""</DEFAULT>
@@ -96,7 +96,7 @@
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
-      NUM_ROW="4"
+      NUM_ROW="40"
       REPOSITORY_VALUE="USERNAME"
       REQUIRED="true"
     >
@@ -106,17 +106,17 @@
     <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
-      NUM_ROW="4"
+      NUM_ROW="40"
       REPOSITORY_VALUE="PASSWORD"
       REQUIRED="true"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-
+    
     <PARAMETER
       NAME="ENCODING"
       FIELD="ENCODING_TYPE"
-      NUM_ROW="5"
+      NUM_ROW="50"
       REQUIRED="true"
       SHOW="false"
     >
@@ -126,7 +126,7 @@
 	<PARAMETER
       NAME="USE_SHARED_CONNECTION"
 	  FIELD="CHECK"
-      NUM_ROW="10"
+      NUM_ROW="100"
       REQUIRED="true"
     >
     </PARAMETER>
@@ -134,7 +134,7 @@
 	<PARAMETER
       NAME="SHARED_CONNECTION_NAME"
 	  FIELD="TEXT"
-      NUM_ROW="10"
+      NUM_ROW="100"
       REQUIRED="true"
 	  SHOW_IF="USE_SHARED_CONNECTION == 'true'"
     >
@@ -144,6 +144,14 @@
   </PARAMETERS>
 
   	<ADVANCED_PARAMETERS>
+        <PARAMETER 
+          NAME="PROPERTIES" 
+          FIELD="TEXT" 
+          NUM_ROW="5" 
+          REPOSITORY_VALUE="PROPERTIES_STRING"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
 		<PARAMETER NAME="AUTO_COMMIT" FIELD="CHECK" NUM_ROW="10">
 			<DEFAULT>false</DEFAULT>
     	</PARAMETER>

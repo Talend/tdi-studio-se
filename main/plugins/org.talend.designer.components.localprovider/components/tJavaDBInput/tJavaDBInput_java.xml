@@ -39,14 +39,14 @@
       NAME="PROPERTY"
       FIELD="PROPERTY_TYPE"
       SHOW="true"
-      NUM_ROW="1"
+      NUM_ROW="10"
       REPOSITORY_VALUE="DATABASE:JAVADB"
     />
 
     <PARAMETER
       NAME="FRAMEWORK_TYPE"
       FIELD="CLOSED_LIST"
-      NUM_ROW="2"
+      NUM_ROW="20"
       REPOSITORY_VALUE="FRAMEWORK_TYPE"
     >
       <ITEMS DEFAULT="EMBEDED">
@@ -59,7 +59,7 @@
 	<PARAMETER
       NAME="TYPE"
       FIELD="TEXT"
-      NUM_ROW="2"
+      NUM_ROW="20"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
@@ -69,7 +69,7 @@
     <PARAMETER
       NAME="CONNECTION_FLAG"
       FIELD="CHECK"
-      NUM_ROW="2"
+      NUM_ROW="20"
       NOT_SHOW_IF="FRAMEWORK_TYPE=='EMBEDED'"
     >
       <DEFAULT>false</DEFAULT>
@@ -78,7 +78,7 @@
     <PARAMETER
     	NAME="HOST"
     	FIELD="TEXT"
-    	NUM_ROW="4"
+    	NUM_ROW="40"
     	REPOSITORY_VALUE="SERVER_NAME"
     	REQUIRED="true"
     	NOT_SHOW_IF="FRAMEWORK_TYPE=='EMBEDED'"
@@ -89,7 +89,7 @@
     <PARAMETER
       NAME="PORT"
       FIELD="TEXT"
-      NUM_ROW="4"
+      NUM_ROW="40"
       REPOSITORY_VALUE="PORT"
       REQUIRED="true"
       NOT_SHOW_IF="FRAMEWORK_TYPE=='EMBEDED'"
@@ -100,7 +100,7 @@
     <PARAMETER
       NAME="DB"
       FIELD="TEXT"
-      NUM_ROW="5"
+      NUM_ROW="50"
       REQUIRED="true"
       REPOSITORY_VALUE="SID"
     >
@@ -110,7 +110,7 @@
     <PARAMETER
       NAME="DBPATH"
       FIELD="DIRECTORY"
-      NUM_ROW="5"
+      NUM_ROW="50"
       REQUIRED="true"
       SHOW_IF="FRAMEWORK_TYPE=='EMBEDED'"
       REPOSITORY_VALUE="DIRECTORY"
@@ -121,7 +121,7 @@
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
-      NUM_ROW="6"
+      NUM_ROW="60"
       REPOSITORY_VALUE="USERNAME"
     >
       <DEFAULT>""</DEFAULT>
@@ -130,30 +130,30 @@
     <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
-      NUM_ROW="6"
+      NUM_ROW="60"
       REPOSITORY_VALUE="PASSWORD"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-
+    
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
-      NUM_ROW="7"
+      NUM_ROW="70"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
     <PARAMETER
       NAME="TABLE"
       FIELD="DBTABLE"
-      NUM_ROW="8"
+      NUM_ROW="80"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
     <PARAMETER
       NAME="QUERYSTORE"
       FIELD="QUERYSTORE_TYPE"
-      NUM_ROW="9"
+      NUM_ROW="90"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -161,7 +161,7 @@
  	<PARAMETER
       NAME="GUESS_SCHEMA"
       FIELD="GUESS_SCHEMA"
-      NUM_ROW="9"
+      NUM_ROW="90"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -169,7 +169,7 @@
     <PARAMETER
       NAME="QUERY"
       FIELD="MEMO_SQL"
-      NUM_ROW="10"
+      NUM_ROW="100"
       REQUIRED="true"
     >
       <DEFAULT>"select id, name from employee"</DEFAULT>
@@ -178,6 +178,14 @@
    </PARAMETERS>
 
    <ADVANCED_PARAMETERS>
+    <PARAMETER 
+      NAME="PROPERTIES" 
+      FIELD="TEXT" 
+      NUM_ROW="5" 
+      REPOSITORY_VALUE="PROPERTIES_STRING"
+    >
+        <DEFAULT>""</DEFAULT>
+    </PARAMETER>
 	<PARAMETER
       	NAME="ENCODING"
       	FIELD="ENCODING_TYPE"

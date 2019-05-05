@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardContainer;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
@@ -55,6 +56,7 @@ import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.wizard.CheckLastVersionRepositoryWizard;
@@ -271,6 +273,21 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
 
     private void updateConnectionItem(IProxyRepositoryFactory repFactory) throws CoreException, PersistenceException {
         repFactory.save(connectionItem);
+        IWizardPage[] pages = getPages();
+        if (pages.length > 0 && pages[0] instanceof GenericWizardPage) {
+            GenericWizardPage namePage = (GenericWizardPage) pages[0];
+            boolean nameModifiedByUser = namePage.nameModifiedByUser();
+            if (nameModifiedByUser) {
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
+                    IDesignerCoreService service = (IDesignerCoreService) GlobalServiceRegister.getDefault()
+                            .getService(IDesignerCoreService.class);
+                    if (service != null) {
+                        service.refreshComponentView(connectionItem);
+                    }
+                }
+            }
+        }
+
         closeLockStrategy();
     }
 

@@ -62,11 +62,12 @@ class BigQueryUtil_<%=cid%> {
 		com.google.api.services.bigquery.model.JobConfigurationQuery queryConfig = new com.google.api.services.bigquery.model.JobConfigurationQuery();
 		queryConfig.setQuery(query);
 		queryConfig.setUseLegacySql(useLegacySql);
+		String location = getLocation(queryConfig);
 		if(useLargeResult){
 			this.useLargeResult = true;
 			tempDataset = genTempName("dataset");
 			tempTable = genTempName("table");
-			createDataset(getLocation(queryConfig));
+			createDataset(location);
 			queryConfig.setAllowLargeResults(true);
 			queryConfig.setDestinationTable(new com.google.api.services.bigquery.model.TableReference()
 											.setProjectId(projectId)
@@ -131,7 +132,7 @@ class BigQueryUtil_<%=cid%> {
 		%>
 		// wait for query execution
 		while (true) {
-			com.google.api.services.bigquery.model.Job pollJob = bigqueryclient.jobs().get(projectId, jobId.getJobId()).execute();
+			com.google.api.services.bigquery.model.Job pollJob = bigqueryclient.jobs().get(projectId, jobId.getJobId()).setLocation(location).execute();
 			com.google.api.services.bigquery.model.JobStatus status = pollJob.getStatus();
 			if (status.getState().equals("DONE")) {
 				com.google.api.services.bigquery.model.ErrorProto errorProto = status.getErrorResult();

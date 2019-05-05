@@ -12,7 +12,12 @@
 // ============================================================================
 package org.talend.designer.unifiedcomponent.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,6 +39,8 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.unifiedcomponent.component.DelegateComponent;
+import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 
 /**
  * created by wchen on Dec 15, 2017 Detailled comment
@@ -294,4 +301,111 @@ public class ChangeComponentCommandTest {
 
     }
 
+    // Add junit test for TUP-20612
+    @Test
+    public void testChangeComponentDBInputMappingType() {
+        IComponent tAS400Input = compService.getComponentsFactory().get("tAS400Input", ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tAccessInput = compService.getComponentsFactory().get("tAccessInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tAmazonAuroraInput = compService.getComponentsFactory().get("tAmazonAuroraInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tAmazonMysqlInput = compService.getComponentsFactory().get("tAmazonMysqlInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tAmazonOracleInput = compService.getComponentsFactory().get("tAmazonOracleInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tRedshiftInput = compService.getComponentsFactory().get("tRedshiftInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tEXAInput = compService.getComponentsFactory().get("tEXAInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tFirebirdInput = compService.getComponentsFactory().get("tFirebirdInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tGreenplumInput = compService.getComponentsFactory().get("tGreenplumInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tDB2Input = compService.getComponentsFactory().get("tDB2Input", ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tInformixInput = compService.getComponentsFactory().get("tInformixInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tIngresInput = compService.getComponentsFactory().get("tIngresInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tInterbaseInput = compService.getComponentsFactory().get("tInterbaseInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tMemSQLInput = compService.getComponentsFactory().get("tMemSQLInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tMSSqlInput = compService.getComponentsFactory().get("tMSSqlInput", ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tMysqlInput = compService.getComponentsFactory().get("tMysqlInput", ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tNetezzaInput = compService.getComponentsFactory().get("tNetezzaInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tOracleInput = compService.getComponentsFactory().get("tOracleInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tParAccelInput = compService.getComponentsFactory().get("tParAccelInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tPostgresqlInput = compService.getComponentsFactory().get("tPostgresqlInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tPostgresPlusInput = compService.getComponentsFactory().get("tPostgresPlusInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tSAPHanaInput = compService.getComponentsFactory().get("tSAPHanaInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tSQLiteInput = compService.getComponentsFactory().get("tSQLiteInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tSybaseInput = compService.getComponentsFactory().get("tSybaseInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tTeradataInput = compService.getComponentsFactory().get("tTeradataInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tVectorWiseInput = compService.getComponentsFactory().get("tVectorWiseInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tVerticaInput = compService.getComponentsFactory().get("tVerticaInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+
+        Property property1 = PropertiesFactory.eINSTANCE.createProperty();
+        property1.setId("property1"); //$NON-NLS-1$
+        property1.setVersion("0.1"); //$NON-NLS-1$
+        property1.setLabel("test1");//$NON-NLS-1$
+        Process process1 = new Process(property1);
+
+        List<IComponent> tDBInputs = new ArrayList<IComponent>();
+        tDBInputs.add(tAS400Input);
+        tDBInputs.add(tAccessInput);
+        tDBInputs.add(tAmazonAuroraInput);
+        tDBInputs.add(tAmazonMysqlInput);
+        tDBInputs.add(tAmazonOracleInput);
+        tDBInputs.add(tRedshiftInput);
+        tDBInputs.add(tEXAInput);
+        tDBInputs.add(tFirebirdInput);
+        tDBInputs.add(tGreenplumInput);
+        tDBInputs.add(tDB2Input);
+        tDBInputs.add(tInformixInput);
+        tDBInputs.add(tIngresInput);
+        tDBInputs.add(tInterbaseInput);
+        tDBInputs.add(tMemSQLInput);
+        tDBInputs.add(tMSSqlInput);
+        tDBInputs.add(tMysqlInput);
+        tDBInputs.add(tNetezzaInput);
+        tDBInputs.add(tOracleInput);
+        tDBInputs.add(tParAccelInput);
+        tDBInputs.add(tPostgresqlInput);
+        tDBInputs.add(tPostgresPlusInput);
+        tDBInputs.add(tSAPHanaInput);
+        tDBInputs.add(tSQLiteInput);
+        tDBInputs.add(tSybaseInput);
+        tDBInputs.add(tTeradataInput);
+        tDBInputs.add(tVectorWiseInput);
+        tDBInputs.add(tVerticaInput);
+
+        for (IComponent component : tDBInputs) {
+            Assert.assertNotNull(component);
+            Node node = new Node(component, process1);
+            DelegateComponent delegateComponent = (DelegateComponent) node.getDelegateComponent();
+            Assert.assertNotNull(delegateComponent);
+            IElementParameter newUnifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
+            Assert.assertNotNull(newUnifiedParam);
+            String unifiedComp = String.valueOf(newUnifiedParam.getValue());
+            Assert.assertNotNull(unifiedComp);
+            UnifiedObject unifiedObject = delegateComponent.getUnifiedObjectByName(unifiedComp);
+            Assert.assertNotNull(unifiedObject);
+            Set<String> mappingExelude = new HashSet<String>();
+            Assert.assertTrue(mappingExelude.isEmpty());
+            mappingExelude.addAll(unifiedObject.getParamMappingExclude());
+            Assert.assertTrue(mappingExelude.contains("TYPE"));
+            mappingExelude.clear();
+        }
+    }
 }

@@ -362,7 +362,14 @@ public class ExportItemUtil {
                 XmiResourceManager localRepositoryManager = ProxyRepositoryFactory.getInstance()
                         .getRepositoryFactoryFromProvider().getResourceManager();
                 IPath propertyPath = null;
-                for (Resource curResource : localRepositoryManager.getAffectedResources(item.getProperty())) {
+                Property property = item.getProperty();
+                List<Resource> resources = localRepositoryManager.getAffectedResources(property);
+                if (resources.isEmpty()) {
+                    IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getSpecificVersion(property.getId(),
+                            property.getVersion(), true);
+                    resources = localRepositoryManager.getAffectedResources(obj.getProperty());
+                }
+                for (Resource curResource : resources) {
                     URI uri = curResource.getURI();
                     IPath relativeItemPath = URIHelper.convert(uri).makeRelative();
                     Project project = ProjectManager.getInstance().getProject(item);

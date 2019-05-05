@@ -15,14 +15,17 @@ package org.talend.repository.generic.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Composite;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.commons.ui.swt.actions.ITreeContextualAction;
 import org.talend.components.api.properties.ComponentProperties;
@@ -137,9 +140,14 @@ public class GenericWizardService implements IGenericWizardService {
         if (repObjType == null) {
             return false;
         }
-        List<String> genericTypeNames = getGenericTypeNames();
-        if (genericTypeNames != null && genericTypeNames.contains(repObjType.getType())) {
-            return true;
+        try {
+	        List<String> genericTypeNames = getGenericTypeNames();
+	        if (genericTypeNames != null && genericTypeNames.contains(repObjType.getType())) {
+	            return true;
+	        }
+        } catch (Exception e) {
+        	// only log the error, might happens during junit execution
+        	ExceptionHandler.process(e);
         }
         return false;
     }
@@ -221,7 +229,7 @@ public class GenericWizardService implements IGenericWizardService {
     @Override
     public void refreshDynamicComposite(Composite composite) {
         if (composite instanceof DynamicComposite) {
-            ((DynamicComposite) composite).resetParameters();
+            ((DynamicComposite) composite).resetParameters(false);
         }
     }
 
@@ -229,23 +237,45 @@ public class GenericWizardService implements IGenericWizardService {
     public void updateComponentSchema(INode node, IMetadataTable metadataTable) {
         SchemaUtils.updateComponentSchema(node, metadataTable, Boolean.FALSE);
     }
-
+    
     @Override
     public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel, boolean withEvaluator) {
+        return getAllComponentProperties(connection, tableLabel, withEvaluator, false, new HashMap<Object, Object>());
+    }
+
+    @Override
+    public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel, boolean withEvaluator,
+            boolean forComponentValue, Map<Object, Object> contextMap) {
         List<ComponentProperties> componentProperties = new ArrayList<>();
         Set<ComponentProperties> componentPropertiesSet = new HashSet<>();
+        if(contextMap == null){
+            contextMap = new HashMap<Object, Object>();
+        }
         if (isGenericConnection(connection)) {
             String compProperties = connection.getCompProperties();
-            ComponentProperties cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection,
-                    withEvaluator);
+            ComponentProperties cp = null;
+            if(contextMap.get(connection.getId()) != null){
+                cp = (ComponentProperties) contextMap.get(connection.getId());
+            }else{
+                cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection,
+                        withEvaluator);
+                if(cp != null){
+                    contextMap.put(connection.getId(), cp);
+                }
+            }
             if (cp != null) {
                 componentProperties.add(cp);
             }
             List<MetadataTable> metadataTables;
-            if (tableLabel == null) {
+            //"forComponentValue" is avoid to load all the metadataTables, 
+            //if just get the component value, totally no need to get hundreds of tables,  
+            if (tableLabel == null && !forComponentValue) {
                 metadataTables = SchemaUtils.getMetadataTables(connection, SubContainer.class);
             } else {
                 metadataTables = Arrays.asList(SchemaUtils.getMetadataTable(connection, tableLabel, SubContainer.class));
+            }
+            if(metadataTables == null){
+                return componentProperties;
             }
             for (MetadataTable metadataTable : metadataTables) {
                 if (metadataTable == null) {
@@ -253,8 +283,15 @@ public class GenericWizardService implements IGenericWizardService {
                 }
                 for (TaggedValue taggedValue : metadataTable.getTaggedValue()) {
                     if (IComponentConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
-                        ComponentProperties compPros = ComponentsUtils
-                                .getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, withEvaluator);
+                        ComponentProperties compPros = null;
+                        if(contextMap.get(metadataTable.getId()) != null){
+                            compPros = (ComponentProperties) contextMap.get(metadataTable.getId());
+                        }else{
+                            compPros = ComponentsUtils.getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, withEvaluator);
+                            if(compPros != null){
+                                contextMap.put(metadataTable.getId(), compPros);
+                            }
+                        }
                         if (compPros != null && !componentPropertiesSet.contains(compPros)) {
                             compPros.updateNestedProperties(cp);
                             componentProperties.add(compPros);

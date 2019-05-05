@@ -45,8 +45,8 @@ public class BusinessModelsRepoViewLinker extends AbstractRepositoryEditorInputL
      * java.lang.String)
      */
     @Override
-    public boolean isRelation(IEditorInput editorInput, String repoNodeId) {
-        return super.isRelation(getRealEditorInput(editorInput), repoNodeId);
+    public boolean isRelation(IEditorInput editorInput, String repoNodeProjectTechLabel, String repoNodeId) {
+        return super.isRelation(getRealEditorInput(editorInput), repoNodeProjectTechLabel, repoNodeId);
     }
 
     private RepositoryEditorInput getRealEditorInput(IEditorInput editorInput) {

@@ -40,14 +40,14 @@
       NAME="PROPERTY"
       FIELD="PROPERTY_TYPE"
       SHOW="true"
-      NUM_ROW="1"
+      NUM_ROW="10"
       REPOSITORY_VALUE="DATABASE:MAXDB"
     />
 
     <PARAMETER
       NAME="HOST"
       FIELD="TEXT"
-      NUM_ROW="2"
+      NUM_ROW="20"
       REPOSITORY_VALUE="SERVER_NAME"
     >
       <DEFAULT>""</DEFAULT>
@@ -56,7 +56,7 @@
     <PARAMETER
       NAME="TYPE"
       FIELD="TEXT"
-      NUM_ROW="2"
+      NUM_ROW="20"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
@@ -66,7 +66,7 @@
    <PARAMETER
       NAME="PORT"
       FIELD="TEXT"
-      NUM_ROW="2"
+      NUM_ROW="20"
       REPOSITORY_VALUE="PORT"
       REQUIRED="true"
     >
@@ -77,7 +77,7 @@
     <PARAMETER
       NAME="DBNAME"
       FIELD="TEXT"
-      NUM_ROW="2"
+      NUM_ROW="20"
       REPOSITORY_VALUE="SID"
     >
       <DEFAULT>""</DEFAULT>
@@ -86,7 +86,7 @@
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="30"
       REPOSITORY_VALUE="USERNAME"
     >
       <DEFAULT>""</DEFAULT>
@@ -95,16 +95,16 @@
     <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
-      NUM_ROW="3"
+      NUM_ROW="30"
       REPOSITORY_VALUE="PASSWORD"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-
+    
     <PARAMETER
       NAME="SCHEMA_FLOW"
       FIELD="SCHEMA_TYPE"
-      NUM_ROW="5"
+      NUM_ROW="50"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -113,7 +113,7 @@
       NAME="SCHEMA_REJECT"
       FIELD="SCHEMA_TYPE"
       REQUIRED="true"
-      NUM_ROW="5"
+      NUM_ROW="50"
       CONTEXT="REJECT"
       SHOW="true">
       <TABLE READONLY="true">
@@ -125,7 +125,7 @@
 	<PARAMETER
       NAME="TABLE"
       FIELD="DBTABLE"
-      NUM_ROW="5"
+      NUM_ROW="50"
       LOG4J_ENABLED="false"
     >
       <DEFAULT>""</DEFAULT>
@@ -133,7 +133,7 @@
     <PARAMETER
       NAME="QUERYSTORE"
       FIELD="QUERYSTORE_TYPE"
-      NUM_ROW="6"
+      NUM_ROW="60"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -141,7 +141,7 @@
     <PARAMETER
       NAME="QUERY"
       FIELD="MEMO_SQL"
-      NUM_ROW="7"
+      NUM_ROW="70"
     >
       <DEFAULT>"select * from mytable"</DEFAULT>
     </PARAMETER>
@@ -149,7 +149,7 @@
     <PARAMETER
       NAME="DIE_ON_ERROR"
       FIELD="CHECK"
-      NUM_ROW="8"
+      NUM_ROW="80"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -157,6 +157,14 @@
   </PARAMETERS>
   
   <ADVANCED_PARAMETERS>
+    <PARAMETER 
+      NAME="PROPERTIES" 
+      FIELD="TEXT" 
+      NUM_ROW="3" 
+      REPOSITORY_VALUE="PROPERTIES_STRING"
+    >
+        <DEFAULT>""</DEFAULT>
+    </PARAMETER>
   	
   	<PARAMETER
       NAME="PROPAGATE_RECORD_SET"

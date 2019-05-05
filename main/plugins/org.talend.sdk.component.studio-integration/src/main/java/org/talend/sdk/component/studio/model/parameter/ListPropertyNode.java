@@ -15,10 +15,11 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.talend.core.model.process.EParameterFieldType;
@@ -54,11 +55,21 @@ public class ListPropertyNode extends PropertyNode {
     }
 
     public List<PropertyNode> getColumns(String form) {
-        final Set<String> childrenNames = getChildrenNames(form);
+        final List<String> childrenNames = getChildrenNames(form);
         return Collections.unmodifiableList(
                 sortChildren(nestedProperties
                         .stream()
                         .filter(node -> childrenNames.contains(node.getProperty().getName()))
                         .collect(Collectors.toList()), form));
+    }
+
+    /**
+     * Returns all nested properties names
+     *
+     * @return nested properties names
+     */
+    @Override
+    protected List<String> getChildrenNames() {
+        return nestedProperties.stream().map(node -> node.getProperty().getName()).collect(toList());
     }
 }

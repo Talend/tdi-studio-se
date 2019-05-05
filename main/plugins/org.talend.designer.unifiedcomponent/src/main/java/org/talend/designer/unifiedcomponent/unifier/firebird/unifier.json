@@ -4,7 +4,7 @@
     "category":"DI",
     "family":"",
     "parameter":{
-        "exclude":"PORT"}
+        "exclude":"PORT,TYPE"}
 },
 {
     "component_delegate":"tDBOutput",

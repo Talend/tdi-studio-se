@@ -116,7 +116,11 @@ imports="
 	        <%}else{%>
 	String driverClass_<%=cid%> = "com.sybase.jdbc3.jdbc.SybDriver";
 	        <%}%>
-    java.lang.Class.forName(driverClass_<%=cid%>);
+    java.lang.Class jdbcclazz_<%=cid%> = java.lang.Class.forName(driverClass_<%=cid%>);
+   	<%if("SYBSEIQ_16".equals(dbVersion)){%>
+	jdbcclazz_<%=cid%>.newInstance();
+	<%}%>
+    
 <%
 		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>

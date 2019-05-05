@@ -720,7 +720,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
             labelledCheckboxCombo = iCheckboxCombo.next();
             // if the checkbox is checked, check Numeric value
             if (labelledCheckboxCombo.getCheckbox().getSelection()) {
-                if (labelledCheckboxCombo.getText() == "") {
+                if ("".equals(labelledCheckboxCombo.getText())) {
                     updateStatus(IStatus.ERROR, labelledCheckboxCombo.getLabelText() + "must be specified");
                     return false;
                 }

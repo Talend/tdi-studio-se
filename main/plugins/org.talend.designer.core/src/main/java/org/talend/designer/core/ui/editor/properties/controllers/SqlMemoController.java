@@ -73,6 +73,7 @@ import org.talend.core.sqlbuilder.util.TextUtil;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.core.ui.services.ISQLBuilderService;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
@@ -151,7 +152,8 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
         String propertyName = (String) openSQLEditorButton.getData(PARAMETER_NAME);
         String query = (String) elem.getPropertyValue(propertyName);
         ECodeLanguage lang = LanguageManager.getCurrentLanguage();
-        if ((!TalendTextUtils.isCommonString(query) || QueryUtil.checkIfHasSpecialEscapeValue(query) || QueryUtil
+        if ((!TalendQuoteUtils.isCommonString(query) || QueryUtil.checkIfHasSpecialEscapeValue(query)
+                || QueryUtil
                 .checkIfIsNoQuotesAtAll(query)) && (lang == ECodeLanguage.JAVA)) {// if
             // the input query is in context mode in java
             // String pid = SqlBuilderPlugin.PLUGIN_ID;
@@ -190,8 +192,8 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
      * @return
      */
     private String removeStrInQuery(String input) {
-        String out = removeSlash(input);
-        return TalendTextUtils.removeQuotes(out);
+//        String out = removeSlash(input);
+        return TalendTextUtils.removeQuotes(input);
     }
 
     /**

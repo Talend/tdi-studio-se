@@ -1262,7 +1262,7 @@ public class Component extends AbstractBasicComponent {
         }
         ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
         componentImportNeedsList.add(moduleNeeded);
-        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.25.3");
+        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.25.4");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
     }
@@ -1463,15 +1463,17 @@ public class Component extends AbstractBasicComponent {
         if (GenericTypeUtils.isEnumType(property)) {
             if (ContextParameterUtils.isContainContextParam(value) || value.indexOf("globalMap.get") > -1) {
                 return value;
-            } else {
-                return TalendQuoteUtils.addQuotesIfNotExist(value);
+            }else {
+                return TalendQuoteUtils.addQuotesForComplexusString(value);
             }
         }
         if (GenericTypeUtils.isStringType(property)
                 && property.getTaggedValue(IGenericConstants.LINE_SEPARATOR_REPLACED_TO) != null) {
-            String replacedTo = String.valueOf(property.getTaggedValue(IGenericConstants.LINE_SEPARATOR_REPLACED_TO));
-            // "Win", "Linux/Unix", "Mac"
-            return value.replaceAll("\r\n", replacedTo).replaceAll("\n", replacedTo).replaceAll("\r", replacedTo);
+            //process for the sql field for jdbc, snowflake, salesforce, LINE_SEPARATOR_REPLACED_TO key can tell us which a sql type field,
+            //as sql type value may have newline and return characters, which make compiler issue in java code, 
+            //so have to convert the newline characters to visible "\r", "\n" for pass the compiler issue and can't only convert them to white space as TDI-41898
+            //jdbc drivers, salesforce driver can work like that sql : select * \nfrom Account, so it is ok 
+            return NodeUtil.replaceCRLFInMEMO_SQL(value);
         }
         if (GenericTypeUtils.isSchemaType(property)) {
             // Handles embedded escaped quotes which might occur
@@ -1494,6 +1496,8 @@ public class Component extends AbstractBasicComponent {
         }
         return value;
     }
+    
+    
 
     @Override
     public int hashCode() {

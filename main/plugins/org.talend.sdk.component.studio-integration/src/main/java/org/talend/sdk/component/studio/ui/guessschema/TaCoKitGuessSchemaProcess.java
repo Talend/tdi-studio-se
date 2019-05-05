@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.talend.core.CorePlugin;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
@@ -34,7 +33,6 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.Property;
-import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.process.DataProcess;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -50,11 +48,6 @@ import org.talend.sdk.component.studio.util.TaCoKitConst;
  * DOC cmeng class global comment. Detailled comment
  */
 public class TaCoKitGuessSchemaProcess {
-
-    protected static final String DEFAULT_JOB_NAME = "Mock_job_for_Guess_schema"; //$NON-NLS-1$
-
-    protected static final int maximumRowsToPreview = CorePlugin.getDefault().getPreferenceStore()
-            .getInt(ITalendCorePrefConstants.PREVIEW_LIMIT);
 
     private final Task guessSchemaTask;
 
@@ -117,7 +110,9 @@ public class TaCoKitGuessSchemaProcess {
                 try (
                         final BufferedReader reader = new BufferedReader(
                                 new InputStreamReader(executeProcess.getInputStream()))) {
-                    return reader.lines().collect(joining("\n"));
+                    return reader.lines()
+                            .filter(l -> l.startsWith("[") || l.startsWith("{")) // ignore line with non json data
+                            .collect(joining("\n"));
                 }
             });
 

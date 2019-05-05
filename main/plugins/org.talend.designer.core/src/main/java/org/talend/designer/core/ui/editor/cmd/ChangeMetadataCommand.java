@@ -20,7 +20,7 @@ import java.util.Set;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IODataComponent;
@@ -251,7 +251,7 @@ public class ChangeMetadataCommand extends Command {
     }
 
     public static boolean askPropagate() {
-        Boolean needPropagate = MessageDialog.openQuestion(new Shell(),
+        Boolean needPropagate = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false),
                 Messages.getString("ChangeMetadataCommand.messageDialog.propagate"), //$NON-NLS-1$
                 Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage")); //$NON-NLS-1$ 
         return needPropagate;

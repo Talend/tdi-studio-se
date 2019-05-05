@@ -14,8 +14,16 @@
 		<bulkload.dir>${project.basedir}/components/tMDMBulkLoad</bulkload.dir>
 		<soap.dir>${project.basedir}/components/tSOAP</soap.dir>
 		<webservice.dir>${project.basedir}/components/tWebServiceInput</webservice.dir>
+		<webservicecore.dir>${project.basedir}/components/tWebService</webservicecore.dir>
 		<thashfile.dir>${project.basedir}/components/tHashInput</thashfile.dir>
 		<thashfile.version>3.0-20170711</thashfile.version>
+		<ftpProxy.dir>${project.basedir}/components/tFTPConnection</ftpProxy.dir>
+		<ftpProxy.version>3.6.1-talend-20190128</ftpProxy.version>
+		<talendMQRFH2.dir>${project.basedir}/components/tMomInput</talendMQRFH2.dir>
+		<talendMQRFH2.version>1.0.1-20190206</talendMQRFH2.version>
+		<talendMQConnectionUtil.dir>${project.basedir}/components/tMomConnection</talendMQConnectionUtil.dir>
+		<talendMQConnectionUtil.version>1.0.1-20190215</talendMQConnectionUtil.version>
+		<tldapinput.dir>${project.basedir}/components/tLDAPInput</tldapinput.dir>
 	</properties>
 
 	<build>
@@ -42,6 +50,30 @@
 							<directory>${thashfile.dir}</directory>
 							<includes>
 								<include>thashfile*.jar</include>
+							</includes>
+						</fileset>
+						<fileset>
+							<directory>${webservicecore.dir}</directory>
+							<includes>
+								<include>talend-ws*.jar</include>
+							</includes>
+						</fileset>
+						<fileset>
+							<directory>${talendMQRFH2.dir}</directory>
+							<includes>
+								<include>talendMQRFH2*.jar</include>
+							</includes>
+						</fileset>
+						<fileset>
+							<directory>${talendMQConnectionUtil.dir}</directory>
+							<includes>
+								<include>talendMQConnectionUtil*.jar</include>
+							</includes>
+						</fileset>
+						<fileset>
+							<directory>${tldapinput.dir}</directory>
+							<includes>
+								<include>talendssl*.jar</include>
 							</includes>
 						</fileset>
 					</filesets>
@@ -78,11 +110,51 @@
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.talend.libraries</groupId>
+									<artifactId>talend-ws</artifactId>
+									<version>1.0.1-20190204</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${webservicecore.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.libraries</groupId>
 									<artifactId>thashfile</artifactId>
 									<version>${thashfile.version}</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${thashfile.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.libraries</groupId>
+									<artifactId>commons-net-ftps-proxy</artifactId>
+									<version>${ftpProxy.version}</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${ftpProxy.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend</groupId>
+									<artifactId>talendMQRFH2</artifactId>
+									<version>${talendMQRFH2.version}</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${talendMQRFH2.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend</groupId>
+									<artifactId>talendMQConnectionUtil</artifactId>
+									<version>${talendMQConnectionUtil.version}</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${talendMQConnectionUtil.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.libraries</groupId>
+									<artifactId>talendssl</artifactId>
+									<version>1.0-20190118</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${tldapinput.dir}</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>

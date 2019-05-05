@@ -46,12 +46,12 @@ public class FileInputJsonNode4Input extends FileInputNode {
         String[] paramNames = null;
         if (EJsonReadbyMode.JSONPATH.getValue().equals(readbyMode)) {
             paramNames = new String[] {
-                    "FILENAME", "JSON_LOOP_QUERY", "MAPPING_JSONPATH", "LIMIT", "ENCODING", "GENERATION_MODE", "READ_BY" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+                    "FILENAME", "JSON_LOOP_QUERY", "MAPPING_JSONPATH", "LIMIT", "ENCODING", "GENERATION_MODE", "READ_BY" ,"USE_LOOP_AS_ROOT" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         } else {
             paramNames = new String[] { "FILENAME", "LOOP_QUERY", "MAPPING", "LIMIT", "ENCODING", "GENERATION_MODE", "READ_BY" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         }
         // see bug 9785.
-        Object[] paramValues = new Object[] { filename, loopQuery, mapping, limitLoop, encoding, "Dom4j", readbyMode }; //$NON-NLS-1$
+        Object[] paramValues = new Object[] { filename, loopQuery, mapping, limitLoop, encoding, "Dom4j", readbyMode ,false }; //$NON-NLS-1$
         // Object[] paramValues = new Object[] { filename, loopQuery, mapping, limitLoop, encoding, "Xerces" }; //$NON-NLS-1$
 
         IComponent component = ComponentsFactoryProvider.getInstance().get(INPUT_COMPONENT_NAME,

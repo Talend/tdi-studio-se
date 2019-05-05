@@ -27,6 +27,8 @@ public class ThreadDumpParser extends AbstractDumpParser {
     /** The thread list elements. */
     private List<IThreadElement> threadListElements;
 
+    private final String DISALLOW_DOCTYPE_DECL = "http://apache.org/xml/features/disallow-doctype-decl"; //$NON-NLS-1$
+
     /**
      * The constructor.
      * 
@@ -50,7 +52,10 @@ public class ThreadDumpParser extends AbstractDumpParser {
      * @throws IOException if parsing input fails
      */
     public void parse() throws ParserConfigurationException, SAXException, IOException {
-        parser = SAXParserFactory.newInstance().newSAXParser();
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+        spf.setFeature(DISALLOW_DOCTYPE_DECL, true);
+        parser = spf.newSAXParser();
         ThreadDumpSaxEventHandler handler = new ThreadDumpSaxEventHandler(threadListElements, monitor);
 
         parser.parse(file, handler);

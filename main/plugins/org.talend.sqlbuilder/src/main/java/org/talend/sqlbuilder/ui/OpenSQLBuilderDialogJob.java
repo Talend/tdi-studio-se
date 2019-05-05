@@ -22,6 +22,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWithDetailAreaAndContinueButton;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.metadata.QueryUtil;
@@ -120,7 +121,7 @@ public class OpenSQLBuilderDialogJob extends Job {
                 Display.getDefault().asyncExec(new Runnable() {
 
                     public void run() {
-                        Shell parentShell = new Shell(composite.getShell().getDisplay());
+                        Shell parentShell = DisplayUtils.getDefaultShell(false);
                         if (elem instanceof Node) {
                             TextUtil.setDialogTitle(process.getName(), (String) ((Node) elem).getElementParameter("LABEL") //$NON-NLS-1$
                                     .getValue(), elem.getElementName());

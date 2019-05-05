@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.INode;
@@ -117,14 +117,14 @@ public class ConnectionSetAsMainRef extends SelectionAction {
                         .size() != 0) {
             MessageDialog
                     .openError(
-                            new Shell(),
+                            DisplayUtils.getDefaultShell(false),
                             Messages.getString("ConnectionSetAsMainRef.ERROR"), Messages.getString("ConnectionSetAsMainRef.ConnectionModifyError")); //$NON-NLS-1$ //$NON-NLS-2$
             return;
         }
         if (checkConnectionStatus(connection.getTarget())) {
             MessageDialog
                     .openError(
-                            new Shell(),
+                            DisplayUtils.getDefaultShell(false),
                             Messages.getString("ConnectionSetAsMainRef.ERROR"), Messages.getString("ConnectionSetAsMainRef.ConnectionModifyError")); //$NON-NLS-1$ //$NON-NLS-2$
             return;
         }

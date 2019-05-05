@@ -98,7 +98,7 @@ public class GenericDialog extends TitleAreaDialog {
                 ExceptionHandler.process(e);
             }
         }
-        dynamicComposite.resetParameters();
+        dynamicComposite.resetParameters(false);
         dynamicComposite.refresh();
     }
 

@@ -27,6 +27,7 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.repository.ui.login.LoginHelper;
 import org.talend.repository.ui.login.connections.network.NetworkConfiguration;
 
 public class PerformancePreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
@@ -176,19 +177,21 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
             final CheckBoxFieldEditor autoRefreshLocksField = new CheckBoxFieldEditor(ITalendCorePrefConstants.AUTO_REFRESH_LOCKS,
                     Messages.getString("PerformancePreferencePage.autoRefreshLocksField"), getFieldEditorParent()); //$NON-NLS-1$
             addField(autoRefreshLocksField);
-
+            //
+            String timeout = Messages.getString("PerformancePreferencePage.tacTimeout");//$NON-NLS-1$
+            String readTimeout = Messages.getString("PerformancePreferencePage.tacTimeout.read");//$NON-NLS-1$
+            if (!LoginHelper.isRemotesConnection()) {
+                timeout = Messages.getString("PerformancePreferencePage.defaultTimeout");//$NON-NLS-1$
+                readTimeout = Messages.getString("PerformancePreferencePage.defaultTimeout.read");//$NON-NLS-1$
+            }
             final IntegerFieldEditor tacConnectionTimeout = new IntegerFieldEditor(
-                    ITalendCorePrefConstants.PERFORMANCE_TAC_CONNECTION_TIMEOUT,
-                    Messages.getString("PerformancePreferencePage.tacTimeout"), //$NON-NLS-1$
-                    getFieldEditorParent());
+                    ITalendCorePrefConstants.PERFORMANCE_TAC_CONNECTION_TIMEOUT, timeout, getFieldEditorParent());
             tacConnectionTimeout.setValidRange(NetworkConfiguration.CONNECTION_TIMEOUT_MIN,
                     NetworkConfiguration.CONNECTION_TIMEOUT_MAX);
             addField(tacConnectionTimeout);
 
             final IntegerFieldEditor tacReadTimeout = new IntegerFieldEditor(
-                    ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT,
-                    Messages.getString("PerformancePreferencePage.tacTimeout.read"), //$NON-NLS-1$
-                    getFieldEditorParent());
+                    ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT, readTimeout, getFieldEditorParent());
             tacReadTimeout.setValidRange(NetworkConfiguration.READ_TIMEOUT_MIN, NetworkConfiguration.READ_TIMEOUT_MAX);
             addField(tacReadTimeout);
         }

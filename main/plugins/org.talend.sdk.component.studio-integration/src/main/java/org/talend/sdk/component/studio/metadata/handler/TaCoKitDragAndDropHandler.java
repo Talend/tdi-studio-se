@@ -138,7 +138,6 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         List<String> possibleRoots = values.keySet().stream()
             .filter(key -> key.contains(PATH_SEPARATOR))
             .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR)))
-            .filter(key -> !key.startsWith("OUT$$") && !key.startsWith("IN$$"))
             .distinct()
             .collect(Collectors.toList());
         

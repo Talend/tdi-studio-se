@@ -71,7 +71,6 @@ import org.talend.core.IService;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IProcess;
-import org.talend.core.model.properties.Project;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -79,7 +78,6 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.viewer.ReconcilerViewer;
 import org.talend.designer.runprocess.IRunProcessService;
-import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryService;
 
@@ -233,7 +231,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
             buff.append("new org.apache.camel.model.RouteDefinition()\n");
         }
         // End of https://jira.talendforge.org/browse/TESB-7615
-
+        buff.append(" ");
         int documentOffset = buff.toString().length();
         buff.append("){\n\t}"); //$NON-NLS-1$
         buff.append("\n\t\n}\n}"); //$NON-NLS-1$
@@ -273,10 +271,10 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
         buff.append("\tpublic void myFunction(){\n"); //$NON-NLS-1$
         buff.append("\t  if( \n"); //$NON-NLS-1$
-
+        buff.append(" ");
         int documentOffset = buff.toString().length();
-        buff.append("){\n\t}"); //$NON-NLS-1$
-        buff.append("\n\t\n}\n}"); //$NON-NLS-1$
+        buff.append("\n){\n\t}"); //$NON-NLS-1$
+        buff.append("\n\t\n}}"); //$NON-NLS-1$
 
         IDocument document = new Document();
         document.set(buff.toString());
@@ -335,7 +333,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
             buff.append("\t\treturn \n"); //$NON-NLS-1$
         }
-
+        buff.append(" ");
         int length = buff.toString().length();
         String defaultValue = ""; //$NON-NLS-1$
         buff.append(defaultValue + "\n;\t\n}\n}"); //$NON-NLS-1$
@@ -422,7 +420,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         buff.append(globalFields);
         buff.append("\tpublic void myFunction(){\n"); //$NON-NLS-1$
         buff.append(localFields);
-
+        buff.append(" ");
         documentOffset = buff.toString().length();
         buff.append("\n\t\n}\n}"); //$NON-NLS-1$
 
@@ -464,7 +462,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         if (!GlobalServiceRegister.getDefault().isServiceRegistered(IRepositoryService.class)) {
             return imports;
         }
-        IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
+        IRepositoryService service = GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
 
         IProxyRepositoryFactory repositoryFactory = service.getProxyRepositoryFactory();
         try {

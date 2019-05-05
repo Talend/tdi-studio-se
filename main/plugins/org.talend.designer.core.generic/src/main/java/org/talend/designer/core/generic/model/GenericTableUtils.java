@@ -156,7 +156,7 @@ public class GenericTableUtils {
         }
         return jars.toString();
     }
-    
+
     public static String getDriverJarPath(String mvnPath){
         String mvnUrl = TalendQuoteUtils.removeQuotesIfExist(mvnPath);
         if (MavenUrlHelper.isMvnUrl(mvnUrl)) {

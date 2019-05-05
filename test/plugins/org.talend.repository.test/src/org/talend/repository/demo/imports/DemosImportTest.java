@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -66,6 +67,7 @@ import org.talend.repository.model.ResourceModelUtils;
 import org.talend.repository.ui.actions.importproject.DemoProjectBean;
 import org.talend.repository.ui.actions.importproject.EDemoProjectFileType;
 import org.talend.repository.ui.actions.importproject.ImportProjectsUtilities;
+import org.talend.utils.io.FilesUtils;
 
 /**
  * created by ldong on 2014-4-28 Detailled comment
@@ -88,6 +90,9 @@ public abstract class DemosImportTest {
 	public static final String TEMP_FOLDER_SUFFIEX = ".tmp";
 
 	private static Project originalProject;
+
+    protected String rootPath = null;
+
 	protected Map<String, List<File>> demoDataMap = new HashMap<String, List<File>>();
 
 	@BeforeClass
@@ -268,6 +273,13 @@ public abstract class DemosImportTest {
 			final IProject project = ResourceModelUtils.getProject(tempDemoProject);
 			project.delete(true, null);
 		}
+        if (StringUtils.isNotBlank(rootPath)) {
+            final File workingFolder = new File(rootPath);
+            File tmpdir = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
+            if (workingFolder.toString().startsWith(tmpdir.toString())) { // remove from temp
+                FilesUtils.deleteFolder(workingFolder, true);
+            }
+        }
 	}
 
 	protected int getUserRoutineSize() throws PersistenceException {

@@ -38,6 +38,7 @@ import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.ui.IJobletProviderService;
@@ -275,7 +276,7 @@ public class GEFPasteAction extends SelectionAction {
                     for (IElementParameter element : copiedNode.getElementParametersFromField(EParameterFieldType.PROCESS_TYPE)) {
                         for (Map.Entry<String, IElementParameter> entry : element.getChildParameters().entrySet()) {
                             if (("PROCESS_TYPE_PROCESS").equals(entry.getKey())) {
-                                if (editorProcessId != null && editorProcessId.equals(entry.getValue().getValue())) {
+                                if (editorProcessId != null && ProcessUtils.isSameProperty(editorProcessId, String.valueOf(entry.getValue().getValue()), true)) {
                                     return;
                                 }
                             }

@@ -166,11 +166,13 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /**
      * Return the initial size of the dialog.
+     * 
+     * For fixing bug TUP-19612, hide this method to use the default size rather than to give the dialog an initial size.
      */
-    @Override
-    protected Point getInitialSize() {
-        return new Point(500, 242);
-    }
+//    @Override
+//    protected Point getInitialSize() {
+//        return new Point(500, 242);
+//    }
 
     /**
      * SaveSQLDialog constructor.

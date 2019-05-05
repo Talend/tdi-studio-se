@@ -136,6 +136,11 @@
            mapping="TACOKIT_VALUE_SELECTION"
            name="Value Selection Generator">
      </generator>
+      <generator
+              class="org.talend.sdk.component.studio.ui.composite.generator.SuggestableTableGenerator"
+              mapping="TACOKIT_SUGGESTABLE_TABLE"
+              name="Suggestable Table Generator">
+      </generator>
   </extension>
   <extension
         point="org.talend.designer.core.process_provider">

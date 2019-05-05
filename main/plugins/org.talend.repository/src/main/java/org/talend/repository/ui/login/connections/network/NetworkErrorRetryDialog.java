@@ -41,16 +41,19 @@ public class NetworkErrorRetryDialog extends MessageDialog {
     private String exceptionString;
 
     private String information;
+    
+    private boolean donnotRetryByCancel = false;
 
     public NetworkErrorRetryDialog(Shell parentShell, Throwable ex) {
         super(parentShell, Messages.getString("NetworkErrorRetryDialog.title"), null, null, MessageDialog.INFORMATION, //$NON-NLS-1$
-                new String[] { IDialogConstants.RETRY_LABEL, IDialogConstants.CANCEL_LABEL }, BUTTON_DEFAULT_INDEX);
+                new String[] { IDialogConstants.RETRY_LABEL, IDialogConstants.NO_LABEL }, BUTTON_DEFAULT_INDEX);
         this.ex = ex;
         if (this.ex instanceof SocketTimeoutException) {
             information = Messages.getString("NetworkErrorRetryDialog.message.default.timeout"); //$NON-NLS-1$
         } else {
             information = Messages.getString("NetworkErrorRetryDialog.message.default"); //$NON-NLS-1$
         }
+        setDonnotRetryByCancel(false);
     }
 
     @Override
@@ -91,7 +94,7 @@ public class NetworkErrorRetryDialog extends MessageDialog {
         if (buttonId == BUTTON_RETRY_INDEX) {
             form.performFinish();
         } else {
-            form.performCancel();
+            setDonnotRetryByCancel(true);
         }
         super.buttonPressed(buttonId);
     }
@@ -101,9 +104,6 @@ public class NetworkErrorRetryDialog extends MessageDialog {
         return true;
     }
 
-    public boolean donnotRetryAgainBeforeRestart() {
-        return form.donnotRetryAgainBeforeRestart();
-    }
 
     public Throwable getEx() {
         return this.ex;
@@ -127,6 +127,14 @@ public class NetworkErrorRetryDialog extends MessageDialog {
 
     public void setInformation(String information) {
         this.information = information;
+    }
+
+    public boolean isDonnotRetryByCancel() {
+        return donnotRetryByCancel;
+    }
+
+    public void setDonnotRetryByCancel(boolean donnotRetryByCancel) {
+        this.donnotRetryByCancel = donnotRetryByCancel;
     }
 
     // @Override

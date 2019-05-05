@@ -25,9 +25,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.part.EditorPart;
 import org.osgi.framework.FrameworkUtil;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
@@ -37,11 +37,13 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.ui.editor.JobEditorInput;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.repository.RepositoryWorkUnit;
-import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.documentation.ERepositoryActionName;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryNode;
 
@@ -63,7 +65,7 @@ public class SaveAsProcessWizard extends Wizard {
 
     private IPath path;
 
-    private IProxyRepositoryFactory repositoryFactory;
+    private ProxyRepositoryFactory repositoryFactory;
 
     private JobEditorInput jobEditorInput;
 
@@ -98,7 +100,7 @@ public class SaveAsProcessWizard extends Wizard {
 
         processItem.setProperty(property);
 
-        repositoryFactory = service.getProxyRepositoryFactory();
+        repositoryFactory = ProxyRepositoryFactory.getInstance();
 
         setDefaultPageImageDescriptor(ImageProvider.getImageDesc(ECoreImage.PROCESS_WIZ));
     }
@@ -118,27 +120,32 @@ public class SaveAsProcessWizard extends Wizard {
 
     @Override
     public boolean performFinish() {
-
         boolean ok = false;
         try {
-
             IProcess2 loadedProcess = jobEditorInput.getLoadedProcess();
             ProcessType processType = loadedProcess.saveXmlFile();
-
             isUpdate = isUpdate();
-
             if (isUpdate) {
                 update(processType);
             } else {
+                if (processType.getScreenshots().isEmpty()) {
+                    // force load
+                    XmiResourceManager resourceManager = new XmiResourceManager();
+                    Property property = loadedProcess.getProperty();
+                    if (property.eResource() == null) {
+                        property = ProxyRepositoryFactory.getInstance().getUptodateProperty(property);
+                    }
+                    processType = ((ProcessItem) property.getItem()).getProcess();
+                    resourceManager.loadScreenshots(property, processType);
+                }
                 processItem.setProcess(processType);
                 property.setId(repositoryFactory.getNextId());
                 // don't need to add depended routines.
-
                 repositoryFactory.create(processItem, mainPage.getDestinationPath());
+                repositoryFactory.fireRepositoryPropertyChange(ERepositoryActionName.SAVE.getName(), false, processItem);
                 RelationshipItemBuilder.getInstance().addOrUpdateItem(processItem);
             }
             ok = true;
-
         } catch (Exception e) {
             MessageDialog.openError(getShell(), "Error", "Job could not be saved" + " : " + e.getMessage());
             ExceptionHandler.process(e);

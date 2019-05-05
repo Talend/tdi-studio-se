@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.utils.threading.ExecutionLimiter;
 import org.talend.commons.utils.threading.ExecutionLimiterImproved;
 import org.talend.core.GlobalServiceRegister;
@@ -40,7 +41,10 @@ import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.properties.Project;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.process.IGraphicalNode;
@@ -60,6 +64,7 @@ import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.repository.ProjectManager;
 
 /**
  * Command that changes a given property. It will call the set or get property value in an element. This element can be
@@ -304,7 +309,7 @@ public class PropertyChangeCommand extends Command {
                 String componentName = targetNode.getComponent().getName();
                 if (componentName.matches("tELT.+Map")) { //$NON-NLS-1$
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IDbMapDesignerService.class)) {
-                        IDbMapDesignerService service = (IDbMapDesignerService) GlobalServiceRegister.getDefault().getService(
+                        IDbMapDesignerService service = GlobalServiceRegister.getDefault().getService(
                                 IDbMapDesignerService.class);
                         updateELTMapComponentCommand = service.getUpdateELTMapComponentCommand(targetNode, connection,
                                 oldELTValue, newELTValue);
@@ -378,7 +383,8 @@ public class PropertyChangeCommand extends Command {
                 // newValue is the id of the job
                 ProcessItem processItem = ItemCacheManager.getProcessItem((String) newValue);
                 if (processItem != null) {
-                    currentParam.getParentParameter().setValue(processItem.getProperty().getLabel());
+                    org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
+                    currentParam.getParentParameter().setValue(ProcessUtils.getProjectProcessLabel(project.getTechnicalLabel(),processItem.getProperty().getLabel()));
                 }
             }
         }
@@ -391,7 +397,7 @@ public class PropertyChangeCommand extends Command {
             // Node jobletNode = null;
             IJobletProviderService service = null;
             if (PluginChecker.isJobLetPluginLoaded()) {
-                service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
+                service = GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
             }
             if (elem instanceof Node) {
                 // jobletNode = (Node) elem;
@@ -401,9 +407,15 @@ public class PropertyChangeCommand extends Command {
             }
             if (isJobletComponent) {
                 // 2.if it is a jobletcomponent,reload the component by the version
-                String id = service.getJobletComponentItem((Node) elem).getId();
+                Property jobletProperty = service.getJobletComponentItem((Node) elem);
+                Project project = ProjectManager.getInstance().getProject(jobletProperty);
+                String projTechLabel = null;
+                if (project != null) {
+                    projTechLabel = project.getTechnicalLabel();
+                }
+                String id = jobletProperty.getId();
                 String version = (String) newValue;
-                IComponent newComponent = service.setPropertyForJobletComponent(id, version);
+                IComponent newComponent = service.setPropertyForJobletComponent(projTechLabel, id, version);
                 reloadNode((Node) elem, newComponent);
             } else {
 
@@ -411,7 +423,8 @@ public class PropertyChangeCommand extends Command {
                         .get(EParameterName.PROCESS_TYPE_PROCESS.getName());
                 ProcessItem processItem = ItemCacheManager.getProcessItem((String) processIdParam.getValue(), (String) newValue);
                 if (processItem != null) {
-                    currentParam.getParentParameter().setValue(processItem.getProperty().getLabel());
+                    org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
+                    currentParam.getParentParameter().setValue(ProcessUtils.getProjectProcessLabel(project.getTechnicalLabel(),processItem.getProperty().getLabel()));
                 }
             }
 
@@ -462,6 +475,17 @@ public class PropertyChangeCommand extends Command {
         if (schemaParameter != null && !schemaParameter.isShow(elem.getElementParameters())
                 && !schemaParameter.getValue().equals("")) {
             schemaParameter.setValue("");
+        }
+        // if the distribution with the version doesn't exist,NameNode URI field should not be reset default value.
+        if (currentParam.getName().equals(EParameterName.DB_VERSION.getName())
+                && currentParam.getFieldType() == EParameterFieldType.CLOSED_LIST) {
+            Object[] values = currentParam.getListItemsValue();
+            if (values != null) {
+                List<Object> valuesList = Arrays.asList(values);
+                if (!valuesList.contains(oldValue)) {
+                    toUpdate = true;
+                }
+            }
         }
         if (!toUpdate
                 && (currentParam.getFieldType().equals(EParameterFieldType.RADIO)
@@ -1040,7 +1064,7 @@ public class PropertyChangeCommand extends Command {
     }
 
     private boolean getTakeSchema() {
-        return MessageDialog.openQuestion(new Shell(), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
+        return MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

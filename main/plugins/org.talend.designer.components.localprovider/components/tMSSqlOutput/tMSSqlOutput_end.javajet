@@ -282,7 +282,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 				%>
 		            }
 		        }else{
-		            <%=prefix+cid%>.setNull(count<%=cid%>,java.sql.Types.DATE);
+<%
+                    String typeToSetNull = "TIME".equals(dbType) ? "java.sql.Types.TIME" : "java.sql.Types.DATE";
+%>
+                    <%=prefix+cid%>.setNull(count<%=cid%>,<%=typeToSetNull%>);
 		        }
 		<%
 		    }else{

@@ -51,6 +51,7 @@ import org.talend.designer.core.ui.action.EditProcess;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryNode;
 
 /**
@@ -104,7 +105,7 @@ public class DesignerUtilities {
      * @param jobName
      * @param jobVersion
      */
-    public static IProcess2 findProcessFromEditors(final String jobId, final String jobVersion) {
+    public static IProcess2 findProcessFromEditors(final String jobProjectLabel, final String jobId, final String jobVersion) {
         final IProcess2[] process = new IProcess2[1];
 
         Display.getDefault().syncExec(new Runnable() {
@@ -119,7 +120,9 @@ public class DesignerUtilities {
                     if (input instanceof JobEditorInput) {
                         JobEditorInput rInput = (JobEditorInput) input;
                         IProcess2 p = rInput.getLoadedProcess();
-                        if (p != null && p.getId().equals(jobId) && p.getVersion().equals(jobVersion)) {
+                        String pProjectLabel = ProjectManager.getInstance().getProject(p.getProperty()).getTechnicalLabel();
+                        if (p != null && p.getId().equals(jobId) && p.getVersion().equals(jobVersion)
+                                && jobProjectLabel.equals(pProjectLabel)) {
                             process[0] = p;
                             break;
                         }

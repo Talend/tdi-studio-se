@@ -12,8 +12,13 @@ imports="
 		public void createURL(INode node) {
 			super.createURL(node);
 %>
-		String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>; 
-<%	
+            String dbProperties_<%=cid%> = <%=dbproperties%>;
+            String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+            
+            if(dbProperties_<%=cid%> != null && !"".equals(dbProperties_<%=cid%>.trim())) {
+                url_<%=cid %> = url_<%=cid%> + "?" + dbProperties_<%=cid%>;
+            }
+<%
 		}
 	
 		public String getDirverClassName(INode node){
@@ -22,16 +27,17 @@ imports="
 		
 		public void adjustDriverRegisterOrderForConflcit() {
 %>
-		java.util.Enumeration<java.sql.Driver> drivers_<%=cid%> =  java.sql.DriverManager.getDrivers();
+        java.util.Enumeration<java.sql.Driver> drivers_<%=cid%> =  java.sql.DriverManager.getDrivers();
+        java.util.Set<String> redShiftDriverNames_<%=cid%> = new java.util.HashSet<String>(java.util.Arrays
+                .asList("com.amazon.redshift.jdbc.Driver","com.amazon.redshift.jdbc41.Driver","com.amazon.redshift.jdbc42.Driver"));
     while (drivers_<%=cid%>.hasMoreElements()) {
         java.sql.Driver d_<%=cid%> = drivers_<%=cid%>.nextElement();
-        java.util.List<String> driverList_<%=cid%> = java.util.Arrays.<String>asList("com.amazon.redshift.jdbc.Driver","com.amazon.redshift.jdbc41.Driver");
-        if (driverList_<%=cid%>.contains(d_<%=cid%>.getClass().getName())) {
+        if (redShiftDriverNames_<%=cid%>.contains(d_<%=cid%>.getClass().getName())) {
             try {
                 java.sql.DriverManager.deregisterDriver(d_<%=cid%>);
                 java.sql.DriverManager.registerDriver(d_<%=cid%>);
             } catch (java.lang.Exception e_<%=cid%>) {
-            		//do nothing
+                    //do nothing
             }
         }
     }

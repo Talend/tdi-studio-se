@@ -38,6 +38,13 @@
                 <include>**</include>
             </includes>
         </fileSet>
+        <fileSet> <!-- add xmlMappings -->
+            <directory>${current.bundle.resources.dir}/xmlMappings</directory>
+            <outputDirectory>xmlMappings</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>	
         
         <fileSet> <!-- add metadata -->
             <directory>${basedir}/src/main/resources</directory>
@@ -55,15 +62,5 @@
             </includes>
         </fileSet>
     </fileSets>
-    <dependencySets>
-        <!-- for all jobs -->
-        <dependencySet>
-            <includes>
-                <!--@JobIncludes@-->
-            </includes>
-            <outputFileNameMapping>${artifact.build.finalName}.${artifact.extension}</outputFileNameMapping>
-            <useProjectArtifact>true</useProjectArtifact>
-            <unpack>true</unpack>
-        </dependencySet>
-    </dependencySets>
+    <dependencySets></dependencySets>
 </assembly>

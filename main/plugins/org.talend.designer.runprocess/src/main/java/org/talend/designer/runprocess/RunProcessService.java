@@ -438,6 +438,11 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
+    public void batchDeleteAllVersionTalendJobProject(List<String> idList) {
+        delegateService.batchDeleteAllVersionTalendJobProject(idList);
+    }
+
+    @Override
     public boolean isExportConfig() {
         return delegateService.isExportConfig();
     }
@@ -476,6 +481,12 @@ public class RunProcessService implements IRunProcessService {
     public void handleJobDependencyLoop(JobInfo mainJobInfo, List<JobInfo> listJobs, IProgressMonitor progressMonitor)
             throws Exception {
         delegateService.handleJobDependencyLoop(mainJobInfo, listJobs, progressMonitor);
+    }
+
+    @Override
+    public boolean isdebug() {
+        
+        return delegateService.isdebug();
     }
 
 }

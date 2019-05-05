@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Bonita
-Bundle-SymbolicName: org.talend.libraries.bonita
-Bundle-Version: 7.2.1.qualifier
-Bundle-ActivationPolicy: lazy
-Eclipse-BundleShape: dir

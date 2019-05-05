@@ -16,6 +16,8 @@
 package org.talend.sdk.component.studio.ui.wizard.page;
 
 import static org.talend.core.model.process.EParameterFieldType.HIDDEN_TEXT;
+import static org.talend.core.model.process.EParameterFieldType.TABLE;
+import static org.talend.core.model.process.EParameterFieldType.TEXT;
 
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
@@ -28,5 +30,15 @@ public class WizardTypeMapper extends WidgetTypeMapper {
     @Override
     protected EParameterFieldType getCredentialType() {
         return HIDDEN_TEXT;
+    }
+
+    @Override
+    protected  EParameterFieldType getPrevColumnListType() {
+        return TEXT;
+    }
+
+    @Override
+    protected  EParameterFieldType getSuggestableTableType() {
+        return TABLE;
     }
 }

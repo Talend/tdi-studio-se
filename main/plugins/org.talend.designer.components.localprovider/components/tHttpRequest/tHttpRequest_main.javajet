@@ -98,7 +98,7 @@ try{
 
     byte[] buffer_<%=cid%> = new byte[1024];
     int bos_buffer_<%=cid%> = 0;
-    <%if(hasOutputSchema){%>StringBuilder sb_<%=cid%>=new StringBuilder(); <%}%>
+    <%if(hasOutputSchema){%>java.io.ByteArrayOutputStream bytestream_<%=cid%> = new java.io.ByteArrayOutputStream(); <%}%>
 <%
 // add parameters from file
     if ("POST".equals(sMethod)){
@@ -137,7 +137,7 @@ try{
 <%      }%>
         while ((bos_buffer_<%=cid%> = bis_<%=cid%>.read(buffer_<%=cid%>)) != -1) {
 <%          if (bOutToFile && sOutFilePath != null){%>bosContent_<%=cid%>.write(buffer_<%=cid%>,0,bos_buffer_<%=cid%>); <%}%>
-<%          if(hasOutputSchema){%>sb_<%=cid%>.append(new String(buffer_<%=cid%>,0,bos_buffer_<%=cid%>)); <%}%>
+<%          if(hasOutputSchema){%>bytestream_<%=cid%>.write(buffer_<%=cid%>,0,bos_buffer_<%=cid%>);<%}%>
         }
 <%      if (bOutToFile && sOutFilePath != null){%>
             bosContent_<%=cid%>.flush();
@@ -191,7 +191,7 @@ try{
 
                 if ("ResponseContent".equals(colName)){
       %>
-                    <%=outConnName%>.ResponseContent = sb_<%=cid%>.toString();
+                    <%=outConnName%>.ResponseContent = new String(bytestream_<%=cid%>.toByteArray());
       <%
                 } else {
       %>

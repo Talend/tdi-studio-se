@@ -16,9 +16,14 @@ imports="
 	    }
 	    
 		public void setURL(INode node) {
-		%>
-			String url_<%=cid %> = "jdbc:sapdb://"+<%=dbhost%>+":"+<%=dbport%>+"/" + <%=dbname%>;
-		<%
+%>
+            String dbProperties_<%=cid%> = <%=dbproperties%>;
+            String url_<%=cid %> = "jdbc:sapdb://"+<%=dbhost%>+":"+<%=dbport%>+"/" + <%=dbname%>;
+
+            if(dbProperties_<%=cid%> != null && !"".equals(dbProperties_<%=cid%>.trim())) {
+                url_<%=cid %> = url_<%=cid%> + "?" + dbProperties_<%=cid%>;
+            }
+<%
 		}
 		
 		public String getDirverClassName(INode node){

@@ -132,7 +132,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
     public void setVisible(boolean visible) {
         super.setVisible(visible);
         if (visible) {
-            dynamicComposite.resetParameters();
+            dynamicComposite.resetParameters(false);
             dynamicComposite.refresh();
             dynamicComposite.setMinHeight(dynamicComposite.getMinHeight());
             updateContextFields();

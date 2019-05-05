@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.runtime.xml.XmlUtil;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQPatternService;
@@ -71,6 +71,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.preferences.StatsAndLogsConstants;
+import org.talend.designer.core.ui.projectsetting.ImplicitContextLoadElement;
 import org.talend.designer.core.ui.views.jobsettings.JobSettings;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
@@ -339,7 +340,12 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 boolean isGenericRepositoryValue = RepositoryToComponentProperty.isGenericRepositoryValue(connection,
                         componentProperties, param.getName());
                 String newRepValue = param.getName();
-                String newParamName = getParamNameForOldJDBC(param);
+                String newParamName;
+                if (elem instanceof ImplicitContextLoadElement) {
+                    newParamName = getParamNameForImplicitContext(param);
+                } else {
+                    newParamName = getParamNameForOldJDBC(param);
+                }
                 boolean isJDBCRepValue = false;
                 if (!isGenericRepositoryValue && newParamName != null) {
                     isJDBCRepValue = RepositoryToComponentProperty.isGenericRepositoryValue(connection, componentProperties,
@@ -757,6 +763,29 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
         return null;
     }
 
+    private String getParamNameForImplicitContext(IElementParameter param) {
+        String paramName = param.getName();
+        if (connection instanceof DatabaseConnection && "JDBC".equals(((DatabaseConnection) connection).getDatabaseType())) {
+            if (EParameterName.URL.getName().equals(paramName)
+                    || EParameterName.URL.getName().equals(param.getRepositoryValue())) {
+                return "connection.jdbcUrl";
+            }
+            if (EParameterName.DRIVER_JAR.getName().equals(paramName)
+                    || EParameterName.DRIVER_JAR.getName().equals(param.getRepositoryValue())) {
+                return "connection.driverTable";
+            }
+            if (EParameterName.DRIVER_CLASS.getName().equals(paramName)
+                    || EParameterName.DRIVER_CLASS.getName().equals(param.getRepositoryValue())) {
+                return "connection.driverClass";
+            }
+            if (EParameterName.MAPPING.getName().equals(paramName)
+                    || EParameterName.MAPPING.getName().equals(param.getRepositoryValue())) {
+                return "connection.mappingFile";
+            }
+        }
+        return null;
+    }
+
     private String getFirstRepositoryTable(Item item) {
         if (isNotSim) {
             if (item != null) {
@@ -1104,7 +1133,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     private boolean getTake() {
         if (take == null) {
-            take = MessageDialog.openQuestion(new Shell(), "", Messages //$NON-NLS-1$
+            take = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), "", Messages //$NON-NLS-1$
                     .getString("ChangeValuesFromRepository.messageDialog.takeMessage")); //$NON-NLS-1$
         }
         return take;

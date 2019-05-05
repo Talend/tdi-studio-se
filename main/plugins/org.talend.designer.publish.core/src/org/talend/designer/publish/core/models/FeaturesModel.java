@@ -24,10 +24,10 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -181,7 +181,7 @@ public class FeaturesModel extends BaseModel {
             }
         }
 
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        Transformer transformer = XmlUtils.getXmlSecureTransform();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         transformer.transform(new DOMSource(document), new StreamResult(os));

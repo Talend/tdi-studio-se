@@ -61,6 +61,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.utils.ControlUtils;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog;
@@ -1440,7 +1441,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
         String schema = getValueFromRepositoryName(element, EConnectionParameterName.SCHEMA.getName(), basePropertyParameter);
         connParameters.setSchema(schema);
 
-        if ((elem instanceof Node) && ((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)) {
+        if ((elem instanceof Node) && (((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC) 
+                || (element instanceof INode
+                        && ((INode) element).getComponent().getComponentType().equals(EComponentType.GENERIC)))) {
             String userName = getValueFromRepositoryName(element, EConnectionParameterName.GENERIC_USERNAME.getDisplayName(), basePropertyParameter);
             connParameters.setUserName(userName);
 
@@ -1604,8 +1607,10 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 realTableName = metadataTable.getTableName();
             }
         }
-        connParameters.setDbType(type); 
-        connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(type)); 
+        connParameters.setDbType(type);
+        if (!EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(type)) {
+            connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(type));
+        }
         connParameters.setSchemaName(QueryUtil.getTableName(elem, connParameters.getMetadataTable(),
                 TalendTextUtils.removeQuotes(schema), type, realTableName));
     }
@@ -1664,7 +1669,10 @@ public abstract class AbstractElementPropertySectionController implements Proper
             dbName = ""; //$NON-NLS-1$
         }
         connParameters.setDbName(dbName);
-        if ((elem instanceof Node) && ((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)) {
+        
+        if ((elem instanceof Node) && (((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)
+                || (element instanceof INode
+                        && ((INode) element).getComponent().getComponentType().equals(EComponentType.GENERIC)))) {
             connParameters.setUserName(getParameterValueWithContext(element, EConnectionParameterName.GENERIC_USERNAME.getDisplayName(), context,
                     basePropertyParameter));
             connParameters.setPassword(getParameterValueWithContext(element, EConnectionParameterName.GENERIC_PASSWORD.getDisplayName(), context,
@@ -1708,7 +1716,11 @@ public abstract class AbstractElementPropertySectionController implements Proper
                     driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
                 }
             }
-            connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(connParameters.getDbType())); 
+            if (EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(dbType)) {
+                connParameters.setDriverClass(driverClass);// tJDBCSCDELT
+            } else {
+                connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(dbType));
+            }
             connParameters.setDriverJar(TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.DRIVER_JAR.getName(), context, basePropertyParameter)));
         }
@@ -2070,7 +2082,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             if (schemaSelected != null) {
                 // repositoryMetadata = repositoryTableMap.get(schemaSelected);
             } else if (newRepositoryMetadata == null) {
-                MessageDialog.openWarning(new Shell(), Messages.getString("QueryTypeController.alert"), //$NON-NLS-1$
+                MessageDialog.openWarning(DisplayUtils.getDefaultShell(false), Messages.getString("QueryTypeController.alert"), //$NON-NLS-1$
                         Messages.getString("QueryTypeController.nothingToGuess")); //$NON-NLS-1$
                 return cmd;
             }
@@ -2358,7 +2370,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             }
             // add for bug TDI-20335
             if (part == null) {
-                Shell parentShell = new Shell(composite.getShell().getDisplay());
+                Shell parentShell = DisplayUtils.getDefaultShell(false);
                 ISQLBuilderService service = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(
                         ISQLBuilderService.class);
                 Dialog sqlBuilder = service.openSQLBuilderDialog(parentShell, "", connParameters);
@@ -2446,7 +2458,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 if (repositoryId != null) {
                     connParameters.setRepositoryId(repositoryId);
                 }
-                Shell parentShell = new Shell(composite.getShell().getDisplay());
+                Shell parentShell = DisplayUtils.getDefaultShell(false);
                 String nodeLabel = null;
                 if (elem instanceof Node) {
                     nodeLabel = (String) ((Node) elem).getElementParameter(EParameterName.LABEL.getName()).getValue();

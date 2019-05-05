@@ -36,6 +36,8 @@ public class OutgoingSchemaEnforcerTest {
      */
     private static Schema talend6Schema;
 
+    private static Schema talend6Schema4LogicalTimeAsDateOutput;
+
     /**
      * An actual record that a component would like to be emitted, which may or may not contain enriched schema
      * information.
@@ -80,6 +82,20 @@ public class OutgoingSchemaEnforcerTest {
                 .name("logicalTimestamp").type(AvroUtils._logicalTimestamp()).noDefault() //
                 .endRecord(); //
 
+        talend6Schema4LogicalTimeAsDateOutput = SchemaBuilder.builder().record("Record").fields() //
+                .name("id").type().intType().noDefault() //
+                .name("name").type().stringType().noDefault() //
+                .name("age").type().intType().noDefault() //
+                .name("valid").type().booleanType().noDefault() //
+                .name("createdDate").prop(DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE, "id_Date") //
+                .prop(DiSchemaConstants.TALEND6_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'").type().nullable().longType()
+                .noDefault() //
+                .name("logicalDate").type(AvroUtils._logicalDate()).noDefault() //
+                .name("logicalTime").prop(DiSchemaConstants.LOGICAL_TIME_TYPE_AS, DiSchemaConstants.AS_TALEND_DATE)
+                .type(AvroUtils._logicalTime()).noDefault() //
+                .name("logicalTimestamp").type(AvroUtils._logicalTimestamp()).noDefault() //
+                .endRecord(); //
+
         record = new GenericData.Record(runtimeSchema);
         record.put(0, 1);
         record.put(1, "User");
@@ -121,6 +137,22 @@ public class OutgoingSchemaEnforcerTest {
         assertThat(enforcer.get(4), equalTo((Object) new Date(1467170137872L)));
         assertThat(enforcer.get(5), equalTo((Object) DATE_COMPARE));
         assertThat(enforcer.get(6), equalTo((Object) 1000));
+        assertThat(enforcer.get(7), equalTo((Object) new Date(1467170137872L)));
+    }
+
+    @Test
+    public void testDateOutput4LogicalTime() {
+        IndexMapper indexMapper = new IndexMapperByIndex(talend6Schema4LogicalTimeAsDateOutput);
+        OutgoingSchemaEnforcer enforcer = new OutgoingSchemaEnforcer(talend6Schema4LogicalTimeAsDateOutput, indexMapper);
+        enforcer.setWrapped(record);
+
+        assertThat(enforcer.get(0), equalTo((Object) 1));
+        assertThat(enforcer.get(1), equalTo((Object) "User"));
+        assertThat(enforcer.get(2), equalTo((Object) 100));
+        assertThat(enforcer.get(3), equalTo((Object) true));
+        assertThat(enforcer.get(4), equalTo((Object) new Date(1467170137872L)));
+        assertThat(enforcer.get(5), equalTo((Object) DATE_COMPARE));
+        assertThat(enforcer.get(6), equalTo((Object) new Date(1000)));
         assertThat(enforcer.get(7), equalTo((Object) new Date(1467170137872L)));
     }
 

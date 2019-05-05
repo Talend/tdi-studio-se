@@ -46,6 +46,7 @@ public class BuildJobFactory {
         oldBuildTypeMap.put(JobExportType.POJO, "STANDALONE");
         oldBuildTypeMap.put(JobExportType.OSGI, "OSGI");
         oldBuildTypeMap.put(JobExportType.MSESB, "REST_MS");
+        oldBuildTypeMap.put(JobExportType.MSESB_IMAGE, "REST_MS");
         esbComponents = Collections.unmodifiableList(Arrays.asList("tRESTClient", "tRESTRequest", "tRESTResponse", "tESBConsumer",
                 "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse", "tRouteInput", "tREST"));
     }
@@ -70,6 +71,8 @@ public class BuildJobFactory {
             case OSGI:
                 break; // continue
             case MSESB:
+                break; // continue、
+            case MSESB_IMAGE:
                 break; // continue
             default:
                 jobExportType = null; // try the first one by default

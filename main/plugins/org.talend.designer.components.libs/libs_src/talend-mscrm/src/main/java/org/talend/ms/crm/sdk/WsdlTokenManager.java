@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,6 +32,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -43,6 +45,7 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -215,7 +218,13 @@ public final class WsdlTokenManager {
 
             Document document = builder.parse(new ByteArrayInputStream(inputXML.getBytes()));
 
-            XPath xpath = XPathFactory.newInstance().newXPath();
+            XPathFactory xpf = XPathFactory.newInstance();
+            try {
+                xpf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            } catch (XPathFactoryConfigurationException ex) {
+                ExceptionHandler.process(ex);
+            }
+            XPath xpath = xpf.newXPath();
             String expression = xPathQuery;
             Node cipherValue = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
             return cipherValue == null ? null : cipherValue.getTextContent();

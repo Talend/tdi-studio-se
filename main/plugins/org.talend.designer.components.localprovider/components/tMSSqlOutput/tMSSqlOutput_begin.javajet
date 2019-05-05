@@ -128,14 +128,11 @@ if(columnList != null && columnList.size() > 0) {
 }
 boolean isUseParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
 boolean  isSpecifyIdentityKey = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_IDENTITY_FIELD__"));
-if(isDynamic || isUseParallelize || identityInsert || (!"DROP_CREATE".equals(tableAction) && !"CREATE".equals(tableAction) && !"DROP_IF_EXISTS_AND_CREATE".equals(tableAction))){
+if(isUseParallelize || identityInsert || (!"DROP_CREATE".equals(tableAction) && !"CREATE".equals(tableAction) && !"DROP_IF_EXISTS_AND_CREATE".equals(tableAction))){
 	isSpecifyIdentityKey = false;
 }
 String identityKey = ElementParameterParser.getValue(node, "__IDENTITY_FIELD__");
 getManager(dbmsId, cid, node).setIsSpecifyIdentityKey(isSpecifyIdentityKey);
-%>
-
-<%
 if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
     int updateKeyCount = 0;
     if(stmtStructure != null) {
@@ -375,21 +372,23 @@ if(usingStatsLogs){ %>
  	boolean isShareIdentity_<%=cid%> = globalMap.get("shareIdentitySetting_<%=connection%>") != null && (Boolean)globalMap.get("shareIdentitySetting_<%=connection%>") == true;
  <%
  	}
-    if(identityInsert ) {
+    if(identityInsert) {
         %>
         java.sql.Statement stmt_<%=cid %> = conn_<%=cid%>.createStatement();
         <%
-        if (useExistingConnection) {
-            String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+        if(!isDynamic){
+    
+            if (useExistingConnection) {
         %>
 	        if ( !isShareIdentity_<%=cid%> ) {
 	            stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
 	        }
         <%
-        } else {
+            } else {
      	%>
             stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
      	<%
+            }
         }
     }
 }

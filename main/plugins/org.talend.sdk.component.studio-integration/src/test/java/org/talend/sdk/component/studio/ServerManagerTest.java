@@ -16,16 +16,16 @@
 package org.talend.sdk.component.studio;
 
 import static java.util.stream.Collectors.joining;
-import static org.apache.xbean.asm6.ClassWriter.COMPUTE_FRAMES;
-import static org.apache.xbean.asm6.Opcodes.ACC_PUBLIC;
-import static org.apache.xbean.asm6.Opcodes.ACC_SUPER;
-import static org.apache.xbean.asm6.Opcodes.ALOAD;
-import static org.apache.xbean.asm6.Opcodes.ARETURN;
-import static org.apache.xbean.asm6.Opcodes.DUP;
-import static org.apache.xbean.asm6.Opcodes.INVOKESPECIAL;
-import static org.apache.xbean.asm6.Opcodes.NEW;
-import static org.apache.xbean.asm6.Opcodes.RETURN;
-import static org.apache.xbean.asm6.Opcodes.V1_8;
+import static org.apache.xbean.asm7.ClassWriter.COMPUTE_FRAMES;
+import static org.apache.xbean.asm7.Opcodes.ACC_PUBLIC;
+import static org.apache.xbean.asm7.Opcodes.ACC_SUPER;
+import static org.apache.xbean.asm7.Opcodes.ALOAD;
+import static org.apache.xbean.asm7.Opcodes.ARETURN;
+import static org.apache.xbean.asm7.Opcodes.DUP;
+import static org.apache.xbean.asm7.Opcodes.INVOKESPECIAL;
+import static org.apache.xbean.asm7.Opcodes.NEW;
+import static org.apache.xbean.asm7.Opcodes.RETURN;
+import static org.apache.xbean.asm7.Opcodes.V1_8;
 import static org.apache.ziplock.JarLocation.jarLocation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,33 +49,31 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.xbean.asm6.AnnotationVisitor;
-import org.apache.xbean.asm6.ClassWriter;
-import org.apache.xbean.asm6.MethodVisitor;
-import org.apache.xbean.asm6.Type;
+import org.apache.xbean.asm7.AnnotationVisitor;
+import org.apache.xbean.asm7.ClassWriter;
+import org.apache.xbean.asm7.MethodVisitor;
+import org.apache.xbean.asm7.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.talend.sdk.component.api.processor.ElementListener;
 import org.talend.sdk.component.api.processor.Processor;
 import org.talend.sdk.component.api.service.Action;
 import org.talend.sdk.component.api.service.Service;
-import org.talend.sdk.component.junit.base.junit5.TemporaryFolder;
-import org.talend.sdk.component.junit.base.junit5.WithTemporaryFolder;
 import org.talend.sdk.component.server.front.model.ComponentDetailList;
 import org.talend.sdk.component.server.front.model.ComponentIndices;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.mvn.Mvn;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
-@WithTemporaryFolder
 class ServerManagerTest {
 
     @BeforeEach
-    void before(final TemporaryFolder folder) {
-        createM2(folder.getRoot());
-        System.setProperty("component.java.m2", folder.getRoot().getAbsolutePath());
+    void before(@TempDir final File folder) {
+        createM2(folder);
+        System.setProperty("component.java.m2", folder.getAbsolutePath());
         System.setProperty("talend.component.server.component.coordinates", "test:test-component:1.0");
     }
 

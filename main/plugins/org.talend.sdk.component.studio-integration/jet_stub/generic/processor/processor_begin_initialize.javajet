@@ -46,6 +46,9 @@
 %>
 
     final org.talend.sdk.component.runtime.manager.ComponentManager mgr_<%=cid%> = org.talend.sdk.component.runtime.manager.ComponentManager.instance();
+    if (mgr_<%=cid%>.getContainer().findAll().isEmpty()) {
+        mgr_<%=cid%>.autoDiscoverPlugins(false, true);
+    }
 
     <%@include file="../configuration.javajet"%>
 

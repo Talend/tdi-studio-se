@@ -40,13 +40,12 @@ import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.gef.rulers.RulerProvider;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.general.ILibrariesService;
@@ -390,8 +389,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
                 if (nodeCon.getErrorMarkRectangle() != null && nodeCon.getErrorMarkRectangle().contains(location)) {
                     Node node = nodeCon.getNode();
                     if (node.isErrorFlag()) {
-                        Shell shell = Display.getCurrent().getActiveShell();// getViewer().getControl().getShell();
-                        ErrorMessageDialog dialog = new ErrorMessageDialog(new Shell(shell), node);
+                        ErrorMessageDialog dialog = new ErrorMessageDialog(DisplayUtils.getDefaultShell(false), node);
                         dialog.open();
                         break;
                     }

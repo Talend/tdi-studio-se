@@ -24,6 +24,7 @@ import org.talend.core.model.properties.ByteArray;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryService;
@@ -108,12 +109,19 @@ public class SaveAsRoutineWizard extends Wizard {
             isUpdate = isUpdate();
 
             if (isUpdate) {
+                String originalLabel = oldProperty.getLabel();
+                String originalVersion = oldProperty.getVersion();
                 assginVlaues(oldProperty, property);
 
-                repositoryFactory.save(oldRoutineItem);
+                repositoryFactory.save(oldProperty, originalLabel, originalVersion);
 
                 // assign value
-                routineItem = oldRoutineItem;
+                IRepositoryViewObject repObject = repositoryFactory.getSpecificVersion(oldProperty.getId(),
+                        oldProperty.getVersion(), true);
+                if (repObject != null) {
+                    routineItem = (RoutineItem) repObject.getProperty().getItem();
+                    repObject.getProperty().eResource();
+                }
 
             } else {
                 property.setId(repositoryFactory.getNextId());

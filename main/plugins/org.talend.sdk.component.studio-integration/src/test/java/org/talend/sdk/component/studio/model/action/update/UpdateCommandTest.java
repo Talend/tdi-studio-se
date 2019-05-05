@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.CheckElementParameter;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
@@ -57,23 +58,28 @@ public class UpdateCommandTest {
         expectedValue.add(row2);
 
         final ButtonParameter button = new ButtonParameter(null);
-        final ArrayList<TaCoKitElementParameter> parameters = new ArrayList<>();
-        final TableElementParameter table = new TableElementParameter(null);
-        table.setName("conf.updatableConfig.table");
-        table.setFieldType(EParameterFieldType.TABLE);
+
+        final List<IElementParameter> columns = new ArrayList<>();
         final TaCoKitElementParameter column1 = new TaCoKitElementParameter(null);
         column1.setFieldType(EParameterFieldType.CHECK);
         column1.setName("conf.updatableConfig.table[].check");
+        columns.add(column1);
         final TaCoKitElementParameter column2 = new TaCoKitElementParameter(null);
         column2.setFieldType(EParameterFieldType.TEXT);
         column2.setName("conf.updatableConfig.table[].number");
+        columns.add(column2);
         final TaCoKitElementParameter column3 = new TaCoKitElementParameter(null);
         column3.setFieldType(EParameterFieldType.CLOSED_LIST);
         column3.setName("conf.updatableConfig.table[].operator");
+        columns.add(column3);
         final TaCoKitElementParameter column4 = new TaCoKitElementParameter(null);
         column4.setFieldType(EParameterFieldType.TEXT);
         column4.setName("conf.updatableConfig.table[].strColumn");
-        table.setListItemsValue(new Object[] {column1, column2, column3, column4});
+        columns.add(column4);
+
+        final TableElementParameter table = new TableElementParameter(null, columns);
+        table.setName("conf.updatableConfig.table");
+        table.setFieldType(EParameterFieldType.TABLE);
 
         final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig", Collections.singletonMap(table.getName(), table), button);
 
@@ -164,9 +170,8 @@ public class UpdateCommandTest {
         final List<String> expectedValue = Arrays.asList("col1", "col2", "col3");
 
         final ButtonParameter button = new ButtonParameter(null);
-        final ArrayList<TaCoKitElementParameter> parameters = new ArrayList<>();
         final TaCoKitElementParameter schema = new TaCoKitElementParameter(null);
-        schema.setName("IN$$conf.updatableConfig.schema");
+        schema.setName("conf.updatableConfig.schema");
         schema.setFieldType(EParameterFieldType.SCHEMA_TYPE);
 
         final UpdateCommand command = new UpdateCommand(null, "conf.updatableConfig",
@@ -185,7 +190,7 @@ public class UpdateCommandTest {
 
         private boolean fireCalled = false;
 
-        public ButtonParameterMock(IElement element) {
+        public ButtonParameterMock(final IElement element) {
             super(element);
         }
 

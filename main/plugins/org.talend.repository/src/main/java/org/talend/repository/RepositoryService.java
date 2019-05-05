@@ -42,7 +42,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -171,7 +170,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     private volatile boolean askUserForNetworkIssueRetryCache = false;
 
-    private volatile boolean donnotRetryAgainBeforeRestart = false;
+    private volatile boolean donnotRetryByCancel = false;
 
     /*
      * (non-Javadoc)
@@ -423,6 +422,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                 repositoryContext.setUser(userInfo);
                 repositoryContext.setClearPassword(password);
                 repositoryContext.setFields(bean.getDynamicFields());
+                repositoryContext.setToken(bean.isToken());
 
                 repositoryFactory.setRepositoryFactoryFromProvider(RepositoryFactoryProvider.getRepositoriyById(bean
                         .getRepositoryId()));
@@ -499,20 +499,20 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
                     });
                 } else {
-                    MessageBoxExceptionHandler.process(e, new Shell());
+                    MessageBoxExceptionHandler.process(e, DisplayUtils.getDefaultShell(false));
                 }
                 repositoryFactory.logOffProject();
                 LoginHelper.isAutoLogonFailed = true;
             } catch (LoginException e) {
-                MessageBoxExceptionHandler.process(e, new Shell());
+                MessageBoxExceptionHandler.process(e, DisplayUtils.getDefaultShell(false));
                 repositoryFactory.logOffProject();
                 LoginHelper.isAutoLogonFailed = true;
             } catch (BusinessException e) {
-                MessageBoxExceptionHandler.process(e, new Shell());
+                MessageBoxExceptionHandler.process(e, DisplayUtils.getDefaultShell(false));
                 repositoryFactory.logOffProject();
                 LoginHelper.isAutoLogonFailed = true;
             } catch (CoreException e) {
-                MessageBoxExceptionHandler.process(e, new Shell());
+                MessageBoxExceptionHandler.process(e, DisplayUtils.getDefaultShell(false));
                 repositoryFactory.logOffProject();
                 LoginHelper.isAutoLogonFailed = true;
             } catch (JSONException e) {
@@ -688,7 +688,8 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     @Override
     public ContextItem openRepositoryReviewDialog(ERepositoryObjectType type, String repositoryType,
             List<IContextParameter> params, IContextManager contextManager) {
-        ContextRepositoryReviewDialog dialog = new ContextRepositoryReviewDialog(new Shell(), type, params, contextManager);
+        ContextRepositoryReviewDialog dialog = new ContextRepositoryReviewDialog(DisplayUtils.getDefaultShell(false), type,
+                params, contextManager);
         dialog.setFilterReferenceNode(true);
         if (dialog.open() == Window.OK) {
             return dialog.getItem();
@@ -933,7 +934,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
         if (CommonsPlugin.isJUnitTest()) {
             return false;
         }
-        if (donnotRetryAgainBeforeRestart) {
+        if (donnotRetryByCancel) {
             return false;
         }
         final AtomicBoolean retry = new AtomicBoolean(false);
@@ -973,7 +974,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
                             @Override
                             public void run() {
-                                Shell shell = new Shell(SWT.ON_TOP);
+                                Shell shell = DisplayUtils.getDefaultShell(false);
                                 retry.set(askRetryForNetworkIssueInDialog(shell, ex));
                                 shell.dispose();
                             }
@@ -1000,7 +1001,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     private boolean askRetryForNetworkIssueInDialog(Shell shell, Throwable ex) {
         NetworkErrorRetryDialog dialog = new NetworkErrorRetryDialog(shell, ex);
         int result = dialog.open();
-        donnotRetryAgainBeforeRestart = dialog.donnotRetryAgainBeforeRestart();
+        donnotRetryByCancel = dialog.isDonnotRetryByCancel();
         return NetworkErrorRetryDialog.BUTTON_RETRY_INDEX == result;
     }
 

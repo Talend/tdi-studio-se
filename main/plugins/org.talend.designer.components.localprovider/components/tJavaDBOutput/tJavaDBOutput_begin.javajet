@@ -27,6 +27,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     String dbhost = ElementParameterParser.getValue(node, "__HOST__");
     
 	String dbport = ElementParameterParser.getValue(node, "__PORT__");	
+    
+    String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 				
     List<Map<String, String>> addCols =
             (List<Map<String,String>>)ElementParameterParser.getObjectValue(
@@ -98,11 +100,16 @@ if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || (
 
 String jdbcDriver_<%=cid%> = null;
 String url_<%=cid%> = null;
+String dbProperties_<%=cid%> = <%=dbproperties%>;
+
+
 <%
 if(("EMBEDED").equals(frameworkType)) {
 	%>
 	jdbcDriver_<%=cid%> = "org.apache.derby.jdbc.EmbeddedDriver";
-	url_<%=cid%> = "jdbc:derby:" + <%=dbname%>;
+    
+    url_<%=cid%> = "jdbc:derby:" + <%=dbname%>;
+
 	//set the root path of the database
 	System.setProperty("derby.system.home",<%=dbRootPath%>);
 	<%
@@ -110,16 +117,15 @@ if(("EMBEDED").equals(frameworkType)) {
 	if(("JCCJDBC").equals(frameworkType)) {
 		%>
 		jdbcDriver_<%=cid%> = "com.ibm.db2.jcc.DB2Driver";
-		url_<%=cid%> = "jdbc:derby:net://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
-		<%
+        url_<%=cid%> = "jdbc:derby:net://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+
+<%
 	} else {
-		%>
+%>
 		jdbcDriver_<%=cid%> = "org.apache.derby.jdbc.ClientDriver";
-		url_<%=cid%> = "jdbc:derby://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
-		<%
+        url_<%=cid%> = "jdbc:derby://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+<%
 	}
-	%>
-	<%
 	String connectionFlag = ElementParameterParser.getValue(node, "__CONNECTION_FLAG__");
 	if(("false").equals(connectionFlag)) {
 	    %>
@@ -154,6 +160,10 @@ if(("EMBEDED").equals(frameworkType)) {
 	}
 }
 %>
+
+if(dbProperties_<%=cid%> != null && !"".equals(dbProperties_<%=cid%>.trim())) {
+    url_<%=cid %> = url_<%=cid%> + ";" + dbProperties_<%=cid%>;
+}
 
 int nb_line_<%=cid%> = 0;
 int nb_line_update_<%=cid%> = 0;

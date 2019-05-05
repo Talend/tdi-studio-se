@@ -2,7 +2,9 @@
     "component_delegate":"tDBInput",
     "component":"tAccessInput",
     "category":"DI",
-    "family":""
+    "family":"",
+    "parameter":{
+        "exclude":"TYPE"}
 },
 {
     "component_delegate":"tDBOutput",

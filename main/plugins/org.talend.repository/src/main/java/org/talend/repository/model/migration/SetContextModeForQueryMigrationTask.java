@@ -27,6 +27,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
@@ -50,7 +51,8 @@ public class SetContextModeForQueryMigrationTask extends AbstractItemMigrationTa
                 return ExecutionResult.NOTHING_TO_DO;
             for (Query query : (List<Query>) conn.getQueries().getQuery()) {
                 String value = query.getValue();
-                if (value != null && (value.startsWith(TalendTextUtils.getQuoteChar()) || !TalendTextUtils.isCommonString(value))) {
+                if (value != null
+                        && (value.startsWith(TalendTextUtils.getQuoteChar()) || !TalendQuoteUtils.isCommonString(value))) {
                     query.setContextMode(true);
                     changed = true;
 

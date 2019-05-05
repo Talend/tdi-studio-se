@@ -44,12 +44,12 @@ public class SQLTemplateRepoViewLinker extends AbstractRepositoryEditorInputLink
      * java.lang.String)
      */
     @Override
-    public boolean isRelation(IEditorInput editorInput, String repoNodeId) {
+    public boolean isRelation(IEditorInput editorInput, String repoNodeProjectLabel, String repoNodeId) {
         if (editorInput instanceof RepositoryEditorInput) {
             RepositoryEditorInput repoEditorInput = (RepositoryEditorInput) editorInput;
             Item item = repoEditorInput.getItem();
             if (item instanceof SQLPatternItem) { // must be SQL template item
-                return super.isRelation(editorInput, repoNodeId);
+                return super.isRelation(editorInput, repoNodeProjectLabel, repoNodeId);
             }
 
         }

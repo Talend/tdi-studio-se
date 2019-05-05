@@ -32,7 +32,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -374,6 +373,7 @@ public class LoginHelper {
         if (connBean != null) {
             repositoryContext.setFields(connBean.getDynamicFields());
             password = connBean.getPassword();
+            repositoryContext.setToken(connBean.isToken());
         }
         repositoryContext.setClearPassword(password);
         if (project != null) {
@@ -474,6 +474,10 @@ public class LoginHelper {
         if (connBean == null || project == null || project.getLabel() == null) {
             return false;
         }
+        LoginFetchLicenseHelper loginFetchLicenseHelper = LoginFetchLicenseHelper.getInstance();
+        if (!loginFetchLicenseHelper.refreshLicenseIfNeeded(project)) {
+            return false;
+        }
         setCurrentSelectedConnBean(connBean);
         try {
             if (!project.getEmfProject().isLocal() && factory.isLocalConnectionProvider()) {
@@ -524,7 +528,6 @@ public class LoginHelper {
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 // monitorWrap = new EventLoopProgressMonitor(monitor);
                 try {
-
                     factory.logOnProject(project, monitor);
                 } catch (LoginException e) {
                     throw new InvocationTargetException(e);
@@ -539,9 +542,9 @@ public class LoginHelper {
         };
 
         try {
-
             dialog.run(true, true, runnable);
-
+            clearLicenseMap();
+            loginFetchLicenseHelper.cancelAndClearFetchJobs();
         } catch (final InvocationTargetException e) {
             // if (PluginChecker.isSVNProviderPluginLoaded()) {
             if (e.getTargetException() instanceof OperationCancelException) {
@@ -685,7 +688,7 @@ public class LoginHelper {
                     if (errorManager != null) {
                         errorManager.setWarnMessage(warnings);
                     } else {
-                        final Shell shell = new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
+                        final Shell shell = DisplayUtils.getDefaultShell(false);
                         MessageDialog.openWarning(shell, Messages.getString("LoginComposite.warningTitle"), warnings); //$NON-NLS-1$
                     }
                 }
@@ -708,7 +711,7 @@ public class LoginHelper {
             if (errorManager != null) {
                 errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
             } else {
-                final Shell shell = new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
+                final Shell shell = DisplayUtils.getDefaultShell(false);
                 MessageDialog.openError(shell, Messages.getString("LoginComposite.warningTitle"), //$NON-NLS-1$
                         Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
             }
@@ -848,7 +851,7 @@ public class LoginHelper {
             return usableShell;
         } else {
             // return new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
-            return DisplayUtils.getDefaultShell();
+            return DisplayUtils.getDefaultShell(false);
         }
     }
 

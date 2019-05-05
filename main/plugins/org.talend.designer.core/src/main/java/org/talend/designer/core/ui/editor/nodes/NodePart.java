@@ -63,6 +63,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalData;
 import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
@@ -641,6 +642,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
                         if (processItem == null) {
                             return;
                         }
+                        processName = ProcessUtils.getPureItemId(processName);
                         Property updatedProperty = null;
                         try {
                             updatedProperty = ProxyRepositoryFactory

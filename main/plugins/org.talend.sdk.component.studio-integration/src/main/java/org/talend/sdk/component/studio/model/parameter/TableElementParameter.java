@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 
 /**
@@ -41,8 +42,26 @@ import org.talend.sdk.component.studio.model.action.IActionParameter;
  */
 public class TableElementParameter extends TaCoKitElementParameter {
 
-    public TableElementParameter(final IElement element) {
+    /**
+     * Constructor setups Table columns and sets empty list as initial value
+     *
+     * @param element represents persisted element, to which this parameter belongs (it can be component Node
+     *                or Connection instance)
+     * @param columns a list of parameters, which represents Table columns
+     */
+    public TableElementParameter(final IElement element, final List<IElementParameter> columns) {
         super(element);
+        final List<String> columnNames = new ArrayList<>(columns.size());
+        final List<String> displayNames = new ArrayList<>(columns.size());
+        for (final IElementParameter param : columns) {
+            columnNames.add(param.getName());
+            displayNames.add(param.getDisplayName());
+        }
+        setListItemsDisplayName(displayNames.toArray(new String[0]));
+        setListItemsDisplayCodeName(columnNames.toArray(new String[0]));
+        setListItemsValue(columns.toArray(new ElementParameter[0]));
+        updateValueOnly(new ArrayList<Map<String, Object>>());
+        setBasedOnSchema(false);
     }
 
     /**
@@ -82,6 +101,18 @@ public class TableElementParameter extends TaCoKitElementParameter {
         }
     }
 
+    @Override
+    public void updateValueOnly(final Object newValue) {
+        if (newValue == null || newValue instanceof String) {
+            final List<Map<String, Object>> tableValue = ValueConverter.toTable((String) newValue);
+            super.updateValueOnly(fromRepository(tableValue));
+        } else if (newValue instanceof List) {
+            super.updateValueOnly(fixClosedListColumn((List<Map<String, Object>>) newValue));
+        } else {
+            throw new IllegalArgumentException("wrong type on new value: " + newValue.getClass().getName());
+        }
+    }
+
     /*
         Provides quickfix for Closed List column. For some reason, when new row is added Studio sets index of possible
         value instead of String value. This fix converts index back to String value
@@ -96,7 +127,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
                 .filter(p -> EParameterFieldType.CLOSED_LIST.equals(p.getFieldType()))
                 .forEach(p -> {
                     if (lastRow.get(p.getName()) instanceof Integer) {
-                        Object newValue = p.getListItemsValue()[(Integer) lastRow.get(p.getName())];
+                        final Object newValue = p.getListItemsValue()[(Integer) lastRow.get(p.getName())];
                         lastRow.put(p.getName(), newValue);
                     }
                 });
@@ -117,8 +148,8 @@ public class TableElementParameter extends TaCoKitElementParameter {
         for (final Object row : table) {
             final Map<String, Object> convertedRow = new LinkedHashMap<>();
             final List<TaCoKitElementParameter> columnParams = getColumnParameters();
-            for (TaCoKitElementParameter columnParam : columnParams) {
-                Object columnValue = null;
+            for (final TaCoKitElementParameter columnParam : columnParams) {
+                Object columnValue;
                 if (row instanceof Map) {
                     final String key = columnParam.getName().replaceFirst(Pattern.quote(getName() + "[]."), "");
                     columnValue = ((Map<String, Object>) row).get(key);
@@ -151,7 +182,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
      * @return converted table value, if incoming value retrieved from repository;
      * If it is not from repository, then returns incoming value unchanged
      */
-    private List<Map<String, Object>> fromRepository(List<Map<String, Object>> table) {
+    private List<Map<String, Object>> fromRepository(final List<Map<String, Object>> table) {
         final Optional<String> repositoryKey = getRepositoryKey(table);
         if (!repositoryKey.isPresent()) {
             return table;
@@ -174,7 +205,7 @@ public class TableElementParameter extends TaCoKitElementParameter {
      * @param tableValue table value
      * @return repository key
      */
-    private Optional<String> getRepositoryKey(List<Map<String, Object>> tableValue) {
+    private Optional<String> getRepositoryKey(final List<Map<String, Object>> tableValue) {
         if (tableValue.isEmpty()) {
             return Optional.empty();
         }

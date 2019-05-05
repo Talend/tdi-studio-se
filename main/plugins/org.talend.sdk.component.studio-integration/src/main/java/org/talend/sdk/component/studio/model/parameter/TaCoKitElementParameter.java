@@ -30,8 +30,6 @@ import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
  */
 public class TaCoKitElementParameter extends ElementParameter implements IAdditionalInfo {
 
-    private static final String GUESS_BUTTON_PREFIX = "Guess Schema_";
-
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private final List<IValueChangedListener> valueChangeListeners = new ArrayList<>();
@@ -135,16 +133,6 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
 
         void onValueChanged(final TaCoKitElementParameter elementParameter, final Object oldValue, final Object
                 newValue);
-    }
-
-    /**
-     * Creates name for Guess Schema button ElementParameter
-     *
-     * @param schemaName a name of schema, which is guessed by the button
-     * @return name for Guess Schema button ElementParameter
-     */
-    public static String guessButtonName(final String schemaName) {
-        return GUESS_BUTTON_PREFIX + schemaName;
     }
 
     /**

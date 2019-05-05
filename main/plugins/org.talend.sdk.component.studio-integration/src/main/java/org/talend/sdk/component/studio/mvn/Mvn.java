@@ -67,6 +67,9 @@ public final class Mvn {
     public static <T> T withDependencies(final File module, final String resource, final boolean acceptProvided,
             final Function<Stream<String>, T> fn) throws IOException {
         return withResource(module, resource, s -> {
+            if (s == null) {
+                return fn.apply(Stream.empty());
+            }
             try {
                 return fn.apply(toDependencies(s, acceptProvided).stream());
             } catch (final IOException e) {

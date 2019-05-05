@@ -2056,7 +2056,11 @@ public class CLASS {
                     setStmt.append(");\r\n");
                 }
                 setStmt.append("} else {\r\n");
-                setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.DATE);\r\n");
+                if ("TIME".equals(dbType)) {
+                    setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.TIME);\r\n");
+                } else {
+                    setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.DATE);\r\n");
+                }
                 setStmt.append("}\r\n");
             } else {
                 setStmt.append(prefix + cid + ".set" + typeToGenerate + "(" + index + dynamic + ", " + incomingConnName + "." + column.getName() + ");\r\n");
@@ -2681,7 +2685,7 @@ public class CLASS {
             } else if(typeToGenerate.equals("Date")) {
                 setStmt.append("if(" + incomingConnName + "." + column.getName() + " != null) {\r\n");
                 boolean isTSWithTZ = dbType.matches("TIMESTAMP WITH TIME ZONE");
-                if(isTSWithTZ && ("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_10".equals(dbVersion))){
+                if(isTSWithTZ && ("ORACLE_10".equals(dbVersion) || "ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion))){
                     setStmt.append("if("+ incomingConnName + "." + column.getName() + " instanceof TalendTimestampWithTZ){\r\n");
                     setStmt.append("((oracle.jdbc.OraclePreparedStatement)" + prefix + cid + ").setTIMESTAMPTZ(" + index + dynamic +  ", new oracle.sql.TIMESTAMPTZ(conn_" + cid + ", ((TalendTimestampWithTZ)"+ incomingConnName + "." + column.getName() +").getTimestamp(),((TalendTimestampWithTZ)"+ incomingConnName + "." + column.getName() +").getCalendar()));\r\n");
                     setStmt.append("}else{");
@@ -3583,8 +3587,14 @@ public class CLASS {
                 setStmt.append("}\r\n");
             } else if ((typeToGenerate.equals("String")) && (dbType != null && dbType.equals("CLOB"))) {
                 setStmt.append(prefix + cid + ".setAsciiStream(" + index + ", new java.io.ByteArrayInputStream(" + incomingConnName + "." + column.getName() + ".toString().getBytes()), (" + incomingConnName + "." + column.getName() + ".toString().getBytes()).length);\r\n");                
-            } else if ((typeToGenerate.equals("Bytes")) && (dbType != null && dbType.equals("BLOB"))) {
-                setStmt.append(prefix + cid + ".setBinaryStream(" + index + ", new java.io.ByteArrayInputStream((byte[])" + incomingConnName + "." + column.getName() + "), ((byte[])" + incomingConnName + "." + column.getName() + ").length);\r\n");    
+            } else if ((typeToGenerate.equals("Bytes") || typeToGenerate.equals("Object")) && (dbType != null && dbType.equals("BLOB"))) {
+                setStmt.append(prefix + cid + ".setBinaryStream(" + index + ", new java.io.ByteArrayInputStream((byte[])" + incomingConnName + "." + column.getName() + "), ((byte[])" + incomingConnName + "." + column.getName() + ").length);\r\n");
+            } else if ((typeToGenerate.equals("Object")) && (dbType != null && (dbType.equals("CLOB")))){
+                setStmt.append("if (" + incomingConnName + "." + column.getName() + " instanceof String){\r\n");
+                setStmt.append(prefix + cid + ".setAsciiStream(" + index + ", new ByteArrayInputStream(" + incomingConnName + "." + column.getName() + ".toString().getBytes()) , (" + incomingConnName + "." + column.getName() + ").toString().getBytes().length);\r\n"); 
+                setStmt.append("} else if (" + incomingConnName + "." + column.getName() + " instanceof byte[]){\r\n");
+                setStmt.append(prefix + cid + ".setAsciiStream(" + index + ", new ByteArrayInputStream((byte[])" + incomingConnName + "." + column.getName() + ") , ((byte[])" + incomingConnName + "." + column.getName() + ").length);\r\n"); 
+                setStmt.append("}\r\n");
             } else if(typeToGenerate.equals("Geometry")) {
                 setStmt.append("if(" + incomingConnName + "." + column.getName() + " != null) {\r\n");
                 // Load geometry

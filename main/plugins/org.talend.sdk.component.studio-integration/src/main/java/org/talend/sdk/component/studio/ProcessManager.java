@@ -32,6 +32,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -321,8 +322,12 @@ public class ProcessManager implements AutoCloseable {
                         lock.unlock();
                         throw new IllegalStateException("Component server startup failed");
                     }
-                    try (Socket ignored = new Socket("localhost", port)) {
-                        new URL("http://localhost:" + port + "/api/v1/environment").openStream().close();
+                    try (final Socket ignored = new Socket("localhost", port)) {
+                        final URLConnection conn = new URL("http://localhost:" + port + "/api/v1/environment")
+                                .openConnection();
+                        conn.setRequestProperty("Content-Type", "application/json");
+                        conn.setRequestProperty("Accept", "application/json");
+                        conn.getInputStream().close();
                         lock.unlock();
                         ready.countDown();
                         return;
@@ -485,12 +490,21 @@ public class ProcessManager implements AutoCloseable {
         // we use the Cli as main so we need it
         paths.add(mvnResolver.apply("commons-cli:commons-cli:jar:" + GAV.INSTANCE.getCliVersion()).toURI().toURL());
         paths.add(mvnResolver.apply("org.slf4j:slf4j-jdk14:jar:" + GAV.INSTANCE.getSlf4jVersion()).toURI().toURL());
+        paths.add(mvnResolver.apply("javax.xml.bind:jaxb-api:jar:2.3.1").toURI().toURL());
         // server
         paths.add(serverJar.toURI().toURL());
-        Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
+        final int originalPaths = paths.size();
+        // only available in 1.1.8
+        Mvn.withDependencies(serverJar, "TALEND-INF/server/dependencies.txt", false, deps -> {
             aggregateDeps(paths, deps);
             return null;
         });
+        if (paths.size() == originalPaths) { // < 1.1.8
+            Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
+                aggregateDeps(paths, deps);
+                return null;
+            });
+        }
         // beam if needed
         if (Boolean.getBoolean("components.server.beam.active")) {
             final File beamModule = mvnResolver.apply(groupId + ":component-runtime-beam:" + GAV.INSTANCE.getComponentRuntimeVersion());

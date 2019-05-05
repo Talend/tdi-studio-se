@@ -59,25 +59,32 @@ imports="
 			}
 	    }
 	    
-		public void setURL(INode node) {
-			if(("EMBEDED").equals(frameworkType)){
-			%>
-				String url_<%=cid%> = "jdbc:derby:" + <%=dbname%>;
-			<%
-			}
-			else
-			{
-				if(("JCCJDBC").equals(frameworkType)){
-				%>
-					String url_<%=cid%> = "jdbc:derby:net://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
-				<%
-				} else{
-				%>
-					String url_<%=cid%> = "jdbc:derby://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
-				<%
-				}
-			}
-		}
+        public void setURL(INode node) {
+%>
+            String url_<%=cid%> = null;
+            String dbProperties_<%=cid%> = <%=dbproperties%>;
+<%
+            if(("EMBEDED").equals(frameworkType)){
+%>
+                url_<%=cid%> = "jdbc:derby:" + <%=dbname%>;
+<%
+            } else {
+                if(("JCCJDBC").equals(frameworkType)){
+%>
+                    url_<%=cid%> = "jdbc:derby:net://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+<%
+                } else {
+%>
+                    url_<%=cid%> = "jdbc:derby://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+<%
+                }
+            }
+%>
+            if(dbProperties_<%=cid%> != null && !"".equals(dbProperties_<%=cid%>.trim())) {
+                url_<%=cid %> = url_<%=cid%> + ";" + dbProperties_<%=cid%>;
+            }
+<%
+        }
 		
 		public String getDirverClassName(INode node){
 			if(("EMBEDED").equals(frameworkType)){

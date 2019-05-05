@@ -45,7 +45,7 @@ String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROT
 boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 
 if (("true").equals(useExistingConn)) {
-  List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
+  List< ? extends INode> nodeList = node.getProcess().getGeneratingNodes();
 
   for (INode n : nodeList) {
 	if (n.getUniqueName().equals(connection)) {
@@ -237,7 +237,7 @@ if (sftp) {// *** sftp *** //
 		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
 		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 %>
-		<%@ include file="../templates/FTP/ftpstlsResumption.javajet"%>
+		<%@ include file="../templates/FTP/ftpsTrust.javajet"%>
 		javax.net.ssl.SSLContext sslContext_<%=cid %> = null;
 		javax.net.ssl.TrustManager[] trustManager_<%=cid %> = null;
 		javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid %> = null;
@@ -250,7 +250,17 @@ if (sftp) {// *** sftp *** //
 			trustManager_<%=cid %> = myTrust_<%=cid%>.getTrustManagers();
 			sslContext_<%=cid %>.init(null, trustManager_<%=cid %>, new java.security.SecureRandom());
 			sslSocketFactory_<%=cid %> = sslContext_<%=cid %>.getSocketFactory();
-			ftp_<%=cid %> = new SSLSessionReuseFTPSClient_<%=cid %>(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
+			boolean isHTTPProxyUsed = "true".equals(System.getProperty("http.proxySet"));
+			if (isHTTPProxyUsed) {
+				String httpProxyHost = System.getProperty("http.proxyHost");
+				int httpProxyPort = Integer.getInteger("http.proxyPort");
+				String httpProxyUser = System.getProperty("http.proxyUser");
+				String httpProxyPass = System.getProperty("http.proxyPassword");
+
+				ftp_<%=cid %> = new org.talend.ftp.HTTPProxyFTPSClient(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>, httpProxyHost, httpProxyPort, httpProxyUser, httpProxyPass);
+			} else {
+				ftp_<%=cid %> = new org.talend.ftp.SSLSessionReuseFTPSClient(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
+			}
 			ftp_<%=cid %>.setControlEncoding(<%=encoding%>);
 
 			<%if(isLog4jEnabled){%>
@@ -277,8 +287,19 @@ if (sftp) {// *** sftp *** //
 				throw new RuntimeException("Login failed");
 			}
 
-			ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
-			ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
+<%
+			if (protectionBufferSize != null && !protectionBufferSize.isEmpty() ) {
+%>
+				ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
+<%
+			}
+
+			if (protectionLevel != null && !protectionLevel.isEmpty()) {
+%>
+				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
+<%
+			}
+%>
 		} catch (Exception e) {
 			<%if(isLog4jEnabled){%>
 				log.error("<%=cid%> - Can't create connection: " + e.getMessage());
@@ -362,7 +383,7 @@ if (sftp) {// *** sftp *** //
 %> 
 		<%/*set to globalMap*/ %>
 		globalMap.put("<%=cid %>_CURRENT_FILE", currentFileName_<%=cid%>);
-		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%> + currentFileName_<%=cid%>);
+		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%> + ftpFile_<%=cid %>.getName());
 		nb_file_<%=cid %>++;
 <%
 } else { // *** ftp *** //
@@ -412,13 +433,8 @@ if (sftp) {// *** sftp *** //
 	<%}%>
 	String remotedir_<%=cid %> = (<%=remotedir%>).replaceAll("\\\\","/");
 	ftp_<%=cid %>.chdir(remotedir_<%=cid %>);
-	String[] fileList_<%=cid %>;
-
-	if (<%=dirFull %>) {
-		fileList_<%=cid %> = ftp_<%=cid %>.dir(null, true);
-	} else {
-		fileList_<%=cid %> = ftp_<%=cid %>.dir(null, false);
-	}
+	String[] fileList_<%=cid %> = ftp_<%=cid %>.dir(null, true);
+    String[] fileListwithNames_<%=cid %> = ftp_<%=cid %>.dir(null, false);
 <%
 	if (("true").equals(useExistingConn)) {
 		if(!moveToCurrentDir){
@@ -429,13 +445,17 @@ if (sftp) {// *** sftp *** //
 	}
 %>
 	List<String> fileListTemp_<%=cid %> = new java.util.ArrayList<String>();
+    List<String> fileListTempWithNames_<%=cid %> = new java.util.ArrayList<String>();
 
 	for (String filemask_<%=cid %> : maskList_<%=cid %>) {
 		java.util.regex.Pattern fileNamePattern_<%=cid %> = java.util.regex.Pattern.compile(filemask_<%=cid %>.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
-	
-		for (String filemaskTemp_<%=cid %> : fileList_<%=cid %>) {
-			if (fileNamePattern_<%=cid %>.matcher(filemaskTemp_<%=cid %>).matches()) {
+        for (int i_<%=cid%> = 0; i_<%=cid%> < fileList_<%=cid%>.length; i_<%=cid%>++){
+            String filemaskTemp_<%=cid%> = fileList_<%=cid%>[i_<%=cid%>];
+            String filemaskTempName_<%=cid%> = fileListwithNames_<%=cid%>[i_<%=cid%>];
+            
+			if (fileNamePattern_<%=cid %>.matcher(filemaskTempName_<%=cid %>).matches()) {
 				fileListTemp_<%=cid %>.add(filemaskTemp_<%=cid %>);
+                fileListTempWithNames_<%=cid%>.add(fileListwithNames_<%=cid%>[i_<%=cid%>]);
 			}
 		}
 	}
@@ -445,12 +465,18 @@ if (sftp) {// *** sftp *** //
 		log.info("<%=cid%> - Listing files from server.");
 	<%}%> 
 	while (++i_<%=cid %> < fileListTemp_<%=cid %>.size()) {
-		String currentFileName_<%=cid%> = fileListTemp_<%=cid %>.get(i_<%=cid %>); 
+<%      if (dirFull){%>
+            String currentFileName_<%=cid%> = fileListTemp_<%=cid %>.get(i_<%=cid %>);
+<%      } else {%>
+            String currentFileName_<%=cid%> = fileListTempWithNames_<%=cid %>.get(i_<%=cid %>);
+<%      }%>
+		 
 		String currentFilePath_<%=cid%> = remotedir_<%=cid %>;
 		if(!remotedir_<%=cid%>.endsWith("/")&&!remotedir_<%=cid%>.endsWith("\\")){
 			currentFilePath_<%=cid%> += "/";
 		}
-		currentFilePath_<%=cid%> += fileListTemp_<%=cid%>.get(i_<%=cid%>);
+        currentFilePath_<%=cid%> += fileListTempWithNames_<%=cid%>.get(i_<%=cid%>);
+        
 		<%if(isLog4jEnabled){%>
 			log.debug("<%=cid%> - List file : '" + currentFilePath_<%=cid%> + "' .");
 		<%}%> 

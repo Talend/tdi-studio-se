@@ -37,7 +37,6 @@ Export-Package: org.talend.repository.generic.model.genericMetadata,
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.talend.components.api.component,
  org.talend.components.api.properties,
  org.talend.components.api.service,

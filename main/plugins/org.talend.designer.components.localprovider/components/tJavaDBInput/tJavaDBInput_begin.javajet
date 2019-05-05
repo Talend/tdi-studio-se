@@ -70,23 +70,28 @@ imports="
 			String frameworkType = ElementParameterParser.getValue(node,"__FRAMEWORK_TYPE__");	
 			String dbRootPath = ElementParameterParser.getValue(node, "__DBPATH__");
 %>
+            String url_<%=cid%> = null;
+            String dbProperties_<%=cid%> = <%=dbproperties%>;
 <%
 			if(("EMBEDED").equals(frameworkType)) {
 %>
-				String url_<%=cid%> = "jdbc:derby:" + <%=db%>;
+            url_<%=cid%> = "jdbc:derby:" + <%=db%>;
 <%
 			} else {
     			if(("JCCJDBC").equals(frameworkType)) {
 %>
-    				String url_<%=cid%> = "jdbc:derby:net://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=db%>;
+                    url_<%=cid%> = "jdbc:derby:net://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=db%>;
 <%
     			} else {
 %>
-    				String url_<%=cid%> = "jdbc:derby://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=db%>;
+                    url_<%=cid%> = "jdbc:derby://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=db%>;
 <%
-    			}
+                }
     		}
 %>
+            if(dbProperties_<%=cid%> != null && !"".equals(dbProperties_<%=cid%>.trim())) {
+                url_<%=cid %> = url_<%=cid%> + ";" + dbProperties_<%=cid%>;
+            }
 <%
 		}
 		public void createConnection(INode node) {

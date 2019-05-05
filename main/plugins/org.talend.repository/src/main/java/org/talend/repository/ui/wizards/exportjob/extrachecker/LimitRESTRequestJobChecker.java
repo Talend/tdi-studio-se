@@ -43,6 +43,13 @@ public class LimitRESTRequestJobChecker extends AbstractJobNodeChecker {
             return null;
         }
 
+        if (exportType == JobExportType.MSESB_IMAGE) {
+            if (T_REST_REQUEST.equals(componentName)) {
+                tRESTRequestExist = true;
+            }
+            return null;
+        }
+
         if (T_REST_REQUEST.equals(componentName)) {
             return Messages.getString("LimitRESTRequestJobChecker.limit_tRESTRequest", componentName);
         }
@@ -73,6 +80,10 @@ public class LimitRESTRequestJobChecker extends AbstractJobNodeChecker {
         } else if (exportType == JobExportType.MSESB) {
             if (!tRESTRequestExist) {
                 return Messages.getString("LimitRESTRequestJobChecker.limit_ESBJobForMS", T_REST_REQUEST);
+            }
+        } else if (exportType == JobExportType.MSESB_IMAGE) {
+            if (!tRESTRequestExist) {
+                return Messages.getString("LimitRESTRequestJobChecker.limit_ESBJobForMSImage", T_REST_REQUEST);
             }
         }
 

@@ -15,10 +15,10 @@ package org.talend.repository.preference;
 import org.apache.log4j.Logger;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.core.model.properties.Status;
@@ -52,7 +52,8 @@ public class StatusProjectSettingPage extends FieldEditorPreferencePage implemen
             preferenceStore.load();
         } catch (PersistenceException e) {
             String detailError = e.getMessage();
-            new ErrorDialogWidthDetailArea(new Shell(), RepositoryPlugin.PLUGIN_ID, Messages
+            new ErrorDialogWidthDetailArea(DisplayUtils.getDefaultShell(false), RepositoryPlugin.PLUGIN_ID,
+                    Messages
                     .getString("CommonWizard.persistenceException"), detailError); //$NON-NLS-1$
             log.error(Messages.getString("CommonWizard.persistenceException") + "\n" + detailError); //$NON-NLS-1$ //$NON-NLS-2$
         }

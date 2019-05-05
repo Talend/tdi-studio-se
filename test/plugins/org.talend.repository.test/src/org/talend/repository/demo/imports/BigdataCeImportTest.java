@@ -39,7 +39,6 @@ public class BigdataCeImportTest extends DemosImportTest {
 	public static final String BIG_DATA_CE_DEMO_PLUGIN_ID = "org.talend.demo.bigdata.ce"; //$NON-NLS-1$
 
 	private ResourcesManager ceResManager;
-	private String rootPath = null;
 
 	@Before
 	public void importCeDemo() throws Exception {

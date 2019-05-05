@@ -21,7 +21,6 @@ import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -32,7 +31,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -40,20 +38,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
-import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
-import org.talend.core.model.process.INodeConnector;
 import org.talend.designer.core.model.FakeElement;
-import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
-import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.action.update.UpdateAction;
@@ -66,8 +59,6 @@ import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResol
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
-import org.talend.sdk.component.studio.util.TaCoKitConst;
-import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
  * Creates properties from leafs
@@ -75,12 +66,6 @@ import org.talend.sdk.component.studio.util.TaCoKitUtil;
 public class SettingVisitor implements PropertyVisitor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SettingVisitor.class.getName());
-
-    /**
-     * Specifies row number, on which schema properties (schema widget and guess schema button) should be displayed
-     * On the 1st row Repository switch widget is located
-     */
-    private static final int SCHEMA_ROW_NUMBER = 2;
 
     private ConfigTypeNode rootConfigNode;
 
@@ -232,13 +217,25 @@ public class SettingVisitor implements PropertyVisitor {
                 final TaCoKitElementParameter table = visitTable((ListPropertyNode) node);
                 settings.put(table.getName(), table);
                 break;
+            case TACOKIT_SUGGESTABLE_TABLE:
+                final TaCoKitElementParameter suggestableTable = visitSuggestableTable((ListPropertyNode) node);
+                settings.put(suggestableTable.getName(), suggestableTable);
+                break;
             case SCHEMA_TYPE:
-                final TaCoKitElementParameter schema = visitSchema(node);
-                settings.put(schema.getName(), schema);
+                final TaCoKitElementParameter outSchema = visitOutSchema(node);
+                settings.put(outSchema.getName(), outSchema);
+                break;
+            case TACOKIT_INPUT_SCHEMA:
+                final TaCoKitElementParameter inSchema = visitInSchema(node);
+                settings.put(inSchema.getName(), inSchema);
                 break;
             case TACOKIT_VALUE_SELECTION:
                 final TaCoKitElementParameter valueSelection = visitValueSelection(node);
                 settings.put(valueSelection.getName(), valueSelection);
+                break;
+            case PREV_COLUMN_LIST:
+                final TaCoKitElementParameter prevColumnList = visitPrevColumnList(node);
+                settings.put(prevColumnList.getName(), prevColumnList);
                 break;
             default:
                 final IElementParameter text;
@@ -394,40 +391,60 @@ public class SettingVisitor implements PropertyVisitor {
         return parameter;
     }
 
-    /**
-     * Creates {@link TaCoKitElementParameter} for Table field type
-     * Sets special fields specific for Table parameter
-     * Based on schema field controls whether table toolbox (buttons under table) is shown
-     */
-    private TaCoKitElementParameter visitTable(final ListPropertyNode tableNode) {
-        final TaCoKitElementParameter parameter = createTableParameter(tableNode);
-
-        final List<IElementParameter> tableParameters = createTableParameters(tableNode);
-        final List<String> codeNames = new ArrayList<>(tableParameters.size());
-        final List<String> displayNames = new ArrayList<>(tableParameters.size());
-        for (final IElementParameter param : tableParameters) {
-            codeNames.add(param.getName());
-            displayNames.add(param.getDisplayName());
-        }
-        parameter.setListItemsDisplayName(displayNames.toArray(new String[0]));
-        parameter.setListItemsDisplayCodeName(codeNames.toArray(new String[0]));
-        parameter.setListItemsValue(tableParameters.toArray(new ElementParameter[0]));
-        parameter.updateValueOnly(new ArrayList<Map<String, Object>>());
-        // TODO change to real value
-        parameter.setBasedOnSchema(false);
+    private TaCoKitElementParameter visitPrevColumnList(final PropertyNode node) {
+        final TaCoKitElementParameter parameter = new TaCoKitElementParameter(element);
+        commonSetup(parameter, node);
         return parameter;
     }
 
-    private TaCoKitElementParameter visitSchema(final PropertyNode node) {
-        final String connectorName = node.getProperty().getConnection().getValue();
-        final String connectionName =
-                connectorName.equals("__default__") ? EConnectionType.FLOW_MAIN.getName() : connectorName;
-        final String schemaName = node.getProperty().getSchemaName();
-        final String discoverSchemaAction = ofNullable(node.getProperty().getMetadata()).orElse(emptyMap())
-                .entrySet().stream().filter(e -> "ui::structure::discoverSchema".equals(e.getKey()))
-                .map(Map.Entry::getValue).filter(Objects::nonNull).findFirst().orElse(null);
+    /**
+     * Creates {@link TaCoKitElementParameter} for Table field type
+     * Sets special fields specific for Table parameter
+     * Based on schema field controls whether table toolbox (buttons under table) is shown.
+     * If parameter is based on schema, then toolbox is not shown
+     */
+    private TaCoKitElementParameter visitTable(final ListPropertyNode tableNode) {
+        final TaCoKitElementParameter parameter = new TableElementParameter(element, createTableParameters(tableNode));
+        commonSetup(parameter, tableNode);
+        return parameter;
+    }
 
-        return createSchemaParameter(connectionName, schemaName, discoverSchemaAction, true);
+    /**
+     * Creates {@link TaCoKitElementParameter} for TACOKIT_SUGGESTABLE_TABLE field type
+     * Sets special fields specific for Table parameter
+     * Based on schema field controls whether table toolbox (buttons under table) is shown.
+     * If parameter is based on schema, then toolbox is not shown
+     */
+    private TaCoKitElementParameter visitSuggestableTable(final ListPropertyNode tableNode) {
+        final TaCoKitElementParameter parameter = new SuggestableTableParameter(element, createTableParameters(tableNode));
+        commonSetup(parameter, tableNode);
+        return parameter;
+    }
+
+    private TaCoKitElementParameter visitOutSchema(final PropertyNode node) {
+        final String connectionName = getConnectionName(node);
+        final String discoverSchemaAction = node.getProperty().getConnection().getDiscoverSchema();
+        return new OutputSchemaParameter(getNode(), node.getProperty().getPath(), connectionName, discoverSchemaAction,
+                true);
+    }
+
+    private TaCoKitElementParameter visitInSchema(final PropertyNode node) {
+        return new InputSchemaParameter(getNode(), node.getProperty().getPath(), getConnectionName(node));
+    }
+
+    /**
+     * Computes Node connection name. This name is used to get connection by name and then get schema from
+     * connection.
+     *
+     * @param node Schema PropertyNode
+     */
+    private String getConnectionName(final PropertyNode node) {
+        final String connectorName = node.getProperty().getConnection().getValue();
+        if (PropertyDefinitionDecorator.Connection.DEFAULT.equals(connectorName)) {
+            return EConnectionType.FLOW_MAIN.getName();
+        } else {
+            return connectorName;
+        }
     }
 
     private ValueSelectionParameter visitValueSelection(final PropertyNode node) {
@@ -444,106 +461,10 @@ public class SettingVisitor implements PropertyVisitor {
         return action;
     }
 
-    // TODO i18n it
-    private String schemaDisplayName(final String connectionName, final String schemaName) {
-        final String connectorName = connectionName.equalsIgnoreCase(EConnectionType.FLOW_MAIN.getName())
-                ? EConnectionType.FLOW_MAIN.getDefaultLinkName()
-                : connectionName;
-        if ("REJECT".equalsIgnoreCase(connectionName)) {
-            return "Reject Schema";
-        }
-        if (schemaName.contains("$$")) {
-            final String type = schemaName.substring(0, schemaName.indexOf("$$"));
-            if ("OUT".equalsIgnoreCase(type)) {
-                return "Output Schema" + "(" + connectorName + ")";
-            }
-            if ("IN".equalsIgnoreCase(type)) {
-                return "Input Schema" + "(" + connectorName + ")";
-            }
-        }
-        return "Schema" + "(" + connectorName + ")";
-    }
-
     protected TaCoKitElementParameter createSchemaParameter(final String connectionName, final String schemaName,
             final String discoverSchemaAction,
             final boolean show) {
-        String baseSchema = EConnectionType.FLOW_MAIN.getName();
-        // Maybe need to find some other condition. this way we will show schema widget for main flow only.
-        final TaCoKitElementParameter schema = new TaCoKitElementParameter(getNode());
-        schema.setName(schemaName);
-        schema.setDisplayName("!!!SCHEMA.NAME!!!");
-        schema.setCategory(EComponentCategory.BASIC);
-        schema.setFieldType(EParameterFieldType.SCHEMA_TYPE);
-        schema.setNumRow(SCHEMA_ROW_NUMBER);
-        schema.setShow(show);
-        schema.setReadOnly(false);
-        schema.setRequired(true);
-        schema.setContext(connectionName);
-
-        // add child parameters
-        // defines whether schema is built-in or repository
-        final ElementParameter childParameter1 = new ElementParameter(getNode());
-        childParameter1.setCategory(EComponentCategory.BASIC);
-        childParameter1.setContext(baseSchema);
-        childParameter1.setDisplayName(schemaDisplayName(connectionName, schemaName));
-        childParameter1.setFieldType(EParameterFieldType.TECHNICAL);
-        childParameter1.setListItemsDisplayCodeName(new String[] { "BUILT_IN", "REPOSITORY" });
-        childParameter1.setListItemsDisplayName(new String[] { "Built-In", "Repository" });
-        childParameter1.setListItemsValue(new String[] { "BUILT_IN", "REPOSITORY" });
-        childParameter1.setName(EParameterName.SCHEMA_TYPE.getName());
-        childParameter1.setNumRow(1);
-        childParameter1.setParentParameter(schema);
-        childParameter1.setShow(show);
-        childParameter1.setShowIf("SCHEMA =='REPOSITORY'");
-        childParameter1.setValue("BUILT_IN");
-        schema.getChildParameters().put(EParameterName.SCHEMA_TYPE.getName(), childParameter1);
-
-        final ElementParameter childParameter2 = new ElementParameter(getNode());
-        childParameter2.setCategory(EComponentCategory.BASIC);
-        childParameter2.setContext(baseSchema);
-        childParameter2.setDisplayName("Repository");
-        childParameter2.setFieldType(EParameterFieldType.TECHNICAL);
-        childParameter2.setListItemsDisplayName(new String[0]);
-        childParameter2.setListItemsValue(new String[0]);
-        childParameter2.setName(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
-        childParameter2.setParentParameter(schema);
-        childParameter2.setRequired(true);
-        childParameter2.setShow(show);
-        childParameter2.setShowIf("SCHEMA =='REPOSITORY'");
-        childParameter2.setValue("");
-        schema.getChildParameters().put(EParameterName.REPOSITORY_SCHEMA_TYPE.getName(), childParameter2);
-
-        if (canAddGuessSchema(connectionName)) {
-            final TaCoKitElementParameter guessSchemaParameter = new TaCoKitElementParameter(getNode());
-            guessSchemaParameter.setCategory(EComponentCategory.BASIC);
-            guessSchemaParameter.setContext(connectionName);
-            guessSchemaParameter.updateValueOnly(discoverSchemaAction);
-            guessSchemaParameter.setDisplayName(Messages.getString("guessSchema.button", connectionName));
-            guessSchemaParameter.setFieldType(EParameterFieldType.TACOKIT_GUESS_SCHEMA);
-            guessSchemaParameter.setListItemsDisplayName(new String[0]);
-            guessSchemaParameter.setListItemsValue(new String[0]);
-            guessSchemaParameter.setName(guessButtonName(schemaName));
-            guessSchemaParameter.setNumRow(SCHEMA_ROW_NUMBER);
-            guessSchemaParameter.setParentParameter(schema);
-            guessSchemaParameter.setReadOnly(false);
-            guessSchemaParameter.setRequired(false);
-            guessSchemaParameter.setShow(show);
-            guessSchemaParameter.putInfo(TaCoKitConst.ADDITIONAL_PARAM_METADATA_ELEMENT, schema);
-        }
-
-        return schema;
-    }
-
-    /**
-     * Creates {@link TableElementParameter} and sets common state
-     *
-     * @param node Property tree node
-     * @return created {@link TableElementParameter}
-     */
-    private TableElementParameter createTableParameter(final PropertyNode node) {
-        final TableElementParameter parameter = new TableElementParameter(element);
-        commonSetup(parameter, node);
-        return parameter;
+        return new OutputSchemaParameter(getNode(), schemaName, connectionName, discoverSchemaAction, show);
     }
 
     /**
@@ -641,28 +562,4 @@ public class SettingVisitor implements PropertyVisitor {
         }
     }
 
-    private boolean canAddGuessSchema(final String connectorName) {
-        if (TaCoKitUtil.isBlank(connectorName)) {
-            return false;
-        }
-        boolean canAddGuessSchema = false;
-        final IElement node = getNode();
-        if (node instanceof Node) {
-            boolean hasOutputConnector = false;
-            final List<? extends INodeConnector> listConnector = ((Node) node).getListConnector();
-            if (listConnector != null) {
-                for (final INodeConnector connector : listConnector) {
-                    if (connectorName.equals(connector.getName())) {
-                        if (0 < connector.getMaxLinkOutput()) {
-                            hasOutputConnector = true;
-                            // input and output connectors may have same name
-                            break;
-                        }
-                    }
-                }
-            }
-            canAddGuessSchema = hasOutputConnector;
-        }
-        return canAddGuessSchema;
-    }
 }

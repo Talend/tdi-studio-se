@@ -86,6 +86,7 @@ import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.core.ui.services.ISQLBuilderService;
 import org.talend.core.utils.CsvArray;
 import org.talend.core.utils.KeywordsValidator;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
@@ -97,6 +98,7 @@ import org.talend.designer.runprocess.ProcessorException;
 import org.talend.metadata.managment.connection.manager.HiveConnectionManager;
 import org.talend.metadata.managment.connection.manager.ImpalaConnectionManager;
 import org.talend.metadata.managment.ui.dialog.MappingFileSelectDialog;
+import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.ui.utils.ColumnNameValidator;
 
 /**
@@ -418,7 +420,11 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                         oneColum.setTalendType(talendType);
                         if (dbmsId != null) {
                             if (!TypesManager.checkDBType(dbmsId, oneColum.getTalendType(), oneColum.getType())) {
-                                oneColum.setType(TypesManager.getDBTypeFromTalendType(dbmsId, oneColum.getTalendType()));
+                                String dbType = MetadataConnectionUtils.getDBType(schemaContent.get(4)[i - 1], dbmsId);
+                                if(dbType == null || dbType.length() <= 0){
+                                    dbType = TypesManager.getDBTypeFromTalendType(dbmsId, oneColum.getTalendType());
+                                }
+                                oneColum.setType(dbType);
                             }
                         }
                         // oneColum.setTalendType(JavaTypesManager.STRING.getId());
@@ -505,7 +511,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                 @Override
                 public void run() {
                     MessageDialog.openWarning(composite.getShell(),
-                            Messages.getString("GuessSchemaController.connectionError"), strExcepton); //$NON-NLS-1$
+                            Messages.getString("GuessSchemaController.connectionWarning"), strExcepton); //$NON-NLS-1$
                 }
             });
             ExceptionHandler.process(e);
@@ -805,7 +811,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                 dialog.getShell().setText(CONTEXT_CHOOSE_DIALOG_TITLE);
                 IContext selectContext = null;
                 // job only have defoult context,or the query isn't context mode
-                if (allcontexts.size() == 1 || TalendTextUtils.isCommonString(tmpMemoSql)) {
+                if (allcontexts.size() == 1 || TalendQuoteUtils.isCommonString(tmpMemoSql)) {
                     selectContext = inputNode.getProcess().getContextManager().getDefaultContext();
                 } else if (Window.OK == dialog.open()) {
                     selectContext = dialog.getSelectedContext();

@@ -23,9 +23,6 @@ public class UseOracle11VersionInsteadOfRemoved extends AbstractJobMigrationTask
     private static final String ORACLE_VERSION_PROPERTY_NAME = "DB_VERSION";
     private static final String REMOVED_ORACLE_VERSION = "ORACLE_11-6";
 
-    private static final String USE_CONNECTION_PROPERTY_NAME = "USE_EXISTING_CONNECTION";
-
-    private static final String MOVE_TO_DIR_PROPERTY_NAME = "MOVE_TO_THE_CURRENT_DIRECTORY";
 
     @Override
     public Date getOrder() {
@@ -83,12 +80,12 @@ public class UseOracle11VersionInsteadOfRemoved extends AbstractJobMigrationTask
     private class OracleVersionConversion implements IComponentConversion {
         @Override
         public void transform(NodeType node) {
-            if ((!"true".equals(ComponentUtilities.getNodePropertyValue(node, USE_CONNECTION_PROPERTY_NAME)))) {
-                String oracleVersion =  ComponentUtilities.getNodePropertyValue(node, ORACLE_VERSION_PROPERTY_NAME);
-                if (REMOVED_ORACLE_VERSION.equals(oracleVersion)) {
-                    ComponentUtilities.setNodeValue(node, ORACLE_VERSION_PROPERTY_NAME, "ORACLE_11");
-                }
+            
+            String oracleVersion =  ComponentUtilities.getNodePropertyValue(node, ORACLE_VERSION_PROPERTY_NAME);
+            if (REMOVED_ORACLE_VERSION.equals(oracleVersion)) {
+                ComponentUtilities.setNodeValue(node, ORACLE_VERSION_PROPERTY_NAME, "ORACLE_11");
             }
+            
 
         }
     }

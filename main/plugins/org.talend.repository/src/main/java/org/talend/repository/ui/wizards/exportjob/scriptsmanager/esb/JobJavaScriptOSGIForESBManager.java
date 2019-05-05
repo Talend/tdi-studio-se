@@ -12,10 +12,12 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -27,11 +29,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.jar.Manifest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.MultiKeyMap;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -55,9 +63,11 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
@@ -75,9 +85,14 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsM
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.TemplateProcessor;
 
+import aQute.bnd.header.Attrs;
 import aQute.bnd.osgi.Analyzer;
+import aQute.bnd.osgi.Descriptors;
 import aQute.bnd.osgi.FileResource;
 import aQute.bnd.osgi.Jar;
+import aQute.bnd.service.AnalyzerPlugin;
+import aQute.bnd.service.Plugin;
+import aQute.service.reporter.Reporter;
 
 /**
  * DOC ycbai class global comment. Detailled comment
@@ -179,7 +194,18 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 getJobScriptsUncompressed(jobScriptResource, processItem);
 
                 // dynamic DB XML mapping
-                addXmlMapping(process, isOptionChoosed(ExportChoice.needSourceCode));
+                addXmlMapping(process, true);// isOptionChoosed(ExportChoice.needSourceCode)
+
+                if (CollectionUtils.isNotEmpty(process.getAllResources())) {
+                    ExportFileResource xm = new ExportFileResource(null, JavaUtils.JAVA_XML_MAPPING);
+                    Set<URL> urls = process
+                            .getResourcesByRelativePath(JOB_SOURCE_FOLDER_NAME + PATH_SEPARATOR + JavaUtils.JAVA_XML_MAPPING);
+
+                    if (CollectionUtils.isNotEmpty(urls)) {
+                        xm.addResources(new ArrayList<URL>(urls));
+                        list.add(xm);
+                    }
+                }
 
                 generateConfig(osgiResource, processItem, iProcess);
 
@@ -194,9 +220,40 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
             ExportFileResource libResource = getCompiledLibExportFileResource(processes);
             list.add(libResource);
+            
+            
+            ExportFileResource libResourceSelected = new ExportFileResource(null, LIBRARY_FOLDER_NAME);
+            
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
+                ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
+                        ICamelDesignerCoreService.class);
+                
+                Collection<String> unselectList = camelService.getUnselectDependenciesBundle(processItem);
+                List<URL> unselectListURLs = new ArrayList<>();
+ 
+                for(Set<URL> set:libResource.getAllResources()) {
 
+                    for (URL url : set) {
+
+                        boolean exist = false;
+                        for(String name: unselectList) {
+                            if (name.equals(new File(url.toURI()).getName())) {
+                               exist = true;
+                            }
+                        }
+                        
+                        if (!exist) {
+                            unselectListURLs.add(url);
+                        }
+                        
+                    }
+                }
+                
+                libResourceSelected.addResources(unselectListURLs);
+            }
+            
             // generate the META-INFO folder
-            ExportFileResource metaInfoFolder = genMetaInfoFolder(libResource, processItem);
+            ExportFileResource metaInfoFolder = genMetaInfoFolder(libResourceSelected, processItem);
             list.add(0, metaInfoFolder);
 
             ExportFileResource providedLibResources = getProvidedLibExportFileResource(processes);
@@ -670,6 +727,39 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private Manifest getManifest(ExportFileResource libResource, ProcessItem processItem) throws IOException {
         Analyzer analyzer = createAnalyzer(libResource, processItem);
+        
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+            IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
+                    .getService(IRunProcessService.class);
+            ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(processItem.getProperty());
+            if (talendProcessJavaProject != null) {
+                String optional = ";resolution:=optional";
+                String src = JavaResourcesHelper.getJobClassFilePath(processItem, true);
+                IFile srcFile = talendProcessJavaProject.getSrcFolder().getFile(src);
+                Set<String> imports = importCompiler(srcFile.getLocation().toString());
+                String[] defaultPackages = analyzer.getProperty(Analyzer.IMPORT_PACKAGE).split(",");
+
+                // JDK upgrade to 11
+                imports.add("org.osgi.framework");
+
+                for (String dp : defaultPackages) {
+                    if (!imports.contains(dp) && !imports.contains(dp + optional)) {
+                        imports.add(dp);
+                    }
+                }
+                imports.remove("*;resolution:=optional");
+                imports.remove("routines.system");
+                imports.remove("routines.system" + optional);
+                StringBuilder importPackage = new StringBuilder();
+                for (String packageName : imports) {
+                    importPackage.append(packageName).append(',');
+                }
+
+                importPackage.append("*;resolution:=optional");
+                analyzer.setProperty(Analyzer.IMPORT_PACKAGE, importPackage.toString());
+            }   
+        }
+        
         // Calculate the manifest
         Manifest manifest = null;
         try {
@@ -738,6 +828,11 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             bundleNativeCode.setLength(bundleNativeCode.length() - 1);
             analyzer.setProperty(Analyzer.BUNDLE_NATIVECODE, bundleNativeCode.toString());
         }
+        
+        // TESB-24730 set specific version for "javax.annotation"
+        ImportedPackageRangeReplacer r = new ImportedPackageRangeReplacer();
+        r.addRange("javax.annotation", "[1.3,2)");
+        analyzer.addBasicPlugin(r);
 
         return analyzer;
     }
@@ -900,4 +995,148 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         return processor.getProcess();
     }
 
+    private Set<String> importCompiler(String src) {
+        Set<String> imports = new HashSet<String>();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        try {
+            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn -maxProblems 100000 ", new PrintWriter(out),
+                    new PrintWriter(err), null);
+            String errString = new String(err.toByteArray());
+            String[] errBlocks = errString.split("----------");
+            String reg = "(^[a-z_0-9\\.]+)\\.";
+            Pattern pattern = Pattern.compile(reg);
+            for (String errBlock : errBlocks) {
+                String[] lines = errBlock.trim().replaceAll("\r", "").split("\n");
+                if (lines.length == 4) {
+                    if (lines[3].endsWith("cannot be resolved to a type") || lines[3].endsWith("cannot be resolved")) {
+                        int markerPos = lines[2].indexOf('^');
+                        Matcher m = pattern.matcher(lines[1].substring(markerPos));
+                        if (m.find()) {
+                            if (m.groupCount() == 1 && m.group(1).indexOf('.') > 0) {
+                                imports.add(m.group(1) + ";resolution:=optional");
+                            }
+                        }
+                    }
+                }
+            }
+            out.close();
+            err.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imports;
+    }
+    
+    private class ImportedPackageRangeReplacer implements AnalyzerPlugin, Plugin {
+
+        private Set<Range> ranges = new TreeSet<>();
+
+        public void addRange(String packageName, String packageVersion) {
+            ranges.add(new Range(packageName, packageVersion));
+        }
+        
+        /**
+         * Analyzes the jar and update the version range.
+         *
+         * @param analyzer the analyzer
+         * @return {@code false}
+         * @throws Exception if the analaysis fails.
+         */
+        @Override
+        public boolean analyzeJar(Analyzer analyzer) throws Exception {
+
+            if (analyzer.getReferred() == null) {
+                return false;
+            }
+
+            for (Map.Entry<Descriptors.PackageRef, Attrs> entry : analyzer.getReferred().entrySet()) {
+                for (Range range : ranges) {
+                    if (range.matches(entry.getKey().getFQN())) {
+                        String value = range.getRange(analyzer);
+                        if (value != null) {
+                            entry.getValue().put("version", value);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+
+        private class Range implements Comparable<Range> {
+            final String name;
+            final String value;
+            final Pattern regex;
+
+            private String foundRange;
+
+            private Range(String name, String value) {
+                this.name = name;
+                this.value = value;
+                this.regex = Pattern.compile(name.trim().replace(".", "\\.").replace("*", ".*"));
+            }
+
+            private boolean matches(String pck) {
+                return regex.matcher(pck).matches();
+            }
+
+            private String getRange(Analyzer analyzer) throws Exception {
+                if (foundRange != null) {
+                    return foundRange;
+                }
+                if (null == value || value.isEmpty()) {
+                    for (Jar jar : analyzer.getClasspath()) {
+                        if (isProvidedByJar(jar) && jar.getVersion() != null) {
+                            foundRange = jar.getVersion();
+                            return jar.getVersion();
+                        }
+                    }
+                    return null;
+                } else {
+                    return value;
+                }
+            }
+
+            private boolean isProvidedByJar(Jar jar) {
+                for (String s : jar.getPackages()) {
+                    if (matches(s)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public int compareTo(Range o) {
+                return Integer.compare(this.regex.pattern().length(), o.regex.pattern().length());
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) {
+                    return true;
+                }
+                if (o == null || getClass() != o.getClass()) {
+                    return false;
+                }
+                Range range = (Range) o;
+                return Objects.equals(name, range.name) &&
+                        Objects.equals(value, range.value);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hashCode(name + value);
+            }
+        }
+
+        @Override
+        public void setReporter(Reporter processor) {
+        }
+
+        @Override
+        public void setProperties(Map<String, String> map) throws Exception {
+        }
+    }
 }

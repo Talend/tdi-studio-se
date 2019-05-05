@@ -443,6 +443,7 @@
 				%>
 				int nb_line_<%=cid%> = 0;
 				org.talend.fileprocess.FileInputDelimited fid_<%=cid %> = null;
+				int limit_<%=cid%> = <%=limit%>;
 				try{
 					<%
 					if(uncompress){
@@ -488,7 +489,12 @@
 								continue;
 							}
 							try {
-								fid_<%=cid %> = new org.talend.fileprocess.FileInputDelimited(zis_<%=cid %>, <%=encoding %>,<%=fieldSeparator %>,<%=rowSeparator %>,<%=removeEmptyRowFlag %>,<%=header %><%=hasDynamic?"-1":""%>,<%=footer %>,<%=limit %>,<%=random %>, <%= splitRecord%>);
+								fid_<%=cid %> = new org.talend.fileprocess.FileInputDelimited(zis_<%=cid %>, <%=encoding %>,<%=fieldSeparator %>,<%=rowSeparator %>,<%=removeEmptyRowFlag %>,<%=header %><%=hasDynamic?"-1":""%>,<%=footer %>,
+								<%if(hasDynamic){%>
+									(limit_<%=cid%> > 0) ? limit_<%=cid%>+1 : limit_<%=cid%>
+								<%} else {%>
+									limit_<%=cid%>
+								<%}%>,<%=random %>, <%= splitRecord%>);
 							} catch(java.lang.Exception e) {
 								<% if(dieOnError) {%>
 									throw e;
@@ -509,7 +515,11 @@
 							%>
 						}
 						try {
-							fid_<%=cid %> = new org.talend.fileprocess.FileInputDelimited(<%=filename %>, <%=encoding %>,<%=fieldSeparator %>,<%=rowSeparator %>,<%=removeEmptyRowFlag %>,<%=header %><%=hasDynamic?"-1":""%>,<%=footer %>,<%=limit %>,<%=random %>, <%= splitRecord%>);
+							fid_<%=cid %> = new org.talend.fileprocess.FileInputDelimited(<%=filename %>, <%=encoding %>,<%=fieldSeparator %>,<%=rowSeparator %>,<%=removeEmptyRowFlag %>,<%=header %><%=hasDynamic?"-1":""%>,<%=footer %>,<%if(hasDynamic){%>
+									(limit_<%=cid%> > 0) ? limit_<%=cid%>+1 : limit_<%=cid%>
+								<%} else {%>
+									limit_<%=cid%>
+								<%}%>,<%=random %>, <%= splitRecord%>);
 						} catch(java.lang.Exception e) {
 							<% if(dieOnError) {%>
 								throw e;

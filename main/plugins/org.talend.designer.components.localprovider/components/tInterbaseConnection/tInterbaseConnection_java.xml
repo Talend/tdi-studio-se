@@ -39,13 +39,13 @@
  	      NAME="PROPERTY"
  	      FIELD="PROPERTY_TYPE"
  	      SHOW="true"
- 	      NUM_ROW="1"
+ 	      NUM_ROW="10"
  	      REPOSITORY_VALUE="DATABASE:INTERBASE"
  	    />
  		<PARAMETER
           NAME="TYPE"
           FIELD="TEXT"
-          NUM_ROW="2"
+          NUM_ROW="20"
           SHOW="false"
           REPOSITORY_VALUE="TYPE"
         >
@@ -54,7 +54,7 @@
  	    <PARAMETER
  	      NAME="HOST"
  	      FIELD="TEXT"
- 	      NUM_ROW="3"
+ 	      NUM_ROW="30"
  	      REPOSITORY_VALUE="SERVER_NAME"
  	      REQUIRED="true"
  	    >
@@ -64,17 +64,17 @@
  	    <PARAMETER
  	      NAME="DBNAME"
  	      FIELD="FILE"
- 	      NUM_ROW="4"
+ 	      NUM_ROW="40"
  	      REPOSITORY_VALUE="FILE"
  	      REQUIRED="true"
  	    >   
  	       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/database.ib"</DEFAULT>
  	    </PARAMETER>
- 	
+        
  	    <PARAMETER
  	      NAME="USER"
  	      FIELD="TEXT"
- 	      NUM_ROW="5"
+ 	      NUM_ROW="50"
  	      REPOSITORY_VALUE="USERNAME"
  	      REQUIRED="true"
  	    >
@@ -84,7 +84,7 @@
  	    <PARAMETER
  	      NAME="PASS"
  	      FIELD="PASSWORD"
- 	      NUM_ROW="6"
+ 	      NUM_ROW="60"
  	      REPOSITORY_VALUE="PASSWORD"
  	      REQUIRED="true"
  	    >
@@ -94,7 +94,7 @@
 		<PARAMETER
 	      NAME="USE_SHARED_CONNECTION"
 		  FIELD="CHECK"
-	      NUM_ROW="10"
+	      NUM_ROW="70"
 	      REQUIRED="true"
 	    >      
 	    </PARAMETER>
@@ -102,7 +102,7 @@
 		<PARAMETER
 	      NAME="SHARED_CONNECTION_NAME"
 		  FIELD="TEXT"
-	      NUM_ROW="10"
+	      NUM_ROW="70"
 	      REQUIRED="true"
 		  SHOW_IF="USE_SHARED_CONNECTION == 'true'"
 	    >      
@@ -113,17 +113,26 @@
  	   </PARAMETERS>
  	   
  	   <ADVANCED_PARAMETERS>
+        <PARAMETER 
+          NAME="PROPERTIES" 
+          FIELD="TEXT" 
+          NUM_ROW="10" 
+          REPOSITORY_VALUE="PROPERTIES_STRING"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+        
  	   <PARAMETER
       		NAME="ENCODING"
       		FIELD="ENCODING_TYPE"
-     		NUM_ROW="1"
+     		NUM_ROW="20"
       		REQUIRED="true"
       		SHOW="false"
     	>
          <DEFAULT>"ISO-8859-15"</DEFAULT>
         </PARAMETER>
         
-		<PARAMETER NAME="AUTO_COMMIT" FIELD="CHECK" NUM_ROW="10">  
+		<PARAMETER NAME="AUTO_COMMIT" FIELD="CHECK" NUM_ROW="30">  
 			<DEFAULT>false</DEFAULT>    
     	</PARAMETER>
 		

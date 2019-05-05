@@ -12,12 +12,15 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.talend.commons.CommonsPlugin;
@@ -139,11 +142,13 @@ public class JavaProcessorUtilitiesTest {
         neededModules.add(moduleNeeded_C);
         neededModules.add(moduleNeeded_D);
 
-        Set<ModuleNeeded> highPriorityNeededModules = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded();
-        highPriorityNeededModules.clear();
-        highPriorityNeededModules.add(moduleNeeded_C);
-        highPriorityNeededModules.add(moduleNeeded_A);
-        highPriorityNeededModules.add(moduleNeeded_E);
+        LastGenerationInfo.getInstance().clearHighPriorityModuleNeeded();
+        Set<ModuleNeeded> highPriorityModuleNeeded = new LinkedHashSet<>();
+        highPriorityModuleNeeded.add(moduleNeeded_C);
+        highPriorityModuleNeeded.add(moduleNeeded_A);
+        highPriorityModuleNeeded.add(moduleNeeded_E);
+        LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(property.getId(), property.getVersion(),
+                highPriorityModuleNeeded);
 
         Set<ModuleNeeded> result = JavaProcessorUtilities.getNeededModulesForProcess(process);
         assertEquals(5, result.size());
@@ -153,13 +158,13 @@ public class JavaProcessorUtilitiesTest {
             ModuleNeeded moduleNeeded = iterator.next();
             switch (i) {
             case 0:
-                assertEquals(moduleNeeded, moduleNeeded_E);
+                assertEquals(moduleNeeded, moduleNeeded_C);
                 break;
             case 1:
                 assertEquals(moduleNeeded, moduleNeeded_A);
                 break;
             case 2:
-                assertEquals(moduleNeeded, moduleNeeded_C);
+                assertEquals(moduleNeeded, moduleNeeded_E);
                 break;
             case 3:
                 assertEquals(moduleNeeded, moduleNeeded_B);
@@ -180,6 +185,11 @@ public class JavaProcessorUtilitiesTest {
             newColumn.setTalendType("id_String");
             table.getListColumns().add(newColumn);
         }
+    }
+
+    @After
+    public void afterTest() {
+        LastGenerationInfo.getInstance().clearHighPriorityModuleNeeded();
     }
 
 }

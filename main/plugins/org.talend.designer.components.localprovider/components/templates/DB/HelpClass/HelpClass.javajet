@@ -34,8 +34,14 @@ imports="
 		public void classForName(INode node){
 %>
 			String driverClass_<%=cid%> = "<%=this.getDirverClassName(node)%>";
-			java.lang.Class.forName(driverClass_<%=cid%>);
+			java.lang.Class jdbcclazz_<%=cid%> = java.lang.Class.forName(driverClass_<%=cid%>);
 <%
+			newInstance(node);
+		}
+		
+		protected void newInstance(INode node) {
+			//do nothing as default
+			//for sybase jdbc in java 11, we have to call jdbcclazz.newInstance method
 		}
 		
 		//for example, postgresql jdbc and redshift jdbc both can process the url : jdbc:postgresql://, 

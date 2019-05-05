@@ -85,6 +85,7 @@ import org.talend.designer.core.ui.editor.palette.TalendPaletteDrawer;
 import org.talend.designer.core.ui.preferences.PaletteSettingsPreferencePage;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
+import org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate;
 
 /**
  * This class creates the palette in the Gef Editor. <br/>
@@ -958,7 +959,11 @@ public final class TalendEditorPaletteFactory {
             if (xmlComponent.isLoaded()) {
                 name = UnifiedComponentUtil.getComponentDisplayNameForPalette(xmlComponent, filter);
                 longName = xmlComponent.getLongName();
-
+                
+                if(!isDBCommonVisible(xmlComponent, name)){
+                    continue;
+                }
+                
                 ImageDescriptor imageSmall = xmlComponent.getIcon16();
                 ImageDescriptor imageLarge;
                 if (largeIconsSize.equals("24")) { //$NON-NLS-1$
@@ -1044,6 +1049,25 @@ public final class TalendEditorPaletteFactory {
             palette.add(paGroup);
         }
         setFilter(""); //$NON-NLS-1$
+    }
+    
+    private static boolean isDBCommonVisible(IComponent xmlComponent, String name){
+        if(xmlComponent == null || name == null){
+            return true;
+        }
+        if(!xmlComponent.getOriginalFamilyName().equals(IComponentDelegate.FAMILY)){
+            return true;
+        }
+        if(!name.contains("(") || !name.contains(")")){
+            return true;
+        }
+        String dbType = name.substring(name.indexOf("(")+1, name.indexOf(")"));
+        String comName = xmlComponent.getName().replaceFirst("DB", dbType);
+        IComponent component  = ComponentsFactoryProvider.getInstance().get(comName, xmlComponent.getPaletteType());
+        if(component == null){
+            return true;
+        }
+        return ComponentUtilities.isComponentVisible(component);
     }
 
     public static void addNewFavoriteIntoPreference(String componentName) {

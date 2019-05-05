@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -37,6 +38,7 @@ import org.talend.core.repository.model.preview.IProcessDescription;
 import org.talend.core.repository.model.preview.SalesforceSchemaBean;
 import org.talend.core.utils.CsvArray;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.JobErrorsChecker;
 import org.talend.designer.runprocess.ProcessStreamTrashReader;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -369,7 +371,11 @@ public class ShadowProcess<T extends IProcessDescription> {
         IContext context = talendProcess.getContextManager().getDefaultContext();
         processor.setContext(context);
         process = processor.run(IProcessor.NO_STATISTICS, IProcessor.NO_TRACES, null);
-
+        IPath srcCodePath = processor.getSrcCodePath();
+        IFile shadowFileInputToDelimitedOutputFile = processor.getTalendJavaProject().getProject().getFile(srcCodePath);
+        if (shadowFileInputToDelimitedOutputFile != null && shadowFileInputToDelimitedOutputFile.exists()) {
+            JobErrorsChecker.checkShadowFileError(shadowFileInputToDelimitedOutputFile);
+        }
         String error = ProcessStreamTrashReader.readErrorStream(process);
         if (error != null) {
             log.warn(error, new ProcessorException(error));

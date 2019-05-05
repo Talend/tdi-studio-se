@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.CommonUIPlugin;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.GlobalServiceRegister;
@@ -95,6 +96,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
     public IProcessor generateJobFiles(IProgressMonitor monitor) throws Exception {
         LastGenerationInfo.getInstance().getUseDynamicMap().clear();
         LastGenerationInfo.getInstance().getUseRulesMap().clear();
+        BuildCacheManager.getInstance().clearAllCaches();
 
         final Map<String, Object> argumentsMap = new HashMap<String, Object>(getArguments());
 
@@ -103,6 +105,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         //
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_STATS, isOptionChoosed(ExportChoice.addStatistics));
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_TRACS, isOptionChoosed(ExportChoice.addTracs));
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_AVOID_BRANCH_NAME, isOptionChoosed(ExportChoice.avoidBranchName));
         Properties prop = (Properties) exportChoice.get(ExportChoice.properties);
         if (prop != null) { // add all properties for arugment map.
             Enumeration<Object> keys = prop.keys();
@@ -112,6 +115,18 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 argumentsMap.put(key, value);
             }
         }
+        //testCase
+        if(isOptionChoosed(ExportChoice.executeTests)){
+            IFolder srcFolder = talendProcessJavaProject.getTestSrcFolder();
+            IFolder resFolder = talendProcessJavaProject.getTestResourcesFolder();
+            if(srcFolder.exists()){
+                talendProcessJavaProject.cleanFolder(monitor, srcFolder);
+            }
+            if(resFolder.exists()){
+                talendProcessJavaProject.cleanFolder(monitor, resFolder);
+            }
+        }
+        
         // context
         boolean needContext = isOptionChoosed(ExportChoice.needContext);
         if (needContext) {
@@ -362,6 +377,26 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                     if (templateFolder.exists() && templateFolder.isDirectory()) {
                         FilesUtils.copyDirectory(templateFolder, itemsFolderDir);
                     }
+                    // TDQ-10842 msjian: consider user defined report template files
+                    String reportTemplateFolderName = "JRXML Template"; //$NON-NLS-1$
+                    String reportTemplateFolderPath = defIdxFolderName + PATH_SEPARATOR + reportTemplateFolderName;
+                    IFolder reportFolder = project.getFolder(reportTemplateFolderPath);
+                    if (reportFolder.exists()) {
+                        File reportFileSource = new File(project
+                                .getLocation()
+                                .makeAbsolute()
+                                .append(defIdxFolderName)
+                                .append(reportTemplateFolderName)
+                                .toFile()
+                                .toURI());
+                        File reportFileTarget = new File(itemsProjectFolder
+                                .getFile(defIdxFolderName)
+                                .getLocation()
+                                .toFile()
+                                .getAbsolutePath());
+                        FilesUtils.copyDirectory(reportFileSource, reportFileTarget);
+                    }
+                    // TDQ-10842~
                 }
             }
         }
@@ -376,8 +411,14 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 try {
                     buildDelegate(monitor);
                 } catch (Exception e) {
-                    if (isOptionChoosed(ExportChoice.pushImage)) {
-                        MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                    if (!CommonUIPlugin.isFullyHeadless() && isOptionChoosed(ExportChoice.buildImage)) {
+                        Display.getDefault().syncExec(new Runnable() {
+                            
+                            @Override
+                            public void run() {
+                                MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                            }
+                        });
                     } else {
                         ExceptionHandler.process(e);
                     }
@@ -405,9 +446,12 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         }
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, goal);
         argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, getProgramArgs());
+        try {
+            talendProcessJavaProject.buildModules(monitor, null, argumentsMap);
+            BuildCacheManager.getInstance().performBuildSuccess();
+        } finally {
+            BuildCacheManager.getInstance().clearAllCaches();
+        }
 
-        talendProcessJavaProject.buildModules(monitor, null, argumentsMap);
-
-        BuildCacheManager.getInstance().performBuildSuccess();
     }
 }

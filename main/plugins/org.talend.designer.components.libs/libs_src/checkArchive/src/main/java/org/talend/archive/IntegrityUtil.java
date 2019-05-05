@@ -5,10 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -17,7 +13,10 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 
 // import javax.crypto.Cipher;
 
@@ -36,8 +35,6 @@ public class IntegrityUtil {
             zipFile = new ZipFile(file);
 
             return true;
-        } catch (ZipException e) {
-            return false;
         } catch (IOException e) {
             return false;
         } finally {
@@ -58,7 +55,6 @@ public class IntegrityUtil {
         try {
             zipFile = new ZipFile(file);
 
-        } catch (ZipException e) {
         } catch (IOException e) {
         } finally {
             try {
@@ -73,27 +69,6 @@ public class IntegrityUtil {
     }
 
     /**
-     * Check the zip entry is valid
-     * 
-     * @param input
-     * @return
-     */
-    public static boolean isZipEntryValid(final ZipInputStream input) {
-        try {
-            ZipEntry entry = input.getNextEntry();
-            return true;
-
-        } catch (ZipException e) {
-            // TODO Auto-generated catch block
-            return false;
-        } catch (IOException e) {
-            return false;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
      * To check if the encrpted zip file is corrupted or not
      * 
      * @param file
@@ -101,18 +76,15 @@ public class IntegrityUtil {
      * @return
      */
     public static boolean isEncryptedZipValid(final File file, String password) {
-        ZipInputStream input = null;
+        ZipArchiveInputStream input = null;
         InputStream target = null;
         try {
             target = new FileInputStream(file);
             target = new CipherInputStream(target, createCipher(Cipher.DECRYPT_MODE, password));
-            input = new ZipInputStream(target);
-            ZipEntry entry = input.getNextEntry();
+            input = new ZipArchiveInputStream(target);
+            ArchiveEntry entry = input.getNextEntry();
             return true;
 
-        } catch (ZipException e) {
-            // TODO Auto-generated catch block
-            return false;
         } catch (IOException e) {
             return false;
         } catch (Exception e) {

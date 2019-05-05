@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.designer.codegen.config;
 
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
+
 /**
  * CodeGenerator Templates Ressources Utils.
  * 
@@ -150,5 +153,18 @@ public class TemplateUtil {
     public EInternalTemplate getType() {
         return this.template;
     }
-    
+
+    /**
+     * Replacement of Platform.getPlugin(bundleName).getDescriptor().getInstallURL().toString()
+     * 
+     * @param bundleName
+     * @return
+     */
+    public static String getPlatformUrlOfBundle(String bundleName) {
+        Bundle bundle = Platform.getBundle(bundleName);
+        if (bundle == null) {
+            return null;
+        }
+        return "platform:/plugin/" + bundle.getSymbolicName() + "_" + bundle.getVersion().toString() + "/";
+    }
 }

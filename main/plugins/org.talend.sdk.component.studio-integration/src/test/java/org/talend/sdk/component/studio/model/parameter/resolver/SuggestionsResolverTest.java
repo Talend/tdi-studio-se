@@ -39,7 +39,7 @@ class SuggestionsResolverTest {
 
     @Test
     public void testResolveParametersOrder() {
-        Map<String, String> expectedPayload = new HashMap<>();
+        final Map<String, String> expectedPayload = new HashMap<>();
         expectedPayload.put("p", "primitive value");
         expectedPayload.put("a", "another value");
 
@@ -57,7 +57,7 @@ class SuggestionsResolverTest {
 
     @Test
     public void testResolveParametersOrderComplex() {
-        Map<String, String> expectedPayload = new HashMap<>();
+        final Map<String, String> expectedPayload = new HashMap<>();
         expectedPayload.put("c.complexString", "complex string");
         expectedPayload.put("c.complexInt", "-1");
         expectedPayload.put("ds.url", "http://initial.url");
@@ -77,7 +77,7 @@ class SuggestionsResolverTest {
 
     @Test
     public void testResolveParametersTable() {
-        Map<String, String> expectedPayload = new HashMap<>();
+        final Map<String, String> expectedPayload = new HashMap<>();
         expectedPayload.put("table[0].check", "true");
         expectedPayload.put("table[0].number", "1");
         expectedPayload.put("table[0].operator", "GREATER");
@@ -118,7 +118,7 @@ class SuggestionsResolverTest {
         row2.put("conf.table[].strColumn", "The best");
         tableValue.add(row2);
 
-        final TableElementParameter tableParam = new TableElementParameter(null);
+        final TableElementParameter tableParam = new TableElementParameter(null, Collections.emptyList());
         tableParam.setName("conf.table");
         tableParam.setValue(tableValue);
         return tableParam;

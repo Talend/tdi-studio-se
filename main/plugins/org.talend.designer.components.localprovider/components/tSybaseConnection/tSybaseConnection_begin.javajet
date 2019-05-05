@@ -42,7 +42,7 @@ imports="
 		}
 	
 		public String getDirverClassName(INode node){
-		        String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__") ;
+		        String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 			if("SYBSEIQ_16_SA".equals(dbVersion)){
                             return "sap.jdbc4.sqlanywhere.IDriver";
 			}
@@ -50,6 +50,15 @@ imports="
 			    return "com.sybase.jdbc4.jdbc.SybDriver";
 			}else{
 			    return "com.sybase.jdbc3.jdbc.SybDriver";
+			}
+		}
+		
+		public void newInstance(INode node) {
+			String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
+			if("SYBSEIQ_16".equals(dbVersion)){
+%>
+		jdbcclazz_<%=cid%>.newInstance();
+<%
 			}
 		}
 		

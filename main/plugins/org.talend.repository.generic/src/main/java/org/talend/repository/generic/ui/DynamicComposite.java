@@ -80,19 +80,19 @@ import org.talend.repository.generic.util.GenericConnectionUtil;
  */
 public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite implements PropertyChangeListener {
 
-    private Element element;
+    protected Element element;
 
-    private Form form;
+    protected Form form;
 
-    private IChecker checker;
+    protected IChecker checker;
 
-    private ConnectionItem connectionItem;
+    protected ConnectionItem connectionItem;
 
-    private IGenericWizardInternalService internalService;
+    protected IGenericWizardInternalService internalService;
 
-    private boolean drivedByForm;
+    protected boolean drivedByForm;
 
-    private PropertyChangeListener wizardPropertyChangeListener;
+    protected PropertyChangeListener wizardPropertyChangeListener;
 
     public DynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element,
             boolean isCompactView, Color backgroundColor, Form form) {
@@ -110,7 +110,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         if (drivedByForm) {
             internalService.getComponentService().makeFormCancelable(form.getProperties(), form.getName());
         }
-        resetParameters();
+        resetParameters(true);
     }
 
     public DynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element,
@@ -125,7 +125,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         if (drivedByForm) {
             internalService.getComponentService().makeFormCancelable(form.getProperties(), form.getName());
         }
-        resetParameters();
+        resetParameters(true);
     }
 
     private void resetComponentProperties() {
@@ -135,7 +135,11 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         }
     }
 
-    public List<ElementParameter> resetParameters() {
+    protected void editJDBCParameter(boolean isforEditor, Connection dbConnection,
+            GenericElementParameter genericElementParameter) {
+    }
+
+    public List<ElementParameter> resetParameters(boolean isforEditor) {
         final List<ElementParameter> newParameters = new ArrayList<>();
         List<ElementParameter> currentParameters = (List<ElementParameter>) element.getElementParameters();
         List<ElementParameter> parameters = new ArrayList<>();
@@ -179,10 +183,10 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
             addUpdateParameterIfNotExist(parameters);
             properties.setValueEvaluator(evaluator);
         }
-
         for (ElementParameter parameter : parameters) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
+                editJDBCParameter(isforEditor, theConnection, genericElementParameter);
                 genericElementParameter.setComponentService(componentService);
                 genericElementParameter.setDrivedByForm(drivedByForm);
                 genericElementParameter.callBeforePresent();
@@ -271,7 +275,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         return newParameters;
     }
 
-    private List<ElementParameter> reverseParameters(List<ElementParameter> parameters) {
+    protected List<ElementParameter> reverseParameters(List<ElementParameter> parameters) {
         List<ElementParameter> reversedParameters = new ArrayList<>();
         Map<Integer, List<ElementParameter>> paramMap = new LinkedHashMap<>();
         for (ElementParameter parameter : parameters) {
@@ -296,7 +300,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         return reversedParameters;
     }
 
-    private boolean isRepository(Element element) {
+    protected boolean isRepository(Element element) {
         IElementParameter property = element.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE, section);
         if (property != null) {
             Map<String, IElementParameter> childParameters = property.getChildParameters();
@@ -308,7 +312,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         return false;
     }
 
-    private void addUpdateParameterIfNotExist(List<ElementParameter> parameters) {
+    protected void addUpdateParameterIfNotExist(List<ElementParameter> parameters) {
         boolean isExist = false;
         for (ElementParameter elementParameter : parameters) {
             if (EParameterName.UPDATE_COMPONENTS.getName().equals(elementParameter.getName())) {
@@ -418,7 +422,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
     }
 
     private void reset(boolean refresh) {
-        resetParameters();
+        resetParameters(false);
         if (refresh) {
             Display.getDefault().asyncExec(new Runnable() {
 

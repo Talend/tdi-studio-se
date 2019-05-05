@@ -56,7 +56,6 @@ import org.eclipse.gef.commands.CommandStackEventListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -66,6 +65,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.ImageUtils;
 import org.talend.commons.utils.Hex;
 import org.talend.commons.utils.VersionUtils;
@@ -105,6 +105,7 @@ import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ISubjobContainer;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.process.UniqueNodeNameGenerator;
 import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
@@ -1152,7 +1153,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             pType.setContextMode(param.isContextMode());
         }
         Object value = param.getValue();
-        if (param.getFieldType().equals(EParameterFieldType.TABLE) && value != null) {
+        if (isTable(param) && value != null) {
             List<Map<String, Object>> tableValues = (List<Map<String, Object>>) value;
             for (Map<String, Object> currentLine : tableValues) {
                 for (int i = 0; i < param.getListItemsDisplayCodeName().length; i++) {
@@ -1238,6 +1239,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         }
         pType.setShow(param.isShow(paramList));
         listParamType.add(pType);
+    }
+
+    private boolean isTable(final IElementParameter parameter) {
+        return parameter.getFieldType().equals(EParameterFieldType.TABLE) ||
+                parameter.getFieldType().equals(EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE);
     }
 
     protected boolean isNeedConvertToHex(String value) {
@@ -1456,7 +1462,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                             .getExtraParameterName(EParameterName.SCHEMA_DB.getName()));
                     DesignerUtilities.setSchemaDB(elementParameter2, param.getValue());
                 }
-            } else if (param.getFieldType().equals(EParameterFieldType.TABLE)) {
+            } else if (isTable(param)) {
                 List<Map<String, Object>> tableValues = new ArrayList<Map<String, Object>>();
                 String[] codeList = param.getListItemsDisplayCodeName();
                 Map<String, Object> lineValues = null;
@@ -2280,8 +2286,16 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                                     IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
                                             .getService(IJobletProviderService.class);
                                     if (service != null) {
-                                        String componentProcessId = service.getJobletComponentItem(component).getId();
-                                        component = service.setPropertyForJobletComponent(componentProcessId, jobletVersion);
+                                        Property jobletProperty = service.getJobletComponentItem(component);
+                                        org.talend.core.model.properties.Project project = ProjectManager.getInstance()
+                                                .getProject(jobletProperty);
+                                        String projTechLabel = null;
+                                        if (project != null) {
+                                            projTechLabel = project.getTechnicalLabel();
+                                        }
+                                        String componentProcessId = jobletProperty.getId();
+                                        component = service.setPropertyForJobletComponent(projTechLabel, componentProcessId,
+                                                jobletVersion);
                                     }
                                 }
                                 break;
@@ -2414,7 +2428,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 processItem = ItemCacheManager.getProcessItem((String) processIdParam.getValue());
             }
             if (processItem != null) {
-                nc.setPropertyValue(processParam.getName(), processItem.getProperty().getLabel());
+                org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
+                String itemLabel = ProcessUtils.getProjectProcessLabel(project.getTechnicalLabel(),processItem.getProperty().getLabel());
+                nc.setPropertyValue(processParam.getName(), itemLabel);
             }
         }
         // nc.setData(nType.getBinaryData(), nType.getStringData());
@@ -2777,9 +2793,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         continue;
                     }
                 }
-                EConnectionType type = EConnectionType.getTypeFromId(lineStyleId);
-                connec = new Connection(source, target, type, source.getConnectorFromType(type).getName(), metaname,
-                        cType.getLabel(), cType.getMetaname(), monitorConnection);
+                if (!ConnectionManager.checkCircle(source, target)) {
+                    EConnectionType type = EConnectionType.getTypeFromId(lineStyleId);
+                    connec = new Connection(source, target, type, source.getConnectorFromType(type).getName(), metaname,
+                            cType.getLabel(), cType.getMetaname(), monitorConnection);
+                } else {
+                    ExceptionHandler.process(new Exception(Messages.getString("Process.errorCircleConnectionDetected", //$NON-NLS-1$
+                            cType.getLabel(), source.getLabel(), target.getLabel())));
+                }
             }
             if (connec == null) {
                 continue;
@@ -2874,7 +2895,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
                     @Override
                     public void run() {
-                        MessageBox mb = new MessageBox(new Shell(display), SWT.ICON_ERROR);
+                        MessageBox mb = new MessageBox(DisplayUtils.getDefaultShell(false), SWT.ICON_ERROR);
                         mb.setText(getLabel() + ":" + Messages.getString("Process.errorLoadingConnectionTitle")); //$NON-NLS-1$
                         mb.setMessage(message2);
                         mb.open();

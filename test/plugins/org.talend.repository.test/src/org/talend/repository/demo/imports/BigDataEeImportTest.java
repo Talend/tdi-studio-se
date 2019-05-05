@@ -39,7 +39,6 @@ public class BigDataEeImportTest extends DemosImportTest {
 	public static final String BIG_DATA_EE_DEMO_PLUGIN_ID = "org.talend.demo.bigdata.ee"; //$NON-NLS-1$
 
 	private ResourcesManager eeResManager;
-	private String rootPath = null;
 
 	@Before
 	public void importEeDemo() throws Exception {

@@ -209,32 +209,5 @@
 			</includes>
 		</fileSet>
 	</fileSets>
-	<dependencySets>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<!--@TalendLibIncludes@-->
-			</includes>
-			<!-- without version for talend libraries -->
-			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
-			</outputFileNameMapping>
-			<useProjectArtifact>false</useProjectArtifact>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<!--@3rdPartyLibIncludes@-->
-			</includes>
-			<useProjectArtifact>false</useProjectArtifact>
-		</dependencySet>
-		<!-- for all jobs -->
-		<dependencySet>
-			<outputDirectory>${talend.job.name}</outputDirectory>
-			<includes>
-				<!--@JobIncludes@-->
-			</includes>
-			<outputFileNameMapping>${artifact.build.finalName}.${artifact.extension}</outputFileNameMapping>
-			<useProjectArtifact>true</useProjectArtifact>
-		</dependencySet>
-	</dependencySets>
+	<dependencySets></dependencySets>
 </assembly>

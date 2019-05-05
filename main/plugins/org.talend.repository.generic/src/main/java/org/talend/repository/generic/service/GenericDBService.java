@@ -155,7 +155,7 @@ public class GenericDBService implements IGenericDBService{
                     param.setValue(GenericTableUtils.getTableValues(((Properties)thing), param));
                 }
             }
-            dynamicComposite.resetParameters();
+            dynamicComposite.resetParameters(false);
         }
 
         Composite contextParentComp = new Composite(composite, SWT.NONE);
@@ -231,7 +231,10 @@ public class GenericDBService implements IGenericDBService{
                         if (creation) {
                             factory.create(connItem, pathToSave);
                         }
-                        compService.afterFormFinish(form.getName(), form.getProperties());
+                        try {
+                            compService.afterFormFinish(form.getName(), form.getProperties());
+                        } catch (Throwable e) {
+                        }
                     }
                     IRepositoryViewObject repViewObj = factory.getLastVersion(connItem.getProperty().getId());
 //                    String compProperties = connItem.getConnection().getCompProperties();

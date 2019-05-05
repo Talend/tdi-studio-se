@@ -22,9 +22,18 @@ abstract class Manager {
     protected boolean temporary;
     protected boolean unlogged;
     protected DefaultLog4jCodeGenerateUtil log4jCodeGenerateUtil;
+    protected String additionalParams;
+    
+    private static final String DEFAULT_SEPARATOR = "?";
+    
     protected abstract String getDriver();
-    public abstract String getConnectionURL();
+    public abstract String getSpecificConnectionURL();
     protected abstract String getDBMSId();
+    
+    public String getSeparator(){
+        return DEFAULT_SEPARATOR;
+    }
+    
     public Manager(String dbName, String userName) {
         this.dbName = dbName;
         this.userName = userName;
@@ -37,6 +46,23 @@ abstract class Manager {
         this(dbName, userName, cid);
         this.tableName = tableName;
     }
+    public Manager(String dbName, String tableName, String userName, String cid, String additionalParams) {
+        this(dbName, tableName, userName, cid);
+        this.additionalParams = additionalParams;
+    }
+    
+    public String getConnectionURL(){
+        if (getAdditionalParams() == null || "\"\"".equals(getAdditionalParams().trim())){
+            return getSpecificConnectionURL();
+        } else {
+            return getSpecificConnectionURL() + " + \"" + getSeparator() + "\" + " + getAdditionalParams();
+        }
+    }
+    
+    public String getAdditionalParams(){
+        return additionalParams;
+    }
+    
     public String difineConnParam(){
         StringBuilder javaCode = new StringBuilder();
         javaCode.append("String driverClass_"+cid+"=\"" + getDriver()+ "\";\r\n");
@@ -47,7 +73,10 @@ abstract class Manager {
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
         javaCode.append(retrieveTable());
-        javaCode.append("java.lang.Class.forName(\"" + getDriver()+ "\");\r\n");
+        javaCode.append("java.lang.Class jdbcclazz_" + cid + "= java.lang.Class.forName(\"" + getDriver()+ "\");\r\n");
+        
+        newInstance(javaCode);
+        
         log4jCodeGenerateUtil.connect_begin();
         String passwordFieldName = "__PASS__";
         if(ElementParameterParser.canEncrypt(node, passwordFieldName)) {
@@ -59,6 +88,12 @@ abstract class Manager {
         javaCode.append("java.sql.Connection conn_" + cid + "= java.sql.DriverManager.getConnection(url_" + cid + ",dbUser_" + cid + ", decryptedPassword_" + cid + ");\r\n");
         return javaCode.toString();
     }
+    
+    protected void newInstance(StringBuilder javaCode) {
+		//do nothing as default
+		//for sybase jdbc in java 11, we have to call jdbcclazz.newInstance method
+	}
+    
     public String closeConnection() {
         StringBuilder javaCode = new StringBuilder();
         javaCode.append("if(conn_" + cid + " != null && !conn_" + cid + ".isClosed()) {\r\n");
@@ -279,22 +314,20 @@ class AS400Manager extends Manager {
     private String dbproperty;
     private boolean useExistingConnection;
 	private String connection;
-    public AS400Manager(String host, String dbName, String tableName, String userName, String cid,String dbproperties,boolean useExistingConnection, String connection ) {
-        super(dbName, tableName, userName, cid);
+    
+    private static final String SEPARATOR = ";";
+    
+    public AS400Manager(String host, String dbName, String tableName, String userName, String cid,boolean useExistingConnection, String connection, String additionalParams ) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
-        this.dbproperty = dbproperties;
         this.useExistingConnection = useExistingConnection;
 		this.connection = connection;
     }
     protected String getDriver() {
         return "com.ibm.as400.access.AS400JDBCDriver";
     }
-    public String getConnectionURL() {
-        if(dbproperty == null || ("\"\"").equals(dbproperty) || ("").equals(dbproperty)){
-            return "\"jdbc:as400://\" + " + host + " + \"/\" + "+ dbName;
-        }else{
-            return "\"jdbc:as400://\" + " + host + " + \"/\" + "+ dbName + "+\";\"+"+ dbproperty;
-        }
+    public String getSpecificConnectionURL() {
+        return "\"jdbc:as400://\" + " + host + " + \"/\" + "+ dbName;
     }
     protected String getDBMSId() {
         return "as400_id";
@@ -305,7 +338,9 @@ class AS400Manager extends Manager {
     protected String getRProtectedChar() {
         return "";
     }
-    
+    public String getSeparator(){
+        return SEPARATOR;
+    }
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
@@ -330,16 +365,18 @@ class AccessManager extends Manager {
     private String dbproperty;
     private boolean useExistingConnection;
 	private String connection;
-    public AccessManager(String dbName, String tableName, String userName, String cid,String dbproperties,boolean useExistingConnection, String connection) {
-        super(dbName, tableName, userName, cid);
-		this.dbproperty = dbproperties;
+    
+    private static final String SEPARATOR = ";";
+    
+    public AccessManager(String dbName, String tableName, String userName, String cid,boolean useExistingConnection, String connection, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.useExistingConnection = useExistingConnection;
 		this.connection = connection;
     }
     protected String getDriver() {
         return "sun.jdbc.odbc.JdbcOdbcDriver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=\" + " + dbName;
     }
     protected String getDBMSId() {
@@ -350,6 +387,9 @@ class AccessManager extends Manager {
     }
     protected String getRProtectedChar() {
         return "]";
+    }
+    public String getSeparator(){
+        return SEPARATOR;
     }
 	public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
@@ -378,8 +418,11 @@ class DB2Manager extends Manager {
     private String dbSchema;
     private boolean useExistingConnection;
 	private String connection;
-    public DB2Manager(String host, String port, String dbName, String tableName, String userName, String cid, String dbSchema,boolean useExistingConnection, String connection) {
-        super(dbName, tableName, userName, cid);
+    
+    private static final String SEPARATOR = ":";
+    
+    public DB2Manager(String host, String port, String dbName, String tableName, String userName, String cid, String dbSchema,boolean useExistingConnection, String connection, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbSchema = dbSchema;
@@ -390,7 +433,7 @@ class DB2Manager extends Manager {
     protected String getDriver() {
         return "com.ibm.db2.jcc.DB2Driver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:db2://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
     }
     protected String getDBMSId() {
@@ -402,7 +445,9 @@ class DB2Manager extends Manager {
     protected String getRProtectedChar() {
         return "\\\"";
     }
-    
+    public String getSeparator(){
+        return SEPARATOR;
+    }
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
@@ -441,8 +486,9 @@ class FirebirdManager extends Manager {
     private String host;
     private boolean useExistingConnection;
 	private String connection;
-    public FirebirdManager(String host, String dbName, String tableName, String userName, String cid,boolean useExistingConnection, String connection ) {
-        super(dbName, tableName, userName, cid);
+    
+    public FirebirdManager(String host, String dbName, String tableName, String userName, String cid,boolean useExistingConnection, String connection, String additionalParams ) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.useExistingConnection = useExistingConnection;
 		this.connection = connection;
@@ -450,7 +496,7 @@ class FirebirdManager extends Manager {
     protected String getDriver() {
         return "org.firebirdsql.jdbc.FBDriver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:firebirdsql:\" + " + host + " + \":\" + " + dbName;
     }
     protected String getDBMSId() {
@@ -462,7 +508,7 @@ class FirebirdManager extends Manager {
     protected String getRProtectedChar() {
         return "";
     }
-     public String getConnection() {
+    public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
             javaCode.append(retrieveTable());
@@ -489,9 +535,12 @@ class HSQLDBManager extends Manager {
     private String dbPath;
     private String dbAlias;
     private boolean tls;
+    
+    private static final String SEPARATOR = ";";
+    
     public HSQLDBManager(String host, String port, String dbPath, String dbName, String tableName, String dbAlias, String userName, 
-            String runningMode, boolean tls, String cid) {
-        super(dbName, tableName, userName, cid);
+            String runningMode, boolean tls, String cid, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbPath = dbPath;
@@ -502,7 +551,10 @@ class HSQLDBManager extends Manager {
     protected String getDriver() {
         return "org.hsqldb.jdbcDriver";
     }
-    public String getConnectionURL() {
+    public String getSeparator(){
+        return SEPARATOR;
+    }
+    public String getSpecificConnectionURL() {
         String connectionURL = null;
         if(("HSQLDB_SERVER").equals(runningMode)) {
             if(tls) {
@@ -555,9 +607,12 @@ class InformixManager extends Manager {
 	private String dbSchema;
 	private boolean useExistingConnection;
 	private String connection;
+    
+    private static final String SEPARATOR = ";";
+    
     public InformixManager(String host, String port, String dbName, String tableName, String dbServer, String userName, 
-    					 	String cid, String dbSchema, boolean useExistingConnection, String connection ) {
-        super(dbName, tableName, userName, cid);
+    					 	String cid, String dbSchema, boolean useExistingConnection, String connection, String additionalParams ) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbServer = dbServer;
@@ -568,7 +623,10 @@ class InformixManager extends Manager {
     protected String getDriver() {
         return "com.informix.jdbc.IfxDriver";
     }
-    public String getConnectionURL() {
+    public String getSeparator(){
+        return SEPARATOR;
+    }
+    public String getSpecificConnectionURL() {
         return "\"jdbc:informix-sqli://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName + " + \":informixserver=\" + " + dbServer;
     }
     protected String getDBMSId() {
@@ -619,8 +677,11 @@ class IngresManager extends Manager {
     private String port;
     private boolean useExistingConnection;
 	private String connection;
-    public IngresManager(String host, String port, String dbName, String tableName, String userName, String cid, boolean useExistingConnection, String connection ) {
-        super(dbName, tableName, userName, cid);
+    
+    private static final String SEPARATOR = ";";
+    
+    public IngresManager(String host, String port, String dbName, String tableName, String userName, String cid, boolean useExistingConnection, String connection, String additionalParams ) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.useExistingConnection = useExistingConnection;
@@ -629,7 +690,7 @@ class IngresManager extends Manager {
     protected String getDriver() {
         return "com.ingres.jdbc.IngresDriver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:ingres://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
     }
     protected String getDBMSId() {
@@ -641,6 +702,9 @@ class IngresManager extends Manager {
     protected String getRProtectedChar() {
         return "\\\"";
     }
+    public String getSeparator(){
+        return SEPARATOR;
+    }
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
@@ -649,7 +713,7 @@ class IngresManager extends Manager {
         } else {
             javaCode.append(super.getConnection());
         }
-        return javaCode.toString();
+        return javaCode.toString(); 
     }  
     public String closeConnection() {
         StringBuilder javaCode = new StringBuilder();
@@ -665,8 +729,9 @@ class InterbaseManager extends Manager {
     private String host;
     private boolean useExistingConnection;
 	private String connection;
-    public InterbaseManager(String host, String dbName, String tableName, String userName, String cid, boolean useExistingConnection, String connection ) {
-        super(dbName, tableName, userName, cid);
+    
+    public InterbaseManager(String host, String dbName, String tableName, String userName, String cid, boolean useExistingConnection, String connection, String additionalParams ) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.useExistingConnection = useExistingConnection;
 		this.connection = connection;
@@ -674,7 +739,7 @@ class InterbaseManager extends Manager {
     protected String getDriver() {
         return "interbase.interclient.Driver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:interbase://\" + " + host + " + \"/\" + " + dbName;
     }
     protected String getDBMSId() {
@@ -712,8 +777,11 @@ class JavaDBManager extends Manager {
     private String dbRootPath;
     private String frameworkType;
     private boolean connectionFlag;
-    public JavaDBManager(String host, String port, String dbRootPath, String dbName, String tableName, String userName, String frameworkType, boolean connectionFlag, String cid) {
-        super(dbName, tableName, userName, cid);
+    
+    private static final String SEPARATOR = ";";
+    
+    public JavaDBManager(String host, String port, String dbRootPath, String dbName, String tableName, String userName, String frameworkType, boolean connectionFlag, String cid, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbRootPath = dbRootPath;
@@ -731,7 +799,7 @@ class JavaDBManager extends Manager {
         }
         return driver;
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         String connectionURL = null;
         if(("EMBEDED").equals(frameworkType)) {
             connectionURL = "\"jdbc:derby:\" + " + dbName;
@@ -741,6 +809,9 @@ class JavaDBManager extends Manager {
             connectionURL = "\"jdbc:derby://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
         }
         return connectionURL;
+    }
+    public String getSeparator(){
+        return SEPARATOR;
     }
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
@@ -798,15 +869,16 @@ class JavaDBManager extends Manager {
 class MaxDBManager extends Manager {
     private String host;
     private String port;
-    public MaxDBManager(String host, String port, String dbName, String tableName, String userName, String cid) {
-        super(dbName, tableName, userName, cid);
+    
+    public MaxDBManager(String host, String port, String dbName, String tableName, String userName, String cid, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
     }
     protected String getDriver() {
         return "com.sap.dbtech.jdbc.DriverSapDB";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:sapdb://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
     }
     protected String getDBMSId() {
@@ -825,16 +897,17 @@ class MSSQLManager extends Manager {
     private String dbSchema;
     private boolean useExistingConnection;
     private String connection;
-    private String dbproperty;
     private String driver;
-    public MSSQLManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, boolean useExistingConnection, String connection, String cid, String dbproperty, String driver) {
-        super(dbName, tableName, userName, cid);
+    
+    private static final String SEPARATOR = ";";
+    
+    public MSSQLManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, boolean useExistingConnection, String connection, String cid, String driver, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbSchema = dbSchema;
         this.useExistingConnection = useExistingConnection;
         this.connection = connection;
-        this.dbproperty = dbproperty;
         this.driver = driver;
     }
     protected String getDriver() {
@@ -844,7 +917,7 @@ class MSSQLManager extends Manager {
         	return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
         }
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
     	StringBuilder connectionUrl = new StringBuilder();
     	if("JTDS".equals(driver)) {
     		connectionUrl.append("\"jdbc:jtds:sqlserver://\" + ");
@@ -857,12 +930,11 @@ class MSSQLManager extends Manager {
     	} else {
     		connectionUrl.append(" + \";databaseName=\" + ");
     	}
-    	connectionUrl.append(dbName);
-    	if(dbproperty != null && !dbproperty.equals("\"\"") && !dbproperty.equals("")) {
-    		connectionUrl.append("+\";\"+").append(dbproperty);
-    	}
-    	
+    	connectionUrl.append(dbName);    	
     	return connectionUrl.toString();
+    }
+    public String getSeparator(){
+        return SEPARATOR;
     }
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
@@ -912,8 +984,9 @@ class MysqlManager extends Manager {
     private boolean useExistingConnection;
     private String connection;        
     private String dbVersion;
-    public MysqlManager(String host, String port, String dbName, String tableName, String userName, boolean useExistingConnection, String connection, boolean temporary, String cid, String dbVersion) {
-        super(dbName, tableName, userName, cid);
+    
+    public MysqlManager(String host, String port, String dbName, String tableName, String userName, boolean useExistingConnection, String connection, boolean temporary, String cid, String dbVersion, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.useExistingConnection = useExistingConnection;
@@ -930,7 +1003,7 @@ class MysqlManager extends Manager {
             return "com.mysql.jdbc.Driver";
         }
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
     	String jdbcURL = "\"jdbc:mysql\"";
     	if("MARIADB".equals(dbVersion)){
 			jdbcURL = "\"jdbc:mariadb\"";
@@ -971,9 +1044,10 @@ class NetezzaManager extends Manager {
     private String host;
     private String port;
     private boolean useExistingConnection;
-    private String connection;        
-    public NetezzaManager(String host, String port, String dbName, String tableName, String userName, boolean useExistingConnection, String connection, String cid) {
-        super(dbName, tableName, userName, cid);
+    private String connection;
+    
+    public NetezzaManager(String host, String port, String dbName, String tableName, String userName, boolean useExistingConnection, String connection, String cid, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.useExistingConnection = useExistingConnection;
@@ -982,7 +1056,7 @@ class NetezzaManager extends Manager {
     protected String getDriver() {
         return "org.netezza.Driver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:netezza://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
     }
     public String getConnection() {
@@ -1025,6 +1099,8 @@ class OracleManager extends Manager {
     private String jdbcURL;
     private String rac_url;
     private String localServiceName;
+    private String additionalParams;
+    
     private String[] oracleKeyWords= {
     	"ACCESS" ,"AUDIT","COMPRESS","DESC" , 
     	"ADD","ACCESS","CONNECT","DISTINCT" ,
@@ -1056,7 +1132,7 @@ class OracleManager extends Manager {
     	};
     private String dbVersion;
             
-    public OracleManager(String host, String port, String dbName, String tableName, String dbSchema, String useName, String connectionType, boolean useExistingConnection, String connection, String cid,String jdbcURL,String rac_url,String localServiceName, String dbVersion) {
+    public OracleManager(String host, String port, String dbName, String tableName, String dbSchema, String useName, String connectionType, boolean useExistingConnection, String connection, String cid,String jdbcURL,String rac_url,String localServiceName, String dbVersion, String additionalParams) {
         super(dbName, tableName, useName, cid);
         this.host = host;
         this.port = port;
@@ -1068,12 +1144,13 @@ class OracleManager extends Manager {
         this.rac_url = rac_url;
         this.localServiceName = localServiceName;
         this.dbVersion = dbVersion;
+        this.additionalParams = additionalParams;
     }
     protected String getDriver() {
         return ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)) ?
             "oracle.jdbc.OracleDriver" : "oracle.jdbc.driver.OracleDriver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         String connectionURL = null;
         if(("ORACLE_RAC").equals(connectionType)) {
         	connectionURL = rac_url;
@@ -1092,22 +1169,37 @@ class OracleManager extends Manager {
     }
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
+        
         if(useExistingConnection) {
             javaCode.append(retrieveTable());
             javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"conn_" + connection + "\");");
-        }
-         else if (("ORACLE_WALLET").equals(connectionType)) 
-        	{
-        	 javaCode.append(retrieveTable());
-        	 javaCode.append("java.lang.Class.forName(\"" + getDriver()+ "\");\r\n");
-        	 log4jCodeGenerateUtil.connect_begin_noUser();
-          	 javaCode.append("java.sql.Connection conn_" + cid + "= java.sql.DriverManager.getConnection(" + getConnectionURL() + ");\r\n");
-        	}
-          else {
-            javaCode.append(super.getConnection());
+        } else if (additionalParams == null || "\"\"".equals(additionalParams.trim())){
+             if (("ORACLE_WALLET").equals(connectionType)) {
+                javaCode.append(retrieveTable());
+                javaCode.append("java.lang.Class.forName(\"" + getDriver()+ "\");\r\n");
+                log4jCodeGenerateUtil.connect_begin_noUser();
+                javaCode.append("java.sql.Connection conn_" + cid + "= java.sql.DriverManager.getConnection(" + getSpecificConnectionURL() + ");\r\n");
+            } else {
+                javaCode.append(super.getConnection());
+            }
+        } else {
+            javaCode.append(retrieveTable());
+            javaCode.append("java.lang.Class.forName(\"" + getDriver()+ "\");\r\n");
+            log4jCodeGenerateUtil.connect_begin();
+            String passwordFieldName = "__PASS__";
+            if(ElementParameterParser.canEncrypt(node, passwordFieldName)) {
+                javaCode.append("final String decryptedPassword_" + cid + "= routines.system.PasswordEncryptUtil.decryptPassword(" + ElementParameterParser.getEncryptedValue(node, passwordFieldName) + ");\r\n");
+            } else {
+                javaCode.append("final String decryptedPassword_" + cid + "= " + ElementParameterParser.getValue(node, passwordFieldName) + ";\r\n");
+            }
+            javaCode.append("java.util.Properties atnParamsPrope_" + cid + "= new java.util.Properties();\r\n");
+            javaCode.append("atnParamsPrope_" + cid + ".put(\"user\",dbUser_"+ cid + ");\r\n");
+			javaCode.append("atnParamsPrope_" + cid + ".put(\"password\",decryptedPassword_" + cid + ");\r\n");
+            javaCode.append("atnParamsPrope_" + cid + ".load(new java.io.ByteArrayInputStream(" + additionalParams + ".replace(\"&\", \"\\n\").getBytes()));\r\n");
+            javaCode.append("java.sql.Connection conn_" + cid + " = java.sql.DriverManager.getConnection(url_" + cid + ", atnParamsPrope_" + cid + ");\r\n");
         }
         return javaCode.toString();
-    }        
+    }     
     protected String getDBMSId() {
         return "oracle_id";
     }
@@ -1190,9 +1282,10 @@ class PostgreManager extends Manager {
     private String dbSchema;
     private boolean useExistingConnection;
     private String connection;
+    
     public PostgreManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid,
-            boolean temporary, boolean unlogged) {
-        super(dbName, tableName, userName ,cid);
+            boolean temporary, boolean unlogged, String additionalParams) {
+        super(dbName, tableName, userName ,cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbSchema = dbSchema;
@@ -1204,7 +1297,7 @@ class PostgreManager extends Manager {
     protected String getDriver() {
         return "org.postgresql.Driver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:postgresql://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
     }
     public String getConnection() {
@@ -1254,9 +1347,10 @@ class PostgrePlusManager extends Manager {
     private String port;
     private String dbSchema;
     private boolean useExistingConnection;
-    private String connection;        
-    public PostgrePlusManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid) {
-        super(dbName, tableName, userName ,cid);
+    private String connection;   
+    
+    public PostgrePlusManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbSchema = dbSchema;
@@ -1266,7 +1360,7 @@ class PostgrePlusManager extends Manager {
     protected String getDriver() {
         return "org.postgresql.Driver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:postgresql://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
     }
     public String getConnection() {
@@ -1314,15 +1408,16 @@ class PostgrePlusManager extends Manager {
 class SQLiteManager extends Manager {
 	private boolean useExistingConnection;
 	private String connection;
-    public SQLiteManager(String dbName, String tableName, String userName, String cid, boolean useExistingConnection, String connection ) {
-        super(dbName, tableName, userName, cid);
+    
+    public SQLiteManager(String dbName, String tableName, String userName, String cid, boolean useExistingConnection, String connection, String additionalParams ) {
+        super(dbName, tableName, userName, cid, additionalParams);
 		this.useExistingConnection = useExistingConnection;
 		this.connection = connection;
     }
     protected String getDriver() {
         return "org.sqlite.JDBC";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:sqlite:/\" + " + dbName;
     }
     protected String getDBMSId() {
@@ -1360,8 +1455,9 @@ class SybaseManager extends Manager {
     private String dbSchema;
     private boolean useExistingConnection;
 	private String connection;
-    public SybaseManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, String cid, boolean useExistingConnection, String connection) {
-        super(dbName, tableName, userName, cid);
+    
+    public SybaseManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, String cid, boolean useExistingConnection, String connection, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbSchema = dbSchema;
@@ -1376,7 +1472,7 @@ class SybaseManager extends Manager {
 			    return "com.sybase.jdbc3.jdbc.SybDriver";
 			    }
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:sybase:Tds:\" + " + host + "+ \":\" + " + port + "+ \"/\" + " + dbName;
     }
     protected String getDBMSId() {
@@ -1404,7 +1500,15 @@ class SybaseManager extends Manager {
             javaCode.append(super.getConnection());
         }
         return javaCode.toString();
-    }  
+    }
+    
+    public void newInstance(StringBuilder javaCode) {
+    	String dbVersion = ElementParameterParser.getValue(node, "__DB_SYBASE_VERSION__");
+		if("SYBSEIQ_16".equals(dbVersion)){
+			javaCode.append("jdbcclazz_" + cid + ".newInstance();\r\n");
+		}
+	}
+	
     public String closeConnection() {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
@@ -1429,13 +1533,19 @@ class SybaseManager extends Manager {
     }
 }
 class ODBCManager extends Manager {
-    public ODBCManager(String dbName, String tableName, String userName, String cid) {
-        super(dbName, tableName, userName, cid);
+    
+    private static final String SEPARATOR = ";";
+    
+    public ODBCManager(String dbName, String tableName, String userName, String cid, String additionalParams) {
+        super(dbName, tableName, userName, cid, additionalParams);
+    }
+    public String getSeparator(){
+        return SEPARATOR;
     }
     protected String getDriver() {
         return "sun.jdbc.odbc.JdbcOdbcDriver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:odbc:\" + " + dbName;
     }
     protected String getDBMSId() {
@@ -1453,9 +1563,12 @@ class TeradataManager extends Manager {
     private String port;
     private boolean useExistingConnection;
 	private String connection;
+    
+    private static final String SEPARATOR = ",";
+    
     protected TeradataManager(String host, String port, String dbName, String tableName, 
-    							String userName, String cid, boolean useExistingConnection, String connection ) {
-        super(dbName, tableName, userName, cid);
+    							String userName, String cid, boolean useExistingConnection, String connection, String additionalParams ) {
+        super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
         this.useExistingConnection = useExistingConnection;
@@ -1464,7 +1577,7 @@ class TeradataManager extends Manager {
     protected String getDriver() {
         return "com.teradata.jdbc.TeraDriver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:teradata://\" + " + host;
     }
     protected String getDBMSId() {
@@ -1486,6 +1599,9 @@ class TeradataManager extends Manager {
         }
         return javaCode.toString();
     }  
+    public String getSeparator(){
+        return SEPARATOR;
+    }
     public String closeConnection() {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
@@ -1624,9 +1740,10 @@ class GreenplumManager extends Manager {
     private String port;
     private String dbSchema;
     private boolean useExistingConnection;
-    private String connection;        
-    public GreenplumManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid) {
-        super(dbName, tableName, userName ,cid);
+    private String connection;    
+    
+    public GreenplumManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid, String additionalParams) {
+        super(dbName, tableName, userName ,cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbSchema = dbSchema;
@@ -1636,7 +1753,7 @@ class GreenplumManager extends Manager {
     protected String getDriver() {
         return "org.postgresql.Driver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:postgresql://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
     }
     public String getConnection() {
@@ -1689,8 +1806,9 @@ class VerticaManager extends Manager {
     private String db_version;
     private boolean useExistingConnection;
     private String connection;        
-    public VerticaManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid, String db_version) {
-        super(dbName, tableName, userName ,cid);
+    
+    public VerticaManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid, String db_version, String additionalParams) {
+        super(dbName, tableName, userName ,cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbSchema = dbSchema;
@@ -1699,13 +1817,13 @@ class VerticaManager extends Manager {
         this.connection = connection;
     }
     protected String getDriver() {
-		if("VERTICA_7_1_X".equals(db_version) || "VERTICA_7_0_X".equals(db_version) || "VERTICA_6_1_X".equals(db_version) || "VERTICA_6_0".equals(db_version) || "VERTICA_5_1".equals(db_version)){
+		if("VERTICA_9_0".equals(db_version) || "VERTICA_7_1_X".equals(db_version) || "VERTICA_7_0_X".equals(db_version) || "VERTICA_6_1_X".equals(db_version) || "VERTICA_6_0".equals(db_version) || "VERTICA_5_1".equals(db_version)){
 			return "com.vertica.jdbc.Driver";
 		}else{
 			return "com.vertica.Driver";
 		}
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:vertica://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
     }
     public String getConnection() {
@@ -1780,9 +1898,12 @@ class ExasolManager extends Manager {
     private String port;
     private String dbSchema;
     private boolean useExistingConnection;
-    private String connection;        
-    public ExasolManager(String host, String port, String dbSchema, String tableName, String userName, boolean useExistingConnection, String connection, String cid) {
-        super(null, tableName, userName ,cid);
+    private String connection;       
+
+    private static final String SEPARATOR = ";";
+    
+    public ExasolManager(String host, String port, String dbSchema, String tableName, String userName, boolean useExistingConnection, String connection, String cid, String additionalParams) {
+        super(null, tableName, userName ,cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbSchema = dbSchema;
@@ -1792,9 +1913,12 @@ class ExasolManager extends Manager {
     protected String getDriver() {
         return "com.exasol.jdbc.EXADriver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
     	
         return "\"jdbc:exa:\" + " + host + " + \":\" + " + port + " + \";schema=\"  + " + dbSchema;
+    }
+    public String getSeparator(){
+        return SEPARATOR;
     }
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
@@ -1847,9 +1971,10 @@ class RedshiftManager extends Manager {
     private String port;
     private String dbSchema;
     private boolean useExistingConnection;
-    private String connection;        
-    public RedshiftManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid) {
-        super(dbName, tableName, userName ,cid);
+    private String connection;       
+    
+    public RedshiftManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid, String additionalParams) {
+        super(dbName, tableName, userName ,cid, additionalParams);
         this.host = host;
         this.port = port;
         this.dbSchema = dbSchema;
@@ -1857,9 +1982,9 @@ class RedshiftManager extends Manager {
         this.connection = connection;
     }
     protected String getDriver() {
-        return "com.amazon.redshift.jdbc41.Driver";
+        return "com.amazon.redshift.jdbc42.Driver";
     }
-    public String getConnectionURL() {
+    public String getSpecificConnectionURL() {
         return "\"jdbc:redshift://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
     }
     public String getConnection() {
@@ -1913,8 +2038,11 @@ class SnowflaketManager extends Manager {
     private boolean useExistingConnection;
     private String connection;
     boolean enforceDelimitedIdentifiers;
-    public SnowflaketManager(String account,String dbName,String dbSchema, String userName,String role,String tableName, String connection, boolean useExistingConnection, String cid, boolean enforceDelimitedIdentifiers) {
-        super(dbName, tableName, userName , cid);
+    
+    private static final String SEPARATOR = "&";
+    
+    public SnowflaketManager(String account,String dbName,String dbSchema, String userName,String role,String tableName, String connection, boolean useExistingConnection, String cid, boolean enforceDelimitedIdentifiers, String additionalParams) {
+        super(dbName, tableName, userName , cid, additionalParams);
         this.account=account;
         this.role=role;
         this.dbSchema=dbSchema;
@@ -1925,7 +2053,12 @@ class SnowflaketManager extends Manager {
     protected String getDriver() {
         return "net.snowflake.client.jdbc.SnowflakeDriver";
     }
-    public String getConnectionURL() {
+    
+    public String getSeparator(){
+        return SEPARATOR;
+    }
+    
+    public String getSpecificConnectionURL() {
         StringBuilder stringBuilder = new StringBuilder("\"jdbc:snowflake://\"");
 
         if (isPropertyValueEmpty(account)) {
@@ -2017,21 +2150,20 @@ class ManagerFactory {
         Manager manager = null;
         String cid = node.getUniqueName();
         String tableName = ElementParameterParser.getValue(node,"__TABLE__");
+        String additionalParams =  ElementParameterParser.getValue(node,"__PROPERTIES__");
         if(("ACCESS").equals(dbType)) {
             String dbName = ElementParameterParser.getValue(node, "__DBFILE_ACCESS__");
             String userName = ElementParameterParser.getValue(node, "__USER__");
-            String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 			String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_ACCESS__"));
-            manager = new AccessManager(dbName, tableName, userName, cid,dbproperties,useExistingConnection, connection);
+            manager = new AccessManager(dbName, tableName, userName, cid, useExistingConnection, connection, additionalParams);
         } else if(("AS400").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String dbName = ElementParameterParser.getValue(node, "__DBNAME__");
             String userName = ElementParameterParser.getValue(node, "__USER__");
-            String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 			String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_AS400__"));
-            manager = new AS400Manager(host, dbName, tableName, userName, cid,dbproperties,useExistingConnection, connection);
+            manager = new AS400Manager(host, dbName, tableName, userName, cid, useExistingConnection, connection, additionalParams);
         } else if(("DB2").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2040,14 +2172,14 @@ class ManagerFactory {
             String dbSchema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 			String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_DB2__"));
-            manager = new DB2Manager(host, port, dbName, tableName, userName, cid, dbSchema,useExistingConnection, connection);
+            manager = new DB2Manager(host, port, dbName, tableName, userName, cid, dbSchema,useExistingConnection, connection, additionalParams);
         } else if(("FIREBIRD").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String dbName = ElementParameterParser.getValue(node, "__DBFILE_FIREBIRD__");
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 			String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_FIREBIRD__"));
-            manager = new FirebirdManager(host, dbName, tableName, userName, cid, useExistingConnection, connection);
+            manager = new FirebirdManager(host, dbName, tableName, userName, cid, useExistingConnection, connection, additionalParams);
         } else if(("HSQLDB").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2057,7 +2189,7 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             String runningMode = ElementParameterParser.getValue(node, "__RUNNING_MODE__");
             boolean tls = ("true").equals(ElementParameterParser.getValue(node, "__TLS__"));
-            manager = new HSQLDBManager(host, port, dbPath, dbName, tableName, dbAlias, userName, runningMode, tls, cid);
+            manager = new HSQLDBManager(host, port, dbPath, dbName, tableName, dbAlias, userName, runningMode, tls, cid, additionalParams);
         } else if(("INFORMIX").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2067,7 +2199,7 @@ class ManagerFactory {
 			String dbSchema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
 			boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 			String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_INFORMIX__"));
-            manager = new InformixManager(host, port, dbName, tableName, dbServer, userName, cid, dbSchema,useExistingConnection, connection);
+            manager = new InformixManager(host, port, dbName, tableName, dbServer, userName, cid, dbSchema,useExistingConnection, connection, additionalParams);
         } else if(("INGRES").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2075,14 +2207,14 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 			String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_INGRES__"));
-            manager = new IngresManager(host, port, dbName, tableName, userName, cid,useExistingConnection, connection);
+            manager = new IngresManager(host, port, dbName, tableName, userName, cid,useExistingConnection, connection, additionalParams);
         } else if(("INTERBASE").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String dbName = ElementParameterParser.getValue(node, "__DBFILE_INTERBASE__");
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 			String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_INTERBASE__"));
-            manager = new InterbaseManager(host, dbName, tableName, userName, cid,useExistingConnection, connection);
+            manager = new InterbaseManager(host, dbName, tableName, userName, cid,useExistingConnection, connection, additionalParams);
         } else if(("JAVADB").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2091,13 +2223,13 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             String frameworkType = ElementParameterParser.getValue(node, "__FRAMEWORK_TYPE__");
             boolean connectionFlag = ("true").equals(ElementParameterParser.getValue(node, "__CONNECTION_FLAG__"));
-            manager = new JavaDBManager(host, port, dbRootPath, dbName, tableName, userName, frameworkType, connectionFlag, cid);
+            manager = new JavaDBManager(host, port, dbRootPath, dbName, tableName, userName, frameworkType, connectionFlag, cid, additionalParams);
         } else if(("MAXDB").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
             String dbName = ElementParameterParser.getValue(node, "__DBNAME__");
             String userName = ElementParameterParser.getValue(node, "__USER__");
-            manager = new MaxDBManager(host, port, dbName, tableName, userName, cid);
+            manager = new MaxDBManager(host, port, dbName, tableName, userName, cid, additionalParams);
         } else if(("MSSQL").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2106,9 +2238,8 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_MSSQL__"));
-            String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
             String driver = ElementParameterParser.getValue(node, "__MSSQL_DRIVER__");
-            manager = new MSSQLManager(host, port, dbName,dbSchema, tableName, userName, useExistingConnection, connection, cid, dbproperties, driver);
+            manager = new MSSQLManager(host, port, dbName,dbSchema, tableName, userName, useExistingConnection, connection, cid, driver, additionalParams);
         } else if(("MYSQL").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2118,7 +2249,7 @@ class ManagerFactory {
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_MYSQL__"));
             boolean temporary = ("true").equals(ElementParameterParser.getValue(node, "__TEMPTABLE__"));
             String dbVersion = ElementParameterParser.getValue(node, "__DB_MYSQL_VERSION__");
-            manager = new MysqlManager(host, port, dbName, tableName, userName, useExistingConnection, connection, temporary, cid, dbVersion);
+            manager = new MysqlManager(host, port, dbName, tableName, userName, useExistingConnection, connection, temporary, cid, dbVersion, additionalParams);
         } else if(("NETEZZA").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2126,7 +2257,7 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_NETEZZA__"));
-            manager = new NetezzaManager(host, port, dbName, tableName, userName, useExistingConnection, connection, cid);
+            manager = new NetezzaManager(host, port, dbName, tableName, userName, useExistingConnection, connection, cid, additionalParams);
         } else if(("DBORACLE").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2140,8 +2271,8 @@ class ManagerFactory {
             String localServiceName = ElementParameterParser.getValue(node, "__LOCAL_SERVICE_NAME__");
             String rac_url = ElementParameterParser.getValue(node, "__RAC_URL__");
             String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");;
-            manager = new OracleManager(host, port, dbName, tableName, dbSchema, userName, connectionType, useExistingConnection, connection,cid,jdbcURL,rac_url,localServiceName,dbVersion);
-            } else if(("POSTGRE").equals(dbType)) {
+            manager = new OracleManager(host, port, dbName, tableName, dbSchema, userName, connectionType, useExistingConnection, connection,cid,jdbcURL,rac_url,localServiceName,dbVersion, additionalParams);
+        } else if(("POSTGRE").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
             String dbSchema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
@@ -2151,7 +2282,7 @@ class ManagerFactory {
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_POSTGRE__"));
             boolean tempTable = ("true").equals(ElementParameterParser.getValue(node, "__TEMPTABLE__"));
             boolean unloggedTable = ("true").equals(ElementParameterParser.getValue(node, "__UNLOGGED__"));
-            manager = new PostgreManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid, tempTable, unloggedTable);
+            manager = new PostgreManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid, tempTable, unloggedTable, additionalParams);
         } else if(("POSTGREPLUS").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2160,13 +2291,13 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_POSTGREPLUS__"));
-            manager = new PostgrePlusManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid);            
+            manager = new PostgrePlusManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid, additionalParams);            
         } else if(("SQLITE").equals(dbType)) {
             String dbName = ElementParameterParser.getValue(node, "__DBFILE_SQLITE__");
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 			String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_SQLITE__"));
-            manager = new SQLiteManager(dbName, tableName, userName, cid,useExistingConnection, connection);
+            manager = new SQLiteManager(dbName, tableName, userName, cid,useExistingConnection, connection, additionalParams);
         } else if(("SYBASE").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2175,7 +2306,7 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 			String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_SYBASE__"));
-            manager = new SybaseManager(host, port, dbName, dbSchema, tableName, userName, cid,useExistingConnection, connection);
+            manager = new SybaseManager(host, port, dbName, dbSchema, tableName, userName, cid,useExistingConnection, connection, additionalParams);
         } else if(("TERADATA").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2183,12 +2314,12 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 			String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_TERADATA__"));
-            manager = new TeradataManager(host, port, dbName, tableName, userName, cid,useExistingConnection, connection);
+            manager = new TeradataManager(host, port, dbName, tableName, userName, cid,useExistingConnection, connection, additionalParams);
             manager.setNode(node);
         } else if(("ODBC").equals(dbType)) {
             String odbcName = ElementParameterParser.getValue(node, "__ODBCNAME__");
             String userName = ElementParameterParser.getValue(node, "__USER__");
-            manager = new ODBCManager(odbcName, tableName, userName, cid);
+            manager = new ODBCManager(odbcName, tableName, userName, cid, additionalParams);
         }else if(("GREENPLUM").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2197,7 +2328,7 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_"+dbType+"__"));
-            manager = new GreenplumManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid);
+            manager = new GreenplumManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid, additionalParams);
         } else if(("VERTICA").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2207,7 +2338,7 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_"+dbType+"__"));
-            manager = new VerticaManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid,db_version);
+            manager = new VerticaManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid,db_version, additionalParams);
         } else if(("EXASOL").equals(dbType)) {
         	 String host = ElementParameterParser.getValue(node, "__HOST__");
              String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2216,7 +2347,7 @@ class ManagerFactory {
              String userName = ElementParameterParser.getValue(node, "__USER__");
              boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
              String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_"+dbType+"__"));
-             manager = new ExasolManager(host, port, dbSchema, tableName, userName, useExistingConnection, connection, cid);
+             manager = new ExasolManager(host, port, dbSchema, tableName, userName, useExistingConnection, connection, cid, additionalParams);
         } else if(("REDSHIFT").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2225,7 +2356,7 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_"+dbType+"__"));
-            manager = new RedshiftManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid);
+            manager = new RedshiftManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid, additionalParams);
         } else if(("SNOWFLAKE").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
@@ -2237,7 +2368,7 @@ class ManagerFactory {
             boolean enforceDelimitedIdentifiers = ("true").equals(ElementParameterParser.getValue(node, "__ENFORCE_DELIMITED_IDENTIFIERS__"));
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_"+dbType+"__"));
-            manager = new SnowflaketManager(account,dbName,dbSchema, userName,role,tableName, connection, useExistingConnection, cid, enforceDelimitedIdentifiers);
+            manager = new SnowflaketManager(account,dbName,dbSchema, userName,role,tableName, connection, useExistingConnection, cid, enforceDelimitedIdentifiers, additionalParams);
         }
         return manager;
     }
@@ -2431,7 +2562,7 @@ if(columnList != null && columnList.size() > 0) {
                 String dbnameMySQL = "";
                 if (useExistMySQLConn) {
                     List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
-                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
+                    String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION_MYSQL__");
                     for (INode ne : nodes) {
                         if (connectionMySQL.equals(ne.getUniqueName())) {
                             dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");

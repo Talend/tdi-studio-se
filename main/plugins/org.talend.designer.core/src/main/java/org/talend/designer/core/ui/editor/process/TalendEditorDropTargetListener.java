@@ -58,7 +58,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
@@ -67,6 +66,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.gmf.draw2d.AnimatableZoomManager;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageUtils.ICON_SIZE;
 import org.talend.core.CorePlugin;
@@ -115,12 +115,14 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.process.node.MapperExternalNode;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.EbcdicConnectionItem;
 import org.talend.core.model.properties.FileItem;
+import org.talend.core.model.properties.FolderItem;
 import org.talend.core.model.properties.HL7ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
@@ -128,6 +130,7 @@ import org.talend.core.model.properties.LinkRulesItem;
 import org.talend.core.model.properties.MDMConnectionItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.RulesItem;
 import org.talend.core.model.properties.SAPConnectionItem;
 import org.talend.core.model.properties.SQLPatternItem;
@@ -135,6 +138,7 @@ import org.talend.core.model.properties.ValidationRulesConnectionItem;
 import org.talend.core.model.repository.DragAndDropManager;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.IComponentName;
 import org.talend.core.model.utils.IDragAndDropServiceHandler;
@@ -153,6 +157,7 @@ import org.talend.core.service.ISAPProviderService;
 import org.talend.core.ui.ICDCProviderService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.editor.JobEditorInput;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.core.ui.metadata.command.RepositoryChangeMetadataForEBCDICCommand;
@@ -196,6 +201,7 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryPlugin;
@@ -203,6 +209,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
+
 import orgomg.cwm.objectmodel.core.ModelElement;
 
 /**
@@ -332,7 +339,13 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                             allowed = false;
                         } else if (selectItem instanceof ContextItem && !(temItem instanceof ContextItem)) {
                             allowed = false;
-                        } else if (selectItem instanceof SQLPatternItem && !(temItem instanceof SQLPatternItem)) {
+                        } else if (selectItem instanceof SQLPatternItem && temItem instanceof SQLPatternItem) {
+                            allowed = false;
+                        } else if (selectItem instanceof ResourceItem && temItem instanceof ResourceItem) {
+                            allowed = false;
+                        } else if (selectItem instanceof RoutineItem && temItem instanceof RoutineItem) {
+                            allowed = false;
+                        } else if (selectItem instanceof FolderItem && temItem instanceof FolderItem) {
                             allowed = false;
                         }
                     }
@@ -342,6 +355,25 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 event.detail = DND.DROP_NONE;
             }
         } else {
+            if (selection.getFirstElement() instanceof RepositoryNode) {
+                RepositoryNode repositoryNode = (RepositoryNode) selection.getFirstElement();
+                IRepositoryViewObject object = repositoryNode.getObject();
+
+                if (object != null) {
+                    Item selectItem = object.getProperty().getItem();
+
+                    if (selectItem instanceof SQLPatternItem) {
+                        event.detail = DND.DROP_NONE;
+                    } else if (selectItem instanceof ResourceItem) {
+                        event.detail = DND.DROP_NONE;
+                    } else if (selectItem instanceof RoutineItem) {
+                        event.detail = DND.DROP_NONE;
+                    } else if (selectItem instanceof FolderItem) {
+                        event.detail = DND.DROP_NONE;
+                    }
+                }
+            }
+
             CreateRequest req = ((CreateRequest) getTargetRequest());
             Object o = null;
             try {
@@ -510,8 +542,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             } else if (getTargetEditPart() instanceof JobletContainerPart) {
                 JobletContainerPart jobletPart = (JobletContainerPart) getTargetEditPart();
                 if (isLock(jobletPart)) {
-                    Shell shell = Display.getCurrent().getActiveShell();
-                    ChooseJobletDialog dialog = new ChooseJobletDialog(new Shell(shell), getDropLocation());
+                    ChooseJobletDialog dialog = new ChooseJobletDialog(DisplayUtils.getDefaultShell(false), getDropLocation());
                     if (dialog.open() == dialog.OK) {
                         EditPart part = getTargetEditPart();
                         if (dialog.addToJoblet()) {
@@ -1500,7 +1531,13 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         } else if (selectedNode.getObject().getProperty().getItem() instanceof ProcessItem) {
             ProcessItem processItem = (ProcessItem) selectedNode.getObject().getProperty().getItem();
             // command used to set job
-            String value = processItem.getProperty().getId();
+            String value = null;
+            if (ProcessorUtilities.isNeedProjectProcessId(node.getComponent().getName())) {
+                org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
+                value = ProcessUtils.getProjectProcessId(project.getTechnicalLabel(), processItem.getProperty().getId());     
+            } else {
+                value = processItem.getProperty().getId();
+            }         
             PropertyChangeCommand command4 = new PropertyChangeCommand(node, EParameterName.PROCESS_TYPE_PROCESS.getName(), value);
             cc.add(command4);
             PropertyChangeCommand command5 = new PropertyChangeCommand(node, EParameterName.PROCESS_TYPE_CONTEXT.getName(),
@@ -1871,6 +1908,10 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
     private Command getChangeChildProcessCommand(Node node, ProcessItem processItem) {
         // command used to set job
         String value = processItem.getProperty().getId();
+        if (ProcessorUtilities.isNeedProjectProcessId(node.getComponent().getName())) {
+            org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
+            value = ProcessUtils.getProjectProcessId(project.getTechnicalLabel(), processItem.getProperty().getId());     
+        } 
         IElementParameter processParam = node.getElementParameterFromField(EParameterFieldType.PROCESS_TYPE);
         if (processParam != null) {
             PropertyChangeCommand command2 = new PropertyChangeCommand(node, EParameterName.PROCESS_TYPE_PROCESS.getName(), value);
@@ -1935,6 +1976,15 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                     neededComponents.add(component);
                 }
             }
+        }
+        // special handle to add tCreateTable component for db , except hive/impala/JDBC
+        boolean isHive = EDatabaseTypeName.HIVE.getDisplayName().toUpperCase().equals(rcSetting.toString());
+        boolean isImpala = EDatabaseTypeName.IMPALA.getDisplayName().toUpperCase().equals(rcSetting.toString());
+        boolean isJDBC = EDatabaseTypeName.GENERAL_JDBC.name().toUpperCase().equals(rcSetting.toString());
+        if (item != null && item instanceof DatabaseConnectionItem && !isHive && !isImpala && !isJDBC) {
+            IComponent createTableComponent = ComponentsFactoryProvider.getInstance().get("tCreateTable", //$NON-NLS-1$
+                    ComponentCategory.CATEGORY_4_DI.getName());
+            neededComponents.add(createTableComponent);
         }
 
         neededComponents = (List<IComponent>) ComponentUtilities.filterVisibleComponents(neededComponents);

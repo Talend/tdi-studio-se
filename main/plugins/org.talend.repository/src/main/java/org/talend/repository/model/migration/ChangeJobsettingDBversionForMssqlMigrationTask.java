@@ -36,6 +36,9 @@ public class ChangeJobsettingDBversionForMssqlMigrationTask extends AbstractJobM
     @Override
     public ExecutionResult execute(Item item) {
         ProcessType processType = getProcessType(item);
+        if(processType == null){
+            return ExecutionResult.NOTHING_TO_DO;
+        }
         if (processType.getParameters() != null) {
             @SuppressWarnings("rawtypes")
             EList elementParameter = processType.getParameters().getElementParameter();

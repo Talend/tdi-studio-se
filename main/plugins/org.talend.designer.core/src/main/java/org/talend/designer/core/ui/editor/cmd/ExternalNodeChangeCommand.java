@@ -19,10 +19,10 @@ import java.util.Map;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IODataComponent;
 import org.talend.core.model.components.IODataComponentContainer;
@@ -179,7 +179,7 @@ public class ExternalNodeChangeCommand extends Command {
         if (propagate == null) {
             propagate = MessageDialog
                     .openQuestion(
-                            new Shell(),
+                            DisplayUtils.getDefaultShell(false),
                             Messages.getString("ExternalNodeChangeCommand.propagate"), Messages.getString("ExternalNodeChangeCommand.propagateMessage")); //$NON-NLS-1$ //$NON-NLS-2$
             if (propagate) {
                 changeCollapsedState(false, jobletMap, connection.getTarget());

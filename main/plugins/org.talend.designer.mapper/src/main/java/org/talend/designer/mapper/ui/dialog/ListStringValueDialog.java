@@ -31,7 +31,6 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -66,11 +65,13 @@ public class ListStringValueDialog<E> extends Dialog {
     public ListStringValueDialog(Shell parentShell, List<E> dataList) {
         this(parentShell);
         this.dataList = dataList;
+        setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MIN | SWT.MAX);
     }
 
     public ListStringValueDialog(Shell parentShell, E[] dataArray) {
         this(parentShell);
         this.dataList = Arrays.asList(dataArray);
+        setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MIN | SWT.MAX);
     }
 
     /**
@@ -164,11 +165,13 @@ public class ListStringValueDialog<E> extends Dialog {
 
     /**
      * Return the initial size of the dialog
+     * 
+     * For bug TUP-21564, remove the initialSize and return the default size from parent class instead.
      */
-    @Override
-    protected Point getInitialSize() {
-        return new Point(227, 278);
-    }
+//    @Override
+//    protected Point getInitialSize() {
+//        return new Point(227, 278);
+//    }
 
     /**
      * DOC ycbai CustomerCellDialog class global comment. Detailled comment

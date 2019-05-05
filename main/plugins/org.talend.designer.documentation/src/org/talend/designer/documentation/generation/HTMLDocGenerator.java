@@ -37,7 +37,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -120,6 +119,7 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSRuleList;
 import org.xml.sax.SAXException;
@@ -350,7 +350,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
                         // replace the old value and generate a new xsl file
                         DOMSource ds = new DOMSource(document);
                         StreamResult sr = new StreamResult(new File(xslfile));
-                        TransformerFactory.newInstance().newTransformer().transform(ds, sr);
+                        XmlUtils.getXmlSecureTransform().transform(ds, sr);
                     }
                 }
             }

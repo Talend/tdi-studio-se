@@ -29,7 +29,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     String dbname= ElementParameterParser.getValue(node, "__DBNAME__");        
     String dbhost = ElementParameterParser.getValue(node, "__HOST__");
 	String dbport = ElementParameterParser.getValue(node, "__PORT__");
-	String dbuser= ElementParameterParser.getValue(node, "__USER__");	
+	String dbuser= ElementParameterParser.getValue(node, "__USER__");
+    String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
 	String tableName = ElementParameterParser.getValue(node,"__TABLE__");	
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");	
@@ -97,7 +98,13 @@ String tableName_<%=cid%> = <%=tableName%>;
 boolean whetherReject_<%=cid%> = false;
 java.lang.Class.forName("com.sap.dbtech.jdbc.DriverSapDB");
 <%dbLog.conn().logJDBCDriver(dbLog.str("com.sap.dbtech.jdbc.DriverSapDB"));%>
+String dbProperties_<%=cid%> = <%=dbproperties%>;
 String url_<%=cid %> = "jdbc:sapdb://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>; 
+
+if(dbProperties_<%=cid%> != null && !"".equals(dbProperties_<%=cid%>.trim())) {
+    url_<%=cid %> = url_<%=cid%> + "?" + dbProperties_<%=cid%>;
+}
+
 String dbUser_<%=cid %> = <%=dbuser%>;
 <%
 String passwordFieldName = "__PASS__";
