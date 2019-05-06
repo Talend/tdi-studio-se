@@ -537,7 +537,8 @@ public class TalendJavaProjectManager {
                 IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
                 for (IProject project : projects) {
                     if (project.hasNature("com.oaklandsw.transform.runtime.nature")) { //$NON-NLS-1$
-                        // never delete TDM Builtin project ref com.oaklandsw.data.transform.builtin
+                        // never delete TDM Builtin, Examples and Examples EDI project ref
+                        // com.oaklandsw.data.transform.builtin
                         continue;
                     }
                     if (project.getLocation() == null || !project.getLocation().toFile().exists()
@@ -549,7 +550,6 @@ public class TalendJavaProjectManager {
                         project.open(monitor);
                     }
                     if (project.hasNature(natureId)) {
-                        project.delete(false, true, monitor);
                         IFile eclipseClasspath = project.getFile(CLASSPATH_FILE_NAME);
                         if (eclipseClasspath.exists()) {
                             eclipseClasspath.delete(true, monitor);
@@ -558,6 +558,7 @@ public class TalendJavaProjectManager {
                         if (projectFile.exists()) {
                             projectFile.delete(true, monitor);
                         }
+                        project.delete(false, true, monitor);
                     }
                 }
                 talendCodeJavaProjects.clear();
