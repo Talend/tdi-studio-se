@@ -12,22 +12,7 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.CLASSPATH_FILE_NAME;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_BEANS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_CODES;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS_SPARK;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS_SPARK_STREAMING;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PIGUDFS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_MR;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_ROUTES;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_SERVICES;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_STORM;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_ROUTELETS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_ROUTINES;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.PROJECT_FILE_NAME;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
 
 import java.io.File;
 import java.util.HashMap;
@@ -233,17 +218,37 @@ public class TalendJavaProjectManager {
     }
 
     private static void cleanUpCodeProject(IProgressMonitor monitor, IFolder codeProjectFolder) throws CoreException {
-        IFolder srcFolder = codeProjectFolder.getFolder(MavenSystemFolders.SRC.getPath());
+        // empty the src/main/java...
+        IFolder srcFolder = codeProjectFolder.getFolder(MavenSystemFolders.JAVA.getPath());
+        cleanFolder(monitor, srcFolder);
+
+        // empty src/main/ext-resources
+        IFolder extResourcesFolder = codeProjectFolder.getFolder(MavenSystemFolders.EXT_RESOURCES.getPath());
+        cleanFolder(monitor, extResourcesFolder);
+
+        // empty src/main/resources
+        IFolder resourcesFolder = codeProjectFolder.getFolder(MavenSystemFolders.RESOURCES.getPath());
+        cleanFolder(monitor, resourcesFolder);
+
+        // empty the src/test/java
+        IFolder testSrcFolder = codeProjectFolder.getFolder(MavenSystemFolders.JAVA_TEST.getPath());
+        cleanFolder(monitor, testSrcFolder);
+
+        // empty the src/test/resources
+        IFolder testResourcesFolder = codeProjectFolder.getFolder(MavenSystemFolders.RESOURCES_TEST.getPath());
+        cleanFolder(monitor, testResourcesFolder);
+
+        // empty target
         IFolder targetFolder = codeProjectFolder.getFolder(MavenSystemFolders.TARGET.getPath());
-        IFolder testFolder = codeProjectFolder.getFolder(MavenSystemFolders.TEST_REPORTS.getPath());
-        if (srcFolder.exists()) {
-            srcFolder.delete(true, monitor);
-        }
-        if (targetFolder.exists()) {
-            targetFolder.delete(true, monitor);
-        }
-        if (testFolder.exists()) {
-            testFolder.delete(true, monitor);
+        cleanFolder(monitor, targetFolder);
+    }
+
+    private static void cleanFolder(IProgressMonitor monitor, IFolder folder) throws CoreException {
+        if (folder != null && folder.exists()) {
+            IResource[] childrenRecs = folder.members();
+            for (IResource child : childrenRecs) {
+                child.delete(true, monitor);
+            }
         }
     }
 
