@@ -484,8 +484,9 @@ public class TalendJavaProjectManager {
             public void run(IProgressMonitor monitor) throws CoreException {
                 IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
                 for (IProject project : projects) {
-                    if ("Builtin".equals(project.getName()) && project.hasNature("com.oaklandsw.transform.runtime.nature")) { //$NON-NLS-1$ //$NON-NLS-2$
-                        // never delete TDM Builtin project ref com.oaklandsw.data.transform.builtin
+                    if (project.hasNature("com.oaklandsw.transform.runtime.nature")) { //$NON-NLS-1$
+                        // never delete TDM Builtin, Examples and Examples EDI project ref
+                        // com.oaklandsw.data.transform.builtin
                         continue;
                     }
                     if (project.getLocation() == null || !project.getLocation().toFile().exists()
