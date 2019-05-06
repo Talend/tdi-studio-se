@@ -147,7 +147,7 @@ public class ComponentsFactory implements IComponentsFactory {
     
     private AtomicBoolean isInitialising;
     
-    private Lock initialiseLock;
+    private volatile Lock initialiseLock;
 
     public ComponentsFactory() {
         isInitialising = new AtomicBoolean(false);
@@ -239,12 +239,11 @@ public class ComponentsFactory implements IComponentsFactory {
                         ExceptionHandler.process(e);
                     }
                 }
-                if (!initialiseLock.tryLock(timeout, TimeUnit.SECONDS)) {
+                if (initialiseLock.tryLock(timeout, TimeUnit.SECONDS)) {
+                    initialiseLock.unlock();
+                } else {
                     // may be track in dead lock, throw exception to try to break dead lock
                     throw new RuntimeException(Messages.getString("ComponentsFactory.init.waitForFinish.timeout")); //$NON-NLS-1$
-                }
-                if (!isInitialising.get()) {
-                    initialiseLock.unlock();
                 }
                 // initialise successfully or not
                 return !isInitialising.get();
@@ -788,7 +787,7 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     @Override
-    public synchronized int size() {
+    public int size() {
         wait4InitialiseFinish();
         if (componentList == null) {
             init(false);
@@ -797,7 +796,7 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     @Override
-    public synchronized IComponent get(String name) {
+    public IComponent get(String name) {
         wait4InitialiseFinish();
         if (componentList == null) {
             init(false);
@@ -818,7 +817,7 @@ public class ComponentsFactory implements IComponentsFactory {
      * @see org.talend.core.model.components.IComponentsFactory#get(java.lang.String, java.lang.String)
      */
     @Override
-    public synchronized IComponent get(String name, String paletteType) {
+    public IComponent get(String name, String paletteType) {
         wait4InitialiseFinish();
         if (componentList == null) {
             init(false);
@@ -887,7 +886,7 @@ public class ComponentsFactory implements IComponentsFactory {
      * @see org.talend.core.model.components.IComponentsFactory#getComponents()
      */
     @Override
-    public synchronized Set<IComponent> getComponents() {
+    public Set<IComponent> getComponents() {
         wait4InitialiseFinish();
         if (componentList == null) {
             init(false);
@@ -911,7 +910,7 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     @Override
-    public synchronized Map<String, Map<String, Set<IComponent>>> getComponentNameMap() {
+    public Map<String, Map<String, Set<IComponent>>> getComponentNameMap() {
         wait4InitialiseFinish();
         if (componentNameMap == null) {
             init(false);
@@ -920,7 +919,7 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     @Override
-    public synchronized List<IComponent> getCustomComponents() {
+    public List<IComponent> getCustomComponents() {
         wait4InitialiseFinish();
         if (customComponentList == null) {
             init(false);
