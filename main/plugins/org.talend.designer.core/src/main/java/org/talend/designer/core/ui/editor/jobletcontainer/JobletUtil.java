@@ -388,8 +388,8 @@ public class JobletUtil {
         ComponentProperties nodeComponentProperties = node.getComponentProperties();
         ComponentProperties cloneNodeComponentProperties = cloneNode.getComponentProperties();
         if (nodeComponentProperties != null && cloneNodeComponentProperties != null) {
-            Properties referencedComponentProperties = nodeComponentProperties.getProperties("referencedComponent");
-            Properties cloneNodeProperties = cloneNodeComponentProperties.getProperties("referencedComponent");
+            Properties referencedComponentProperties = nodeComponentProperties.getProperties("referencedComponent");//$NON-NLS-1$
+            Properties cloneNodeProperties = cloneNodeComponentProperties.getProperties("referencedComponent");//$NON-NLS-1$
             if (referencedComponentProperties != null && cloneNodeProperties != null) {
                 List<NamedThing> nodeProperties = referencedComponentProperties.getProperties();
                 List<NamedThing> cloneProperties = cloneNodeProperties.getProperties();
