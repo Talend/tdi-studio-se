@@ -95,6 +95,7 @@ class="MomConnection"
 		if(isUseSharedConnection){
 		%>
 			javax.jms.Connection connection_<%=cid %> = org.talend.mq.SharedActiveMQConnection.getMQConnection(url_<%=cid %>,<%=dbuser%>,decryptedPassword_<%=cid%>,<%=sharedConnectionName%>);
+			globalMap.put("connection_<%=cid%>", connection_<%=cid %>);
 		<%
 		}else{
 		%>
