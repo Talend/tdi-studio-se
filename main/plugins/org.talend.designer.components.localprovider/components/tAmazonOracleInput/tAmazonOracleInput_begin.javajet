@@ -69,7 +69,7 @@ imports="
 			dbhost = ElementParameterParser.getValue(node, "__HOST__");
 	    	dbport = ElementParameterParser.getValue(node, "__PORT__");
 	    	dbname = ElementParameterParser.getValue(node, "__DBNAME__");
-	    	dbuser = ElementParameterParser.getValue(node, "__USER__");
+	    	dbuser = ElementParameterParser.getValue(node, "__USER__").toUpperCase();
 
 	 		String connectionType = ElementParameterParser.getValue(node, "__CONNECTION_TYPE__");
 %>
