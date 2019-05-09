@@ -12,9 +12,13 @@
 // ============================================================================
 package org.talend.designer.core.model.components;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,7 +107,7 @@ public class ExpressionTest {
         when(param.getName()).thenReturn(paraName);
         if (isShow) {
             when(param.isShow(anyList())).thenReturn(isShow);
-            when(param.isShow(anyString(), anyString(), anyList())).thenReturn(isShow);
+            when(param.isShow(isNull(), isNull(), anyList())).thenReturn(isShow);
         } else {
             when(param.getShowIf()).thenReturn(showIf);
         }
