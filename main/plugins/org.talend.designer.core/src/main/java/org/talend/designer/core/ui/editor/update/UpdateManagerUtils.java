@@ -296,6 +296,7 @@ public final class UpdateManagerUtils {
         if (results == null || results.isEmpty()) {
             return false;
         }
+        Collections.sort(results, new UpdateResultSorter());
         try {
             IWorkspaceRunnable op = new IWorkspaceRunnable() {
 
