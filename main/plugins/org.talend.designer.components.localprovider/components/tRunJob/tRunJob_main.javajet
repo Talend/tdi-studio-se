@@ -220,23 +220,26 @@ String inputConnName = null;
 		      		<%
 		    		} else if (i > 0){
 		      			String param;
-						if (commandLineUnix[i].indexOf("\"") >= 0){
+		      			if(commandLineUnix[i].contains("\"$ROOT_PATH\"")){
+		      				param = commandLineUnix[i].replaceAll("\"\\$ROOT_PATH\"", "\\\\\"\\$ROOT_PATH\\\\\"");
+		      				param = "\""+param+"\"";
+		      			}else if (commandLineUnix[i].indexOf("\"") >= 0){
 							param = commandLineUnix[i];
 						} else {
 							param = "\""+commandLineUnix[i]+"\"";
 						}
-						if (param.contains("$ROOT_PATH")) {
+						if (param.contains("\"$ROOT_PATH\"")) {
 							if(param.indexOf(".jar") >= 0){
 		      				%>
-								paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+								paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("\"$ROOT_PATH\"",System.getProperty("user.dir")));
 		      				<%}else{%>
-		        				paraList_<%=cid %>.add(<%=param %>.replace("$ROOT_PATH",System.getProperty("user.dir")));
+		        				paraList_<%=cid %>.add(<%=param %>.replace("\"$ROOT_PATH\"",System.getProperty("user.dir")));
 		     	 			<%
 		      				}
 		      			}else{
 							if(param.indexOf(".jar") >= 0){
 		      				%>
-		      					paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+		      					paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("\"$ROOT_PATH\"",System.getProperty("user.dir")));
 		      				<%}else{%>
 								paraList_<%=cid %>.add(<%=param %>);
 		      				<%			
