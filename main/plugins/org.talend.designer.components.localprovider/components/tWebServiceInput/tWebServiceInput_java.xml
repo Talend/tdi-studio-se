@@ -32,7 +32,7 @@
 			<DEFAULT />
 		</PARAMETER>
 		<PARAMETER NAME="ENDPOINT" FIELD="TEXT" REQUIRED="true" NUM_ROW="30" REPOSITORY_VALUE="ENDPOINT">
-			<DEFAULT>"http://www.webservicex.net/country.asmx?WSDL"</DEFAULT>
+			<DEFAULT>"http://wsf.cdyne.com/WeatherWS/Weather.asmx?WSDL"</DEFAULT>
 		</PARAMETER>
 
 		<PARAMETER NAME="NEED_AUTH" FIELD="CHECK" REQUIRED="true"
