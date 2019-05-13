@@ -87,8 +87,6 @@ public class UpdateContextParameterCommand extends Command {
             return;
         }
         List<String> contextItemGroupNames = new ArrayList<String>();
-//        ContextItemImpl parameter2 = (ContextItemImpl) result.getParameter();
-//        EList context2 = parameter2.getContext();
         if (result.getParameter() != null) {
             if (result.getParameter() instanceof ContextItem) {
                 contextItemGroupNames.clear();
