@@ -318,7 +318,7 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
         for (int i = 0; i < itemsValue.size(); i++) {
             String iValue = itemsValue.get(i);
             if ((selectedValue == null && (((INode) elem).getUniqueName()).equals(iValue))
-                    || (selectedValue != null && selectedValue.equals(iValue))) {
+                    || (selectedValue != null && StringUtils.isNotEmpty(iValue) && iValue.endsWith(selectedValue))) {
                 iLabel = itemsLabel.get(i);
                 break;
             }
