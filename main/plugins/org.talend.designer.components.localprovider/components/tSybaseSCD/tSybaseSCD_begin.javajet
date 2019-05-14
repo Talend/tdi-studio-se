@@ -91,7 +91,8 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
             }
             else{           
 		    if("SYBSEIQ_16".equals(dbVersion)){%>
-			java.lang.Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
+			java.lang.Class jdbcclazz_<%=cid%> = java.lang.Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
+			jdbcclazz_<%=cid%>.newInstance();
 		    <%}else{%>
 			java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");
 		    <%}%>

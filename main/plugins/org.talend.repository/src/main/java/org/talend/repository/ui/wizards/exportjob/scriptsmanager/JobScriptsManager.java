@@ -229,7 +229,8 @@ public abstract class JobScriptsManager {
         imageTag,
         pushRegistry,
         registryUsername,
-        registryPassword
+        registryPassword,
+        avoidBranchName
     }
 
     /**

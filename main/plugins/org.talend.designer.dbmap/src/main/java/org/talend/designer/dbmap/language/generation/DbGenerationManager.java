@@ -1180,7 +1180,8 @@ public abstract class DbGenerationManager {
             if(i % 2 == 0 && i != indexs.size() - 1){
                 result.append(expression.substring(indexs.get(i), indexs.get(i+1)+1));
                 if (i < indexs.size() - 2) {
-                    result.append(expression.substring(indexs.get(i + 1) + 1, indexs.get(i + 2)));
+                    String exp = expression.substring(indexs.get(i + 1) + 1, indexs.get(i + 2));
+                    result.append(exp.replaceAll(quoParser,"\\\\" +quote)); //$NON-NLS-1$
                 }
                 start = indexs.get(i+1)+1;
             }else if(i == indexs.size() - 1){

@@ -72,6 +72,10 @@ class="MomConnection"
 				url_<%=cid %> = url_<%=cid %> +<%=strHost%>;
 				url_<%=cid %> = url_<%=cid %> +":";
 				url_<%=cid %> = url_<%=cid %> +<%=strPort%>;
+				<%if(isUseSSL){%>
+				url_<%=cid %> = url_<%=cid %> +"?verifyHostName=false";
+				<%}%>
+				
 				<%
 				i++;
 			}
@@ -84,7 +88,7 @@ class="MomConnection"
 			<%
 			}
 		}else{%>
-			url_<%=cid %> = "<%=transProtocol%>://"+<%=host%>+":"+<%=port%>;
+			url_<%=cid %> = "<%=transProtocol%>://"+<%=host%>+":"+<%=port%><%if(isUseSSL){%>+"?verifyHostName=false"<%}%>;
 		<%}%>			
 		
 		<%
@@ -95,6 +99,7 @@ class="MomConnection"
 		if(isUseSharedConnection){
 		%>
 			javax.jms.Connection connection_<%=cid %> = org.talend.mq.SharedActiveMQConnection.getMQConnection(url_<%=cid %>,<%=dbuser%>,decryptedPassword_<%=cid%>,<%=sharedConnectionName%>);
+			globalMap.put("connection_<%=cid%>", connection_<%=cid %>);
 		<%
 		}else{
 		%>
@@ -119,7 +124,7 @@ class="MomConnection"
 			<%
 			}
 			%>
-		
+		    globalMap.put("connection_<%=cid%>", connection_<%=cid %>);
 		    connection_<%=cid %>.start();
 		    <%
 			if(isLog4jEnabled){
@@ -135,7 +140,6 @@ class="MomConnection"
 		}
 		%>
 		
-	    globalMap.put("connection_<%=cid%>", connection_<%=cid %>);
 	    javax.jms.Session session_<%=cid %> = connection_<%=cid %>.createSession(<%=transacted%>, javax.jms.Session.<%=acknowledgmentMode%>);
 	    globalMap.put("session_<%=cid %>", session_<%=cid %>);
 		<%

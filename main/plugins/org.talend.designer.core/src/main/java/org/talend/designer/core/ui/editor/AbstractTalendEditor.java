@@ -1386,7 +1386,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         getEditDomain().setActiveTool(null);
         getEditDomain().setPaletteRoot(null);
         getEditDomain().setPaletteViewer(null);
-        getEditDomain().setCommandStack(null);
+        // don't clear edit domain, since git merge conflict editor reused it
+        // getEditDomain().setCommandStack(null);
         getEditDomain().setDefaultTool(null);
         getSelectionSynchronizer().removeViewer(getGraphicalViewer());
         getSite().setSelectionProvider(null);

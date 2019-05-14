@@ -600,7 +600,6 @@ public class RepositoryWebService implements AbstractWebService {
             trustStorePassword = TalendTextUtils.removeQuotes(trustStorePassword);
         }
 
-        System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
         System.setProperty("javax.net.ssl.trustStore", trustStoreFile);
         System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
 

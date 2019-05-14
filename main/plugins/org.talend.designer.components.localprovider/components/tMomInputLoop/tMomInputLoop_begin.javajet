@@ -322,6 +322,10 @@ imports="
 						url_<%=cid %> = url_<%=cid %> +<%=strHost%>;
 						url_<%=cid %> = url_<%=cid %> +":";
 						url_<%=cid %> = url_<%=cid %> +<%=strPort%>;
+						<%if(isUseSSL){%>
+						url_<%=cid %> = url_<%=cid %> +"?verifyHostName=false";
+						<%}%>
+						
 						<%
 						i++;
 					}
@@ -334,7 +338,7 @@ imports="
 					<%
 					}
 				}else{%>
-					url_<%=cid %> = "<%=transProtocol%>://"+<%=host%>+":"+<%=port%>;
+					url_<%=cid %> = "<%=transProtocol%>://"+<%=host%>+":"+<%=port%><%if(isUseSSL){%>+"?verifyHostName=false"<%}%>;
 				<%}%>			
 	
 				<%

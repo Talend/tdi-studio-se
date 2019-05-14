@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorReference;
@@ -44,6 +45,7 @@ import org.talend.core.ui.process.UpdateRunJobComponentContextHelper;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.repository.RepositoryPlugin;
 
@@ -84,6 +86,19 @@ public class UpdateContextParameterCommand extends Command {
         if (result == null) {
             return;
         }
+        List<String> contextItemGroupNames = new ArrayList<String>();
+        if (result.getParameter() != null) {
+            if (result.getParameter() instanceof ContextItem) {
+                contextItemGroupNames.clear();
+                EList<?> contextGroups = ((ContextItem) result.getParameter()).getContext();
+                for (Object contextGroup : contextGroups) {
+                    if (contextGroup instanceof ContextTypeImpl) {
+                        String name = ((ContextTypeImpl) contextGroup).getName();
+                        contextItemGroupNames.add(name);
+                    }
+                }
+            }
+        }
         Object job = result.getJob();
         if (job == null) {
             return;
@@ -106,54 +121,57 @@ public class UpdateContextParameterCommand extends Command {
                     return;
                 }
                 for (IContext context : listContext) {
-                    for (IContextParameter param : context.getContextParameterList()) {
-                        ContextItem item = null;
-                        if (names != null && names.contains(param.getName())) {
-                            switch (result.getResultType()) {
-                            case DELETE:
-                                item = (ContextItem) result.getParameter();
+                        for (IContextParameter param : context.getContextParameterList()) {
+                            ContextItem item = null;
+                            if (names != null && names.contains(param.getName())) {
+                                switch (result.getResultType()) {
+                                case DELETE:
+                                    item = (ContextItem) result.getParameter();
 
-                                if (item != null && item.getProperty().getId().equals(param.getSource()) && result.isChecked()) {
-                                    // delete it later
-                                    deleteParameters.addParameter(context, param);
-                                } else {
-                                    param.setSource(IContextParameter.BUILT_IN);
-                                }
-                                break;
-                            case UPDATE:
-                                item = (ContextItem) result.getParameter();
-
-                                if (item != null && item.getProperty().getId().equals(param.getSource()) && result.isChecked()) {
-
-                                    ContextUtils.updateParameterFromRepository(item, param, context.getName());
-                                } else {
-                                    param.setSource(IContextParameter.BUILT_IN);
-                                }
-                                break;
-                            case RENAME:
-                                List<Object> parameter = (List<Object>) result.getParameter();
-                                if (parameter.size() >= 3) {
-                                    item = (ContextItem) parameter.get(0);
-                                    String sourceId = item.getProperty().getId();
-                                    String oldName = (String) parameter.get(1);
-                                    String newName = (String) parameter.get(2);
-                                    if (oldName.equals(param.getName()) && sourceId.equals(param.getSource())) {
-                                        if (newName != null) {
-                                            param.setName(newName);
-                                            ContextUtils.updateParameterFromRepository(item, param, context.getName());
-                                        }
+                                    if (item != null && item.getProperty().getId().equals(param.getSource())
+                                            && result.isChecked()) {
+                                        // delete it later
+                                        deleteParameters.addParameter(context, param);
+                                    } else {
+                                        param.setSource(IContextParameter.BUILT_IN);
                                     }
+                                    break;
+                                case UPDATE:
+                                if (contextItemGroupNames.contains(context.getName())) {
+                                    item = (ContextItem) result.getParameter();
 
+                                    if (item != null && item.getProperty().getId().equals(param.getSource())
+                                            && result.isChecked()) {
+
+                                        ContextUtils.updateParameterFromRepository(item, param, context.getName());
+                                    } else {
+                                        param.setSource(IContextParameter.BUILT_IN);
+                                    }
                                 }
-                                break;
-                            case BUIL_IN: // built-in
-                            default:
-                                param.setSource(IContextParameter.BUILT_IN);
-                                break;
-                            }
-                        }
-                    }
+                                    break;
+                                case RENAME:
+                                    List<Object> parameter = (List<Object>) result.getParameter();
+                                    if (parameter.size() >= 3) {
+                                        item = (ContextItem) parameter.get(0);
+                                        String sourceId = item.getProperty().getId();
+                                        String oldName = (String) parameter.get(1);
+                                        String newName = (String) parameter.get(2);
+                                        if (oldName.equals(param.getName()) && sourceId.equals(param.getSource())) {
+                                            if (newName != null) {
+                                                param.setName(newName);
+                                                ContextUtils.updateParameterFromRepository(item, param, context.getName());
+                                            }
+                                        }
 
+                                    }
+                                    break;
+                                case BUIL_IN: // built-in
+                                default:
+                                    param.setSource(IContextParameter.BUILT_IN);
+                                    break;
+                                }
+                            }
+                    }
                 }
             }
 

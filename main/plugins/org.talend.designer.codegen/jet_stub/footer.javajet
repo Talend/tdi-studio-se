@@ -506,11 +506,14 @@
             if (inContext == null) {
                 inContext = <%=className%>.class.getClassLoader().getResourceAsStream("config/contexts/" + contextStr + ".properties");
             }
-            if (inContext != null && context != null && context.isEmpty()) {
+            if (inContext != null) {
                 //defaultProps is in order to keep the original context value
-                defaultProps.load(inContext);
+                if(context != null && context.isEmpty()) {
+	                defaultProps.load(inContext);
+	                context = new ContextProperties(defaultProps);
+                }
+                
                 inContext.close();
-                context = new ContextProperties(defaultProps);
             } else if (!isDefaultContext) {
                 //print info and job continue to run, for case: context_param is not empty.
                 System.err.println("Could not find the context " + contextStr);
@@ -1161,8 +1164,12 @@ if (execStat) {
 			if(conn_<%=hbaseComponent.getUniqueName()%> != null )
 	        {
 			<%
-				if((isCustom && isHadoop2) || (!isCustom && hbaseDistrib.doSupportNewHBaseAPI())) {%>
-		        org.apache.hadoop.hbase.client.HConnection hConnection_<%=hbaseComponent.getUniqueName() %> = org.apache.hadoop.hbase.client.HConnectionManager.getConnection(conn_<%=hbaseComponent.getUniqueName() %>);
+		        if((isCustom && isHadoop2) || (!isCustom && hbaseDistrib.doSupportNewHBaseAPI())) {
+		            if (!hbaseDistrib.doSupportHBase2x()) {%>
+                                org.apache.hadoop.hbase.client.HConnection hConnection_<%=hbaseComponent.getUniqueName() %> = org.apache.hadoop.hbase.client.HConnectionManager.getConnection(conn_<%=hbaseComponent.getUniqueName() %>);
+                         <% } else {%>
+                                org.apache.hadoop.hbase.client.Connection hConnection_<%=hbaseComponent.getUniqueName() %> = org.apache.hadoop.hbase.client.ConnectionFactory.createConnection(conn_<%=hbaseComponent.getUniqueName() %>);
+                         <% }%>
 		        if ((hConnection_<%=hbaseComponent.getUniqueName() %> != null) && (!hConnection_<%=hbaseComponent.getUniqueName() %>.isClosed())) {
 				    hConnection_<%=hbaseComponent.getUniqueName() %>.close();
 			}

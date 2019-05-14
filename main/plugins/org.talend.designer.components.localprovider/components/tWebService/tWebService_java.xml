@@ -149,7 +149,7 @@
             </ITEMS>
         </PARAMETER>-->
         <PARAMETER NAME="ENDPOINT" FIELD="TEXT" REQUIRED="true" NUM_ROW="62" SHOW="false"  REPOSITORY_VALUE="ENDPOINT">
-            <DEFAULT>"http://www.webservicex.net/country.asmx?WSDL"</DEFAULT>
+            <DEFAULT>"http://wsf.cdyne.com/WeatherWS/Weather.asmx?WSDL"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER NAME="SERVICE_NS" FIELD="TEXT" REQUIRED="true" NUM_ROW="63" SHOW="false" REPOSITORY_VALUE="SERVICE_NS">
@@ -365,6 +365,18 @@
                 REQUIRED="true"
             />
 
+			<IMPORT
+                NAME="jaxb-api"
+                MODULE="jaxb-api-2.2.6.jar"
+                MVN="mvn:javax.xml.bind/jaxb-api/2.2.6"
+                REQUIRED="true"
+            />
+            <IMPORT
+                NAME="javax.annotation-api"
+                MODULE="javax.annotation-api-1.3.jar"
+                MVN="mvn:javax.annotation/javax.annotation-api/1.3"
+                REQUIRED="true"
+            />
             <IMPORT
                 NAME="jaxb-xjc"
                 MODULE="jaxb-xjc-2.2.6-modified.jar"

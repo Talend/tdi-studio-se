@@ -20,12 +20,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.talend.commons.utils.VersionUtils;
+import org.talend.core.CorePlugin;
+import org.talend.core.context.Context;
+import org.talend.core.context.RepositoryContext;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.properties.PropertiesFactory;
+import org.talend.core.model.properties.Property;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * DOC hwang  class global comment. Detailled comment
@@ -36,7 +43,11 @@ public class UpgradeElementHelperTest {
     public void renameDataTest() {
         IComponent testComponent = ComponentsFactoryProvider.getInstance().get("tRunJob",
                 ComponentCategory.CATEGORY_4_DI.getName());
-        INode node = new Node(testComponent);
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
+        property.setVersion(VersionUtils.DEFAULT_VERSION);
+        Process process = new Process(property);
+        INode node = new Node(testComponent, process);
         IElementParameter ePara = node.getElementParameter("CONTEXTPARAMS");
         if(ePara != null) {
             List<Map<String, String>> tableValues = new ArrayList<>();

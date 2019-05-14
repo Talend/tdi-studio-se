@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
@@ -121,7 +120,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
         IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         setTitle(Messages.getString("ImportProjectAsWizardPage.title")); //$NON-NLS-1$
-        setDescription(Messages.getString("ImportProjectAsWizardPage.description", brandingService.getShortProductName())); //$NON-NLS-1$
+        setDescription(Messages.getString("ImportProjectAsWizardPage.importDescription", brandingService.getShortProductName())); //$NON-NLS-1$
 
         nameStatus = createOkStatus();
         fileNameStatus = createOkStatus();

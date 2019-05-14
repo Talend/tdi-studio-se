@@ -29127,10 +29127,10 @@
                 UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))" />
             <IMPORT
-                NAME="commons-lang3-3.3.2.jar"
-                MODULE="commons-lang3-3.3.2.jar"
-                MVN="mvn:org.talend.libraries/commons-lang3-3.3.2/6.0.0"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.3.2.jar"
+                NAME="commons-lang3-3.8.1.jar"
+                MODULE="commons-lang3-3.8.1.jar"
+                MVN="mvn:org.apache.commons/commons-lang3/3.8.1"
+                UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.8.1.jar"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))" />
             <IMPORT
                 NAME="gson-2.3.1"

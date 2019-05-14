@@ -170,8 +170,8 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 			}
 		}
 
-			org.apache.commons.httpclient.protocol.Protocol myhttps = new org.apache.commons.httpclient.protocol.Protocol("https", new SocketFactory_<%=cid%>(), 443);
-			org.apache.commons.httpclient.protocol.Protocol.registerProtocol("https", myhttps);
+			org.apache.commons.httpclient.protocol.Protocol myhttps_<%=cid%> = new org.apache.commons.httpclient.protocol.Protocol("https", new SocketFactory_<%=cid%>(), 443);
+			org.apache.commons.httpclient.protocol.Protocol.registerProtocol("https", myhttps_<%=cid%>);
 <%
 	}
 %>
