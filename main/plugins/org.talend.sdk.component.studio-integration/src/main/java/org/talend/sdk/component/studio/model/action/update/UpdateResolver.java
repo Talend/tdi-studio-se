@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,8 +29,6 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.update.UpdateAction;
-import org.talend.sdk.component.studio.model.action.update.UpdateCommand;
 import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.PathCollector;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
@@ -41,21 +40,36 @@ public class UpdateResolver extends AbstractParameterResolver {
     private final ButtonParameter button;
 
     public UpdateResolver(final IElement element, final EComponentCategory category, final int rowNumber,
-            final UpdateAction action, final PropertyNode actionOwner, final Collection<ActionReference> actions,
-                          final ElementParameter redrawParameter, final Map<String, IElementParameter> settings) {
+                          final UpdateAction action, final PropertyNode actionOwner, final Collection<ActionReference> actions,
+                          final ElementParameter redrawParameter, final Map<String, IElementParameter> settings,
+                          final BooleanSupplier isShown) {
         super(action, actionOwner,
                 getActionRef(actions,
                         actionOwner.getProperty().getUpdatable().orElseThrow(IllegalStateException::new).getActionName(),
                         Action.Type.UPDATE));
 
-        this.button = new ButtonParameter(element);
+        this.button = new ButtonParameter(element) {
+            @Override
+            public boolean isShow(final List<? extends IElementParameter> listParam) {
+                return isShown.getAsBoolean();
+            }
+
+            @Override
+            public boolean isShow(final String conditionShowIf, final String conditionNotShowIf,
+                                  final List<? extends IElementParameter> listParam) {
+                return isShown.getAsBoolean();
+            }
+        };
         button.setCategory(category);
         button.setDisplayName(actionRef.getDisplayName());
         button.setName(actionOwner.getProperty().getPath() + PropertyNode.UPDATE_BUTTON);
         button.setNumRow(rowNumber);
-        button.setShow(true);
         button.setRedrawParameter(redrawParameter);
         settings.put(button.getName(), button);
+    }
+
+    public ButtonParameter getButton() {
+        return button;
     }
 
     @Override

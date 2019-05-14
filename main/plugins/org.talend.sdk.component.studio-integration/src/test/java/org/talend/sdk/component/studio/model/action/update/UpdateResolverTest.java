@@ -56,7 +56,7 @@ public class UpdateResolverTest {
         final ActionMock action = new ActionMock(actionRef.getName(), actionRef.getFamily());
         final Map<String, IElementParameter> settings = component.getSettings();
         final UpdateResolver resolver = new UpdateResolver(null, EComponentCategory.ADVANCED, 0,
-                action, actionOwner,actions, null, settings);
+                action, actionOwner,actions, null, settings, () -> true);
 
         resolver.resolveParameters(settings);
 
