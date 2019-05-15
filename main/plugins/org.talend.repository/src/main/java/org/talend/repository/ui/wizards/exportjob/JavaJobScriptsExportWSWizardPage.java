@@ -591,18 +591,10 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         JobExportType jobExportType = getCurrentExportType1();
         switch (jobExportType) {
         case OSGI:
-            if (isAddMavenScript()) {
-                dialog.setFilterExtensions(new String[] { "*" + FileConstants.ZIP_FILE_SUFFIX, "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
-            } else {
-                dialog.setFilterExtensions(new String[] { "*" + FileConstants.JAR_FILE_SUFFIX, "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
-            }
+            dialog.setFilterExtensions(new String[] { "*" + FileConstants.JAR_FILE_SUFFIX, "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
             break;
         case MSESB:
-            if (isAddMavenScript()) {
-                dialog.setFilterExtensions(new String[] { "*" + FileConstants.ZIP_FILE_SUFFIX, "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
-            } else {
-                dialog.setFilterExtensions(new String[] { "*" + FileConstants.JAR_FILE_SUFFIX, "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
-            }
+            dialog.setFilterExtensions(new String[] { "*" + FileConstants.JAR_FILE_SUFFIX, "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
             break;
         default:
             dialog.setFilterExtensions(new String[] { "*" + FileConstants.ZIP_FILE_SUFFIX, "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
@@ -622,11 +614,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             return;
         }
         String idealSuffix;
-        if (isAddMavenScript()) {
-            idealSuffix = FileConstants.ZIP_FILE_SUFFIX;
-        } else {
-            idealSuffix = getOutputSuffix();
-        }
+        idealSuffix = getOutputSuffix();
         if (!selectedFileName.endsWith(idealSuffix)) {
             selectedFileName += idealSuffix;
         }
@@ -1065,10 +1053,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             exportChoiceMap.put(ExportChoice.needContext, true);
             exportChoiceMap.put(ExportChoice.needJobItem, false);
             exportChoiceMap.put(ExportChoice.needSourceCode, false);
-            exportChoiceMap.put(ExportChoice.binaries, !isAddMavenScript());
-            if (addBSButton != null) {
-                exportChoiceMap.put(ExportChoice.needMavenScript, addBSButton.getSelection());
-            }
+            exportChoiceMap.put(ExportChoice.binaries, true);
+
             return exportChoiceMap;
         }
 
@@ -1077,14 +1063,12 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             exportChoiceMap.put(ExportChoice.needContext, true);
             exportChoiceMap.put(ExportChoice.needJobItem, false);
             exportChoiceMap.put(ExportChoice.needSourceCode, false);
-            exportChoiceMap.put(ExportChoice.binaries, !isAddMavenScript());
+            exportChoiceMap.put(ExportChoice.binaries, true);
             if (exportMSAsZipButton != null) {
                 exportChoiceMap.put(ExportChoice.needAssembly, exportMSAsZipButton.getSelection());
                 exportChoiceMap.put(ExportChoice.needLauncher, exportMSAsZipButton.getSelection());
             }
-            if (addBSButton != null) {
-                exportChoiceMap.put(ExportChoice.needMavenScript, addBSButton.getSelection());
-            }
+
             return exportChoiceMap;
         }
 
@@ -1121,7 +1105,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         exportChoiceMap.put(ExportChoice.needUserRoutine, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needTalendLibraries, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needMetaInfo, true);
-        exportChoiceMap.put(ExportChoice.binaries, !isAddMavenScript());
+        exportChoiceMap.put(ExportChoice.binaries, true);
         // TDQ-15391: when have tDqReportRun, must always export items.
         if (EmfModelUtils.getComponentByName(getProcessItem(), "tDqReportRun") != null) { //$NON-NLS-1$
             exportChoiceMap.put(ExportChoice.needJobItem, Boolean.TRUE);
@@ -1329,20 +1313,10 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    boolean show = addBSButton.getSelection();
                     String destinationValue = getDestinationValue();
-                    if (destinationValue.endsWith(getOutputSuffix())) {
-                        if (show) {
-                            destinationValue =
-                                    destinationValue.substring(0, destinationValue.indexOf(getOutputSuffix()))
-                                            + OUTPUT_FILE_SUFFIX;
-                        }
-                    } else if (destinationValue.endsWith(OUTPUT_FILE_SUFFIX)) {
-                        if (!show) {
-                            destinationValue =
-                                    destinationValue.substring(0, destinationValue.indexOf(OUTPUT_FILE_SUFFIX))
-                                            + getOutputSuffix();
-                        }
+                    if (destinationValue.endsWith(OUTPUT_FILE_SUFFIX)) {
+                        destinationValue = destinationValue.substring(0, destinationValue.indexOf(OUTPUT_FILE_SUFFIX))
+                                + getOutputSuffix();
                     }
                     setDestinationValue(destinationValue);
 
@@ -1422,18 +1396,10 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                boolean show = addBSButton.getSelection();
                 String destinationValue = getDestinationValue();
-                if (destinationValue.endsWith(getOutputSuffix())) {
-                    if (show) {
-                        destinationValue = destinationValue.substring(0, destinationValue.indexOf(getOutputSuffix()))
-                                + OUTPUT_FILE_SUFFIX;
-                    }
-                } else if (destinationValue.endsWith(OUTPUT_FILE_SUFFIX)) {
-                    if (!show) {
-                        destinationValue = destinationValue.substring(0, destinationValue.indexOf(OUTPUT_FILE_SUFFIX))
-                                + getOutputSuffix();
-                    }
+                if (destinationValue.endsWith(OUTPUT_FILE_SUFFIX)) {
+                    destinationValue = destinationValue.substring(0, destinationValue.indexOf(OUTPUT_FILE_SUFFIX))
+                            + getOutputSuffix();
                 }
                 setDestinationValue(destinationValue);
             }
