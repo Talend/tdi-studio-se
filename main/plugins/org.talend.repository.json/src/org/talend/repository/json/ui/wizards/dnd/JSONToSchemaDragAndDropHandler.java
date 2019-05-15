@@ -371,6 +371,7 @@ public class JSONToSchemaDragAndDropHandler {
 
             }
             linker.updateLinksStyleAndControlsSelection(control, true);
+            linker.getFieldsTableEditorView().getTableViewerCreator().getTableViewer().refresh();
         }
 
     }
