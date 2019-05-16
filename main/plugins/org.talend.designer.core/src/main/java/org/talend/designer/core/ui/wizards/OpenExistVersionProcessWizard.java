@@ -272,7 +272,7 @@ public class OpenExistVersionProcessWizard extends Wizard {
                     if (editorPart == null) {
                         fileEditorInput.setRepositoryNode(node);
                         if (item instanceof ProcessItem) {
-                            page.openEditor(fileEditorInput, MultiPageTalendEditor.ID, true);
+                            page.openEditor(fileEditorInput, MultiPageTalendEditor.ID, readonly);
                         } else if (item instanceof BusinessProcessItem) {
                             CorePlugin.getDefault().getDiagramModelService().openBusinessDiagramEditor(page, fileEditorInput);
                         } else {

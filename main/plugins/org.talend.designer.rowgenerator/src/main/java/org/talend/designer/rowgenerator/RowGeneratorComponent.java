@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -137,7 +139,10 @@ public class RowGeneratorComponent extends AbstractExternalNode {
         initRowGeneratorMain();
         rowGeneratorMain.createModelFromExternalData(getIODataComponents(), getMetadataList(), externalData, true);
         Dialog dialog = rowGeneratorMain.createRowGeneratorDialog(parent.getShell());
-        dialog.open();
+        int returnCode = dialog.open();
+        if (returnCode == Window.OK) {
+            return SWT.OK;
+        }
         return rowGeneratorMain.getMapperDialogResponse();
     }
 
