@@ -17,9 +17,15 @@ imports="
 	    }
 	    
 		public void setURL(INode node) {
+			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 		%>
-			String url_<%=cid %> ="jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=dbname%>;
+				String url_<%=cid %> ="jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=dbname%>;
+			<%
+			} else {
+	    	%>
+	    		String url_<%=cid %> ="jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=dbname%> + "?" + <%=dbproperties%>;
 		<%
+			}
 		}
 		
 		public String getDirverClassName(INode node){

@@ -26,6 +26,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String dbhost = ElementParameterParser.getValue(node, "__HOST__");
 	String dbport = ElementParameterParser.getValue(node, "__PORT__");
 	String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+	String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 	String dbuser = ElementParameterParser.getValue(node, "__USER__");
 	String dbtable = ElementParameterParser.getValue(node, "__TABLE__");
 	String tableAction = ElementParameterParser.getValue(node, "__TABLE_ACTION__");
@@ -116,7 +117,17 @@ skeleton="../templates/db_output_bulk.skeleton"
 		%>
 		String driverClass_<%=cid%> = "org.netezza.Driver";
 		java.lang.Class.forName(driverClass_<%=cid%>);
-		String url_<%=cid%> = "jdbc:netezza://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+		<%
+        if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+            %>
+			String url_<%=cid%> = "jdbc:netezza://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+			<%
+        } else {
+            %>
+            String url_<%=cid%> = "jdbc:netezza://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+            <%
+        }       
+        %>
 		String dbUser_<%=cid %> = <%=dbuser%>;
 	        
 		<%
