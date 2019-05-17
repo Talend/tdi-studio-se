@@ -347,11 +347,11 @@ public class ProcessManager implements AutoCloseable {
     }
 
     private void reloadProperties() {
-        final String value = TaCoKitUtil.getInstalledComponentsString(new NullProgressMonitor());
-        if (value == null) {
-            return;
-        }
         try {
+            final String value = TaCoKitUtil.getInstalledComponentsString(new NullProgressMonitor());
+            if (value == null) {
+                return;
+            }
             System.setProperty(TaCoKitConst.PROP_COMPONENT, value);
         } catch (Exception e) {
             ExceptionHandler.process(e);
