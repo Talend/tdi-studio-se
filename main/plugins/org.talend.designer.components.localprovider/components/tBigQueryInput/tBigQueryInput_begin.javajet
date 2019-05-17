@@ -197,7 +197,7 @@
 		<%
 		if(isLog4jEnabled){
 		%>
-			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> allowLargeResults flag");
+			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> the allowLargeResults flag");
 		<%
 		}
 		%>
@@ -250,7 +250,7 @@
 		job_<%=cid%> = job_<%=cid%>.waitFor();
 		
 		if (job_<%=cid%>.getStatus().getError() != null && "responseTooLarge".equals(job_<%=cid%>.getStatus().getError().getReason()) && "AUTO".equals("<%=resultSizeType%>")) {
-			log.info("<%=cid%> - Try with allow large results flag");
+			log.info("<%=cid%> - Try with the allowLargeResults flag");
 			com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration1_<%=cid%> = 
 																com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>)
 																.setUseLegacySql(<%=useLegacySql%>)
