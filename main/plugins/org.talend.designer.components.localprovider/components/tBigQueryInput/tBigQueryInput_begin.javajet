@@ -197,7 +197,7 @@
 		<%
 		if(isLog4jEnabled){
 		%>
-			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> allow large results flag");
+			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> allowLargeResults flag");
 		<%
 		}
 		%>
