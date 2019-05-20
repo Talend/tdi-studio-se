@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
@@ -51,6 +52,11 @@ import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
  * PropertyChangeListener refreshes layout after each IElementParameter value update
  */
 public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite {
+
+    /**
+     * Indent between component options on properties form
+     */
+    private static final int OPTIONS_INDENT = Platform.getOS().equals(Platform.OS_LINUX) ? 0 : 2;
 
     private List<? extends IElementParameter> parameters;
 
@@ -299,7 +305,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
     protected Control addWidget(final Composite parent, final IElementParameter parameter, final Control previous) {
         final AbstractElementPropertySectionController controller =
                 generator.getController(parameter.getFieldType(), this);
-        return controller.createControl(parent, parameter, 1, 1, 0, previous);
+        return controller.createControl(parent, parameter, 1, 1, OPTIONS_INDENT, previous);
     }
 
     /**
