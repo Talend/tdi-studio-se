@@ -51,8 +51,10 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.ui.runtime.image.ImageUtils.ICON_SIZE;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
+import org.talend.commons.ui.swt.colorstyledtext.UnnotifiableColorStyledText;
 import org.talend.commons.ui.swt.drawing.background.BackgroundRefresher;
 import org.talend.commons.ui.swt.linking.BgDrawableComposite;
+import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.commons.utils.threading.ExecutionLimiterImproved;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.metadata.IMetadataColumn;
@@ -71,6 +73,7 @@ import org.talend.designer.mapper.managers.MapperManager;
 import org.talend.designer.mapper.managers.UIManager;
 import org.talend.designer.mapper.model.MapperModel;
 import org.talend.designer.mapper.model.table.AbstractDataMapTable;
+import org.talend.designer.mapper.model.table.AbstractInOutTable;
 import org.talend.designer.mapper.model.table.InputTable;
 import org.talend.designer.mapper.model.table.OutputTable;
 import org.talend.designer.mapper.model.table.VarsTable;
@@ -243,6 +246,7 @@ public class MapperUI {
             }
 
             public void shellClosed(ShellEvent e) {
+                checkExpressionFilter();
                 UIManager uiManager = mapperManager.getUiManager();
                 if (uiManager.getMapperResponse() == SWT.NONE) {
                     for (DataMapTableView dataMapTableView : uiManager.getInputsTablesView()) {
@@ -323,6 +327,33 @@ public class MapperUI {
         mapperShell.open();
         return mapperShell;
 
+    }
+
+    private void checkExpressionFilter() {
+        // TUP-22701 for MAC won't trigger focusLost
+        if (!EnvironmentUtils.isMacOsSytem()) {
+            return;
+        }
+        UIManager uiManager = mapperManager.getUiManager();
+        for (DataMapTableView inputTableView : uiManager.getInputsTablesView()) {
+            setExpressionFilterOnfocusForShellClose(inputTableView);
+        }
+        for (DataMapTableView outputTableView : uiManager.getOutputsTablesView()) {
+            setExpressionFilterOnfocusForShellClose(outputTableView);
+        }
+    }
+
+    private void setExpressionFilterOnfocusForShellClose(DataMapTableView dataMapTableView) {
+        UnnotifiableColorStyledText expressionFilterText = dataMapTableView.getExpressionFilterText();
+        if (!expressionFilterText.isFocusControl()) {
+            return;
+        }
+        if ("".equals(expressionFilterText.getText().trim())) {
+            expressionFilterText.setText("");
+        }
+        final AbstractInOutTable table = (AbstractInOutTable) dataMapTableView.getDataMapTable();
+        dataMapTableView.setExpressionFilterFromStyledText(table, expressionFilterText);
+        dataMapTableView.checkProblemsForExpressionFilter(false, true);
     }
 
     public void createCompositeContent(MapperModel mapperModel) {

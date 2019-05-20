@@ -3097,7 +3097,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
      * @param table
      * @param text
      */
-    private void setExpressionFilterFromStyledText(final AbstractInOutTable table, Control text) {
+    public void setExpressionFilterFromStyledText(final AbstractInOutTable table, Control text) {
         String currentContent = ControlUtils.getText(text);
         if (isFilterEqualsToDefault(currentContent)) {
             table.getExpressionFilter().setExpression(null);
