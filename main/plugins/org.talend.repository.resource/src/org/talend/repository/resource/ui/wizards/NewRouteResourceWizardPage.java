@@ -65,7 +65,7 @@ public class NewRouteResourceWizardPage extends PropertiesWizardPage {
 	public NewRouteResourceWizardPage(Property property, IPath destinationPath) {
 		super("WizardPage", property, destinationPath); //$NON-NLS-1$
 
-		setTitle(Messages.getString("NewRouteResourceWizardPage.title")); //$NON-NLS-1$
+        setTitle(Messages.getString("NewRouteResourceWizardPage.update.title")); //$NON-NLS-1$
 		setDescription(Messages.getString("NewRouteResourceWizardPage.desc")); //$NON-NLS-1$
 	}
 
@@ -96,7 +96,7 @@ public class NewRouteResourceWizardPage extends PropertiesWizardPage {
 					File file = new File(filenameText.getText());
 					String fileName = file.getName();
 					if (nameText.getText().isEmpty()) {
-						nameText.setText(fileName); //$NON-NLS-1$ //$NON-NLS-2$
+						nameText.setText(fileName); 
 					}
 					evaluateFields();
 				}
