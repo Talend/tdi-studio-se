@@ -2,7 +2,6 @@ package com.talend.compress.zip;
 
 import java.io.File;
 import java.util.List;
-
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 
@@ -123,6 +122,7 @@ public class Unzip {
 			}
 
 			zipFile.extractFile(fileHeader, targetDir, null, filename);
+			util.addUnzippedFiles(targetDir, filename);
 		}
 	}
 

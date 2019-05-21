@@ -131,4 +131,11 @@ public class Util {
 		}
 		return fileEntry;
 	}
+	
+	// This function is used for extract file with password.
+	public void addUnzippedFiles(String path, String fileName) 
+			throws java.lang.Exception{
+		java.io.File f = new java.io.File(path, fileName);
+		unzippedFiles.add(new UnzippedFile(f.getName(), f.getAbsolutePath()));
+	}
 }
