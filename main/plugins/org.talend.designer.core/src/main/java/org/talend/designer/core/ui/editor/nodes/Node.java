@@ -1381,7 +1381,8 @@ public class Node extends Element implements IGraphicalNode {
                                 // MetadataTool.copyTable(inputTable, targetTable);
                                 // add by wzhang for feature 7611.
                                 String dbmsId = targetTable.getDbms();
-                                MetadataToolHelper.copyTable(dbmsId, inputTable, targetTable);
+                                MetadataToolHelper.copyTable(inputTable, targetTable, null, false, true);
+                                MetadataToolHelper.setDBType(targetTable, dbmsId);
                                 ChangeMetadataCommand cmc = new ChangeMetadataCommand(this, null,
                                         tmpTableCreated ? targetTable : null, targetTable, inputSchemaParam);
                                 cmc.execute();
