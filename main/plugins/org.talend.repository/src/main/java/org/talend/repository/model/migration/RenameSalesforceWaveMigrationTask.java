@@ -123,7 +123,7 @@ public class RenameSalesforceWaveMigrationTask extends AbstractJobMigrationTask 
     }
 
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2019, 5, 17, 12, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2019, 4, 17, 12, 0, 0);
         return gc.getTime();
     }
 }
