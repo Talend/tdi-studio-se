@@ -22,7 +22,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.database.DriverShim;
-import org.talend.core.sqlbuilder.util.TextUtil;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.model.RepositoryNode;
@@ -167,7 +166,7 @@ public class ExecSQLAction extends AbstractEditorAction {
             return;
         }
 
-        QueryTokenizer qt = new QueryTokenizer(getSQLToBeExecuted(), queryDelimiter, alternateDelimiter, commentDelimiter);
+        QueryTokenizer qt = new QueryTokenizer(editor.getSQLToBeExecuted(), queryDelimiter, alternateDelimiter, commentDelimiter);
 
         List<String> queryStrings = new ArrayList<String>();
         while (qt.hasQuery()) {
@@ -208,16 +207,4 @@ public class ExecSQLAction extends AbstractEditorAction {
             }
         }
     }
-
-    /**
-     * Gets sql for executing.
-     * 
-     * @return string
-     */
-    public String getSQLToBeExecuted() {
-        String sql = editor.getSQLToBeExecuted();
-        sql = TextUtil.calEscapeValue(sql);
-        return sql;
-    }
-
 }

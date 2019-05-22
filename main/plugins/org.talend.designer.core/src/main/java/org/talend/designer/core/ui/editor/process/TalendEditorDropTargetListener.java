@@ -229,6 +229,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     private ConnectionPart selectedConnectionPart = null;
 
+    private boolean sqlChange = false;
+
     /**
      * TalendEditorDropTargetListener constructor comment.
      *
@@ -246,7 +248,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         if (obj instanceof RepositoryNode) {
             RepositoryNode sourceNode = (RepositoryNode) obj;
             if (PluginChecker.isCDCPluginLoaded()) {
-                ICDCProviderService service = (ICDCProviderService) GlobalServiceRegister.getDefault().getService(
+                ICDCProviderService service = GlobalServiceRegister.getDefault().getService(
                         ICDCProviderService.class);
 
                 if (service != null && (service.isSubscriberTableNode(sourceNode) || service.isSystemSubscriberTable(sourceNode))) {
@@ -259,7 +261,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             }
             IOozieService oozieService = null;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IOozieService.class)) {
-                oozieService = (IOozieService) GlobalServiceRegister.getDefault().getService(IOozieService.class);
+                oozieService = GlobalServiceRegister.getDefault().getService(IOozieService.class);
             }
             if (oozieService != null && oozieService.isOozieNode(sourceNode)) {
                 return false;
@@ -267,7 +269,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
             ISAPProviderService sapService = null;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ISAPProviderService.class)) {
-                sapService = (ISAPProviderService) GlobalServiceRegister.getDefault().getService(ISAPProviderService.class);
+                sapService = GlobalServiceRegister.getDefault().getService(ISAPProviderService.class);
             }
             if (sapService != null && sapService.isSAPNode(sourceNode)) {
                 return false;
@@ -734,7 +736,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                             String propertyId = property.getId();
                             String propertyLabel = property.getLabel();
                             List<Map> values = (List<Map>) sqlPatternValue.getValue();
-                            Map<String, String> patternMap = new HashMap<String, String>();
+                            Map<String, String> patternMap = new HashMap<>();
                             boolean contains = false;
                             for (Map map : values) {
                                 String compoundId = (String) map.get(SQLPatternUtils.SQLPATTERNLIST);
@@ -774,7 +776,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 if (item instanceof ContextItem) {
                     ContextItem contextItem = (ContextItem) item;
                     EList context = contextItem.getContext();
-                    Set<String> contextSet = new HashSet<String>();
+                    Set<String> contextSet = new HashSet<>();
                     Iterator iterator = context.iterator();
                     while (iterator.hasNext()) {
                         Object obj = iterator.next();
@@ -805,7 +807,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                         if (addedVars != null && !addedVars.isEmpty()
                                 && !ConnectionContextHelper.isAddContextVar(contextItem, contextManager, contextSet)) {
                             // show
-                            Map<String, Set<String>> addedVarsMap = new HashMap<String, Set<String>>();
+                            Map<String, Set<String>> addedVarsMap = new HashMap<>();
                             addedVarsMap.put(item.getProperty().getLabel(), contextSet);
                             if (ConnectionContextHelper.showContextdialog(process, contextItem, process.getContextManager(),
                                     addedVarsMap, contextSet)) {
@@ -830,7 +832,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
     }
 
     private List<Object> getSelectSource() {
-        List<Object> sourceList = new ArrayList<Object>();
+        List<Object> sourceList = new ArrayList<>();
         Iterator iterator = getSelection().iterator();
         while (iterator.hasNext()) {
             Object obj = iterator.next();
@@ -1037,8 +1039,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         boolean quickCreateInput = event1.detail == DND.DROP_LINK;
         boolean quickCreateOutput = event1.detail == DND.DROP_COPY;
         Iterator iterator = getSelection().iterator();
-        List<TempStore> list = new ArrayList<TempStore>();
-        List<IComponent> components = new ArrayList<IComponent>();
+        List<TempStore> list = new ArrayList<>();
+        List<IComponent> components = new ArrayList<>();
         while (iterator.hasNext()) {
             Object obj = iterator.next();
             if (obj instanceof RepositoryNode) {
@@ -1050,7 +1052,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 Item item = sourceNode.getObject().getProperty().getItem();
 
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                    ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                    ITestContainerProviderService testContainerService = GlobalServiceRegister
                             .getDefault().getService(ITestContainerProviderService.class);
                     if (testContainerService != null && testContainerService.isTestContainerItem(item)) {
                         continue;
@@ -1213,7 +1215,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
     }
 
     private List<NodePart> getAllNodePart(AbstractEditPart part) {
-        List<NodePart> partList = new ArrayList<NodePart>();
+        List<NodePart> partList = new ArrayList<>();
         if (part.getChildren() != null && part.getChildren().size() > 0) {
             for (int i = 0; i < part.getChildren().size(); i++) {
                 if (part.getChildren().get(i) instanceof AbstractEditPart) {
@@ -1332,10 +1334,10 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                                 .isHL7PluginLoaded())) {
                 if (originalConnection instanceof HL7ConnectionImpl) {
                     if (((HL7ConnectionImpl) originalConnection).getRoot() != null) {
-                        List<Map<String, String>> mapList = new ArrayList<Map<String, String>>();
+                        List<Map<String, String>> mapList = new ArrayList<>();
                         for (Object obj : ((HL7ConnectionImpl) originalConnection).getRoot()) {
                             if (obj instanceof HL7FileNode) {
-                                Map<String, String> newMap = new HashMap<String, String>();
+                                Map<String, String> newMap = new HashMap<>();
                                 newMap.put(IHL7Constant.ATTRIBUTE, ((HL7FileNode) obj).getAttribute());
                                 newMap.put(IHL7Constant.PATH, ((HL7FileNode) obj).getFilePath());
                                 newMap.put(IHL7Constant.COLUMN, ((HL7FileNode) obj).getRelatedColumn());
@@ -1376,12 +1378,12 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                                 .isBRMSPluginLoaded())) {
                 if (originalConnection instanceof BRMSConnectionImpl) {
                     if (((BRMSConnectionImpl) originalConnection).getRoot() != null) {
-                        List<Map<String, String>> rootList = new ArrayList<Map<String, String>>();
-                        List<Map<String, String>> loopList = new ArrayList<Map<String, String>>();
-                        List<Map<String, String>> groupList = new ArrayList<Map<String, String>>();
+                        List<Map<String, String>> rootList = new ArrayList<>();
+                        List<Map<String, String>> loopList = new ArrayList<>();
+                        List<Map<String, String>> groupList = new ArrayList<>();
                         for (Object obj : ((BRMSConnectionImpl) originalConnection).getRoot()) {
                             if (obj instanceof XMLFileNode) {
-                                Map<String, String> rootMap = new HashMap<String, String>();
+                                Map<String, String> rootMap = new HashMap<>();
                                 rootMap.put("ATTRIBUTE", ((XMLFileNode) obj).getAttribute()); //$NON-NLS-1$
                                 rootMap.put("PATH", ((XMLFileNode) obj).getXMLPath()); //$NON-NLS-1$
                                 rootMap.put("COLUMN", ((XMLFileNode) obj).getRelatedColumn()); //$NON-NLS-1$
@@ -1393,7 +1395,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                         }
                         for (Object obj : ((BRMSConnectionImpl) originalConnection).getLoop()) {
                             if (obj instanceof XMLFileNode) {
-                                Map<String, String> loopMap = new HashMap<String, String>();
+                                Map<String, String> loopMap = new HashMap<>();
                                 loopMap.put("ATTRIBUTE", ((XMLFileNode) obj).getAttribute()); //$NON-NLS-1$
                                 loopMap.put("PATH", ((XMLFileNode) obj).getXMLPath()); //$NON-NLS-1$
                                 loopMap.put("COLUMN", ((XMLFileNode) obj).getRelatedColumn()); //$NON-NLS-1$
@@ -1404,7 +1406,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                         }
                         for (Object obj : ((BRMSConnectionImpl) originalConnection).getGroup()) {
                             if (obj instanceof XMLFileNode) {
-                                Map<String, String> groupMap = new HashMap<String, String>();
+                                Map<String, String> groupMap = new HashMap<>();
                                 groupMap.put("ATTRIBUTE", ((XMLFileNode) obj).getAttribute()); //$NON-NLS-1$
                                 groupMap.put("PATH", ((XMLFileNode) obj).getXMLPath()); //$NON-NLS-1$
                                 groupMap.put("COLUMN", ((XMLFileNode) obj).getRelatedColumn()); //$NON-NLS-1$
@@ -1436,7 +1438,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             }
             IProxyRepositoryFactory factory = DesignerPlugin.getDefault().getProxyRepositoryFactory();
 
-            Map<String, IMetadataTable> repositoryTableMap = new HashMap<String, IMetadataTable>();
+            Map<String, IMetadataTable> repositoryTableMap = new HashMap<>();
 
             if (!originalConnection.isReadOnly()) {
                 for (Object tableObj : ConnectionHelper.getTables(originalConnection)) {
@@ -1503,6 +1505,11 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
                 QueryRepositoryObject object = (QueryRepositoryObject) selectedNode.getObject();
                 Query query = object.getQuery();
+                if (!sqlChange) {
+                    String sql = query.getValue();
+                    query.setValue(TalendTextUtils.addStrInQuery(sql));
+                    sqlChange = true;
+                }
                 String value = originalConnectionItem.getProperty().getId() + " - " + query.getLabel(); //$NON-NLS-1$
                 if (queryParam != null) {
                     RepositoryChangeQueryCommand command3 = new RepositoryChangeQueryCommand(node, query, queryParam.getName()
@@ -1869,7 +1876,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             }
         }
 
-        List<String> componentNameList = new ArrayList<String>();
+        List<String> componentNameList = new ArrayList<>();
         for (IComponent component : neededComponents) {
             componentNameList.add(component.getName());
         }
@@ -1965,7 +1972,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         // special handle hbase to support tpigLoad
         String hbaseName = EDatabaseTypeName.HBASE.getDisplayName().toUpperCase();
         if (rcSetting != null && (hbaseName).equals(rcSetting.toString())) {
-            IComponentsService service = (IComponentsService) GlobalServiceRegister.getDefault().getService(
+            IComponentsService service = GlobalServiceRegister.getDefault().getService(
                     IComponentsService.class);
             String componentProductname = null;
             Collection<IComponent> components = service.getComponentsFactory().readComponents();
@@ -2119,7 +2126,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
                 EConnectionType connectionType = EConnectionType.FLOW_MAIN;
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-                    ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
+                    ICamelDesignerCoreService camelService = GlobalServiceRegister.getDefault()
                             .getService(ICamelDesignerCoreService.class);
                     if (camelService.isRouteBuilderNode(node)) {
                         connectionType = camelService.getTargetConnectionType(node);
@@ -2137,7 +2144,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 // FIXME perhaps, this is not good fix, need check it later
                 // bug 21411
                 if (PluginChecker.isJobLetPluginLoaded()) {
-                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                    IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                             IJobletProviderService.class);
                     if (service != null && service.isJobletComponent(targetConnection.getTarget())) {
                         if (targetConnection.getTarget() instanceof Node) {
@@ -2271,7 +2278,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
     private boolean isLock(JobletContainerPart part) {
         INode jobletNode = ((JobletContainer) part.getModel()).getNode();
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+            IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                     IJobletProviderService.class);
             if (service != null) {
                 return service.isLock(jobletNode);
@@ -2286,7 +2293,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         Node jobletNode = ((JobletContainer) part.getModel()).getNode();
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+            IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                     IJobletProviderService.class);
             if (service != null) {
                 openEditor = (AbstractMultiPageTalendEditor) service.openJobletEditor(jobletNode, page);
