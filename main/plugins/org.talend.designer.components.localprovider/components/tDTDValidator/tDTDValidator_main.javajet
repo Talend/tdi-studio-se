@@ -66,7 +66,7 @@ String xmlfile = ElementParameterParser.getValue(node, "__XMLFILE__");
 		dbf<%=cid %> = javax.xml.parsers.DocumentBuilderFactory.newInstance();
 		
 		try {
-			dbf<%=cid %>.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			dbf<%=cid %>.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		} catch (java.lang.Exception e_<%=cid%>) {
 			//do nothing
 		}
