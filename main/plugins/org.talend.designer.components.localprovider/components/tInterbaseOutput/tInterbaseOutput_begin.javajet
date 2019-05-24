@@ -32,6 +32,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 
     String dbname= ElementParameterParser.getValue(node, "__DBNAME__");
 
+	String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
+
 	String tableName = ElementParameterParser.getValue(node,"__TABLE__");
 
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
@@ -148,7 +150,17 @@ if(("true").equals(useExistingConn)) {
     %>
     java.lang.Class.forName("<%=javaDbDriver %>");
     <%dbLog.conn().logJDBCDriver(dbLog.str(javaDbDriver));%>
-    String url_<%=cid %> = "jdbc:interbase://" + <%=host%> + "/" + <%=dbname%>;
+    <%
+	if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+	    %>
+    	String url_<%=cid %> = "jdbc:interbase://" + <%=host%> + "/" + <%=dbname%>;
+    	<%
+	} else {
+	    %>
+	    String url_<%=cid %> = "jdbc:interbase://" + <%=host%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+	    <%
+	}
+	%>
     String dbUser_<%=cid%> = <%=username%>;
     <%
     String passwordFieldName = "__PASS__";

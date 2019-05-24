@@ -17,6 +17,11 @@ imports="
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
 	    
+	    public void beforeComponentProcess(INode node){
+			super.beforeComponentProcess(node);
+			cid = node.getUniqueName();
+		}
+	    
 		public void setURL(INode node) {
 			
 			String logLevel= ElementParameterParser.getValue(node, "__LOG_LEVEL__");
@@ -27,9 +32,16 @@ imports="
 					java.sql.DriverManager.setLogWriter(new java.io.PrintWriter(output_<%=cid %>,true));
 				}				
 			com.paraccel.Driver.setLogLevel(<%= logLevel %>);
-
-			String url_<%=cid %> = "jdbc:paraccel://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> +"?prepareThreshold=100&loglevel="+<%= logLevel %>+"&protocolVersion=3";
 <%
+			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+%>
+				String url_<%=cid %> = "jdbc:paraccel://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> +"?prepareThreshold=100&loglevel="+<%= logLevel %>+"&protocolVersion=3";
+<%
+			} else {
+%>
+				String url_<%=cid %> = "jdbc:paraccel://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> +"?prepareThreshold=100&loglevel="+<%= logLevel %>+"&protocolVersion=3" + "&" + <%=dbproperties%>;
+<%
+			}
 		}
 		
 		public String getDirverClassName(INode node){

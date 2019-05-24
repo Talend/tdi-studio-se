@@ -32,6 +32,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     List<Map<String, String>> fieldOptions = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__FIELD_OPTIONS__");
 
     String dbname= ElementParameterParser.getValue(node, "__DBNAME__");
+    
+    String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 
     String dbhost = ElementParameterParser.getValue(node, "__HOST__");
 
@@ -196,7 +198,18 @@ if(("true").equals(useExistingConn)) {
 	%>
 	<%dbLog.conn().logJDBCDriver(dbLog.str("org.postgresql.Driver"));%>
     java.lang.Class.forName("org.postgresql.Driver");
-    String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+    
+    <%
+    if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+        %>
+        String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+        <%
+    } else {
+        %>
+        String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%> + "?" + <%=dbproperties%>;
+        <%
+    }       
+    %>
     dbUser_<%=cid %> = <%=dbuser%>;
     <%
     String passwordFieldName = "__PASS__";

@@ -535,16 +535,46 @@
 			com.google.cloud.bigquery.TableInfo tableInfo_<%=cid%> = com.google.cloud.bigquery.TableInfo.newBuilder(tableId_<%=cid%>, com.google.cloud.bigquery.StandardTableDefinition.of(schema_<%=cid%>)).build();
 			table_<%=cid%> = bigquery_<%=cid%>.create(tableInfo_<%=cid%>);
 			loadJobBuilder_<%=cid%>.setSchema(schema_<%=cid%>);
-			
 		}
 		
+			<%
+				if("true".equals(ElementParameterParser.getValue(node, "__CREATE_TABLE_IF_NOT_EXIST__"))) {
+			%>
+				loadJobBuilder_<%=cid%>.setCreateDisposition(com.google.cloud.bigquery.JobInfo.CreateDisposition.CREATE_IF_NEEDED);
+			<%
+			} else {
+			%>
+				loadJobBuilder_<%=cid%>.setCreateDisposition(com.google.cloud.bigquery.JobInfo.CreateDisposition.CREATE_NEVER);
+			<%
+			}
+			%>
+			
+			<%
+			if("Append".equals(ElementParameterParser.getValue(node, "__ACTION_ON_DATA__"))) {
+			%>
+				loadJobBuilder_<%=cid%>.setWriteDisposition(com.google.cloud.bigquery.JobInfo.WriteDisposition.WRITE_APPEND);
+			<%
+			} else if("Truncate".equals(ElementParameterParser.getValue(node, "__ACTION_ON_DATA__"))) {
+			%>
+				loadJobBuilder_<%=cid%>.setWriteDisposition(com.google.cloud.bigquery.JobInfo.WriteDisposition.WRITE_TRUNCATE);
+				
+			<%
+			}
+		 	else {
+			%>
+				loadJobBuilder_<%=cid%>.setWriteDisposition(com.google.cloud.bigquery.JobInfo.WriteDisposition.WRITE_EMPTY);				
+			<%
+			}
+			%>
+		
+		loadJobBuilder_<%=cid%>.setDestinationTable(tableId_<%=cid%>);
 																				
 		<%if("true".equals(ElementParameterParser.getValue(node, "__SET_FIELD_DELIMITER__"))) {
         %>
          	loadJobBuilder_<%=cid%>.setFormatOptions(com.google.cloud.bigquery.CsvOptions.newBuilder().setFieldDelimiter(<%=fieldDelimiter%>).build());
         <%
         }
-         %>		
+        %>		
 		
 		loadJobBuilder_<%=cid%>.setNullMarker("\\N");																
 		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(loadJobBuilder_<%=cid%>.build()));

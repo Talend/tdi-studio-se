@@ -623,7 +623,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 	               				}
            					}
                				dis.readFully(<%= currentTableName %>Struct.commonByteArray_<%=codeGenArgument.getCurrentProjectName() %>_<%=codeGenArgument.getJobName() %>, 0, length);
-               				this.<%= connection.getName() %>__<%= column.getLabel() %> = new String(<%= currentTableName %>Struct.commonByteArray_<%=codeGenArgument.getCurrentProjectName() %>_<%=codeGenArgument.getJobName() %>, 0, length);
+               				this.<%= connection.getName() %>__<%= column.getLabel() %> = new String(<%= currentTableName %>Struct.commonByteArray_<%= codeGenArgument.getCurrentProjectName() %>_<%=codeGenArgument.getJobName() %>, 0, length, utf8Charset);
            				}
 					<%
 				} else if(("java.util.Date").equals(typeToGenerate)) {
@@ -706,7 +706,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 	               				}
            					}
                				dis.readFully(<%= currentTableName %>Struct.commonByteArray_<%=codeGenArgument.getCurrentProjectName() %>_<%=codeGenArgument.getJobName() %>, 0, length);
-               				this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> = new String(<%= currentTableName %>Struct.commonByteArray_<%=codeGenArgument.getCurrentProjectName() %>_<%=codeGenArgument.getJobName() %>, 0, length);
+               				this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> = new String(<%= currentTableName %>Struct.commonByteArray_<%=codeGenArgument.getCurrentProjectName() %>_<%=codeGenArgument.getJobName() %>, 0, length, utf8Charset);
            				}
 					<%
 				} else if(("byte[]").equals(typeToGenerate)) {
@@ -797,7 +797,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 						if(this.<%= connection.getName() %>__<%= column.getLabel() %> == null) {
 			                dos.writeInt(-1);
 						} else {
-			                byte[] byteArray = this.<%= connection.getName() %>__<%= column.getLabel() %>.getBytes();
+			                byte[] byteArray = this.<%= connection.getName() %>__<%= column.getLabel() %>.getBytes(utf8Charset);
            			    	dos.writeInt(byteArray.length);
                				dos.write(byteArray);
 		            	}
@@ -858,7 +858,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 						if(this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> == null) {
 			                dos.writeInt(-1);
 						} else {
-			                byte[] byteArray = this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %>.getBytes();
+			                byte[] byteArray = this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %>.getBytes(utf8Charset);
            			    	dos.writeInt(byteArray.length);
                				dos.write(byteArray);
 		            	}

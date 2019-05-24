@@ -30,6 +30,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     List<Map<String, String>> fieldOptions = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__FIELD_OPTIONS__");
 
     String dbname= ElementParameterParser.getValue(node, "__DBNAME__");
+    
+    String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 
     String dbhost = ElementParameterParser.getValue(node, "__HOST__");
 
@@ -139,7 +141,17 @@ if(useExistingConnection) {
 	%>
 	java.lang.Class.forName("com.ingres.jdbc.IngresDriver");
 	<%dbLog.conn().logJDBCDriver(dbLog.str("com.ingres.jdbc.IngresDriver"));%>
-	String url_<%=cid %> = "jdbc:ingres://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+	<%
+    if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+        %>
+        String url_<%=cid %> = "jdbc:ingres://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+        <%
+    } else {
+        %>
+        String url_<%=cid %> = "jdbc:ingres://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + ";" + <%=dbproperties%>;
+        <%
+    }       
+    %>
 	String dbUser_<%=cid %> = <%=dbuser%>;
 	<%
 	String passwordFieldName = "__PASS__";

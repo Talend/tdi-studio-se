@@ -20,6 +20,7 @@ INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 String table = ElementParameterParser.getValue(node, "__TABLE__");
 String dbSchema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
+String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 String parallel = ElementParameterParser.getValue(node, "__COPY_MODE__");
 String fileType = ElementParameterParser.getValue(node, "__FILETYPE__");
 String fieldTerminator = ElementParameterParser.getValue(node, "__FIELDS_TERMINATED_BY__");
@@ -204,7 +205,17 @@ java.sql.Connection conn_<%=cid%> = null;
 	 %>
 	 	String driverClass_<%=cid%> = "com.paraccel.Driver";
 		java.lang.Class.forName(driverClass_<%=cid%>).newInstance();
-		String url_<%=cid%> = "jdbc:paraccel://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>+"?prepareThreshold=100&loglevel="+<%= logLevel %>+"&protocolVersion=3";
+		<%
+        if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+            %>
+            String url_<%=cid%> = "jdbc:paraccel://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>+"?prepareThreshold=100&loglevel="+<%= logLevel %>+"&protocolVersion=3";
+            <%
+        } else {
+            %>
+            String url_<%=cid%> = "jdbc:paraccel://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>+"?prepareThreshold=100&loglevel="+<%= logLevel %>+"&protocolVersion=3" + "&" + <%=dbproperties%>;
+            <%
+        }       
+        %>
 		String dbUser_<%=cid%> = <%=userName%>;
 		<%
 		String passwordFieldName = "__PASS__";

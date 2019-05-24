@@ -116,14 +116,14 @@
             id="org.talend.repository.resource.CreateRouteResource"
             isEditAction="true"
             level="1"
-            name="Create Route Resource">
+            name="Create Resource">
       </Action>
       <Action
             class="org.talend.repository.resource.ui.action.EditRouteResourceAction"
             id="org.talend.repository.resource.EditRouteResourceAction"
             isEditAction="true"
             level="3"
-            name="Edit Route Resource">
+            name="Edit Resource">
       </Action>
       <Action
             class="org.talend.repository.resource.ui.action.OpenDefaultEditorAction"

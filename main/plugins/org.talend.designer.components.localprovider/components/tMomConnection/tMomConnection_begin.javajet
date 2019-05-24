@@ -99,6 +99,7 @@ class="MomConnection"
 		if(isUseSharedConnection){
 		%>
 			javax.jms.Connection connection_<%=cid %> = org.talend.mq.SharedActiveMQConnection.getMQConnection(url_<%=cid %>,<%=dbuser%>,decryptedPassword_<%=cid%>,<%=sharedConnectionName%>);
+			globalMap.put("connection_<%=cid%>", connection_<%=cid %>);
 		<%
 		}else{
 		%>
@@ -123,7 +124,7 @@ class="MomConnection"
 			<%
 			}
 			%>
-		
+		    globalMap.put("connection_<%=cid%>", connection_<%=cid %>);
 		    connection_<%=cid %>.start();
 		    <%
 			if(isLog4jEnabled){
@@ -139,7 +140,6 @@ class="MomConnection"
 		}
 		%>
 		
-	    globalMap.put("connection_<%=cid%>", connection_<%=cid %>);
 	    javax.jms.Session session_<%=cid %> = connection_<%=cid %>.createSession(<%=transacted%>, javax.jms.Session.<%=acknowledgmentMode%>);
 	    globalMap.put("session_<%=cid %>", session_<%=cid %>);
 		<%

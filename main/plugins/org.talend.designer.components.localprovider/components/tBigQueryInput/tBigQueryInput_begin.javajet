@@ -28,7 +28,8 @@
 	String authorizationCode = ElementParameterParser.getValue(node,"__AUTHORIZATION_CODE__");
 	String query = ElementParameterParser.getValue(node,"__QUERY__");
 	boolean useLegacySql = ElementParameterParser.getBooleanValue(node,"__USE_LEGACY_SQL__");
-	
+	String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
+
 	query = query.replaceAll("\n"," ");
 	query = query.replaceAll("\r"," ");
 	
@@ -177,9 +178,7 @@
 		}
 	
 	
-		<%
-		String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
-		%>
+		
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/tBigQueryInput/BigQueryInputQueryHelper.javajet"%>	
 	
 		// Start a Query Job
@@ -198,7 +197,7 @@
 		<%
 		if(isLog4jEnabled){
 		%>
-			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> allow large results flag");
+			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> the allowLargeResults flag");
 		<%
 		}
 		%>
@@ -220,6 +219,11 @@
 		try(java.io.FileInputStream credentialsStream_<%=cid%> = new java.io.FileInputStream(credentialsFile_<%=cid%>)) {
 		    credentials_<%=cid%> = com.google.auth.oauth2.ServiceAccountCredentials.fromStream(credentialsStream_<%=cid%>);
 		}
+		String query_<%=cid%> = <%=query%>;
+		String dataset = query_<%=cid%>.substring(query_<%=cid%>.indexOf("from") + 4, query_<%=cid%>.indexOf(".")).trim();
+		String temp_table = "temp_" + dataset + java.util.UUID.randomUUID().toString().replaceAll("-", "") 
+													 + "<%=cid%>".toLowerCase().replaceAll("[^a-z0-9]", "0").replaceAll("^[^a-z]", "a") 
+													 + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
 
 		com.google.cloud.bigquery.BigQuery bigquery_<%=cid%> = com.google.cloud.bigquery.BigQueryOptions.newBuilder()
 				.setCredentials(credentials_<%=cid%>)
@@ -227,7 +231,12 @@
 				.build()
 				.getService();
 				
-		com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>).build();
+		com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration_<%=cid%> = 
+																com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>)
+																.setUseLegacySql(<%=useLegacySql%>)
+																.setDestinationTable(com.google.cloud.bigquery.TableId.of(dataset, temp_table))
+																.setAllowLargeResults(<%="LARGE".equals(resultSizeType) ? true : false%>)
+																.build();
 		com.google.cloud.bigquery.JobId jobId_<%=cid%> = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
 		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>).setJobId(jobId_<%=cid%>).build());
 
@@ -239,7 +248,19 @@
 		}
 		%>
 		job_<%=cid%> = job_<%=cid%>.waitFor();
-
+		
+		if (job_<%=cid%>.getStatus().getError() != null && "responseTooLarge".equals(job_<%=cid%>.getStatus().getError().getReason()) && "AUTO".equals("<%=resultSizeType%>")) {
+			log.info("<%=cid%> - Try with the allowLargeResults flag");
+			com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration1_<%=cid%> = 
+																com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>)
+																.setUseLegacySql(<%=useLegacySql%>)
+																.setDestinationTable(com.google.cloud.bigquery.TableId.of(dataset, temp_table))
+																.setAllowLargeResults(true)
+																.build();
+			com.google.cloud.bigquery.JobId jobId1_<%=cid%> = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
+			com.google.cloud.bigquery.Job job1_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>).setJobId(jobId_<%=cid%>).build());
+			job1_<%=cid%> = job1_<%=cid%>.waitFor();
+		}
 		if (job_<%=cid%> == null) {
 			throw new RuntimeException("Job no longer exists");
 		} else if (job_<%=cid%>.getStatus().getError() != null) {

@@ -265,6 +265,11 @@ public class TalendBorderItemRectilinearRouter extends BorderItemRectilinearRout
         if (alreadyHandle && pointList.size() > 0) {
             conn.setPoints(pointList);
         }
+
+        Point midpoint = conn.getPoints().getMidpoint();
+        if ((midpoint.x == lastpoint.x && midpoint.y == firstpoint.y) || pointList.size() == 0) {
+            makeUpConnection(conn);
+        }
         return alreadyHandle;
     }
 

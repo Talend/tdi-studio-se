@@ -52,6 +52,7 @@ if(columnList != null && columnList.size() > 0) {
 String host = ElementParameterParser.getValue(node, "__HOST__");
 String port = ElementParameterParser.getValue(node, "__PORT__");
 String dbName = ElementParameterParser.getValue(node, "__DBNAME__");
+String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 String userName = ElementParameterParser.getValue(node, "__USER__");
 
 String maxerrors = ElementParameterParser.getValue(node, "__MAXERRORS__");
@@ -82,7 +83,17 @@ String skiprows = ElementParameterParser.getValue(node, "__SKIPROWS__");
 %>
 		String driverClass_<%=cid%> = "org.netezza.Driver";
 		java.lang.Class.forName(driverClass_<%=cid%>).newInstance();
-		String url_<%=cid%> = "jdbc:netezza://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>;
+		<%
+		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+		%>
+			String url_<%=cid%> = "jdbc:netezza://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>;
+		<%
+		} else {
+		%>
+			String url_<%=cid%> = "jdbc:netezza://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%> + "?" + <%=dbproperties%>;
+		<%
+		}
+		%>
 		String dbUser_<%=cid%> = <%=userName%>;
 		<%
 		String passwordFieldName = "__PASS__";

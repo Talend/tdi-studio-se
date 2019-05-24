@@ -13,13 +13,13 @@
 package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -476,17 +476,6 @@ public class PropertyChangeCommand extends Command {
                 && !schemaParameter.getValue().equals("")) {
             schemaParameter.setValue("");
         }
-        // if the distribution with the version doesn't exist,NameNode URI field should not be reset default value.
-        if (currentParam.getName().equals(EParameterName.DB_VERSION.getName())
-                && currentParam.getFieldType() == EParameterFieldType.CLOSED_LIST) {
-            Object[] values = currentParam.getListItemsValue();
-            if (values != null) {
-                List<Object> valuesList = Arrays.asList(values);
-                if (!valuesList.contains(oldValue)) {
-                    toUpdate = true;
-                }
-            }
-        }
         if (!toUpdate
                 && (currentParam.getFieldType().equals(EParameterFieldType.RADIO)
                         || currentParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
@@ -758,21 +747,31 @@ public class PropertyChangeCommand extends Command {
             // if the field is not a schema type, then use standard "set value".
             if (!(testedParam.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE) || testedParam.getFieldType().equals(
                     EParameterFieldType.SCHEMA_REFERENCE))) {
-                String oldMapping = ""; //$NON-NLS-1$
+                String oldValue = ""; //$NON-NLS-1$
                 if (!testedParam.getFieldType().equals(EParameterFieldType.CHECK)
                         && !testedParam.getFieldType().equals(EParameterFieldType.RADIO)) {
-                    oldMapping = (String) testedParam.getValue();
+                    oldValue = (String) testedParam.getValue();
                 }
                 testedParam.setValueToDefault(elementParameters);
                 if (testedParam.getFieldType().equals(EParameterFieldType.MAPPING_TYPE)) {
                     String newMapping = (String) testedParam.getValue();
-                    if (!oldMapping.equals(newMapping)) {
+                    if (!oldValue.equals(newMapping)) {
                         Node node = (Node) referenceNode;
                         if (node.getMetadataList().size() > 0) {
                             // to change with:
                             // IMetadataTable metadataTable = node.getMetadataFromConnector(testedParam.getContext());
                             IMetadataTable metadataTable = node.getMetadataList().get(0);
                             metadataTable.setDbms(newMapping);
+                        }
+                    }
+                } else if (testedParam.getFieldType().equals(EParameterFieldType.TEXT)) {
+                    String newValue = (String) testedParam.getValue();
+                    if (StringUtils.isNotEmpty(oldValue) && !oldValue.equals(newValue)
+                            && !isDefaultValue(testedParam, oldValue)) {
+                        Node node = (Node) referenceNode;
+                        String label = node.getLabel();
+                        if (label != null && label.startsWith("tHDFS")) { //$NON-NLS-1$
+                            testedParam.setValue(oldValue);
                         }
                     }
                 }
@@ -1067,4 +1066,15 @@ public class PropertyChangeCommand extends Command {
         return MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    private boolean isDefaultValue(IElementParameter param, String paraValue) {
+        if (StringUtils.isEmpty(paraValue)) {
+            return false;
+        }
+        for (IElementParameterDefaultValue defaultValue : param.getDefaultValues()) {
+            if (paraValue.equals(defaultValue.getDefaultValue())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

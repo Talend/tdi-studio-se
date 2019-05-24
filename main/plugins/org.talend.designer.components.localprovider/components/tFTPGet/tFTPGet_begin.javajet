@@ -282,57 +282,15 @@ if (sftp) { // *** sftp *** //
   <%
 			} else{
   %>    
-				com.jcraft.jsch.JSch jsch_<%=cid%>=new com.jcraft.jsch.JSch(); 
-
-				<%if ("PUBLICKEY".equals(authMethod)){%>
-					<%if(isLog4jEnabled){%>
-						log.info("<%=cid%> - SFTP authentication using a public key.");
-						log.debug("<%=cid%> - Private key: '" + <%=privateKey%> + "'.");
-					  <%}%>
-    				jsch_<%=cid%>.addIdentity(<%=privateKey %>, defaultUserInfo_<%=cid%>.getPassphrase());
-			    <%}%>
+				<%
+      	passwordFieldName = "__PASSWORD__";
+      	%>
+				
+				<%@ include file="../tFTPConnection/sftp_connect.javajet"%>
 			    
-				com.jcraft.jsch.Session session_<%=cid%>=jsch_<%=cid%>.getSession(<%=user%>, <%=host%>, <%=port%>);
-				session_<%=cid%>.setConfig("PreferredAuthentications", "publickey,password,keyboard-interactive,gssapi-with-mic");
-
-			    <%if("PASSWORD".equals(authMethod)){%>
-					<%if(isLog4jEnabled){%>
-						log.info("<%=cid%> - SFTP authentication using a password.");
-					<%}%>
-					
-        			<%
-                	passwordFieldName = "__PASSWORD__";
-                	%> 
-                	
-                	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-                	
-				      session_<%=cid%>.setPassword(decryptedPassword_<%=cid%>); 
-			    <%}%>
-
-				session_<%=cid%>.setUserInfo(defaultUserInfo_<%=cid%>); 
-				<%if (!useProxy) {%>
-				  	if(("true").equals(System.getProperty("http.proxySet")) ){
-				  		com.jcraft.jsch.ProxyHTTP proxy_<%=cid%> = new com.jcraft.jsch.ProxyHTTP(System.getProperty("http.proxyHost"),Integer.parseInt(System.getProperty("http.proxyPort")));
-				  		if(!"".equals(System.getProperty("http.proxyUser"))){
-				  			proxy_<%=cid%>.setUserPasswd(System.getProperty("http.proxyUser"),System.getProperty("http.proxyPassword"));
-				  		}
-				  		session_<%=cid%>.setProxy(proxy_<%=cid%>);
-				  	}
-				<%}%>
-				<%if(isLog4jEnabled){%>
-					log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username: '" + <%=user%> + "'.");
-				<%}%>
-			    session_<%=cid%>.connect();
-			    com.jcraft.jsch. Channel channel_<%=cid%>=session_<%=cid%>.openChannel("sftp");
-			    channel_<%=cid%>.connect();
-				<%if(isLog4jEnabled){%>
-					log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
-				<%}%>
-			    com.jcraft.jsch.ChannelSftp c_<%=cid%>=(com.jcraft.jsch.ChannelSftp)channel_<%=cid%>;
-			    
-			    <%if(use_encoding) {%>
-			    	c_<%=cid%>.setFilenameEncoding(<%=encoding%>);
-			    <%}%>
+		    <%if(use_encoding) {%>
+		    	c_<%=cid%>.setFilenameEncoding(<%=encoding%>);
+		    <%}%>
   <%
 			}
   %>

@@ -26,7 +26,6 @@ Require-Bundle: org.eclipse.ui,
  org.talend.designer.core,
  org.apache.commons.collections,
  org.talend.repository.items.importexport,
- org.talend.daikon,
  org.talend.designer.core.generic,
  org.talend.repository.metadata,
  org.apache.servicemix.bundles.avro

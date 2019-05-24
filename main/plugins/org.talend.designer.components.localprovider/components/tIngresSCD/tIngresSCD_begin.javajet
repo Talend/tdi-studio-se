@@ -37,6 +37,7 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     String dbhost = ElementParameterParser.getValue(node, "__SERVER__");
     String dbport = ElementParameterParser.getValue(node, "__PORT__");
     String dbname= ElementParameterParser.getValue(node, "__DBNAME__");
+    String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
     String dbuser= ElementParameterParser.getValue(node, "__USER__");
 
     String dbtable = ElementParameterParser.getValue(node, "__TABLE__");
@@ -71,8 +72,17 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     } else {
         %>
     	java.lang.Class.forName("com.ingres.jdbc.IngresDriver");
-    	String connectionString_<%=cid %> = "jdbc:ingres://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
-	        
+    	<%
+        if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+            %>
+    		String connectionString_<%=cid %> = "jdbc:ingres://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+	        <%
+        } else {
+            %>
+            String connectionString_<%=cid %> = "jdbc:ingres://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + ";" + <%=dbproperties%>;
+            <%
+        }       
+        %>
 		<%
 		String passwordFieldName = "__PASS__";
 		%>

@@ -122,6 +122,7 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.update.UpdateCheckResult;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
@@ -414,6 +415,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
         Map<ContextItem, Set<String>> existedParams = new HashMap<ContextItem, Set<String>>();
 
+        List<String> contextItemGroupNames = new ArrayList<String>();
+
         for (IContext context : contextManager.getListContext()) {
             for (IContextParameter param : context.getContextParameterList()) {
                 if (!param.isBuiltIn()) {
@@ -437,6 +440,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         boolean builtin = true;
                         if (contextItem != null) {
                             if (contextItem instanceof ContextItem) {
+                                contextItemGroupNames.clear();
+                                EList<?> contextGroups = ((ContextItem) contextItem).getContext();
+                                for (Object contextGroup : contextGroups) {
+                                    if (contextGroup instanceof ContextTypeImpl) {
+                                        String name = ((ContextTypeImpl) contextGroup).getName();
+                                        contextItemGroupNames.add(name);
+                                    }
+                                }
                                 final ContextType contextType = ContextUtils.getContextTypeByName((ContextItem) contextItem,
                                         context.getName(), true);
                                 if (contextType != null) {
@@ -448,8 +459,10 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                             existedParams.put(repositoryContext, new HashSet<String>());
                                         }
                                         existedParams.get(repositoryContext).add(paramName);
-                                        if (onlySimpleShow
-                                                || !ContextUtils.samePropertiesForContextParameter(param, contextParameterType)) {
+                                        String jobContextGroupName = context.getName();
+                                        boolean contains = contextItemGroupNames.contains(jobContextGroupName);
+                                        if (contains && (onlySimpleShow || !ContextUtils.samePropertiesForContextParameter(param,
+                                                contextParameterType))) {
                                             unsameMap.add(contextItem, paramName);
                                         }
                                         builtin = false;

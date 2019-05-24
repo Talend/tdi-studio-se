@@ -22,7 +22,7 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                 continue;
             }
             //TODO: modify this part for Maps and nested lists.
-            if (p.getFieldType() == EParameterFieldType.TABLE) {
+            if (p.getFieldType() == EParameterFieldType.TABLE || p.getFieldType() == EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE) {
 				java.util.List<java.util.Map<String, String>> tableValues = ElementParameterParser.createTableValues((java.util.List<java.util.Map<String, Object>>) p.getValue(), p);
                 String[] items = p.getListItemsDisplayCodeName();
                 String tableName = p.getName().replace('$', '.');

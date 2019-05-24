@@ -16,9 +16,15 @@ imports="
 	    }
 	    
 		public void setURL(INode node) {
-		%>
-			String url_<%=cid %> = "jdbc:interbase://" + <%=dbhost%> + "/" + <%=dbname%>;  
+			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+			%>
+				String url_<%=cid %> = "jdbc:interbase://" + <%=dbhost%> + "/" + <%=dbname%>;
+				<%
+		    } else {
+				%>
+				String url_<%=cid %> = "jdbc:interbase://" + <%=dbhost%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
 		<%
+			}
 		}
 		
 		public String getDirverClassName(INode node){

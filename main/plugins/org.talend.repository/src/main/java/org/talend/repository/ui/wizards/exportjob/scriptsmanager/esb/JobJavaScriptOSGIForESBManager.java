@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -87,6 +88,7 @@ import org.talend.repository.utils.TemplateProcessor;
 
 import aQute.bnd.header.Attrs;
 import aQute.bnd.osgi.Analyzer;
+import aQute.bnd.osgi.Clazz;
 import aQute.bnd.osgi.Descriptors;
 import aQute.bnd.osgi.FileResource;
 import aQute.bnd.osgi.Jar;
@@ -98,6 +100,7 @@ import aQute.service.reporter.Reporter;
  * DOC ycbai class global comment. Detailled comment
  */
 public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
+
 
     protected static final char MANIFEST_ITEM_SEPARATOR = ',';
 
@@ -127,6 +130,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private static final String JAVA = "java"; //$NON-NLS-1$
 
+    private static final String JAVA_VERSION = "java.version";
+    
     private MultiKeyMap requireBundleModules = new MultiKeyMap();
 
 //    private String itemType = null;
@@ -771,6 +776,20 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         } finally {
             analyzer.close();
         }
+        
+        // In some cases of Java8, if user compiled some classes with newer(Java 11) JDK versions, the
+        // Require-Capability will use the last version(Java 11)
+        // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Analyzer.java#L975
+        if (System.getProperty(JAVA_VERSION) != null && System.getProperty(JAVA_VERSION).startsWith("1.8")) { //$NON-NLS-1$
+            String requireCapability = manifest.getMainAttributes().getValue(Analyzer.REQUIRE_CAPABILITY);
+            // set back to 1.8, version from:
+            // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Clazz.java#L141
+            requireCapability = requireCapability.replace(Clazz.JAVA.OpenJDK9.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
+                    .replace(Clazz.JAVA.OpenJDK10.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
+                    .replace(Clazz.JAVA.OpenJDK11.getFilter(), Clazz.JAVA.OpenJDK8.getFilter());
+            manifest.getMainAttributes().put(new Attributes.Name(Analyzer.REQUIRE_CAPABILITY), requireCapability);
+        }
+
         return manifest;
     }
 
