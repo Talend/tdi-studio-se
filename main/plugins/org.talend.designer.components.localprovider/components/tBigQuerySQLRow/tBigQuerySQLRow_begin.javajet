@@ -3,12 +3,6 @@
 		org.talend.core.model.process.INode 	
 		org.talend.core.model.process.ElementParameterParser 
 		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.metadata.IMetadataTable 
-		org.talend.core.model.metadata.IMetadataColumn 
-		org.talend.core.model.process.IConnection
-		org.talend.core.model.process.IConnectionCategory
-		org.talend.core.model.metadata.types.JavaTypesManager
-		org.talend.core.model.metadata.types.JavaType
 		java.util.List
 	    "
 %>
@@ -29,15 +23,11 @@
 	String query = ElementParameterParser.getValue(node,"__QUERY__");
 	boolean useLegacySql = ElementParameterParser.getBooleanValue(node,"__USE_LEGACY_SQL__");
 	
-	query = query.replaceAll("\n"," ");
-	query = query.replaceAll("\r"," ");
+	query = query.replaceAll("\n"," ").replaceAll("\r", " ");
 	
     String tokenFile = ElementParameterParser.getValue(node,"__TOKEN_NAME__");
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
     if (authMode.equals("OAUTH")) {
-		%>
-		final String CLIENT_ID_<%=cid %> = <%=clientId %>;
-		<%
 		String passwordFieldName = "__CLIENT_SECRET__";
 		%>
 	
@@ -53,7 +43,7 @@
 		final com.google.api.client.json.JsonFactory JSON_FACTORY_<%=cid %> = new com.google.api.client.json.jackson2.JacksonFactory();
 	
 		com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets clientSecrets_<%=cid%> = com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets.load(
-						new com.google.api.client.json.jackson2.JacksonFactory(), new java.io.InputStreamReader(new java.io.ByteArrayInputStream(
+						JSON_FACTORY_<%=cid %>, new java.io.InputStreamReader(new java.io.ByteArrayInputStream(
 								CLIENT_SECRET_<%=cid%>.getBytes())));
 	
 		com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow flow_<%=cid%> = null;
@@ -70,21 +60,11 @@
 		%>
 	
 		// Attempt to load existing refresh token
-	    String tokenFile_<%=cid %> = <%=tokenFile%>;
+		String tokenFile_<%=cid %> = <%=tokenFile%>;
 		java.util.Properties properties_<%=cid%> = new java.util.Properties();
-		try {
-			java.io.FileInputStream inputStream_<%=cid%> = new java.io.FileInputStream(tokenFile_<%=cid %>);
+		try(java.io.FileInputStream inputStream_<%=cid%> = new java.io.FileInputStream(tokenFile_<%=cid %>)) {
 			properties_<%=cid%>.load(inputStream_<%=cid%>);
-			inputStream_<%=cid%>.close();
-		} catch (java.io.FileNotFoundException e_<%=cid%>) {
-			<%
-	    	if(isLog4jEnabled){
-			%>
-				log.warn("<%=cid%> - "+e_<%=cid%>.getMessage());
-			<%
-			}
-	    	%>
-		} catch (java.io.IOException ee_<%=cid%>) {
+		} catch (java.io.IOException ee) {
 			<%
 	    	if(isLog4jEnabled){
 			%>
@@ -126,18 +106,21 @@
 				String authorizeUrl_<%=cid%> = new com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl(
 						clientSecrets_<%=cid%>, REDIRECT_URI_<%=cid%>, SCOPES_<%=cid%>).setState("").build();
 	
-				System.out
-						.println("Paste this URL into a web browser to authorize BigQuery Access:\n"
-								+ authorizeUrl_<%=cid%>);
 				<%
 		    	if(isLog4jEnabled){
 				%>
 					log.warn("<%=cid%> - Paste this URL into a web browser to authorize BigQuery Access:\n"
 									+ authorizeUrl_<%=cid%>);
 				<%
-				}
+				} else {
 		    	%>
-				throw new java.lang.Exception("Authorization Code error");
+					System.out
+						.println("Paste this URL into a web browser to authorize BigQuery Access:\n"
+								+ authorizeUrl_<%=cid%>);
+				<%
+				}
+				%>
+				throw new Exception("Authorization Code error");
 			} else {
 				<%
 				if(isLog4jEnabled){
@@ -147,12 +130,10 @@
 				}
 				%>
 				// Exchange the auth code for an access token and refesh token
-				if (flow_<%=cid%> == null) {
-					flow_<%=cid%> = new com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow.Builder(new com.google.api.client.http.javanet.NetHttpTransport(),
-							new com.google.api.client.json.jackson2.JacksonFactory(), clientSecrets_<%=cid%>, SCOPES_<%=cid%>)
-							.setAccessType("offline").setApprovalPrompt("force")
-							.build();
-				}
+				flow_<%=cid%> = new com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow.Builder(new com.google.api.client.http.javanet.NetHttpTransport(),
+						new com.google.api.client.json.jackson2.JacksonFactory(), clientSecrets_<%=cid%>, SCOPES_<%=cid%>)
+						.setAccessType("offline").setApprovalPrompt("force")
+						.build();
 				com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse response_<%=cid%> = flow_<%=cid%>.newTokenRequest(authorizationCode_<%=cid%>).setRedirectUri(REDIRECT_URI_<%=cid%>).execute();
 				com.google.api.client.auth.oauth2.Credential credential_<%=cid%> = flow_<%=cid%>.createAndStoreCredential(response_<%=cid%>, null);
 	
@@ -166,10 +147,8 @@
 				// Store the refresh token for future use.
 				java.util.Properties storeProperties_<%=cid%> = new java.util.Properties();
 				storeProperties_<%=cid%>.setProperty("refreshtoken", credential_<%=cid%>.getRefreshToken());
-				java.io.FileOutputStream outputStream_<%=cid%> = new java.io.FileOutputStream(tokenFile_<%=cid %>);
-				storeProperties_<%=cid%>.store(outputStream_<%=cid%>,null);
-				if (outputStream_<%=cid%> != null) {
-				    outputStream_<%=cid%>.close();
+				try(java.io.FileOutputStream outputStream_<%=cid%> = new java.io.FileOutputStream(tokenFile_<%=cid %>)) {
+					storeProperties_<%=cid%>.store(outputStream_<%=cid%>,null);
 				}
 	
 				bigqueryclient_<%=cid%> = new com.google.api.services.bigquery.Bigquery.Builder(new com.google.api.client.http.javanet.NetHttpTransport(),new com.google.api.client.json.jackson2.JacksonFactory(),credential_<%=cid%>).build();
