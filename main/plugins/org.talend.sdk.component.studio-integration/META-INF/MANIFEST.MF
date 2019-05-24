@@ -7,7 +7,7 @@ Bundle-Name: org.talend.sdk.component.studio-integration
 Bundle-SymbolicName: org.talend.sdk.component.studio-integration;singleton=true
 Bundle-Description: Studio integration of the Talend Component Kit framework.
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: org.talend.sdk.component.studio.ServerManager
+Bundle-Activator: org.talend.sdk.component.studio.SdkComponentPlugin
 Export-Package: org.talend.sdk.component.studio.metadata.provider,
   org.talend.sdk.component.studio.metadata.tester,
   org.talend.sdk.component.studio.metadata.sorter,
