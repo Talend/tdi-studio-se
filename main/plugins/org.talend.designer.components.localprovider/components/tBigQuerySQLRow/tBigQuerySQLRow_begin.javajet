@@ -68,7 +68,7 @@
 			<%
 	    	if(isLog4jEnabled){
 			%>
-				log.warn("<%=cid%> - "+ee_<%=cid%>.getMessage());
+				log.warn("<%=cid%> - "+ee.getMessage());
 			<%
 			}
 	    	%>
