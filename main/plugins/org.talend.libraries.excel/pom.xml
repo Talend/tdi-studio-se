@@ -22,7 +22,7 @@
 				<version>2.8</version>
 				<executions>
 					<execution>
-						<id>copy-maven-repository</id>
+						<id>copy-maven-repository1</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>copy</goal>
@@ -54,7 +54,7 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>copy-maven-repository</id>
+						<id>copy-maven-repository2</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>copy</goal>
