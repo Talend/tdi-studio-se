@@ -28,29 +28,41 @@
 							<goal>copy</goal>
 						</goals>
 						<configuration>
-							<stripVersion>true</stripVersion>
 							<outputDirectory>${project.basedir}/lib</outputDirectory>
 							<artifactItems>
 								<artifactItem>
-									<groupId>${talend.groupid}</groupId>
-									<artifactId>poi-scratchpad-4.1.0-20190412</artifactId>
-									<version>${talend.version.600}</version>
+									<groupId>org.apache.poi</groupId>
+									<artifactId>poi-scratchpad</artifactId>
+									<version>4.1.0-20190523141255_modified_talend</version>
 								</artifactItem>
 								<artifactItem>
-									<groupId>${talend.groupid}</groupId>
-									<artifactId>poi-4.1.0-20190412_modified_talend</artifactId>
-									<version>${talend.version.600}</version>
+									<groupId>org.apache.poi</groupId>
+									<artifactId>poi</artifactId>
+									<version>4.1.0-20190523141255_modified_talend</version>
 								</artifactItem>
 								<artifactItem>
-									<groupId>${talend.groupid}</groupId>
-									<artifactId>poi-ooxml-schemas-4.1.0-20190412</artifactId>
-									<version>${talend.version.600}</version>
+									<groupId>org.apache.poi</groupId>
+									<artifactId>poi-ooxml-schemas</artifactId>
+									<version>4.1.0-20190523141255_modified_talend</version>
 								</artifactItem>
 								<artifactItem>
-									<groupId>${talend.groupid}</groupId>
-									<artifactId>poi-ooxml-4.1.0-20190412_modified_talend</artifactId>
-									<version>${talend.version.600}</version>
+									<groupId>org.apache.poi</groupId>
+									<artifactId>poi-ooxml</artifactId>
+									<version>4.1.0-20190523141255_modified_talend</version>
 								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-maven-repository</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<stripVersion>true</stripVersion>
+							<outputDirectory>${project.basedir}/lib</outputDirectory>
+							<artifactItems>
 								<artifactItem>
                                     <groupId>${talend.groupid}</groupId>
                                     <artifactId>simpleexcel-2.1-20190507</artifactId>
