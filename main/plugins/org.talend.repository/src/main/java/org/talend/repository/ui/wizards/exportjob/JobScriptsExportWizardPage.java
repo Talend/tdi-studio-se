@@ -86,8 +86,10 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.ui.context.nattableTree.ContextNatTableUtils;
 import org.talend.core.ui.export.ArchiveFileExportOperationFullPath;
 import org.talend.core.ui.export.FileSystemExporterFullPath;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
@@ -1047,6 +1049,17 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                         if (changeControl && PasswordEncryptUtil.isPasswordType(type)) {
                             setStyle(oldStyle | SWT.PASSWORD);
                         }
+                        if (ContextNatTableUtils.isResourceType(type)) {
+                            // to fix wrong display after click
+                            setStyle(SWT.READ_ONLY);
+                            String parameterValue = ((ContextParameterType) obj).getValue();
+                            if (parameterValue.contains("|")) {
+                                String[] part = parameterValue.split("\\|");
+                                if (part.length > 1) {
+                                    value = JavaResourcesHelper.getResouceClasspath(part[0], part[1]);
+                                }
+                            }
+                        }
                     }
 
                     if (changeControl) {
@@ -1184,6 +1197,18 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                     String rawValue = contextParameter.getRawValue();
                     if (rawValue != null && PasswordEncryptUtil.isPasswordType(contextParameter.getType())) {
                         return PasswordEncryptUtil.getPasswordDisplay(rawValue);
+                    }
+                    if (ContextNatTableUtils.isResourceType(contextParameter.getType())) {
+                        String parameterValue = contextParameter.getValue();
+                        if (parameterValue.contains("|")) {
+                            String[] part = parameterValue.split("\\|");
+                            if (part.length > 1) {
+                                String resource = JavaResourcesHelper.getResouceClasspath(part[0], part[1]);
+                                if (resource != null) {
+                                    return resource;
+                                }
+                            }
+                        }
                     }
                     return rawValue;
                 }
