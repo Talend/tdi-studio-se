@@ -1319,19 +1319,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                                 + getOutputSuffix();
                     }
                     setDestinationValue(destinationValue);
-
-                    if (exportMSAsZipButton != null) {
-
-                        if (addBSButton.getSelection()) {
-                            exportMSAsZipButton.setEnabled(false);
-                            exportMSAsZipButton.setSelection(true);
-                        } else {
-                            exportMSAsZipButton.setEnabled(true);
-                            exportMSAsZipButton.setSelection(false);
-                        }
-
-                    }
-
                 }
             });
         }

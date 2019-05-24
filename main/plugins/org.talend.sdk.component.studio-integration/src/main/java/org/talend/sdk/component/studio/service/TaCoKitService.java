@@ -23,6 +23,7 @@ import org.talend.core.repository.utils.ComponentsJsonModel;
 import org.talend.core.repository.utils.ProjectDataJsonProvider;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.ServerManager;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
 import org.talend.sdk.component.studio.toolbar.ReloadAction;
@@ -30,6 +31,11 @@ import org.talend.updates.runtime.service.ITaCoKitUpdateService;
 
 
 public class TaCoKitService implements ITaCoKitService {
+
+    @Override
+    public void start() throws Exception {
+        ServerManager.getInstance().start();
+    }
 
     @Override
     public String reload(IProgressMonitor monitor) throws Exception {

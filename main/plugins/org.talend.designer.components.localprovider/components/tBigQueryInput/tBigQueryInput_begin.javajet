@@ -197,7 +197,7 @@
 		<%
 		if(isLog4jEnabled){
 		%>
-			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> allow large results flag");
+			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> the allowLargeResults flag");
 		<%
 		}
 		%>
@@ -219,7 +219,8 @@
 		try(java.io.FileInputStream credentialsStream_<%=cid%> = new java.io.FileInputStream(credentialsFile_<%=cid%>)) {
 		    credentials_<%=cid%> = com.google.auth.oauth2.ServiceAccountCredentials.fromStream(credentialsStream_<%=cid%>);
 		}
-		String query_<%=cid%> = <%=query %>;
+
+		String query_<%=cid%> = <%=query%>;
 		String dataset = query_<%=cid%>.substring(query_<%=cid%>.indexOf("from") + 4, query_<%=cid%>.indexOf(".")).trim();
 		String temp_table = "temp_" + dataset + java.util.UUID.randomUUID().toString().replaceAll("-", "") 
 													 + "<%=cid%>".toLowerCase().replaceAll("[^a-z0-9]", "0").replaceAll("^[^a-z]", "a") 
@@ -230,10 +231,10 @@
 				.setProjectId(<%=projectId%>)
 				.build()
 				.getService();
+
 		<%
 		if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {
 		%>
-		
 		com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration_<%=cid%> = 
 																com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>)
 																.setUseLegacySql(<%=useLegacySql%>)
