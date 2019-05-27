@@ -24,8 +24,7 @@
 	String query = ElementParameterParser.getValue(node,"__QUERY__");
 	boolean useLegacySql = ElementParameterParser.getBooleanValue(node,"__USE_LEGACY_SQL__");
 	
-	query = query.replaceAll("\n"," ");
-	query = query.replaceAll("\r"," ");
+	query = query.replaceAll("\n"," ").replaceAll("\r"," ");
 	
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	if (authMode.equals("OAUTH")) {
