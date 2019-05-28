@@ -24,7 +24,6 @@
 		<talendMQConnectionUtil.dir>${project.basedir}/components/tMomConnection</talendMQConnectionUtil.dir>
 		<talendMQConnectionUtil.version>1.0.1-20190215</talendMQConnectionUtil.version>
 		<tldapinput.dir>${project.basedir}/components/tLDAPInput</tldapinput.dir>
-		<talendzip.dir>${project.basedir}/components/tFileArchive</talendzip.dir>
 	</properties>
 
 	<build>
@@ -75,12 +74,6 @@
 							<directory>${tldapinput.dir}</directory>
 							<includes>
 								<include>talendssl*.jar</include>
-							</includes>
-						</fileset>
-						<fileset>
-							<directory>${talendzip.dir}</directory>
-							<includes>
-								<include>talendzip*.jar</include>
 							</includes>
 						</fileset>
 					</filesets>
@@ -162,14 +155,6 @@
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${tldapinput.dir}</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.talend.libraries</groupId>
-									<artifactId>talendzip-1.0-20190527</artifactId>
-									<version>6.0.0</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${talendzip.dir}</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>

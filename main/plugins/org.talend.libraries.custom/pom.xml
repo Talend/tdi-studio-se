@@ -43,8 +43,8 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.talend.libraries</groupId>
-                  <artifactId>talendzip-1.0-20190527</artifactId>
-                  <version>6.0.0</version>
+                  <artifactId>talendzip</artifactId>
+                  <version>1.0-20190527</version>
                 </artifactItem>
               </artifactItems>
             </configuration>
