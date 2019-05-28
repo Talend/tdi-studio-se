@@ -123,6 +123,7 @@ public class Unzip {
 			}
 
 			zipFile.extractFile(fileHeader, targetDir, null, filename);
+			util.addUnzippedFiles(targetDir, filename);
 		}
 	}
 
