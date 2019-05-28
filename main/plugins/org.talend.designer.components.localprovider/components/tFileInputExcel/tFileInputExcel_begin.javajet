@@ -884,10 +884,10 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 					org.apache.poi.ss.usermodel.Cell cell_<%=cid%> = row_<%= cid %>.getCell(i + start_column_<%= cid %>);
 					if(cell_<%=cid%>!=null){
 					switch (cell_<%=cid%>.getCellType()) {
-                        case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
+                        case STRING:
                             temp_row_<%= cid %>[i] = cell_<%=cid%>.getRichStringCellValue().getString();
                             break;
-                        case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
+                        case NUMERIC:
                             if (org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(cell_<%=cid%>)) {
 <%
                             	if(hasDynamic){
@@ -930,15 +930,15 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                                 temp_row_<%= cid %>[i] = df_<%=cid %>.format(cell_<%=cid%>.getNumericCellValue());
                             }
                             break;
-                        case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
+                        case BOOLEAN:
                             temp_row_<%= cid %>[i] =String.valueOf(cell_<%=cid%>.getBooleanCellValue());
                             break;
-                        case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA:
+                        case FORMULA:
         					switch (cell_<%=cid%>.getCachedFormulaResultType()) {
-                                case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING:
+                                case STRING:
                                     temp_row_<%= cid %>[i] = cell_<%=cid%>.getRichStringCellValue().getString();
                                     break;
-                                case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
+                                case NUMERIC:
                                     if (org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(cell_<%=cid%>)) {
 <%
                             			if(hasDynamic){
@@ -982,7 +982,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 										temp_row_<%= cid %>[i] = ne_<%=cid%>.getStringValue();
                                     }
                                     break;
-                                case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BOOLEAN:
+                                case BOOLEAN:
                                     temp_row_<%= cid %>[i] =String.valueOf(cell_<%=cid%>.getBooleanCellValue());
                                     break;
                                 default:
@@ -1039,7 +1039,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 %>
 				if(<%= i%><actual_end_column_<%= cid %>){
 					try{
-						if(row_<%= cid %>.getCell(columnIndex_<%=cid%>+ start_column_<%= cid %>).getCellType() == org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC && org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(row_<%= cid %>.getCell(columnIndex_<%=cid%>+ start_column_<%= cid %>))){
+						if(row_<%= cid %>.getCell(columnIndex_<%=cid%>+ start_column_<%= cid %>).getCellType() == org.apache.poi.ss.usermodel.CellType.NUMERIC && org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(row_<%= cid %>.getCell(columnIndex_<%=cid%>+ start_column_<%= cid %>))){
 							<%=firstConnName %>.<%=column.getLabel() %> = row_<%= cid %>.getCell(columnIndex_<%=cid%>+ start_column_<%= cid %>).getDateCellValue();
 						}
 						else{
