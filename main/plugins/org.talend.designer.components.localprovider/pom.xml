@@ -165,8 +165,8 @@
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.talend.libraries</groupId>
-									<artifactId>talendzip</artifactId>
-									<version>1.0</version>
+									<artifactId>talendzip-1.0-20190527</artifactId>
+									<version>6.0.0</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${talendzip.dir}</outputDirectory>

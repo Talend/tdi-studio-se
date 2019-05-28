@@ -3,15 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.libraries</groupId>
-	<artifactId>talendzip</artifactId>
-	<version>1.0</version>
+	<artifactId>talendzip-1.0-20190527</artifactId>
+	<version>6.0.0</version>
 	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
-		<jar.name>talendzip.jar</jar.name>
-		<component.name>tFileArchive</component.name>
 		<author.name>wangwei</author.name>
 	</properties>
 
