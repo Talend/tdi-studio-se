@@ -89,9 +89,6 @@
 		}
 		%>
 		
-		com.google.cloud.bigquery.TableResult result_<%=cid%> = job_<%=cid%>.getQueryResults();
-
-		long nb_line_<%=cid%> = 0;
 	<%
 	} else {
 		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
@@ -130,6 +127,10 @@
 						<%
 					} else if (authMode.equals("SERVICEACCOUNT")) {
 						%>
+						com.google.cloud.bigquery.TableResult result_<%=cid%> = job_<%=cid%>.getQueryResults();
+
+						long nb_line_<%=cid%> = 0;
+						
 						for (com.google.cloud.bigquery.FieldValueList field_<%=cid %> : result_<%=cid%>.iterateAll()) {
 							Object value_<%=cid%>;
 							nb_line_<%=cid%> ++;
