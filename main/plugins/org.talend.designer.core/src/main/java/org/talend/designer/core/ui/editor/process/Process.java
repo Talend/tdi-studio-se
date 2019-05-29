@@ -1496,6 +1496,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         if (tmpParam != null && EParameterFieldType.PASSWORD.equals(tmpParam.getFieldType())) {
                             elemValue = elementValue.getRawValue();
                         }
+                        if (elementValue.isHexValue() && elemValue != null) {
+                            byte[] decodeBytes = Hex.decodeHex(elemValue.toCharArray());
+                            try {
+                                elemValue = new String(decodeBytes, UTF8);
+                            } catch (UnsupportedEncodingException e) {
+                                ExceptionHandler.process(e);
+                            }
+                        }
                         if (needRemoveQuotes) {
                             elemValue = TalendTextUtils.removeQuotes(elemValue);
                         }
