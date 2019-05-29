@@ -89,6 +89,7 @@ public class RouteResoureChangeListener implements IResourceChangeListener {
                             }
                         };
                         repositoryWorkUnit.setAvoidUpdateLocks(false);
+                        repositoryWorkUnit.setSvnFileModefied(true);
                         repositoryWorkUnit.setAvoidUnloadResources(false);
                         repositoryWorkUnit.setUnloadResourcesAfterRun(false);
                         Display.getDefault().asyncExec(new Runnable() {
