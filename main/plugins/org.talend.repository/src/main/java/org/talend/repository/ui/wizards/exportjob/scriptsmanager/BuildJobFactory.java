@@ -21,6 +21,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.build.AbstractBuildProvider;
@@ -83,6 +84,7 @@ public class BuildJobFactory {
         String buildType = null;
         if (jobExportType != null) {
             final String newType = oldBuildTypeMap.get(jobExportType);
+
             if (newType == null) {// not valid type
                 return null;
             }
@@ -107,12 +109,18 @@ public class BuildJobFactory {
             boolean esb = false;
 
             if (processItem instanceof ProcessItem) {
-                for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
-                    if (o instanceof NodeType) {
-                        NodeType currentNode = (NodeType) o;
-                        if(esbComponents.contains(currentNode.getComponentName())) {
-                            esb = true;
-                            break;
+
+                ERepositoryObjectType repositoryObjectType = ERepositoryObjectType.getItemType(processItem);
+                if (repositoryObjectType == ERepositoryObjectType.PROCESS_ROUTE && "ROUTE_MICROSERVICE".equals(type)) {
+                    esb = true;
+                } else {
+                    for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
+                        if (o instanceof NodeType) {
+                            NodeType currentNode = (NodeType) o;
+                            if (esbComponents.contains(currentNode.getComponentName())) {
+                                esb = true;
+                                break;
+                            }
                         }
                     }
                 }
