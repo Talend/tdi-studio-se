@@ -62,14 +62,17 @@
             // means we will not find it through data
             // try by reflection
             tacokitGuessSchema.fromOutputEmitterPojo(processorImpl_<%=cid%>, "<%= outputConnectionName %>");
+            errorCode = 0;
             return;
         }
         if (rowObject_<%=guessSchemaCid%> != null && tacokitGuessSchema.guessSchemaThroughResult(rowObject_<%=guessSchemaCid%>)) {
+            errorCode = 0;
             return;
         }
 
         _recordsCount_<%=guessSchemaCid%>++;
         if(_recordsCount_<%=guessSchemaCid%> > 100){
+            errorCode = 0;
             return; //stop reading. a sort of timeout
         }
 

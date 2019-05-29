@@ -82,6 +82,8 @@ System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
         <%@include file="./tTaCoKitGuessSchema_begin_for_processor.javajet"%>
 <%  } %>
 
+    // if codes execute successfully, errorCode will be set to 0, otherwise it will keep 1, like exception occurs
+    errorCode = 1;
     org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema tacokitGuessSchema =
                             new org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema(out, configuration_<%=guessSchemaCid%>,
                                                                                     "<%=pluginName%>",
@@ -92,6 +94,7 @@ System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
     <% if ("input".equalsIgnoreCase(tacokitComponentType)) {  %>
             try {
                 tacokitGuessSchema.guessInputComponentSchema();
+                errorCode = 0;
             } finally {
                 tacokitGuessSchema.close();
             }

@@ -41,6 +41,7 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.metadata.model.ComponentModelSpy;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 
@@ -124,10 +125,14 @@ public class TaCoKitGuessSchemaProcess {
                     return reader.lines().collect(joining("\n"));
                 }
             });
-            executeProcess.waitFor();
-            final String errMessage = error.get();
-            if (errMessage != null && !errMessage.isEmpty()) {
-                throw new IllegalStateException(errMessage);
+            int returnCode = executeProcess.waitFor();
+            if (returnCode != 0) {
+                final String errMessage = error.get();
+                if (errMessage != null && !errMessage.isEmpty()) {
+                    throw new IllegalStateException(errMessage);
+                } else {
+                    throw new IllegalStateException(Messages.getString("guessSchema.error.empty")); //$NON-NLS-1$
+                }
             }
 
             return result.get();
