@@ -55,6 +55,7 @@ import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.ICommandLineService;
+import org.talend.daikon.security.CryptoHelper;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -62,7 +63,6 @@ import org.talend.repository.preference.audit.AuditManager;
 import org.talend.repository.preference.audit.SupportDBUrlStore;
 import org.talend.repository.preference.audit.SupportDBUrlType;
 import org.talend.repository.preference.audit.SupportDBVersions;
-import org.talend.utils.security.CryptoHelper;
 import org.talend.utils.sugars.TypedReturnCode;
 
 /**

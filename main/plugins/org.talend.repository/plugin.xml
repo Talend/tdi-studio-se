@@ -3197,6 +3197,15 @@
               name="CleanCustomerMatcherField"
               version="7.2.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.RenameSalesforceWaveMigrationTask"
+              description="rename salesforce wave to salesforce einstein"
+              id="org.talend.repository.model.migration.RenameSalesforceWaveMigrationTask"
+              name="RenameSalesforceWaveMigrationTask"
+              version="7.2.1">
+        </projecttask>
    </extension>
 
    <extension

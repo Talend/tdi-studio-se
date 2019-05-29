@@ -229,6 +229,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     private ConnectionPart selectedConnectionPart = null;
 
+    private boolean sqlChange = false;
     /**
      * TalendEditorDropTargetListener constructor comment.
      *
@@ -1503,6 +1504,11 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
                 QueryRepositoryObject object = (QueryRepositoryObject) selectedNode.getObject();
                 Query query = object.getQuery();
+                if (!sqlChange) {
+                    String sql = query.getValue();
+                    query.setValue(TalendTextUtils.addStrInQuery(sql));
+                    sqlChange = true;
+                }
                 String value = originalConnectionItem.getProperty().getId() + " - " + query.getLabel(); //$NON-NLS-1$
                 if (queryParam != null) {
                     RepositoryChangeQueryCommand command3 = new RepositoryChangeQueryCommand(node, query, queryParam.getName()

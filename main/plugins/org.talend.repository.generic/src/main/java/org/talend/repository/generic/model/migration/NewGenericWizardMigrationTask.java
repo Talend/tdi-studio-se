@@ -29,11 +29,11 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.utils.ReflectionUtils;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.security.CryptoHelper;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
-import org.talend.utils.security.CryptoHelper;
 
 /**
  * created by hcyi on Apr 11, 2016 Detailled comment

@@ -235,7 +235,9 @@ public class RowGeneratorComponent extends AbstractExternalNode {
      */
     @Override
     public List<Problem> getProblems() {
-        initRowGeneratorMain();
+        if (rowGeneratorMain == null) {
+            initRowGeneratorMain();
+        }
         ProblemsAnalyser problemsAnalyser = new ProblemsAnalyser(rowGeneratorMain.getRowGenManager());
         return problemsAnalyser.checkProblems(externalData);
     }

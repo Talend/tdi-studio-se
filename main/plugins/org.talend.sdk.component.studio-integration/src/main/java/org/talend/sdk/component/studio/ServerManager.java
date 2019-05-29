@@ -25,7 +25,6 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.tomcat.websocket.Constants;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -40,7 +39,9 @@ import org.talend.sdk.component.studio.service.Configuration;
 import org.talend.sdk.component.studio.service.UiActionsThreadPool;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
-public class ServerManager extends AbstractUIPlugin {
+public class ServerManager {
+
+    private static ServerManager instance;
 
     private ProcessManager manager;
 
@@ -54,11 +55,29 @@ public class ServerManager extends AbstractUIPlugin {
 
     private UiActionsThreadPool uiActionsThreadPool;
 
-    @Override
-    public void start(final BundleContext context) throws Exception {
-        super.start(context);
+    private volatile boolean start;
 
-        final BundleContext ctx = getBundle().getBundleContext();
+    private static Object lock = new Object();
+
+    private ServerManager() {
+    }
+
+    public static ServerManager getInstance() {
+        if (instance == null) {
+            synchronized (lock) {
+                if (instance == null) {
+                    instance = new ServerManager();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public synchronized void start() throws Exception {
+        if (start) {
+            return;
+        }
+        final BundleContext ctx = SdkComponentPlugin.getDefault().getBundle().getBundleContext();
         final Configuration configuration = new Configuration(!Boolean.getBoolean("component.kit.skip"),
                 Integer.getInteger("component.debounce.timeout", 750));
         services.add(ctx.registerService(Configuration.class.getName(), configuration, new Hashtable<>()));
@@ -100,6 +119,7 @@ public class ServerManager extends AbstractUIPlugin {
         services.add(ctx.registerService(ComponentService.class.getName(), new ComponentService(mvnResolverImpl),
                 new Hashtable<>()));
         services.add(ctx.registerService(TaCoKitCache.class.getName(), new TaCoKitCache(), new Hashtable<>()));
+        start = true;
     }
 
     private void extractFiles() throws Exception {
@@ -112,63 +132,62 @@ public class ServerManager extends AbstractUIPlugin {
         guessSchemaExtractor.extract();
     }
 
-    @Override
-    public synchronized void stop(final BundleContext context) throws Exception {
+    public synchronized void stop() throws Exception {
+        if (!start) {
+            return;
+        }
+        services.forEach(ServiceRegistration::unregister);
+        services.clear();
+
+        RuntimeException error = null;
         try {
-            services.forEach(ServiceRegistration::unregister);
-            services.clear();
-
-            RuntimeException error = null;
-            try {
-                if (debounceManager != null) {
-                    debounceManager.close();
-                    debounceManager = null;
-                }
-            } catch (final RuntimeException re) {
-                error = re;
+            if (debounceManager != null) {
+                debounceManager.close();
+                debounceManager = null;
             }
-            try {
-                if (uiActionsThreadPool != null) {
-                    uiActionsThreadPool.close();
-                    uiActionsThreadPool = null;
-                }
-            } catch (final RuntimeException re) {
-                error = re;
+        } catch (final RuntimeException re) {
+            error = re;
+        }
+        try {
+            if (uiActionsThreadPool != null) {
+                uiActionsThreadPool.close();
+                uiActionsThreadPool = null;
             }
-            try {
-                if (manager != null) {
-                    manager.close();
-                    manager = null;
-                }
-            } catch (final RuntimeException re) {
-                error = re;
+        } catch (final RuntimeException re) {
+            error = re;
+        }
+        try {
+            if (manager != null) {
+                manager.close();
+                manager = null;
             }
-            try {
-                if (client != null) {
-                    client.close();
-                    client = null;
-                }
-            } catch (final RuntimeException ioe) {
-                if (error != null) {
-                    throw error;
-                }
-                throw ioe;
+        } catch (final RuntimeException re) {
+            error = re;
+        }
+        try {
+            if (client != null) {
+                client.close();
+                client = null;
             }
-
-            if (reset != null) {
-                reset.run();
-            }
-
+        } catch (final RuntimeException ioe) {
             if (error != null) {
                 throw error;
             }
-        } finally {
-            super.stop(context);
+            throw ioe;
         }
+
+        if (reset != null) {
+            reset.run();
+        }
+
+        if (error != null) {
+            throw error;
+        }
+        start = false;
     }
 
     private MavenResolver findMavenResolver() {
-        final BundleContext bundleContext = getBundle().getBundleContext();
+        final BundleContext bundleContext = SdkComponentPlugin.getDefault().getBundle().getBundleContext();
         final ServiceReference<MavenResolver> serviceReference = bundleContext.getServiceReference(MavenResolver.class);
         MavenResolver mavenResolver = null;
         if (serviceReference != null) {
@@ -179,4 +198,5 @@ public class ServerManager extends AbstractUIPlugin {
         }
         return mavenResolver;
     }
+
 }

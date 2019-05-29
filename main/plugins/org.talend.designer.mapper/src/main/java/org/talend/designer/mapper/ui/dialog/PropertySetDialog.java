@@ -451,8 +451,10 @@ public class PropertySetDialog extends Dialog {
         currentModel.setEnableAutoConvertType(enableAutoConvertTypeBtn.getSelection());
         currentModel.setTempDataDir(directory);
         currentModel.setRowBufferSize(sizeField.getText());
-        currentModel.setLevenshteinWeight(Integer.valueOf(levenshteinSlider.getSelection()));
-        currentModel.setJaccardWeight(Integer.valueOf(jaccardSlider.getSelection()));
+        if (PluginChecker.isTIS()) {
+            currentModel.setLevenshteinWeight(Integer.valueOf(levenshteinSlider.getSelection()));
+            currentModel.setJaccardWeight(Integer.valueOf(jaccardSlider.getSelection()));
+        }
 
         if (dieOnErrorButton.getSelection()) {
             mapperManager.removeRejectOutput();

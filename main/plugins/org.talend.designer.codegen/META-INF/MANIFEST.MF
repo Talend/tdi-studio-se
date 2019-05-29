@@ -21,8 +21,8 @@ Require-Bundle: org.talend.core.repository,
  org.eclipse.ui.workbench,
  org.apache.log4j,
  org.talend.components.api,
- org.talend.designer.core.generic,
- org.talend.daikon
+ org.talend.daikon,
+ org.talend.designer.core.generic
 Eclipse-LazyStart: true
 Bundle-ClassPath: .
 Export-Package: org.talend.designer.codegen,

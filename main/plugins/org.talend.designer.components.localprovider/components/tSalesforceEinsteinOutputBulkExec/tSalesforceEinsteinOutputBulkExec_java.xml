@@ -74,7 +74,7 @@
 	      </PARAMETER>
           <!-- tFileOutputDelimited parameters end -->
 
-          <!-- tSalesforceWaveBulkExec parameters begin -->
+          <!-- tSalesforceEinsteinBulkExec parameters begin -->
         <PARAMETER
           NAME="USE_EXISTING_CONNECTION"
           FIELD="CHECK"
@@ -168,7 +168,7 @@
         >
         <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/out.csv"</DEFAULT>
         </PARAMETER>
-        <!-- tSalesforceWaveBulkExec parameters end -->
+        <!-- tSalesforceEinsteinBulkExec parameters end -->
 
         <!-- tFileOutputDelimited parameters begin -->
         <PARAMETER NAME="APPEND" FIELD="CHECK" REQUIRED="true"
@@ -464,7 +464,7 @@
           <LINK_TO NAME="out" CTYPE="ROWS_END"/>
         </TEMPLATE>
 
-        <TEMPLATE NAME="out" COMPONENT="tSalesforceWaveBulkExec"/>
+        <TEMPLATE NAME="out" COMPONENT="tSalesforceEinsteinBulkExec"/>
 
         <TEMPLATE_PARAM SOURCE="self.PROPERTY"   TARGET="in.PROPERTY" />
         <TEMPLATE_PARAM SOURCE="self.USESTREAM"   TARGET="in.USESTREAM" />
