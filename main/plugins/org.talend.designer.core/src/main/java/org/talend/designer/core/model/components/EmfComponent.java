@@ -2248,6 +2248,9 @@ public class EmfComponent extends AbstractBasicComponent {
                 readOnlyColumnPosition = EReadOnlyComlumnPosition.BOTTOM.toString();
             }
             defaultTable.setReadOnlyColumnPosition(readOnlyColumnPosition);
+            
+            List<String> originalColumns = new ArrayList<>();
+            
             int nbCustom = 0;
             for (int i = 0; i < xmlColumnList.size(); i++) {
                 xmlColumn = (COLUMNType) xmlColumnList.get(i);
@@ -2283,9 +2286,11 @@ public class EmfComponent extends AbstractBasicComponent {
                     talendColumn.setCustomId(-1);
                 }
                 talendColumnList.add(talendColumn);
+                originalColumns.add(talendColumn.getLabel());
             }
 
             defaultTable.setListColumns(talendColumnList);
+            defaultTable.setOriginalColumns(originalColumns);
 
             // store the default table in default value
             IElementParameterDefaultValue defaultValue = new ElementParameterDefaultValue();

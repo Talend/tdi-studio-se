@@ -1113,9 +1113,13 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 for (IMetadataColumn column : metadataTable.getListColumns()) {
                     columnNames.add(column.getLabel());
                 }
-                metadataTable.setOriginalColumns(columnNames);
+                if(metadataTable.getOriginalColumns() == null || metadataTable.getOriginalColumns().isEmpty()){
+                	metadataTable.setOriginalColumns(columnNames);
+                }
             }
-            tableCopy.setOriginalColumns(metadataTable.getOriginalColumns());
+            if(tableCopy.getOriginalColumns() == null || tableCopy.getOriginalColumns().isEmpty()){
+            	tableCopy.setOriginalColumns(metadataTable.getOriginalColumns());
+            }
         }
     }
 

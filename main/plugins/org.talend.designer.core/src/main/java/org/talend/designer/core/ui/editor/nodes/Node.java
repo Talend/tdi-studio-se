@@ -635,6 +635,7 @@ public class Node extends Element implements IGraphicalNode {
                     if (param.getValue() instanceof IMetadataTable) {
                         IMetadataTable paramTable = (IMetadataTable) param.getValue();
                         table.getListColumns().addAll(paramTable.getListColumns());
+                        table.setOriginalColumns(paramTable.getOriginalColumns());
                         table.setReadOnly(paramTable.isReadOnly());
                     } else if (param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)) {
                         Schema schema = (Schema) componentProperties.getValuedProperty(param.getName()).getValue();
