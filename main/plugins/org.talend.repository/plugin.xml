@@ -3206,6 +3206,15 @@
               name="RenameSalesforceWaveMigrationTask"
               version="7.2.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.RenameTCOMPCouchbaseMigrationTask"
+              description="rename couchbase to couchbaseDCP"
+              id="org.talend.repository.model.migration.RenameTCOMPCouchbaseMigrationTask"
+              name="RenameTCOMPCouchbaseMigrationTask"
+              version="7.2.1">
+        </projecttask>
    </extension>
 
    <extension
