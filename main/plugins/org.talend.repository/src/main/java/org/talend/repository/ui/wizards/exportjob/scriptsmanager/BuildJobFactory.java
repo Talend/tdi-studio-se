@@ -12,10 +12,7 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +27,7 @@ import org.talend.core.runtime.repository.build.IBuildExportHandler;
 import org.talend.core.runtime.repository.build.IBuildJobParameters;
 import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.repository.constants.BuildJobConstants;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
@@ -39,18 +37,6 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
  *
  */
 public class BuildJobFactory {
-
-    public static final Map<JobExportType, String> oldBuildTypeMap = new HashMap<JobExportType, String>();
-    private static final List<String> esbComponents;
-    static {
-        // from the extension point
-        oldBuildTypeMap.put(JobExportType.POJO, "STANDALONE");
-        oldBuildTypeMap.put(JobExportType.OSGI, "OSGI");
-        oldBuildTypeMap.put(JobExportType.MSESB, "REST_MS");
-        oldBuildTypeMap.put(JobExportType.MSESB_IMAGE, "REST_MS");
-        esbComponents = Collections.unmodifiableList(Arrays.asList("tRESTClient", "tRESTRequest", "tRESTResponse", "tESBConsumer",
-                "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse", "tRouteInput", "tREST"));
-    }
 
     /**
      * Create the build job handler according the job export type. Now only implement the handler of standalone job.
@@ -83,7 +69,7 @@ public class BuildJobFactory {
 
         String buildType = null;
         if (jobExportType != null) {
-            final String newType = oldBuildTypeMap.get(jobExportType);
+            final String newType = BuildJobConstants.oldBuildTypeMap.get(jobExportType);
 
             if (newType == null) {// not valid type
                 return null;
@@ -117,7 +103,7 @@ public class BuildJobFactory {
                     for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
                         if (o instanceof NodeType) {
                             NodeType currentNode = (NodeType) o;
-                            if (esbComponents.contains(currentNode.getComponentName())) {
+                            if (BuildJobConstants.esbComponents.contains(currentNode.getComponentName())) {
                                 esb = true;
                                 break;
                             }
@@ -136,7 +122,7 @@ public class BuildJobFactory {
             } // else{ // if didn't set, should use default provider to create it.
         }
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put(IBuildParametes.ITEM, processItem);
         parameters.put(IBuildParametes.VERSION, version);
         parameters.put(IBuildJobParameters.CONTEXT_GROUP, contextName);
