@@ -208,8 +208,8 @@ public class DefaultRunProcessService implements IRunProcessService {
     protected IProcessor createJavaProcessor(IProcess process, Property property, boolean filenameFromLabel) {
         boolean isTestContainer = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
-                    .getDefault().getService(ITestContainerProviderService.class);
+            ITestContainerProviderService testContainerService = GlobalServiceRegister.getDefault()
+                    .getService(ITestContainerProviderService.class);
             if (testContainerService != null && property != null && property.getItem() != null) {
                 isTestContainer = testContainerService.isTestContainerItem(property.getItem());
             }
@@ -219,7 +219,7 @@ public class DefaultRunProcessService implements IRunProcessService {
         }
         // check for ESB Runtime
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRunContainerService.class)) {
-            IESBRunContainerService runContainerService = (IESBRunContainerService) GlobalServiceRegister.getDefault()
+            IESBRunContainerService runContainerService = GlobalServiceRegister.getDefault()
                     .getService(IESBRunContainerService.class);
             if (runContainerService != null) {
                 IProcessor processor = runContainerService.createJavaProcessor(process, property, filenameFromLabel);
@@ -236,7 +236,7 @@ public class DefaultRunProcessService implements IRunProcessService {
         IESBService soapService = null;
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
-            microService = (IESBMicroService) GlobalServiceRegister.getDefault().getService(IESBMicroService.class);
+            microService = GlobalServiceRegister.getDefault().getService(IESBMicroService.class);
 
             if (ProcessorUtilities.isExportJobAsMicroService()) {
                 if (microService != null) {
@@ -258,12 +258,12 @@ public class DefaultRunProcessService implements IRunProcessService {
         }
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRouteService.class)) {
-            routeService = (IESBRouteService) GlobalServiceRegister.getDefault().getService(IESBRouteService.class);
+            routeService = GlobalServiceRegister.getDefault().getService(IESBRouteService.class);
         }
 
         // Create maven processer for SOAP service, @see org.talend.designer.runprocess.java.TalendJavaProjectManager
         if (process == null && GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-            soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            soapService = GlobalServiceRegister.getDefault().getService(IESBService.class);
             if (property.getItem() != null && soapService.isServiceItem(property.getItem().eClass().getClassifierID())) {
                 return (IProcessor) soapService.createJavaProcessor(process, property, filenameFromLabel);
             }
@@ -324,7 +324,7 @@ public class DefaultRunProcessService implements IRunProcessService {
                             }
                         }
                     }
-                    
+
                     boolean isOSGI = "OSGI"
                             .equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
                     // TESB-25116 The microservice jar which is built from route with ctalendjob is only 2kb
@@ -333,7 +333,7 @@ public class DefaultRunProcessService implements IRunProcessService {
                                     .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
                     if (isOSGI || servicePart || (isRouteReferenceJob && !isMicroservice)) {
                         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-                            soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                            soapService = GlobalServiceRegister.getDefault().getService(IESBService.class);
                             return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
                         }
                     }
@@ -386,7 +386,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     @Override
     public void updateLibraries(Set<ModuleNeeded> jobModuleList, IProcess process) {
-        JavaProcessorUtilities.computeLibrariesPath(new HashSet<ModuleNeeded>(jobModuleList), process);
+        JavaProcessorUtilities.computeLibrariesPath(new HashSet<>(jobModuleList), process);
     }
 
     /*
@@ -403,7 +403,8 @@ public class DefaultRunProcessService implements IRunProcessService {
             return;
         }
         ILibraryManagerService repositoryBundleService = CorePlugin.getDefault().getRepositoryBundleService();
-        repositoryBundleService.retrieve(modulesForRoutine, libDir.getAbsolutePath(), true);
+        repositoryBundleService.retrieve(ERepositoryObjectType.getItemType(routineItem), modulesForRoutine,
+                libDir.getAbsolutePath(), true);
         repositoryBundleService.installModules(modulesForRoutine, null);
         CorePlugin.getDefault().getLibrariesService().checkLibraries();
     }
@@ -417,7 +418,7 @@ public class DefaultRunProcessService implements IRunProcessService {
     @Override
     public void updateLibraries(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules)
             throws ProcessorException {
-        JavaProcessorUtilities.computeLibrariesPath(new HashSet<ModuleNeeded>(jobModuleList), process, alreadyRetrievedModules);
+        JavaProcessorUtilities.computeLibrariesPath(new HashSet<>(jobModuleList), process, alreadyRetrievedModules);
     }
 
     @Override
@@ -619,7 +620,7 @@ public class DefaultRunProcessService implements IRunProcessService {
     public String getLogTemplate(String path) {
         IRunProcessService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            service = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
         }
         if (service == null) {
             return "";
@@ -769,6 +770,7 @@ public class DefaultRunProcessService implements IRunProcessService {
         return ProcessorUtilities.isExportConfig();
     }
 
+    @Override
     public boolean isdebug() {
         return ProcessorUtilities.isdebug();
     }
@@ -878,8 +880,8 @@ public class DefaultRunProcessService implements IRunProcessService {
         IProject mainProject = mainJobInfo.getCodeFile().getProject();
 
         ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-        Set<String> childJobDependencies = new HashSet<String>();
-        List<IFile> childPoms = new ArrayList<IFile>();
+        Set<String> childJobDependencies = new HashSet<>();
+        List<IFile> childPoms = new ArrayList<>();
         for (JobInfo info : listJobs) {
             IRepositoryViewObject specificVersion = factory.getSpecificVersion(info.getJobId(), info.getJobVersion(), true);
             Property property = specificVersion.getProperty();
