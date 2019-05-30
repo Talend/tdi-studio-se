@@ -2533,7 +2533,16 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                                         lineValues = new HashMap<String, Object>();
                                         tableValues.add(lineValues);
                                     }
-                                    lineValues.put(elementValue.getElementRef(), elementValue.getValue());
+                                    String elemValue = elementValue.getValue();
+                                    if (elementValue.isHexValue() && elemValue != null) {
+                                        byte[] decodeBytes = Hex.decodeHex(elemValue.toCharArray());
+                                        try {
+                                            elemValue = new String(decodeBytes, UTF8);
+                                        } catch (UnsupportedEncodingException e) {
+                                            ExceptionHandler.process(e);
+                                        }
+                                    }
+                                    lineValues.put(elementValue.getElementRef(), elemValue);
                                     if (elementValue.getType() != null) {
                                         lineValues.put(elementValue.getElementRef() + IEbcdicConstant.REF_TYPE,
                                                 elementValue.getType());
