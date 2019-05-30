@@ -3215,7 +3215,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     private void parseColumnNameFilterRefresh() {
 
         notifyFocusLost();
-        tableViewerCreatorForColumns.setBeforeFilter(true);
         viewer.refresh();
         if (abstractDataMapTable instanceof OutputTable) {
             OutputTable outputTable = (OutputTable) abstractDataMapTable;
