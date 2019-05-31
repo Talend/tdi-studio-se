@@ -163,7 +163,7 @@ public class JvmAttachHandler implements IJvmAttachHandler, IPropertyChangeListe
             mainClass = getMainClass(monitoredVm, pid);
             try {
                 localConnectorAddress = getLocalConnectorAddress(monitoredVm, pid);
-            } catch (Exception e) {
+            } catch (JvmCoreException  e) {
                 stateMessage = e.getMessage();
                 String message = NLS.bind(Messages.getLocalConnectorAddressFailedMsg, pid);
                 Activator.log(IStatus.WARNING, message, e);
