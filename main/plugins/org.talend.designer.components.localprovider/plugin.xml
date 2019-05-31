@@ -1362,7 +1362,7 @@
             context="plugin:org.talend.libraries.s3"
             id="aws-java-sdk-core-emr400-latest"
             name="aws-java-sdk-core-1.10.4.jar"
-            mvn_uri="mvn:org.talend.libraries/aws-java-sdk-core-emr400-latest/6.0.0"
+            mvn_uri="mvn:org.talend.libraries/aws-java-sdk-core-1.10.4/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.s3/lib/aws-java-sdk-core-1.10.4.jar">
         </libraryNeeded>
 
