@@ -302,13 +302,12 @@ public class ExcelTool {
     }
 
     public void writeExcel(OutputStream outputStream) throws Exception {
-    	if(outputStream == null) {
-    		return;
-    	}
     	try {
     		wb.write(outputStream);
     	} finally {
-    		outputStream.close();
+    		if(outputStream != null) {
+    			outputStream.close();
+    		}
     	}
     }
 
