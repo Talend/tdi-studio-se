@@ -79,6 +79,7 @@ import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.language.CodeProblemsChecker;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.ICodeProblemsChecker;
+import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.QueryUtil;
@@ -91,6 +92,7 @@ import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
+import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IElement;
@@ -1939,6 +1941,28 @@ public abstract class AbstractElementPropertySectionController implements Proper
                         if (node.getUniqueName().equals(compValue) && (node instanceof INode)) {
                             connectionNode = node;
                             break;
+                        }
+                    }
+                }
+                if (connectionNode == null) {
+                    INode node = null;
+                    if (elem instanceof INode) {
+                        node = (INode) elem;
+                    } else { // else instanceof Connection
+                        node = ((IConnection) elem).getSource();
+                    }
+                    if (node != null) {
+                        List<IMultipleComponentManager> multipleComponentManagers = node.getComponent()
+                                .getMultipleComponentManagers();
+                        for (IMultipleComponentManager manager : multipleComponentManagers) {
+                            String inName = manager.getInput().getName();
+                            String componentValue = compValue + "_" + inName;
+                            for (INode gnode : nodes) {
+                                if (gnode.getUniqueName().equals(componentValue) && (gnode instanceof INode)) {
+                                    connectionNode = gnode;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }

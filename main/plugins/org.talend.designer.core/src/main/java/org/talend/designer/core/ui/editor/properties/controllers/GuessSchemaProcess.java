@@ -30,6 +30,7 @@ import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
@@ -161,11 +162,35 @@ public class GuessSchemaProcess {
             IElementParameter connector = node.getElementParameter("CONNECTION");
             if (connector != null) {
                 String connectorValue = connector.getValue().toString();
-                List<? extends INode> generatingNodes = originalProcess.getGeneratingNodes();
-                for (INode node : generatingNodes) {
-                    if (node.getUniqueName().equals(connectorValue)) {
-                        connectionNode = node;
+                for (INode generatingNode : originalProcess.getGraphicalNodes()) {
+                    if (generatingNode.getUniqueName().equals(connectorValue)) {
+                        connectionNode = generatingNode;
                         break;
+                    }
+                }
+                List<? extends INode> generatingNodes = originalProcess.getGeneratingNodes();
+                if (connectionNode == null) {
+                    // for connection node in joblet
+                    for (INode generatingNode : generatingNodes) {
+                        if (generatingNode.getUniqueName().equals(connectorValue)) {
+                            connectionNode = generatingNode;
+                            break;
+                        }
+                    }
+                    // for visual connection component in joblet
+                    if (connectionNode == null) {
+                        List<IMultipleComponentManager> multipleComponentManagers = node.getComponent()
+                                .getMultipleComponentManagers();
+                        for (IMultipleComponentManager manager : multipleComponentManagers) {
+                            String inName = manager.getInput().getName();
+                            String componentValue = connectorValue + "_" + inName;
+                            for (INode gnode : generatingNodes) {
+                                if (gnode.getUniqueName().equals(componentValue) && (gnode instanceof INode)) {
+                                    connectionNode = gnode;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
