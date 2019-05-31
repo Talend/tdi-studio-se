@@ -7,7 +7,6 @@
 package org.talend.designer.runtime.visualization.internal.tools;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -24,8 +23,6 @@ import org.talend.designer.runtime.visualization.IJvmAttachHandler;
 import org.talend.designer.runtime.visualization.JvmCoreException;
 import org.talend.designer.runtime.visualization.tools.Activator;
 
-import com.sun.tools.attach.AttachNotSupportedException;
-import com.sun.tools.attach.VirtualMachine;
 
 /**
  * The JVM attach handler that contributes to the extension point <tt>org.jvmmonitor.core.jvmAttachHandler</tt>.
@@ -219,7 +216,7 @@ public class JvmAttachHandler implements IJvmAttachHandler, IPropertyChangeListe
         }
         return mainClass;
     }
-
+    
     /**
      * Gets the local connector address.
      * 
@@ -228,24 +225,30 @@ public class JvmAttachHandler implements IJvmAttachHandler, IPropertyChangeListe
      * 
      * @return The local connector address
      * @throws JvmCoreException
-     * @throws IOException 
-     * @throws AttachNotSupportedException 
      */
-    private static String getLocalConnectorAddress(Object monitoredVm, int pid)
-            throws JvmCoreException, IOException, AttachNotSupportedException {
+    private static String getLocalConnectorAddress(Object monitoredVm, int pid) throws JvmCoreException {
         String url = null;
 
         Tools tools = Tools.getInstance();
-        VirtualMachine virtualMachine = null;
+        Object virtualMachine = null;
         try {
-            virtualMachine = VirtualMachine.attach(String.valueOf(pid));
-            url = virtualMachine.startLocalManagementAgent();
-            if (url == null) {
-                String javaHome = ((Properties) tools.invokeGetSystemProperties(virtualMachine))
-                        .getProperty(IConstants.JAVA_HOME_PROPERTY_KEY);
-                File file = new File(javaHome + IConstants.MANAGEMENT_AGENT_JAR);
-                if (file.exists()) {
+            virtualMachine = tools.invokeAttach(pid);
+            if (virtualMachine != null) {
+                try {
+                    url = (String) tools.invokeStartLocalManagementAgent(virtualMachine);
+                } catch (JvmCoreException e) {
+                    // ignore
+                }
+                if (url == null) {
+                    String javaHome = ((Properties) tools.invokeGetSystemProperties(virtualMachine))
+                            .getProperty(IConstants.JAVA_HOME_PROPERTY_KEY);
+                    File file = new File(javaHome + IConstants.MANAGEMENT_AGENT_JAR);
+                    if (!file.exists()) {
+                        String message = NLS.bind(Messages.fileNotFoundMsg, file.getPath());
+                        throw new JvmCoreException(IStatus.ERROR, message, new Exception());
+                    }
                     tools.invokeLoadAgent(virtualMachine, file.getAbsolutePath(), IConstants.JMX_REMOTE_AGENT);
+
                     Properties props = tools.invokeGetAgentProperties(virtualMachine);
                     url = (String) props.get(LOCAL_CONNECTOR_ADDRESS);
                 }
