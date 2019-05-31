@@ -54,6 +54,7 @@ import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
+import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -519,6 +520,8 @@ public class RunProcessContext {
             org.talend.designer.core.ui.editor.process.Process prs =
                     (org.talend.designer.core.ui.editor.process.Process) process;
             prs.checkDifferenceWithRepository();
+            IContextManager contextManager = process.getContextManager();
+            setSelectedContext(contextManager.getDefaultContext());
         }
         checkTraces();
 
