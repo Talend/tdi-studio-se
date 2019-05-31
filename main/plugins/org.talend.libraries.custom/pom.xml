@@ -41,6 +41,18 @@
                   <artifactId>checkArchive-1.1-20181130</artifactId>
                   <version>6.0.0</version>
                 </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-with-version</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/lib</outputDirectory>
+              <artifactItems>
                 <artifactItem>
                   <groupId>org.talend.libraries</groupId>
                   <artifactId>talendzip</artifactId>
