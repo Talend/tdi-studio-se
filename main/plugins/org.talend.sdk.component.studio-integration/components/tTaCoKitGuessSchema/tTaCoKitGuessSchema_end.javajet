@@ -47,4 +47,3 @@
 <% if (!"input".equalsIgnoreCase(tacokitComponentType)) { %>
         <%@include file="../../jet_stub/generic/processor/processor_end.javajet"%>
 <% } %>
-   errorCode = 0;

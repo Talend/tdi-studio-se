@@ -60,7 +60,7 @@ public class TaCoKitGuessSchemaProcess {
         this.guessSchemaTask = new Task(property, context, node, discoverSchemaAction, connectionName, executorService);
     }
 
-    public Future<String> run() {
+    public Future<GuessSchemaResult> run() {
         return executorService.submit(guessSchemaTask);
     }
 
@@ -68,7 +68,7 @@ public class TaCoKitGuessSchemaProcess {
         guessSchemaTask.kill();
     }
 
-    public static class Task implements Callable<String> {
+    public static class Task implements Callable<GuessSchemaResult> {
 
         private final Property property;
 
@@ -97,7 +97,7 @@ public class TaCoKitGuessSchemaProcess {
         }
 
         @Override
-        public String call() throws Exception {
+        public GuessSchemaResult call() throws Exception {
             buildProcess();
             IProcessor processor = ProcessorUtilities.getProcessor(process, null);
             processor.setContext(context);
@@ -125,17 +125,17 @@ public class TaCoKitGuessSchemaProcess {
                     return reader.lines().collect(joining("\n"));
                 }
             });
-            int returnCode = executeProcess.waitFor();
-            if (returnCode != 0) {
-                final String errMessage = error.get();
-                if (errMessage != null && !errMessage.isEmpty()) {
-                    throw new IllegalStateException(errMessage);
-                } else {
-                    throw new IllegalStateException(Messages.getString("guessSchema.error.empty")); //$NON-NLS-1$
-                }
+            executeProcess.waitFor();
+            final String resultStr = result.get();
+            if (resultStr != null && !resultStr.trim().isEmpty()) {
+                return new GuessSchemaResult(resultStr, error.get());
             }
-
-            return result.get();
+            final String errMessage = error.get();
+            if (errMessage != null && !errMessage.isEmpty()) {
+                throw new IllegalStateException(errMessage);
+            } else {
+                throw new IllegalStateException(Messages.getString("guessSchema.error.empty")); //$NON-NLS-1$
+            }
         }
 
         public synchronized void kill() {
@@ -246,4 +246,33 @@ public class TaCoKitGuessSchemaProcess {
         }
     }
 
+    public static class GuessSchemaResult {
+
+        private String result;
+
+        private String error;
+
+        public GuessSchemaResult(String result, String error) {
+            super();
+            this.result = result;
+            this.error = error;
+        }
+
+        public String getResult() {
+            return result;
+        }
+
+        public void setResult(String result) {
+            this.result = result;
+        }
+
+        public String getError() {
+            return error;
+        }
+
+        public void setError(String error) {
+            this.error = error;
+        }
+
+    }
 }
