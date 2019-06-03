@@ -144,7 +144,7 @@ class ComponentModelTest {
         final ComponentIndex idx =
                 new ComponentIndex(id, "XML Input", null, null, null, 1, Arrays.asList("Local", "File"), null);
         final ComponentDetail detail = new ComponentDetail(id, "XML Input", null, "Processor", 1, emptyList(), null,
-                emptyList(), emptyList(), null);
+                emptyList(), emptyList(), emptyList(), null);
         final ComponentModel componentModel = new ComponentModel(idx, detail) {
 
             @Override
@@ -177,7 +177,7 @@ class ComponentModelTest {
         ComponentIndex idx =
                 new ComponentIndex(id, "XML Input", null, null, null, 1, Arrays.asList("Local", "File"), null);
         ComponentDetail detail = new ComponentDetail(id, "XML Input", null, "Processor", 1, emptyList(), null,
-                emptyList(), emptyList(), null);
+                emptyList(), emptyList(), emptyList(), null);
         ComponentModel componentModel = new ComponentModel(idx, detail);
 
         assertEquals(expectedFamilyName, componentModel.getOriginalFamilyName());
@@ -191,7 +191,7 @@ class ComponentModelTest {
         ComponentIndex idx =
                 new ComponentIndex(id, "XML Input", null, null, null, 1, Arrays.asList("Local", "File"), null);
         ComponentDetail detail = new ComponentDetail(id, "XML Input", null, "Processor", 1, emptyList(), null,
-                emptyList(), emptyList(), null);
+                emptyList(), emptyList(), emptyList(), null);
         ComponentModel componentModel = new ComponentModel(idx, detail);
 
         assertEquals(expectedName, componentModel.getLongName());
@@ -205,7 +205,7 @@ class ComponentModelTest {
         ComponentIndex idx =
                 new ComponentIndex(id, "XML Input", null, null, null, 1, Arrays.asList("Local", "File"), null);
         ComponentDetail detail = new ComponentDetail(id, "XML Input", null, "Processor", 1, emptyList(), null,
-                emptyList(), emptyList(), null);
+                emptyList(), emptyList(), emptyList(), null);
         ComponentModel componentModel = new ComponentModel(idx, detail);
 
         List<? extends INodeConnector> connectors = componentModel.createConnectors(null);
@@ -219,7 +219,7 @@ class ComponentModelTest {
         ComponentIndex idx =
                 new ComponentIndex(id, "XML Input", null, null, null, 1, Arrays.asList("Local", "File"), null);
         ComponentDetail detail = new ComponentDetail(id, "XML Input", null, "Processor", 1, emptyList(), null,
-                emptyList(), emptyList(), null);
+                emptyList(), emptyList(), emptyList(), null);
         ComponentModel componentModel = new ComponentModel(idx, detail);
 
         List<? extends INodeReturn> returnVariables = componentModel.createReturns(null);
@@ -241,7 +241,7 @@ class ComponentModelTest {
         ComponentIndex idx =
                 new ComponentIndex(id, "XML Input", null, null, null, 1, Arrays.asList("Local", "File"), null);
         ComponentDetail detail = new ComponentDetail(id, "XML Input", null, "Processor", 1, emptyList(), null,
-                emptyList(), emptyList(), null);
+                emptyList(), emptyList(), emptyList(), null);
         ComponentModel componentModel = new ComponentModel(idx, detail);
 
         List<ECodePart> codeParts = componentModel.getAvailableCodeParts();
@@ -258,7 +258,7 @@ class ComponentModelTest {
         ComponentIndex idx =
                 new ComponentIndex(id, "XML Input", null, null, null, 1, Arrays.asList("Local", "File"), null);
         ComponentDetail detail = new ComponentDetail(id, "XML Input", null, "Input", 1, emptyList(), null, emptyList(),
-                emptyList(), null);
+                emptyList(), emptyList(), null);
         ComponentModel componentModel = new ComponentModel(idx, detail);
 
         List<ECodePart> codeParts = componentModel.getAvailableCodeParts();

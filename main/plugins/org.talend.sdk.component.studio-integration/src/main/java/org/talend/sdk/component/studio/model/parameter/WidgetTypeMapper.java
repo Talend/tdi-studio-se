@@ -18,6 +18,7 @@ package org.talend.sdk.component.studio.model.parameter;
 import static java.util.Locale.ROOT;
 import static org.talend.core.model.process.EParameterFieldType.CHECK;
 import static org.talend.core.model.process.EParameterFieldType.CLOSED_LIST;
+import static org.talend.core.model.process.EParameterFieldType.DATE;
 import static org.talend.core.model.process.EParameterFieldType.MEMO;
 import static org.talend.core.model.process.EParameterFieldType.MEMO_JAVA;
 import static org.talend.core.model.process.EParameterFieldType.MEMO_PERL;
@@ -88,6 +89,16 @@ public class WidgetTypeMapper {
             return getSuggestableTableType();
         } else if (isTable(property)) {
             return getTableType();
+        } else if (isDate(property)) {
+            final String type = property.getMetadata().getOrDefault("ui::datetime", "datetime");
+            switch (type) {
+                case "time": // HH:MM:ss
+                case "date": // YYYY-MM-dd
+                case "datetime": // YYYY-MM-dd HH:MM:ss
+                case "zoneddatetime": // YYYY-MM-dd HH:MM:ss+offset[zone]
+                default: // FIXME: today we don't completely map all the widgets
+                    return getDateType();
+            }
         }
         final String codeStyle = property.getMetadata().get(UI_CODE);
         if (codeStyle != null) {
@@ -241,8 +252,16 @@ public class WidgetTypeMapper {
         return ARRAY.equals(property.getType());
     }
 
+    private boolean isDate(final SimplePropertyDefinition property) {
+        return property.getMetadata().containsKey("ui::datetime");
+    }
+
     protected EParameterFieldType getTableType() {
         return TABLE;
+    }
+
+    protected EParameterFieldType getDateType() {
+        return DATE;
     }
 
     private boolean isValueSelection(final PropertyDefinitionDecorator property) {
