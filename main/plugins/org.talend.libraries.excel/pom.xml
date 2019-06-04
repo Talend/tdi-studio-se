@@ -50,6 +50,16 @@
 									<artifactId>poi-ooxml</artifactId>
 									<version>4.1.0-20190523141255_modified_talend</version>
 								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.commons</groupId>
+									<artifactId>commons-compress</artifactId>
+									<version>1.18</version>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.commons</groupId>
+									<artifactId>commons-math3</artifactId>
+									<version>3.6.1</version>
+								</artifactItem>
 							</artifactItems>
 						</configuration>
 					</execution>
