@@ -76,8 +76,6 @@ public class WidgetTypeMapper {
             return getCredentialType();
         } else if (isTextArea(property)) {
             return getTextAreaType();
-        } else if (isValueSelection(property)) {
-            return getValueSelectionType();
         } else if (isCheck(property)) {
             return getCheckType();
         } else if (isClosedList(property)) {
@@ -88,6 +86,8 @@ public class WidgetTypeMapper {
             return getSuggestableTableType();
         } else if (isTable(property)) {
             return getTableType();
+        } else if (isValueSelection(property)) {
+            return getValueSelectionType();
         }
         final String codeStyle = property.getMetadata().get(UI_CODE);
         if (codeStyle != null) {
