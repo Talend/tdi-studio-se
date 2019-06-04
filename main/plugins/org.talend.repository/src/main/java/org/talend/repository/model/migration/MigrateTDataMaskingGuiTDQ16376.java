@@ -282,7 +282,7 @@ public class MigrateTDataMaskingGuiTDQ16376 extends AbstractJobMigrationTask {
 
                     ElementValueType elementValue7 = fileFactory.createElementValueType();
                     elementValue7.setElementRef("KEEP_FORMAT");
-                    elementValue7.setValue(keepFormatSelections.get(i));
+                    elementValue7.setValue(i < keepFormatSelections.size() ? keepFormatSelections.get(i) : "false");
                     maskingParams.add(elementValue7);
                 }
 
