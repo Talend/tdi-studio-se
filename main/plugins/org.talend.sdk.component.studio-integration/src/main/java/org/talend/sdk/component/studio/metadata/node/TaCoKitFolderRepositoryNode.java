@@ -25,19 +25,13 @@ public class TaCoKitFolderRepositoryNode extends AbsTaCoKitRepositoryNode implem
     public TaCoKitFolderRepositoryNode(final IRepositoryViewObject repViewObject, final RepositoryNode parent,
             final ITaCoKitRepositoryNode parentTaCoKitNode, final String label, final ConfigTypeNode configTypeNode)
             throws Exception {
-        super(repViewObject, parent, parentTaCoKitNode, label, configTypeNode);
+        super(repViewObject, parent, parentTaCoKitNode, label, null, configTypeNode);
         this.setType(ENodeType.SIMPLE_FOLDER);
     }
 
     @Override
     public Image getImage() {
         return null;
-    }
-
-    // TODO remove it as it has the same impl as the parent
-    @Override
-    public boolean isLeafNode() {
-        return false;
     }
 
     @Override

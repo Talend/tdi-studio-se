@@ -12,12 +12,25 @@
  */
 package org.talend.sdk.component.studio.metadata.node;
 
+import java.io.ByteArrayInputStream;
+
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.talend.commons.CommonsPlugin;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.image.ECoreImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.runtime.image.ImageUtils;
+import org.talend.commons.ui.runtime.image.ImageUtils.ICON_SIZE;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.studio.GAV;
+import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
@@ -32,13 +45,87 @@ public abstract class AbsTaCoKitRepositoryNode extends RepositoryNode implements
     private Image image;
 
     public AbsTaCoKitRepositoryNode(final IRepositoryViewObject repViewObject, final RepositoryNode parent,
-            final ITaCoKitRepositoryNode parentTaCoKitNode, final String label, final ConfigTypeNode configTypeNode)
-            throws Exception {
+            final ITaCoKitRepositoryNode parentTaCoKitNode, final String label, final Image image,
+            final ConfigTypeNode configTypeNode) throws Exception {
         super(repViewObject, parent, IRepositoryNode.ENodeType.SYSTEM_FOLDER);
         this.parentTaCoKitNode = parentTaCoKitNode;
         this.configTypeNode = configTypeNode;
+        this.image = image;
         this.setProperties(EProperties.LABEL, label);
         this.setProperties(EProperties.CONTENT_TYPE, TaCoKitUtil.getOrCreateERepositoryObjectType(configTypeNode));
+    }
+
+    public Image getTaCoKitImage(final ConfigTypeNode configTypeNode) {
+        Image imageToDispose = null;
+        try {
+            ImageRegistry imageRegistry = JFaceResources.getImageRegistry();
+            String id = configTypeNode.getId();
+            String imageKey = GAV.INSTANCE.getArtifactId() + "/TaCoKit/Family/Metadata/" + id; //$NON-NLS-1$
+            Image image = imageRegistry.get(imageKey);
+            if (image == null) {
+                try {
+                    image = buildTaCoKitImage(id);
+                    imageToDispose = image;
+                    image = ImageUtils.scale(image, ICON_SIZE.ICON_16);
+                } catch (Exception e) {
+                    if (CommonsPlugin.isDebugMode()) {
+                        ExceptionHandler.process(e);
+                    }
+                    image = getDefaultImage();
+                    imageToDispose = image;
+                    image = ImageUtils.scale(image, ICON_SIZE.ICON_16);
+                }
+                if (image != null) {
+                    imageRegistry.put(imageKey, image);
+                }
+            }
+            if (image != null) {
+                return image;
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        } finally {
+            if (imageToDispose != null) {
+                imageToDispose.dispose();
+            }
+        }
+        return null;
+    }
+
+    protected Image getDefaultImage() {
+        return ImageProvider.getImage(ECoreImage.FOLDER_CLOSE_ICON);
+    }
+
+    protected Image buildTaCoKitImage(final String id) throws Exception {
+        byte[] icon = requestIcon(id);
+        return buildTaCoKitImage(icon);
+    }
+
+    protected Image buildTaCoKitImage(byte[] icon) throws Exception {
+        if (icon != null && 0 < icon.length) {
+            ByteArrayInputStream inputStream = null;
+            try {
+                inputStream = new ByteArrayInputStream(icon);
+                return new Image(Display.getDefault(), inputStream);
+            } finally {
+                try {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    protected byte[] requestFamilyIcon(final String id) throws Exception {
+        return Lookups.client().v1().component().familyIcon(id);
+    }
+
+    protected byte[] requestIcon(final String id) throws Exception {
+        return Lookups.client().v1().component().icon(id);
     }
 
     public void setContentType(final ERepositoryObjectType contentType) {
@@ -94,19 +181,24 @@ public abstract class AbsTaCoKitRepositoryNode extends RepositoryNode implements
 
     @Override
     public boolean equals(final Object o) {
-        if (o == this)
+        if (o == this) {
             return true;
-        if (!(o instanceof AbsTaCoKitRepositoryNode))
+        }
+        if (!(o instanceof AbsTaCoKitRepositoryNode)) {
             return false;
+        }
         final AbsTaCoKitRepositoryNode other = (AbsTaCoKitRepositoryNode) o;
-        if (!other.canEqual(this))
+        if (!other.canEqual(this)) {
             return false;
-        if (!super.equals(o))
+        }
+        if (!super.equals(o)) {
             return false;
+        }
         final Object this$configTypeNode = this.getConfigTypeNode();
         final Object other$configTypeNode = other.getConfigTypeNode();
-        if (this$configTypeNode == null ? other$configTypeNode != null : !this$configTypeNode.equals(other$configTypeNode))
+        if (this$configTypeNode == null ? other$configTypeNode != null : !this$configTypeNode.equals(other$configTypeNode)) {
             return false;
+        }
         return true;
     }
 

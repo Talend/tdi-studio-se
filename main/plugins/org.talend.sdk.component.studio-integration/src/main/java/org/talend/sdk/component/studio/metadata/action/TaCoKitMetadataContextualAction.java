@@ -85,18 +85,18 @@ public abstract class TaCoKitMetadataContextualAction extends AbstractCreateActi
     }
 
     protected String getCreateLabel() {
-        return Messages.getString("TaCoKitConfiguration.action.createLabel", configTypeNode.getConfigurationType(), //$NON-NLS-1$
-                configTypeNode.getDisplayName());
+        return Messages.getString("TaCoKitConfiguration.action.create.Label", configTypeNode.getDisplayName(), //$NON-NLS-1$
+                configTypeNode.getConfigurationType());
     }
 
     protected String getEditLabel() {
-        return Messages.getString("TaCoKitConfiguration.action.editLabel", configTypeNode.getConfigurationType(), //$NON-NLS-1$
-                configTypeNode.getDisplayName());
+        return Messages.getString("TaCoKitConfiguration.action.edit.Label", configTypeNode.getDisplayName(), //$NON-NLS-1$
+                configTypeNode.getConfigurationType());
     }
 
     protected String getOpenLabel() {
-        return Messages.getString("TaCoKitConfiguration.action.openLabel", configTypeNode.getConfigurationType(), //$NON-NLS-1$
-                configTypeNode.getDisplayName());
+        return Messages.getString("TaCoKitConfiguration.action.open.Label", configTypeNode.getDisplayName(), //$NON-NLS-1$
+                configTypeNode.getConfigurationType());
     }
 
     protected String getNodeLabel() {

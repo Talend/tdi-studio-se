@@ -28,6 +28,8 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionMessageDialog;
+import org.talend.commons.ui.runtime.image.EImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -50,6 +52,7 @@ public class EditTaCoKitConfigurationAction extends TaCoKitMetadataContextualAct
 
     public EditTaCoKitConfigurationAction() {
         super();
+        setImageDescriptor(ImageProvider.getImageDesc(EImage.EDIT_ICON));
     }
 
     @Override

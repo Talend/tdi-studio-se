@@ -93,10 +93,16 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
         ITaCoKitRepositoryNode repositoryNode = runtimeData.getTaCoKitRepositoryNode();
         ENodeType nodeType = repositoryNode.getType();
         switch (nodeType) {
+        case STABLE_SYSTEM_FOLDER:
+
         case SIMPLE_FOLDER:
 
         case REPOSITORY_ELEMENT:
-            pathToSave = RepositoryNodeUtilities.getPath(repositoryNode);
+            if (repositoryNode.isLeafNode()) {
+                pathToSave = new Path(""); //$NON-NLS-1$
+            } else {
+                pathToSave = RepositoryNodeUtilities.getPath(repositoryNode);
+            }
             break;
 
         case SYSTEM_FOLDER:
@@ -135,8 +141,8 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
         wizardPropertiesPage = new Step0WizardPage(runtimeData.getConnectionItem().getProperty(), pathToSave,
                 TaCoKitConst.METADATA_TACOKIT, runtimeData.isReadonly(), creation);
         final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
-        wizardPropertiesPage.setTitle(Messages.getString("TaCoKitConfiguration.wizard.title", //$NON-NLS-1$
-                configTypeNode.getConfigurationType(), configTypeNode.getDisplayName()));
+        wizardPropertiesPage.setTitle(Messages.getString("TaCoKitConfiguration.wizard.title.str", //$NON-NLS-1$
+                configTypeNode.getDisplayName(), configTypeNode.getConfigurationType()));
         wizardPropertiesPage.setDescription(""); //$NON-NLS-1$
         addPage(wizardPropertiesPage);
         final PropertyNode root = new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);

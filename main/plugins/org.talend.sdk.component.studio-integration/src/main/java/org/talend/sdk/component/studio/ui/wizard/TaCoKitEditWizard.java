@@ -17,7 +17,6 @@ package org.talend.sdk.component.studio.ui.wizard;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IWorkbench;
@@ -47,8 +46,8 @@ public class TaCoKitEditWizard extends TaCoKitConfigurationWizard {
     protected void setWindowTitle() {
         ConfigTypeNode configTypeNode = getRuntimeData().getConfigTypeNode();
         setWindowTitle(
-                Messages.getString("TaCoKitConfiguration.wizard.title.edit", configTypeNode.getConfigurationType(), //$NON-NLS-1$
-                        configTypeNode.getDisplayName()));
+                Messages.getString("TaCoKitConfiguration.wizard.title.edit.str", configTypeNode.getDisplayName(), //$NON-NLS-1$
+                        configTypeNode.getConfigurationType()));
     }
 
     /**

@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.talend.commons.utils.data.container.Container;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -103,6 +104,28 @@ public class TaCoKitUtil {
 
     public static String getTaCoKitFolderName(final ConfigTypeNode configNode) {
         return configNode.getName().toLowerCase();
+    }
+
+    public static Container<String, IRepositoryViewObject> getContainer(
+            Container<String, IRepositoryViewObject> tacokitRootContainer, final ConfigTypeNode configNode) {
+        if (tacokitRootContainer == null) {
+            return null;
+        }
+        if (configNode == null) {
+            return null;
+        }
+        String parentId = configNode.getParentId();
+        if (parentId != null) {
+            ConfigTypeNode parentConfigTypeNode = Lookups.taCoKitCache().getConfigTypeNodeMap().get(parentId);
+            Container<String, IRepositoryViewObject> container = getContainer(tacokitRootContainer, parentConfigTypeNode);
+            if (container == null) {
+                return null;
+            } else {
+                return container.getSubContainer(getTaCoKitFolderName(configNode));
+            }
+        } else {
+            return tacokitRootContainer.getSubContainer(getTaCoKitFolderName(configNode));
+        }
     }
 
     public static TaCoKitConfigurationModel getTaCoKitConfigurationModel(final String itemId) throws Exception {
@@ -247,6 +270,10 @@ public class TaCoKitUtil {
         }
     }
 
+    public static boolean hideConfigFolderOnSingleEdge() {
+        return true;
+    }
+
     public static class GAV {
 
         private String groupId;
@@ -273,38 +300,51 @@ public class TaCoKitUtil {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             GAV other = (GAV) obj;
             if (this.artifactId == null) {
-                if (other.artifactId != null)
+                if (other.artifactId != null) {
                     return false;
-            } else if (!this.artifactId.equals(other.artifactId))
+                }
+            } else if (!this.artifactId.equals(other.artifactId)) {
                 return false;
+            }
             if (this.classifier == null) {
-                if (other.classifier != null)
+                if (other.classifier != null) {
                     return false;
-            } else if (!this.classifier.equals(other.classifier))
+                }
+            } else if (!this.classifier.equals(other.classifier)) {
                 return false;
+            }
             if (this.groupId == null) {
-                if (other.groupId != null)
+                if (other.groupId != null) {
                     return false;
-            } else if (!this.groupId.equals(other.groupId))
+                }
+            } else if (!this.groupId.equals(other.groupId)) {
                 return false;
+            }
             if (this.type == null) {
-                if (other.type != null)
+                if (other.type != null) {
                     return false;
-            } else if (!this.type.equals(other.type))
+                }
+            } else if (!this.type.equals(other.type)) {
                 return false;
+            }
             if (this.version == null) {
-                if (other.version != null)
+                if (other.version != null) {
                     return false;
-            } else if (!this.version.equals(other.version))
+                }
+            } else if (!this.version.equals(other.version)) {
                 return false;
+            }
             return true;
         }
 

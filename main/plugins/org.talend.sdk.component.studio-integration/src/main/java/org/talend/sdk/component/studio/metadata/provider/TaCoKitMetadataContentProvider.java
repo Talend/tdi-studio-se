@@ -17,12 +17,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -30,7 +28,6 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
-import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.utils.data.container.Container;
 import org.talend.commons.utils.data.container.RootContainer;
 import org.talend.core.model.properties.ConnectionItem;
@@ -51,6 +48,7 @@ import org.talend.repository.viewer.content.VisitResourceHelper;
 import org.talend.repository.viewer.content.listener.ResourceCollectorVisitor;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
@@ -74,8 +72,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
     }
 
     @Override
-    protected RepositoryNode
-            getTopLevelNodeFromProjectRepositoryNode(final ProjectRepositoryNode projectRepositoryNode) {
+    protected RepositoryNode getTopLevelNodeFromProjectRepositoryNode(final ProjectRepositoryNode projectRepositoryNode) {
         return projectRepositoryNode.getRootRepositoryNode(TaCoKitConst.METADATA_TACOKIT);
     }
 
@@ -105,19 +102,17 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
         }
         if (element instanceof ITaCoKitRepositoryNode) {
             RepositoryNode repNode = (RepositoryNode) element;
-            if (!repNode.isInitialized()) {
+            ITaCoKitRepositoryNode tacoNode = (ITaCoKitRepositoryNode) repNode;
+            if (!repNode.isInitialized() && (tacoNode.isFamilyNode() || tacoNode.isLeafNode())) {
                 try {
-                    ITaCoKitRepositoryNode tacoNode = (ITaCoKitRepositoryNode) repNode;
                     tacoNode.getChildren().clear();
-                    Map<String, IRepositoryViewObject> repoViewObjMap = new HashMap<>();
-                    Map<String, ITaCoKitRepositoryNode> repoNodeMap = new HashMap<>();
-                    Set<IRepositoryViewObject> visitedCollection = new HashSet<>();
+
                     IProjectRepositoryNode rootNode = repNode.getRoot();
-                    RootContainer<String, IRepositoryViewObject> metadata =
-                            ProxyRepositoryFactory.getInstance().getMetadata(rootNode.getProject(),
-                                    TaCoKitUtil.getOrCreateERepositoryObjectType(tacoNode.getConfigTypeNode()), true);
-                    getConfigurations(tacoNode, metadata, repoViewObjMap, repoNodeMap, visitedCollection, true);
+                    RootContainer<String, IRepositoryViewObject> tacokitRootContainer = ProxyRepositoryFactory.getInstance()
+                            .getMetadata(rootNode.getProject(), TaCoKitConst.METADATA_TACOKIT, true);
+                    initTaCoKitNode(repNode, new HashSet<>(), new HashSet<>(), tacokitRootContainer, true);
                     repNode.setInitialized(true);
+
                     try {
                         List<IRepositoryNode> repNodes = new ArrayList<>();
                         repNodes.add(repNode);
@@ -152,8 +147,9 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
                 if (familyNodesCache != null && !familyNodesCache.isEmpty()) {
                     repoNode.getChildren().removeAll(familyNodesCache);
                 }
-                familyNodesCache = getTaCoKitFamilies(repoNode, true, false);
+                familyNodesCache = getTaCoKitFamilyNodes(repoNode, false);
                 if (familyNodesCache != null && !familyNodesCache.isEmpty()) {
+                    familyNodesCache.stream().forEach(n -> initilizeContentProviderWithTopLevelNode(n));
                     rootNode.collectRepositoryNodes(new ArrayList<>(familyNodesCache));
                 }
             }
@@ -169,202 +165,17 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
         return Collections.EMPTY_SET;
     }
 
-    private boolean isAllInitialized(final Set<RepositoryNode> repoNodes) {
-        if (repoNodes == null || repoNodes.isEmpty()) {
-            return false;
-        }
-        // for (RepositoryNode repoNode : repoNodes) {
-        // if (!repoNode.isInitialized()) {
-        // return false;
-        // }
-        // }
-        return true;
-    }
-
-    private Object[] getConfigurations(final ITaCoKitRepositoryNode tacoNode,
-            final Container<String, IRepositoryViewObject> itemObjs,
-            final Map<String, IRepositoryViewObject> repoViewObjMap,
-            final Map<String, ITaCoKitRepositoryNode> repoNodeMap, final Set<IRepositoryViewObject> visitedCollection,
-            final boolean collectStorage) throws Exception {
-        ConfigTypeNode configTypeNode = tacoNode.getConfigTypeNode();
-
-        Set<String> edges = null;
-        if (!tacoNode.isFolderNode() && !tacoNode.isLeafNode()) {
-            edges = configTypeNode.getEdges();
-        }
-        Set<String> configFolderNames = new HashSet<>();
-        if (edges != null && !edges.isEmpty()) {
-            Map<String, ConfigTypeNode> nodes = Lookups.taCoKitCache().getConfigTypeNodeMap();
-            for (String edge : edges) {
-                ConfigTypeNode edgeNode = nodes.get(edge);
-                String folderName = TaCoKitUtil.getTaCoKitFolderName(edgeNode);
-                configFolderNames.add(folderName);
-            }
-        }
-
-        // 1. create nodes from storage
-        if (collectStorage && !tacoNode.isFamilyNode() && itemObjs != null) {
-            IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-            // 2.1 create folders and their children
-            List<Container<String, IRepositoryViewObject>> subContainers = itemObjs.getSubContainer();
-            if (subContainers != null && !subContainers.isEmpty()) {
-                Iterator<Container<String, IRepositoryViewObject>> subContainerIter = subContainers.iterator();
-                while (subContainerIter.hasNext()) {
-                    Container<String, IRepositoryViewObject> subContainer = subContainerIter.next();
-                    String label = subContainer.getLabel();
-                    if (configFolderNames.contains(label)) {
-                        continue;
-                    }
-                    Folder oFolder = new Folder((Property) subContainer.getProperty(), TaCoKitConst.METADATA_TACOKIT);
-                    if (factory.getStatus(oFolder) != ERepositoryStatus.DELETED) {
-                        ITaCoKitRepositoryNode parentTaCoKitNode = null;
-                        if (tacoNode.isFolderNode()) {
-                            parentTaCoKitNode = tacoNode.getParentTaCoKitNode();
-                        } else if (tacoNode.isLeafNode()) {
-                            parentTaCoKitNode = tacoNode;
-                        } else {
-                            parentTaCoKitNode = tacoNode;
-                        }
-                        TaCoKitFolderRepositoryNode folderNode = new TaCoKitFolderRepositoryNode(oFolder,
-                                (RepositoryNode) tacoNode, parentTaCoKitNode, label, configTypeNode);
-                        tacoNode.getChildren().add(folderNode);
-                        getConfigurations(folderNode, subContainer, repoViewObjMap, repoNodeMap, visitedCollection,
-                                collectStorage);
-                        folderNode.setInitialized(true);
-                    }
-                }
-            }
-            // 2.2 create nodes
-            List<IRepositoryViewObject> members = itemObjs.getMembers();
-            if (members != null && !members.isEmpty()) {
-                Iterator<IRepositoryViewObject> iter = members.iterator();
-                while (iter.hasNext()) {
-                    IRepositoryViewObject viewObject = iter.next();
-                    repoViewObjMap.put(viewObject.getId(), viewObject);
-                }
-                iter = members.iterator();
-                while (iter.hasNext()) {
-                    IRepositoryViewObject viewObject = iter.next();
-                    if (visitedCollection.contains(viewObject)) {
-                        continue;
-                    }
-                    if (factory.getStatus(viewObject) != ERepositoryStatus.DELETED) {
-                        try {
-                            createLeafNode(tacoNode, viewObject, repoViewObjMap, repoNodeMap, visitedCollection);
-                        } catch (Exception e) {
-                            ExceptionHandler.process(e);
-                        }
-                    }
-                    visitedCollection.add(viewObject);
-                }
-            }
-        }
-
-        // 2. create sub configuration
-        if (edges != null && !edges.isEmpty()) {
-            Map<String, ConfigTypeNode> nodes = Lookups.taCoKitCache().getConfigTypeNodeMap();
-            for (String edge : edges) {
-                ConfigTypeNode edgeNode = nodes.get(edge);
-                TaCoKitConfigurationRepositoryNode configurationRepositoryNode =
-                        createConfigurationRepositoryNode((RepositoryNode) tacoNode, tacoNode, edgeNode);
-                tacoNode.getChildren().add(0, configurationRepositoryNode);
-                String name = TaCoKitUtil.getTaCoKitFolderName(edgeNode);
-                Container<String, IRepositoryViewObject> subContainer = null;
-                if (itemObjs != null) {
-                    subContainer = itemObjs.getSubContainer(name);
-                }
-                getConfigurations(configurationRepositoryNode, subContainer, repoViewObjMap, repoNodeMap,
-                        visitedCollection, collectStorage);
-                configurationRepositoryNode.setInitialized(collectStorage);
-            }
-        }
-        return tacoNode.getChildren().toArray();
-    }
-
-    private void createLeafNode(final ITaCoKitRepositoryNode tacoNode, final IRepositoryViewObject viewObject,
-            final Map<String, IRepositoryViewObject> repoViewObjMap,
-            final Map<String, ITaCoKitRepositoryNode> repoNodeMap, final Set<IRepositoryViewObject> visitedCollection)
-            throws Exception {
-        if (visitedCollection.contains(viewObject)) {
-            return;
-        } else {
-            visitedCollection.add(viewObject);
-        }
-        RepositoryNode parentNode = (RepositoryNode) tacoNode;
-        ITaCoKitRepositoryNode parentTaCoKitNode = tacoNode;
-        ConnectionItem item = (ConnectionItem) viewObject.getProperty().getItem();
-        TaCoKitConfigurationItemModel itemModule = new TaCoKitConfigurationItemModel(item);
-        TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
-        String parentItemId = module.getParentItemId();
-        if (StringUtils.isNotEmpty(parentItemId)) {
-            IRepositoryViewObject parentViewObj = repoViewObjMap.get(parentItemId);
-            if (parentViewObj == null) {
-                // maybe parentViewObj is deleted to recyclebin
-                // throw new Exception("Can't find parent node: " + parentItemId);
-                return;
-            }
-            parentTaCoKitNode = repoNodeMap.get(parentItemId);
-            if (parentTaCoKitNode == null) {
-                createLeafNode(tacoNode, parentViewObj, repoViewObjMap, repoNodeMap, visitedCollection);
-                parentTaCoKitNode = repoNodeMap.get(parentItemId);
-            }
-            if (parentTaCoKitNode == null) {
-                // not created, means don't need to create
-                return;
-            }
-        }
-        if (parentTaCoKitNode.isFolderNode()) {
-            parentTaCoKitNode = tacoNode.getParentTaCoKitNode();
-            if (!StringUtils.equals(module.getConfigurationId(), parentTaCoKitNode.getConfigTypeNode().getId())) {
-                return;
-            }
-        } else if (parentTaCoKitNode.isLeafNode()) {
-            if (!StringUtils.equals(module.getParentConfigurationId(), parentTaCoKitNode.getConfigTypeNode().getId())) {
-                return;
-            }
-            parentNode = (RepositoryNode) parentTaCoKitNode;
-        } else {
-            if (!StringUtils.equals(module.getConfigurationId(), parentTaCoKitNode.getConfigTypeNode().getId())) {
-                return;
-            }
-        }
-        TaCoKitLeafRepositoryNode leafRepositoryNode = createLeafRepositoryNode(parentNode, parentTaCoKitNode,
-                itemModule, Lookups.taCoKitCache().getConfigTypeNodeMap().get(module.getConfigurationId()), viewObject);
-        parentNode.getChildren().add(leafRepositoryNode);
-        leafRepositoryNode.setInitialized(true);
-        repoNodeMap.put(leafRepositoryNode.getId(), leafRepositoryNode);
-    }
-
-    private Set<RepositoryNode> getTaCoKitFamilies(final RepositoryNode repositoryNode, final boolean createChildren,
-            final boolean collectStorage) {
+    private Set<RepositoryNode> buildTaCoKitFamilies(final RepositoryNode repositoryNode) {
         try {
             Map<String, ConfigTypeNode> nodes = Lookups.taCoKitCache().getConfigTypeNodeMap();
             Set<RepositoryNode> familyNodes = new HashSet<>();
             if (nodes != null) {
-                Map<String, IRepositoryViewObject> repoViewObjMap = new HashMap<>();
-                Map<String, ITaCoKitRepositoryNode> repoNodeMap = new HashMap<>();
-                Set<IRepositoryViewObject> visitedCollection = new HashSet<>();
                 Collection<ConfigTypeNode> topLevelNodes = TaCoKitUtil.filterTopLevelNodes(nodes.values());
                 for (ConfigTypeNode node : topLevelNodes) {
                     TaCoKitFamilyRepositoryNode familyRepositoryNode = createFamilyRepositoryNode(repositoryNode, node);
-                    initilizeContentProviderWithTopLevelNode(familyRepositoryNode);
                     repositoryNode.getChildren().add(familyRepositoryNode);
                     familyNodes.add(familyRepositoryNode);
-                    if (createChildren) {
-                        String name = TaCoKitUtil.getTaCoKitFolderName(node);
-                        Container<String, IRepositoryViewObject> subContainer = null;
-                        if (collectStorage) {
-                            // improve performance
-                            RootContainer<String, IRepositoryViewObject> metadata = ProxyRepositoryFactory.getInstance()
-                                    .getMetadata(repositoryNode.getRoot().getProject(), TaCoKitConst.METADATA_TACOKIT, true);
-                            subContainer = metadata.getSubContainer(name);
-                        }
-                        getConfigurations(familyRepositoryNode, subContainer, repoViewObjMap, repoNodeMap,
-                                visitedCollection, collectStorage);
-                        familyRepositoryNode.setInitialized(collectStorage);
-                    } else {
-                        familyRepositoryNode.setInitialized(false);
-                    }
+                    familyRepositoryNode.setInitialized(false);
                 }
             }
             return familyNodes;
@@ -374,18 +185,211 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
         return Collections.EMPTY_SET;
     }
 
+    private Set<RepositoryNode> getTaCoKitFamilyNodes(final RepositoryNode repositoryNode, final boolean collectStorage)
+            throws Exception {
+        Set<RepositoryNode> taCoKitFamilies = buildTaCoKitFamilies(repositoryNode);
+        if (taCoKitFamilies == null || taCoKitFamilies.isEmpty()) {
+            return Collections.EMPTY_SET;
+        }
+
+        RootContainer<String, IRepositoryViewObject> metadata = ProxyRepositoryFactory.getInstance()
+                .getMetadata(repositoryNode.getRoot().getProject(), TaCoKitConst.METADATA_TACOKIT, true);
+
+        Set<IRepositoryViewObject> unknownObjs = new HashSet<>();
+        Set<IRepositoryViewObject> usedObjs = new HashSet<>();
+        for (RepositoryNode familyRepoNode : taCoKitFamilies) {
+            initTaCoKitNode(familyRepoNode, unknownObjs, usedObjs, metadata, collectStorage);
+        }
+
+        return taCoKitFamilies;
+    }
+
+    private void initTaCoKitNode(RepositoryNode repoNode, Set<IRepositoryViewObject> allObjs, Set<IRepositoryViewObject> usedObjs,
+            Container<String, IRepositoryViewObject> tacokitRootContainer,
+            boolean collectStorage) throws Exception {
+        ITaCoKitRepositoryNode tacokitNode = (ITaCoKitRepositoryNode) repoNode;
+        ConfigTypeNode configTypeNode = tacokitNode.getConfigTypeNode();
+        Set<String> edges = configTypeNode.getEdges();
+        if (edges != null && !edges.isEmpty()) {
+            Map<String, ConfigTypeNode> nodes = Lookups.taCoKitCache().getConfigTypeNodeMap();
+            boolean hideConfigFolderMode = (edges.size() <= 1) && TaCoKitUtil.hideConfigFolderOnSingleEdge();
+            for (String edge : edges) {
+                try {
+                    ConfigTypeNode edgeNode = nodes.get(edge);
+                    ITaCoKitRepositoryNode parentNode = tacokitNode;
+                    if (!hideConfigFolderMode) {
+                        parentNode = createConfigurationRepositoryNode(repoNode, tacokitNode, edgeNode);
+                        repoNode.getChildren().add(parentNode);
+                        ((RepositoryNode) parentNode).setInitialized(false);
+                    }
+                    if (collectStorage) {
+                        Set<IRepositoryViewObject> objs = allObjs;
+                        Set<IRepositoryViewObject> usedSet = usedObjs;
+
+                        boolean isRootConfigType = false;
+                        if (parentNode.isFamilyNode()) {
+                            isRootConfigType = true;
+                        } else if (parentNode.isConfigNode()) {
+                            ITaCoKitRepositoryNode parentTaCoKitNode = parentNode.getParentTaCoKitNode();
+                            if (parentTaCoKitNode != null && parentTaCoKitNode.isFamilyNode()) {
+                                isRootConfigType = true;
+                            }
+                        }
+                        if (isRootConfigType) {
+                            objs = new HashSet<>();
+                            usedSet = new HashSet<>();
+                        }
+
+                        Container<String, IRepositoryViewObject> container = TaCoKitUtil.getContainer(tacokitRootContainer,
+                                edgeNode);
+                        loadFromStorage((ITaCoKitRepositoryNode) parentNode, objs, usedSet, container, tacokitRootContainer);
+                        ((RepositoryNode) parentNode).setInitialized(true);
+                        TaCoKitConfigurationRepositoryNode deprecatedNode = null;
+                        if (isRootConfigType) {
+                            objs.removeAll(usedSet);
+                            if (!objs.isEmpty()) {
+                                deprecatedNode = createConfigurationRepositoryNode((RepositoryNode) parentNode, parentNode,
+                                        configTypeNode);
+                                deprecatedNode.setLabel(Messages.getString("repository.node.missingparent")); //$NON-NLS-1$
+                                deprecatedNode.setDeprecated(true);
+                                for (IRepositoryViewObject repObj : objs) {
+                                    ConnectionItem item = (ConnectionItem) repObj.getProperty().getItem();
+                                    TaCoKitConfigurationItemModel itemModule = new TaCoKitConfigurationItemModel(item);
+                                    TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
+                                    TaCoKitLeafRepositoryNode deprecatedLeafNode = createLeafRepositoryNode(deprecatedNode,
+                                            deprecatedNode, itemModule, module.getConfigTypeNode(), repObj);
+                                    initTaCoKitNode(deprecatedLeafNode, new HashSet<>(), new HashSet<>(),
+                                            tacokitRootContainer, true);
+                                    deprecatedNode.getChildren().add(deprecatedLeafNode);
+                                }
+                                List<IRepositoryNode> children = parentNode.getChildren();
+                                children.add(children.size(), deprecatedNode);
+                                ((RepositoryNode) deprecatedNode).setInitialized(true);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
+        repoNode.setInitialized(true);
+    }
+
+    private void loadFromStorage(ITaCoKitRepositoryNode parentNode, Set<IRepositoryViewObject> allObjs,
+            Set<IRepositoryViewObject> usedObjs, Container<String, IRepositoryViewObject> container,
+            Container<String, IRepositoryViewObject> tacokitRootContainer) throws Exception {
+        if (container == null) {
+            return;
+        }
+        ConfigTypeNode configTypeNode = parentNode.getConfigTypeNode();
+        Map<String, ConfigTypeNode> configTypeNodeMap = Lookups.taCoKitCache().getConfigTypeNodeMap();
+        Set<String> edges = configTypeNode.getEdges();
+        Set<String> typeFolders = new HashSet<>();
+        if (parentNode.isFamilyNode() || parentNode.isLeafNode()) {
+            if (edges.size() == 1) {
+                configTypeNode = configTypeNodeMap.get(edges.iterator().next());
+                edges = configTypeNode.getEdges();
+            }
+        }
+        for (String edge : edges) {
+            typeFolders.add(TaCoKitUtil.getTaCoKitFolderName(configTypeNodeMap.get(edge)));
+        }
+
+        IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+        List<Container<String, IRepositoryViewObject>> subContainers = container.getSubContainer();
+        if (subContainers != null) {
+            for (Container<String, IRepositoryViewObject> subContainer : subContainers) {
+                try {
+                    String folderName = subContainer.getLabel();
+                    if (typeFolders.contains(folderName)) {
+                        // ignore type folders, since they store sub types
+                        continue;
+                    }
+                    Folder oFolder = new Folder((Property) subContainer.getProperty(), TaCoKitConst.METADATA_TACOKIT);
+                    if (factory.getStatus(oFolder) != ERepositoryStatus.DELETED) {
+                        TaCoKitFolderRepositoryNode folderNode = new TaCoKitFolderRepositoryNode(oFolder,
+                                (RepositoryNode) parentNode, parentNode, folderName, configTypeNode);
+                        parentNode.getChildren().add(folderNode);
+                        loadFromStorage(folderNode, allObjs, usedObjs, subContainer, tacokitRootContainer);
+                        folderNode.setInitialized(true);
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
+        List<IRepositoryViewObject> members = container.getMembers();
+        if (members != null) {
+            ITaCoKitRepositoryNode parentLeafNode = null;
+            ITaCoKitRepositoryNode testNode = parentNode;
+            while (true) {
+                try {
+                    if (testNode == null) {
+                        break;
+                    }
+                    if (testNode.isFamilyNode()) {
+                        break;
+                    }
+                    if (testNode.isFolderNode()) {
+                        continue;
+                    }
+                    if (testNode.isConfigNode()) {
+                        continue;
+                    }
+                    if (testNode.isLeafNode()) {
+                        parentLeafNode = testNode;
+                        break;
+                    }
+                } finally {
+                    testNode = testNode.getParentTaCoKitNode();
+                }
+            }
+            String parentId = null;
+            if (parentLeafNode != null) {
+                parentId = parentLeafNode.getId();
+            }
+            for (IRepositoryViewObject member : members) {
+                if (factory.getStatus(member) != ERepositoryStatus.DELETED) {
+                    try {
+                        allObjs.add(member);
+                        ConnectionItem item = (ConnectionItem) member.getProperty().getItem();
+                        TaCoKitConfigurationItemModel itemModule = new TaCoKitConfigurationItemModel(item);
+                        TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
+
+                        String requiredParentId = module.getParentItemId();
+                        if (requiredParentId != null && !requiredParentId.isEmpty()) {
+                            if (!requiredParentId.equals(parentId)) {
+                                continue;
+                            }
+                        }
+                        usedObjs.add(member);
+
+                        TaCoKitLeafRepositoryNode leafRepositoryNode = createLeafRepositoryNode((RepositoryNode) parentNode,
+                                parentNode, itemModule, configTypeNodeMap.get(module.getConfigurationId()), member);
+                        parentNode.getChildren().add(leafRepositoryNode);
+                        initTaCoKitNode(leafRepositoryNode, allObjs, usedObjs, tacokitRootContainer, true);
+                        leafRepositoryNode.setInitialized(true);
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+            }
+        }
+
+    }
+
     private TaCoKitFamilyRepositoryNode createFamilyRepositoryNode(final RepositoryNode parentNode,
             final ConfigTypeNode tacokitFamilyNode) throws Exception {
         TaCoKitFamilyRepositoryNode familyRepositoryNode = new TaCoKitFamilyRepositoryNode(parentNode,
-                tacokitFamilyNode.getDisplayName(), ECoreImage.FOLDER_CLOSE_ICON, tacokitFamilyNode);
-        familyRepositoryNode.setChildrenObjectType(TaCoKitUtil.getOrCreateERepositoryObjectType(tacokitFamilyNode));
+                tacokitFamilyNode.getDisplayName(), tacokitFamilyNode);
         return familyRepositoryNode;
     }
 
     private TaCoKitConfigurationRepositoryNode createConfigurationRepositoryNode(final RepositoryNode parentNode,
             final ITaCoKitRepositoryNode parentTaCoKitNode, final ConfigTypeNode configurationNode) throws Exception {
-        TaCoKitConfigurationRepositoryNode configurationRepositoryNode = new TaCoKitConfigurationRepositoryNode(null,
-                parentNode, parentTaCoKitNode, configurationNode.getDisplayName(), configurationNode); // $NON-NLS-1$
+        TaCoKitConfigurationRepositoryNode configurationRepositoryNode = new TaCoKitConfigurationRepositoryNode(null, parentNode,
+                parentTaCoKitNode, configurationNode.getDisplayName(), configurationNode); // $NON-NLS-1$
         return configurationRepositoryNode;
     }
 
@@ -510,8 +514,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
             }
             for (final RepositoryNode repoNode : topLevelNodes) {
                 IPath topLevelNodeWorkspaceRelativePath = getTopLevelNodePath(repoNode);
-                if (topLevelNodeWorkspaceRelativePath != null
-                        && topLevelNodeWorkspaceRelativePath.isPrefixOf(fullPath)) {
+                if (topLevelNodeWorkspaceRelativePath != null && topLevelNodeWorkspaceRelativePath.isPrefixOf(fullPath)) {
                     return repoNode;
                 }
             }

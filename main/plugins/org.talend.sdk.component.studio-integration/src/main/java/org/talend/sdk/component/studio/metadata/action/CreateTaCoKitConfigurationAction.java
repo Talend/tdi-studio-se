@@ -19,6 +19,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.image.EImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.context.Context;
@@ -30,10 +32,8 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
-import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
-import org.talend.sdk.component.studio.metadata.node.TaCoKitFamilyRepositoryNode;
 import org.talend.sdk.component.studio.ui.wizard.TaCoKitConfigurationRuntimeData;
 import org.talend.sdk.component.studio.ui.wizard.TaCoKitCreateWizard;
 
@@ -49,14 +49,11 @@ public class CreateTaCoKitConfigurationAction extends TaCoKitMetadataContextualA
     public CreateTaCoKitConfigurationAction(final ConfigTypeNode configTypeNode) {
         super();
         this.configTypeNode = configTypeNode;
+        setImageDescriptor(ImageProvider.getImageDesc(EImage.ADD_ICON));
     }
 
     @Override
     public void init(final RepositoryNode node) {
-        if (node instanceof TaCoKitFamilyRepositoryNode) {
-            setEnabled(false);
-            return;
-        }
         setRepositoryNode((ITaCoKitRepositoryNode) node);
         setText(getCreateLabel());
         setToolTipText(getEditLabel());
@@ -65,6 +62,7 @@ public class CreateTaCoKitConfigurationAction extends TaCoKitMetadataContextualA
             this.setImageDescriptor(ImageDescriptor.createFromImage(nodeImage));
         }
         switch (node.getType()) {
+        case STABLE_SYSTEM_FOLDER:
         case SIMPLE_FOLDER:
         case SYSTEM_FOLDER:
         case REPOSITORY_ELEMENT:
@@ -121,8 +119,20 @@ public class CreateTaCoKitConfigurationAction extends TaCoKitMetadataContextualA
         connectionItem.setTypeName(configTypeNode.getId());
 
         TaCoKitConfigurationModel configurationModel = new TaCoKitConfigurationModel(connection, configTypeNode);
-        if (repositoryNode.isLeafNode()) {
-            configurationModel.setParentItemId(repositoryNode.getObject().getId());
+        String id = null;
+        ITaCoKitRepositoryNode parentNode = repositoryNode.getParentTaCoKitNode();
+        do {
+            if (parentNode == null) {
+                break;
+            }
+            if (parentNode.isLeafNode()) {
+                id = parentNode.getObject().getId();
+                break;
+            }
+            parentNode = parentNode.getParentTaCoKitNode();
+        } while (true);
+        if (id != null) {
+            configurationModel.setParentItemId(id);
         }
         return connectionItem;
     }

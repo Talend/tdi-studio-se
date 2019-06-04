@@ -72,11 +72,10 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
         super(Messages.getString("WizardPage.TaCoKitConfiguration"), runtimeData); //$NON-NLS-1$
         this.isNew = isNew;
         final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
-        setTitle(Messages.getString("TaCoKitConfiguration.wizard.title", configTypeNode.getConfigurationType(), // $NON-NLS-1$
-                configTypeNode.getDisplayName()));
-        setDescription(Messages.getString("TaCoKitConfiguration.wizard.description.edit",
-                configTypeNode.getConfigurationType(), // $NON-NLS-1$
-                configTypeNode.getDisplayName()));
+        setTitle(Messages.getString("TaCoKitConfiguration.wizard.title.str", configTypeNode.getDisplayName(), //$NON-NLS-1$
+                configTypeNode.getConfigurationType()));
+        setDescription(Messages.getString("TaCoKitConfiguration.wizard.description.edit.str", //$NON-NLS-1$
+                configTypeNode.getDisplayName(), configTypeNode.getConfigurationType()));
         this.form = form;
         this.category = Metadatas.MAIN_FORM.equals(form) ? EComponentCategory.BASIC : EComponentCategory.ADVANCED;
         if (!runtimeData.isReadonly()) {

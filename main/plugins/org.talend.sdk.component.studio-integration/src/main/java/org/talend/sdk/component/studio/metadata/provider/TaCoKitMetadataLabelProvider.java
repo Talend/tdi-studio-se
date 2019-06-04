@@ -29,9 +29,11 @@ public class TaCoKitMetadataLabelProvider extends RepositoryViewLabelProvider im
         String label = super.getText(element);
 
         if (element instanceof TaCoKitConfigurationRepositoryNode) {
-            ConfigTypeNode configTypeNode = ((TaCoKitConfigurationRepositoryNode) element).getConfigTypeNode();
-            String type = configTypeNode.getConfigurationType();
-            label = label + " (" + type + ")";
+            if (!((TaCoKitConfigurationRepositoryNode) element).isDeprecated()) {
+                ConfigTypeNode configTypeNode = ((TaCoKitConfigurationRepositoryNode) element).getConfigTypeNode();
+                String type = configTypeNode.getConfigurationType();
+                label = label + " (" + type + ")";
+            }
         }
 
         return label;

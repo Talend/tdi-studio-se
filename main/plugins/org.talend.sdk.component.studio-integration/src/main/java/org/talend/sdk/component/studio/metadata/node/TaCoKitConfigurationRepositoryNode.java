@@ -12,24 +12,38 @@
  */
 package org.talend.sdk.component.studio.metadata.node;
 
+import org.talend.commons.ui.runtime.image.ECoreImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
-import org.talend.sdk.component.studio.util.ETaCoKitImage;
+import org.talend.sdk.component.studio.Lookups;
 
 /**
  * DOC cmeng class global comment. Detailled comment
  */
 public class TaCoKitConfigurationRepositoryNode extends AbsTaCoKitRepositoryNode {
 
-    private final String label;
+    private String label;
+
+    private boolean isDeprecated;
 
     public TaCoKitConfigurationRepositoryNode(final IRepositoryViewObject repViewObject, final RepositoryNode parent,
             final ITaCoKitRepositoryNode parentTaCoKitNode, final String label, final ConfigTypeNode configTypeNode)
             throws Exception {
-        super(repViewObject, parent, parentTaCoKitNode, label, configTypeNode);
+        super(repViewObject, parent, parentTaCoKitNode, label, null, configTypeNode);
         this.label = label;
-        setIcon(ETaCoKitImage.TACOKIT_CONFIGURATION_ICON);
+        // setIcon(ETaCoKitImage.TACOKIT_CONFIGURATION_ICON);
+        this.setImage(ImageProvider.getImage(ECoreImage.FOLDER_OPEN_ICON));
+        this.isDeprecated = false;
+        ENodeType folderType = null;
+        if (Lookups.taCoKitCache().getFamilyNode(configTypeNode).getEdges().contains(configTypeNode.getId())) {
+            folderType = IRepositoryNode.ENodeType.SYSTEM_FOLDER;
+        } else {
+            folderType = IRepositoryNode.ENodeType.STABLE_SYSTEM_FOLDER;
+        }
+        this.setType(folderType);
     }
 
     @Override
@@ -43,6 +57,7 @@ public class TaCoKitConfigurationRepositoryNode extends AbsTaCoKitRepositoryNode
     }
 
     // todo when studio is redeployed @Override
+    @Override
     public boolean shouldCollectRepositoryNode() {
         return true;
     }
@@ -51,4 +66,17 @@ public class TaCoKitConfigurationRepositoryNode extends AbsTaCoKitRepositoryNode
     public String getLabel() {
         return this.label;
     }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public boolean isDeprecated() {
+        return isDeprecated;
+    }
+
+    public void setDeprecated(boolean isDeprecated) {
+        this.isDeprecated = isDeprecated;
+    }
+
 }
