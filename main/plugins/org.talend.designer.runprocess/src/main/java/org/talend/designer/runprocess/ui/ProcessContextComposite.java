@@ -230,9 +230,6 @@ public class ProcessContextComposite extends Composite {
         // oldSelectedCopiedContext = (IContext) ((StructuredSelection)
         // contextComboViewer.getSelection()).getFirstElement();
         // }
-        if (process != null && process.getUpdateManager() != null) {
-            process.getUpdateManager().updateAll();
-        }
         if (process != null && process.getLastRunContext() != null) {
             for (IContext context : contextManager.getListContext()) {
                 IContext copiedContext = context.clone();
