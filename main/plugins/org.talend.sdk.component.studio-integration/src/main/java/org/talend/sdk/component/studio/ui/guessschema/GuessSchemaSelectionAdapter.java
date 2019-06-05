@@ -201,10 +201,9 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
             return null;
         }
         Collection<MetadataColumn> jsonColumns = new HashSet<>();
-        final Jsonb jsonb = JsonbBuilder.create();
         final String[] lines = schema.split("\n"); //$NON-NLS-1$
         for (String line : lines) {
-            try {
+            try (final Jsonb jsonb = JsonbBuilder.create()) {
                 Collection<MetadataColumn> columns = jsonb.fromJson(line, new ParameterizedType() {
 
                     @Override
@@ -228,11 +227,6 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
             } catch (final Exception e) {
                 ExceptionHandler.process(e);
             }
-        }
-        try {
-            jsonb.close();
-        } catch (Exception e1) {
-            ExceptionHandler.process(e1);
         }
         if (jsonColumns.isEmpty()) {
             return null;
