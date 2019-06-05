@@ -1440,8 +1440,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         } else {
             boolean hasCXFComponent = false;
             out: for (ModuleNeeded neededModule : neededModules) {
-                MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(neededModule.getMavenUri());
-                String moduleName = artifact.getFileName();
+                String moduleName = neededModule.getModuleName();
                 if (moduleName != null && moduleName.startsWith("cxf-core")) { //$NON-NLS-1$
                     List<? extends INode> nodes = process.getGeneratingNodes();
                     for (INode node : nodes) {
