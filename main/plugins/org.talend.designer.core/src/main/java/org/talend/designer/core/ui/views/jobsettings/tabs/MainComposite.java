@@ -587,6 +587,7 @@ public class MainComposite extends AbstractTabComposite {
                                 || property == null) {
                             return;
                         }
+                        String oldVersion = repositoryObject.getVersion();
                         String originalName = nameText.getText();
                         String originalJobType = jobTypeCCombo.getText();
                         String originalFramework = ConvertJobsUtil.convertFrameworkByJobType(originalJobType,
@@ -779,6 +780,9 @@ public class MainComposite extends AbstractTabComposite {
                                         public void run(final IProgressMonitor monitor) throws CoreException {
                                             try {
                                                 if (repositoryObject.getProperty() != null) {
+                                                	if (!originalversion.equals(StringUtils.trimToEmpty(oldVersion))) {
+                                                        RelationshipItemBuilder.getInstance().addOrUpdateItem(repositoryObject.getProperty().getItem());
+                                                    }
                                                     proxyRepositoryFactory.save(ProjectManager.getInstance().getCurrentProject(),
                                                             repositoryObject.getProperty().getItem(), false);
                                                     if (needjobletRelateUpdate && GlobalServiceRegister.getDefault()
