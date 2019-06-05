@@ -128,6 +128,7 @@ import org.talend.designer.core.IMultiPageTalendEditor;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
@@ -1328,9 +1329,17 @@ public abstract class AbstractElementPropertySectionController implements Proper
     protected void fixedCursorPosition(IElementParameter param, Control labelText, Object value, boolean valueChanged) {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         IWorkbenchPart workbenchPart = page.getActivePart();
+        // tacokit
+        boolean update = false;
+        if (param != null && param instanceof ElementParameter && param.getFieldType().equals(EParameterFieldType.TEXT)) {
+            Object sourceName = ((ElementParameter) param).getTaggedValue("org.talend.sdk.component.source"); //$NON-NLS-1$
+            if ("tacokit".equalsIgnoreCase(String.valueOf(sourceName))) { //$NON-NLS-1$
+                update = true;
+            }
+        }
 
         if ((workbenchPart instanceof PropertySheet) || (workbenchPart instanceof JobSettingsView)
-                || (workbenchPart instanceof ComponentSettingsView)) {
+                || (workbenchPart instanceof ComponentSettingsView) || update) {
             Object control = editionControlHelper.undoRedoHelper.typedTextCommandExecutor.getActiveControl();
             if (param.getName().equals(control) && valueChanged && !param.isRepositoryValueUsed()) {
                 String previousText = editionControlHelper.undoRedoHelper.typedTextCommandExecutor.getPreviousText2();
@@ -1379,7 +1388,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
     }
 
     public void openSqlBuilderBuildIn(final ConnectionParameters connParameters, final String propertyName) {
-        ISQLBuilderService service = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(ISQLBuilderService.class);
+        ISQLBuilderService service = GlobalServiceRegister.getDefault().getService(ISQLBuilderService.class);
         service.openSQLBuilderDialog(connParameters, composite, elem, propertyName, getCommandStack(), this, part);
     }
 
@@ -2291,7 +2300,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         ISQLBuilderService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ISQLBuilderService.class)) {
-            service = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(ISQLBuilderService.class);
+            service = GlobalServiceRegister.getDefault().getService(ISQLBuilderService.class);
         }
         if (service == null) {
             return false;
@@ -2394,7 +2403,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             // add for bug TDI-20335
             if (part == null) {
                 Shell parentShell = DisplayUtils.getDefaultShell(false);
-                ISQLBuilderService service = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(
+                ISQLBuilderService service = GlobalServiceRegister.getDefault().getService(
                         ISQLBuilderService.class);
                 Dialog sqlBuilder = service.openSQLBuilderDialog(parentShell, "", connParameters);
                 sqlBuilder.open();
@@ -2488,7 +2497,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 }
                 TextUtil.setDialogTitle(processName, nodeLabel, elem.getElementName());
 
-                ISQLBuilderService service = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(
+                ISQLBuilderService service = GlobalServiceRegister.getDefault().getService(
                         ISQLBuilderService.class);
 
                 connParameters.setQuery(query);
@@ -2707,7 +2716,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
     protected void callBeforeActive(IElementParameter param) {
         IGenericService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericService.class)) {
-            service = (IGenericService) GlobalServiceRegister.getDefault().getService(IGenericService.class);
+            service = GlobalServiceRegister.getDefault().getService(IGenericService.class);
         }
         if (service != null) {
             service.callBeforeActivate(param);

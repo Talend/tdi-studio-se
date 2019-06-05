@@ -550,11 +550,11 @@
 			%>
 			
 			<%
-			if("Append".equals(ElementParameterParser.getValue(node, "__ACTION_ON_DATA__"))) {
+			if("APPEND".equals(actionOnData)) {
 			%>
 				loadJobBuilder_<%=cid%>.setWriteDisposition(com.google.cloud.bigquery.JobInfo.WriteDisposition.WRITE_APPEND);
 			<%
-			} else if("Truncate".equals(ElementParameterParser.getValue(node, "__ACTION_ON_DATA__"))) {
+			} else if("TRUNCATE".equals(actionOnData)) {
 			%>
 				loadJobBuilder_<%=cid%>.setWriteDisposition(com.google.cloud.bigquery.JobInfo.WriteDisposition.WRITE_TRUNCATE);
 				

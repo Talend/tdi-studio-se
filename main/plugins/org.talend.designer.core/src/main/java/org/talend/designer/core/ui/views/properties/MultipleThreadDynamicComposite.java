@@ -489,7 +489,15 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
                             groupPosition.put(groupName, heightSize);
                         }
                         subComposite = (Composite) hashCurControls.get(groupName);
-                        curTop = heightSize - groupPosition.get(groupName);
+                        
+                        Integer position = groupPosition.get(groupName);
+                        //position can be null: if (show-if="...") return false for all the items of a group,
+                        //then the group is not visible and then the groupPosition is null.
+                        if (position!=null) {
+                            curTop = heightSize - position;
+//                        } else {
+//                            System.out.println("curParam="+curParam+", numInRow="+numInRow+", nbInRow="+nbInRow+", "+"heightSize="+heightSize+", groupName="+groupName+", "+groupPosition.get(groupName));
+                        }
                     } else {
                         subComposite = composite;
                         curTop = DEFAULT_GROUP_HEIGHT * (groupPosition.size() > 0 ? 1 : 0) + heightSize;

@@ -19607,9 +19607,9 @@
                     MVN="mvn:org.codehaus.woodstox/stax2-api/4.1"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="woodstox-core-5.1.0.jar"
-                    MODULE="woodstox-core-5.1.0.jar"
-                    MVN="mvn:com.fasterxml.woodstox/woodstox-core/5.1.0"
+                    NAME="woodstox-core-5.2.0.jar"
+                    MODULE="woodstox-core-5.2.0.jar"
+                    MVN="mvn:com.fasterxml.woodstox/woodstox-core/5.2.0"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
                     NAME="wsdl4j-1.6.3"
@@ -19730,14 +19730,14 @@
 				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.2"
 				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
-				NAME="jackson-core-2.9.5.jar"
-				MODULE="jackson-core-2.9.5.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.5"
+				NAME="jackson-core-2.9.9.jar"
+				MODULE="jackson-core-2.9.9.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.9"
 				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
-				NAME="jackson-databind-2.9.5.jar"
-				MODULE="jackson-databind-2.9.5.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.5"
+				NAME="jackson-databind-2.9.9.jar"
+				MODULE="jackson-databind-2.9.9.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.9"
 				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="jackson-annotations-2.9.0.jar"

@@ -515,7 +515,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				int fieldCount_<%=cid %> = row_<%= cid %>.length;
 				dynamic_column_count_<%=cid%> = dynamic_<%=cid %>.getColumnCount();
 				for (int i = 0; i < dynamic_column_count_<%=cid%> ; i++) {
-					if ((<%=dynamic_index%>+i) < fieldCount_<%=cid %>){
+					if ((<%=dynamic_index%>+i) <= fieldCount_<%=cid %>){
 						if(temp_row_<%= cid %>[<%=dynamic_index%>+i]<%=(isTrimAll || (!trimSelects.isEmpty() && ("true").equals(trimSelects.get(i).get("TRIM"))))?".trim()":"" %>.length() < 1){
 							emptyColumnCount_<%= cid %>++;
 						}
@@ -1081,7 +1081,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 							}
 							dynamic_column_count_<%=cid%> = dynamic_<%=cid %>.getColumnCount();
 							for (int i = 0; i < dynamic_column_count_<%=cid%> ; i++) {
-								if ((<%=dynamic_index%>+i) < fieldCount_<%=cid %>){
+								if ((<%=dynamic_index%>+i) <= fieldCount_<%=cid %>){
 									if(temp_row_<%= cid %>[<%=dynamic_index%>+i]<%=(isTrimAll || (!trimSelects.isEmpty() && ("true").equals(trimSelects.get(i).get("TRIM"))))?".trim()":"" %>.length() < 1){
 										emptyColumnCount_<%= cid %>++;
 									}
@@ -1426,7 +1426,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 							int fieldCount_<%=cid %> = row_<%= cid %>.size();
 							dynamic_column_count_<%=cid%> = dynamic_<%=cid %>.getColumnCount();
 							for (int i = 0; i < dynamic_column_count_<%=cid%> ; i++) {
-								if ((<%=dynamic_index%>+i) < fieldCount_<%=cid %>){
+								if ((<%=dynamic_index%>+i) <= fieldCount_<%=cid %>){
 									if(temp_row_<%= cid %>[<%=dynamic_index%>+i]<%=(isTrimAll || (!trimSelects.isEmpty() && ("true").equals(trimSelects.get(i).get("TRIM"))))?".trim()":"" %>.length() < 1){
 										emptyColumnCount_<%= cid %>++;
 									}

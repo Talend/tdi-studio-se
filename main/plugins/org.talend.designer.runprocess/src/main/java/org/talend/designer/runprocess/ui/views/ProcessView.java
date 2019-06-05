@@ -214,7 +214,6 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
         parent.setLayout(new FillLayout());
 
         sash = new SashForm(parent, SWT.HORIZONTAL | SWT.SMOOTH);
-        sash.setLayoutData(new GridData(GridData.FILL_BOTH));
         sash.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
         GridLayout layout = new GridLayout();
         sash.setLayout(layout);

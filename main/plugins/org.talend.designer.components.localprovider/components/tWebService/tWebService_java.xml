@@ -239,8 +239,8 @@
             />
             <IMPORT
                 NAME="WOODSTOX-CORE"
-                MODULE="woodstox-core-5.1.0.jar"
-                MVN="mvn:com.fasterxml.woodstox/woodstox-core/5.1.0"
+                MODULE="woodstox-core-5.2.0.jar"
+                MVN="mvn:com.fasterxml.woodstox/woodstox-core/5.2.0"
                 REQUIRED="true"
             />
             <IMPORT
@@ -326,7 +326,7 @@
             <IMPORT
                 NAME="talend-ws"
                 MODULE="talend-ws-1.0.1-20190204.jar"
-                MVN="mvn:org.talend.libraries/talend-ws/1.0.1-20190204"
+                MVN="mvn:org.talend.libraries/talend-ws-1.0.1-20190204/6.0.0"
                 REQUIRED="true"
             />
 

@@ -302,7 +302,13 @@ public class ExcelTool {
     }
 
     public void writeExcel(OutputStream outputStream) throws Exception {
-        wb.write(outputStream);
+    	try {
+    		wb.write(outputStream);
+    	} finally {
+    		if(outputStream != null) {
+    			outputStream.close();
+    		}
+    	}
     }
 
     public void writeExcel(String fileName, boolean createDir) throws Exception {
@@ -317,8 +323,11 @@ public class ExcelTool {
         if (appendWorkbook && appendSheet && recalculateFormula) {
             evaluateFormulaCell();
         }
-        wb.write(fileOutput);
-        fileOutput.close();
+        try {
+        	wb.write(fileOutput);
+        } finally {
+        	fileOutput.close();
+        }
     }
 
     private void evaluateFormulaCell() {

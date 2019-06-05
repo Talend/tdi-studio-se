@@ -252,7 +252,9 @@ public class SettingVisitor implements PropertyVisitor {
                 break;
             }
         } else {
-            buildHealthCheck(node);
+            if (Metadatas.MAIN_FORM.equalsIgnoreCase(form)) {
+                buildHealthCheck(node);
+            }
             buildUpdate(node);
         }
     }

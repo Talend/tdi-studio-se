@@ -67,10 +67,10 @@ import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.repository.constants.BuildJobConstants;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BuildJobFactory;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManagerFactory;
@@ -290,8 +290,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
      */
     protected List<JobExportType> extractExportJobTypes() {
         // Feature TDI-29084:put the Deprecated build type at last
-        List<JobExportType> deprecateTypeList = new ArrayList<JobExportType>();
-        List<JobExportType> typeList = new ArrayList<JobExportType>();
+        List<JobExportType> deprecateTypeList = new ArrayList<>();
+        List<JobExportType> typeList = new ArrayList<>();
         for (JobExportType type : JobExportType.values()) {
             if (!type.deprecate) {
                 typeList.add(type);
@@ -385,7 +385,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         // createExportTree(pageComposite);
         if (!isMultiNodes()) {
             IBrandingService brandingService =
-                    (IBrandingService) GlobalServiceRegister.getDefault().getService(IBrandingService.class);
+                    GlobalServiceRegister.getDefault().getService(IBrandingService.class);
             boolean allowVerchange = brandingService.getBrandingConfiguration().isAllowChengeVersion();
             if (allowVerchange) {
                 createJobVersionGroup(pageComposite);
@@ -471,7 +471,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             final Object buildType =
                     item.getProperty().getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
             if (buildType != null) {
-                Map<JobExportType, String> map = BuildJobFactory.oldBuildTypeMap;
+                Map<JobExportType, String> map = BuildJobConstants.oldBuildTypeMap;
                 for (JobExportType t : map.keySet()) {
                     if (buildType.toString().equals(map.get(t))) { // same build type
                         label2 = t.label;
@@ -1044,7 +1044,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         if (comboType.equals(JobExportType.POJO)) {
             return JavaJobScriptsExportWSWizardPage.super.getExportChoiceMap();
         }
-        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
+        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<>(ExportChoice.class);
         exportChoiceMap.put(ExportChoice.needJobItem, false);
         exportChoiceMap.put(ExportChoice.needSourceCode, false);
 
@@ -1097,7 +1097,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     }
 
     private Map<ExportChoice, Object> getExportChoiceMapForMSESBImage() {
-        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
+        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<>(ExportChoice.class);
         exportChoiceMap.put(ExportChoice.buildImage, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needLauncher, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.launcherName, JobScriptsManager.UNIX_ENVIRONMENT);
@@ -1139,7 +1139,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     }
 
     private Map<ExportChoice, Object> getExportChoiceMapForImage() {
-        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
+        Map<ExportChoice, Object> exportChoiceMap = new EnumMap<>(ExportChoice.class);
         exportChoiceMap.put(ExportChoice.buildImage, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needLauncher, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.launcherName, JobScriptsManager.UNIX_ENVIRONMENT);

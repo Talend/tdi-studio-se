@@ -86,7 +86,7 @@
           REPOSITORY_VALUE="ENDPOINT"
           SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
         >
-          <DEFAULT>"https://login.salesforce.com/services/Soap/u/44.0"</DEFAULT>
+          <DEFAULT>"https://login.salesforce.com/services/Soap/u/45.0"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER
@@ -339,22 +339,21 @@
     <CODEGENERATION>
       <IMPORTS>
         <IMPORT
-            NAME="force-wsc-44.0.0"
-            MODULE="force-wsc-44.0.0.jar"
-            MVN="mvn:com.force.api/force-wsc/44.0.0"
+            NAME="force-wsc-46.0.0"
+            MODULE="force-wsc-46.0.0.jar"
+            MVN="mvn:com.force.api/force-wsc/46.0.0"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT
-            NAME="force-partner-api-44.0.0"
-            MODULE="force-partner-api-44.0.0.jar"
-            MVN="mvn:com.force.api/force-partner-api/44.0.0"
+            NAME="force-partner-api-46.0.0"
+            MODULE="force-partner-api-46.0.0.jar"
+            MVN="mvn:com.force.api/force-partner-api/46.0.0"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT
-            NAME="commons-beanutils-1.8.3"
-            MODULE="commons-beanutils-1.8.3.jar"
-            MVN="mvn:commons-beanutils/commons-beanutils/1.8.3"
-            UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-beanutils-1.8.3.jar"
+            NAME="commons-beanutils-1.9.3"
+            MODULE="commons-beanutils-1.9.3.jar"
+            MVN="mvn:commons-beanutils/commons-beanutils/1.9.3"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT

@@ -1330,6 +1330,7 @@
             context="plugin:org.talend.libraries.hadoop.emr.4.0.0"
             id="hadoop-aws-emr400-latest"
             name="hadoop-aws-2.6.0-amzn-0.jar"
+            mvn_uri="mvn:org.talend.libraries/hadoop-aws-2.6.0-amzn-0/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.hadoop.emr.4.0.0/lib/hadoop-aws-2.6.0-amzn-0.jar">
         </libraryNeeded>
 
@@ -1337,6 +1338,7 @@
             context="plugin:org.talend.libraries.s3"
             id="aws-java-sdk-s3-emr400-latest"
             name="aws-java-sdk-s3-1.10.4.jar"
+            mvn_uri="mvn:org.talend.libraries/aws-java-sdk-s3-1.10.4/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.s3/lib/aws-java-sdk-s3-1.10.4.jar">
         </libraryNeeded>
    
@@ -1360,6 +1362,7 @@
             context="plugin:org.talend.libraries.s3"
             id="aws-java-sdk-core-emr400-latest"
             name="aws-java-sdk-core-1.10.4.jar"
+            mvn_uri="mvn:org.talend.libraries/aws-java-sdk-core-1.10.4/6.0.0"
             uripath="platform:/plugin/org.talend.libraries.s3/lib/aws-java-sdk-core-1.10.4.jar">
         </libraryNeeded>
 
@@ -1367,6 +1370,7 @@
             context="plugin:org.talend.libraries.s3"
             id="jets3t-0.9.0"
             name="jets3t-0.9.0.jar"
+            mvn_uri="mvn:net.java.dev.jets3t/jets3t/0.9.0"
             uripath="platform:/plugin/org.talend.libraries.s3/lib/jets3t-0.9.0.jar">
         </libraryNeeded>
 
