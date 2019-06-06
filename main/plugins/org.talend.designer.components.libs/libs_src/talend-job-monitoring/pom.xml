@@ -51,13 +51,13 @@
         <dependency>
             <groupId>org.talend.daikon</groupId>
             <artifactId>daikon-audit</artifactId>
-            <version>0.31.5</version>
+            <version>0.31.6</version>
         </dependency>
 
 		<dependency>
 		    <groupId>org.talend.daikon</groupId>
 		    <artifactId>audit-logback</artifactId>
-		    <version>0.31.5</version>
+		    <version>0.31.6</version>
 		</dependency>
 		
 		<dependency>
