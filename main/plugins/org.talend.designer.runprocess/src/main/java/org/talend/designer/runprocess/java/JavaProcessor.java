@@ -186,6 +186,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     private ISyntaxCheckableEditor checkableEditor;
 
     private String formatedCode;
+    
+    private boolean useRelativeClasspath;
 
     /**
      * Matchs placeholder in subprocess_header.javajet, it will be replaced by the size of method code.
@@ -1228,9 +1230,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     protected String getLibsClasspath() throws ProcessorException {
         final String classPathSeparator = extractClassPathSeparator();
 
-        final String basePathClasspath = getBasePathClasspath();
         // for -cp libs str
+        useRelativeClasspath = false;
         final String neededModulesJarStr = getNeededModulesJarStr();
+
+        final String basePathClasspath = getBasePathClasspath();
+
         String libsStr = basePathClasspath + classPathSeparator + neededModulesJarStr.toString();
         if (isExportConfig() || isRunAsExport()) {
             libsStr += classPathSeparator + getExportJarsStr();
@@ -1246,12 +1251,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         // create classpath.jar
         if (!isExportConfig() && !isSkipClasspathJar() && isCorrespondingOS()) {
             try {
-                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator);
+                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator, useRelativeClasspath);
             } catch (Exception e) {
                 throw new ProcessorException(e);
             }
         }
-
+        useRelativeClasspath = false;
         return libsStr;
     }
 
@@ -1322,15 +1327,14 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             }
         } else {
             ITalendProcessJavaProject tProcessJvaProject = this.getTalendJavaProject();
-            IPath targetPath = tProcessJvaProject.getTargetFolder().getLocation();
             // add main job classes folder
             IPath classesFolder = tProcessJvaProject.getOutputFolder().getLocation();
-            String outputPath = getRelativePath(classesFolder, targetPath);
+            String outputPath = getClassPath(classesFolder);
             basePath.append(outputPath);
             basePath.append(classPathSeparator);
             // add main job src/main/resource folder as ext-resources
             IPath externalResourcePath = tProcessJvaProject.getExternalResourcesFolder().getLocation();
-            basePath.append(getRelativePath(externalResourcePath, targetPath));
+            basePath.append(getClassPath(externalResourcePath));
             basePath.append(classPathSeparator);
             // add subjobs
             Set<JobInfo> subjobs = this.getBuildChildrenJobs();
@@ -1339,7 +1343,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 ITalendProcessJavaProject subjobPrject = TalendJavaProjectManager
                         .getTalendJobJavaProject(info.getProcessItem().getProperty());
                 IPath subjobClassesFolder = subjobPrject.getOutputFolder().getLocation();
-                String subjobOutputPath = getRelativePath(subjobClassesFolder, targetPath);
+                String subjobOutputPath = getClassPath(subjobClassesFolder);
                 // if equals to main classPath, no need to add again
                 if (subjobOutputPath.equals(outputPath)) {
                     continue;
@@ -1348,7 +1352,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 basePath.append(classPathSeparator);
                 // add sub job src/main/resource folder as ext-resources
                 IPath subjobExternalResourcePath = subjobPrject.getExternalResourcesFolder().getLocation();
-                basePath.append(getRelativePath(subjobExternalResourcePath, targetPath));
+                basePath.append(getClassPath(subjobExternalResourcePath));
                 basePath.append(classPathSeparator);
             }
 
@@ -1358,13 +1362,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 ITalendProcessJavaProject mainjobPrject = TalendJavaProjectManager
                         .getTalendJobJavaProject(ProcessorUtilities.getMainJobInfo().getProcessor().getProperty());
                 IPath mainjobClassesFolder = mainjobPrject.getOutputFolder().getLocation();
-                String mainjobOutputPath = getRelativePath(mainjobClassesFolder, targetPath);
+                String mainjobOutputPath = getClassPath(mainjobClassesFolder);
                 if (!mainjobOutputPath.equals(outputPath)) {
                     basePath.append(mainjobOutputPath);
                     basePath.append(classPathSeparator);
                     // add main job src/main/resource folder as ext-resources
                     IPath mainjobExternalResourcePath = mainjobPrject.getExternalResourcesFolder().getLocation();
-                    basePath.append(getRelativePath(mainjobExternalResourcePath, targetPath));
+                    basePath.append(getClassPath(mainjobExternalResourcePath));
                     basePath.append(classPathSeparator);
                 }
             }
@@ -1372,14 +1376,14 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             ITalendProcessJavaProject routineProject = TalendJavaProjectManager
                     .getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
             IPath routineOutputPath = routineProject.getOutputFolder().getLocation();
-            basePath.append(getRelativePath(routineOutputPath, targetPath));
+            basePath.append(getClassPath(routineOutputPath));
             basePath.append(classPathSeparator);
 
             if (ProcessUtils.isRequiredPigUDFs(process)) {
                 ITalendProcessJavaProject pigudfsProject = TalendJavaProjectManager
                         .getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
                 IPath pigudfsOutputPath = pigudfsProject.getOutputFolder().getLocation();
-                basePath.append(getRelativePath(pigudfsOutputPath, targetPath));
+                basePath.append(getClassPath(pigudfsOutputPath));
                 basePath.append(classPathSeparator);
             }
 
@@ -1387,7 +1391,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 ITalendProcessJavaProject beansProject = TalendJavaProjectManager
                         .getTalendCodeJavaProject(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
                 IPath beansOutputPath = beansProject.getOutputFolder().getLocation();
-                basePath.append(getRelativePath(beansOutputPath, targetPath));
+                basePath.append(getClassPath(beansOutputPath));
                 basePath.append(classPathSeparator);
             }
 
@@ -1397,8 +1401,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         return basePath.toString();
     }
 
-    private String getRelativePath(IPath target, IPath base) {
-        return target.makeRelativeTo(base).toPortableString();
+    private String getClassPath(IPath base) {
+        if (useRelativeClasspath) {
+            IPath target = talendJavaProject.getTargetFolder().getLocation();
+            return target.makeRelativeTo(base).toPortableString();
+        }
+        return base.toPortableString();
     }
 
     protected String getNeededModulesJarStr() {
@@ -1463,8 +1471,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 String artifactId = artifact.getArtifactId();
                 boolean hasSapjco3 = "sapjco3".equals(artifactId) && compareSapjco3Version(relativeJarPath) > 0; //$NON-NLS-1$
                 boolean hasSapidoc3 = "sapidoc3".equals(artifactId); //$NON-NLS-1$
-                boolean useRelativePath = hasCXFComponent || hasSapjco3 || hasSapidoc3;
-                if (useRelativePath) {
+                useRelativeClasspath = hasCXFComponent || hasSapjco3 || hasSapidoc3;
+                if (useRelativeClasspath) {
                     libPath.append(relativeJarPath).append(classPathSeparator);
                 } else {
                     libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);

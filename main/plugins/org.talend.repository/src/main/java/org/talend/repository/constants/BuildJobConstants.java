@@ -42,7 +42,6 @@ public class BuildJobConstants {
 
         // components contain cxf-core-**.jar
         ESB_CXF_COMPONENTS = Collections
-                .unmodifiableSet(new HashSet<>(Arrays.asList("tESBConsumer", "tESBProviderRequestLoop", "tMicrosoftCrmInput",
-                        "tMicrosoftCrmOutput", "tRESTClient", "tRESTRequestLoop", "tWebService")));
+                .unmodifiableSet(new HashSet<>(Arrays.asList("tMicrosoftCrmInput", "tMicrosoftCrmOutput", "tWebService")));
     }
 }
