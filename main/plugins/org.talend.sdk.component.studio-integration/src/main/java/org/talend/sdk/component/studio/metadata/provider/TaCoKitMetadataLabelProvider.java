@@ -18,26 +18,9 @@ package org.talend.sdk.component.studio.metadata.provider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.talend.repository.viewer.label.RepositoryViewLabelProvider;
-import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
-import org.talend.sdk.component.studio.metadata.node.TaCoKitConfigurationRepositoryNode;
 
 public class TaCoKitMetadataLabelProvider extends RepositoryViewLabelProvider implements ILabelProvider {
-
-    @Override
-    public String getText(final Object element) {
-        String label = super.getText(element);
-
-        if (element instanceof TaCoKitConfigurationRepositoryNode) {
-            if (!((TaCoKitConfigurationRepositoryNode) element).isDeprecated()) {
-                ConfigTypeNode configTypeNode = ((TaCoKitConfigurationRepositoryNode) element).getConfigTypeNode();
-                String type = configTypeNode.getConfigurationType();
-                label = label + " (" + type + ")";
-            }
-        }
-
-        return label;
-    }
 
     @Override
     public Image getImage(final Object element) {

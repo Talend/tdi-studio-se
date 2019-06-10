@@ -44,7 +44,7 @@
      <repositoryNode
            alias="TACOKIT"
            folder="metadata/tacokit"
-           icon="icon/connection.png"
+           icon="icon/configuration_16x16.png"
            isResouce="true"
            key="repository.metadata.TaCoKit"
            label="%TaCoKitConnection"
@@ -171,7 +171,7 @@
     <navigatorContent
           activeByDefault="true"
           contentProvider="org.talend.sdk.component.studio.metadata.provider.TaCoKitMetadataContentProvider"
-          icon="icon/connection.png"
+          icon="icon/configuration_16x16.png"
           id="org.talend.repository.viewer.metadata.TaCoKit"
           labelProvider="org.talend.sdk.component.studio.metadata.provider.TaCoKitMetadataLabelProvider"
           name="TaCoKit Connection"
