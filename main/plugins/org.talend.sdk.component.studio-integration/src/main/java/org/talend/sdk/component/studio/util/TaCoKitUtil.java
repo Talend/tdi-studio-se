@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
@@ -152,8 +153,13 @@ public class TaCoKitUtil {
         IPath path = tacokitPath.append(baseFolder);
         String portableStr = path.toPortableString();
 
-        String type = portableStr.replaceAll("/", "."); //$NON-NLS-1$ //$NON-NLS-2$
-        String alias = portableStr.replaceAll("/", "_"); //$NON-NLS-1$//$NON-NLS-2$
+        /**
+         * Keep the prefix: "repository.", since there are some codes like: <br/>
+         * objectType.getKey().toString().startsWith("repository.metadata") <br/>
+         * For example: DeleteAction
+         */
+        String type = "repository." + portableStr.replaceAll("/", "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        String alias = "repository_" + portableStr.replaceAll("/", "_"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 
         ERepositoryObjectType eType = ERepositoryObjectType.valueOf(type);
         if (eType == null) {
@@ -272,6 +278,15 @@ public class TaCoKitUtil {
 
     public static boolean hideConfigFolderOnSingleEdge() {
         return true;
+    }
+
+    public static void registAllTaCoKitRepositoryTypes() throws Exception {
+        Map<String, ConfigTypeNode> nodes = Lookups.taCoKitCache().getConfigTypeNodeMap();
+        if (nodes != null) {
+            for (ConfigTypeNode node : nodes.values()) {
+                TaCoKitUtil.getOrCreateERepositoryObjectType(node);
+            }
+        }
     }
 
     public static class GAV {

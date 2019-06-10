@@ -339,6 +339,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
             typeFolders.add(TaCoKitUtil.getTaCoKitFolderName(configTypeNodeMap.get(edge)));
         }
 
+        ERepositoryObjectType repObjType = TaCoKitUtil.getOrCreateERepositoryObjectType(configTypeNode);
         IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         List<Container<String, IRepositoryViewObject>> subContainers = container.getSubContainer();
         if (subContainers != null) {
@@ -349,7 +350,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
                         // ignore type folders, since they store sub types
                         continue;
                     }
-                    Folder oFolder = new Folder((Property) subContainer.getProperty(), TaCoKitConst.METADATA_TACOKIT);
+                    Folder oFolder = new Folder((Property) subContainer.getProperty(), repObjType);
                     if (factory.getStatus(oFolder) != ERepositoryStatus.DELETED) {
                         TaCoKitFolderRepositoryNode folderNode = new TaCoKitFolderRepositoryNode(oFolder,
                                 (RepositoryNode) parentNode, parentNode, folderName, configTypeNode);
