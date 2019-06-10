@@ -177,6 +177,7 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
             IWorkspaceRunnable operation = createFinishOperation();
             ISchedulingRule schedulingRule = workspace.getRoot();
             workspace.run(operation, schedulingRule, IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+            closeLockStrategy();
             return true;
         } catch (Exception e) {
             ExceptionHandler.process(e);
