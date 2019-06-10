@@ -189,20 +189,28 @@
           </and>
        </possibleChildren>
        <triggerPoints>
-          <and>
-             <instanceof
-                   value="org.talend.repository.model.RepositoryNode">
-             </instanceof>
-             <or>
-                 <test
-                       forcePluginActivation="true"
-                       property="org.talend.repository.node.isMetadataTopNode">
-                 </test>
-                 <test
-                       property="org.talend.sdk.component.node.metadata.isTaCoKitNode">
-                 </test>
-             </or>
-          </and>
+           <or>
+               <adapt
+                     type="org.talend.core.repository.model.ProjectRepositoryNode">
+               </adapt>
+               <instanceof
+                     value="org.talend.core.repository.model.ProjectRepositoryNode">
+               </instanceof>
+               <and>
+	             <instanceof
+	                   value="org.talend.repository.model.RepositoryNode">
+	             </instanceof>
+	             <or>
+	                 <test
+	                       forcePluginActivation="true"
+	                       property="org.talend.repository.node.isMetadataTopNode">
+	                 </test>
+	                 <test
+	                       property="org.talend.sdk.component.node.metadata.isTaCoKitNode">
+	                 </test>
+	             </or>
+               </and>
+          </or>
        </triggerPoints>
        <actionProvider
              class="org.talend.sdk.component.studio.metadata.provider.NodeActionProvider"
