@@ -29,6 +29,12 @@ public class TaCoKitMetadataLabelProvider extends RepositoryViewLabelProvider im
             image = ((ITaCoKitRepositoryNode) element).getImage();
         }
         if (image != null) {
+            if (element instanceof ITaCoKitRepositoryNode) {
+                ITaCoKitRepositoryNode rnode = ((ITaCoKitRepositoryNode) element);
+                if (rnode.isLeafNode()) {
+                    return super.decorateImageWithStatus(image, rnode.getObject());
+                }
+            }
             return image;
         }
         return super.getImage(element);
