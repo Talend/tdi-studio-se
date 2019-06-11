@@ -531,7 +531,6 @@ public class ProcessManager implements AutoCloseable {
     private void aggregateDeps(final Collection<URL> paths, final Stream<String> deps) {
         paths.addAll(deps.map(it -> {
             try {
-                System.out.println(it);
                 return mvnResolver.apply(it).toURI().toURL();
             } catch (final MalformedURLException e) {
                 throw new IllegalArgumentException(e);
