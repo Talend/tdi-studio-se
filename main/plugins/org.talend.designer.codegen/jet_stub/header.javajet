@@ -363,8 +363,15 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 	%>
 
 <%
-	List<? extends INode> jobCatcherNodes = process.getNodesOfType("tJobStructureCatcher");
-	boolean enableLogStash = jobCatcherNodes != null && !jobCatcherNodes.isEmpty();
+	INode jobCatcherNode = null;
+	for (INode nodeInProcess : processNodes) {
+		String componentName = nodeInProcess.getComponent().getName();
+		if("tJobStructureCatcher".equals(componentName)) {
+			jobCatcherNode = nodeInProcess;
+			break;
+		}
+	}
+	boolean enableLogStash = jobCatcherNode != null;
 	if (stats || enableLogStash) {
 %>
 private RunStat runStat = new RunStat();
@@ -406,12 +413,11 @@ private RunTrace runTrace = new RunTrace();
 <%
 	}
 	
-	for (INode jobStructureCatcher : jobCatcherNodes) {
+	if(enableLogStash) {
 %>
-	JobStructureCatcherUtils <%=jobStructureCatcher.getUniqueName() %> = new JobStructureCatcherUtils(jobName, "<%=process.getId() %>", "<%=process.getVersion() %>");
-	org.talend.job.audit.JobAuditLogger auditLogger_<%=jobStructureCatcher.getUniqueName()%> = null;
+	JobStructureCatcherUtils <%=jobCatcherNode.getUniqueName() %> = new JobStructureCatcherUtils(jobName, "<%=process.getId() %>", "<%=process.getVersion() %>");
+	org.talend.job.audit.JobAuditLogger auditLogger_<%=jobCatcherNode.getUniqueName()%> = null;
 <%
-		break;
 	}
 
 	for (INode metterCatcher : process.getNodesOfType("tFlowMeterCatcher")) {
