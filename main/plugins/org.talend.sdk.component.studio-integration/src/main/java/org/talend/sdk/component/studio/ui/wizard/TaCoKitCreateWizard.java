@@ -82,23 +82,19 @@ public class TaCoKitCreateWizard extends TaCoKitConfigurationWizard {
         connectionItem.getProperty().setId(nextId);
         TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connectionItem.getConnection(), configTypeNode);
         ITaCoKitRepositoryNode parentNode = null;
-        if (taCoKitRepositoryNode.isLeafNode()) {
-            parentNode = taCoKitRepositoryNode;
-        } else if (taCoKitRepositoryNode.isConfigNode() || taCoKitRepositoryNode.isFolderNode()) {
-            ITaCoKitRepositoryNode tempNode = taCoKitRepositoryNode;
-            while (true) {
-                if (tempNode == null) {
-                    break;
-                }
-                if (tempNode.isLeafNode()) {
-                    parentNode = tempNode;
-                    break;
-                }
-                if (tempNode.isFamilyNode()) {
-                    break;
-                }
-                tempNode = tempNode.getParentTaCoKitNode();
+        ITaCoKitRepositoryNode tempNode = taCoKitRepositoryNode;
+        while (true) {
+            if (tempNode == null) {
+                break;
             }
+            if (tempNode.isLeafNode()) {
+                parentNode = tempNode;
+                break;
+            }
+            if (tempNode.isFamilyNode()) {
+                break;
+            }
+            tempNode = tempNode.getParentTaCoKitNode();
         }
         if (parentNode != null) {
             model.setParentItemId(parentNode.getObject().getId());
