@@ -14,6 +14,7 @@ package org.talend.sdk.component.studio.ui.composite;
 
 import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.exception.ExceptionHandler;
@@ -78,15 +79,20 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
                 .filter(p -> !EParameterFieldType.SCHEMA_TYPE.equals(p.getFieldType()))
                 .forEach(parameter -> {
                     parameter.addValueChangeListener(configurationUpdater);
-                    if (isNew) {
-                        parameter.setValue(parameter.getValue());
-                        return;
-                    }
                     try {
-                        ValueModel valueModel = configurationModel.getValue(parameter.getName());
+                        String key = parameter.getName();
+                        if (isNew) {
+                            parameter.setValue(parameter.getValue());
+                            key = configurationModel.computeKey(key);
+                        }
+                        ValueModel valueModel = configurationModel.getValue(key);
                         if (valueModel != null) {
                             if (valueModel.getConfigurationModel() != configurationModel) {
                                 parameter.setReadOnly(true);
+                            }
+                            if (StringUtils.isEmpty(valueModel.getValue())
+                                    || StringUtils.equalsIgnoreCase("null", valueModel.getValue())) { //$NON-NLS-1$
+                                return;
                             }
                             parameter.setValue(valueModel.getValue());
                         }

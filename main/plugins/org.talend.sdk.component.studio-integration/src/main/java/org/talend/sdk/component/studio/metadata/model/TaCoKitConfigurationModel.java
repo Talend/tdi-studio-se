@@ -12,11 +12,11 @@
  */
 package org.talend.sdk.component.studio.metadata.model;
 
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_ID;
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_PARENT_ID;
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_PARENT_ITEM_ID;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.*;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,12 +26,14 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
@@ -150,6 +152,56 @@ public class TaCoKitConfigurationModel {
 
     private String getValueOfSelf(final String key) {
         return (String) getAllProperties().get(key);
+    }
+
+    public String computeKey(String key) throws Exception {
+        final Map<String, PropertyDefinitionDecorator> tree = buildPropertyTree();
+        final Optional<String> configPath = findConfigPath(tree, key);
+        final String modelRoot = findModelRoot();
+
+        if (configPath.isPresent()) {
+            return key.replace(configPath.get(), modelRoot);
+        } else {
+            return key;
+        }
+    }
+
+    private Map<String, PropertyDefinitionDecorator> buildPropertyTree() {
+        final Map<String, PropertyDefinitionDecorator> tree = new HashMap<>();
+        final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator
+                .wrap(getConfigTypeNode().getProperties());
+        properties.forEach(p -> tree.put(p.getPath(), p));
+        return tree;
+    }
+
+    private String findModelRoot() {
+        final Map<String, String> values = getProperties();
+        List<String> possibleRoots = values.keySet().stream().filter(key -> key.contains(PATH_SEPARATOR))
+                .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR))).distinct().collect(Collectors.toList());
+
+        if (possibleRoots.size() != 1) {
+            throw new IllegalStateException("Multiple roots found. Can't guess correct one: " + possibleRoots); //$NON-NLS-1$
+        }
+        return possibleRoots.get(0);
+    }
+
+    private Optional<String> findConfigPath(final Map<String, PropertyDefinitionDecorator> tree, final String key)
+            throws Exception {
+        TaCoKitConfigurationModel parentModel = getParentConfigurationModel();
+        if (parentModel != null && parentModel.getConfigTypeNode() != null) {
+            final String configType = parentModel.getConfigTypeNode().getConfigurationType();
+            final String configName = parentModel.getConfigTypeNode().getName();
+            if (configType != null && configName != null) {
+                for (PropertyDefinitionDecorator current = tree.get(key); current != null; current = tree
+                        .get(current.getParentPath())) {
+                    if (configType.equals(current.getConfigurationType())
+                            && configName.equals(current.getConfigurationTypeName())) {
+                        return Optional.of(current.getPath());
+                    }
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     @SuppressWarnings("unchecked")
