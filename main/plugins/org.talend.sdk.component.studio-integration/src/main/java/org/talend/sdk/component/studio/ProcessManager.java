@@ -499,7 +499,15 @@ public class ProcessManager implements AutoCloseable {
         final int originalPaths = paths.size();
         // only available in 1.1.8
         Mvn.withDependencies(serverJar, "TALEND-INF/server/dependencies.txt", false, deps -> {
-            aggregateDeps(paths, deps);
+            Stream<String> filteredDeps = deps.filter(dep -> {
+                if (dep.contains("com.sun.istack/istack-commons-runtime/")) {
+                    return false;
+                } else if (dep.contains("org.codehaus.woodstox/stax2-api/")) {
+                    return false;
+                }
+                return true;
+            });
+            aggregateDeps(paths, filteredDeps);
             return null;
         });
         if (paths.size() == originalPaths) { // < 1.1.8
@@ -523,6 +531,7 @@ public class ProcessManager implements AutoCloseable {
     private void aggregateDeps(final Collection<URL> paths, final Stream<String> deps) {
         paths.addAll(deps.map(it -> {
             try {
+                System.out.println(it);
                 return mvnResolver.apply(it).toURI().toURL();
             } catch (final MalformedURLException e) {
                 throw new IllegalArgumentException(e);
