@@ -368,26 +368,18 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
             ITaCoKitRepositoryNode parentLeafNode = null;
             ITaCoKitRepositoryNode testNode = parentNode;
             while (true) {
-                try {
-                    if (testNode == null) {
-                        break;
-                    }
-                    if (testNode.isFamilyNode()) {
-                        break;
-                    }
-                    if (testNode.isFolderNode()) {
-                        continue;
-                    }
-                    if (testNode.isConfigNode()) {
-                        continue;
-                    }
-                    if (testNode.isLeafNode()) {
-                        parentLeafNode = testNode;
-                        break;
-                    }
-                } finally {
-                    testNode = testNode.getParentTaCoKitNode();
+                if (testNode == null) {
+                    break;
                 }
+                if (testNode.isFamilyNode()) {
+                    break;
+                }
+
+                if (testNode.isLeafNode()) {
+                    parentLeafNode = testNode;
+                    break;
+                }
+                testNode = testNode.getParentTaCoKitNode();
             }
             String parentId = null;
             if (parentLeafNode != null) {
