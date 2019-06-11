@@ -147,7 +147,7 @@ public class StatsAndLogsConstants {
 
     public static final String[] AS400_VERSION_CODE = new String[] { "AS400_V7R1_V7R3", "AS400_V6R1_V7R2", "AS400_V5R3_V6R1", "AS400_V5R2_V5R4" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-    public static final String[] AS400_VERSION_DRIVER = new String[] { "jt400_V7R3.jar", "jt400_V6R1.jar", "jt400_V5R3.jar", "jt400_V5R2.jar" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    public static final String[] AS400_VERSION_DRIVER = new String[] { "jt400-9.8.jar", "jt400_V6R1.jar", "jt400_V5R3.jar", "jt400_V5R2.jar" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
     public static final String[] PSQL_VERSION_DISPLAY = new String[] {"v9 and later","Prior to v9" }; //$NON-NLS-1$ //$NON-NLS-2$
 
