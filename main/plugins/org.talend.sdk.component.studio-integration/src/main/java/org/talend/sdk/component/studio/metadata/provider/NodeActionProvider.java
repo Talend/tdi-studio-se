@@ -13,6 +13,8 @@
 package org.talend.sdk.component.studio.metadata.provider;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +58,9 @@ public class NodeActionProvider extends MetedataNodeActionProvier {
                     if (edges != null && !edges.isEmpty()) {
                         TaCoKitCache cache = Lookups.taCoKitCache();
                         Map<String, ConfigTypeNode> configTypeNodeMap = cache.getConfigTypeNodeMap();
-                        for (String edge : edges) {
+                        List<String> edgeArray = new LinkedList<String>(edges);
+                        Collections.sort(edgeArray);
+                        for (String edge : edgeArray) {
                             ConfigTypeNode subTypeNode = configTypeNodeMap.get(edge);
                             ITreeContextualAction createAction = new CreateTaCoKitConfigurationAction(subTypeNode);
                             createAction.init((TreeViewer) getActionSite().getStructuredViewer(), sel);
@@ -64,7 +68,7 @@ public class NodeActionProvider extends MetedataNodeActionProvier {
                             actions.add(createAction);
                         }
                         if (tacokitNode.isFamilyNode()) {
-                            if (TaCoKitUtil.hideConfigFolderOnSingleEdge() && edges.size() == 1) {
+                            if (TaCoKitUtil.hideConfigFolderOnSingleEdge() && edgeArray.size() == 1) {
                                 TaCoKitCreateFolderAction createFolderAction = new TaCoKitCreateFolderAction(
                                         configTypeNodeMap.get(edges.iterator().next()));
                                 createFolderAction.init((TreeViewer) getActionSite().getStructuredViewer(), sel);

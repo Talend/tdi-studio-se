@@ -402,10 +402,19 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
                         TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
 
                         String requiredParentId = module.getParentItemId();
-                        if (requiredParentId != null && !requiredParentId.isEmpty()) {
-                            if (!requiredParentId.equals(parentId)) {
-                                continue;
+                        if (requiredParentId == null || requiredParentId.isEmpty()) {
+                            // if parent type is family, then create node; else continue
+                            ConfigTypeNode moduleTypeNode = itemModule.getConfigTypeNode();
+                            String mPId = moduleTypeNode.getParentId();
+                            if (mPId != null) {
+                                ConfigTypeNode parentTypeNode = configTypeNodeMap.get(mPId);
+                                // if it's family node, then no parent anymore, else it's not a family node
+                                if (parentTypeNode != null && !TaCoKitUtil.isBlank(parentTypeNode.getParentId())) {
+                                    continue;
+                                }
                             }
+                        } else if (!requiredParentId.equals(parentId)) {
+                            continue;
                         }
                         usedObjs.add(member);
 
