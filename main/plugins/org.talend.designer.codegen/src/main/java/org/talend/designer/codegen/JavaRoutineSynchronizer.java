@@ -15,6 +15,7 @@ package org.talend.designer.codegen;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.SystemException;
+import org.talend.commons.runtime.utils.io.IOUtils;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.CorePlugin;
@@ -179,7 +181,11 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
     private static void copyFile(File in, IFile out) throws CoreException, IOException {
         final FileInputStream fis = new FileInputStream(in);
         if (out.exists()) {
-            out.setContents(fis, true, false, null);
+            InputStream outIs = out.getContents(true);
+            if (!IOUtils.contentEquals(fis, outIs)) {                
+                out.setContents(fis, true, false, null);
+            }
+            outIs.close();
         } else {
             out.create(fis, true, null);
         }
