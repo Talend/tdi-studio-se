@@ -219,7 +219,7 @@ public final class WsdlTokenManager {
 	            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 	            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             } catch (Exception e) {
-            	logger.warn("failed to ebable xml safe feature");
+            	logger.warn("failed to enable xml safe feature");
             }
             
             builder = factory.newDocumentBuilder();
@@ -230,7 +230,7 @@ public final class WsdlTokenManager {
             try {
                 xpf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             } catch (XPathFactoryConfigurationException ex) {
-            	logger.warn("failed to ebable xpath safe feature");
+            	logger.warn("failed to enable xpath safe feature");
             }
             XPath xpath = xpf.newXPath();
             String expression = xPathQuery;

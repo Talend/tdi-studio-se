@@ -208,7 +208,7 @@ public class SOAPUtil {
 
     private Document extractContentAsDocument(SOAPHeader header) throws ParserConfigurationException, TransformerException {
         Document document;
-        DocumentBuilderFactory factory = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         
         try {
         	factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
