@@ -485,6 +485,7 @@
 				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("appender.file.path", <%=location%>);
 				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("appender.file.maxsize", "52428800");
 				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("appender.file.maxbackup", "20");
+				properties_<%=jobStructureCatcher.getUniqueName()%>.setProperty("host", "false");
 				
 				auditLogger_<%=jobStructureCatcher.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(properties_<%=jobStructureCatcher.getUniqueName()%>);
 			}
