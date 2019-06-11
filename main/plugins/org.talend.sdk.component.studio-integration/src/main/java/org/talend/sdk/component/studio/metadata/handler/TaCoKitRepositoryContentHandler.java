@@ -34,7 +34,6 @@ import org.talend.commons.utils.data.container.Container;
 import org.talend.commons.utils.data.container.RootContainer;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.MetadataManager;
-import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PropertiesFactory;
@@ -171,7 +170,7 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
      */
     @Override
     public IRepositoryTypeProcessor getRepositoryTypeProcessor(final String repositoryType) {
-        if (isTaCoKitRepositoryType(repositoryType)) {
+        if (containsTaCoKitRepositoryType(repositoryType)) {
             if (repositoryType.contains("|")) {
                 return new TaCoKitTypeProcessor(repositoryType.split("\\|"));
             } else {
@@ -182,8 +181,20 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
         }
     }
 
-    private boolean isTaCoKitRepositoryType(final String repositoryType) {
-        return repositoryType != null && repositoryType.startsWith(TaCoKitConst.METADATA_TACOKIT_PREFIX);
+    private boolean containsTaCoKitRepositoryType(final String repositoryTypes) {
+        if (repositoryTypes == null) {
+            return false;
+        }
+        String[] typeArray = repositoryTypes.split("\\|"); //$NON-NLS-1$
+        for (String type : typeArray) {
+            ERepositoryObjectType typeFromKey = ERepositoryObjectType.getTypeFromKey(type);
+            if (typeFromKey != null) {
+                if (TaCoKitUtil.isTaCoKitType(typeFromKey)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

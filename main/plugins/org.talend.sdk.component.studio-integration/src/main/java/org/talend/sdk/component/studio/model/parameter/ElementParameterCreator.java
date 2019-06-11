@@ -485,7 +485,7 @@ public class ElementParameterCreator {
             if (configNode == null) {
                 return "";
             }
-            return TaCoKitUtil.getConfigTypePath(configNode).replaceAll("/", ".");
+            return TaCoKitUtil.getTaCoKitRepositoryKey(configNode);
         }).collect(Collectors.joining("|"));
     }
 

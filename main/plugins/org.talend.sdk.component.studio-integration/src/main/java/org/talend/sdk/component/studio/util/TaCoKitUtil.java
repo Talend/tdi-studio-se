@@ -143,31 +143,33 @@ public class TaCoKitUtil {
         return path.toPortableString();
     }
 
-    public static ERepositoryObjectType getOrCreateERepositoryObjectType(final ConfigTypeNode configTypeNode)
-            throws Exception {
-        if (configTypeNode == null) {
-            return null;
-        }
-        IPath tacokitPath = new Path(TaCoKitConst.METADATA_TACOKIT.getFolder());
-        IPath baseFolder = getTaCoKitBaseFolder(configTypeNode);
-        IPath path = tacokitPath.append(baseFolder);
-        String portableStr = path.toPortableString();
-
+    public static String getTaCoKitRepositoryKey(final ConfigTypeNode configTypeNode) {
+        String configTypePath = getConfigTypePath(configTypeNode);
         /**
          * Keep the prefix: "repository.", since there are some codes like: <br/>
          * objectType.getKey().toString().startsWith("repository.metadata") <br/>
          * For example: DeleteAction
          */
-        String type = "repository." + portableStr.replaceAll("/", "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        String alias = "repository_" + portableStr.replaceAll("/", "_"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+        return TaCoKitConst.METADATA_PREFIX + configTypePath.replaceAll("/", "."); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public static ERepositoryObjectType getOrCreateERepositoryObjectType(final ConfigTypeNode configTypeNode)
+            throws Exception {
+        if (configTypeNode == null) {
+            return null;
+        }
+        IPath baseFolder = getTaCoKitBaseFolder(configTypeNode);
+        String label = baseFolder.toPortableString();
+        String folderPathStr = getConfigTypePath(configTypeNode);
+
+        String type = getTaCoKitRepositoryKey(configTypeNode);
+        String alias = folderPathStr.replaceAll("/", "_"); //$NON-NLS-1$//$NON-NLS-2$
 
         ERepositoryObjectType eType = ERepositoryObjectType.valueOf(type);
         if (eType == null) {
-            eType = new WizardRegistry().createRepositoryObjectType(type, baseFolder.toPortableString(), alias,
-                    portableStr, 1, // $NON-NLS-1$
+            eType = new WizardRegistry().createRepositoryObjectType(type, label, alias, folderPathStr, 1,
                     new String[] { ERepositoryObjectType.PROD_DI });
-            ConfigTypeNode parentTypeNode =
-                    Lookups.taCoKitCache().getConfigTypeNodeMap().get(configTypeNode.getParentId());
+            ConfigTypeNode parentTypeNode = Lookups.taCoKitCache().getConfigTypeNodeMap().get(configTypeNode.getParentId());
             if (parentTypeNode == null) {
                 eType.setAParent(TaCoKitConst.METADATA_TACOKIT);
             } else {
