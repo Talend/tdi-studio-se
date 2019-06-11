@@ -219,8 +219,10 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     IContainer parent = sourceFolder.getParent();
                     sourceFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
                     removeFromParentSourceFolder(sourceFolder);
-                    RenameResourceChange change = new RenameResourceChange(sourceFolder.getFullPath(), newName);
-                    change.perform(monitor);
+                    if(sourceFolder.exists()) {
+                    	RenameResourceChange change = new RenameResourceChange(sourceFolder.getFullPath(), newName);
+                        change.perform(monitor);
+                    }
                     IFolder newFolder = parent.getFolder(new Path(newName));
                     updatePomsInNewFolder(newFolder);
                 } catch (CoreException e) {
@@ -238,6 +240,9 @@ public class ProcessChangeListener implements PropertyChangeListener {
      * @throws CoreException
      */
     private void updatePomsInNewFolder(IFolder newFolder) throws CoreException {
+    	if(!newFolder.exists()) {
+    		return;
+    	}
         for (IResource res : newFolder.members()) {
             if (res instanceof IFolder) {
                 IFolder currentFolder = (IFolder) res;
@@ -263,6 +268,9 @@ public class ProcessChangeListener implements PropertyChangeListener {
      * @throws CoreException
      */
     private void removeFromParentSourceFolder(IFolder sourceFolder) throws CoreException {
+    	if(!sourceFolder.exists()) {
+    		return;
+    	}
         for (IResource res : sourceFolder.members()) {
             if (res instanceof IFolder) {
                 IFolder currentFolder = (IFolder) res;
