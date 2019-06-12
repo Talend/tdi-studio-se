@@ -149,6 +149,10 @@ public class ServerManager {
         guessSchemaExtractor.extract();
     }
 
+    public boolean isStarted() {
+        return start;
+    }
+
     public synchronized void stop() throws Exception {
         services.forEach(ServiceRegistration::unregister);
         services.clear();

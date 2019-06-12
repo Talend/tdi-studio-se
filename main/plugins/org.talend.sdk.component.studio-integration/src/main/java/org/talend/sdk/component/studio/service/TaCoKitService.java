@@ -45,6 +45,11 @@ public class TaCoKitService implements ITaCoKitService {
     }
 
     @Override
+    public boolean isStarted() throws Exception {
+        return ServerManager.getInstance().isStarted();
+    }
+
+    @Override
     public String reload(IProgressMonitor monitor) throws Exception {
         String result = new ReloadAction().reload(monitor);
         try {
