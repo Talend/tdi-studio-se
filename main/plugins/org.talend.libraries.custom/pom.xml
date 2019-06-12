@@ -44,6 +44,23 @@
               </artifactItems>
             </configuration>
           </execution>
+          <execution>
+            <id>copy-with-version</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/lib</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.talend.libraries</groupId>
+                  <artifactId>talendzip</artifactId>
+                  <version>1.0-20190527</version>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>

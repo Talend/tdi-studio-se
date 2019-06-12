@@ -4,12 +4,12 @@ Bundle-Name: Excel
 Bundle-SymbolicName: org.talend.libraries.excel
 Bundle-Version: 7.2.1.qualifier
 Bundle-ClassPath: .,
- lib/simpleexcel-2.0-20180927.jar,
+ lib/simpleexcel-2.1-20190507.jar,
  lib/commons-collections4-4.1.jar,
- lib/poi-3.16-20170419_modified_talend.jar,
- lib/poi-ooxml-3.16-20170419_modified_talend.jar,
- lib/poi-ooxml-schemas-3.16-20170419.jar,
- lib/poi-scratchpad-3.16-20170419.jar
+ lib/poi-4.1.0-20190523141255_modified_talend.jar,
+ lib/poi-ooxml-4.1.0-20190523141255_modified_talend.jar,
+ lib/poi-ooxml-schemas-4.1.0-20190523141255_modified_talend.jar,
+ lib/poi-scratchpad-4.1.0-20190523141255_modified_talend.jar
 Export-Package: 
  com.microsoft.schemas.office.excel,
  com.microsoft.schemas.office.excel.impl,
@@ -49,7 +49,7 @@ Export-Package:
  org.apache.poi,
  org.apache.poi.common.usermodel,
  org.apache.poi.ddf,
- org.apache.poi.dev,
+ org.apache.poi.ooxml.dev,
  org.apache.poi.extractor,
  org.apache.poi.hdgf,
  org.apache.poi.hdgf.chunks,
@@ -176,7 +176,6 @@ Export-Package:
  org.apache.poi.xslf.usermodel,
  org.apache.poi.xslf.util,
  org.apache.poi.xssf,
- org.apache.poi.xssf.dev,
  org.apache.poi.xssf.eventusermodel,
  org.apache.poi.xssf.extractor,
  org.apache.poi.xssf.model,
@@ -217,12 +216,10 @@ Export-Package:
  org.openxmlformats.schemas.wordprocessingml.x2006.main.impl,
  org.openxmlformats.schemas.xpackage.x2006.digitalSignature,
  org.openxmlformats.schemas.xpackage.x2006.digitalSignature.impl,
- org.openxmlformats.schemas.xpackage.x2006.relationships,
- org.openxmlformats.schemas.xpackage.x2006.relationships.impl,
  org.w3.x2000.x09.xmldsig,
  org.w3.x2000.x09.xmldsig.impl,
  schemaorg_apache_xmlbeans.system.s8C3F193EE11A2F798ACF65489B9E6078,
- schemaorg_apache_xmlbeans.system.sF1327CCA741569E70F9CA8C9AF9B44B2
+ schemaorg_apache_xmlbeans.system.sD023D6490046BA0250A839A9AD24C443
 Require-Bundle: org.talend.libraries.dom4j-jaxen,
  org.talend.libraries.apache.xml
 Bundle-ActivationPolicy: lazy

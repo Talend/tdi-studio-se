@@ -46,10 +46,11 @@
 
     <PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="2"
 			REPOSITORY_VALUE="DB_VERSION">
-			<ITEMS DEFAULT="V6R1_V7R2">
+			<ITEMS DEFAULT="V7R1_V7R3">
 				<ITEM NAME="V5R2_V5R4" VALUE="jt400_V5R2.jar"/>
 				<ITEM NAME="V5R3_V6R1" VALUE="jt400_V5R3.jar" />
                 <ITEM NAME="V6R1_V7R2" VALUE="jt400_V6R1.jar" />
+                <ITEM NAME="V7R1_V7R3" VALUE="jt400_V7R3.jar" />
 			</ITEMS>
 	</PARAMETER>
 
@@ -147,6 +148,7 @@
        <IMPORT NAME="Driver-V5R2_V5R4" MODULE="jt400_V5R2.jar" MVN="mvn:org.talend.libraries/jt400_V5R2/6.0.0"  REQUIRED_IF="DB_VERSION == 'jt400_V5R2.jar'" />
        <IMPORT NAME="Driver-V5R3_V6R1" MODULE="jt400_V5R3.jar" MVN="mvn:org.talend.libraries/jt400_V5R3/6.0.0"  REQUIRED_IF="DB_VERSION == 'jt400_V5R3.jar'" />
        <IMPORT NAME="Driver-V6R1_V7R2" MODULE="jt400_V6R1.jar" MVN="mvn:org.talend.libraries/jt400_V6R1/6.0.0"  REQUIRED_IF="DB_VERSION == 'jt400_V6R1.jar'" />
+       <IMPORT NAME="Driver-V7R1_V7R3" MODULE="jt400_V7R3.jar" MVN="mvn:org.talend.libraries/jt400_V7R3/6.0.0"  REQUIRED_IF="DB_VERSION == 'jt400_V7R3.jar'" />
      </IMPORTS>
 	</CODEGENERATION>
 

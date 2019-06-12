@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.talend.libraries</groupId>
-  <artifactId>simpleexcel-2.0-20180927</artifactId>
+  <artifactId>simpleexcel-2.1-20190507</artifactId>
   <version>6.0.0</version>
   <packaging>jar</packaging>
 
@@ -43,24 +43,24 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.16</version>
+			<version>4.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-scratchpad</artifactId>
-			<version>3.16</version>
+			<version>4.1.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>3.16</version>
+			<version>4.1.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-schemas -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml-schemas</artifactId>
-			<version>3.16</version>
+			<version>4.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
-			<version>2.3.0</version>
+			<version>3.1.0</version>
 		</dependency>
 	</dependencies>
 	<build>

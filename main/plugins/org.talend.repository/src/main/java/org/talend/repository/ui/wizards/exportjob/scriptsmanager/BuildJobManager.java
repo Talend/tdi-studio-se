@@ -211,6 +211,7 @@ public class BuildJobManager {
         buildJob(destinationPath, itemToExport, version, context, exportChoiceMap, jobExportType, false, monitor);
     }
 
+    IBuildJobHandler buildJobHandler = null;
     public void buildJob(String destinationPath, ProcessItem itemToExport, String version, String context,
             Map<ExportChoice, Object> exportChoiceMap, JobExportType jobExportType, boolean checkCompilationError,
             IProgressMonitor monitor) throws Exception {
@@ -238,8 +239,10 @@ public class BuildJobManager {
             final String label = processItem.getProperty().getLabel();
             ITalendProcessJavaProject talendJavaProject = getRunProcessService()
                     .getTalendJobJavaProject(processItem.getProperty());
-            final IBuildJobHandler buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context, version,
-                    exportChoiceMap, jobExportType);
+
+            buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context, version, exportChoiceMap,
+                    jobExportType);
+
             boolean isSignJob = false;
             if (buildJobHandler instanceof AbstractBuildJobHandler) {
                 AbstractBuildJobHandler absBuildJobHandler = (AbstractBuildJobHandler)buildJobHandler;
@@ -264,7 +267,8 @@ public class BuildJobManager {
                             throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled")); //$NON-NLS-1$
                         }
 
-                        if (jobExportType == JobExportType.IMAGE) {
+                        if (jobExportType == JobExportType.IMAGE || jobExportType == JobExportType.MSESB
+                                || jobExportType == JobExportType.MSESB_IMAGE) {
                             IFile logFile = talendJavaProject.getProject().getFile("lastGenerated.log");
                             if (logFile.exists()) {
                                 logFile.delete(true, false, subMonitor);

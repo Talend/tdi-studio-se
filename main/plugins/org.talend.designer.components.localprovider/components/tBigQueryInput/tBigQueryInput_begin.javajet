@@ -219,6 +219,7 @@
 		try(java.io.FileInputStream credentialsStream_<%=cid%> = new java.io.FileInputStream(credentialsFile_<%=cid%>)) {
 		    credentials_<%=cid%> = com.google.auth.oauth2.ServiceAccountCredentials.fromStream(credentialsStream_<%=cid%>);
 		}
+
 		String query_<%=cid%> = <%=query%>;
 		String dataset = query_<%=cid%>.substring(query_<%=cid%>.indexOf("from") + 4, query_<%=cid%>.indexOf(".")).trim();
 		String temp_table = "temp_" + dataset + java.util.UUID.randomUUID().toString().replaceAll("-", "") 
@@ -230,15 +231,19 @@
 				.setProjectId(<%=projectId%>)
 				.build()
 				.getService();
-				
-		com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration_<%=cid%> = 
-																com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>)
-																.setUseLegacySql(<%=useLegacySql%>)
-																.setDestinationTable(com.google.cloud.bigquery.TableId.of(dataset, temp_table))
-																.setAllowLargeResults(<%="LARGE".equals(resultSizeType) ? true : false%>)
-																.build();
+		
+		com.google.cloud.bigquery.QueryJobConfiguration.Builder queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>);
+																
+		<%
+		if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {
+		%>
+			queryConfiguration_<%=cid%>.setDestinationTable(com.google.cloud.bigquery.TableId.of(dataset, temp_table)).setAllowLargeResults(true);
+		<%
+		}
+		%>		
+	
 		com.google.cloud.bigquery.JobId jobId_<%=cid%> = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
-		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>).setJobId(jobId_<%=cid%>).build());
+		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>.build()).setJobId(jobId_<%=cid%>).build());
 
 		<%
 		if(isLog4jEnabled){
@@ -249,18 +254,6 @@
 		%>
 		job_<%=cid%> = job_<%=cid%>.waitFor();
 		
-		if (job_<%=cid%>.getStatus().getError() != null && "responseTooLarge".equals(job_<%=cid%>.getStatus().getError().getReason()) && "AUTO".equals("<%=resultSizeType%>")) {
-			log.info("<%=cid%> - Try with the allowLargeResults flag");
-			com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration1_<%=cid%> = 
-																com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>)
-																.setUseLegacySql(<%=useLegacySql%>)
-																.setDestinationTable(com.google.cloud.bigquery.TableId.of(dataset, temp_table))
-																.setAllowLargeResults(true)
-																.build();
-			com.google.cloud.bigquery.JobId jobId1_<%=cid%> = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
-			com.google.cloud.bigquery.Job job1_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>).setJobId(jobId_<%=cid%>).build());
-			job1_<%=cid%> = job1_<%=cid%>.waitFor();
-		}
 		if (job_<%=cid%> == null) {
 			throw new RuntimeException("Job no longer exists");
 		} else if (job_<%=cid%>.getStatus().getError() != null) {
@@ -274,9 +267,7 @@
 		<%
 		}
 		%>
-		
 		com.google.cloud.bigquery.TableResult result_<%=cid%> = job_<%=cid%>.getQueryResults();
-
 		long nb_line_<%=cid%> = 0;
 	<%
 	} else {
@@ -297,7 +288,6 @@
 					.setPageToken(pageToken_<%=cid%>).execute();
 		
 		List<com.google.api.services.bigquery.model.TableRow> rows_<%=cid %> = dataList_<%=cid %>.getRows();
-
 		if(rows_<%=cid %> == null) {
 			// Means there is no record.
 			rows_<%=cid %> = new java.util.ArrayList<com.google.api.services.bigquery.model.TableRow>();
@@ -355,6 +345,7 @@
 								}
 								%>
 								if(com.google.api.client.util.Data.isNull(value_<%=cid%>)) value_<%=cid%> = null;
+								
 								if(value_<%=cid%> != null){
 									
 									<%
@@ -363,7 +354,7 @@
 										<%=connName%>.<%=columnName%> = value_<%=cid%>.toString();
 									<%
 									} else if (javaType == JavaTypesManager.OBJECT) {
-									%>		
+									%>	
 										<%=connName%>.<%=columnName%> = value_<%=cid%>;
 									<%		
 									} else if(javaType == JavaTypesManager.DATE) {						
@@ -377,7 +368,7 @@
 										
 									<%		
 									} else if(advancedSeparator && JavaTypesManager.isNumberType(javaType)) { 
-									%>
+									%>	
 										<%=connName%>.<%=columnName%> = ParserUtils.parseTo_<%= typeToGenerate %>(ParserUtils.parseTo_Number(value_<%=cid%>.toString(), <%= thousandsSeparator %>, <%= decimalSeparator %>));
 									<%
 									} else if(javaType == JavaTypesManager.BYTE_ARRAY) { 
