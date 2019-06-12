@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.Lookups;
@@ -41,8 +42,14 @@ public class TaCoKitCache {
      */
     private Map<String, ConfigTypeNode> familyConfigTypes;
 
+    private Map<ERepositoryObjectType, ConfigTypeNode> repTypeNodeMap;
+
     public TaCoKitCache() {
-        // nothing to do
+        repTypeNodeMap = new HashMap<>();
+    }
+
+    public Map<ERepositoryObjectType, ConfigTypeNode> getRepositoryObjectType2ConfigTypeNodeMap() {
+        return repTypeNodeMap;
     }
 
     public ConfigTypeNode getFamilyNode(final ConfigTypeNode configNode) {

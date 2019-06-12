@@ -199,7 +199,7 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
 
     @Override
     public IImage getIcon(final ERepositoryObjectType type) {
-        if (TaCoKitUtil.isTaCoKitType(type)) {
+        if (TaCoKitConst.METADATA_TACOKIT.equals(type)) {
             return ETaCoKitImage.TACOKIT_REPOSITORY_ICON;
         }
         return null;

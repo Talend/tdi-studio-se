@@ -33,6 +33,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.ProjectManager;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.metadata.WizardRegistry;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.updates.runtime.utils.PathUtils;
@@ -169,12 +170,14 @@ public class TaCoKitUtil {
         if (eType == null) {
             eType = new WizardRegistry().createRepositoryObjectType(type, label, alias, folderPathStr, 1,
                     new String[] { ERepositoryObjectType.PROD_DI });
-            ConfigTypeNode parentTypeNode = Lookups.taCoKitCache().getConfigTypeNodeMap().get(configTypeNode.getParentId());
+            TaCoKitCache taCoKitCache = Lookups.taCoKitCache();
+            ConfigTypeNode parentTypeNode = taCoKitCache.getConfigTypeNodeMap().get(configTypeNode.getParentId());
             if (parentTypeNode == null) {
                 eType.setAParent(TaCoKitConst.METADATA_TACOKIT);
             } else {
                 eType.setAParent(getOrCreateERepositoryObjectType(parentTypeNode));
             }
+            taCoKitCache.getRepositoryObjectType2ConfigTypeNodeMap().put(eType, configTypeNode);
         }
         return eType;
     }

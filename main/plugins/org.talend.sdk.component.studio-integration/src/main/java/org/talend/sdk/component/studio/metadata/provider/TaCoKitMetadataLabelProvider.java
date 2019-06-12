@@ -15,27 +15,76 @@
  */
 package org.talend.sdk.component.studio.metadata.provider;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.repository.model.IRepositoryNode.ENodeType;
+import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.viewer.label.RepositoryViewLabelProvider;
+import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
+import org.talend.sdk.component.studio.metadata.node.TaCoKitLeafRepositoryNode;
+import org.talend.sdk.component.studio.util.ETaCoKitImage;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public class TaCoKitMetadataLabelProvider extends RepositoryViewLabelProvider implements ILabelProvider {
 
+    private Map<ERepositoryObjectType, Image> imageMap = new HashMap<>();
+
     @Override
     public Image getImage(final Object element) {
-        Image image = null;
-        if (element instanceof ITaCoKitRepositoryNode) {
-            image = ((ITaCoKitRepositoryNode) element).getImage();
-        }
-        if (image != null) {
+        try {
+            Image image = null;
             if (element instanceof ITaCoKitRepositoryNode) {
                 ITaCoKitRepositoryNode rnode = ((ITaCoKitRepositoryNode) element);
-                if (rnode.isLeafNode()) {
-                    return super.decorateImageWithStatus(image, rnode.getObject());
+                image = rnode.getImage();
+                if (image != null) {
+                    if (rnode.isLeafNode()) {
+                        return super.decorateImageWithStatus(image, rnode.getObject());
+                    }
+                    return image;
                 }
             }
-            return image;
+            if (element instanceof RepositoryNode) {
+                RepositoryNode repoNode = ((RepositoryNode) element);
+                ENodeType nodeType = repoNode.getType();
+                ERepositoryObjectType type = repoNode.getObjectType();
+                if (nodeType == ENodeType.REPOSITORY_ELEMENT && type != null) {
+                    if (TaCoKitUtil.isTaCoKitType(type)) {
+                        Image img = imageMap.get(type);
+                        if (img == null) {
+                            ConfigTypeNode configTypeNode = Lookups.taCoKitCache().getRepositoryObjectType2ConfigTypeNodeMap()
+                                    .get(type);
+                            if (configTypeNode != null) {
+                                try {
+                                    img = new TaCoKitLeafRepositoryNode(null, null, null, "dummy", configTypeNode).getImage(); //$NON-NLS-1$
+                                } catch (Exception e) {
+                                    ExceptionHandler.process(e);
+                                }
+                            }
+                            if (img == null) {
+                                img = ImageProvider.getImage(ETaCoKitImage.TACOKIT_REPOSITORY_ICON);
+                            }
+                            imageMap.put(type, img);
+                        }
+                        return super.decorateImageWithStatus(img, repoNode.getObject());
+                    }
+                }
+            }
+            if (element instanceof ITaCoKitRepositoryNode) {
+                ITaCoKitRepositoryNode rnode = ((ITaCoKitRepositoryNode) element);
+                if (rnode.isFamilyNode()) {
+                    return ImageProvider.getImage(ETaCoKitImage.TACOKIT_REPOSITORY_ICON);
+                }
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
         }
         return super.getImage(element);
     }

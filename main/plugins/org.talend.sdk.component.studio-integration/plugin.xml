@@ -185,6 +185,9 @@
                  <test
                        property="org.talend.sdk.component.node.metadata.isTaCoKitNode">
                  </test>
+                 <test
+                       property="org.talend.repository.node.isRecycleBin">
+                 </test>
              </or>
           </and>
        </possibleChildren>
