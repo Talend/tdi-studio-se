@@ -114,7 +114,14 @@ public class TaCoKitConfigurationModel {
     public ValueModel getValue(final String key) throws Exception {
         TaCoKitConfigurationModel parentModel = getParentConfigurationModel();
         if (parentModel != null) {
-            ValueModel modelValue = parentModel.getValue(key);
+            final Map<String, PropertyDefinitionDecorator> tree = buildPropertyTree();
+            final Optional<String> configPath = findConfigPath(tree, key);
+            final String modelRoot = findModelRoot();
+            String keyStr = key;
+            if (configPath.isPresent()) {
+                keyStr = modelRoot + "." + key.substring(configPath.get().length() + 1, key.length()); //$NON-NLS-1$
+            }
+            ValueModel modelValue = parentModel.getValue(keyStr);
             if (modelValue == null) {
                 if (parentModel.contains(key)) {
                     return new ValueModel(parentModel, null, getValueType(parentModel.getConfigTypeNode(), key));

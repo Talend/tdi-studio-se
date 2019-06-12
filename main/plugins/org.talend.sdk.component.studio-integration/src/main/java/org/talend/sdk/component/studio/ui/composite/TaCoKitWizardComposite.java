@@ -83,7 +83,6 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
                         String key = parameter.getName();
                         if (isNew) {
                             parameter.setValue(parameter.getValue());
-                            key = configurationModel.computeKey(key);
                         }
                         ValueModel valueModel = configurationModel.getValue(key);
                         if (valueModel != null) {
