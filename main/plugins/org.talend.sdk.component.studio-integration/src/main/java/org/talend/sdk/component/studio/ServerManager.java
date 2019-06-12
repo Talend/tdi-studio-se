@@ -29,6 +29,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.talend.commons.CommonsPlugin;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.osgi.hook.maven.MavenResolver;
 import org.talend.sdk.component.studio.debounce.DebounceManager;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
@@ -77,49 +78,65 @@ public class ServerManager {
         if (start) {
             return;
         }
-        final BundleContext ctx = SdkComponentPlugin.getDefault().getBundle().getBundleContext();
-        final Configuration configuration = new Configuration(!Boolean.getBoolean("component.kit.skip"),
-                Integer.getInteger("component.debounce.timeout", 750));
-        services.add(ctx.registerService(Configuration.class.getName(), configuration, new Hashtable<>()));
-        debounceManager = new DebounceManager();
-        services.add(ctx.registerService(DebounceManager.class.getName(), debounceManager, new Hashtable<>()));
-        uiActionsThreadPool = new UiActionsThreadPool(Executors.newCachedThreadPool(
-                new BasicThreadFactory.Builder().namingPattern(UiActionsThreadPool.class.getName() + "-%d").build()));
-        services.add(ctx.registerService(UiActionsThreadPool.class.getName(), uiActionsThreadPool, new Hashtable<>()));
-        if (!configuration.isActive()) {
-            return;
-        }
-        services.add(ctx.registerService(AsciidoctorService.class.getName(), new AsciidoctorService(), new Hashtable<>()));
-
-        extractFiles();
-
-        reset = Lookups.init();
-
-        final MavenResolver mavenResolver = findMavenResolver();
-        final Function<String, File> mvnResolverImpl = gav -> {
-            try { // convert to pax-url syntax
-                return mavenResolver.resolve(Mvn.locationToMvn(gav));
-            } catch (final IOException e) {
-                throw new IllegalArgumentException(
-                        "can't resolve '" + gav + "', " + "in development ensure you are using maven"
-                                + ".repository=global in configuration/config.ini, " + "in a standalone installation, "
-                                + "ensure the studio maven repository contains this dependency",
-                        e);
+        try {
+            // make sure all things are cleaned
+            try {
+                stop();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
             }
-        };
-        manager = new ProcessManager(GAV.INSTANCE.getGroupId(), mvnResolverImpl);
-        manager.start();
 
-        client = new WebSocketClient("ws://localhost:" + manager.getPort() + "/websocket/v1",
-                Long.getLong("talend.component.websocket.client.timeout", Constants.IO_TIMEOUT_MS_DEFAULT));
-        client.setSynch(() -> manager.waitForServer(() -> client.v1().healthCheck()));
+            final BundleContext ctx = SdkComponentPlugin.getDefault().getBundle().getBundleContext();
+            final Configuration configuration = new Configuration(!Boolean.getBoolean("component.kit.skip"),
+                    Integer.getInteger("component.debounce.timeout", 750));
+            services.add(ctx.registerService(Configuration.class.getName(), configuration, new Hashtable<>()));
+            debounceManager = new DebounceManager();
+            services.add(ctx.registerService(DebounceManager.class.getName(), debounceManager, new Hashtable<>()));
+            uiActionsThreadPool = new UiActionsThreadPool(Executors.newCachedThreadPool(
+                    new BasicThreadFactory.Builder().namingPattern(UiActionsThreadPool.class.getName() + "-%d").build()));
+            services.add(ctx.registerService(UiActionsThreadPool.class.getName(), uiActionsThreadPool, new Hashtable<>()));
+            if (!configuration.isActive()) {
+                return;
+            }
+            services.add(ctx.registerService(AsciidoctorService.class.getName(), new AsciidoctorService(), new Hashtable<>()));
 
-        services.add(ctx.registerService(ProcessManager.class.getName(), manager, new Hashtable<>()));
-        services.add(ctx.registerService(WebSocketClient.class.getName(), client, new Hashtable<>()));
-        services.add(ctx.registerService(ComponentService.class.getName(), new ComponentService(mvnResolverImpl),
-                new Hashtable<>()));
-        services.add(ctx.registerService(TaCoKitCache.class.getName(), new TaCoKitCache(), new Hashtable<>()));
-        start = true;
+            extractFiles();
+
+            reset = Lookups.init();
+
+            final MavenResolver mavenResolver = findMavenResolver();
+            final Function<String, File> mvnResolverImpl = gav -> {
+                try { // convert to pax-url syntax
+                    return mavenResolver.resolve(Mvn.locationToMvn(gav));
+                } catch (final IOException e) {
+                    throw new IllegalArgumentException("can't resolve '" + gav + "', "
+                            + "in development ensure you are using maven" + ".repository=global in configuration/config.ini, "
+                            + "in a standalone installation, " + "ensure the studio maven repository contains this dependency",
+                            e);
+                }
+            };
+            manager = new ProcessManager(GAV.INSTANCE.getGroupId(), mvnResolverImpl);
+            manager.start();
+
+            client = new WebSocketClient("ws://localhost:" + manager.getPort() + "/websocket/v1",
+                    Long.getLong("talend.component.websocket.client.timeout", Constants.IO_TIMEOUT_MS_DEFAULT));
+            client.setSynch(() -> manager.waitForServer(() -> client.v1().healthCheck()));
+
+            services.add(ctx.registerService(ProcessManager.class.getName(), manager, new Hashtable<>()));
+            services.add(ctx.registerService(WebSocketClient.class.getName(), client, new Hashtable<>()));
+            services.add(ctx.registerService(ComponentService.class.getName(), new ComponentService(mvnResolverImpl),
+                    new Hashtable<>()));
+            services.add(ctx.registerService(TaCoKitCache.class.getName(), new TaCoKitCache(), new Hashtable<>()));
+            start = true;
+        } catch (Throwable ex) {
+            start = false;
+            try {
+                stop();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            throw ex;
+        }
     }
 
     private void extractFiles() throws Exception {
@@ -133,9 +150,6 @@ public class ServerManager {
     }
 
     public synchronized void stop() throws Exception {
-        if (!start) {
-            return;
-        }
         services.forEach(ServiceRegistration::unregister);
         services.clear();
 
