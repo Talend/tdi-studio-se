@@ -58,8 +58,6 @@ public class BuildJobFactory {
             case OSGI:
                 break; // continue
             case MSESB:
-                break; // continue、
-            case MSESB_IMAGE:
                 break; // continue
             default:
                 jobExportType = null; // try the first one by default

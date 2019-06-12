@@ -28,6 +28,7 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.commons.utils.data.container.Container;
 import org.talend.commons.utils.data.container.RootContainer;
 import org.talend.core.model.properties.ConnectionItem;
@@ -97,45 +98,60 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
 
     @Override
     public Object[] getChildren(final Object element) {
-        if (familyNodesMapCache.isEmpty()) {
-            getTopLevelNodes();
-        }
-        if (isRootNodeType(element)) {
-            return getTopLevelNodes((ProjectRepositoryNode) RepositoryNode.class.cast(element).getRoot()).toArray();
-        }
-        if (element instanceof ITaCoKitRepositoryNode) {
-            RepositoryNode repNode = (RepositoryNode) element;
-            ITaCoKitRepositoryNode tacoNode = (ITaCoKitRepositoryNode) repNode;
-            if (!repNode.isInitialized() && (tacoNode.isFamilyNode() || tacoNode.isLeafNode())) {
-                try {
-                    tacoNode.getChildren().clear();
-
-                    IProjectRepositoryNode rootNode = repNode.getRoot();
-                    RootContainer<String, IRepositoryViewObject> tacokitRootContainer = ProxyRepositoryFactory.getInstance()
-                            .getMetadata(rootNode.getProject(), TaCoKitConst.METADATA_TACOKIT, true);
-                    initTaCoKitNode(repNode, new HashSet<>(), new HashSet<>(), tacokitRootContainer, true);
-                    repNode.setInitialized(true);
-
+        try {
+            if (!ITaCoKitService.getInstance().isStarted()) {
+                return EMPTY_ARRAY;
+            }
+            if (familyNodesMapCache.isEmpty()) {
+                getTopLevelNodes();
+            }
+            if (isRootNodeType(element)) {
+                return getTopLevelNodes((ProjectRepositoryNode) RepositoryNode.class.cast(element).getRoot()).toArray();
+            }
+            if (element instanceof ITaCoKitRepositoryNode) {
+                RepositoryNode repNode = (RepositoryNode) element;
+                ITaCoKitRepositoryNode tacoNode = (ITaCoKitRepositoryNode) repNode;
+                if (!repNode.isInitialized() && (tacoNode.isFamilyNode() || tacoNode.isLeafNode())) {
                     try {
-                        List<IRepositoryNode> repNodes = new ArrayList<>();
-                        repNodes.add(repNode);
-                        ProjectRepositoryNode.class.cast(rootNode).collectRepositoryNodes(repNodes);
+                        tacoNode.getChildren().clear();
+
+                        IProjectRepositoryNode rootNode = repNode.getRoot();
+                        RootContainer<String, IRepositoryViewObject> tacokitRootContainer = ProxyRepositoryFactory.getInstance()
+                                .getMetadata(rootNode.getProject(), TaCoKitConst.METADATA_TACOKIT, true);
+                        initTaCoKitNode(repNode, new HashSet<>(), new HashSet<>(), tacokitRootContainer, true);
+                        repNode.setInitialized(true);
+
+                        try {
+                            List<IRepositoryNode> repNodes = new ArrayList<>();
+                            repNodes.add(repNode);
+                            ProjectRepositoryNode.class.cast(rootNode).collectRepositoryNodes(repNodes);
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
                     } catch (Exception e) {
                         ExceptionHandler.process(e);
                     }
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
                 }
+                return ((RepositoryNode) element).getChildren().toArray();
             }
-            return ((RepositoryNode) element).getChildren().toArray();
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
         }
         return EMPTY_ARRAY;
     }
 
     @Override
     public Set<RepositoryNode> getTopLevelNodes() {
-        final ProjectRepositoryNode rootNode = ProjectRepositoryNode.getInstance();
-        return getTopLevelNodes(rootNode);
+        try {
+            if (!ITaCoKitService.getInstance().isStarted()) {
+                return Collections.EMPTY_SET;
+            }
+            final ProjectRepositoryNode rootNode = ProjectRepositoryNode.getInstance();
+            return getTopLevelNodes(rootNode);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return Collections.EMPTY_SET;
     }
 
     public Set<RepositoryNode> getTopLevelNodes(final ProjectRepositoryNode rootNode) {

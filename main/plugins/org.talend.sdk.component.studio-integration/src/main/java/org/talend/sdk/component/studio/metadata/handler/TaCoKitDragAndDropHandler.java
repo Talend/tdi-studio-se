@@ -12,9 +12,9 @@
  */
 package org.talend.sdk.component.studio.metadata.handler;
 
-import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.addQuotesIfNecessary;
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
-import static org.talend.sdk.component.studio.util.TaCoKitUtil.isEmpty;
+import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.*;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
+import static org.talend.sdk.component.studio.util.TaCoKitUtil.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
@@ -101,7 +102,8 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-        if (valueModel == null || valueModel.getValue() == null) {
+        if (valueModel == null || StringUtils.isEmpty(valueModel.getValue())
+                || StringUtils.equalsIgnoreCase("null", valueModel.getValue())) { //$NON-NLS-1$
             return null;
         }
         if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())) {
@@ -216,7 +218,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         String configName = configTypeNode.getName();
 
         IComponentsService service =
-                (IComponentsService) GlobalServiceRegister.getDefault().getService(IComponentsService.class);
+                GlobalServiceRegister.getDefault().getService(IComponentsService.class);
         Collection<IComponent> components = service.getComponentsFactory().readComponents();
         for (IComponent component : components) {
             if (component instanceof ComponentModel) {

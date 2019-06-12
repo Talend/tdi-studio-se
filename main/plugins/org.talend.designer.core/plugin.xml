@@ -572,7 +572,12 @@
            class="org.talend.designer.core.ui.editor.properties.controllers.generator.GenerateSurvivorshipRulesControllerGenerator"
            mapping="GENERATE_SURVIVORSHIP_RULES_CONTROLLER"
            name="GenerateSurvivorshipRulesController">
-     </generator>     
+     </generator>
+     <generator
+           class="org.talend.designer.core.ui.editor.properties.controllers.generator.GenerateCryptoFileControllerGenerator"
+           mapping="GENERATE_CRYPTO_FILE_CONTROLLER"
+           name="GenerateCryptoFileController">
+     </generator>
 	 <generator
            class="org.talend.designer.core.ui.editor.properties.controllers.generator.DCSchemaGenerator"
            mapping="DCSCHEMA"

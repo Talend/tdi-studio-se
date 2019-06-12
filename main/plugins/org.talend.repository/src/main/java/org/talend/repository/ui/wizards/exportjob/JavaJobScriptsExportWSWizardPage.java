@@ -1721,16 +1721,24 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     protected void updateOptionBySelection() {
         RepositoryNode[] selectedNodes = treeViewer.getCheckNodes();
         if (selectedNodes.length > 1) {
-            imageText.setText(getDefaultImageNamePattern());
-            imageText.setEnabled(false);
-            tagText.setText(getDefaultImageTagPattern());
-            tagText.setEnabled(false);
+            if (imageText != null) {
+                imageText.setText(getDefaultImageNamePattern());
+                imageText.setEnabled(false);
+            }
+            if (tagText != null) {
+                tagText.setText(getDefaultImageTagPattern());
+                tagText.setEnabled(false);
+            }
         } else if (selectedNodes.length == 1) {
             ProcessItem selectedProcessItem = ExportJobUtil.getProcessItem(Arrays.asList(selectedNodes));
-            imageText.setText(getDefaultImageName(selectedProcessItem));
-            imageText.setEnabled(true);
-            tagText.setText(getDefaultImageTag(selectedProcessItem));
-            tagText.setEnabled(true);
+            if (imageText != null) {
+                imageText.setText(getDefaultImageName(selectedProcessItem));
+                imageText.setEnabled(true);
+            }
+            if (tagText != null) {
+                tagText.setText(getDefaultImageTag(selectedProcessItem));
+                tagText.setEnabled(true);
+            }
         }
     }
 

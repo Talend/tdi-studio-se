@@ -15,7 +15,6 @@ package org.talend.repository.resource.ui.util;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -39,7 +38,6 @@ import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.resource.editors.ResourceEditorListener;
 import org.talend.repository.resource.editors.RouteResourceEditor;
-import org.talend.repository.resource.editors.RouteResoureChangeListener;
 import org.talend.repository.resource.editors.input.RouteResourceInput;
 
 public class RouteResourceEditorUtil {
@@ -132,15 +130,10 @@ public class RouteResourceEditorUtil {
 					.addPartListener(
 							new ResourceEditorListener(fileEditorInput, page));
 
-			if (!RouteResourceEditor.ID.endsWith(editorId)) {
-				ResourcesPlugin.getWorkspace().addResourceChangeListener(
-						new RouteResoureChangeListener(fileEditorInput));
-			}
-
 			if (editorPart == null) {
-				editorPart = page.openEditor(fileEditorInput, editorId, true);
+                editorPart = page.openEditor(fileEditorInput, RouteResourceEditor.ID, true);
 			} else {
-				editorPart = page.openEditor(fileEditorInput, editorId);
+                editorPart = page.openEditor(fileEditorInput, RouteResourceEditor.ID);
 			}
 		} catch (PartInitException e) {
 			try {
