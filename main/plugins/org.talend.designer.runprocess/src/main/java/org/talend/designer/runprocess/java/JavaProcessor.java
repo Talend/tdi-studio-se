@@ -1404,7 +1404,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     private String getClassPath(IPath base) {
         if (useRelativeClasspath) {
             IPath target = talendJavaProject.getTargetFolder().getLocation();
-            return target.makeRelativeTo(base).toPortableString();
+            return base.makeRelativeTo(target).toPortableString();
         }
         return base.toPortableString();
     }
