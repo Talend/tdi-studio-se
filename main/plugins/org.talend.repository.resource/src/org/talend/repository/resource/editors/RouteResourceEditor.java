@@ -12,10 +12,6 @@
 // ============================================================================
 package org.talend.repository.resource.editors;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.SWT;
@@ -26,11 +22,16 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.core.model.properties.ByteArray;
+import org.talend.commons.exception.LoginException;
+import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.core.model.properties.Item;
-import org.talend.core.model.properties.ReferenceFileItem;
 import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.repository.RepositoryWorkUnit;
+import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.resource.editors.input.RouteResourceInput;
 
 /**
@@ -75,43 +76,48 @@ public class RouteResourceEditor extends TextEditor {
 	public void doSave(IProgressMonitor progressMonitor) {
 		super.doSave(progressMonitor);
 
-		saveContentsToItem(rrInput);
-
+        ResourceItem item = (ResourceItem) rrInput.getItem();
+        saveProcess(item, progressMonitor);
 	}
 
-	/**
-	 * Save the file content to EMF item.
-	 *
-	 * @param rrInput
-	 */
-	public static void saveContentsToItem(RouteResourceInput rrInput) {
+    private static boolean saveProcess(ResourceItem item, final IProgressMonitor monitor) {
+        try {
+            if (monitor != null) {
+                monitor.beginTask("save process", 100); //$NON-NLS-1$
+            }
+            IRepositoryService service = CoreRuntimePlugin.getInstance().getRepositoryService();
+            final IProxyRepositoryFactory factory = service.getProxyRepositoryFactory();
+            RepositoryWorkUnit rwu = new RepositoryWorkUnit("save process : ") {
 
-		try {
-            ResourceItem item = (ResourceItem) rrInput.getItem();
-
-			ReferenceFileItem refFile = (ReferenceFileItem) item
-					.getReferenceResources().get(0);
-
-			InputStream inputstream = rrInput.getFile().getContents();
-			BufferedReader bufferedReader = new BufferedReader(
-					new InputStreamReader(inputstream));
-			String line = bufferedReader.readLine();
-			StringBuffer sb = new StringBuffer();
-			String lineSeparator = System.getProperty("line.separator");
-			while (line != null) {
-				sb.append(line).append(lineSeparator);
-				line = bufferedReader.readLine();
-			}
-			bufferedReader.close();
-			inputstream.close();
-
-			ByteArray content = refFile.getContent();
-			content.setInnerContent(sb.toString().getBytes());
-		} catch (Exception e) {
-		    ExceptionHandler.process(e);
-		}
-
-	}
+                @Override
+                protected void run() throws LoginException, PersistenceException {
+                    factory.save(item);
+                }
+            };
+            rwu.setAvoidUnloadResources(false);
+            rwu.setAvoidSvnUpdate(false);
+            rwu.setAvoidUpdateLocks(false);
+            factory.executeRepositoryWorkUnit(rwu);
+            rwu.throwPersistenceExceptionIfAny();
+            if (monitor != null) {
+                monitor.worked(50);
+            }
+            if (monitor != null) {
+                monitor.worked(10);
+            }
+            return true;
+        } catch (Exception e) {
+            MessageBoxExceptionHandler.process(e);
+            if (monitor != null) {
+                monitor.setCanceled(true);
+            }
+            return false;
+        } finally {
+            if (monitor != null) {
+                monitor.done();
+            }
+        }
+    }
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
