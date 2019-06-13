@@ -225,7 +225,9 @@ public class TaCoKitConfigurationModel {
     @SuppressWarnings("unchecked")
     public void setValue(final TaCoKitElementParameter parameter) {
         Objects.requireNonNull(parameter, "Parameter should not be null");
-        if (parameter.getStringValue() != null) {
+        if (parameter.getStringValue() == null) {
+            getAllProperties().remove(parameter.getName());
+        } else {
             getAllProperties().put(parameter.getName(), parameter.getStringValue());
         }
     }
