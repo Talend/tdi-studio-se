@@ -26,13 +26,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -95,18 +95,24 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
             return null;
         }
         ValueModel valueModel = null;
+        TaCoKitConfigurationModel model = null;
+        String key = null;
         try {
-            final TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);
-            final String key = computeKey(model, repositoryKey, targetComponent);
+            model = new TaCoKitConfigurationModel(connection);
+            key = computeKey(model, repositoryKey, targetComponent);
             valueModel = model.getValue(key);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-        if (valueModel == null || StringUtils.isEmpty(valueModel.getValue())
-                || StringUtils.equalsIgnoreCase("null", valueModel.getValue())) { //$NON-NLS-1$
+        if (valueModel == null || valueModel.getValue() == null) {
             return null;
         }
-        if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())) {
+        EParameterFieldType fieldType = null;
+        if (model != null) {
+            fieldType = model.getEParameterFieldType(key);
+        }
+        if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())
+                && !EParameterFieldType.CLOSED_LIST.equals(fieldType)) {
             return addQuotesIfNecessary(connection, valueModel.getValue());
         } else {
             return valueModel.getValue();

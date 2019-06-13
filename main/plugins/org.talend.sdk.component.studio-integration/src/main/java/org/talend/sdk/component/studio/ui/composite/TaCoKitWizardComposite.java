@@ -89,8 +89,7 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
                             if (valueModel.getConfigurationModel() != configurationModel) {
                                 parameter.setReadOnly(true);
                             }
-                            if (StringUtils.isEmpty(valueModel.getValue())
-                                    || StringUtils.equalsIgnoreCase("null", valueModel.getValue())) { //$NON-NLS-1$
+                            if (StringUtils.isEmpty(valueModel.getValue())) {
                                 return;
                             }
                             parameter.setValue(valueModel.getValue());

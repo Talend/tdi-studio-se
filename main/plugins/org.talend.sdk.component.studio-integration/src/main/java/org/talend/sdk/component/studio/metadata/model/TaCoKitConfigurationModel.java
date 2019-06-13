@@ -30,11 +30,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
+import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
@@ -211,10 +213,21 @@ public class TaCoKitConfigurationModel {
         return Optional.empty();
     }
 
+    public EParameterFieldType getEParameterFieldType(String key) {
+        Map<String, PropertyDefinitionDecorator> tree = buildPropertyTree();
+        PropertyDefinitionDecorator property = tree.get(key);
+        if (property != null) {
+            return new WidgetTypeMapper().getFieldType(property);
+        }
+        return EParameterFieldType.TEXT;
+    }
+
     @SuppressWarnings("unchecked")
     public void setValue(final TaCoKitElementParameter parameter) {
         Objects.requireNonNull(parameter, "Parameter should not be null");
-        getAllProperties().put(parameter.getName(), parameter.getStringValue());
+        if (parameter.getStringValue() != null) {
+            getAllProperties().put(parameter.getName(), parameter.getStringValue());
+        }
     }
 
     public ConfigTypeNode getConfigTypeNode() {
