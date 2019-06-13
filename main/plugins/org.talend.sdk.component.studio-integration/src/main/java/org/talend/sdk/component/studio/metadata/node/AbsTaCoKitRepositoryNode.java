@@ -187,6 +187,9 @@ public abstract class AbsTaCoKitRepositoryNode extends RepositoryNode implements
         if (!(o instanceof AbsTaCoKitRepositoryNode)) {
             return false;
         }
+        if (!this.getClass().equals(o.getClass())) {
+            return false;
+        }
         final AbsTaCoKitRepositoryNode other = (AbsTaCoKitRepositoryNode) o;
         if (!other.canEqual(this)) {
             return false;

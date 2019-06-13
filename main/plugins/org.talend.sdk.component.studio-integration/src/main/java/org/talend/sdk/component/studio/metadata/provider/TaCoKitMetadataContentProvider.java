@@ -113,7 +113,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
                 ITaCoKitRepositoryNode tacoNode = (ITaCoKitRepositoryNode) repNode;
                 if (!repNode.isInitialized() && (tacoNode.isFamilyNode() || tacoNode.isLeafNode())) {
                     try {
-                        tacoNode.getChildren().clear();
+                        cleanChildren(tacoNode);
 
                         IProjectRepositoryNode rootNode = repNode.getRoot();
                         RootContainer<String, IRepositoryViewObject> tacokitRootContainer = ProxyRepositoryFactory.getInstance()
@@ -138,6 +138,19 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
             ExceptionHandler.process(e);
         }
         return EMPTY_ARRAY;
+    }
+
+    private void cleanChildren(IRepositoryNode child) {
+        if (child == null) {
+            return;
+        }
+        List<IRepositoryNode> children = child.getChildren();
+        if (children != null) {
+            for (IRepositoryNode c : children) {
+                cleanChildren(c);
+            }
+            children.clear();
+        }
     }
 
     @Override
@@ -165,12 +178,12 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
             if (!repoNode.isInitialized()) {
                 if (familyNodesCache != null && !familyNodesCache.isEmpty()) {
                     repoNode.getChildren().removeAll(familyNodesCache);
+                } else {
+                    familyNodesCache = getTaCoKitFamilyNodes(repoNode, false);
                 }
-                familyNodesCache = getTaCoKitFamilyNodes(repoNode, false);
-                if (familyNodesCache != null && !familyNodesCache.isEmpty()) {
-                    familyNodesCache.stream().forEach(n -> initilizeContentProviderWithTopLevelNode(n));
-                    rootNode.collectRepositoryNodes(new ArrayList<>(familyNodesCache));
-                }
+                clearCache();
+                familyNodesCache.stream().forEach(n -> initilizeContentProviderWithTopLevelNode(n));
+                rootNode.collectRepositoryNodes(new ArrayList<>(familyNodesCache));
             }
             familyNodesMapCache.put(repoNode, familyNodesCache);
             if (familyNodesCache == null) {
