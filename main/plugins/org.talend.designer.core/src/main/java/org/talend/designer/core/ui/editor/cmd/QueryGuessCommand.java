@@ -25,6 +25,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQRuleService;
 import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.QueryUtil;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -280,6 +281,21 @@ public class QueryGuessCommand extends Command {
                     if (node.getUniqueName().equals(connectorValue)) {
                         connectionNode = node;
                         break;
+                    }
+                }
+                // for visual connection component in joblet
+                if (connectionNode == null && node instanceof INode) {
+                    List<IMultipleComponentManager> multipleComponentManagers = ((INode) node).getComponent()
+                            .getMultipleComponentManagers();
+                    for (IMultipleComponentManager manager : multipleComponentManagers) {
+                        String inName = manager.getInput().getName();
+                        String componentValue = connectorValue + "_" + inName;
+                        for (INode gnode : process.getGeneratingNodes()) {
+                            if (gnode.getUniqueName().equals(componentValue) && (gnode instanceof INode)) {
+                                connectionNode = gnode;
+                                break;
+                            }
+                        }
                     }
                 }
             }
