@@ -38,7 +38,6 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
-import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.VersionList;
 import org.talend.core.repository.utils.ComponentsJsonModel;
@@ -54,6 +53,7 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.exception.UserCancelledException;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
+import org.talend.sdk.component.studio.model.update.TaCoKitUpdateManager;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Component;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1ConfigurationType;
@@ -329,7 +329,7 @@ public class TaCoKitMigrationManager {
         }
 
         monitor.subTask(Messages.getString("migration.check.progress.updateRelated", label, version)); //$NON-NLS-1$
-        RepositoryUpdateManager.updateDBConnection(item, version, false, false);
+        TaCoKitUpdateManager.updateTaCoKitConnection(item, version, false, false);
     }
 
 }
