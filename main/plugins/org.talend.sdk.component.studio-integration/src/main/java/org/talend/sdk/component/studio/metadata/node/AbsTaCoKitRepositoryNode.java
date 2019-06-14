@@ -167,6 +167,16 @@ public abstract class AbsTaCoKitRepositoryNode extends RepositoryNode implements
         return this.image;
     }
 
+    @Override
+    public String getLabel() {
+        String label = (String) this.getProperties(EProperties.LABEL);
+        if (label != null && !label.trim().isEmpty()) {
+            return label;
+        } else {
+            return super.getLabel();
+        }
+    }
+
     public void setParentTaCoKitNode(final ITaCoKitRepositoryNode parentTaCoKitNode) {
         this.parentTaCoKitNode = parentTaCoKitNode;
     }
