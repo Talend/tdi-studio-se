@@ -1,10 +1,10 @@
 <%@ jet
 	    imports="
-		org.talend.core.model.process.INode 	
-		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.process.INode
+		org.talend.core.model.process.ElementParameterParser
 		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.metadata.IMetadataTable 
-		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.metadata.IMetadataTable
+		org.talend.core.model.metadata.IMetadataColumn
 		org.talend.core.model.process.IConnection
 		org.talend.core.model.process.IConnectionCategory
 		org.talend.core.model.metadata.types.JavaTypesManager
@@ -28,10 +28,11 @@
 	String authorizationCode = ElementParameterParser.getValue(node,"__AUTHORIZATION_CODE__");
 	String query = ElementParameterParser.getValue(node,"__QUERY__");
 	boolean useLegacySql = ElementParameterParser.getBooleanValue(node,"__USE_LEGACY_SQL__");
-	
+	String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
+
 	query = query.replaceAll("\n"," ");
 	query = query.replaceAll("\r"," ");
-	
+
     String tokenFile = ElementParameterParser.getValue(node,"__TOKEN_NAME__");
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
     if (authMode.equals("OAUTH")) {
@@ -40,22 +41,22 @@
 		<%
 		String passwordFieldName = "__CLIENT_SECRET__";
 		%>
-	
+
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-		
+
 		final String CLIENT_SECRET_<%=cid%> = "{\"web\": {\"client_id\": \""+<%=clientId%>+"\",\"client_secret\": \"" +decryptedPassword_<%=cid%>+ "\",\"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\"token_uri\": \"https://accounts.google.com/o/oauth2/token\"}}";
 		final String PROJECT_ID_<%=cid %> = <%=projectId %>;
-	
+
 		// Static variables for API scope, callback URI, and HTTP/JSON functions
 		final List<String> SCOPES_<%=cid%> = java.util.Arrays.asList("https://www.googleapis.com/auth/bigquery");
 		final String REDIRECT_URI_<%=cid%> = "urn:ietf:wg:oauth:2.0:oob";
 		final com.google.api.client.http.HttpTransport TRANSPORT_<%=cid %> = new com.google.api.client.http.javanet.NetHttpTransport();
 		final com.google.api.client.json.JsonFactory JSON_FACTORY_<%=cid %> = new com.google.api.client.json.jackson2.JacksonFactory();
-	
+
 		com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets clientSecrets_<%=cid%> = com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets.load(
 						new com.google.api.client.json.jackson2.JacksonFactory(), new java.io.InputStreamReader(new java.io.ByteArrayInputStream(
 								CLIENT_SECRET_<%=cid%>.getBytes())));
-	
+
 		com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow flow_<%=cid%> = null;
 		com.google.api.services.bigquery.Bigquery bigqueryclient_<%=cid%> = null;
 		long nb_line_<%=cid%> = 0;
@@ -68,7 +69,7 @@
 		<%
 		}
 		%>
-	
+
 		// Attempt to load existing refresh token
 	    String tokenFile_<%=cid %> = <%=tokenFile%>;
 		java.util.Properties properties_<%=cid%> = new java.util.Properties();
@@ -94,7 +95,7 @@
 	    	%>
 		}
 		String storedRefreshToken_<%=cid%> = (String) properties_<%=cid%>.get("refreshtoken");
-	
+
 		// Check to see if the an existing refresh token was loaded.
 		// If so, create a credential and call refreshToken() to get a new
 		// access token.
@@ -103,7 +104,7 @@
 			com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential_<%=cid%> = new com.google.api.client.googleapis.auth.oauth2. GoogleCredential.Builder().setTransport(TRANSPORT_<%=cid%>)
 					.setJsonFactory(JSON_FACTORY_<%=cid%>).setClientSecrets(clientSecrets_<%=cid%>)
 					.build().setFromTokenResponse(new com.google.api.client.auth.oauth2.TokenResponse().setRefreshToken(storedRefreshToken_<%=cid%>));
-	
+
 			credential_<%=cid%>.refreshToken();
 			<%
 			if(isLog4jEnabled){
@@ -125,7 +126,7 @@
 			if(authorizationCode_<%=cid%> == null || "".equals(authorizationCode_<%=cid%>) || "\"\"".equals(authorizationCode_<%=cid%>)) {
 				String authorizeUrl_<%=cid%> = new com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl(
 						clientSecrets_<%=cid%>, REDIRECT_URI_<%=cid%>, SCOPES_<%=cid%>).setState("").build();
-	
+
 				System.out
 						.println("Paste this URL into a web browser to authorize BigQuery Access:\n"
 								+ authorizeUrl_<%=cid%>);
@@ -155,7 +156,7 @@
 				}
 				com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse response_<%=cid%> = flow_<%=cid%>.newTokenRequest(authorizationCode_<%=cid%>).setRedirectUri(REDIRECT_URI_<%=cid%>).execute();
 				com.google.api.client.auth.oauth2.Credential credential_<%=cid%> = flow_<%=cid%>.createAndStoreCredential(response_<%=cid%>, null);
-	
+
 				<%
 				if(isLog4jEnabled){
 				%>
@@ -171,17 +172,13 @@
 				if (outputStream_<%=cid%> != null) {
 				    outputStream_<%=cid%>.close();
 				}
-	
+
 				bigqueryclient_<%=cid%> = new com.google.api.services.bigquery.Bigquery.Builder(new com.google.api.client.http.javanet.NetHttpTransport(),new com.google.api.client.json.jackson2.JacksonFactory(),credential_<%=cid%>).build();
 			}
 		}
-	
-	
-		<%
-		String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
-		%>
-		<%@ include file="@{org.talend.designer.components.localprovider}/components/tBigQueryInput/BigQueryInputQueryHelper.javajet"%>	
-	
+
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/tBigQueryInput/BigQueryInputQueryHelper.javajet"%>
+
 		// Start a Query Job
 		String querySql_<%=cid %> = <%=query %>;
 		System.out.format("Running Query : %s\n", querySql_<%=cid %>);
@@ -192,18 +189,17 @@
 		<%
 		}
 		%>
-		
+
 		BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, tokenFile_<%=cid%>);
-		
 		<%
 		if(isLog4jEnabled){
 		%>
-			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> allow large results flag");
+			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> the allowLargeResults flag");
 		<%
 		}
 		%>
 		com.google.api.services.bigquery.model.Job insert_<%=cid %> = bigQueryUtil_<%=cid%>.executeQuery(querySql_<%=cid%>, <%="LARGE".equals(resultSizeType) ? true : false%>, <%=useLegacySql%>);
-	
+
 		<%
 		if(isLog4jEnabled){
 		%>
@@ -221,15 +217,30 @@
 		    credentials_<%=cid%> = com.google.auth.oauth2.ServiceAccountCredentials.fromStream(credentialsStream_<%=cid%>);
 		}
 
+		String query_<%=cid%> = <%=query%>;
+		String dataset = query_<%=cid%>.substring(query_<%=cid%>.indexOf("from") + 4, query_<%=cid%>.indexOf(".")).trim();
+		String temp_table = "temp_" + dataset + java.util.UUID.randomUUID().toString().replaceAll("-", "")
+													 + "<%=cid%>".toLowerCase().replaceAll("[^a-z0-9]", "0").replaceAll("^[^a-z]", "a")
+													 + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
+
 		com.google.cloud.bigquery.BigQuery bigquery_<%=cid%> = com.google.cloud.bigquery.BigQueryOptions.newBuilder()
 				.setCredentials(credentials_<%=cid%>)
 				.setProjectId(<%=projectId%>)
 				.build()
 				.getService();
-				
-		com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>).build();
-		com.google.cloud.bigquery.JobId jobId_tBigQueryInput_1 = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
-		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>).setJobId(jobId_<%=cid%>).build());
+
+		com.google.cloud.bigquery.QueryJobConfiguration.Builder queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>);
+
+		<%
+		if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {
+		%>
+			queryConfiguration_<%=cid%>.setDestinationTable(com.google.cloud.bigquery.TableId.of(dataset, temp_table)).setAllowLargeResults(true);
+		<%
+		}
+		%>
+
+		com.google.cloud.bigquery.JobId jobId_<%=cid%> = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
+		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>.build()).setJobId(jobId_<%=cid%>).build());
 
 		<%
 		if(isLog4jEnabled){
@@ -245,7 +256,6 @@
 		} else if (job_<%=cid%>.getStatus().getError() != null) {
 			throw new RuntimeException(job_<%=cid%>.getStatus().getError().toString());
 		}
-
 		<%
 		if(isLog4jEnabled){
 		%>
@@ -253,16 +263,14 @@
 		<%
 		}
 		%>
-		
 		com.google.cloud.bigquery.TableResult result_<%=cid%> = job_<%=cid%>.getQueryResults();
-
 		long nb_line_<%=cid%> = 0;
 	<%
 	} else {
 		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
 	}
-	
-	
+
+
 	if (authMode.equals("OAUTH")) {
 	%>
 	while (true) {
@@ -274,14 +282,13 @@
 							insert_<%=cid %>.getConfiguration().getQuery()
 									.getDestinationTable().getTableId())
 					.setPageToken(pageToken_<%=cid%>).execute();
-		
-		List<com.google.api.services.bigquery.model.TableRow> rows_<%=cid %> = dataList_<%=cid %>.getRows();
 
+		List<com.google.api.services.bigquery.model.TableRow> rows_<%=cid %> = dataList_<%=cid %>.getRows();
 		if(rows_<%=cid %> == null) {
 			// Means there is no record.
 			rows_<%=cid %> = new java.util.ArrayList<com.google.api.services.bigquery.model.TableRow>();
 		}
-		
+
 		for (com.google.api.services.bigquery.model.TableRow row_<%=cid %> : rows_<%=cid %>) {
 			java.util.List<com.google.api.services.bigquery.model.TableCell> field_<%=cid %> = row_<%=cid %>.getF();
 			Object value_<%=cid%> = null;
@@ -311,16 +318,14 @@
 							boolean advancedSeparator = (advancedSeparatorStr!=null&&!("").equals(advancedSeparatorStr))?("true").equals(advancedSeparatorStr):false;
 							String thousandsSeparator = ElementParameterParser.getValueWithJavaType(node, "__THOUSANDS_SEPARATOR__", JavaTypesManager.CHARACTER);
 							String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER);
-						
 							List<IMetadataColumn> columns = metadata.getListColumns();
 							int nbColumns = columns.size();
 							for (int i = 0; i < nbColumns; i++ ) {
 								IMetadataColumn column = columns.get(i);
 								String columnName = column.getLabel();
-							
 								String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
 								JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
-								String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern(); 
+								String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
 								if (authMode.equals("OAUTH")) {
 								%>
 								value_<%=cid%> = field_<%=cid %>.get(<%=i%>).getV();
@@ -334,33 +339,34 @@
 								}
 								%>
 								if(com.google.api.client.util.Data.isNull(value_<%=cid%>)) value_<%=cid%> = null;
+
 								if(value_<%=cid%> != null){
-									
+
 									<%
 									if (javaType == JavaTypesManager.STRING) {
 									%>
 										<%=connName%>.<%=columnName%> = value_<%=cid%>.toString();
 									<%
 									} else if (javaType == JavaTypesManager.OBJECT) {
-									%>		
+									%>
 										<%=connName%>.<%=columnName%> = value_<%=cid%>;
-									<%		
-									} else if(javaType == JavaTypesManager.DATE) {						
-									%>					
-										
+									<%
+									} else if(javaType == JavaTypesManager.DATE) {
+									%>
+
 										if (value_<%=cid%>.toString().contains("-")) {
-											<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString(),<%=patternValue%>);						
-										} else {						
+											<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString(),<%=patternValue%>);
+										} else {
 											<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString());
 										}
-										
-									<%		
-									} else if(advancedSeparator && JavaTypesManager.isNumberType(javaType)) { 
+
+									<%
+									} else if(advancedSeparator && JavaTypesManager.isNumberType(javaType)) {
 									%>
 										<%=connName%>.<%=columnName%> = ParserUtils.parseTo_<%= typeToGenerate %>(ParserUtils.parseTo_Number(value_<%=cid%>.toString(), <%= thousandsSeparator %>, <%= decimalSeparator %>));
 									<%
-									} else if(javaType == JavaTypesManager.BYTE_ARRAY) { 
-									%>							
+									} else if(javaType == JavaTypesManager.BYTE_ARRAY) {
+									%>
 										<%=connName%>.<%=columnName%> = value_<%=cid%>.toString().getBytes(<%=encoding %>);
 									<%
 									} else {
