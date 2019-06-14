@@ -178,7 +178,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
             if (!repoNode.isInitialized()) {
                 if (familyNodesCache != null && !familyNodesCache.isEmpty()) {
                     repoNode.getChildren().removeAll(familyNodesCache);
-                } else {
+                } else if (familyNodesCache == null) {
                     familyNodesCache = getTaCoKitFamilyNodes(repoNode, false);
                 }
                 clearCache();
