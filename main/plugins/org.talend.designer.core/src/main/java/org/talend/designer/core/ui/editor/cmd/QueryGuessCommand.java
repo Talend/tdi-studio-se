@@ -276,24 +276,32 @@ public class QueryGuessCommand extends Command {
             IElementParameter connector = node.getElementParameter("CONNECTION");
             if (connector != null) {
                 String connectorValue = connector.getValue().toString();
-                List<? extends INode> graphicalNodes = process.getGeneratingNodes();
-                for (INode node : graphicalNodes) {
-                    if (node.getUniqueName().equals(connectorValue)) {
-                        connectionNode = node;
+                for (INode generatingNode : process.getGraphicalNodes()) {
+                    if (generatingNode.getUniqueName().equals(connectorValue)) {
+                        connectionNode = generatingNode;
                         break;
                     }
                 }
-                // for visual connection component in joblet
-                if (connectionNode == null && node instanceof INode) {
-                    List<IMultipleComponentManager> multipleComponentManagers = ((INode) node).getComponent()
-                            .getMultipleComponentManagers();
-                    for (IMultipleComponentManager manager : multipleComponentManagers) {
-                        String inName = manager.getInput().getName();
-                        String componentValue = connectorValue + "_" + inName;
-                        for (INode gnode : process.getGeneratingNodes()) {
-                            if (gnode.getUniqueName().equals(componentValue) && (gnode instanceof INode)) {
-                                connectionNode = gnode;
-                                break;
+                if (connectionNode == null) {
+                    List<? extends INode> graphicalNodes = process.getGeneratingNodes();
+                    for (INode node : graphicalNodes) {
+                        if (node.getUniqueName().equals(connectorValue)) {
+                            connectionNode = node;
+                            break;
+                        }
+                    }
+                    // for visual connection component in joblet
+                    if (connectionNode == null && node instanceof INode) {
+                        List<IMultipleComponentManager> multipleComponentManagers = ((INode) node).getComponent()
+                                .getMultipleComponentManagers();
+                        for (IMultipleComponentManager manager : multipleComponentManagers) {
+                            String inName = manager.getInput().getName();
+                            String componentValue = connectorValue + "_" + inName;
+                            for (INode gnode : process.getGeneratingNodes()) {
+                                if (gnode.getUniqueName().equals(componentValue) && (gnode instanceof INode)) {
+                                    connectionNode = gnode;
+                                    break;
+                                }
                             }
                         }
                     }
