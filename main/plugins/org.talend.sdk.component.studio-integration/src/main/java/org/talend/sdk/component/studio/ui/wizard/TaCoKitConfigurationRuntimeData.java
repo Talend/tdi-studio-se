@@ -12,9 +12,13 @@
  */
 package org.talend.sdk.component.studio.ui.wizard;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
+import org.talend.sdk.component.studio.ui.composite.problemmanager.WizardProblemManager;
 
 public class TaCoKitConfigurationRuntimeData {
 
@@ -23,6 +27,8 @@ public class TaCoKitConfigurationRuntimeData {
     private ConnectionItem connectionItem;
 
     private ConfigTypeNode configTypeNode;
+
+    private Set<WizardProblemManager> problemManagers;
 
     private boolean isCreation = true;
 
@@ -33,6 +39,7 @@ public class TaCoKitConfigurationRuntimeData {
     private String[] existingNames;
 
     public TaCoKitConfigurationRuntimeData() {
+        problemManagers = new LinkedHashSet<>();
     }
 
     public ITaCoKitRepositoryNode getTaCoKitRepositoryNode() {
@@ -91,36 +98,58 @@ public class TaCoKitConfigurationRuntimeData {
         this.existingNames = existingNames;
     }
 
+    public Set<WizardProblemManager> getProblemManagers() {
+        return this.problemManagers;
+    }
+
+    public void registProblemManager(WizardProblemManager problemManager) {
+        this.problemManagers.add(problemManager);
+    }
+
+    public void unregistProblemManager(WizardProblemManager problemManager) {
+        this.problemManagers.remove(problemManager);
+    }
+
     @Override
     public boolean equals(final Object o) {
-        if (o == this)
+        if (o == this) {
             return true;
-        if (!(o instanceof TaCoKitConfigurationRuntimeData))
+        }
+        if (!(o instanceof TaCoKitConfigurationRuntimeData)) {
             return false;
+        }
         final TaCoKitConfigurationRuntimeData other = (TaCoKitConfigurationRuntimeData) o;
-        if (!other.canEqual(this))
+        if (!other.canEqual(this)) {
             return false;
+        }
         final Object this$taCoKitRepositoryNode = this.getTaCoKitRepositoryNode();
         final Object other$taCoKitRepositoryNode = other.getTaCoKitRepositoryNode();
         if (this$taCoKitRepositoryNode == null ? other$taCoKitRepositoryNode != null
-                : !this$taCoKitRepositoryNode.equals(other$taCoKitRepositoryNode))
+                : !this$taCoKitRepositoryNode.equals(other$taCoKitRepositoryNode)) {
             return false;
+        }
         final Object this$connectionItem = this.getConnectionItem();
         final Object other$connectionItem = other.getConnectionItem();
-        if (this$connectionItem == null ? other$connectionItem != null : !this$connectionItem.equals(other$connectionItem))
+        if (this$connectionItem == null ? other$connectionItem != null : !this$connectionItem.equals(other$connectionItem)) {
             return false;
+        }
         final Object this$configTypeNode = this.getConfigTypeNode();
         final Object other$configTypeNode = other.getConfigTypeNode();
-        if (this$configTypeNode == null ? other$configTypeNode != null : !this$configTypeNode.equals(other$configTypeNode))
+        if (this$configTypeNode == null ? other$configTypeNode != null : !this$configTypeNode.equals(other$configTypeNode)) {
             return false;
-        if (this.isCreation() != other.isCreation())
+        }
+        if (this.isCreation() != other.isCreation()) {
             return false;
-        if (this.isReadonly() != other.isReadonly())
+        }
+        if (this.isReadonly() != other.isReadonly()) {
             return false;
-        if (this.isAddContextFields() != other.isAddContextFields())
+        }
+        if (this.isAddContextFields() != other.isAddContextFields()) {
             return false;
-        if (!java.util.Arrays.deepEquals(this.getExistingNames(), other.getExistingNames()))
+        }
+        if (!java.util.Arrays.deepEquals(this.getExistingNames(), other.getExistingNames())) {
             return false;
+        }
         return true;
     }
 
