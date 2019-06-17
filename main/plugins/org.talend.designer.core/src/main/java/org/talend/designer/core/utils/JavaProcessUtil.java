@@ -49,6 +49,7 @@ import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.maven.utils.MavenVersionHelper;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 
@@ -56,6 +57,8 @@ import org.talend.librariesmanager.model.ModulesNeededProvider;
  * DOC xye class global comment. Detailled comment
  */
 public class JavaProcessUtil {
+
+    private static Set<String> DEDUPLICATECACHE = new HashSet<String>();
 
     public static Set<ModuleNeeded> getNeededModules(final IProcess process, int options) {
         List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
@@ -82,6 +85,9 @@ public class JavaProcessUtil {
          */
         Collections.sort(modulesNeeded, new ModuleNeededComparator());
 
+        // special check for slf4j-log4j12 and slf4j-api, need deep deduplicate
+        Map<String,ModuleNeeded> latestVersionHM = new HashMap<String, ModuleNeeded>();
+        
         Set<String> dedupModulesList = new HashSet<String>();
         Iterator<ModuleNeeded> it = modulesNeeded.iterator();
         ModuleNeeded previousModule = null;
@@ -97,6 +103,23 @@ public class JavaProcessUtil {
                     previousModule.setMrRequired(Boolean.TRUE);
                 }
                 it.remove();
+            } else if (getIfmoduleNeedDeepDeDuplicate(module) != null) {
+                String key = getIfmoduleNeedDeepDeDuplicate(module);
+                if (latestVersionHM.get(key) == null) {
+                    latestVersionHM.put(key, module);
+                } else {
+                    ModuleNeeded existModuleNeeded = latestVersionHM.get(key);
+                    String existModuleName = existModuleNeeded.getModuleName();
+                    String previousVersion = MavenVersionHelper.getJarOriginalVersion(existModuleName);
+
+                    String moduleName = module.getModuleName();
+                    String currentVersion = MavenVersionHelper.getJarOriginalVersion(moduleName);
+
+                    if (MavenVersionHelper.compareTo(currentVersion, previousVersion) > 0) {
+                        latestVersionHM.put(key, module);
+                    }
+                }
+                it.remove();
             } else {
                 dedupModulesList.add(module.getModuleName());
                 previousModule = module;
@@ -107,7 +130,41 @@ public class JavaProcessUtil {
             new BigDataJobUtil(process).removeExcludedModules(modulesNeeded);
         }
 
+        for (ModuleNeeded module : latestVersionHM.values()) {
+            modulesNeeded.add(module);
+        }
+        if (!latestVersionHM.values().isEmpty()) {
+            Collections.sort(modulesNeeded, new ModuleNeededComparator());
+        }
+
         return new HashSet<ModuleNeeded>(modulesNeeded);
+    }
+
+    /**
+     * Get if module need deep deduplicate, if need return key, otherwise return null. DOC jding Comment method
+     * "getIfmoduleNeedDeepDeDuplicate".
+     * 
+     * @param moduleNeeded
+     * @return
+     */
+    public static String getIfmoduleNeedDeepDeDuplicate(ModuleNeeded moduleNeeded) {
+        if (DEDUPLICATECACHE.isEmpty()) {
+            initDeduplicateCache();
+        }
+        String key = null;
+        String moduleName = moduleNeeded.getModuleName();
+        for (String str : DEDUPLICATECACHE) {
+            if (moduleName.startsWith(str)) {
+                key = str;
+                break;
+            }
+        }
+        return key;
+    }
+
+    private static void initDeduplicateCache() {
+        DEDUPLICATECACHE.add("slf4j-log4j12");//$NON-NLS-1$
+        DEDUPLICATECACHE.add("slf4j-api");//$NON-NLS-1$
     }
 
     // for MapReduce job, if the jar on Xml don't set MRREQUIRED="true", shouldn't add it to
