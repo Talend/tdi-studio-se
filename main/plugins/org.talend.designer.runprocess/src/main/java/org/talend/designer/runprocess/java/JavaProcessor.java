@@ -1461,6 +1461,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                     break;
                 }
             }
+            useRelativeClasspath = hasCXFComponent;
             IFolder execPath = talendJavaProject.getTargetFolder();
             for (ModuleNeeded neededModule : neededModules) {
                 MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(neededModule.getMavenUri());
@@ -1469,10 +1470,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                         .makeRelativeTo(execPath.getLocation())
                         .toPortableString();
                 String artifactId = artifact.getArtifactId();
-                boolean hasSapjco3 = "sapjco3".equals(artifactId) && compareSapjco3Version(relativeJarPath) > 0; //$NON-NLS-1$
+                boolean hasSapjco3 = "sapjco3".equals(artifactId) //$NON-NLS-1$
+                        && compareSapjco3Version(relativeJarPath, execPath.getLocation().toPortableString()) > 0;
                 boolean hasSapidoc3 = "sapidoc3".equals(artifactId); //$NON-NLS-1$
-                useRelativeClasspath = hasCXFComponent || hasSapjco3 || hasSapidoc3;
-                if (useRelativeClasspath) {
+                boolean isRelative = hasCXFComponent || hasSapjco3 || hasSapidoc3;
+                if (isRelative) {
                     libPath.append(relativeJarPath).append(classPathSeparator);
                 } else {
                     libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
@@ -1487,11 +1489,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         return libPath.toString();
     }
 
-    private int compareSapjco3Version(String jarPath) {
+    private int compareSapjco3Version(String jarPath, String execPath) {
         JarFile jar = null;
         String version = null;
         try {
-            jar = new JarFile(jarPath);
+            File file = new File(execPath + "/" + jarPath); //$NON-NLS-1$
+            jar = new JarFile(file.getCanonicalFile());
             Manifest manifest = jar.getManifest();
             version = manifest.getMainAttributes().getValue(Attributes.Name.SPECIFICATION_VERSION);
         } catch (IOException e) {
