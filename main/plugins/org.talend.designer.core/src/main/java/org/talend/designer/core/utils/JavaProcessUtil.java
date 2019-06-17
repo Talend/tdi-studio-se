@@ -43,6 +43,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.utils.BitwiseOptionUtils;
@@ -110,10 +111,10 @@ public class JavaProcessUtil {
                 } else {
                     ModuleNeeded existModuleNeeded = latestVersionHM.get(key);
                     String existModuleName = existModuleNeeded.getModuleName();
-                    String previousVersion = MavenVersionHelper.getJarOriginalVersion(existModuleName);
+                    String previousVersion = getJarVersion4SLF4J(existModuleName);
 
                     String moduleName = module.getModuleName();
-                    String currentVersion = MavenVersionHelper.getJarOriginalVersion(moduleName);
+                    String currentVersion = getJarVersion4SLF4J(moduleName);
 
                     if (MavenVersionHelper.compareTo(currentVersion, previousVersion) > 0) {
                         latestVersionHM.put(key, module);
@@ -160,6 +161,15 @@ public class JavaProcessUtil {
             }
         }
         return key;
+    }
+
+    private static String getJarVersion4SLF4J(String jarName) {
+        String artifactId = jarName;
+        if (jarName.endsWith(MavenConstants.TYPE_JAR)) {
+            artifactId = jarName.substring(0, jarName.lastIndexOf(MavenConstants.TYPE_JAR) - 1);
+        }
+        String version = artifactId.substring(artifactId.lastIndexOf("-") + 1);//$NON-NLS-1$
+        return version;
     }
 
     private static void initDeduplicateCache() {
