@@ -70,7 +70,7 @@ public class WizardProblemManager extends ColorfulProblemManager {
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<IElementParameter, String> entry : msgMap.entrySet()) {
             try {
-                builder.append(entry.getKey().getDisplayName()).append(": ").append(entry.getValue()).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
+                builder.append(entry.getKey().getDisplayName()).append(": ").append(entry.getValue()).append("\n "); //$NON-NLS-1$ //$NON-NLS-2$
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
