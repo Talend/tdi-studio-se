@@ -93,6 +93,7 @@ public class JavaProcessUtil {
         ModuleNeeded previousModule = null;
         while (it.hasNext()) {
             ModuleNeeded module = it.next();
+            String key = getIfmoduleNeedDeepDeDuplicate(module);
             // try to keep only real files (with extension, no matter be jar or other)
             // in some case it's not a real library, but just a text.
             if (!module.getModuleName().contains(".")) { //$NON-NLS-1$
@@ -103,8 +104,7 @@ public class JavaProcessUtil {
                     previousModule.setMrRequired(Boolean.TRUE);
                 }
                 it.remove();
-            } else if (getIfmoduleNeedDeepDeDuplicate(module) != null) {
-                String key = getIfmoduleNeedDeepDeDuplicate(module);
+            } else if (key != null) {
                 if (latestVersionHM.get(key) == null) {
                     latestVersionHM.put(key, module);
                 } else {
