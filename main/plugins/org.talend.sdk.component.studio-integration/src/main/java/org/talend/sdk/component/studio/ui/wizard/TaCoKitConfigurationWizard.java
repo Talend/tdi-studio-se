@@ -12,8 +12,6 @@
  */
 package org.talend.sdk.component.studio.ui.wizard;
 
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -36,7 +34,6 @@ import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.PropertyTreeCreator;
-import org.talend.sdk.component.studio.ui.composite.problemmanager.WizardProblemManager;
 import org.talend.sdk.component.studio.ui.wizard.page.TaCoKitConfigurationWizardPage;
 import org.talend.sdk.component.studio.ui.wizard.page.WizardTypeMapper;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
@@ -214,18 +211,7 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
         if (currentPage instanceof Step0WizardPage) {
             return false;
         }
-        Set<WizardProblemManager> problemManagers = getRuntimeData().getProblemManagers();
-        if (problemManagers != null) {
-            for (WizardProblemManager problemManager : problemManagers) {
-                if (problemManager.hasError()) {
-                    return false;
-                }
-            }
-        }
-        if (currentPage.isPageComplete()) {
-            return true;
-        }
-        return false;
+        return super.canFinish();
     }
 
     @Override
