@@ -1025,6 +1025,7 @@ public abstract class DbGenerationManager {
 
     protected String initExpression(DbMapComponent component, ExternalDbMapEntry dbMapEntry) {
     	String quote = getQuote(component);
+    	String quto_mark = TalendQuoteUtils.QUOTATION_MARK;
         String expression = dbMapEntry.getExpression();
         if (expression != null) {
             List<Map<String, String>> itemNameList = null;
@@ -1049,7 +1050,7 @@ public abstract class DbGenerationManager {
                 itemNameList = mapParser2.parseInTableEntryLocations(expression);
             }
 
-            String quoParser = "[\\\\]?\\" + quote; //$NON-NLS-1$
+            String quto_markParser = "[\\\\]?\\" + quto_mark; //$NON-NLS-1$
             for (Map<String, String> itemNamemap : itemNameList) {
                 Set<Entry<String, String>> set = itemNamemap.entrySet();
                 Iterator<Entry<String, String>> ite = set.iterator();
@@ -1115,16 +1116,12 @@ public abstract class DbGenerationManager {
                                         }
                                         if (expression.trim().equals(tableValue + "." + oriName)) {
                                             expression = tableValue + "." + getColumnName(iconn, oriName, quote);
-                                            if(TalendQuoteUtils.QUOTATION_MARK.equals(quote)){
-                                            	expression = expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
-                                            }
+                                            expression = expression.replaceAll(quto_markParser,"\\\\" +quto_mark); //$NON-NLS-1$
                                             continue;
                                         }
                                         if (expression.trim().equals(originaltableName + "." + oriName)) {
                                             expression = originaltableName + "." + getColumnName(iconn, oriName, quote);
-                                            if(TalendQuoteUtils.QUOTATION_MARK.equals(quote)){
-                                            	expression = expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
-                                            }
+                                            expression = expression.replaceAll(quto_markParser,"\\\\" +quto_mark); //$NON-NLS-1$
                                             continue;
                                         }
                                         // if it is temp delived table, use label to generate sql
@@ -1138,9 +1135,7 @@ public abstract class DbGenerationManager {
                                         }
                                         expression = expression.replaceFirst(tableValue + "\\." + co.getLabel(), //$NON-NLS-1$
                                         		tableValue + "\\." + oriName); //$NON-NLS-1$
-                                        if(TalendQuoteUtils.QUOTATION_MARK.equals(quote)){
-                                        	expression = replaceAuotes(expression, quoParser, quote);
-                                        }
+                                        expression = replaceAuotes(expression, quto_markParser, quto_mark);
                                     }
                                 }
 
