@@ -12,9 +12,9 @@
  */
 package org.talend.sdk.component.studio.metadata.handler;
 
-import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.*;
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
-import static org.talend.sdk.component.studio.util.TaCoKitUtil.*;
+import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.addQuotesIfNecessary;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
+import static org.talend.sdk.component.studio.util.TaCoKitUtil.isEmpty;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -272,7 +272,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
 
     @Override
     public void setComponentValue(final Connection connection, final INode node, final IElementParameter param) {
-        System.out.println("setComponentValue: " + param);
+        // System.out.println("setComponentValue: " + param);
     }
 
     @Override
