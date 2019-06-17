@@ -101,7 +101,8 @@ public class ElementParameterCreator {
      */
     private void addSettings() {
         if (!properties.isEmpty()) {
-            final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper()).createPropertyTree(properties);
+            final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper())
+                    .createPropertyTree(properties);
             final SettingVisitor settingVisitor = new SettingVisitor(node, updateComponentsParameter, detail);
             root.accept(settingVisitor.withCategory(BASIC), Metadatas.MAIN_FORM);
             root.accept(settingVisitor.withCategory(ADVANCED), Metadatas.ADVANCED_FORM);
@@ -111,7 +112,8 @@ public class ElementParameterCreator {
             // create config type version param
             properties.stream().filter(p -> p.getConfigurationType() != null && p.getConfigurationTypeName() != null)
                     .forEach(p -> parameters.add(new VersionParameter(node, p.getPath(),
-                            String.valueOf(getConfigTypeVersion(p, component.getConfigTypeNodes(), component.getId().getFamilyId())))));
+                            String.valueOf(
+                                    getConfigTypeVersion(p, component.getConfigTypeNodes(), component.getId().getFamilyId())))));
         }
 
         checkSchemaProperties(new SettingVisitor(node, updateComponentsParameter, detail).withCategory(BASIC));

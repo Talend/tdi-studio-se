@@ -26,6 +26,7 @@ import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.ValueModel;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.IValueChangedListener;
+import org.talend.sdk.component.studio.ui.composite.problemmanager.IProblemManager;
 
 /**
  * Stores {@link TaCoKitConfigurationModel} and sets Configuration Model Updater listener for each
@@ -41,8 +42,8 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
 
     public TaCoKitWizardComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
             final Element element, final TaCoKitConfigurationModel model, final boolean isCompactView,
-            final Color backgroundColor, final boolean isNew) {
-        super(parentComposite, styles, section, element, isCompactView, backgroundColor);
+            final Color backgroundColor, final boolean isNew, final IProblemManager problemManager) {
+        super(parentComposite, styles, section, element, isCompactView, backgroundColor, problemManager);
         this.configurationModel = model;
         this.isNew = isNew;
         configurationUpdater = new ConfigurationModelUpdater();
