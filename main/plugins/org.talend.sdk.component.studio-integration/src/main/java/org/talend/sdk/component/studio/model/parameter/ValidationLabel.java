@@ -19,6 +19,7 @@ import static java.util.stream.Stream.of;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,30 +41,30 @@ public class ValidationLabel {
      */
     private String validationMessage;
 
-    private TaCoKitElementParameter elementParameter;
+    private Optional<TaCoKitElementParameter> elementParameter = Optional.ofNullable(null);
 
     public ValidationLabel(final TaCoKitElementParameter elementParameter) {
-        this.elementParameter = elementParameter;
+        this.elementParameter = Optional.ofNullable(elementParameter);
     }
 
     public void showValidation(final String message) {
         validationMessage = message;
-        elementParameter.getProblemManager().ifPresent(p -> p.setError(elementParameter, buildValue()));
+        elementParameter.ifPresent(c -> c.getProblemManager().ifPresent(p -> p.setError(elementParameter.get(), buildValue())));
     }
 
     public void hideValidation() {
         validationMessage = null;
-        elementParameter.getProblemManager().ifPresent(p -> p.setError(elementParameter, null));
+        elementParameter.ifPresent(c -> c.getProblemManager().ifPresent(p -> p.setError(elementParameter.get(), null)));
     }
 
     public void showConstraint(final String message) {
         constraintMessages.add(message);
-        elementParameter.getProblemManager().ifPresent(p -> p.setError(elementParameter, buildValue()));
+        elementParameter.ifPresent(c -> c.getProblemManager().ifPresent(p -> p.setError(elementParameter.get(), buildValue())));
     }
 
     public void hideConstraint(final String message) {
         constraintMessages.remove(message);
-        elementParameter.getProblemManager().ifPresent(p -> p.setError(elementParameter, null));
+        elementParameter.ifPresent(c -> c.getProblemManager().ifPresent(p -> p.setError(elementParameter.get(), null)));
     }
 
     private String buildValue() {
