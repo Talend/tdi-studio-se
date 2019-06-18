@@ -1465,17 +1465,17 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             IFolder execPath = talendJavaProject.getTargetFolder();
             for (ModuleNeeded neededModule : neededModules) {
                 MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(neededModule.getMavenUri());
-                String relativeJarPath = JavaProcessorUtilities.getJavaProjectLibFolder2()
-                        .getFile(MavenUrlHelper.generateModuleNameByMavenURI(neededModule.getMavenUri())).getLocation()
-                        .makeRelativeTo(execPath.getLocation())
-                        .toPortableString();
+                IPath jarPath = JavaProcessorUtilities.getJavaProjectLibFolder2()
+                        .getFile(MavenUrlHelper.generateModuleNameByMavenURI(neededModule.getMavenUri())).getLocation();
+                String relativeJarPath = jarPath.makeRelativeTo(execPath.getLocation()).toPortableString();
                 String artifactId = artifact.getArtifactId();
                 boolean hasSapjco3 = "sapjco3".equals(artifactId) //$NON-NLS-1$
-                        && compareSapjco3Version(relativeJarPath, execPath.getLocation().toPortableString()) > 0;
+                        && compareSapjco3Version(jarPath.toPortableString()) > 0;
                 boolean hasSapidoc3 = "sapidoc3".equals(artifactId); //$NON-NLS-1$
-                boolean isRelative = hasCXFComponent || hasSapjco3 || hasSapidoc3;
-                if (isRelative) {
+                if (hasCXFComponent) {
                     libPath.append(relativeJarPath).append(classPathSeparator);
+                } else if (hasSapjco3 || hasSapidoc3) {
+                    libPath.append(jarPath).append(classPathSeparator);
                 } else {
                     libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
                 }
@@ -1489,12 +1489,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         return libPath.toString();
     }
 
-    private int compareSapjco3Version(String jarPath, String execPath) {
+    private int compareSapjco3Version(String jarPath) {
         JarFile jar = null;
         String version = null;
         try {
-            File file = new File(execPath + "/" + jarPath); //$NON-NLS-1$
-            jar = new JarFile(file.getCanonicalFile());
+            jar = new JarFile(jarPath);
             Manifest manifest = jar.getManifest();
             version = manifest.getMainAttributes().getValue(Attributes.Name.SPECIFICATION_VERSION);
         } catch (IOException e) {
