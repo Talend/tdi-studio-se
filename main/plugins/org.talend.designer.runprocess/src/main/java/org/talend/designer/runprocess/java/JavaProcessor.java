@@ -1467,15 +1467,14 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(neededModule.getMavenUri());
                 IPath jarPath = JavaProcessorUtilities.getJavaProjectLibFolder2()
                         .getFile(MavenUrlHelper.generateModuleNameByMavenURI(neededModule.getMavenUri())).getLocation();
-                String relativeJarPath = jarPath.makeRelativeTo(execPath.getLocation()).toPortableString();
                 String artifactId = artifact.getArtifactId();
                 boolean hasSapjco3 = "sapjco3".equals(artifactId) //$NON-NLS-1$
                         && compareSapjco3Version(jarPath.toPortableString()) > 0;
                 boolean hasSapidoc3 = "sapidoc3".equals(artifactId); //$NON-NLS-1$
                 if (hasCXFComponent) {
-                    libPath.append(relativeJarPath).append(classPathSeparator);
+                    libPath.append(jarPath.makeRelativeTo(execPath.getLocation()).toPortableString()).append(classPathSeparator);
                 } else if (hasSapjco3 || hasSapidoc3) {
-                    libPath.append(jarPath).append(classPathSeparator);
+                    libPath.append(jarPath.toPortableString()).append(classPathSeparator);
                 } else {
                     libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
                 }
