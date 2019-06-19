@@ -51,7 +51,13 @@
 %>
 	for(Object obj_<%=cid %> :noAssignList_<%=cid %>){
 		<%if(isLog4jEnabled){%>
-			log.<%=oldVariable.equals("Error")?"error(":"info("%>"<%=cid%> - <%=oldVariable%>: Parameter \"" + obj_<%=cid %> + "\" has not been set by <%=cid %>");
+			<%if(oldVariable.equals("Error")){%>
+				log.error("<%=cid%> - <%=oldVariable%>: Parameter \"" + obj_<%=cid %> + "\" has not been set by <%=cid %>");
+			<%}else if(oldVariable.equals("Warning")){%>
+				log.warn("<%=cid%> - <%=oldVariable%>: Parameter \"" + obj_<%=cid %> + "\" has not been set by <%=cid %>");
+			<%}else{%>	
+				log.info("<%=cid%> - <%=oldVariable%>: Parameter \"" + obj_<%=cid %> + "\" has not been set by <%=cid %>");
+			<%}%>
 		<%}%>
 		System.<%=oldVariable.equals("Error")?"err":"out"%>.println("<%=oldVariable%>: Parameter \"" + obj_<%=cid %> + "\" has not been set by <%=cid %>");
 		<%if (bDieOnError && oldVariable.equals("Error")){%>
