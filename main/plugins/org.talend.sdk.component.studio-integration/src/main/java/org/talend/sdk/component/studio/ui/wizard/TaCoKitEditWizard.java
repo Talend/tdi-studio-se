@@ -70,6 +70,7 @@ public class TaCoKitEditWizard extends TaCoKitConfigurationWizard {
     private void updateConfigurationItem() throws Exception {
         updateConnectionItem();
         refreshInFinish(getWizardPropertiesPage().isNameModifiedByUser());
+        TaCoKitUpdateManager.updateTaCoKitSubConnection(getRuntimeData());
         TaCoKitUpdateManager.updateTaCoKitConnection(connectionItem);
     }
 

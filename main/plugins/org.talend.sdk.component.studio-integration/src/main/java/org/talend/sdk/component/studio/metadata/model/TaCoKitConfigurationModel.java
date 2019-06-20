@@ -175,7 +175,7 @@ public class TaCoKitConfigurationModel {
         }
     }
 
-    private Map<String, PropertyDefinitionDecorator> buildPropertyTree() {
+    public Map<String, PropertyDefinitionDecorator> buildPropertyTree() {
         final Map<String, PropertyDefinitionDecorator> tree = new HashMap<>();
         final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator
                 .wrap(getConfigTypeNode().getProperties());
@@ -183,7 +183,7 @@ public class TaCoKitConfigurationModel {
         return tree;
     }
 
-    private String findModelRoot() {
+    public String findModelRoot() {
         final Map<String, String> values = getProperties();
         List<String> possibleRoots = values.keySet().stream().filter(key -> key.contains(PATH_SEPARATOR))
                 .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR))).distinct().collect(Collectors.toList());
@@ -194,7 +194,7 @@ public class TaCoKitConfigurationModel {
         return possibleRoots.get(0);
     }
 
-    private Optional<String> findConfigPath(final Map<String, PropertyDefinitionDecorator> tree, final String key)
+    public Optional<String> findConfigPath(final Map<String, PropertyDefinitionDecorator> tree, final String key)
             throws Exception {
         TaCoKitConfigurationModel parentModel = getParentConfigurationModel();
         if (parentModel != null && parentModel.getConfigTypeNode() != null) {
