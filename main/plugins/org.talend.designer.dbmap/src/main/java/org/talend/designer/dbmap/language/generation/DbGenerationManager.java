@@ -256,9 +256,9 @@ public abstract class DbGenerationManager {
      * @return
      */
     public String buildSqlSelect(DbMapComponent component, String outputTableName) {
-        boolean checkUseUpdateStatement = checkUseUpdateStatement(component, outputTableName);
-        if (checkUseUpdateStatement) {
-            return buildSqlSelect(component, outputTableName, DEFAULT_TAB_SPACE_STRING, checkUseUpdateStatement);
+        ELTConfig outputELTConfig = getELTConfig(component, outputTableName);
+        if (outputELTConfig.useJoinsUpdateQuery) {
+            return createBasicSqlSelectQuery(component, outputTableName, DEFAULT_TAB_SPACE_STRING, outputELTConfig);
         } else {
             return buildSqlSelect(component, outputTableName, DEFAULT_TAB_SPACE_STRING);
         }
@@ -278,11 +278,7 @@ public abstract class DbGenerationManager {
      * @return
      */
     public String buildSqlSelect(DbMapComponent dbMapComponent, String outputTableName, String tabString) {
-        queryColumnsName = "\""; //$NON-NLS-1$
-        aliasAlreadyDeclared.clear();
-        queryColumnsSegments.clear();
-        querySegments.clear();
-        subQueryTable.clear();
+        cleanUpForNewSQLQuerry();
 
         this.tabSpaceString = tabString;
         DbMapComponent component = getDbMapComponent(dbMapComponent);
@@ -558,13 +554,15 @@ public abstract class DbGenerationManager {
         return sqlQuery;
     }
 
+    @Deprecated
     public String buildSqlSelect(DbMapComponent dbMapComponent, String outputTableName, String tabString,
             boolean checkUseUpdateStatement) {
-        queryColumnsName = "\""; //$NON-NLS-1$
-        aliasAlreadyDeclared.clear();
-        queryColumnsSegments.clear();
-        querySegments.clear();
-        subQueryTable.clear();
+        return createBasicSqlSelectQuery(dbMapComponent, outputTableName, tabString, new ELTConfig(checkUseUpdateStatement, null));
+        
+    }
+    
+    private String createBasicSqlSelectQuery(DbMapComponent dbMapComponent, String outputTableName, String tabString, ELTConfig eltConfig) {
+        cleanUpForNewSQLQuerry();
 
         this.tabSpaceString = tabString;
         DbMapComponent component = getDbMapComponent(dbMapComponent);
@@ -676,6 +674,10 @@ public abstract class DbGenerationManager {
             appendSqlQuery(sb, DbMapSqlConstants.FROM);
             appendSqlQuery(sb, DbMapSqlConstants.SPACE);
             appendSqlQuery(sb, targetSchemaTable);
+            if (org.apache.commons.lang.StringUtils.isNotEmpty(eltConfig.aliasForOutput)) {
+                appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sb, eltConfig.aliasForOutput);
+            }
             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
 
             // Inner Join
@@ -709,7 +711,9 @@ public abstract class DbGenerationManager {
                     appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                     appendSqlQuery(sb, inputTable.getTableName());
                     appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                    appendSqlQuery(sb, inputTable.getAlias());
+                    if (inputTable.getAlias() != null) {
+                        appendSqlQuery(sb, inputTable.getAlias());
+                    }
                 }
             }
 
@@ -822,6 +826,14 @@ public abstract class DbGenerationManager {
         return sqlQuery;
     }
 
+    private void cleanUpForNewSQLQuerry() {
+        queryColumnsName = "\""; //$NON-NLS-1$
+        aliasAlreadyDeclared.clear();
+        queryColumnsSegments.clear();
+        querySegments.clear();
+        subQueryTable.clear();
+    }
+
     protected DbMapComponent getDbMapComponent(DbMapComponent dbMapComponent) {
         DbMapComponent component = dbMapComponent;
         INode realGraphicalNode = dbMapComponent.getRealGraphicalNode();
@@ -839,7 +851,16 @@ public abstract class DbGenerationManager {
         checkUseDelimitedIdentifiers(component);
     }
 
+    @Deprecated
     protected boolean checkUseUpdateStatement(DbMapComponent dbMapComponent, String outputTableName) {
+        ELTConfig eltConfig = getELTConfig(dbMapComponent, outputTableName);
+        return eltConfig.useJoinsUpdateQuery;
+    }
+    
+    protected ELTConfig getELTConfig(DbMapComponent dbMapComponent, String outputTableName) {
+        boolean useJoinsUpdate = false;
+        String aliasForOutput = null;
+        
         List<IConnection> outputConnections = (List<IConnection>) dbMapComponent.getOutgoingConnections();
         if (outputConnections != null) {
             IConnection iconn = this.getConnectonByMetadataName(outputConnections, outputTableName);
@@ -848,11 +869,17 @@ public abstract class DbGenerationManager {
                 IElementParameter useUpdateStatementParam = source.getElementParameter("USE_UPDATE_STATEMENT"); //$NON-NLS-1$
                 if (useUpdateStatementParam != null && useUpdateStatementParam.isShow(source.getElementParameters())
                         && useUpdateStatementParam.getValue() != null) {
-                    return Boolean.valueOf(useUpdateStatementParam.getValue().toString());
+                    useJoinsUpdate = Boolean.valueOf(useUpdateStatementParam.getValue().toString());
+                }
+                IElementParameter aliasForOutputParam = source.getElementParameter("ALIAS_FOR_OUTPUT_TABLE"); //$NON-NLS-1$
+                if (aliasForOutputParam != null && aliasForOutputParam.isShow(source.getElementParameters())
+                        && aliasForOutputParam.getValue() != null) {
+                    aliasForOutput = TalendQuoteUtils.removeQuotesIfExist(String.valueOf(aliasForOutputParam.getValue()));
                 }
             }
         }
-        return false;
+        
+        return new ELTConfig(useJoinsUpdate, aliasForOutput);
     }
 
     protected void checkUseDelimitedIdentifiers(DbMapComponent component) {
@@ -1666,4 +1693,15 @@ public abstract class DbGenerationManager {
         this.useDelimitedIdentifiers = useDelimitedIdentifiers;
     }
 
+    private class ELTConfig {
+       
+        private boolean useJoinsUpdateQuery;
+        private String aliasForOutput;
+        
+        
+        private ELTConfig(boolean useJoinsUpdateQuery, String aliasForOutput) {
+            this.useJoinsUpdateQuery = useJoinsUpdateQuery;
+            this.aliasForOutput = aliasForOutput;
+        }
+    }
 }
