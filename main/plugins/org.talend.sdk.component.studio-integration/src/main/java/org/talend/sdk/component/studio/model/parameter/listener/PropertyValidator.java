@@ -19,7 +19,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.regex.Pattern;
 
-import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
 
 /**
@@ -35,9 +34,6 @@ public abstract class PropertyValidator implements PropertyChangeListener {
     private final String validationMessage;
 
     PropertyValidator(final ValidationLabel label, final String validationMessage) {
-        if (label.getFieldType() != EParameterFieldType.LABEL) {
-            throw new IllegalArgumentException("parameter should be a LABEL");
-        }
         this.label = label;
         this.validationMessage = validationMessage;
     }
@@ -55,13 +51,10 @@ public abstract class PropertyValidator implements PropertyChangeListener {
 
         if (isContextualValue(event.getNewValue())) {
             label.hideConstraint(validationMessage);
-            label.firePropertyChange("show", null, false);
         } else if (!validate(event.getNewValue())) {
             label.showConstraint(validationMessage);
-            label.firePropertyChange("show", null, true);
         } else {
             label.hideConstraint(validationMessage);
-            label.firePropertyChange("show", null, false);
         }
     }
 

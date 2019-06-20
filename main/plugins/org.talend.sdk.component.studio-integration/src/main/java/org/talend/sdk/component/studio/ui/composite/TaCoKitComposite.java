@@ -46,6 +46,7 @@ import org.talend.sdk.component.studio.model.parameter.Layout;
 import org.talend.sdk.component.studio.model.parameter.LayoutParameter;
 import org.talend.sdk.component.studio.model.parameter.Level;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
+import org.talend.sdk.component.studio.ui.composite.problemmanager.IProblemManager;
 
 /**
  * Registers PropertyChangeListener for each IElementParameter during instantiation
@@ -60,6 +61,8 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
 
     private List<? extends IElementParameter> parameters;
 
+    private final IProblemManager problemManager;
+
     private PropertyChangeListener redrawListener = evt -> {
         if (!"show".equals(evt.getPropertyName())) {
             return;
@@ -68,15 +71,35 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
     };
 
     public TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
-            final Element element, final boolean isCompactView) {
+            final Element element, final boolean isCompactView, final IProblemManager problemManager) {
         super(parentComposite, styles, section, element, isCompactView);
+        this.problemManager = problemManager;
+        registProblemManager();
         postInit();
     }
 
-    TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
-            final Element element, final boolean isCompactView, final Color backgroundColor) {
+    TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section, final Element element,
+            final boolean isCompactView, final Color backgroundColor, final IProblemManager problemManager) {
         super(parentComposite, styles, section, element, isCompactView, backgroundColor);
+        this.problemManager = problemManager;
+        registProblemManager();
         postInit();
+    }
+
+    private void registProblemManager() {
+        if (this.problemManager != null) {
+            this.problemManager.registTckComposite(this);
+        }
+        elem.getElementParameters().stream().filter(Objects::nonNull).filter(TaCoKitElementParameter.class::isInstance)
+                .map(TaCoKitElementParameter.class::cast).forEach(p -> p.setProblemManager(problemManager));
+    }
+
+    private void unregistProblemManager() {
+        if (this.problemManager != null) {
+            this.problemManager.unregistTckComposite(this);
+        }
+        elem.getElementParameters().stream().filter(Objects::nonNull).filter(TaCoKitElementParameter.class::isInstance)
+                .map(TaCoKitElementParameter.class::cast).forEach(p -> p.setProblemManager(null));
     }
 
     protected void postInit() {
@@ -99,6 +122,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
 
     @Override
     public synchronized void dispose() {
+        unregistProblemManager();
         preDispose();
         super.dispose();
     }

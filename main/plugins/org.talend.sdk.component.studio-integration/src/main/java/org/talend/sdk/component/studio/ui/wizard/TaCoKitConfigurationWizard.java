@@ -211,10 +211,7 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
         if (currentPage instanceof Step0WizardPage) {
             return false;
         }
-        if (currentPage.isPageComplete()) {
-            return true;
-        }
-        return false;
+        return super.canFinish();
     }
 
     @Override
@@ -237,4 +234,5 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
     protected TaCoKitConfigurationWizardPage getAdvancedPage() {
         return this.advancedPage;
     }
+
 }

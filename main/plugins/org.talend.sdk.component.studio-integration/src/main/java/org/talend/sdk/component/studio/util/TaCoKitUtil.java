@@ -159,8 +159,7 @@ public class TaCoKitUtil {
         if (configTypeNode == null) {
             return null;
         }
-        IPath baseFolder = getTaCoKitBaseFolder(configTypeNode);
-        String label = baseFolder.toPortableString();
+        String label = configTypeNode.getDisplayName();
         String folderPathStr = getConfigTypePath(configTypeNode);
 
         String type = getTaCoKitRepositoryKey(configTypeNode);

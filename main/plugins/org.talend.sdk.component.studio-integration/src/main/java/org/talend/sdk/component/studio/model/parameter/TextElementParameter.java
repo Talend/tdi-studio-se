@@ -15,7 +15,7 @@ package org.talend.sdk.component.studio.model.parameter;
 import org.talend.core.model.process.IAdvancedElementParameter;
 import org.talend.core.model.process.IElement;
 
-public class TextElementParameter extends DebouncedParameter implements IAdvancedElementParameter {
+public class TextElementParameter extends TaCoKitElementParameter implements IAdvancedElementParameter {
 
     private String placeholder;
 

@@ -18,12 +18,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.talend.core.model.process.IElement;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
+import org.talend.sdk.component.studio.ui.composite.problemmanager.IProblemManager;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -42,6 +44,8 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     private ElementParameter redrawParameter;
 
     private Map<String, Object> additionalInfoMap = new HashMap<>();
+
+    private Optional<IProblemManager> problemManager = Optional.ofNullable(null);
 
     public TaCoKitElementParameter() {
         this(null);
@@ -67,6 +71,14 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
      */
     public String getStringValue() {
         return (String) getValue();
+    }
+
+    public Optional<IProblemManager> getProblemManager() {
+        return problemManager;
+    }
+
+    public void setProblemManager(IProblemManager problemManager) {
+        this.problemManager = Optional.ofNullable(problemManager);
     }
 
     public void registerListener(final String propertyName, final PropertyChangeListener listener) {
@@ -183,7 +195,6 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         super.setValue(newValue);
         firePropertyChange("value", oldValue, getStringValue());
         fireValueChange(oldValue, newValue);
-        redraw();
     }
 
     public void updateValueOnly(final Object newValue) {
