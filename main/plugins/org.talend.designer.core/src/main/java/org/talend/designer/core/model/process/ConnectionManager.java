@@ -452,7 +452,7 @@ public class ConnectionManager {
             return false;
         }
         if(newlineStyle == EConnectionType.ON_SUBJOB_OK || newlineStyle == EConnectionType.ON_SUBJOB_ERROR) {
-        	if(newTarget.getUniqueName().equals(newTarget.getDesignSubjobStartNode().getUniqueName())) {
+        	if(!newTarget.getUniqueName().equals(newTarget.getDesignSubjobStartNode().getUniqueName())) {
         		return false;
         	}
         }
