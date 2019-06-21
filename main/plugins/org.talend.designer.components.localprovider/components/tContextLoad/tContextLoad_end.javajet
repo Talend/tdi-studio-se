@@ -57,8 +57,8 @@
 		|| (oldVariable.equals("Info") && disInfo==false) ){
 %>
 	for(Object obj_<%=cid %> :noAssignList_<%=cid %>){
-		String oldLog_<%=cid %> = "<%=cid%>: Parameter \"" + obj_<%=cid %> + "\" has not been set by <%=cid %>";
 		<%if(isLog4jEnabled){%>
+			String oldLog_<%=cid %> = "<%=cid%>: Parameter \"" + obj_<%=cid %> + "\" has not been set by <%=cid %>";
 			<%if(oldVariable.equals("Error")){%>
 				log.error(oldLog_<%=cid %>);
 			<%}else if(oldVariable.equals("Warning")){%>
