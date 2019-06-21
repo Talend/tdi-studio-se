@@ -48,4 +48,13 @@
         // nothing to do
     }
 %>
+    try {
+        if (processor_<%=cid%> != null) {
+            processor_<%=cid%>.stop();
+        }
+    } catch (final RuntimeException re) {
+        throw new TalendException(re, currentComponent, globalMap);
+    }
+    globalMap.remove("processor_<%=cid%>");
+
 
