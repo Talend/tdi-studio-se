@@ -36,7 +36,13 @@
 %>
 	for(Object obj_<%=cid %> :newPropertyList_<%=cid%>){
 		<%if(isLog4jEnabled){%>
-			log.<%="Error".equals(newVariable)?"error(":"info("%>"<%=cid%> - <%=newVariable%>: Parameter \"" + obj_<%=cid %> + "\" is a new parameter of <%=cid %>");
+			<%if(newVariable.equals("Error")){%>
+				log.error("<%=cid%>: Parameter \"" + obj_<%=cid %> + "\" is a new parameter of <%=cid %>");
+			<%}else if(newVariable.equals("Warning")){%>
+				log.warn("<%=cid%>: Parameter \"" + obj_<%=cid %> + "\" is a new parameter of <%=cid %>");
+			<%}else{%>	
+				log.info("<%=cid%>: Parameter \"" + obj_<%=cid %> + "\" is a new parameter of <%=cid %>");
+			<%}%>
 		<%}%>
 		System.<%="Error".equals(newVariable)?"err":"out"%>.println("<%=newVariable%>: Parameter \"" + obj_<%=cid %> + "\" is a new parameter of <%=cid %>");
         <%if (bDieOnError && newVariable.equals("Error")){%>
