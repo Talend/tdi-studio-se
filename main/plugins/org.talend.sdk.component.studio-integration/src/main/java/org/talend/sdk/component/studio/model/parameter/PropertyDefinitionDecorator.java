@@ -36,6 +36,7 @@ import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_T
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.MAIN_FORM;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ORDER_SEPARATOR;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.PARAMETER_INDEX;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_CREDENTIAL;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_PREFIX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_SUFFIX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_OPTIONS_ORDER;
@@ -55,6 +56,7 @@ import java.util.Set;
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
 
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.form.internal.converter.impl.widget.path.AbsolutePathResolver;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
@@ -610,6 +612,15 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                 .orElse(new Parameter());
     }
 
+    /**
+     * Checks whether widget type is {@link EParameterFieldType#PASSWORD}
+     *
+     * @return check result
+     */
+    public boolean isCredential() {
+        return getMetadata().containsKey(UI_CREDENTIAL);
+    }
+
     @Override
     public int hashCode() {
         return delegate.hashCode();
@@ -668,10 +679,12 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
         @Override
         public boolean equals(final Object o) {
-            if (this == o)
+            if (this == o) {
                 return true;
-            if (o == null || getClass() != o.getClass())
+            }
+            if (o == null || getClass() != o.getClass()) {
                 return false;
+            }
             final Condition condition = (Condition) o;
             return Objects.equals(targetPath, condition.targetPath) &&
                     Arrays.equals(values, condition.values);

@@ -12,8 +12,10 @@
  */
 package org.talend.sdk.component.studio.metadata.model;
 
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.*;
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_ID;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_PARENT_ID;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_PARENT_ITEM_ID;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,8 +31,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.EParameterFieldType;
+import org.talend.daikon.security.CryptoHelper;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
@@ -53,6 +57,8 @@ public class TaCoKitConfigurationModel {
     private TaCoKitConfigurationModel parentConfigurationModel;
 
     private String parentConfigurationModelItemId;
+
+    private boolean printEncryptionException = true;
 
     public TaCoKitConfigurationModel(final Connection connection) {
         this(connection, Lookups.taCoKitCache().getConfigTypeNode(getConfigId(connection)));
@@ -139,6 +145,12 @@ public class TaCoKitConfigurationModel {
         return null;
     }
 
+    private SimplePropertyDefinition getDefinition(String key) throws Exception {
+        return getConfigTypeNode().getProperties().stream()
+                .filter(propertyDefinition -> TaCoKitUtil.equals(key, propertyDefinition.getPath())).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("wrong key: " + key));
+    }
+
     private String getValueType(final ConfigTypeNode typeNode, final String key) throws Exception {
         return typeNode.getProperties().stream()
                 .filter(propertyDefinition -> TaCoKitUtil.equals(key, propertyDefinition.getPath()))
@@ -159,8 +171,24 @@ public class TaCoKitConfigurationModel {
         return false;
     }
 
-    private String getValueOfSelf(final String key) {
-        return (String) getAllProperties().get(key);
+    public String getValueOfSelf(final String key) {
+        String value = (String) getAllProperties().get(key);
+        String decryptedValue = value;
+        try {
+            if (!TaCoKitUtil.isBlank(value) && contains(key)
+                    && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
+                decryptedValue = CryptoHelper.getDefault().decrypt(value);
+                if (decryptedValue == null) {
+                    // if null, means error occurs, just reuse the original value
+                    decryptedValue = value;
+                }
+            }
+        } catch (Exception e) {
+            if (printEncryptionException) {
+                ExceptionHandler.process(e);
+            }
+        }
+        return decryptedValue;
     }
 
     public String computeKey(String key) throws Exception {
@@ -225,10 +253,26 @@ public class TaCoKitConfigurationModel {
     @SuppressWarnings("unchecked")
     public void setValue(final TaCoKitElementParameter parameter) {
         Objects.requireNonNull(parameter, "Parameter should not be null");
-        if (parameter.getStringValue() == null) {
-            getAllProperties().remove(parameter.getName());
+        setValue(parameter.getName(), parameter.getStringValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setValue(String key, String value) {
+        String originalValue = value;
+        if (originalValue == null) {
+            getAllProperties().remove(key);
         } else {
-            getAllProperties().put(parameter.getName(), parameter.getStringValue());
+            String storeValue = originalValue;
+
+            try {
+                if (contains(key) && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
+                    storeValue = CryptoHelper.getDefault().encrypt(originalValue);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+
+            getAllProperties().put(key, storeValue);
         }
     }
 
@@ -323,6 +367,10 @@ public class TaCoKitConfigurationModel {
                     "current version: " + currentVersion + " persisted version: " + persistedVersion);
         }
         return currentVersion != persistedVersion;
+    }
+
+    public void setPrintEncryptionException(boolean print) {
+        this.printEncryptionException = print;
     }
 
     public static class ValueModel {
