@@ -48,13 +48,9 @@
         // nothing to do
     }
 %>
-    try {
-        if (processor_<%=cid%> != null) {
-            processor_<%=cid%>.stop();
-        }
-    } catch (final RuntimeException re) {
-        throw new RuntimeException(re);
+
+    if (processor_<%=cid%> != null) {
+        processor_<%=cid%>.stop();
     }
+
     globalMap.remove("processor_<%=cid%>");
-
-
