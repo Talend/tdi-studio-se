@@ -33,6 +33,7 @@ import org.talend.daikon.security.CryptoHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.repository.ProjectManager;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -63,7 +64,7 @@ public class ImportProjectSettings {
         File file = new File(path);
         org.talend.core.model.properties.Project project = pro.getEmfProject();
 
-        final DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory fabrique = XmlUtils.getSecureDocumentBuilderFactory();
         DocumentBuilder analyseur = fabrique.newDocumentBuilder();
         analyseur.setErrorHandler(new ErrorHandler() {
 

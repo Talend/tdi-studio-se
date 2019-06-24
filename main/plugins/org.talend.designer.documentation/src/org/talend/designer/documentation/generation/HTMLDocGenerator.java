@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -317,8 +316,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
     private void generateXslFile(String resource, String xslfile, String cssfile, String folder) {
         try {
 
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XmlUtils.getSecureDocumentBuilderFactory().newDocumentBuilder();
             org.w3c.dom.Document document = builder.parse(new File(resource));
             org.w3c.dom.Element rootElement = document.getDocumentElement();
 

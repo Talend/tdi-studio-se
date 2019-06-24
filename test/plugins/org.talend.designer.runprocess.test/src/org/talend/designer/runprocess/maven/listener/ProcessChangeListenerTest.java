@@ -58,6 +58,7 @@ import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.documentation.ERepositoryActionName;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -456,7 +457,7 @@ public class ProcessChangeListenerTest {
 
     private void checkRootPomModules(List<String> toRemove, List<String> toAdd) throws Exception {
         File projectPomFile = new AggregatorPomsHelper().getProjectRootPom().getLocation().toFile();
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory dbf = XmlUtils.getSecureDocumentBuilderFactory();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.parse(projectPomFile);
         Node modulesNode = getElement(document.getDocumentElement(), "modules", 1);

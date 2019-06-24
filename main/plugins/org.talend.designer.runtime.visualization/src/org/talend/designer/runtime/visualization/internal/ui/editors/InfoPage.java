@@ -12,7 +12,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -129,7 +128,7 @@ public class InfoPage extends Composite {
                 return;
             }
 
-            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
+            Document document = XmlUtils.getSecureDocumentBuilderFactory().newDocumentBuilder().parse(inputStream);
             Element root = document.getDocumentElement();
             root.setAttribute("comments", comments); //$NON-NLS-1$
 
