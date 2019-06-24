@@ -72,7 +72,7 @@
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
-      <DEFAULT>MySQL</DEFAULT>
+      <DEFAULT>AMAZON_AURORA</DEFAULT>
     </PARAMETER>
 
     <PARAMETER

@@ -12,7 +12,7 @@
     "category":"DI",
     "family":"",
     "parameter":{
-        "exclude":"PORT,DB_VERSION"}
+        "exclude":"PORT,DB_VERSION,TYPE"}
 },
 {
     "component_delegate":"tDBClose",
