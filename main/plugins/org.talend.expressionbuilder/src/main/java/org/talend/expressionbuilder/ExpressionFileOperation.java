@@ -34,6 +34,7 @@ import org.talend.commons.runtime.model.expressionbuilder.Variable;
 import org.talend.commons.runtime.xml.XSDValidator;
 import org.talend.expressionbuilder.i18n.Messages;
 import org.talend.utils.files.FileUtils;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -70,7 +71,7 @@ public class ExpressionFileOperation {
     public boolean saveExpressionToFile(File file, List<Variable> variables, String expressionContent)
             throws IOException, ParserConfigurationException {
 
-        final DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory fabrique = XmlUtils.getSecureDocumentBuilderFactory();
 
         final Bundle b = Platform.getBundle(PLUGIN_ID);
         final URL url = FileLocator.toFileURL(FileLocator.find(b, new Path(SCHEMA_XSD), null));
@@ -155,8 +156,6 @@ public class ExpressionFileOperation {
                 openDialog(shell);
                 return list;
             } else {
-                final DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
-
                 final Bundle b = Platform.getBundle(PLUGIN_ID);
                 final URL url = FileLocator.toFileURL(FileLocator.find(b, new Path(SCHEMA_XSD), null));
                 final File schema = new File(url.getPath());
