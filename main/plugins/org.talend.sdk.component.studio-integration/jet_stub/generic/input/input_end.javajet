@@ -31,7 +31,7 @@ final String cid = node.getUniqueName();
         }
     } catch (final RuntimeException re) {
         swallowNextException_<%=cid%> = true;
-        throw new TalendException(re, currentComponent, globalMap);
+        throw new RuntimeException(re);
     } finally {
         try {
             if (mapper_<%=cid%> != null) {
@@ -39,7 +39,7 @@ final String cid = node.getUniqueName();
             }
         } catch (final RuntimeException re) {
             if (!swallowNextException_<%=cid%>) {
-                throw new TalendException(re, currentComponent, globalMap);
+                throw new RuntimeException(re);
             }
         }
     }
