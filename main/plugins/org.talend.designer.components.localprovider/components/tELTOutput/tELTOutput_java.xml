@@ -145,7 +145,7 @@
         NAME="USE_UPDATE_STATEMENT"
         FIELD="CHECK"
         NUM_ROW="10"
-        SHOW_IF="DATA_ACTION='UPDATE'"
+        SHOW_IF="DATA_ACTION=='UPDATE'"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>

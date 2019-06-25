@@ -278,7 +278,7 @@ public abstract class DbGenerationManager {
      * @return
      */
     public String buildSqlSelect(DbMapComponent dbMapComponent, String outputTableName, String tabString) {
-        cleanUpForNewSQLQuerry();
+        cleanUp();
 
         this.tabSpaceString = tabString;
         DbMapComponent component = getDbMapComponent(dbMapComponent);
@@ -562,7 +562,7 @@ public abstract class DbGenerationManager {
     }
     
     private String createBasicSqlSelectQuery(DbMapComponent dbMapComponent, String outputTableName, String tabString, ELTConfig eltConfig) {
-        cleanUpForNewSQLQuerry();
+        cleanUp();
 
         this.tabSpaceString = tabString;
         DbMapComponent component = getDbMapComponent(dbMapComponent);
@@ -710,8 +710,8 @@ public abstract class DbGenerationManager {
                 if (language.unuseWithExplicitJoin().contains(joinType) && !explicitJoin) {
                     appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                     appendSqlQuery(sb, inputTable.getTableName());
-                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                    if (inputTable.getAlias() != null) {
+                    if (org.apache.commons.lang.StringUtils.isNotEmpty(inputTable.getAlias())) {
+                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                         appendSqlQuery(sb, inputTable.getAlias());
                     }
                 }
@@ -826,7 +826,7 @@ public abstract class DbGenerationManager {
         return sqlQuery;
     }
 
-    private void cleanUpForNewSQLQuerry() {
+    private void cleanUp() {
         queryColumnsName = "\""; //$NON-NLS-1$
         aliasAlreadyDeclared.clear();
         queryColumnsSegments.clear();
@@ -1695,8 +1695,8 @@ public abstract class DbGenerationManager {
 
     private class ELTConfig {
        
-        private boolean useJoinsUpdateQuery;
-        private String aliasForOutput;
+        private final boolean useJoinsUpdateQuery;
+        private final String aliasForOutput;
         
         
         private ELTConfig(boolean useJoinsUpdateQuery, String aliasForOutput) {
