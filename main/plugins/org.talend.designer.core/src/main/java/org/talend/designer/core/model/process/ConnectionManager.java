@@ -451,6 +451,11 @@ public class ConnectionManager {
                 && isMainConn && !((Node) newTarget).isJoblet()) {
             return false;
         }
+        if(newlineStyle == EConnectionType.ON_SUBJOB_OK || newlineStyle == EConnectionType.ON_SUBJOB_ERROR) {
+        	if(!newTarget.getUniqueName().equals(newTarget.getDesignSubjobStartNode().getUniqueName())) {
+        		return false;
+        	}
+        }
         if (newTarget.getJobletNode() != null) {
             return false;
         }

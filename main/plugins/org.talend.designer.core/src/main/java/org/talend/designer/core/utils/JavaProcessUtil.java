@@ -14,6 +14,7 @@ package org.talend.designer.core.utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -335,7 +336,7 @@ public class JavaProcessUtil {
         return false;
     }
 
-    private static void addJunitNeededModules(List<ModuleNeeded> modulesNeeded) {
+    public static void addJunitNeededModules(Collection<ModuleNeeded> modulesNeeded) {
         ModuleNeeded junitModule = new ModuleNeeded("junit", "junit.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
         junitModule.setModuleLocaion("platform:/plugin/org.junit/junit.jar");
         junitModule.setMavenUri("mvn:org.talend.libraries/junit/6.0.0");

@@ -218,6 +218,10 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
     	dbMapComponent.setElementParameters(list);
     	checkValue("t1.`id`", extMapEntry);
     	
+    	ExternalDbMapEntry extMapEntry3 = new ExternalDbMapEntry("multiple", "if(t1.id<2500,\"<2500\",\">=2500\")");
+        tableEntries.add(extMapEntry3);
+        checkValue("if(t1.`id`<2500,\\\"<2500\\\",\\\">=2500\\\")", extMapEntry3);
+    	
     	ExternalDbMapEntry extMapEntry2 = new ExternalDbMapEntry("multiple", "t1.id + t1.name");
         tableEntries.add(extMapEntry2);
         checkValue("t1.`id` + t1.`name`", extMapEntry2);

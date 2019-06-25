@@ -442,6 +442,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         boolean canESBMicroServiceJob = EmfModelUtils.getComponentByName(getProcessItem(), "tRESTRequest") != null;
         boolean isESBJob = false;
+        
+        boolean canESBMicroServiceDockerImage = PluginChecker.isDockerPluginLoaded();
 
         for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
             if (o instanceof NodeType) {
@@ -473,7 +475,10 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                     }
                 } else if (exportType.equals(JobExportType.MSESB_IMAGE)) {
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class) && canESBMicroServiceJob) {
-                        exportTypeCombo.add(exportType.label);
+                        if(canESBMicroServiceDockerImage) {
+                            exportTypeCombo.add(exportType.label);
+                        }
+
                     } else {
                         // reset export type to POJO
                         if (getCurrentExportType1().equals(JobExportType.MSESB)) {

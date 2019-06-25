@@ -284,8 +284,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      */
     @Override // TODO This is dummy implementation. Correct impl should be added soon
     public List<? extends IElementParameter> createElementParameters(final INode node) {
-        ElementParameterCreator creator =
-                new ElementParameterCreator(this, detail, node, reportPath, isCatcherAvailable);
+        ElementParameterCreator creator = new ElementParameterCreator(this, detail, node, reportPath, isCatcherAvailable);
         List<IElementParameter> parameters = (List<IElementParameter>) creator.createParameters();
         return parameters;
     }

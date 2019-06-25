@@ -21,9 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
 
 
@@ -54,13 +52,7 @@ class PatternValidatorTest {
         private final Collection<String> invalidTexts;
 
         private RegexCases(final String regex, final Collection<String> validTexts, final Collection<String> invalidTexts) {
-            this.regex = new PatternValidator(new ValidationLabel(null) {
-
-                @Override
-                public EParameterFieldType getFieldType() {
-                    return EParameterFieldType.LABEL;
-                }
-            }, regex);
+            this.regex = new PatternValidator(new ValidationLabel(null), regex);
             this.validTexts = validTexts;
             this.invalidTexts = invalidTexts;
         }

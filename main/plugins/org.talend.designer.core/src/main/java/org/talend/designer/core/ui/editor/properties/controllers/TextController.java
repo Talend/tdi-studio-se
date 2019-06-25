@@ -266,6 +266,9 @@ public class TextController extends AbstractElementPropertySectionController {
      * @param value
      */
     private void checkTextError(IElementParameter param, Text labelText, Object value) {
+        if (elem instanceof Node) {
+            labelText.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
+        }
         // Only for job settings View.
         // job settings extra (feature 2710)
         if (param.getCategory() == EComponentCategory.STATSANDLOGS || param.getCategory() == EComponentCategory.EXTRA) {

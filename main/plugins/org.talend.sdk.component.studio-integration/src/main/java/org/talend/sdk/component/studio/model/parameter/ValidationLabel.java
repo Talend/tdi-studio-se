@@ -19,25 +19,20 @@ import static java.util.stream.Stream.of;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.swt.graphics.RGB;
-import org.talend.core.model.process.EParameterFieldType;
-import org.talend.core.model.process.IElement;
-
 /**
  * Synthetic Element Parameter which shows validation message
  */
-public class ValidationLabel extends TaCoKitElementParameter {
+public class ValidationLabel {
 
     /**
      * Delimiter between messages in resulting validation message
      */
     private static final String DELIMITER = "; ";
-
-    private static final RGB RED = new RGB(255, 0, 0);
 
     private final Set<String> constraintMessages = new HashSet<>();
 
@@ -46,39 +41,30 @@ public class ValidationLabel extends TaCoKitElementParameter {
      */
     private String validationMessage;
 
-    public ValidationLabel(final IElement element) {
-        super(element);
-        setColor(RED);
-        setFieldType(EParameterFieldType.LABEL);
-        setDisplayName("");
-        setShow(false);
-        setSerialized(false);
-        setReadOnly(true);
-        setValue("");
+    private Optional<TaCoKitElementParameter> elementParameter = Optional.ofNullable(null);
+
+    public ValidationLabel(final TaCoKitElementParameter elementParameter) {
+        this.elementParameter = Optional.ofNullable(elementParameter);
     }
 
     public void showValidation(final String message) {
         validationMessage = message;
-        setShow(true);
-        setValue(buildValue());
+        elementParameter.ifPresent(c -> c.getProblemManager().ifPresent(p -> p.setError(elementParameter.get(), buildValue())));
     }
 
     public void hideValidation() {
         validationMessage = null;
-        setShow(false);
-        setValue("");
+        elementParameter.ifPresent(c -> c.getProblemManager().ifPresent(p -> p.setError(elementParameter.get(), null)));
     }
 
     public void showConstraint(final String message) {
         constraintMessages.add(message);
-        setShow(true);
-        setValue(buildValue());
+        elementParameter.ifPresent(c -> c.getProblemManager().ifPresent(p -> p.setError(elementParameter.get(), buildValue())));
     }
 
     public void hideConstraint(final String message) {
         constraintMessages.remove(message);
-        setShow(false);
-        setValue(buildValue());
+        elementParameter.ifPresent(c -> c.getProblemManager().ifPresent(p -> p.setError(elementParameter.get(), null)));
     }
 
     private String buildValue() {
@@ -87,15 +73,4 @@ public class ValidationLabel extends TaCoKitElementParameter {
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(DELIMITER));
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return false
-     */
-    @Override
-    public boolean isPersisted() {
-        return false;
-    }
-
 }

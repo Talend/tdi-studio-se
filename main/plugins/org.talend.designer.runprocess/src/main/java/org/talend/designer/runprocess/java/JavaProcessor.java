@@ -1461,19 +1461,20 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                     break;
                 }
             }
+            useRelativeClasspath = hasCXFComponent;
             IFolder execPath = talendJavaProject.getTargetFolder();
             for (ModuleNeeded neededModule : neededModules) {
                 MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(neededModule.getMavenUri());
-                String relativeJarPath = JavaProcessorUtilities.getJavaProjectLibFolder2()
-                        .getFile(MavenUrlHelper.generateModuleNameByMavenURI(neededModule.getMavenUri())).getLocation()
-                        .makeRelativeTo(execPath.getLocation())
-                        .toPortableString();
+                IPath jarPath = JavaProcessorUtilities.getJavaProjectLibFolder2()
+                        .getFile(MavenUrlHelper.generateModuleNameByMavenURI(neededModule.getMavenUri())).getLocation();
                 String artifactId = artifact.getArtifactId();
-                boolean hasSapjco3 = "sapjco3".equals(artifactId) && compareSapjco3Version(relativeJarPath) > 0; //$NON-NLS-1$
+                boolean hasSapjco3 = "sapjco3".equals(artifactId) //$NON-NLS-1$
+                        && compareSapjco3Version(jarPath.toPortableString()) > 0;
                 boolean hasSapidoc3 = "sapidoc3".equals(artifactId); //$NON-NLS-1$
-                useRelativeClasspath = hasCXFComponent || hasSapjco3 || hasSapidoc3;
-                if (useRelativeClasspath) {
-                    libPath.append(relativeJarPath).append(classPathSeparator);
+                if (hasCXFComponent) {
+                    libPath.append(jarPath.makeRelativeTo(execPath.getLocation()).toPortableString()).append(classPathSeparator);
+                } else if (hasSapjco3 || hasSapidoc3) {
+                    libPath.append(jarPath.toPortableString()).append(classPathSeparator);
                 } else {
                     libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
                 }

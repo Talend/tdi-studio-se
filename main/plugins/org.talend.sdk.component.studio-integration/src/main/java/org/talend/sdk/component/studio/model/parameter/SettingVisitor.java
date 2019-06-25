@@ -15,6 +15,25 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.core.model.process.EComponentCategory;
@@ -40,25 +59,6 @@ import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResol
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * Creates properties from leafs
@@ -547,13 +547,7 @@ public class SettingVisitor implements PropertyVisitor {
      * It is shown on the next row, but may be shown in the next
      */
     private void createValidationLabel(final PropertyNode node, final TaCoKitElementParameter target) {
-        final ValidationLabel label = new ValidationLabel(element);
-        label.setCategory(category);
-        label.setName(node.getProperty().getPath() + PropertyNode.VALIDATION);
-        label.setRedrawParameter(redrawParameter);
-        // it is shown on the next row by default, but may be changed
-        label.setNumRow(node.getLayout(form).getPosition() + 1);
-        settings.put(label.getName(), label);
+        final ValidationLabel label = new ValidationLabel(target);
 
         processConstraints(node, target, label);
         processValidations(node, target, label);
