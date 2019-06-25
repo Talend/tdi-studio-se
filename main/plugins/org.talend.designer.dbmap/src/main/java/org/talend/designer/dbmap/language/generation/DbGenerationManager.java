@@ -257,7 +257,7 @@ public abstract class DbGenerationManager {
      */
     public String buildSqlSelect(DbMapComponent component, String outputTableName) {
         ELTConfig outputELTConfig = getELTConfig(component, outputTableName);
-        if (outputELTConfig.useJoinsUpdateQuery) {
+        if (outputELTConfig.isUseJoinsUpdateQuery()) {
             return createBasicSqlSelectQuery(component, outputTableName, DEFAULT_TAB_SPACE_STRING, outputELTConfig);
         } else {
             return buildSqlSelect(component, outputTableName, DEFAULT_TAB_SPACE_STRING);
@@ -674,9 +674,9 @@ public abstract class DbGenerationManager {
             appendSqlQuery(sb, DbMapSqlConstants.FROM);
             appendSqlQuery(sb, DbMapSqlConstants.SPACE);
             appendSqlQuery(sb, targetSchemaTable);
-            if (org.apache.commons.lang.StringUtils.isNotEmpty(eltConfig.aliasForOutput)) {
+            if (org.apache.commons.lang.StringUtils.isNotEmpty(eltConfig.getAliasForOutput())) {
                 appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                appendSqlQuery(sb, eltConfig.aliasForOutput);
+                appendSqlQuery(sb, eltConfig.getAliasForOutput());
             }
             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
 
@@ -854,7 +854,7 @@ public abstract class DbGenerationManager {
     @Deprecated
     protected boolean checkUseUpdateStatement(DbMapComponent dbMapComponent, String outputTableName) {
         ELTConfig eltConfig = getELTConfig(dbMapComponent, outputTableName);
-        return eltConfig.useJoinsUpdateQuery;
+        return eltConfig.isUseJoinsUpdateQuery();
     }
     
     protected ELTConfig getELTConfig(DbMapComponent dbMapComponent, String outputTableName) {
@@ -1698,10 +1698,19 @@ public abstract class DbGenerationManager {
         private final boolean useJoinsUpdateQuery;
         private final String aliasForOutput;
         
-        
         private ELTConfig(boolean useJoinsUpdateQuery, String aliasForOutput) {
             this.useJoinsUpdateQuery = useJoinsUpdateQuery;
             this.aliasForOutput = aliasForOutput;
+        }
+
+        
+        private boolean isUseJoinsUpdateQuery() {
+            return useJoinsUpdateQuery;
+        }
+
+        
+        private String getAliasForOutput() {
+            return aliasForOutput;
         }
     }
 }
