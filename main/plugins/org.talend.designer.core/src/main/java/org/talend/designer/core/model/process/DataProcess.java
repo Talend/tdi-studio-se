@@ -2498,12 +2498,13 @@ public class DataProcess implements IGeneratingProcess {
         List<? extends IConnection> mainConnections;
         IMetadataTable rejectMetadataTable = null;
         DataConnection dataConnection = null;
+        EConnectionType connectionType = connection.getLineStyle();
         if (isOutput) {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getIncomingConnections();
-            mainConnections = nodeUseValidationRule.getIncomingConnections(EConnectionType.FLOW_MAIN);
+            mainConnections = nodeUseValidationRule.getIncomingConnections(connectionType);
         } else {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getOutgoingConnections();
-            mainConnections = nodeUseValidationRule.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            mainConnections = nodeUseValidationRule.getOutgoingConnections(connectionType);
         }
 
         if (validRuleConnections == null || validRuleConnections.size() == 0) {
