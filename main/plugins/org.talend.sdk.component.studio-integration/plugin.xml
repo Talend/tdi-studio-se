@@ -289,7 +289,7 @@
            description="Encrypt tck metadata password"
            id="org.talend.sdk.component.studio.metadata.migration.EncryptTckMetadataMigrationTask"
            name="EncryptTckMetadataMigrationTask"
-           version="7.3.0">
+           version="7.2.2">
      </projecttask>
   </extension>
 
