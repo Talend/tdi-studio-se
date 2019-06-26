@@ -30,7 +30,7 @@ imports="
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
 	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
 	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
-	
+	boolean useUpdateStatementPostgres="true".equals(ElementParameterParser.getValue(node, "__USE_UPDATE_STATEMENT_POSTGRES__"));
 	%>
 	String select_query_<%=cid %> = null;	
 	String tableName_<%=cid%> = null;
@@ -263,9 +263,14 @@ for(Column colStmt:stmtStructure){
 		}else{
 			insertColName.append(colStmt.getName()+suffix);
 			insertValueStmt.append(colStmt.getValue()+suffix);
-			if(!colStmt.getColumn().isKey()){
-				updateSetStmt.append(colStmt.getName()+"=\"+routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "]+\"" +suffix);
+			if(useUpdateStatementPostgres){
+				if(!colStmt.getColumn().isKey()){
+					updateSetStmt.append(colStmt.getName()+"=\"+routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "]+\"" +suffix);
+				}
+			}else{
+				updateSetStmt.append(colStmt.getName()+"=(\"+select_query_"+ cid +".replaceFirst(java.util.regex.Pattern.quote(selectQueryColumnsName_"+ cid +"),routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "])+\")" +suffix);
 			}
+			
 		}
 	}
 	counterOuter ++;
@@ -280,20 +285,37 @@ for(Column colStmt:stmtStructure){
 <%
 	}else if (("UPDATE").equals(dataAction)){
 %>
-	String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> " +select_query_<%=cid %>.substring(select_query_<%=cid %>.indexOf("FROM"));
 <%
-		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+		if(useUpdateStatementPostgres){
 %>
-		if(select_query_<%=cid %>.indexOf("WHERE")==-1){
-		updateQuery_<%=cid %> +="  WHERE ";
+			String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> " +select_query_<%=cid %>.substring(select_query_<%=cid %>.indexOf("FROM"));	
+<%
 		}else{
-		updateQuery_<%=cid %> +="  AND ";
-		} 
-		updateQuery_<%=cid %>+= <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>;
+%>
+			String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> "
 <%
 		}
+		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+			if(useUpdateStatementPostgres){
 %>
-	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
+				if(select_query_<%=cid %>.indexOf("WHERE")==-1){
+					updateQuery_<%=cid %> +="  WHERE ";
+				}else{
+					updateQuery_<%=cid %> +="  AND ";
+				} 
+				updateQuery_<%=cid %>+= <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>;
+<%
+			}else{
+%>
+				+"  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
+<%
+			}
+		}
+%>
+		<%if(!useUpdateStatementPostgres){%>
+			;
+		<%}%>
+		pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
 
 <%		
 	}else if (("DELETE").equals(dataAction)){
