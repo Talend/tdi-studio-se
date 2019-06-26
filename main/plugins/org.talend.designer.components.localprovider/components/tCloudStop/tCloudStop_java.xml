@@ -90,8 +90,8 @@ COMPATIBILITY="ALL"
 		<IMPORT NAME="jclouds-sshj-2_0_2" MODULE="jclouds-sshj-2.0.2.jar" MVN="mvn:org.talend.libraries/jclouds-sshj-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="jsr250-api-1_0" MODULE="jsr250-api-1.0.jar" MVN="mvn:org.talend.libraries/jsr250-api-1.0/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="jsr311-api-1_1_1" MODULE="jsr311-api-1.1.1.jar" MVN="mvn:org.talend.libraries/jsr311-api-1.1.1/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="logback-classic-1_0_9" MODULE="logback-classic-1.0.9.jar" MVN="mvn:org.talend.libraries/logback-classic-1.0.9/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="logback-core-1_0_9" MODULE="logback-core-1.0.9.jar" MVN="mvn:org.talend.libraries/logback-core-1.0.9/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="logback-classic-1.2.3" MODULE="logback-classic-1.2.3.jar" MVN="mvn:org.talend.libraries/logback-classic-1.2.3/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="logback-core-1.2.3" MODULE="logback-core-1.2.3.jar" MVN="mvn:org.talend.libraries/logback-core-1.2.3/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="rocoto-6_1" MODULE="rocoto-6.1.jar" MVN="mvn:org.talend.libraries/rocoto-6.1/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="slf4j-api-1_7_2" MODULE="slf4j-api-1.7.2.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.7.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="sshj-0_8_1" MODULE="sshj-0.8.1.jar" MVN="mvn:org.talend.libraries/sshj-0.8.1/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
