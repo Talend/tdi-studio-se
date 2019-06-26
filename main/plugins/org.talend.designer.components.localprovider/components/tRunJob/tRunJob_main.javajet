@@ -572,9 +572,7 @@ String inputConnName = null;
                                             reader.close();
                                         }
                                     } catch (java.io.IOException ioe) {
-
-                                        log.error("tRunJob_2 - " + ioe.getMessage());
-
+                                        log.error("<%=cid %> - " + ioe.getMessage());
                                         ioe.printStackTrace();
                                     }
                                 }
@@ -598,9 +596,7 @@ String inputConnName = null;
                                             reader.close();
                                         }
                                     } catch (java.io.IOException ioe) {
-
-                                        log.error("tRunJob_2 - " + ioe.getMessage());
-
+                                        log.error("<%=cid %> - " + ioe.getMessage());
                                         ioe.printStackTrace();
                                     }
                                 }
