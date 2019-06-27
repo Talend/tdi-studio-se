@@ -950,43 +950,18 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             }
             askUserForNetworkIssueSemaphore.acquire();
 
-            if (Display.getCurrent() == null) {
-                try {
-                    Display defaultDisplay = Display.getDefault();
+            /**
+             * to avoid dead lock, we need to create a new UI thread and run dialog in this new UI thread
+             */
+            DisplayUtils.syncExecInNewUIThread(new Runnable() {
 
-                    /**
-                     * Check whether UI thread is busy
-                     */
-                    if (defaultDisplay.getThread().getState() == Thread.State.RUNNABLE) {
-                        defaultDisplay.syncExec(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                retry.set(askRetryForNetworkIssueInDialog(DisplayUtils.getDefaultShell(), ex));
-                            }
-                        });
-                    } else {
-                        /**
-                         * If UI thread is busy, to avoid dead lock, we need to create a new UI thread and run dialog in
-                         * this new UI thread
-                         */
-                        DisplayUtils.syncExecInNewUIThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                Shell shell = DisplayUtils.getDefaultShell(false);
-                                retry.set(askRetryForNetworkIssueInDialog(shell, ex));
-                                shell.dispose();
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
+                @Override
+                public void run() {
+                    Shell shell = new Shell();
+                    retry.set(askRetryForNetworkIssueInDialog(shell, ex));
+                    shell.dispose();
                 }
-            } else {
-                retry.set(askRetryForNetworkIssueInDialog(DisplayUtils.getDefaultShell(), ex));
-            }
-
+            });
         } catch (Throwable t) {
             ExceptionHandler.process(t);
         } finally {
