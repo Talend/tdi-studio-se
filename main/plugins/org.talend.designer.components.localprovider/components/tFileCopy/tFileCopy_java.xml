@@ -143,7 +143,10 @@
   
   <CODEGENERATION>
     <IMPORTS>
-      <IMPORT NAME="filecopy" MODULE="filecopy.jar" MVN="mvn:org.talend.libraries/filecopy/6.0.0"  REQUIRED="true" />
+      <IMPORT NAME="filecopy" 
+              MODULE="filecopy.jar" 
+              MVN="mvn:org.talend.filecopy/filecopy/2.0.0-SNAPSHOT" 
+              REQUIRED="true" />
     </IMPORTS>
   </CODEGENERATION>
   
