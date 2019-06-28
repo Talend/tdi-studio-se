@@ -42,6 +42,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -950,18 +951,44 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             }
             askUserForNetworkIssueSemaphore.acquire();
 
-            /**
-             * to avoid dead lock, we need to create a new UI thread and run dialog in this new UI thread
-             */
-            DisplayUtils.syncExecInNewUIThread(new Runnable() {
+            if (Display.getCurrent() == null) {
+                try {
+                    Display defaultDisplay = Display.getDefault();
 
-                @Override
-                public void run() {
-                    Shell shell = new Shell();
-                    retry.set(askRetryForNetworkIssueInDialog(shell, ex));
-                    shell.dispose();
+                    /**
+                     * Check whether UI thread is busy
+                     */
+                    if (defaultDisplay.getThread().getState() == Thread.State.RUNNABLE) {
+                        defaultDisplay.syncExec(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                retry.set(askRetryForNetworkIssueInDialog(DisplayUtils.getDefaultShell(), ex));
+                            }
+                        });
+                    } else {
+                        /**
+                         * If UI thread is busy, to avoid dead lock, we need to create a new UI thread and run dialog in
+                         * this new UI thread
+                         */
+                        final DeviceData deviceData = Display.getDefault().getDeviceData();
+                        DisplayUtils.syncExecInNewUIThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                Shell shell = DisplayUtils.getDefaultShell(false);
+                                retry.set(askRetryForNetworkIssueInDialog(shell, ex));
+                                shell.dispose();
+                            }
+                        }, deviceData);
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
                 }
-            });
+            } else {
+                retry.set(askRetryForNetworkIssueInDialog(DisplayUtils.getDefaultShell(), ex));
+            }
+
         } catch (Throwable t) {
             ExceptionHandler.process(t);
         } finally {
