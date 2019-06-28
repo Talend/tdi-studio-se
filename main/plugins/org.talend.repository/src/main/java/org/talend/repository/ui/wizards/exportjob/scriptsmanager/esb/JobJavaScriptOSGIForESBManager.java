@@ -709,6 +709,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         Manifest manifest = null;
         try {
             manifest = analyzer.calcManifest();
+            filterImportPackages(manifest);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
@@ -717,6 +718,38 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             analyzer.close();
         }
         return manifest;
+    }
+    
+    private void filterImportPackages(Manifest manifest) {
+
+        // remove import packages which are present in private packages
+
+        List<String> privatePackages = new ArrayList<String>(); 
+        String privatePackagesString = manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE);
+        if (privatePackagesString != null) {
+            String [] packages = privatePackagesString.split(",");
+            for (String p : packages) {
+                privatePackages.add(p);
+            }
+        }
+        
+        StringBuilder fileterdImportPackage = new StringBuilder();
+        String importPackagesString = manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE);
+        if (importPackagesString != null) {
+            String [] packages = importPackagesString.split(",");
+            for (String p : packages) {
+                String importPackage = p.split(";")[0];
+                if (!privatePackages.contains(importPackage) || importPackage.startsWith("routines")) {
+                    fileterdImportPackage.append(p).append(",");
+                }
+            }
+        }
+        
+        String str = fileterdImportPackage.toString();
+        if (str != null && str.length() > 0 && str.endsWith(",")) {
+            str = str.substring(0, str.length() - 1);
+        }
+        manifest.getMainAttributes().putValue(Analyzer.IMPORT_PACKAGE, str);
     }
 
     protected Analyzer createAnalyzer(ExportFileResource libResource, ProcessItem processItem) throws IOException {
