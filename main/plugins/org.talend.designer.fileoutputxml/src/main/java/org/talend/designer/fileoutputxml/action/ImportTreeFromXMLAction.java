@@ -46,8 +46,6 @@ import org.talend.metadata.managment.ui.wizard.metadata.xml.utils.TreeUtil;
  */
 public class ImportTreeFromXMLAction extends SelectionProviderAction {
 
-    private static final String PID = "org.talend.designer.fileoutputxml";//$NON-NLS-1$
-
     private static final String LINEFEED = "\n";//$NON-NLS-1$
 
     // the xml viewer, see FOXUI.
@@ -188,7 +186,7 @@ public class ImportTreeFromXMLAction extends SelectionProviderAction {
                     for (String xsdfilePath : notExistImportSchema) {
                         detail.append(xsdfilePath).append(LINEFEED);
                     }
-                    new ErrorDialogWidthDetailArea(xmlViewer.getControl().getShell(), PID,
+                    new ErrorDialogWidthDetailArea(xmlViewer.getControl().getShell(), Messages.PLUGIN_ID,
                             Messages.getString("ImportTreeFromXMLAction.ImportSchemaNotExistError"), detail.toString());//$NON-NLS-1$
                 }else {
                     List<ATreeNode> list = new XSDPopulationUtil2().getAllRootNodes(xsdSchema);
