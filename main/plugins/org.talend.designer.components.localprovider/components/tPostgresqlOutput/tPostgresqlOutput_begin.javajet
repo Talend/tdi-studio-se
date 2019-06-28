@@ -69,6 +69,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 	boolean savePoint = ("true").equals(ElementParameterParser.getValue(node,"__SAVE_POINT__"));
 
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+	
+	boolean convertToLowercase = ("true").equals(ElementParameterParser.getValue(node, "__CONVERT_COLUMN_TABLE_TO_LOWERCASE__"));
 
     String rejectConnName = null;
     List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
@@ -98,6 +100,18 @@ List<Column> stmtStructure = null;
 if(columnList != null && columnList.size() > 0) {
     stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, useFieldOptions, fieldOptions, addCols);
     isDynamic = isDynamic && !getManager(dbmsId, cid).isDynamicColumnReplaced();
+    
+    if(convertToLowercase){
+    	for(Column column : stmtStructure) {
+    		if(column.isReplaced()) {
+    			for (Column replacedColumn : column.getReplacement()) {
+    				replacedColumn.setColumnName(replacedColumn.getColumnName().toLowerCase());
+    			}
+    		} else if(!column.isDynamic()){
+    			column.setColumnName(column.getColumnName().toLowerCase());
+    		}
+    	}
+    }
 }
 %>
 
@@ -116,9 +130,9 @@ if(("true").equals(useExistingConn)) {
 
 String tableName_<%=cid%> = null;
 if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
-	tableName_<%=cid%> = <%=table%>;
+	tableName_<%=cid%> = (<%=table%>)<%=convertToLowercase ? ".toLowerCase()" : ""%>;
 } else {
-	tableName_<%=cid%> = dbschema_<%=cid%> + "\".\"" + <%=table%>;
+	tableName_<%=cid%> = dbschema_<%=cid%> + "." + (<%=table%>)<%=convertToLowercase ? ".toLowerCase()" : ""%>;
 }
 
 <%
