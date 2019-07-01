@@ -132,7 +132,7 @@ String tableName_<%=cid%> = null;
 if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
 	tableName_<%=cid%> = (<%=table%>)<%=convertToLowercase ? ".toLowerCase()" : ""%>;
 } else {
-	tableName_<%=cid%> = dbschema_<%=cid%> + "." + (<%=table%>)<%=convertToLowercase ? ".toLowerCase()" : ""%>;
+	tableName_<%=cid%> = dbschema_<%=cid%> + "\".\"" + (<%=table%>)<%=convertToLowercase ? ".toLowerCase()" : ""%>;
 }
 
 <%
