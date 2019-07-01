@@ -42,7 +42,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -971,7 +970,6 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                          * If UI thread is busy, to avoid dead lock, we need to create a new UI thread and run dialog in
                          * this new UI thread
                          */
-                        final DeviceData deviceData = Display.getDefault().getDeviceData();
                         DisplayUtils.syncExecInNewUIThread(new Runnable() {
 
                             @Override
@@ -980,7 +978,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                                 retry.set(askRetryForNetworkIssueInDialog(shell, ex));
                                 shell.dispose();
                             }
-                        }, deviceData);
+                        });
                     }
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
