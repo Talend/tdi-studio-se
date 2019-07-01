@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.editor.properties.controllers;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,7 @@ import org.talend.designer.rowgenerator.data.Function;
 import org.talend.utils.json.JSONArray;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
+import org.talend.utils.sql.TalendTypeConvert;
 
 import orgomg.cwm.objectmodel.core.TaggedValue;
 
@@ -111,6 +113,12 @@ public class ColumnListController extends AbstractElementPropertySectionControll
      * Indicate you only want to filter custom columns.
      */
     private static final String FILTER_PREFIX_CUSTOM = "CUSTOM_COLUMNS:"; //$NON-NLS-1$
+
+    /**
+     * Indicate you want to filter columns by data type
+     * DATA_TYPE:Date,String will only keep Date and String columns
+     */
+    private static final String FILTER_DATA_TYPE = "DATA_TYPE:"; //$NON-NLS-1$
 
     private static Logger log = Logger.getLogger(ColumnListController.class);
 
@@ -778,9 +786,15 @@ public class ColumnListController extends AbstractElementPropertySectionControll
                 }
                 boolean unlimited = !onlyFilterCustom && !onlyFilterNoneCustom;
                 boolean hasReg = false;
+                boolean hasDataTypeFilter = false;
+                List<String> datatypeNameList = null;
                 if (filter.startsWith(FILTER_PREFIX_REGEXP)) {
                     filter = filter.substring(FILTER_PREFIX_REGEXP.length());
                     hasReg = true;
+                } else if (filter.startsWith(FILTER_DATA_TYPE)) {
+                    filter = filter.substring(FILTER_DATA_TYPE.length());
+                    hasDataTypeFilter = true;
+                    datatypeNameList = Arrays.asList(filter.split(FILTER_SEPARATOR));
                 }
                 boolean filterAll = false;
                 if (filter.equals(FILTER_ALL)) {
@@ -794,6 +808,17 @@ public class ColumnListController extends AbstractElementPropertySectionControll
                         if (!matcher.matches(colName, pattern)
                                 && (onlyFilterCustom && customColMap.get(colName) || onlyFilterNoneCustom
                                         && !customColMap.get(colName) || unlimited)) {
+                            columnNameList = (String[]) ArrayUtils.removeElement(columnNameList, colName);
+                            columnValueList = (String[]) ArrayUtils.removeElement(columnValueList, colName);
+                        }
+                    }
+                } else if (hasDataTypeFilter && datatypeNameList != null) {
+                    IMetadataTable metadataTable = getMetadataTable(param.getElement(), param.getContext());
+                    for (String colName : tmpColumnNameList) {
+                        IMetadataColumn metadataColumn = metadataTable.getColumn(colName);
+                        String dataType = metadataColumn.getTalendType();
+                        if (!(datatypeNameList.contains(dataType)
+                                || datatypeNameList.contains(TalendTypeConvert.convertToJavaType(dataType)))) {
                             columnNameList = (String[]) ArrayUtils.removeElement(columnNameList, colName);
                             columnValueList = (String[]) ArrayUtils.removeElement(columnValueList, colName);
                         }
@@ -923,28 +948,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
     private static List<String> getColumnList(IElement element, String context, Map<String, Boolean> customColMap) {
         List<String> columnList = new ArrayList<String>();
 
-        IMetadataTable table = null;
-        if (element instanceof INode) {
-            table = ((INode) element).getMetadataFromConnector(context);
-            if (table == null) {
-                List<IMetadataTable> tableList = ((INode) element).getMetadataList();
-                if (tableList.size() == 1) {
-                    table = tableList.get(0);
-                } else {
-                    for (IMetadataTable itable : tableList) {
-                        if (itable.getAttachedConnector() != null && !itable.getAttachedConnector().equals("REJECT")) {
-                            table = itable;
-                            break;
-                        }
-                    }
-                }
-                // if (tableList.size() > 0) {
-                // table = tableList.get(0);
-                // }
-            }
-        } else if (element instanceof IConnection) {
-            table = ((IConnection) element).getMetadataTable();
-        }
+        IMetadataTable table = getMetadataTable(element, context);
 
         if (table != null) {
             for (IMetadataColumn column : table.getListColumns()) {
@@ -966,6 +970,31 @@ public class ColumnListController extends AbstractElementPropertySectionControll
         }
 
         return columnList;
+    }
+
+    private static IMetadataTable getMetadataTable(IElement element, String context) {
+
+        IMetadataTable table = null;
+        if (element instanceof INode) {
+            table = ((INode) element).getMetadataFromConnector(context);
+            if (table == null) {
+                List<IMetadataTable> tableList = ((INode) element).getMetadataList();
+                if (tableList.size() == 1) {
+                    table = tableList.get(0);
+                } else {
+                    for (IMetadataTable itable : tableList) {
+                        if (itable.getAttachedConnector() != null && !itable.getAttachedConnector().equals("REJECT")) {
+                            table = itable;
+                            break;
+                        }
+                    }
+                }
+            }
+        } else if (element instanceof IConnection) {
+            table = ((IConnection) element).getMetadataTable();
+        }
+
+        return table;
     }
 
     private static List<String> getPrevColumnList(INode node, Map<String, Boolean> customColMap) {
