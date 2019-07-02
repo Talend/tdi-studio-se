@@ -24,6 +24,7 @@ import org.talend.designer.runtime.visualization.Activator;
 import org.talend.designer.runtime.visualization.IJvm;
 import org.talend.designer.runtime.visualization.ISnapshot;
 import org.talend.designer.runtime.visualization.JvmCoreException;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -98,7 +99,7 @@ public class Snapshot implements ISnapshot {
         try {
             inputStream = new FileInputStream(new File(fileStore.toURI().getPath()));
 
-            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
+            Document document = XmlUtils.getSecureDocumentBuilderFactory().newDocumentBuilder().parse(inputStream);
 
             Element root = document.getDocumentElement();
             timeStamp = root.getAttribute("date"); //$NON-NLS-1$

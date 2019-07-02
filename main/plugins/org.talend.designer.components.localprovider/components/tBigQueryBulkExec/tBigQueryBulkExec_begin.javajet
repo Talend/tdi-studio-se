@@ -579,7 +579,7 @@
 		
 		loadJobBuilder_<%=cid%>.setNullMarker("\\N");																
 		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(loadJobBuilder_<%=cid%>.build()));
-		job_<%=cid%> = job_<%=cid%>.waitFor(com.google.cloud.RetryOption.initialRetryDelay(org.threeten.bp.Duration.ofSeconds(1)), com.google.cloud.RetryOption.totalTimeout(org.threeten.bp.Duration.ofSeconds(30)));
+		job_<%=cid%> = job_<%=cid%>.waitFor(com.google.cloud.RetryOption.initialRetryDelay(org.threeten.bp.Duration.ofSeconds(1)));
 		if (job_<%=cid%> != null && job_<%=cid%>.getStatus().getError() == null) {
 			<%
 			if(isLog4jEnabled){

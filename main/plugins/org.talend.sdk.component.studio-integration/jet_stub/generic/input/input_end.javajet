@@ -12,5 +12,36 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */%>
-<%@ jet %>
+<%@ jet
+    imports="
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+    "
+%>
+<%
+final CodeGeneratorArgument codeGenArgument = CodeGeneratorArgument.class.cast(argument);
+final INode node = INode.class.cast(codeGenArgument.getArgument());
+final String cid = node.getUniqueName();
+%>
 }
+    boolean swallowNextException_<%=cid%> = false;
+    try {
+        if (input_<%=cid%> != null) {
+            input_<%=cid%>.stop();
+        }
+    } catch (final RuntimeException re) {
+        swallowNextException_<%=cid%> = true;
+        throw re;
+    } finally {
+        try {
+            if (mapper_<%=cid%> != null) {
+                mapper_<%=cid%>.stop();
+            }
+        } catch (final RuntimeException re) {
+            if (!swallowNextException_<%=cid%>) {
+                throw re;
+            }
+        }
+    }
+    globalMap.remove("mapper_<%=cid%>");
+    globalMap.remove("input_<%=cid%>");

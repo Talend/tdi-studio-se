@@ -146,7 +146,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 
                 context.<%=ctxParam.getName()%>=Integer.parseInt(value_<%=cid %>);
 
-           <%}else if(typeToGenerate.equals("Object")||typeToGenerate.equals("String")){%>
+           <%}else if(typeToGenerate.equals("Object")||typeToGenerate.equals("String")||typeToGenerate.equals("java.lang.String")){%>
            context.<%=ctxParam.getName()%>=value_<%=cid %>;
            <%}else if(typeToGenerate.equals("Character")){%>
            context.<%=ctxParam.getName()%>=new java.text.StringCharacterIterator(value_<%=cid %>).first();

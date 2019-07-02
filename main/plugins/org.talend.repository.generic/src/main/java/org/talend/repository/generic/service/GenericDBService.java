@@ -295,12 +295,8 @@ public class GenericDBService implements IGenericDBService{
             // MOD qiongli 2012-11-19 TDQ-6287
             if (creation) {
                 tdqRepService.notifySQLExplorer(connectionItem);
-                tdqRepService.openConnectionEditor(connectionItem);
             } else {
                 tdqRepService.updateAliasInSQLExplorer(connectionItem, connectionItem.getProperty().getDisplayName());
-                // refresh the opened connection editor whatever is in DI or DQ perspective.
-                tdqRepService.refreshConnectionEditor(connectionItem);
-
             }
         }
     }

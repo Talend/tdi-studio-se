@@ -33,7 +33,6 @@ import static org.talend.core.model.process.EParameterFieldType.TACOKIT_VALUE_SE
 import static org.talend.core.model.process.EParameterFieldType.TEXT;
 import static org.talend.core.model.process.EParameterFieldType.TEXT_AREA;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_CODE;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_CREDENTIAL;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_STRUCTURE_TYPE;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_STRUCTURE_VALUE;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_TEXTAREA;
@@ -73,7 +72,7 @@ public class WidgetTypeMapper {
             return getInputSchemaType();
         } else if (isText(property)) {
             return getTextType();
-        } else if (isCredential(property)) {
+        } else if (property.isCredential()) {
             return getCredentialType();
         } else if (isTextArea(property)) {
             return getTextAreaType();
@@ -198,16 +197,6 @@ public class WidgetTypeMapper {
 
     protected EParameterFieldType getTextAreaType() {
         return TEXT_AREA;
-    }
-
-    /**
-     * Checks whether widget type is {@link EParameterFieldType#PASSWORD}
-     *
-     * @param property SimplePropertyDefinition to test
-     * @return check result
-     */
-    private boolean isCredential(final SimplePropertyDefinition property) {
-        return property.getMetadata().containsKey(UI_CREDENTIAL);
     }
 
     protected EParameterFieldType getCredentialType() {

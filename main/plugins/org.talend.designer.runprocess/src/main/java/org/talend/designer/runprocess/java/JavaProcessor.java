@@ -1180,7 +1180,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             list.addAll(Arrays.asList(cmd2));
             return list.toArray(new String[0]);
         } else {
-            return cmd2;
+            List<String> asList = convertArgsToList(cmd2);
+            if (isStandardJob()) {
+                String localM2Path = "-Dtalend.component.manager.m2.repository=\"" + PomUtil.getLocalRepositoryPath() + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+                asList.add(3, localM2Path);
+            }
+            return asList.toArray(new String[0]);
         }
     }
 

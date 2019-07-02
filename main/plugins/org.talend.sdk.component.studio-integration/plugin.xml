@@ -280,6 +280,18 @@
         name="Reload Component Kit Server">
     </command>
   </extension>
+  <extension
+        point="org.talend.core.migrationTask">
+     <projecttask
+           beforeLogon="false"
+           breaks="7.1.0"
+           class="org.talend.sdk.component.studio.metadata.migration.EncryptTckMetadataMigrationTask"
+           description="Encrypt tck metadata password"
+           id="org.talend.sdk.component.studio.metadata.migration.EncryptTckMetadataMigrationTask"
+           name="EncryptTckMetadataMigrationTask"
+           version="7.3.0">
+     </projecttask>
+  </extension>
 
   <!-- don't use it since there is already one which is integrated and studio doesnt support composition here
   <extension point="org.talend.core.runtime.service">
