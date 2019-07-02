@@ -555,55 +555,55 @@ String inputConnName = null;
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 	// use independent process to run subjob
 	%>
-						class ConsoleHelper_<%=cid %> {
-							private Thread getNormalThread(Process process) {
-								return new Thread() {
-									public void run() {
-										try {
-											java.io.BufferedReader reader = new java.io.BufferedReader(
-													new java.io.InputStreamReader(
-															process.getInputStream()));
-											String line = "";
-											try {
-												while ((line = reader.readLine()) != null) {
-													System.out.println(line);
-												}
-											} finally {
-												reader.close();
-											}
-										} catch (java.io.IOException ioe) {
-											log.error("<%=cid %> - " + ioe.getMessage());
-											ioe.printStackTrace();
+				class ConsoleHelper_<%=cid %> {
+					private Thread getNormalThread(Process process) {
+						return new Thread() {
+							public void run() {
+								try {
+									java.io.BufferedReader reader = new java.io.BufferedReader(
+											new java.io.InputStreamReader(
+													process.getInputStream()));
+									String line = "";
+									try {
+										while ((line = reader.readLine()) != null) {
+											System.out.println(line);
 										}
+									} finally {
+										reader.close();
 									}
-								};
+								} catch (java.io.IOException ioe) {
+									log.error("<%=cid %> - " + ioe.getMessage());
+									ioe.printStackTrace();
+								}
 							}
+						};
+					}
 
-							private Thread getErrorThread(Process process, StringBuffer sb) {
-								return new Thread() {
-									public void run() {
-										try {
-											java.io.BufferedReader reader = new java.io.BufferedReader(
-													new java.io.InputStreamReader(
-															process.getErrorStream()));
-											String line = "";
-											try {
-												while ((line = reader.readLine()) != null) {
-													sb.append(line)
-															.append("\n");
-												}
-											} finally {
-												reader.close();
-											}
-										} catch (java.io.IOException ioe) {
-											log.error("<%=cid %> - " + ioe.getMessage());
-											ioe.printStackTrace();
+					private Thread getErrorThread(Process process, StringBuffer sb) {
+						return new Thread() {
+							public void run() {
+								try {
+									java.io.BufferedReader reader = new java.io.BufferedReader(
+											new java.io.InputStreamReader(
+													process.getErrorStream()));
+									String line = "";
+									try {
+										while ((line = reader.readLine()) != null) {
+											sb.append(line)
+													.append("\n");
 										}
+									} finally {
+										reader.close();
 									}
-								};
+								} catch (java.io.IOException ioe) {
+									log.error("<%=cid %> - " + ioe.getMessage());
+									ioe.printStackTrace();
+								}
 							}
-						}
-						ConsoleHelper_<%=cid %> consoleHelper_<%=cid %> = new ConsoleHelper_<%=cid %>();
+						};
+					}
+				}
+				ConsoleHelper_<%=cid %> consoleHelper_<%=cid %> = new ConsoleHelper_<%=cid %>();
 
 		Runtime runtime_<%=cid %> = Runtime.getRuntime();
 		Process ps_<%=cid %> = null;
