@@ -153,58 +153,73 @@
 			}
 			<%
 		} else {
-			if(stat) {
+			if(stat && logstashCurrent) {
 			%>
-				if(execStat) {
-					runStat.updateStatOnConnection(resourceMap,iterateId,0,0<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
-				}
+			runStat.updateStatAndLog(execStat,enableLogStash,resourceMap,iterateId,0,0<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
 			<%
-			}
-			
-			if(logstashCurrent) {
-			%>
-				if(enableLogStash) {
-					runStat.log(resourceMap,iterateId,0,0<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+			} else {
+				if(stat) {
+				%>
+					if(execStat) {
+						runStat.updateStatOnConnection(resourceMap,iterateId,0,0<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+					}
+				<%
 				}
-			<%
+				
+				if(logstashCurrent) {
+				%>
+					if(enableLogStash) {
+						runStat.log(resourceMap,iterateId,0,0<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+					}
+				<%
+				}
 			}
 		}
 	}
 	
 	if((codePart.equals(ECodePart.MAIN))&&(stat || logstashCurrent)&&connSet.size()>0){
 		if(!node.getComponent().useMerge()) {
-			if(stat) {
-				%>
-				if(execStat){
-					runStat.updateStatOnConnection(iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+			if(stat && logstashCurrent) {
+			%>
+			runStat.updateStatAndLog(execStat,enableLogStash,iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+			<%
+			} else {
+				if(stat) {
+					%>
+					if(execStat){
+						runStat.updateStatOnConnection(iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+					}
+					<%
 				}
-				<%
-			}
-			
-			if(logstashCurrent) {
-				%>
-				if(enableLogStash) {
-					runStat.log(iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+				
+				if(logstashCurrent) {
+					%>
+					if(enableLogStash) {
+						runStat.log(iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+					}
+					<%
 				}
-				<%
 			}
 		} else {
 			for(IConnection connection:connSet){
 				if(connection.getUniqueName().equals((String)codeGenArgument.getIncomingName())){
-				%>
-					<%if(stat) {%>
-					if(execStat){
-						runStat.updateStatOnConnection(iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+					if(stat && logstashCurrent) {
+					%>
+					runStat.updateStatAndLog(execStat,enableLogStash,iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+					<%
+					} else {
+						if(stat) {%>
+						if(execStat){
+							runStat.updateStatOnConnection(iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+						}
+						<%}
+						
+						if(logstashCurrent) {%>
+						if(enableLogStash) {
+							runStat.log(iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+						}
+						<%}
 					}
-					<%}%>
-					
-					<%if(logstashCurrent) {%>
-					if(enableLogStash) {
-						runStat.log(iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
-					}
-					<%}%>
-				<%
-					break;
 				}
 			}
 		}
@@ -259,20 +274,26 @@
 				}
 				<%
 				} else {
-					if(stat){
+					if(stat && logstashCurrent) {
 					%>
-					if(execStat){
-						runStat.updateStatOnConnection(iterateId,0,0<%for(String connName : needToStartConnNames){%>,"<%=connName%>"<%}%>);
-					}
+					runStat.updateStatAndLog(execStat,enableLogStash,iterateId,0,0<%for(String connName : needToStartConnNames){%>,"<%=connName%>"<%}%>);
 					<%
-					}
-					%>
-					
-					<%if(logstashCurrent) {%>
-					if(enableLogStash){
-						runStat.log(iterateId,0,0<%for(String connName : needToStartConnNames){%>,"<%=connName%>"<%}%>);
-					}
-					<%
+					} else {
+						if(stat){
+						%>
+						if(execStat){
+							runStat.updateStatOnConnection(iterateId,0,0<%for(String connName : needToStartConnNames){%>,"<%=connName%>"<%}%>);
+						}
+						<%
+						}
+						%>
+						
+						<%if(logstashCurrent) {%>
+						if(enableLogStash){
+							runStat.log(iterateId,0,0<%for(String connName : needToStartConnNames){%>,"<%=connName%>"<%}%>);
+						}
+						<%
+						}
 					}
 				}
 			}else if(codePart.equals(ECodePart.MAIN)){ 
