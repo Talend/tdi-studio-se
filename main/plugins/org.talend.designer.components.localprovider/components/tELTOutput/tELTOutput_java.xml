@@ -149,6 +149,15 @@
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
+    <PARAMETER
+        NAME="ALIAS_FOR_OUTPUT_TABLE"
+        FIELD="TEXT"
+        NUM_ROW="11"
+        SHOW_IF="USE_UPDATE_STATEMENT=='true'"
+        REQUIRED="true"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
   </ADVANCED_PARAMETERS>
 
   <CODEGENERATION>
