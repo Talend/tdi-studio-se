@@ -253,6 +253,9 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 			client_<%=cid %>.getState().setProxyCredentials(
 			new org.apache.commons.httpclient.auth.AuthScope(<%=proxyHost %>, Integer.parseInt(<%=proxyPort%>), null),
 			new org.apache.commons.httpclient.UsernamePasswordCredentials(<%=proxyUser %>, decryptedPassword_<%=cid%>));
+			
+			java.util.List<String> authPrefs_<%=cid %> = java.util.Collections.singletonList(org.apache.commons.httpclient.auth.AuthPolicy.BASIC);
+			client_<%=cid %>.getParams().setParameter(org.apache.commons.httpclient.auth.AuthPolicy.AUTH_SCHEME_PRIORITY, authPrefs_<%=cid %>);
 		<%}
 	}
 

@@ -8322,15 +8322,13 @@
               context="plugin:org.talend.libraries.apache"
               id="logback-classic-1.0.9.jar"
               mvn_uri="mvn:org.talend.libraries/logback-classic-1.0.9/6.0.0"
-              name="logback-classic-1.0.9.jar"
-              uripath="platform:/plugin/org.talend.libraries.apache/lib/logback-classic-1.0.9.jar">
+              name="logback-classic-1.0.9.jar">
         </libraryNeeded>
         <libraryNeeded
               context="plugin:org.talend.libraries.apache"
               id="logback-core-1.0.9.jar"
               mvn_uri="mvn:org.talend.libraries/logback-core-1.0.9/6.0.0"
-              name="logback-core-1.0.9.jar"
-              uripath="platform:/plugin/org.talend.libraries.apache/lib/logback-core-1.0.9.jar">
+              name="logback-core-1.0.9.jar">
         </libraryNeeded>
         <libraryNeeded
               context="plugin:"

@@ -69,145 +69,140 @@ if(hasInput){
 	    	}
 	   	}
    	}
-
+   	
    	boolean hasValidInput = inputConn!=null;
-
-   	IMetadataTable metadata = null;
-    List<IMetadataTable> metadatas = node.getMetadataList();
-    boolean haveValidNodeMetadata = ((metadatas != null) && (metadatas.size() > 0) && (metadata = metadatas.get(0)) != null);
-
-    if (hasValidInput && haveValidNodeMetadata) {
+    if (hasValidInput) {
         List<IMetadataColumn> input_columnList = inputConn.getMetadataTable().getListColumns();
+        if(input_columnList == null) {
+        	input_columnList = new ArrayList<IMetadataColumn>();
+        }
+        // add incoming (not present) columns to enforcer for this comps
+        if (cid.contains("tDataStewardship") || cid.contains("tMarkLogic")){
+            %>
+            boolean shouldCreateRuntimeSchemaForIncomingNode = false;
+            <%
+            for (int i = 0; i < input_columnList.size(); i++) {
+                if(!input_columnList.get(i).getTalendType().equals("id_Dynamic")) {
+                %>
+                    if (incomingEnforcer_<%=cid%>.getDesignSchema().getField("<%=input_columnList.get(i)%>") == null){
+                        incomingEnforcer_<%=cid%>.addIncomingNodeField("<%=input_columnList.get(i)%>", ((Object) <%=inputConn.getName()%>.<%=input_columnList.get(i)%>).getClass().getCanonicalName());
+                        shouldCreateRuntimeSchemaForIncomingNode = true;
+                    }
+                <%
+                }
+            }
+            %>
+            if (shouldCreateRuntimeSchemaForIncomingNode){
+                incomingEnforcer_<%=cid%>.createRuntimeSchema();
+            }
+            <%
+        }
+        // If there are dynamic columns in the schema, they need to be
+        // initialized into the runtime schema of the actual IndexedRecord
+        // provided to the component.
+
+        int dynamicPos = -1;
+        for (int i = 0; i < input_columnList.size(); i++) {
+            if (input_columnList.get(i).getTalendType().equals("id_Dynamic")) {
+                dynamicPos = i;
+                break;
+            }
+        }
+
+        if (dynamicPos != -1)  {
+            %>
+            if (!incomingEnforcer_<%=cid%>.areDynamicFieldsInitialized()) {
+                // Initialize the dynamic columns when they are first encountered.
+                for (routines.system.DynamicMetadata dm_<%=cid%> : <%=inputConn.getName()%>.<%=input_columnList.get(dynamicPos).getLabel()%>.metadatas) {
+                    incomingEnforcer_<%=cid%>.addDynamicField(
+                            dm_<%=cid%>.getName(),
+                            dm_<%=cid%>.getType(),
+                            dm_<%=cid%>.getLogicalType(),
+                            dm_<%=cid%>.getFormat(),
+                            dm_<%=cid%>.getDescription(),
+                            dm_<%=cid%>.isNullable());
+                }
+                incomingEnforcer_<%=cid%>.createRuntimeSchema();
+            }
+            <%
+        }
+
+        %>
+        incomingEnforcer_<%=cid%>.createNewRecord();
+        <%
+        for (int i = 0; i < input_columnList.size(); i++) { // column
+            IMetadataColumn column = input_columnList.get(i);
+            if (dynamicPos != i) {
+                %>
+                //skip the put action if the input column doesn't appear in component runtime schema
+                if (incomingEnforcer_<%=cid%>.getRuntimeSchema().getField("<%=input_columnList.get(i)%>") != null){
+                    incomingEnforcer_<%=cid%>.put("<%=column.getLabel()%>", <%=inputConn.getName()%>.<%=column.getLabel()%>);
+                }
+                <%
+            } else {
+                %>
+                for (int i = 0; i < <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnCount(); i++) {
+                    incomingEnforcer_<%=cid%>.put(<%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnMetadata(i).getName(),
+                            <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnValue(i));
+                }
+                <%
+            }
+        } // column
+
+        // If necesary, generate the code to handle outgoing connections.
+        // TODO: For now, this can only handle one outgoing record for
+        // each incoming record.  To handle multiple outgoing records, code
+        // generation needs to occur in component_begin in order to open
+        // a for() loop.
+
+        // There will be a ClassCastException if the output component does
+        // not implement WriterWithFeedback, but permits outgoing
+        // connections.
         
-        if (input_columnList!=null && !input_columnList.isEmpty()) {
-            // add incoming (not present) columns to enforcer for this comps
-            if (cid.contains("tDataStewardship") || cid.contains("tMarkLogic")){
-                %>
-                boolean shouldCreateRuntimeSchemaForIncomingNode = false;
-                <%
-                for (int i = 0; i < input_columnList.size(); i++) {
-                    if(!input_columnList.get(i).getTalendType().equals("id_Dynamic")) {
-                    %>
-                        if (incomingEnforcer_<%=cid%>.getDesignSchema().getField("<%=input_columnList.get(i)%>") == null){
-                            incomingEnforcer_<%=cid%>.addIncomingNodeField("<%=input_columnList.get(i)%>", ((Object) <%=inputConn.getName()%>.<%=input_columnList.get(i)%>).getClass().getCanonicalName());
-                            shouldCreateRuntimeSchemaForIncomingNode = true;
-                        }
-                    <%
-                    }
-                }
-                %>
-                if (shouldCreateRuntimeSchemaForIncomingNode){
-                    incomingEnforcer_<%=cid%>.createRuntimeSchema();
-                }
-                <%
-            }
-            // If there are dynamic columns in the schema, they need to be
-            // initialized into the runtime schema of the actual IndexedRecord
-            // provided to the component.
-
-            int dynamicPos = -1;
-	        for (int i = 0; i < input_columnList.size(); i++) {
-	            if (input_columnList.get(i).getTalendType().equals("id_Dynamic")) {
-	                dynamicPos = i;
-	                break;
-	            }
-	        }
-
-            if (dynamicPos != -1)  {
-                %>
-                if (!incomingEnforcer_<%=cid%>.areDynamicFieldsInitialized()) {
-                    // Initialize the dynamic columns when they are first encountered.
-                    for (routines.system.DynamicMetadata dm_<%=cid%> : <%=inputConn.getName()%>.<%=input_columnList.get(dynamicPos).getLabel()%>.metadatas) {
-                        incomingEnforcer_<%=cid%>.addDynamicField(
-                                dm_<%=cid%>.getName(),
-                                dm_<%=cid%>.getType(),
-                                dm_<%=cid%>.getLogicalType(),
-                                dm_<%=cid%>.getFormat(),
-                                dm_<%=cid%>.getDescription(),
-                                dm_<%=cid%>.isNullable());
-                    }
-                    incomingEnforcer_<%=cid%>.createRuntimeSchema();
-                }
-                <%
-            }
-
-            %>
-            incomingEnforcer_<%=cid%>.createNewRecord();
-            <%
-            for (int i = 0; i < input_columnList.size(); i++) { // column
-                IMetadataColumn column = input_columnList.get(i);
-                if (dynamicPos != i) {
-                    %>
-                    //skip the put action if the input column doesn't appear in component runtime schema
-                    if (incomingEnforcer_<%=cid%>.getRuntimeSchema().getField("<%=input_columnList.get(i)%>") != null){
-                        incomingEnforcer_<%=cid%>.put("<%=column.getLabel()%>", <%=inputConn.getName()%>.<%=column.getLabel()%>);
-                    }
-                    <%
-                } else {
-                    %>
-                    for (int i = 0; i < <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnCount(); i++) {
-                        incomingEnforcer_<%=cid%>.put(<%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnMetadata(i).getName(),
-                                <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnValue(i));
-                    }
-                    <%
-                }
-            } // column
-
-            // If necesary, generate the code to handle outgoing connections.
-            // TODO: For now, this can only handle one outgoing record for
-            // each incoming record.  To handle multiple outgoing records, code
-            // generation needs to occur in component_begin in order to open
-            // a for() loop.
-
-            // There will be a ClassCastException if the output component does
-            // not implement WriterWithFeedback, but permits outgoing
-            // connections.
-            
-            ComponentProperties componentProps = node.getComponentProperties();
-			ProcessPropertiesGenerator generator = new ProcessPropertiesGenerator(cid, component);
-            List<Component.CodegenPropInfo> propsToProcess = component.getCodegenPropInfos(componentProps);
-            for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
-    			List<NamedThing> properties = propInfo.props.getProperties();
-    			for (NamedThing prop : properties) { // property
-        			if (prop instanceof Property) { // if, only deal with valued Properties
-            			Property property = (Property)prop;
-            			if (property.getFlags() != null && (property.getFlags().contains(Property.Flags.DESIGN_TIME_ONLY) || property.getFlags().contains(Property.Flags.HIDDEN)))
- 		                	continue;
-            			if(property.getTaggedValue(IGenericConstants.DYNAMIC_PROPERTY_VALUE)!=null && Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.DYNAMIC_PROPERTY_VALUE)))) {
-            				generator.setPropertyValues(property, propInfo, null, false, false);
-            			}
+        ComponentProperties componentProps = node.getComponentProperties();
+		ProcessPropertiesGenerator generator = new ProcessPropertiesGenerator(cid, component);
+        List<Component.CodegenPropInfo> propsToProcess = component.getCodegenPropInfos(componentProps);
+        for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
+			List<NamedThing> properties = propInfo.props.getProperties();
+			for (NamedThing prop : properties) { // property
+    			if (prop instanceof Property) { // if, only deal with valued Properties
+        			Property property = (Property)prop;
+        			if (property.getFlags() != null && (property.getFlags().contains(Property.Flags.DESIGN_TIME_ONLY) || property.getFlags().contains(Property.Flags.HIDDEN)))
+	                	continue;
+        			if(property.getTaggedValue(IGenericConstants.DYNAMIC_PROPERTY_VALUE)!=null && Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.DYNAMIC_PROPERTY_VALUE)))) {
+        				generator.setPropertyValues(property, propInfo, null, false, false);
         			}
-    			} // property
-			} // propInfo
-            
-            %>
-            org.apache.avro.generic.IndexedRecord data_<%=cid%> = incomingEnforcer_<%=cid%>.getCurrentRecord();
-            
-            <%
-            boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
-            if (isParallelize) {
-            	String sourceComponentId = inputConn.getSource().getUniqueName();
-            	if(sourceComponentId!=null && sourceComponentId.contains("tAsyncIn")) {
-            	%>
-            	globalMap.put(buffersSizeKey_<%=cid%>, buffersSize_<%=sourceComponentId%>);
-            	<%
-            	}
-            }
-            %>
+    			}
+			} // property
+		} // propInfo
+        
+        %>
+        org.apache.avro.generic.IndexedRecord data_<%=cid%> = incomingEnforcer_<%=cid%>.getCurrentRecord();
+        
+        <%
+        boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
+        if (isParallelize) {
+        	String sourceComponentId = inputConn.getSource().getUniqueName();
+        	if(sourceComponentId!=null && sourceComponentId.contains("tAsyncIn")) {
+        	%>
+        	globalMap.put(buffersSizeKey_<%=cid%>, buffersSize_<%=sourceComponentId%>);
+        	<%
+        	}
+        }
+        %>
 
-            writer_<%=cid%>.write(data_<%=cid%>);
-            
-            nb_line_<%=cid %>++;
-            <%if(hasMainOutput){
-                %>
-            	if(!(writer_<%=cid%> instanceof org.talend.components.api.component.runtime.WriterWithFeedback)) {
-              		// For no feedback writer,just pass the input record to the output
-              		if (data_<%=cid%>!=null) {
-              			outgoingMainRecordsList_<%=cid%> = java.util.Arrays.asList(data_<%=cid%>);
-                  	}
-                    }
-            <%
-            }
+        writer_<%=cid%>.write(data_<%=cid%>);
+        
+        nb_line_<%=cid %>++;
+        <%if(hasMainOutput){
+            %>
+        	if(!(writer_<%=cid%> instanceof org.talend.components.api.component.runtime.WriterWithFeedback)) {
+          		// For no feedback writer,just pass the input record to the output
+          		if (data_<%=cid%>!=null) {
+          			outgoingMainRecordsList_<%=cid%> = java.util.Arrays.asList(data_<%=cid%>);
+              	}
+                }
+        <%
         }
     }
 } // canStart

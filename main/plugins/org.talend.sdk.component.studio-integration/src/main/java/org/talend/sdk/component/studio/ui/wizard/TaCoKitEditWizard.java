@@ -20,10 +20,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IWorkbench;
-import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.GAV;
 import org.talend.sdk.component.studio.i18n.Messages;
+import org.talend.sdk.component.studio.model.update.TaCoKitUpdateManager;
 
 /**
  * Wizard which is called on Edit action
@@ -70,7 +70,8 @@ public class TaCoKitEditWizard extends TaCoKitConfigurationWizard {
     private void updateConfigurationItem() throws Exception {
         updateConnectionItem();
         refreshInFinish(getWizardPropertiesPage().isNameModifiedByUser());
-        RepositoryUpdateManager.updateDBConnection(connectionItem);
+        TaCoKitUpdateManager.updateTaCoKitSubConnection(getRuntimeData());
+        TaCoKitUpdateManager.updateTaCoKitConnection(connectionItem);
     }
 
 }

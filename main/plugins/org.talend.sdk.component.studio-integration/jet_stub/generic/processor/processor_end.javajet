@@ -49,3 +49,8 @@
     }
 %>
 
+    if (processor_<%=cid%> != null) {
+        processor_<%=cid%>.stop();
+    }
+
+    globalMap.remove("processor_<%=cid%>");

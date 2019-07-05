@@ -450,7 +450,7 @@ public final class UpdateManagerUtils {
                                     } else {
                                         ((ProcessItem) item).setProcess(processType);
                                     }
-                                    factory.save(item);
+                                    factory.save(item, true);
                                 } catch (IOException e) {
                                     ExceptionHandler.process(e);
                                 } catch (PersistenceException e) {

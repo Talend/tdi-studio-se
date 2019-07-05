@@ -143,6 +143,9 @@ public class GenericTableUtils {
 
     public static String getDriverJarPaths(List<String> listString){
         StringBuffer jars = null;
+        if (listString == null) {
+            return null;
+        }
         for(String str : listString){
             if(jars == null){
                 jars = new StringBuffer();

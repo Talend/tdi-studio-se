@@ -36,7 +36,14 @@
 %>
 	for(Object obj_<%=cid %> :newPropertyList_<%=cid%>){
 		<%if(isLog4jEnabled){%>
-			log.<%="Error".equals(newVariable)?"error(":"info("%>"<%=cid%> - <%=newVariable%>: Parameter \"" + obj_<%=cid %> + "\" is a new parameter of <%=cid %>");
+			String newLog_<%=cid %> = "<%=cid%>: Parameter \"" + obj_<%=cid %> + "\" is a new parameter of <%=cid %>";
+			<%if(newVariable.equals("Error")){%>
+				log.error(newLog_<%=cid%>);
+			<%}else if(newVariable.equals("Warning")){%>
+				log.warn(newLog_<%=cid%>);
+			<%}else{%>	
+				log.info(newLog_<%=cid%>);
+			<%}%>
 		<%}%>
 		System.<%="Error".equals(newVariable)?"err":"out"%>.println("<%=newVariable%>: Parameter \"" + obj_<%=cid %> + "\" is a new parameter of <%=cid %>");
         <%if (bDieOnError && newVariable.equals("Error")){%>
@@ -51,7 +58,14 @@
 %>
 	for(Object obj_<%=cid %> :noAssignList_<%=cid %>){
 		<%if(isLog4jEnabled){%>
-			log.<%=oldVariable.equals("Error")?"error(":"info("%>"<%=cid%> - <%=oldVariable%>: Parameter \"" + obj_<%=cid %> + "\" has not been set by <%=cid %>");
+			String oldLog_<%=cid %> = "<%=cid%>: Parameter \"" + obj_<%=cid %> + "\" has not been set by <%=cid %>";
+			<%if(oldVariable.equals("Error")){%>
+				log.error(oldLog_<%=cid %>);
+			<%}else if(oldVariable.equals("Warning")){%>
+				log.warn(oldLog_<%=cid %>);
+			<%}else{%>	
+				log.info(oldLog_<%=cid %>);
+			<%}%>
 		<%}%>
 		System.<%=oldVariable.equals("Error")?"err":"out"%>.println("<%=oldVariable%>: Parameter \"" + obj_<%=cid %> + "\" has not been set by <%=cid %>");
 		<%if (bDieOnError && oldVariable.equals("Error")){%>

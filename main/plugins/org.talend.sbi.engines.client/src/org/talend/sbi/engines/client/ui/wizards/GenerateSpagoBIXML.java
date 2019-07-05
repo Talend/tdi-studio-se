@@ -27,6 +27,7 @@ import org.talend.core.context.RepositoryContext;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.utils.files.FileUtils;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -77,7 +78,7 @@ public class GenerateSpagoBIXML {
             try {
                 Project project = ((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY))
                         .getProject();
-                final DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
+                final DocumentBuilderFactory fabrique = XmlUtils.getSecureDocumentBuilderFactory();
                 fabrique.setValidating(true);
                 final DocumentBuilder analyseur = fabrique.newDocumentBuilder();
                 analyseur.setErrorHandler(new ErrorHandler() {

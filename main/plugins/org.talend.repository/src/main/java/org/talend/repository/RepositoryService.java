@@ -974,9 +974,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
                             @Override
                             public void run() {
-                                Shell shell = DisplayUtils.getDefaultShell(false);
-                                retry.set(askRetryForNetworkIssueInDialog(shell, ex));
-                                shell.dispose();
+                                retry.set(askRetryForNetworkIssueInDialog(null, ex));
                             }
                         });
                     }

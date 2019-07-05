@@ -384,7 +384,6 @@ public class UpdateDetectionDialog extends SelectionDialog {
         tree.setLayoutData(new GridData(GridData.FILL_BOTH));
         addViewerListener();
         createColumns(tree);
-        helper.selectAll(true);
         return composite;
     }
 

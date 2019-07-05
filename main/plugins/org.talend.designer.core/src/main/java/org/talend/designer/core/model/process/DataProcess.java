@@ -1948,7 +1948,7 @@ public class DataProcess implements IGeneratingProcess {
             }
         }
 
-        if (duplicatedProcess.getComponentsType().equals(ComponentCategory.CATEGORY_4_DI.getName()) && PluginChecker.isTIS()) {
+        if (duplicatedProcess.getComponentsType().equals(ComponentCategory.CATEGORY_4_DI.getName()) && PluginChecker.isTIS() && !Boolean.getBoolean("deactivate_extended_component_log")) {
         	final String talendJobLogComponent = "tJobStructureCatcher";
             final String uid4TalendJobLogComponent = "talendJobLog";
         	IComponent jobStructComponent = ComponentsFactoryProvider.getInstance().get(talendJobLogComponent, ComponentCategory.CATEGORY_4_DI.getName());
@@ -2498,12 +2498,13 @@ public class DataProcess implements IGeneratingProcess {
         List<? extends IConnection> mainConnections;
         IMetadataTable rejectMetadataTable = null;
         DataConnection dataConnection = null;
+        EConnectionType connectionType = connection.getLineStyle();
         if (isOutput) {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getIncomingConnections();
-            mainConnections = nodeUseValidationRule.getIncomingConnections(EConnectionType.FLOW_MAIN);
+            mainConnections = nodeUseValidationRule.getIncomingConnections(connectionType);
         } else {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getOutgoingConnections();
-            mainConnections = nodeUseValidationRule.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            mainConnections = nodeUseValidationRule.getOutgoingConnections(connectionType);
         }
 
         if (validRuleConnections == null || validRuleConnections.size() == 0) {
