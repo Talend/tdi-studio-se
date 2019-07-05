@@ -258,76 +258,80 @@
 	
 		com.google.api.services.bigquery.model.JobConfiguration config_<%=cid%> = new com.google.api.services.bigquery.model.JobConfiguration();
 		com.google.api.services.bigquery.model.JobConfigurationLoad queryLoad_<%=cid%> = new com.google.api.services.bigquery.model.JobConfigurationLoad();
-		com.google.api.services.bigquery.model.TableSchema schema_<%=cid%> = new com.google.api.services.bigquery.model.TableSchema();
-	
-		<%
-		if(isLog4jEnabled){
-		%>
-			log.info("<%=cid%> - Table field schema:");
-		<%
-		}
-		%>
-		java.util.List<com.google.api.services.bigquery.model.TableFieldSchema> fields_<%=cid%> = new java.util.ArrayList<com.google.api.services.bigquery.model.TableFieldSchema>();
-		<%
-		List<IMetadataTable> metadatas = node.getMetadataList();
-		if ((metadatas!=null) && (metadatas.size() > 0)) {
-			IMetadataTable metadata = metadatas.get(0);
-			if (metadata != null) {
-				List<IMetadataColumn> columns = metadata.getListColumns();
-				int nbColumns = columns.size();
-				for (int i = 0; i < nbColumns; i++ ) {
-					IMetadataColumn column = columns.get(i);
-					String columnName = column.getLabel();
-					String typeToGenerate = "string";
-					if("id_Float".equals(column.getTalendType()) || "id_Double".equals(column.getTalendType())) {
-						typeToGenerate = "float";
-					}else if("id_Integer".equals(column.getTalendType()) || "id_Long".equals(column.getTalendType()) || "id_Short".equals(column.getTalendType())) {
-						typeToGenerate = "integer";
-					} else if("id_Character".equals(column.getTalendType())) {
-						typeToGenerate = "string";
-					} else if("id_BigDecimal".equals(column.getTalendType())) {
-						typeToGenerate = "numeric";					
-					} else if("id_Boolean".equals(column.getTalendType())) {
-						typeToGenerate = "boolean";
-					} else if("id_Date".equals(column.getTalendType())) {
-						String pattern = column.getPattern();
-					    if(pattern.length() == 12 || pattern.isEmpty() || "\"\"".equals(pattern)) {
-					        typeToGenerate = "date";
-					    }else if(pattern.length() > 12){
-					        typeToGenerate = "timestamp";
-					    }else{
-					        typeToGenerate = "string";
-					    }
-					}
-					%>
-					<%
-						String modeType = null;
-						if (!column.isNullable()) { 
-							modeType = "REQUIRED";
-						} else {
-							modeType = "NULLABLE";
+		
+		if (<%=ElementParameterParser.getBooleanValue(node, "__CREATE_TABLE_IF_NOT_EXIST__")%>) {
+			com.google.api.services.bigquery.model.TableSchema schema_<%=cid%> = new com.google.api.services.bigquery.model.TableSchema();
+		
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.info("<%=cid%> - Table field schema:");
+			<%
+			}
+			%>
+			java.util.List<com.google.api.services.bigquery.model.TableFieldSchema> fields_<%=cid%> = new java.util.ArrayList<com.google.api.services.bigquery.model.TableFieldSchema>();
+			<%
+			List<IMetadataTable> metadatas = node.getMetadataList();
+			if ((metadatas!=null) && (metadatas.size() > 0)) {
+				IMetadataTable metadata = metadatas.get(0);
+				if (metadata != null) {
+					List<IMetadataColumn> columns = metadata.getListColumns();
+					int nbColumns = columns.size();
+					for (int i = 0; i < nbColumns; i++ ) {
+						IMetadataColumn column = columns.get(i);
+						String columnName = column.getLabel();
+						String typeToGenerate = "string";
+						if("id_Float".equals(column.getTalendType()) || "id_Double".equals(column.getTalendType())) {
+							typeToGenerate = "float";
+						}else if("id_Integer".equals(column.getTalendType()) || "id_Long".equals(column.getTalendType()) || "id_Short".equals(column.getTalendType())) {
+							typeToGenerate = "integer";
+						} else if("id_Character".equals(column.getTalendType())) {
+							typeToGenerate = "string";
+						} else if("id_BigDecimal".equals(column.getTalendType())) {
+							typeToGenerate = "numeric";					
+						} else if("id_Boolean".equals(column.getTalendType())) {
+							typeToGenerate = "boolean";
+						} else if("id_Date".equals(column.getTalendType())) {
+							String pattern = column.getPattern();
+						    if(pattern.length() == 12 || pattern.isEmpty() || "\"\"".equals(pattern)) {
+						        typeToGenerate = "date";
+						    }else if(pattern.length() > 12){
+						        typeToGenerate = "timestamp";
+						    }else{
+						        typeToGenerate = "string";
+						    }
 						}
-					%>
-					com.google.api.services.bigquery.model.TableFieldSchema <%=columnName%>_<%=cid%> = new com.google.api.services.bigquery.model.TableFieldSchema();
-					<%=columnName%>_<%=cid%>.setName("<%=columnName%>");
-					<%=columnName%>_<%=cid%>.setType("<%=typeToGenerate%>");
-					<%=columnName%>_<%=cid%>.setMode("<%=modeType%>");
-					fields_<%=cid%>.add(<%=columnName%>_<%=cid%>);		
-					<%
-					if(isLog4jEnabled){
-					%>
-						log.debug("<%=cid%> - Field index[<%=i%>] {\"name\":\"<%=columnName%>\",\"type\":\"<%=typeToGenerate%>\",\"mode\":\"<%=modeType%>\"}");
-					<%
+						%>
+						<%
+							String modeType = null;
+							if (!column.isNullable()) { 
+								modeType = "REQUIRED";
+							} else {
+								modeType = "NULLABLE";
+							}
+						%>
+						com.google.api.services.bigquery.model.TableFieldSchema <%=columnName%>_<%=cid%> = new com.google.api.services.bigquery.model.TableFieldSchema();
+						<%=columnName%>_<%=cid%>.setName("<%=columnName%>");
+						<%=columnName%>_<%=cid%>.setType("<%=typeToGenerate%>");
+						<%=columnName%>_<%=cid%>.setMode("<%=modeType%>");
+						fields_<%=cid%>.add(<%=columnName%>_<%=cid%>);		
+						<%
+						if(isLog4jEnabled){
+						%>
+							log.debug("<%=cid%> - Field index[<%=i%>] {\"name\":\"<%=columnName%>\",\"type\":\"<%=typeToGenerate%>\",\"mode\":\"<%=modeType%>\"}");
+						<%
+						}
 					}
 				}
 			}
-		}
-		%>
+			%>
+			
 		
-	
-		schema_<%=cid%>.setFields(fields_<%=cid%>);
-	
-		queryLoad_<%=cid%>.setSchema(schema_<%=cid%>);
+			schema_<%=cid%>.setFields(fields_<%=cid%>);
+		
+			queryLoad_<%=cid%>.setSchema(schema_<%=cid%>);
+			
+		}
 		<%
 		if("true".equals(ElementParameterParser.getValue(node, "__CREATE_TABLE_IF_NOT_EXIST__"))) {
 		%>
