@@ -62,10 +62,7 @@ public class GenericTableUtils {
                 if(dbService != null){
                     for(String v:values){
                         if(param.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())){
-                        	if(v == null || v.length() <= 0 || TalendQuoteUtils.removeQuotesIfExist(v).length() <= 0){
-                        		continue;
-                        	}
-                            v = dbService.getMVNPath(v);
+                        	v = dbService.getMVNPath(v);
                         }
                         valueList.add(v);
                     }
