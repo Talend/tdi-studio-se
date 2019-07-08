@@ -537,13 +537,14 @@ public class ChangeActivateStatusElementCommand extends Command {
             }
         }
 
-        Iterator<IConnection> connectionIte = exactList.iterator();
-        while (connectionIte.hasNext()) {
-            IConnection connection = (IConnection) connectionIte.next();
+        Collection<Set<INode>> pathSets = pathhm.values();
+        if (!pathSets.isEmpty()) {
+            Iterator<IConnection> connectionIte = exactList.iterator();
+            while (connectionIte.hasNext()) {
+                IConnection connection = (IConnection) connectionIte.next();
 
-            boolean rightIn = false;
-            Collection<Set<INode>> pathSets = pathhm.values();
-            if (!pathSets.isEmpty()) {
+                boolean rightIn = false;
+
                 Iterator<Set<INode>> pathIte = pathSets.iterator();
                 while (pathIte.hasNext()) {
                     Set<INode> nodes = (Set<INode>) pathIte.next();
