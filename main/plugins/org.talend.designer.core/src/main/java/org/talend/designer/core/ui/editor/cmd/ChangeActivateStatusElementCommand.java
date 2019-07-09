@@ -521,7 +521,7 @@ public class ChangeActivateStatusElementCommand extends Command {
         return middConnMap;
     }
 
-    private List<IConnection> getExactConnectionsBetweenNodes(INode node, List<INode> nodeList, List<IConnection> connList,
+    public static List<IConnection> getExactConnectionsBetweenNodes(INode node, List<INode> nodeList, List<IConnection> connList,
             boolean isOutgoing) {
         List<IConnection> exactList = new ArrayList<IConnection>(connList);
         List<INode> targetNodeList = new ArrayList<INode>(nodeList);
@@ -566,7 +566,7 @@ public class ChangeActivateStatusElementCommand extends Command {
         return exactList;
     }
 
-    private boolean getPathsNodes(INode node, INode targetNode, Set<INode> nodes, boolean isOutgoing) {
+    private static boolean getPathsNodes(INode node, INode targetNode, Set<INode> nodes, boolean isOutgoing) {
         List<? extends IConnection> connections = null;
         if (node.equals(targetNode)) {
             return true;
