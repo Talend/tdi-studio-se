@@ -105,10 +105,8 @@ public class ChangeActivateStatusElementCommandTest {
         List<IConnection> exactConnection1 = ChangeActivateStatusElementCommand.getExactConnectionsBetweenNodes(baseNode,
                 nodeList,
                 connList, true);
-        if (!exactConnection1.isEmpty()) {
-            Assert.assertTrue(exactConnection1.size() == 1);
-            Assert.assertTrue(exactConnection1.contains(conn3));
-        }
+        Assert.assertTrue(exactConnection1.size() == 1);
+        Assert.assertTrue(exactConnection1.contains(conn3));
 
         // case3 Flow1 deactivate, Node3 & Node5 deactivate
         nodeList = new ArrayList<INode>();
