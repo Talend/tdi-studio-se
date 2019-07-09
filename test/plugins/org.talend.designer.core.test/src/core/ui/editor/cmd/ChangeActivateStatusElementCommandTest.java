@@ -90,12 +90,10 @@ public class ChangeActivateStatusElementCommandTest {
         connList.add(conn5);
         List<IConnection> exactConnection = ChangeActivateStatusElementCommand.getExactConnectionsBetweenNodes(baseNode, nodeList,
                 connList, true);
-        if (!exactConnection.isEmpty()) {
-            Assert.assertTrue(exactConnection.size() == 3);
-            Assert.assertTrue(exactConnection.contains(conn1));
-            Assert.assertTrue(exactConnection.contains(conn3));
-            Assert.assertTrue(exactConnection.contains(conn5));
-        }
+        Assert.assertTrue(exactConnection.size() == 3);
+        Assert.assertTrue(exactConnection.contains(conn1));
+        Assert.assertTrue(exactConnection.contains(conn3));
+        Assert.assertTrue(exactConnection.contains(conn5));
 
         // case2 Flow1 Flow3 deactivate
         nodeList = new ArrayList<INode>();
@@ -121,13 +119,11 @@ public class ChangeActivateStatusElementCommandTest {
         connList.add(conn4);
         List<IConnection> exactConnection2 = ChangeActivateStatusElementCommand.getExactConnectionsBetweenNodes(baseNode,
                 nodeList, connList, true);
-        if (!exactConnection2.isEmpty()) {
-            Assert.assertTrue(exactConnection2.size() == 4);
-            Assert.assertTrue(exactConnection2.contains(conn3));
-            Assert.assertTrue(exactConnection2.contains(conn4));
-            Assert.assertTrue(exactConnection2.contains(conn5));
-            Assert.assertTrue(exactConnection2.contains(conn6));
-        }
+        Assert.assertTrue(exactConnection2.size() == 4);
+        Assert.assertTrue(exactConnection2.contains(conn3));
+        Assert.assertTrue(exactConnection2.contains(conn4));
+        Assert.assertTrue(exactConnection2.contains(conn5));
+        Assert.assertTrue(exactConnection2.contains(conn6));
 
         // case4 Flow2 inComing, Node3 deactivate
         nodeList = new ArrayList<INode>();
@@ -135,11 +131,9 @@ public class ChangeActivateStatusElementCommandTest {
         nodeList.add(baseNode);
         List<IConnection> exactConnection3 = ChangeActivateStatusElementCommand.getExactConnectionsBetweenNodes(node4, nodeList,
                 connList, false);
-        if (!exactConnection3.isEmpty()) {
-            Assert.assertTrue(exactConnection3.size() == 2);
-            Assert.assertTrue(exactConnection2.contains(conn3));
-            Assert.assertTrue(exactConnection2.contains(conn4));
-        }
+        Assert.assertTrue(exactConnection3.size() == 2);
+        Assert.assertTrue(exactConnection2.contains(conn3));
+        Assert.assertTrue(exactConnection2.contains(conn4));
 
     }
 
