@@ -178,50 +178,50 @@
 				}
 			}
 
-			//attachment Deal
-			class MessagePartProcessor {
-				void saveAttachment(javax.mail.Part mpart) throws IOException, javax.mail.MessagingException {
-					if (mpart.getFileName() != null && (
-							mpart.getDisposition() == null ||
-							(mpart.getDisposition().equals(javax.mail.Part.ATTACHMENT) || mpart.getDisposition().equals(javax.mail.Part.INLINE))
-					)) {
-						String attachFileName = javax.mail.internet.MimeUtility.decodeText(mpart.getFileName());
+            //attachment Deal
+            class MessagePartProcessor {
+                void saveAttachment(javax.mail.Part mpart) throws IOException, javax.mail.MessagingException {
+                    if (mpart.getFileName() != null && (
+                            mpart.getDisposition() == null ||
+                            (mpart.getDisposition().equals(javax.mail.Part.ATTACHMENT) || mpart.getDisposition().equals(javax.mail.Part.INLINE))
+                    )) {
+                        String attachFileName = javax.mail.internet.MimeUtility.decodeText(mpart.getFileName());
 
-						String path = <%=directory%>;
-						if(!path.endsWith("/")){
-							path = path + "/";
-						}
-						path = path + attachFileName;
-						<% if(isLog4jEnabled){ %>
-								log.info("<%= cid %> - Extracted attachment: '" + attachFileName + "'.");
-						<% } %>
+                        String path = <%=directory%>;
+                        if(!path.endsWith("/")){
+                            path = path + "/";
+                        }
+                        path = path + attachFileName;
+                        <% if(isLog4jEnabled){ %>
+                                log.info("<%= cid %> - Extracted attachment: '" + attachFileName + "'.");
+                        <% } %>
 
-						java.io.File attachFile = new java.io.File(path);
-						java.io.BufferedOutputStream out = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
-						java.io.BufferedInputStream in = new java.io.BufferedInputStream(mpart.getInputStream());
-						int buffer = 0;
-						while ((buffer = in.read()) != -1) {
-							out.write(buffer);
-							out.flush();
-						}
-						out.close();
-						in.close();
-					}
-				}
+                        java.io.File attachFile = new java.io.File(path);
+                        java.io.BufferedOutputStream out = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
+                        java.io.BufferedInputStream in = new java.io.BufferedInputStream(mpart.getInputStream());
+                        int buffer = 0;
+                        while ((buffer = in.read()) != -1) {
+                            out.write(buffer);
+                            out.flush();
+                        }
+                        out.close();
+                        in.close();
+                    }
+                }
 
-				// recursively process body parts
-				void processPart(javax.mail.Part part) throws javax.mail.MessagingException, IOException {
-					if (part.isMimeType("multipart/*")) {
-						javax.mail.Multipart multipartContent = (javax.mail.Multipart) part.getContent();
-						for (int i = 0; i < multipartContent.getCount(); i++) {
-							javax.mail.Part mpart = multipartContent.getBodyPart(i);
-							saveAttachment(mpart);
-							processPart(mpart);
-						}
-					}
-				}
-			}
-			new MessagePartProcessor().processPart(msg_<%=cid %>);
+                // recursively process body parts
+                void processPart(javax.mail.Part part) throws javax.mail.MessagingException, IOException {
+                    if (part.isMimeType("multipart/*")) {
+                        javax.mail.Multipart multipartContent = (javax.mail.Multipart) part.getContent();
+                        for (int i = 0; i < multipartContent.getCount(); i++) {
+                            javax.mail.Part mpart = multipartContent.getBodyPart(i);
+                            saveAttachment(mpart);
+                            processPart(mpart);
+                        }
+                    }
+                }
+            }
+            new MessagePartProcessor().processPart(msg_<%=cid %>);
 
 			// for output
 			<%
