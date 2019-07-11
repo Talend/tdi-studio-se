@@ -445,6 +445,7 @@
                 lastStr = "";
             }
         }
+        enableLogStash = "true".equalsIgnoreCase(System.getProperty("monitoring"));
 
         <%if(isLog4jEnabled){%>
 	        if(!"".equals(log4jLevel)){
@@ -1518,8 +1519,6 @@ if (execStat) {
 			final String key = arg.substring("--".length(), equal);
 			System.setProperty(key, arg.substring(equal + 1));
 		}
-		
-		enableLogStash = "true".equalsIgnoreCase(System.getProperty("monitoring"));
     }
     
     private static final String NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY = "<TALEND_NULL>";
