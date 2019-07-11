@@ -459,9 +459,9 @@
 		com.google.cloud.bigquery.Table table_<%=cid%> = bigquery_<%=cid%>.getTable(tableId_<%=cid%>);
 		com.google.cloud.bigquery.LoadJobConfiguration.Builder loadJobBuilder_<%=cid%> = com.google.cloud.bigquery.LoadJobConfiguration.newBuilder(tableId_<%=cid%>, <%=gsFile%>);
 		
-		boolean dropTable = <%=ElementParameterParser.getBooleanValue(node, "__DROP__")%>;
+		boolean dropTable_<%=cid%> = <%=ElementParameterParser.getBooleanValue(node, "__DROP__")%>;
 
-		if ( dropTable && table_<%=cid%> != null) {
+		if ( dropTable_<%=cid%> && table_<%=cid%> != null) {
 			boolean deleted = bigquery_<%=cid%>.delete(tableId_<%=cid%>);	
 			if (deleted) {
 				<%
