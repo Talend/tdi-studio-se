@@ -3215,6 +3215,14 @@
               name="RenameTCOMPCouchbaseMigrationTask"
               version="7.2.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              class="org.talend.repository.model.migration.AddEncodingTypeForDQComponentsTask"
+              description="Add the encoding type for some dq components"
+              id="org.talend.repository.model.migration.AddEncodingTypeForDQComponentsTask"
+              name="AddEncodingTypeForDQComponentsTask"
+              version="7.3.1">
+        </projecttask>
    </extension>
 
    <extension
