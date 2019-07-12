@@ -16,7 +16,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.metadata.Query;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.RepositoryNode;
 
 /**
@@ -57,8 +56,10 @@ public class QueryTypeProcessor extends SingleTypeProcessor {
         if (isCDCConnection(node)) {
             return false;
         }
-        if (node.getType() == ENodeType.STABLE_SYSTEM_FOLDER) {
-            return false;
+        if (node.getObject() == null && node.getParent() != null) {
+            if (ERepositoryObjectType.METADATA.equals(node.getParent().getContentType())) {
+                return false;
+            }
         }
         return true;
     }
