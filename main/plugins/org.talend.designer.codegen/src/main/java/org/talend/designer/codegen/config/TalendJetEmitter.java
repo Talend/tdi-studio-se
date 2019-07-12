@@ -91,6 +91,14 @@ public class TalendJetEmitter extends JETEmitter {
 
     private boolean classAvailable = true;
 
+    private boolean isInitialized;
+
+    private String packageName;
+
+    private String className;
+
+    private String methodName;
+
     /**
      * DOC mhirt TalendJetEmitter constructor comment.
      *
@@ -299,7 +307,8 @@ public class TalendJetEmitter extends JETEmitter {
                     }
                 }
                 boolean needRebuild = true;
-                String targetFileName = jetCompiler.getSkeleton().getClassName() + ".java"; //$NON-NLS-1$
+                String className = jetCompiler.getSkeleton().getClassName();
+                String targetFileName = className + ".java"; //$NON-NLS-1$
                 IFile targetFile = sourceContainer.getFile(new Path(targetFileName));
                 if (!targetFile.exists()) {
                     subProgressMonitor.subTask(CodeGenPlugin.getPlugin().getString("_UI_JETCreating_message", //$NON-NLS-1$
@@ -358,26 +367,13 @@ public class TalendJetEmitter extends JETEmitter {
                     } else if (this.helperJetBean != null) {
                         this.helperJetBean.setGenerationError(null);
                     }
-
                     if (!errors) {
-                        subProgressMonitor.subTask(CodeGenPlugin.getPlugin().getString("_UI_JETLoadingClass_message", //$NON-NLS-1$
-                                new Object[] { jetCompiler.getSkeleton().getClassName() + ".class" })); //$NON-NLS-1$
-
-                        // Construct a proper URL for relative lookup.
-                        //
-                        URL url = new File(project.getLocation() + "/" + "runtime" + "/") //$NON-NLS-1$ //$NON-NLS-2$
-                                .toURL();
-                        URLClassLoader theClassLoader = new URLClassLoader(new URL[] { url }, jetEmitter.classLoader);
-                        Class theClass = theClassLoader.loadClass((packageName.length() == 0 ? "" : packageName + ".") //$NON-NLS-1$ //$NON-NLS-2$
-                                + jetCompiler.getSkeleton().getClassName());
                         String methodName = jetCompiler.getSkeleton().getMethodName();
-                        Method[] methods = theClass.getDeclaredMethods();
-                        for (Method method2 : methods) {
-                            if (method2.getName().equals(methodName)) {
-                                jetEmitter.setMethod(method2);
-                                break;
-                            }
-                        }
+                        loadMethod(subProgressMonitor, jetEmitter, packageName, className, methodName);
+                        jetEmitter.isInitialized = true;
+                        jetEmitter.packageName = packageName;
+                        jetEmitter.className = className;
+                        jetEmitter.methodName = methodName;
                     }
                 }
                 subProgressMonitor.done();
@@ -412,6 +408,23 @@ public class TalendJetEmitter extends JETEmitter {
 
         public void setHelperJetBean(JetBean helperJetBean) {
             this.helperJetBean = helperJetBean;
+        }
+
+        @SuppressWarnings("resource")
+        public void loadMethod(IProgressMonitor monitor, TalendJetEmitter jetEmitter, String packageName, String className,
+                String methodName) throws ClassNotFoundException, IOException {
+            monitor.subTask(CodeGenPlugin.getPlugin().getString("_UI_JETLoadingClass_message", //$NON-NLS-1$
+                    new Object[] { className + ".class" })); //$NON-NLS-1$
+            // Construct a proper URL for relative lookup.
+            URL url = new File(project.getLocation() + "/runtime/").toURI().toURL(); //$NON-NLS-1$
+            URLClassLoader theClassLoader = new URLClassLoader(new URL[] { url }, jetEmitter.classLoader);
+            Class<?> theClass = theClassLoader.loadClass((packageName.length() == 0 ? "" : packageName + ".") + className); //$NON-NLS-1$ //$NON-NLS-2$
+            for (Method method : theClass.getDeclaredMethods()) {
+                if (method.getName().equals(methodName)) {
+                    jetEmitter.setMethod(method);
+                    break;
+                }
+            }
         }
     }
 
@@ -579,10 +592,14 @@ public class TalendJetEmitter extends JETEmitter {
      */
     @Override
     public Method getMethod() {
+        IProgressMonitor monitor = new NullProgressMonitor();
         Method localMethod = super.getMethod();
         if (localMethod == null) {
             try {
-                localMethod = loadMethod();
+                if (isInitialized) {
+                    talendEclipseHelper.loadMethod(monitor, this, packageName, className, methodName);
+                    localMethod = super.getMethod();
+                }
             } catch (Exception e) {
                 // nothing since if got exception here, the method will be reloaded bellow. (normal case)
                 // real error should be logged if the initialize fail.
@@ -593,7 +610,7 @@ public class TalendJetEmitter extends JETEmitter {
         // This might be also called for custom components.
         if (localMethod == null) {
             try {
-                talendEclipseHelper.initialize(BasicMonitor.toMonitor(new NullProgressMonitor()), this, componentFamily,
+                talendEclipseHelper.initialize(BasicMonitor.toMonitor(monitor), this, componentFamily,
                         templateName, templateLanguage, codePart);
                 localMethod = super.getMethod();
             } catch (JETException e) {
@@ -612,6 +629,7 @@ public class TalendJetEmitter extends JETEmitter {
      * @return
      * @throws MalformedURLException
      * @throws ClassNotFoundException
+     * @deprecated
      */
     private Method loadMethod() throws ClassNotFoundException, MalformedURLException {
         if (jetbean == null) {
@@ -684,7 +702,8 @@ public class TalendJetEmitter extends JETEmitter {
         try {
             return super.generate(progressMonitor, list.toArray(), lineDelimiter);
         } finally {
-            setObject(null);
+            method = null;
+            object = null;
         }
     }
 
