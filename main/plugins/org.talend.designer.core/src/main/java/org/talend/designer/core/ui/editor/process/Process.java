@@ -122,6 +122,7 @@ import org.talend.core.model.update.IUpdateManager;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
+import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.util.ItemDateParser;
@@ -1914,12 +1915,25 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             }
 
-            for (IRepositoryViewObject object : routines) {
-                if (routinesToAdd.contains(object.getLabel()) && !routinesAlreadySetup.contains(object.getLabel())) {
-                    RoutinesParameterType routinesParameterType = TalendFileFactory.eINSTANCE.createRoutinesParameterType();
-                    routinesParameterType.setId(object.getId());
-                    routinesParameterType.setName(object.getLabel());
-                    routinesDependencies.add(routinesParameterType);
+            //
+            boolean isLimited = false;
+            org.talend.core.model.properties.Project currProject = getProject().getEmfProject();
+            org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(this.property);
+            if (currProject != null && project != null && !currProject.equals(project)) {
+                int currOrdinal = ProjectHelper.getProjectTypeOrdinal(currProject);
+                int ordinal = ProjectHelper.getProjectTypeOrdinal(project);
+                if (currOrdinal > ordinal) {
+                    isLimited = true;
+                }
+            }
+            if (!isLimited) {
+                for (IRepositoryViewObject object : routines) {
+                    if (routinesToAdd.contains(object.getLabel()) && !routinesAlreadySetup.contains(object.getLabel())) {
+                        RoutinesParameterType routinesParameterType = TalendFileFactory.eINSTANCE.createRoutinesParameterType();
+                        routinesParameterType.setId(object.getId());
+                        routinesParameterType.setName(object.getLabel());
+                        routinesDependencies.add(routinesParameterType);
+                    }
                 }
             }
         } catch (PersistenceException e) {
