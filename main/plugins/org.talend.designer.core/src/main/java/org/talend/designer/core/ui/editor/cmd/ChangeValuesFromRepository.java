@@ -23,6 +23,7 @@ import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQPatternService;
+import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IODataComponent;
@@ -333,6 +334,18 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
             for (IElementParameter param : elementParameters) {
 
+                if (elem instanceof INode && param.getName().equalsIgnoreCase("DBTYPE")) {//$NON-NLS-1$
+                    String name = ((INode) elem).getComponent().getName();
+                    if ("tCreateTable".equals(name)) {//$NON-NLS-1$
+                        String databaseType = ((DatabaseConnection) connection).getDatabaseType();
+                        EDatabaseTypeName typeFromDisplayName = EDatabaseTypeName.getTypeFromDisplayName(databaseType);
+                        if (typeFromDisplayName != null) {
+                            String dbType = typeFromDisplayName.getXMLType();
+                            param.setValue(dbType);
+                            param.setDefaultClosedListValue(dbType);
+                        }
+                    }
+                }
                 String repositoryValue = param.getRepositoryValue();
                 if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
                     continue;
