@@ -32,7 +32,6 @@
 	String gsFileHeader = ElementParameterParser.getValue(node, "__GS_FILE_HEADER__");
     String tokenFile = ElementParameterParser.getValue(node,"__TOKEN_NAME__");
 	boolean isLog4jEnabled = ElementParameterParser.getBooleanValue(node.getProcess(), "__LOG4J_ACTIVATE__");
-	boolean dropTable = ElementParameterParser.getBooleanValue(node, "__DROP__");
 	
 	String passwordFieldName = "";
 	
@@ -261,117 +260,77 @@
 		com.google.api.services.bigquery.model.JobConfiguration config_<%=cid%> = new com.google.api.services.bigquery.model.JobConfiguration();
 		com.google.api.services.bigquery.model.JobConfigurationLoad queryLoad_<%=cid%> = new com.google.api.services.bigquery.model.JobConfigurationLoad();
 		
-		<%if (dropTable) {%>
-			try {
-				bigqueryclient_<%=cid%>.tables().delete(PROJECT_ID_<%=cid%>, <%=dataset%>, <%=table%>).execute();
-			} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e_<%=cid%>) {
-				if (e_<%=cid%>.getDetails().getCode() != 404) {
-					<%
-					if(dieOnError) {
-					%>
-						throw e_<%=cid%>;
-					<%
-					} else {
-						if(isLog4jEnabled){
-						%>
-							log.error("<%=cid%> - "+ e_<%=cid%>.getDetails().getMessage());
-						<%
-						}
-						%>
-						System.err.println(e_<%=cid%>.getDetails().getMessage());
-					<%
-					}
-					%>
-				}
-			}
-		<%}%>
-		
 		<%if (createTableIfNotExist) { %>
-			
-			try {
-				com.google.api.services.bigquery.model.Table getTable = bigqueryclient_<%=cid%>.tables().get(PROJECT_ID_<%=cid%>, <%=dataset%>, <%=table%>).execute();
-				queryLoad_<%=cid%>.setCreateDisposition("CREATE_NEVER");
-			} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e_<%=cid%>){
-				if (e_<%=cid%>.getDetails().getCode() == 404) {
-					com.google.api.services.bigquery.model.TableSchema schema_<%=cid%> = new com.google.api.services.bigquery.model.TableSchema();
-					<%
-					if(isLog4jEnabled){
-					%>
-						log.info("<%=cid%> - Table field schema:");
-					<%
-					}
-					%>
-					java.util.List<com.google.api.services.bigquery.model.TableFieldSchema> fields_<%=cid%> = new java.util.ArrayList<com.google.api.services.bigquery.model.TableFieldSchema>();
-					<%
-					List<IMetadataTable> metadatas = node.getMetadataList();
-					if ((metadatas!=null) && (metadatas.size() > 0)) {
-						IMetadataTable metadata = metadatas.get(0);
-						if (metadata != null) {
-							List<IMetadataColumn> columns = metadata.getListColumns();
-							int nbColumns = columns.size();
-							for (int i = 0; i < nbColumns; i++ ) {
-								IMetadataColumn column = columns.get(i);
-								String columnName = column.getLabel();
-								String typeToGenerate = "string";
-								if("id_Float".equals(column.getTalendType()) || "id_Double".equals(column.getTalendType())) {
-									typeToGenerate = "float";
-								}else if("id_Integer".equals(column.getTalendType()) || "id_Long".equals(column.getTalendType()) || "id_Short".equals(column.getTalendType())) {
-									typeToGenerate = "integer";
-								} else if("id_Character".equals(column.getTalendType())) {
-									typeToGenerate = "string";
-								} else if("id_BigDecimal".equals(column.getTalendType())) {
-									typeToGenerate = "numeric";
-								} else if("id_Boolean".equals(column.getTalendType())) {
-									typeToGenerate = "boolean";
-								} else if("id_Date".equals(column.getTalendType())) {
-									String pattern = column.getPattern();
-								    if(pattern.length() == 12 || pattern.isEmpty() || "\"\"".equals(pattern)) {
-								        typeToGenerate = "date";
-								    }else if(pattern.length() > 12){
-								        typeToGenerate = "timestamp";
-								    }else{
-								        typeToGenerate = "string";
-								    }
-								}
-								String modeType = (!column.isNullable()) ? "REQUIRED" : "NULLABLE";
-								%>
-								com.google.api.services.bigquery.model.TableFieldSchema <%=columnName%>_<%=cid%> = new com.google.api.services.bigquery.model.TableFieldSchema();
-								<%=columnName%>_<%=cid%>.setName("<%=columnName%>");
-								<%=columnName%>_<%=cid%>.setType("<%=typeToGenerate%>");
-								<%=columnName%>_<%=cid%>.setMode("<%=modeType%>");
-								fields_<%=cid%>.add(<%=columnName%>_<%=cid%>);
-								<%
-								if(isLog4jEnabled){
-								%>
-									log.debug("<%=cid%> - Field index[<%=i%>] {\"name\":\"<%=columnName%>\",\"type\":\"<%=typeToGenerate%>\",\"mode\":\"<%=modeType%>\"}");
-								<%
-								}
-							}
+			com.google.api.services.bigquery.model.TableSchema schema_<%=cid%> = new com.google.api.services.bigquery.model.TableSchema();
+		
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.info("<%=cid%> - Table field schema:");
+			<%
+			}
+			%>
+			java.util.List<com.google.api.services.bigquery.model.TableFieldSchema> fields_<%=cid%> = new java.util.ArrayList<com.google.api.services.bigquery.model.TableFieldSchema>();
+			<%
+			List<IMetadataTable> metadatas = node.getMetadataList();
+			if ((metadatas!=null) && (metadatas.size() > 0)) {
+				IMetadataTable metadata = metadatas.get(0);
+				if (metadata != null) {
+					List<IMetadataColumn> columns = metadata.getListColumns();
+					int nbColumns = columns.size();
+					for (int i = 0; i < nbColumns; i++ ) {
+						IMetadataColumn column = columns.get(i);
+						String columnName = column.getLabel();
+						String typeToGenerate = "string";
+						if("id_Float".equals(column.getTalendType()) || "id_Double".equals(column.getTalendType())) {
+							typeToGenerate = "float";
+						}else if("id_Integer".equals(column.getTalendType()) || "id_Long".equals(column.getTalendType()) || "id_Short".equals(column.getTalendType())) {
+							typeToGenerate = "integer";
+						} else if("id_Character".equals(column.getTalendType())) {
+							typeToGenerate = "string";
+						} else if("id_BigDecimal".equals(column.getTalendType())) {
+							typeToGenerate = "numeric";					
+						} else if("id_Boolean".equals(column.getTalendType())) {
+							typeToGenerate = "boolean";
+						} else if("id_Date".equals(column.getTalendType())) {
+							String pattern = column.getPattern();
+						    if(pattern.length() == 12 || pattern.isEmpty() || "\"\"".equals(pattern)) {
+						        typeToGenerate = "date";
+						    }else if(pattern.length() > 12){
+						        typeToGenerate = "timestamp";
+						    }else{
+						        typeToGenerate = "string";
+						    }
 						}
-					}
-					%>
-					schema_<%=cid%>.setFields(fields_<%=cid%>);
-					queryLoad_<%=cid%>.setSchema(schema_<%=cid%>);
-					queryLoad_<%=cid%>.setCreateDisposition("CREATE_IF_NEEDED");
-				} else {
-					<%
-					if(dieOnError) {
-					%>
-						throw e_<%=cid%>;
-					<%
-					} else {
+						String modeType = (!column.isNullable()) ? "REQUIRED" : "NULLABLE";
+						%>
+						com.google.api.services.bigquery.model.TableFieldSchema <%=columnName%>_<%=cid%> = new com.google.api.services.bigquery.model.TableFieldSchema();
+						<%=columnName%>_<%=cid%>.setName("<%=columnName%>");
+						<%=columnName%>_<%=cid%>.setType("<%=typeToGenerate%>");
+						<%=columnName%>_<%=cid%>.setMode("<%=modeType%>");
+						fields_<%=cid%>.add(<%=columnName%>_<%=cid%>);		
+						<%
 						if(isLog4jEnabled){
 						%>
-							log.error("<%=cid%> - "+ e_<%=cid%>.getDetails().getMessage());
+							log.debug("<%=cid%> - Field index[<%=i%>] {\"name\":\"<%=columnName%>\",\"type\":\"<%=typeToGenerate%>\",\"mode\":\"<%=modeType%>\"}");
 						<%
 						}
-						%>
-						System.err.println(e_<%=cid%>.getDetails().getMessage());
-					<%
 					}
-					%>
 				}
 			}
+			%>
+			
+		
+			schema_<%=cid%>.setFields(fields_<%=cid%>);
+		
+			queryLoad_<%=cid%>.setSchema(schema_<%=cid%>);
+			
+		
+		<%
+		}
+		if(createTableIfNotExist) {
+		%>
+			queryLoad_<%=cid%>.setCreateDisposition("CREATE_IF_NEEDED");
 		<%
 		} else {
 		%>
@@ -497,11 +456,12 @@
 	%>
 		/* ----START-CREATING-JOB (Cloud API)---- */
 		com.google.cloud.bigquery.TableId tableId_<%=cid%> = com.google.cloud.bigquery.TableId.of(<%=projectId%>, <%=dataset%>, <%=table%>);
+		com.google.cloud.bigquery.Table table_<%=cid%> = bigquery_<%=cid%>.getTable(tableId_<%=cid%>);
 		com.google.cloud.bigquery.LoadJobConfiguration.Builder loadJobBuilder_<%=cid%> = com.google.cloud.bigquery.LoadJobConfiguration.newBuilder(tableId_<%=cid%>, <%=gsFile%>);
 		
-		boolean dropTable_<%=cid%> = <%=dropTable%>;
+		boolean dropTable_<%=cid%> = <%=ElementParameterParser.getBooleanValue(node, "__DROP__")%>;
 
-		if (dropTable_<%=cid%> && bigquery_<%=cid%>.getTable(tableId_<%=cid%>) != null) {
+		if ( dropTable_<%=cid%> && table_<%=cid%> != null) {
 			boolean deleted = bigquery_<%=cid%>.delete(tableId_<%=cid%>);	
 			if (deleted) {
 				<%
@@ -515,9 +475,8 @@
 				throw new RuntimeException("Unable to delete table " + tableId_<%=cid%>);
 			}
 		}
-
 		<%if(createTableIfNotExist){%>
-			if(bigquery_<%=cid%>.getTable(tableId_<%=cid%>) == null){
+			if(table_<%=cid%> == null){
 				java.util.List<com.google.cloud.bigquery.Field> fields_<%=cid%> = new java.util.ArrayList<>();
 				<%
 				List<IMetadataTable> metadatas = node.getMetadataList();
@@ -570,17 +529,22 @@
 			
 				com.google.cloud.bigquery.Schema schema_<%=cid%> = com.google.cloud.bigquery.Schema.of(fields_<%=cid%>);
 				com.google.cloud.bigquery.TableInfo tableInfo_<%=cid%> = com.google.cloud.bigquery.TableInfo.newBuilder(tableId_<%=cid%>, com.google.cloud.bigquery.StandardTableDefinition.of(schema_<%=cid%>)).build();
-				com.google.cloud.bigquery.Table table_<%=cid%> = bigquery_<%=cid%>.create(tableInfo_<%=cid%>);
+				table_<%=cid%> = bigquery_<%=cid%>.create(tableInfo_<%=cid%>);
 				loadJobBuilder_<%=cid%>.setSchema(schema_<%=cid%>);
-				loadJobBuilder_<%=cid%>.setCreateDisposition(com.google.cloud.bigquery.JobInfo.CreateDisposition.CREATE_IF_NEEDED);
        
-			} else {
-				loadJobBuilder_<%=cid%>.setCreateDisposition(com.google.cloud.bigquery.JobInfo.CreateDisposition.CREATE_NEVER);
 			}
-		<%} else {%>
+		<%}
+			if(createTableIfNotExist) {
+			%>
+				loadJobBuilder_<%=cid%>.setCreateDisposition(com.google.cloud.bigquery.JobInfo.CreateDisposition.CREATE_IF_NEEDED);
+			<%
+			} else {
+			%>
 				loadJobBuilder_<%=cid%>.setCreateDisposition(com.google.cloud.bigquery.JobInfo.CreateDisposition.CREATE_NEVER);
-		<%}%>
-			
+			<%
+			}
+			%>
+
 			loadJobBuilder_<%=cid%>.setWriteDisposition(com.google.cloud.bigquery.JobInfo.WriteDisposition.WRITE_<%=actionOnData%>);	
 			loadJobBuilder_<%=cid%>.setDestinationTable(tableId_<%=cid%>);
 	        com.google.cloud.bigquery.CsvOptions.Builder csvOptions_<%=cid%> = com.google.cloud.bigquery.CsvOptions.newBuilder();
