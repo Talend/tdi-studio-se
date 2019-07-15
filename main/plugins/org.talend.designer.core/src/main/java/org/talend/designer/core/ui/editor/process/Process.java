@@ -123,6 +123,7 @@ import org.talend.core.model.update.IUpdateManager;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
+import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.util.ItemDateParser;
@@ -1079,7 +1080,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         ElementParameterType pType;
         boolean isJoblet = false;
         if (param.getElement() instanceof INode && PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+            IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                     IJobletProviderService.class);
             if (service != null && service.isJobletComponent((INode) param.getElement())) {
                 isJoblet = true;
@@ -1920,12 +1921,25 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             }
 
-            for (IRepositoryViewObject object : routines) {
-                if (routinesToAdd.contains(object.getLabel()) && !routinesAlreadySetup.contains(object.getLabel())) {
-                    RoutinesParameterType routinesParameterType = TalendFileFactory.eINSTANCE.createRoutinesParameterType();
-                    routinesParameterType.setId(object.getId());
-                    routinesParameterType.setName(object.getLabel());
-                    routinesDependencies.add(routinesParameterType);
+            //
+            boolean isLimited = false;
+            org.talend.core.model.properties.Project currProject = getProject().getEmfProject();
+            org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(this.property);
+            if (currProject != null && project != null && !currProject.equals(project)) {
+                int currOrdinal = ProjectHelper.getProjectTypeOrdinal(currProject);
+                int ordinal = ProjectHelper.getProjectTypeOrdinal(project);
+                if (currOrdinal > ordinal) {
+                    isLimited = true;
+                }
+            }
+            if (!isLimited) {
+                for (IRepositoryViewObject object : routines) {
+                    if (routinesToAdd.contains(object.getLabel()) && !routinesAlreadySetup.contains(object.getLabel())) {
+                        RoutinesParameterType routinesParameterType = TalendFileFactory.eINSTANCE.createRoutinesParameterType();
+                        routinesParameterType.setId(object.getId());
+                        routinesParameterType.setName(object.getLabel());
+                        routinesDependencies.add(routinesParameterType);
+                    }
                 }
             }
         } catch (PersistenceException e) {
@@ -2283,7 +2297,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                             if (EParameterName.PROCESS_TYPE_VERSION.name().equals(pType.getName())) {
                                 String jobletVersion = pType.getValue();
                                 if (!RelationshipItemBuilder.LATEST_VERSION.equals(jobletVersion)) {
-                                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                                    IJobletProviderService service = GlobalServiceRegister.getDefault()
                                             .getService(IJobletProviderService.class);
                                     if (service != null) {
                                         Property jobletProperty = service.getJobletComponentItem(component);
@@ -2453,7 +2467,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         updateAllMappingTypes();
         nc.setNeedLoadLib(false);
         if (nc.isJoblet()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+            IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                     IJobletProviderService.class);
             if (service != null) {
                 // reload only for stuido ,because joblet can be changed in the job editor
@@ -2467,7 +2481,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         NodeContainer nodeContainer = null;
         if (isJunitContainer) {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerGEFService.class)) {
-                ITestContainerGEFService testContainerService = (ITestContainerGEFService) GlobalServiceRegister.getDefault()
+                ITestContainerGEFService testContainerService = GlobalServiceRegister.getDefault()
                         .getService(ITestContainerGEFService.class);
                 if (testContainerService != null) {
                     nodeContainer = testContainerService.createJunitContainer(node);
@@ -2669,7 +2683,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             }
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IScdComponentService.class)) {
-                IScdComponentService service = (IScdComponentService) GlobalServiceRegister.getDefault().getService(
+                IScdComponentService service = GlobalServiceRegister.getDefault().getService(
                         IScdComponentService.class);
                 service.updateOutputMetadata(nc, metadataTable);
             }
@@ -2796,7 +2810,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             } else {
                 if (PluginChecker.isJobLetPluginLoaded()) { // bug 12764
-                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                    IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                             IJobletProviderService.class);
                     if (service != null && service.isJobletComponent(source)) {
                         continue;
@@ -4572,7 +4586,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             Item item = ((IProcess2) jobletProcess).getProperty().getItem();
             if (item instanceof JobletProcessItem) {
                 JobletProcessItem jobletItem = ((JobletProcessItem) item);
-                IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                         IJobletProviderService.class);
                 if (service != null) {
                     service.saveJobletNode(jobletItem, jobletContainer);
@@ -4621,7 +4635,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
         IJobletProviderService jobletService = null;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
+            jobletService = GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
             for (INode node : getGraphicalNodes()) {
                 if (jobletService.isJobletComponent(node)) {
                     listRoutines.addAll(getJobletRoutines(jobletService, node));
