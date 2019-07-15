@@ -1922,17 +1922,17 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             }
 
             //
-            boolean update = false;
+            boolean isLimited = false;
             org.talend.core.model.properties.Project currProject = getProject().getEmfProject();
             org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(this.property);
             if (currProject != null && project != null && !currProject.equals(project)) {
                 int currOrdinal = ProjectHelper.getProjectTypeOrdinal(currProject);
                 int ordinal = ProjectHelper.getProjectTypeOrdinal(project);
                 if (currOrdinal > ordinal) {
-                    update = true;
+                    isLimited = true;
                 }
             }
-            if (!update) {
+            if (!isLimited) {
                 for (IRepositoryViewObject object : routines) {
                     if (routinesToAdd.contains(object.getLabel()) && !routinesAlreadySetup.contains(object.getLabel())) {
                         RoutinesParameterType routinesParameterType = TalendFileFactory.eINSTANCE.createRoutinesParameterType();
