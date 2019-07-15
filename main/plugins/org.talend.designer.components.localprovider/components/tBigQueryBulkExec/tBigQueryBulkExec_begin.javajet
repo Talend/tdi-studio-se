@@ -549,6 +549,7 @@
 			loadJobBuilder_<%=cid%>.setDestinationTable(tableId_<%=cid%>);
 	        com.google.cloud.bigquery.CsvOptions.Builder csvOptions_<%=cid%> = com.google.cloud.bigquery.CsvOptions.newBuilder();
 			csvOptions_<%=cid%>.setAllowQuotedNewLines(true);
+			csvOptions_<%=cid%>.setSkipLeadingRows(<%=gsFileHeader%>);
 																				
 			<%if(setFieldDelimiter) {
 	        %>
