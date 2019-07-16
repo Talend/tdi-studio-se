@@ -650,7 +650,7 @@
    <CODEGENERATION>
      <IMPORTS>
         <IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9302.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9302/6.3.0"  REQUIRED="true" />
-		<IMPORT NAME="Talend-DB-Exasol-Util" MODULE="talend-db-exasol-2.1.3.jar" MVN="mvn:org.talend.libraries/talend-db-exasol-2.1.3/6.2.0" 
+		<IMPORT NAME="Talend-DB-Exasol-Util" MODULE="talend-db-exasol-2.1.3.jar" MVN="mvn:org.talend.libraries/talend-db-exasol/2.1.3" 
 			UrlPath="platform:/plugin/org.talend.libraries.jdbc.exasol/lib/talend-db-exasol-2.1.3.jar" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
