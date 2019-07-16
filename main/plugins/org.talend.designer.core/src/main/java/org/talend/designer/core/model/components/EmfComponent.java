@@ -2630,7 +2630,10 @@ public class EmfComponent extends AbstractBasicComponent {
                             EDatabaseTypeName typeFromDisplayName = EDatabaseTypeName.getTypeFromDisplayName(repositoryType);
                             if (typeFromDisplayName != null) {
                                 String xmlType = typeFromDisplayName.getXMLType();
-                                defaultValue = new String(xmlType);
+                                List<String> listItems = Arrays.asList(listItemsDisplayCodeValue);
+                                if (listItems.contains(xmlType)) {
+                                    defaultValue = new String(xmlType);
+                                }
                             }
                         }
 
