@@ -95,6 +95,7 @@ import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.RuntimeExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.resource.FileExtensions;
+import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
@@ -1182,7 +1183,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         } else {
             List<String> asList = convertArgsToList(cmd2);
             if ((!isExternalUse() && isStandardJob()) || isGuessSchemaJob(property)) {
-                String localM2Path = "-Dtalend.component.manager.m2.repository=\"" + PomUtil.getLocalRepositoryPath() + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+                String localM2Path = "-Dtalend.component.manager.m2.repository="; //$NON-NLS-1$
+                if (EnvironmentUtils.isWindowsSystem()) {
+                    localM2Path = localM2Path + "\"" + PomUtil.getLocalRepositoryPath() + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+                } else {
+                    localM2Path = localM2Path + PomUtil.getLocalRepositoryPath();
+                }
                 asList.add(3, localM2Path);
             }
             return asList.toArray(new String[0]);
