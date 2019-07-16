@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.IMetadataColumn;
@@ -188,8 +189,26 @@ public class ChangeValuesFromRepositoryTest {
         assertEquals(elem.getPropertyValue("HOST"), TalendTextUtils.addQuotes(dbConn.getServerName()));
         assertEquals(elem.getPropertyValue("PORT"), TalendTextUtils.addQuotes(dbConn.getPort()));
         assertEquals(elem.getPropertyValue("DBNAME"), TalendTextUtils.addQuotes(dbConn.getDatasourceName()));
+        testExecuteForTCreateTable();
     }
 
+    private void testExecuteForTCreateTable() {
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        IProcess2 process = new Process(property);
+        IComponent sourceCom = ComponentsFactoryProvider.getInstance().get("tCreateTable",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        elem = new Node(sourceCom, process);
+        elem.setLabel("tCreateTable_1");
+        ((DatabaseConnection) connection).setDatabaseType("MSSQL");
+        ChangeValuesFromRepository changeValuesFromRepository = new ChangeValuesFromRepository(elem, connection,
+                "PROPERTY:REPOSITORY_PROPERTY_TYPE", databaseConnItem.getProperty().getId());
+        changeValuesFromRepository.execute();
+        DatabaseConnection dbConn = (DatabaseConnection) connection;
+        String databaseType = dbConn.getDatabaseType();
+        EDatabaseTypeName typeFromDisplayName = EDatabaseTypeName.getTypeFromDisplayName(databaseType);
+        String dbType = typeFromDisplayName.getXMLType();
+        assertEquals(elem.getPropertyValue("DBTYPE"), dbType);
+    }
 
 
     /**
