@@ -124,7 +124,14 @@ public class SOAPUtil {
         }
         SOAPMessage message = messageFactory.createMessage();
         MimeHeaders mimeHeaders = message.getMimeHeaders();
-        mimeHeaders.setHeader("SOAPAction", soapAction);
+
+        // https://jira.talendforge.org/browse/TDI-42581 skip add SOAPAction directly to header v1.2
+        if (SOAP12.equals(version)) {
+            mimeHeaders.addHeader("Content-Type", "application/soap+_xml; charset=utf-8; action=\"" + soapAction+"\"");
+        } else {
+            mimeHeaders.setHeader("SOAPAction", soapAction);
+        }
+
         if (basicAuth) {
             addBasicAuthHeader(mimeHeaders, username, password);
         }
@@ -263,7 +270,12 @@ public class SOAPUtil {
     	}
     	SOAPMessage message = messageFactory.createMessage();
     	MimeHeaders mimeHeaders = message.getMimeHeaders();
-    	mimeHeaders.setHeader("SOAPAction", soapAction);
+        if (SOAP12.equals(version)) {
+            // https://jira.talendforge.org/browse/TDI-42581 skip add SOAPAction directly to header
+            mimeHeaders.addHeader("Content-Type", "application/soap+_xml; charset=utf-8; action=\"" + soapAction+"\"");
+        } else {
+            mimeHeaders.setHeader("SOAPAction", soapAction);
+        }
     	SOAPPart soapPart = message.getSOAPPart();
     	
     	String encoding = getEncoding(soapMessage);
