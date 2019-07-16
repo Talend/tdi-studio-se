@@ -59,7 +59,6 @@ import org.talend.commons.ui.utils.image.ColorUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
-import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.component_cache.ComponentCacheFactory;
@@ -235,9 +234,6 @@ public class EmfComponent extends AbstractBasicComponent {
 
     private AbstractComponentsProvider provider;
 
-    public ComponentInfo getComponentInfo() {
-        return info;
-    }
     public EmfComponent(String uriString, String bundleId, String name, String pathSource, ComponentsCache cache, boolean isload,
             AbstractComponentsProvider provider) throws BusinessException {
         this.uriString = uriString;
@@ -2623,27 +2619,10 @@ public class EmfComponent extends AbstractBasicComponent {
                         }
                     }
                     defaultValue = new String(temp);
-                    if (param.getName().equals("DBTYPE")) {
-                        IComponent component = node.getComponent();
-                        if (component != null && component.getName().equals("tCreateTable")) {
-                            String repositoryType = component.getRepositoryType();
-                            EDatabaseTypeName typeFromDisplayName = EDatabaseTypeName.getTypeFromDisplayName(repositoryType);
-                            if (typeFromDisplayName != null) {
-                                String xmlType = typeFromDisplayName.getXMLType();
-                                List<String> listItems = Arrays.asList(listItemsDisplayCodeValue);
-                                if (listItems.contains(xmlType)) {
-                                    defaultValue = new String(xmlType);
-                                }
-                            }
-                        }
-
-                    }
                 }
             }
-
             param.setDefaultClosedListValue(defaultValue);
             param.setValue(defaultValue);
-
         }
     }
 

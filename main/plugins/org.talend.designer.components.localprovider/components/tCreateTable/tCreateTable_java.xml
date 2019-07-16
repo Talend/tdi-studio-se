@@ -53,6 +53,7 @@
 
   <PARAMETER
       NAME="DBTYPE"
+      REPOSITORY_VALUE="DBTYPE"
       FIELD="CLOSED_LIST"
       NUM_ROW="10"
     >

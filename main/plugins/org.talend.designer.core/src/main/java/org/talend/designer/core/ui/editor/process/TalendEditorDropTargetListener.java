@@ -77,7 +77,6 @@ import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.IOozieService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
-import org.talend.core.model.component_cache.ComponentInfo;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.IComponent;
@@ -1991,10 +1990,6 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         if (item != null && item instanceof DatabaseConnectionItem && !isHive && !isImpala && !isJDBC) {
             IComponent createTableComponent = ComponentsFactoryProvider.getInstance().get("tCreateTable", //$NON-NLS-1$
                     ComponentCategory.CATEGORY_4_DI.getName());
-            EmfComponent em = (EmfComponent) createTableComponent;
-            ComponentInfo componentInfo = em.getComponentInfo();
-            String typeName = ((ConnectionItem) item).getTypeName();
-            componentInfo.setRepositoryType(typeName);
             neededComponents.add(createTableComponent);
         }
 
