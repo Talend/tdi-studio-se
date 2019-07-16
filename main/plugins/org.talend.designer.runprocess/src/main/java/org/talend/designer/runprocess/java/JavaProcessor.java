@@ -273,7 +273,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     }
 
     private boolean isGuessSchemaJob(Property property) {
-        return "ID".equals(property.getId()) && "Mock_job_for_Guess_schema".equals(property.getLabel()); //$NON-NLS-1$ //$NON-NLS-2$
+        return property != null && "ID".equals(property.getId()) && "Mock_job_for_Guess_schema".equals(property.getLabel()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
@@ -1181,7 +1181,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             return list.toArray(new String[0]);
         } else {
             List<String> asList = convertArgsToList(cmd2);
-            if (isStandardJob()) {
+            if ((!isExternalUse() && isStandardJob()) || isGuessSchemaJob(property)) {
                 String localM2Path = "-Dtalend.component.manager.m2.repository=\"" + PomUtil.getLocalRepositoryPath() + "\""; //$NON-NLS-1$ //$NON-NLS-2$
                 asList.add(3, localM2Path);
             }

@@ -1564,7 +1564,7 @@ class TeradataManager extends Manager {
     private boolean useExistingConnection;
 	private String connection;
     
-    private static final String SEPARATOR = ",";
+    private static final String SEPARATOR = "/";
     
     protected TeradataManager(String host, String port, String dbName, String tableName, 
     							String userName, String cid, boolean useExistingConnection, String connection, String additionalParams ) {

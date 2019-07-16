@@ -7,6 +7,7 @@
 
   <FAMILIES>
 		<FAMILY>Databases/DB Specifics/Amazon/Redshift</FAMILY>
+		<FAMILY>Cloud/Amazon/Redshift</FAMILY>
   </FAMILIES>
 
 	<DOCUMENTATION>
