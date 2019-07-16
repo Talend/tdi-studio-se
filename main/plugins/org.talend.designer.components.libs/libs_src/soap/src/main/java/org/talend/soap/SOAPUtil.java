@@ -298,7 +298,7 @@ public class SOAPUtil {
     private void setSoapAction(String version, String soapAction, MimeHeaders mimeHeaders) {
         if (SOAP12.equals(version)) {
             // https://jira.talendforge.org/browse/TDI-42581 skip add SOAPAction directly to header
-            mimeHeaders.setHeader("Content-Type", "application/soap+_xml; charset=utf-8; action=\"" + soapAction + "\"");
+            mimeHeaders.setHeader("Content-Type", "application/soap+xml; charset=utf-8; action=\"" + soapAction + "\"");
         } else {
             mimeHeaders.setHeader("SOAPAction", soapAction);
         }
