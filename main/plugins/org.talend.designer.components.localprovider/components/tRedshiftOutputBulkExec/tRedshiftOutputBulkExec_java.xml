@@ -538,7 +538,7 @@
 				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar"
 				REQUIRED="true" />
 			<IMPORT NAME="commons-codec-1.6.jar" MODULE="commons-codec-1.6.jar"
-				MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"
+				MVN="mvn:commons-codec/commons-codec/1.6"
 				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar"
 				REQUIRED="true" />
 		</IMPORTS>
