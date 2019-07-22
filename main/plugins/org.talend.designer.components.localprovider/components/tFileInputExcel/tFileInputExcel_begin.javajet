@@ -55,6 +55,12 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		String mode = ElementParameterParser.getValue(node,"__GENERATION_MODE__");
 		final boolean eventMode = "EVENT_MODE".equals(mode);
 
+        String passwordFieldName = "__PASSWORD__";
+        %>
+        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+        String password_<%=cid%> = decryptedPassword_<%=cid%>;
+        <%
+
 		boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 		
 		int dynamic_index = -1;
