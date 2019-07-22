@@ -1383,7 +1383,7 @@ public class Node extends Element implements IGraphicalNode {
                                 // MetadataTool.copyTable(inputTable, targetTable);
                                 // add by wzhang for feature 7611.
                                 String dbmsId = targetTable.getDbms();
-                                MetadataToolHelper.copyTable(inputTable, targetTable, null, false, true);
+                                MetadataToolHelper.copyTable(inputTable, targetTable, null, false);
                                 MetadataToolHelper.setDBType(targetTable, dbmsId);
                                 ChangeMetadataCommand cmc = new ChangeMetadataCommand(this, null,
                                         tmpTableCreated ? targetTable : null, targetTable, inputSchemaParam);
@@ -1436,7 +1436,7 @@ public class Node extends Element implements IGraphicalNode {
                         }
                         boolean isJunitInput = false;
                         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                            ITestContainerProviderService testContainerService = GlobalServiceRegister
                                     .getDefault().getService(ITestContainerProviderService.class);
                             if (testContainerService != null
                                     && testContainerService.isTestCaseComponent(connection.getSource().getComponent())) {
@@ -1888,7 +1888,7 @@ public class Node extends Element implements IGraphicalNode {
             connectionToParse = (String) value;
             boolean isTestCase = false;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                ITestContainerProviderService testContainerService = GlobalServiceRegister
                         .getDefault().getService(ITestContainerProviderService.class);
                 isTestCase = getProcess() != null && testContainerService.isTestContainerProcess(getProcess());
             }
@@ -3361,7 +3361,7 @@ public class Node extends Element implements IGraphicalNode {
     private void checkHasMultiPrejobOrPostJobComponents() {
         Map<String, INode> multiNodes = new HashMap<String, INode>();
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault()
+            IJobletProviderService jobletService = GlobalServiceRegister.getDefault()
                     .getService(IJobletProviderService.class);
             if (jobletService != null) {
                 // need to check all node from the process
@@ -3414,7 +3414,7 @@ public class Node extends Element implements IGraphicalNode {
     public void checkLinks() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+            IJobletProviderService service = GlobalServiceRegister.getDefault()
                     .getService(IJobletProviderService.class);
             if (service != null && service.isJobletComponent(this)) {
                 isJoblet = true;
@@ -3820,7 +3820,7 @@ public class Node extends Element implements IGraphicalNode {
         }
         ICoreTisService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
-            service = (ICoreTisService) GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
+            service = GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
         }
 
         // test in case several Dynamic type has been set or if Dynamic is not the last type in schema
@@ -4449,16 +4449,16 @@ public class Node extends Element implements IGraphicalNode {
                                     .getLastVersion(value.toString());
                             if (lastVersion != null) {
                                 if (isMRServiceRegistered) {
-                                    if (((IMRProcessService) GlobalServiceRegister.getDefault()
-                                            .getService(IMRProcessService.class))
+                                    if (GlobalServiceRegister.getDefault()
+                                            .getService(IMRProcessService.class)
                                                     .isMapReduceItem(lastVersion.getProperty().getItem())) {
                                         targetIsBigdata = true;
                                         bigDataType = "Batch"; //$NON-NLS-1$
                                     }
                                 }
                                 if (isStormServiceRegistered) {
-                                    if (((IStormProcessService) GlobalServiceRegister.getDefault()
-                                            .getService(IStormProcessService.class))
+                                    if (GlobalServiceRegister.getDefault()
+                                            .getService(IStormProcessService.class)
                                                     .isStormItem(lastVersion.getProperty().getItem())) {
                                         targetIsBigdata = true;
                                         bigDataType = "Streaming"; //$NON-NLS-1$
@@ -4935,7 +4935,7 @@ public class Node extends Element implements IGraphicalNode {
         }
         boolean isJobletNode = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+            IJobletProviderService service = GlobalServiceRegister.getDefault()
                     .getService(IJobletProviderService.class);
             if (service != null && service.isJobletComponent(this)) {
                 isJobletNode = true;
@@ -5310,7 +5310,7 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isStandardJoblet() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+            IJobletProviderService service = GlobalServiceRegister.getDefault()
                     .getService(IJobletProviderService.class);
             if (service != null && service.isStandardJobletComponent(this)) {
                 isJoblet = true;
@@ -5322,7 +5322,7 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isJoblet() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+            IJobletProviderService service = GlobalServiceRegister.getDefault()
                     .getService(IJobletProviderService.class);
             if (service != null && service.isJobletComponent(this)) {
                 isJoblet = true;
@@ -5334,7 +5334,7 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isSparkJoblet() {
         boolean isSparkJoblet = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
-            ISparkJobletProviderService sparkJobletService = (ISparkJobletProviderService) GlobalServiceRegister.getDefault()
+            ISparkJobletProviderService sparkJobletService = GlobalServiceRegister.getDefault()
                     .getService(ISparkJobletProviderService.class);
             if (sparkJobletService != null) {
                 isSparkJoblet = sparkJobletService.isSparkJobletComponent(this);
@@ -5346,7 +5346,7 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isSparkStreamingJoblet() {
         boolean isSparkStreamingJoblet = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkStreamingJobletProviderService.class)) {
-            ISparkStreamingJobletProviderService sparkJobletService = (ISparkStreamingJobletProviderService) GlobalServiceRegister
+            ISparkStreamingJobletProviderService sparkJobletService = GlobalServiceRegister
                     .getDefault().getService(ISparkStreamingJobletProviderService.class);
             if (sparkJobletService != null) {
                 isSparkStreamingJoblet = sparkJobletService.isSparkStreamingJobletComponent(this);
@@ -5383,7 +5383,7 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isProgressBarNeeded() {
         boolean needBar = true;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)) {
-            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault()
+            IMRProcessService mrService = GlobalServiceRegister.getDefault()
                     .getService(IMRProcessService.class);
             needBar = mrService.isProgressBarNeeded(process);
         }
@@ -5579,7 +5579,7 @@ public class Node extends Element implements IGraphicalNode {
     public void refreshNodeContainer() {
         boolean isRunning = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            IRunProcessService runProcessService = (IRunProcessService) GlobalServiceRegister.getDefault()
+            IRunProcessService runProcessService = GlobalServiceRegister.getDefault()
                     .getService(IRunProcessService.class);
             if (runProcessService != null) {
                 isRunning = runProcessService.isJobRunning();

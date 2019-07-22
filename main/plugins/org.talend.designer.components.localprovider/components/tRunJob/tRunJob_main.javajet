@@ -555,66 +555,92 @@ String inputConnName = null;
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 	// use independent process to run subjob
 	%>
-		Runtime runtime_<%=cid %> = Runtime.getRuntime();
-		final Process ps_<%=cid %>;
-		ps_<%=cid %> = runtime_<%=cid %>.exec((String[])paraList_<%=cid %>.toArray(new String[paraList_<%=cid %>.size()]));
-
-		Thread normal_<%=cid %> = new Thread() {
-			public void run() {
-				try {
-					java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps_<%=cid %>.getInputStream()));
-					String line = "";
-					try {
-						while((line = reader.readLine()) != null) {
-						System.out.println(line);
-						}
-					} finally {
-					reader.close();
+				class ConsoleHelper_<%=cid %> {
+					private Thread getNormalThread(Process process) {
+						return new Thread() {
+							public void run() {
+								try {
+									java.io.BufferedReader reader = new java.io.BufferedReader(
+											new java.io.InputStreamReader(
+													process.getInputStream()));
+									String line = "";
+									try {
+										while ((line = reader.readLine()) != null) {
+											System.out.println(line);
+										}
+									} finally {
+										reader.close();
+									}
+								} catch (java.io.IOException ioe) {
+						            <%if(isLog4jEnabled){%>
+										log.error("<%=cid %> - " + ioe.getMessage());
+						            <%}%>
+									ioe.printStackTrace();
+								}
+							}
+						};
 					}
-				} catch(java.io.IOException ioe) {
-					<%if(isLog4jEnabled){%>
-						log.error("<%=cid %> - " + ioe.getMessage());
-					<%}%>
-					ioe.printStackTrace();
+
+					private Thread getErrorThread(Process process, StringBuffer sb) {
+						return new Thread() {
+							public void run() {
+								try {
+									java.io.BufferedReader reader = new java.io.BufferedReader(
+											new java.io.InputStreamReader(
+													process.getErrorStream()));
+									String line = "";
+									try {
+										while ((line = reader.readLine()) != null) {
+											sb.append(line)
+													.append("\n");
+										}
+									} finally {
+										reader.close();
+									}
+								} catch (java.io.IOException ioe) {
+						            <%if(isLog4jEnabled){%>
+										log.error("<%=cid %> - " + ioe.getMessage());
+						            <%}%>
+									ioe.printStackTrace();
+								}
+							}
+						};
+					}
 				}
-	    	}
-  		};
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - The child job '<%if(!useDynamicJob){%><%=childJob %><%}else{%>"+<%=dynamicJobName%>+"<%}%>' starts on the version '<%=version%>' with the context '<%=context%>'.");
-		<%}%>
-		normal_<%=cid %>.start();
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - The child job '<%if(!useDynamicJob){%><%=childJob %><%}else{%>"+<%=dynamicJobName%>+"<%}%>' is done.");
-		<%}%>
+				ConsoleHelper_<%=cid %> consoleHelper_<%=cid %> = new ConsoleHelper_<%=cid %>();
 
-		final StringBuffer errorMsg_<%=cid %> = new StringBuffer();
-		Thread error_<%=cid %> = new Thread() {
-			public void run() {
-				try {
-					java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps_<%=cid %>.getErrorStream()));
-					String line = "";
-        			try {
-          				while((line = reader.readLine()) != null) {
-            				errorMsg_<%=cid %>.append(line).append("\n");
-          				}
-        			} finally {
-          				reader.close();
-        			}
-      			} catch(java.io.IOException ioe) {
-					<%if(isLog4jEnabled){%>
-						log.error("<%=cid %> - " + ioe.getMessage());
-					<%}%>
-			        ioe.printStackTrace();
-      			}
-    		}
-		};
-		error_<%=cid %>.start();
+		Runtime runtime_<%=cid %> = Runtime.getRuntime();
+		Process ps_<%=cid %> = null;
 
-		//0 indicates normal termination	
-		int result_<%=cid %> = ps_<%=cid %>.waitFor();
-		normal_<%=cid %>.join(10000);
-		error_<%=cid %>.join(10000);
-  
+		//0 indicates normal termination
+        int result_<%=cid %>;
+        StringBuffer errorMsg_<%=cid %> = new StringBuffer();
+        try {
+            ps_<%=cid %> = runtime_<%=cid %>.exec((String[])paraList_<%=cid %>.toArray(new String[paraList_<%=cid %>.size()]));
+
+            Thread normal_<%=cid %> = consoleHelper_<%=cid %>.getNormalThread(ps_<%=cid %>);
+            <%if(isLog4jEnabled){%>
+                log.info("<%=cid%> - The child job '<%if(!useDynamicJob){%><%=childJob %><%}else{%>"+<%=dynamicJobName%>+"<%}%>' starts on the version '<%=version%>' with the context '<%=context%>'.");
+            <%}%>
+            normal_<%=cid %>.start();
+            <%if(isLog4jEnabled){%>
+                log.info("<%=cid%> - The child job '<%if(!useDynamicJob){%><%=childJob %><%}else{%>"+<%=dynamicJobName%>+"<%}%>' is done.");
+            <%}%>
+
+            Thread error_<%=cid %> = consoleHelper_<%=cid %>.getErrorThread(ps_<%=cid %>, errorMsg_<%=cid %>);
+            error_<%=cid %>.start();
+
+            result_<%=cid %> = ps_<%=cid %>.waitFor();
+            normal_<%=cid %>.join(10000);
+            error_<%=cid %>.join(10000);
+        } catch (ThreadDeath tde) {
+            <%if(isLog4jEnabled){%>
+            	log.error("<%=cid %> - thread was terminated.");
+            <%}%>
+            ps_<%=cid %>.destroy();
+            throw tde;
+        }
+
 		globalMap.put("<%=cid %>_CHILD_RETURN_CODE",result_<%=cid %>);
 		if(result_<%=cid %> != 0){
    			globalMap.put("<%=cid %>_CHILD_EXCEPTION_STACKTRACE",errorMsg_<%=cid %>.toString());

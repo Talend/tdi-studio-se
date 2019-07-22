@@ -36,6 +36,8 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 	String defaultDateFormat = ElementParameterParser.getValue(node, "__DEFAULT_DATE_FORMAT__");
 	String defaultTimestampFormat = ElementParameterParser.getValue(node, "__DEFAULT_TIMESTAMP_FORMAT__");
 	String numGroupSep = ElementParameterParser.getValue(node, "__THOUSANDS_SEPARATOR__");
+	boolean useLenPrecision = "true".equals(ElementParameterParser.getValue(node, "__USE_PRECISION_LENGTH_FROM_SCHEMA__"));
+	
 	if (numGroupSep == null|| numGroupSep.trim().isEmpty()) {
 		 numGroupSep = "null";
 	}
@@ -207,12 +209,24 @@ org.talend.database.exasol.imp.EXABulkUtil <%=cid%> = new org.talend.database.ex
                 String lengthStr = "null";
                 String precisionStr = "null";
                 Integer length = column.getLength();
-                if (length != null) {
-                    lengthStr = String.valueOf(length);
-                }
+                if(useLenPrecision) {
+	                if (length != null) {
+	                    lengthStr = String.valueOf(length);
+	                }
+	            } else {
+	            	if (length != null && hasGroupSep) {
+	                    lengthStr = String.valueOf(length);
+	                }
+	            }
                 Integer precision = column.getPrecision();
-                if (precision != null) {
-                    precisionStr = String.valueOf(precision);
+                if(useLenPrecision) {
+                	if (precision != null) {
+                    	precisionStr = String.valueOf(precision);
+                	}
+                } else {
+                	if (precision != null && hasGroupSep) {
+	                    precisionStr = String.valueOf(precision);
+	                }
                 }
                 String talendType = column.getTalendType();
                 if ("id_Date".equals(talendType)

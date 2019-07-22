@@ -94,12 +94,11 @@ public class EXABulkUtil {
 	private String createNumberFormat(Integer length, Integer precision, boolean hasGroups) {
         if (length != null && length.intValue() > 0) {
             StringBuilder sb = new StringBuilder();
-            int numGroups = (length.intValue() / 3) + 1;
-            for (int i = 0; i < numGroups; i++) {
-                if (i > 0 && hasGroups) {
-                    sb.append("G");
-                    }
-                sb.append("999");
+            for (int i = length - 1; i >= 0; i--) {
+            	if(hasGroups && i < length - 1 && i > 0 && (i % 3 == 2)) {
+            		sb.append("G");
+            	}
+            	sb.append("9");
             }
             if (precision != null && precision.intValue() > 0) {
                 sb.append("D");
