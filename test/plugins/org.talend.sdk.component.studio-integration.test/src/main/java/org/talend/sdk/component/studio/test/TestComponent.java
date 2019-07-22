@@ -15,24 +15,24 @@
  */
 package org.talend.sdk.component.studio.test;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.talend.core.model.process.IElementParameter;
-import org.talend.sdk.component.api.configuration.action.meta.ActionRef;
-import org.talend.sdk.component.server.front.model.ActionReference;
-import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
-import org.talend.sdk.component.studio.model.parameter.PropertyNode;
-import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
-
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import javax.json.bind.annotation.JsonbCreator;
-import javax.json.bind.annotation.JsonbProperty;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.talend.core.model.process.IElementParameter;
+import org.talend.sdk.component.server.front.model.ActionReference;
+import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
+import org.talend.sdk.component.studio.model.parameter.PropertyNode;
+import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 
 public class TestComponent {
 
