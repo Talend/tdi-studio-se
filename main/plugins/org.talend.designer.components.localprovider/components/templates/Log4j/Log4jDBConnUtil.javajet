@@ -167,14 +167,10 @@ imports="
 			conn_<%=cid%>.close();
 			<% /* TESB-24900 - graceful shutdown for MYSQL connection */ %>
 			String driverClass_<%=cid%> = (String)globalMap.get("driverClass_<%=connection.replaceAll("'","").trim()%>");
-			Class<?> cls = null;
 			if("com.mysql.cj.jdbc.Driver".equals(driverClass_<%=cid%>)) {
-                            cls = Class.forName("com.mysql.cj.jdbc.AbandonedConnectionCleanupThread");
-                            cls.getMethod("checkedShutdown").invoke(null, (Object[]) null);
-                        } else if ("com.mysql.jdbc.Driver".equals(driverClass_<%=cid%>)){
-                            cls = Class.forName("com.mysql.jdbc.AbandonedConnectionCleanupThread");
-                            cls.getMethod("shutdown").invoke(null, (Object[]) null);
-                        }
+			    Class.forName("com.mysql.cj.jdbc.AbandonedConnectionCleanupThread").
+			        getMethod("checkedShutdown").invoke(null, (Object[]) null);
+			}
 			<%
 			close_end();
 		}
