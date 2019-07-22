@@ -149,7 +149,7 @@
 		if(containsTPartitioner) {
 			%>
 			if(<%if(stat){%>execStat<%}%><%if(stat && logstashCurrent){%> || <%}%><%if(logstashCurrent){%>enableLogStash<%}%>) {
-				runStat.updateStatOnConnectionAndLog(resourceMap,globalMap,iterateLoop,iterateId,execStat,enableLogStash,0<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+				runStat.updateStatOnConnectionAndLog(resourceMap,globalMap,iterateLoop,iterateId,<%if(stat){%>execStat<%} else {%>false<%}%>,enableLogStash,0<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
 			}
 			<%
 		} else {
@@ -270,7 +270,7 @@
 				} else if(containsTPartitioner){
 				%>
 				if(<%if(stat){%>execStat<%}%><%if(stat && logstashCurrent){%> || <%}%><%if(logstashCurrent){%>enableLogStash<%}%>){
-					runStat.updateStatOnConnectionAndLog(globalMap,iterateLoop,iterateId,execStat,enableLogStash,0<%for(String connName : needToStartConnNames){%>,"<%=connName%>"<%}%>);
+					runStat.updateStatOnConnectionAndLog(globalMap,iterateLoop,iterateId,<%if(stat){%>execStat<%} else {%>false<%}%>,enableLogStash,0<%for(String connName : needToStartConnNames){%>,"<%=connName%>"<%}%>);
 				}
 				<%
 				} else {
