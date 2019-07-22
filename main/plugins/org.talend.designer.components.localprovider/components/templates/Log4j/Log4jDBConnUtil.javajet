@@ -167,7 +167,7 @@ imports="
 			conn_<%=cid%>.close();
 			<% /* TESB-24900 - graceful shutdown for MYSQL connection */ %>
 			String driverClass_<%=cid%> = (String)globalMap.get("driverClass_<%=connection.replaceAll("'","").trim()%>");
-			if("com.mysql.cj.jdbc.Driver".equals(driverClass_<%=cid%>)) {
+			if(routines.system.BundleUtils.inOSGi() && "com.mysql.cj.jdbc.Driver".equals(driverClass_<%=cid%>)) {
 			    Class.forName("com.mysql.cj.jdbc.AbandonedConnectionCleanupThread").
 			        getMethod("checkedShutdown").invoke(null, (Object[]) null);
 			}
