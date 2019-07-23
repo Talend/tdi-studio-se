@@ -10,17 +10,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.poifs.crypt.EncryptionInfo;
+import org.apache.poi.poifs.crypt.EncryptionMode;
+import org.apache.poi.poifs.crypt.Encryptor;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 
 public class ExcelTool {
 
@@ -69,6 +73,10 @@ public class ExcelTool {
     private int rowAccessWindowSize = SXSSFWorkbook.DEFAULT_WINDOW_SIZE;// used in auto flush
 
     private boolean isTrackAllColumns = false;
+
+    private String password = null;
+
+    private EncryptionMode encryptionMode = EncryptionMode.agile;
 
     public ExcelTool() {
         cellStylesMapping = new HashMap<>();
@@ -141,7 +149,6 @@ public class ExcelTool {
     }
 
     /**
-     *
      * @return start insert row index.
      */
     public int getStartRow() {
@@ -302,13 +309,13 @@ public class ExcelTool {
     }
 
     public void writeExcel(OutputStream outputStream) throws Exception {
-    	try {
-    		wb.write(outputStream);
-    	} finally {
-    		if(outputStream != null) {
-    			outputStream.close();
-    		}
-    	}
+        try {
+            wb.write(outputStream);
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+        }
     }
 
     public void writeExcel(String fileName, boolean createDir) throws Exception {
@@ -319,14 +326,29 @@ public class ExcelTool {
                 pFile.mkdirs();
             }
         }
-        FileOutputStream fileOutput = new FileOutputStream(fileName);
         if (appendWorkbook && appendSheet && recalculateFormula) {
             evaluateFormulaCell();
         }
+        FileOutputStream fileOutput = new FileOutputStream(fileName);
+        POIFSFileSystem fs = null;
         try {
-        	wb.write(fileOutput);
+            if (password == null) {
+                wb.write(fileOutput);
+            } else {
+                fs = new POIFSFileSystem();
+                Encryptor encryptor = new EncryptionInfo(encryptionMode).getEncryptor();
+                encryptor.confirmPassword(password);
+                OutputStream encryptedDataStream = encryptor.getDataStream(fs);
+                wb.write(encryptedDataStream);
+                wb.close();
+                encryptedDataStream.close(); // this is mandatory to do that at that point
+                fs.writeFilesystem(fileOutput);
+            }
         } finally {
-        	fileOutput.close();
+            fileOutput.close();
+            if (fs != null) {
+                fs.close();
+            }
         }
     }
 
@@ -349,4 +371,10 @@ public class ExcelTool {
             ((SXSSFSheet) sheet).flushRows();
         }
     }
+
+    public void setPasswordProtection(String password, String encryptionMode) {
+        this.password = password;
+        this.encryptionMode = EncryptionMode.valueOf(encryptionMode);
+    }
+
 }
