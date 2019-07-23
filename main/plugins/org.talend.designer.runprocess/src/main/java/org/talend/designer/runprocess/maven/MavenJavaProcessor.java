@@ -14,10 +14,12 @@ package org.talend.designer.runprocess.maven;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -26,15 +28,20 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.CommonUIPlugin;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.resource.FileExtensions;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.IESBService;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.JavaResourcesHelper;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
@@ -58,6 +65,7 @@ import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessor;
 import org.talend.repository.i18n.Messages;
+import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * created by ggu on 2 Feb 2015 Detailled comment
@@ -302,6 +310,31 @@ public class MavenJavaProcessor extends JavaProcessor {
         }
 
         buildTypeName = exportType != null ? exportType.toString() : null;
+
+        if (StringUtils.isBlank(buildTypeName)) {
+            List<IRepositoryViewObject> serviceRepoList = null;
+
+            IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+
+            try {
+                IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+                serviceRepoList = factory.getAll(ERepositoryObjectType.valueOf(ERepositoryObjectType.class, "SERVICES"));
+
+                for (IRepositoryViewObject serviceItem : serviceRepoList) {
+                    if (service != null) {
+                        List<String> jobIds = service.getSerivceRelatedJobIds(serviceItem.getProperty().getItem());
+                        if (jobIds.contains(itemProperty.getId())) {
+                            buildTypeName = "OSGI";
+                            service.setOperatingDataService(true);
+                            break;
+                        }
+                    }
+                }
+
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(IBuildParametes.ITEM, itemProperty.getItem());
