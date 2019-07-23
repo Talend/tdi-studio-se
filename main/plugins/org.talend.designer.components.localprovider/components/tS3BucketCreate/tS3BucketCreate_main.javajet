@@ -7,12 +7,16 @@ imports="
 	java.util.Map
 " 
 %>
+
 	<%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
 	String bucket = ElementParameterParser.getValue(node,"__BUCKET__");
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+
+	boolean enableACL = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__ACCESS_CONTROL_LIST__"));
+	List<Map<String, String>> paramsACL = ElementParameterParser.getTableValue(node,"__ACL__");
 	%>
 		<%@ include file="../tS3Connection/S3Client.javajet" %>
 	try{
@@ -23,7 +27,44 @@ imports="
 		<%
 		}
 		%>
-		conn_<%=cid%>.createBucket(<%=bucket%>);
+  		<%
+		if (enableACL) {  // need Access Control List.
+		%>
+			com.amazonaws.services.s3.model.AccessControlList accessCtrlList = new com.amazonaws.services.s3.model.AccessControlList();
+			accessCtrlList.setOwner(conn_<%=cid%>.getS3AccountOwner());
+			accessCtrlList.setRequesterCharged(true); 
+        <%
+			for (Map<String, String> paramACL : paramsACL) {
+				String aclAccountId = paramACL.get("ID");
+				if ("true".equalsIgnoreCase(paramACL.get("READ"))) {
+        %> 
+                    accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee("<%=aclAccountId%>"), com.amazonaws.services.s3.model.Permission.Read);
+        <%
+				}
+				if ("true".equalsIgnoreCase(paramACL.get("READ_ACL"))) {
+        %> 
+accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee("<%=aclAccountId%>"), com.amazonaws.services.s3.model.Permission.ReadAcp);
+        <%
+				}
+				if ("true".equalsIgnoreCase(paramACL.get("WRITE"))) {
+        %> 
+accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee("<%=aclAccountId%>"), com.amazonaws.services.s3.model.Permission.Write);
+        <%
+				}
+				if ("true".equalsIgnoreCase(paramACL.get("WRITE_ACL"))) {
+        %> 
+accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee("<%=aclAccountId%>"), com.amazonaws.services.s3.model.Permission.WriteAcp);
+        <%
+				}
+					
+			}
+		}
+  		%>
+                com.amazonaws.services.s3.model.CreateBucketRequest bucketRequest_<%=cid%> = new com.amazonaws.services.s3.model.CreateBucketRequest(<%=bucket%>);
+		<%if (enableACL) {%>
+				bucketRequest_<%=cid%>.withAccessControlList(accessCtrlList);
+		<%}%>
+		conn_<%=cid%>.createBucket(bucketRequest_<%=cid%>);
 		<%
 		if(isLog4jEnabled){
 		%>	
