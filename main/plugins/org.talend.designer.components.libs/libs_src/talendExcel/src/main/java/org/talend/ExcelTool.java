@@ -311,6 +311,7 @@ public class ExcelTool {
     public void writeExcel(OutputStream outputStream) throws Exception {
         try {
             wb.write(outputStream);
+            wb.close();
         } finally {
             if (outputStream != null) {
                 outputStream.close();
@@ -334,18 +335,17 @@ public class ExcelTool {
         try {
             if (password == null) {
                 wb.write(fileOutput);
-                wb.close();
             } else {
                 fs = new POIFSFileSystem();
                 Encryptor encryptor = new EncryptionInfo(encryptionMode).getEncryptor();
                 encryptor.confirmPassword(password);
                 OutputStream encryptedDataStream = encryptor.getDataStream(fs);
                 wb.write(encryptedDataStream);
-                wb.close();
                 encryptedDataStream.close(); // this is mandatory to do that at that point
                 fs.writeFilesystem(fileOutput);
             }
         } finally {
+            wb.close();
             fileOutput.close();
             if (fs != null) {
                 fs.close();
