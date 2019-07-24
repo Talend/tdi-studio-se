@@ -66,19 +66,19 @@ public class TaCoKitConfigurationModelTest {
 
     @Test
     public void testConvertParameterValue4Empty2() throws Exception {
-        Object obj = configurationModel.convertParameterValue("", "", "[]");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        Object obj = configurationModel.convertParameterValue("currentKey", "parentKey", "[]");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         Assert.assertEquals("[]", obj);//$NON-NLS-1$
     }
 
     @Test
     public void testConvertParameterValue4Empty3() throws Exception {
-        Object obj = configurationModel.convertParameterValue("", "", "[{}]");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        Object obj = configurationModel.convertParameterValue("currentKey", "parentKey", "[{}]");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         Assert.assertEquals("[{}]", obj);//$NON-NLS-1$
     }
 
     @Test
-    public void testConvertParameterValue4Empty4() throws Exception {
-        Object obj = configurationModel.convertParameterValue("", "", "[{test=1}]");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    public void testConvertParameterValue4SingleKey() throws Exception {
+        Object obj = configurationModel.convertParameterValue("currentKey", "parentKey", "[{test=1}]");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         Assert.assertEquals("[{test=1}]", obj);//$NON-NLS-1$
     }
 
