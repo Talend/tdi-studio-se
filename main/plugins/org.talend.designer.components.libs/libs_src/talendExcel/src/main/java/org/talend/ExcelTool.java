@@ -334,6 +334,7 @@ public class ExcelTool {
         try {
             if (password == null) {
                 wb.write(fileOutput);
+                wb.close();
             } else {
                 fs = new POIFSFileSystem();
                 Encryptor encryptor = new EncryptionInfo(encryptionMode).getEncryptor();
