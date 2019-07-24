@@ -242,30 +242,30 @@ public class TaCoKitConfigurationModel {
     }
 
     public Object convertParameterValue(String currentKey, String parentKey, String objectValue) {
-        if (objectValue != null) {
-            boolean update = false;
-            final List<Map<String, Object>> tableValues = ValueConverter.toTable(objectValue);
-            final List<Map<String, Object>> converted = new ArrayList<>(tableValues.size());
-            for (Object current : tableValues) {
-                if (current != null && current instanceof Map) {
-                    Map<String, Object> line = (Map<String, Object>) current;
-                    Map<String, Object> convertedLine = new HashMap<>();
-                    for (String key : line.keySet()) {
-                        if (key.startsWith(parentKey)) {
-                            final String newKey = key.replace(parentKey, currentKey);
-                            convertedLine.put(newKey, line.get(key));
-                            update = true;
-                        }
-                    }
-                    converted.add(convertedLine);
-                }
-            }
-            if (update) {
-                return converted.toString();
-            }
+        if (objectValue == null || StringUtils.isEmpty(currentKey) || StringUtils.isEmpty(parentKey)) {
             return objectValue;
         }
-        return null;
+        boolean update = false;
+        final List<Map<String, Object>> tableValues = ValueConverter.toTable(objectValue);
+        final List<Map<String, Object>> converted = new ArrayList<>(tableValues.size());
+        for (Object current : tableValues) {
+            if (current != null && current instanceof Map) {
+                Map<String, Object> line = (Map<String, Object>) current;
+                Map<String, Object> convertedLine = new HashMap<>();
+                for (String key : line.keySet()) {
+                    if (key.startsWith(parentKey)) {
+                        final String newKey = key.replace(parentKey, currentKey);
+                        convertedLine.put(newKey, line.get(key));
+                        update = true;
+                    }
+                }
+                converted.add(convertedLine);
+            }
+        }
+        if (update) {
+            return converted.toString();
+        }
+        return objectValue;
     }
 
     public EParameterFieldType getEParameterFieldType(String key) {

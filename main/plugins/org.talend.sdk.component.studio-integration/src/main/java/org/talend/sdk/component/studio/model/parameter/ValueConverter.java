@@ -79,7 +79,7 @@ public final class ValueConverter {
      * @return true, if it is empty
      */
     private static boolean isListEmpty(final String list) {
-        return list == null || list.isEmpty() || "[]".equals(list);
+        return list == null || list.isEmpty() || "[]".equals(list) || "[{}]".equals(list);
     }
 
     /**
