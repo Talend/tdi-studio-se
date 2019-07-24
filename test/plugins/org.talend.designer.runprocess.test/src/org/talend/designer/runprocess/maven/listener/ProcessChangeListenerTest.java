@@ -534,7 +534,7 @@ public class ProcessChangeListenerTest {
         Property curProperty = item.getProperty();
 
         if (register.isServiceRegistered(IDesignerCoreService.class)) {
-            IDesignerCoreService designerService = register.getService(IDesignerCoreService.class);
+            IDesignerCoreService designerService = (IDesignerCoreService) register.getService(IDesignerCoreService.class);
             process = designerService.getProcessFromItem(item);
             if (item.getProperty() == null && process instanceof IProcess2) {
                 curProperty = ((IProcess2) process).getProperty();
@@ -543,7 +543,8 @@ public class ProcessChangeListenerTest {
         }
 
         if (process != null && GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            IRunProcessService runProcessservice = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            IRunProcessService runProcessservice = (IRunProcessService) GlobalServiceRegister.getDefault()
+                    .getService(IRunProcessService.class);
             processor = runProcessservice.createCodeProcessor(process, curProperty, ECodeLanguage.getCodeLanguage("java"), true);
         }
         processor.setContext(context);
