@@ -77,7 +77,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         %>
         <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
         String password_<%=cid%> = decryptedPassword_<%=cid%>;
-        String encryptionMode_<%=cid%> = <%=encryptionMode%>;
+        String encryptionMode_<%=cid%> = "<%=encryptionMode%>";
         <%
         }
 
