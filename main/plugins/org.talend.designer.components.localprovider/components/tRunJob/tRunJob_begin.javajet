@@ -120,15 +120,16 @@ class DealChildJobLibrary_<%=cid%> {
 					Map<String, String> one = jvm_arguments.get(i);
 					String jvm_argument = one.get("ARGUMENT");
 					%>
-					String custom_argument = <%=jvm_argument%>;
-					if(!custom_argument.startsWith("-cp") && !custom_argument.startsWith("-libjars")) {
-						custom_arguments.add(custom_argument);
-					}
+					custom_arguments.add(<%=jvm_argument%>);
 				<%
 				}
 				%>
 				
 				for(String current_custom_argument : custom_arguments) {
+					if(current_custom_argument.startsWith("-cp") || current_custom_argument.startsWith("-libjars")) {
+						continue;
+					}
+					
 					target_argument_list.add(current_custom_argument);
 					
 					if(current_custom_argument.startsWith("-Dfile.encoding=")) {
