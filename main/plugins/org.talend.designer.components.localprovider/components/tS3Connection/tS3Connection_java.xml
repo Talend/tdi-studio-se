@@ -126,6 +126,15 @@
 	        <ITEM NAME="US_EAST_1" VALUE="&quot;us-east-1&quot;" />
 	        <ITEM NAME="US_WEST_1" VALUE="&quot;us-west-1&quot;" />
 	        <ITEM NAME="US_WEST_2" VALUE="&quot;us-west-2&quot;" />
+	        <ITEM NAME="US_EAST_2" VALUE="&quot;us-east-2&quot;" />
+	        <ITEM NAME="AP_EAST_1" VALUE="&quot;ap-east-1&quot;" />
+	        <ITEM NAME="AP_NORTHEAST_2" VALUE="&quot;ap-northeast-2&quot;" />
+	        <ITEM NAME="CA_CENTRAL_1" VALUE="&quot;ca-central-1&quot;" />
+	        <ITEM NAME="CN_NORTHWEST_1" VALUE="&quot;cn-northwest-1&quot;" />
+	        <ITEM NAME="EU_WEST_2" VALUE="&quot;eu-west-2&quot;" />
+	        <ITEM NAME="EU_WEST_3" VALUE="&quot;eu-west-3&quot;" />
+	        <ITEM NAME="EU_NORTH_1" VALUE="&quot;eu-north-1&quot;" />
+	        <ITEM NAME="US_GOV_EAST_1" VALUE="&quot;us-gov-east-1&quot;" />
     	</ITEMS>
     </PARAMETER>
     
