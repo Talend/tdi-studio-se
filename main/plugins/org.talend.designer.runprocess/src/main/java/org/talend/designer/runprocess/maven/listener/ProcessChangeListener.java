@@ -125,6 +125,8 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     // version change, will create new item
                     // create new job project.
                     TalendJavaProjectManager.generatePom(property.getItem());
+                    AggregatorPomsHelper helper = new AggregatorPomsHelper();
+                    helper.syncParentJobPomsForPropertyChange(property);
                 }
             }
         }

@@ -31,30 +31,51 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.language.ECodeLanguage;
+import org.talend.core.model.context.JobContextManager;
+import org.talend.core.model.process.IContext;
+import org.talend.core.model.process.IContextManager;
+import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.relationship.Relation;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.repository.RepositoryObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
+import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
+import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.joblet.model.JobletFactory;
 import org.talend.designer.joblet.model.JobletProcess;
+import org.talend.designer.maven.model.TalendJavaProjectConstants;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
+import org.talend.designer.maven.utils.PomUtil;
+import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
+import org.talend.designer.runprocess.maven.MavenJavaProcessor;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.documentation.ERepositoryActionName;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -401,6 +422,144 @@ public class ProcessChangeListenerTest {
         toAdd.add("jobs/process/testImportJob_0.1".toLowerCase());
         toAdd.add("jobs/process/testImportJob_0.2".toLowerCase());
         checkRootPomModules(toRemove, toAdd);
+    }
+
+    @Test
+    public void testSyncParentJobPomsForPropertyChange() throws Exception {
+        ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+        Property maintestProp = createJobPropertyWithContext("maintest", "0.1");
+        Property childtestProp = createJobPropertyWithContext("childtest", "0.1");
+
+        ProcessItem mainItem = (ProcessItem) maintestProp.getItem();
+        mainItem.getProcess().setDefaultContext("Default");
+        JobInfo mainJobInfo = new JobInfo(mainItem, mainItem.getProcess().getDefaultContext());
+        ProcessItem childItem = (ProcessItem) childtestProp.getItem();
+        JobInfo childJobInfo = new JobInfo(childItem, childItem.getProcess().getDefaultContext());
+        childJobInfo.setJobId(childtestProp.getId());
+        childJobInfo.setFatherJobInfo(mainJobInfo);
+
+        IProcessor mainProcessor = getProcessor(maintestProp.getItem());
+        assertTrue(mainProcessor != null);
+        mainProcessor.getBuildFirstChildrenJobs().add(childJobInfo);
+        int option = 0;
+        option |= TalendProcessOptionConstants.GENERATE_POM_ONLY;
+        option |= TalendProcessOptionConstants.GENERATE_IS_MAINJOB;
+        // ((MavenJavaProcessor) processor).generatePom(option);
+        MavenJavaProcessor mavenProcessor = (MavenJavaProcessor) mainProcessor;
+        mavenProcessor.generatePom(option);
+
+        // prepare relationship
+        RelationshipItemBuilder relationBuilder = RelationshipItemBuilder
+                .getInstance(ProjectManager.getInstance().getCurrentProject(), true);
+        relationBuilder.load();
+        Map<Relation, Set<Relation>> currentProjectItemsRelations = relationBuilder.getCurrentProjectItemsRelations();
+        Relation baseItem = new Relation();
+        baseItem.setId(maintestProp.getId());
+        baseItem.setType(RelationshipItemBuilder.JOB_RELATION);
+        baseItem.setVersion("0.1");
+        Relation relatedItem = new Relation();
+        relatedItem.setId(childtestProp.getId());
+        relatedItem.setVersion(RelationshipItemBuilder.LATEST_VERSION);
+        relatedItem.setType(RelationshipItemBuilder.JOB_RELATION);
+        currentProjectItemsRelations.put(baseItem, new HashSet<Relation>());
+        currentProjectItemsRelations.get(baseItem).add(relatedItem);
+        relationBuilder.saveRelations();
+
+        IFile maintestPom = getJobPomFile(maintestProp);
+        assertTrue(maintestPom.exists());
+        // expect: parentJob pom exist childJob dependency
+        assertTrue(PomUtil.checkIfJobDependencyExist(maintestPom, childtestProp));
+
+        // to upgrade child job version
+        IRepositoryViewObject childObject = factory.getSpecificVersion(childtestProp.getId(), childtestProp.getVersion(), true);
+        RepositoryObject upperChildObject = new RepositoryObject(childObject.getProperty());
+        Property upperProperty = upperChildObject.getProperty();
+        upperProperty.setVersion("0.2");
+        factory.save(upperProperty, childtestProp.getLabel(), childtestProp.getVersion());
+        RelationshipItemBuilder.getInstance().addOrUpdateItem(upperChildObject.getProperty().getItem());
+
+        // to moke the process of syncParentJobPomsForPropertyChange
+        List<Relation> itemsHaveRelationWith = RelationshipItemBuilder.getInstance()
+                .getItemsHaveRelationWith(upperProperty.getId(), upperProperty.getVersion());
+        assertTrue(itemsHaveRelationWith.size() == 1);
+        Relation relation = itemsHaveRelationWith.get(0);
+        assertTrue(relation.getId().equals(maintestProp.getId()));
+        assertTrue(relation.getVersion().equals(maintestProp.getVersion()));
+        // will get latest version childJobInfo in ProcessorUtilities.getSubjobInfo
+        mainProcessor.getBuildFirstChildrenJobs().clear();
+        ProcessItem upperItem = (ProcessItem) upperChildObject.getProperty().getItem();
+        JobInfo newChildJobInfo = new JobInfo(upperItem, upperItem.getProcess().getDefaultContext());
+        newChildJobInfo.setJobId(upperProperty.getId());
+        newChildJobInfo.setFatherJobInfo(mainJobInfo);
+        mainProcessor.getBuildFirstChildrenJobs().add(newChildJobInfo);
+        mavenProcessor.generatePom(option);
+
+        // expect: after childJob upgrade version, parentJob pom exist childJob dependency
+        // dependency version should be new version
+        assertTrue(PomUtil.checkIfJobDependencyExist(maintestPom, upperProperty));
+
+    }
+
+    private Property createJobPropertyWithContext(String label, String version) throws Exception {
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        String id = ProxyRepositoryFactory.getInstance().getNextId();
+        property.setId(id);
+        property.setLabel(label);
+        property.setVersion(version);
+
+        ProcessItem item = PropertiesFactory.eINSTANCE.createProcessItem();
+        item.setProperty(property);
+        Process process = new Process(property);
+
+        ProcessType processType = TalendFileFactory.eINSTANCE.createProcessType();
+        ParametersType parameterType = TalendFileFactory.eINSTANCE.createParametersType();
+        processType.setParameters(parameterType);
+        item.setProcess(processType);
+        IContextManager contextManager = process.getContextManager();
+        if (contextManager == null) {
+            contextManager = new JobContextManager();
+        }
+
+        ProxyRepositoryFactory.getInstance().create(item, new Path(""));
+        testJobs.add(property);
+
+        return property;
+    }
+
+    private IProcessor getProcessor(Item item) {
+        GlobalServiceRegister register = GlobalServiceRegister.getDefault();
+        IProcessor processor = null;
+        IProcess process = null;
+        IContext context = null;
+        Property curProperty = item.getProperty();
+
+        if (register.isServiceRegistered(IDesignerCoreService.class)) {
+            IDesignerCoreService designerService = register.getService(IDesignerCoreService.class);
+            process = designerService.getProcessFromItem(item);
+            if (item.getProperty() == null && process instanceof IProcess2) {
+                curProperty = ((IProcess2) process).getProperty();
+            }
+            context = process.getContextManager().getDefaultContext();
+        }
+
+        if (process != null && GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+            IRunProcessService runProcessservice = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            processor = runProcessservice.createCodeProcessor(process, curProperty, ECodeLanguage.getCodeLanguage("java"), true);
+        }
+        processor.setContext(context);
+
+        return processor;
+    }
+
+    private IFile getJobPomFile(Property property) {
+        String projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        final IProject project = root.getProject(projectTechName);
+        IFolder pomsFolder = project.getFolder(TalendJavaProjectConstants.DIR_POMS);
+        IFolder jobFolder = pomsFolder.getFolder("jobs").getFolder("process")
+                .getFolder(property.getLabel() + "_" + property.getVersion());
+        IFile jobPom = jobFolder.getFile("pom.xml");
+        return jobPom;
     }
 
     private Property createJobProperty(String label, String version, boolean create) throws Exception {
