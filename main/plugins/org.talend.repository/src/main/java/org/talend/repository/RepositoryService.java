@@ -129,6 +129,7 @@ import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.RepositoryNodeUtilities;
+import org.talend.repository.navigator.RepoViewCommonNavigator;
 import org.talend.repository.plugin.integration.BindingActions;
 import org.talend.repository.plugin.integration.SwitchProjectAction;
 import org.talend.repository.ui.actions.AContextualAction;
@@ -1023,5 +1024,14 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             return gitProviderService.isProjectInGitMode();
         }
         return false;
+    }
+
+    @Override
+    public void setShouldCheckRepoViewCommonNavigatorDirty(IRepositoryView repView, boolean shouldFlag) {
+        if (repView instanceof RepoViewCommonNavigator) {
+            // RepoViewCommonNavigator.shouldCheckRepositoryDirty default is true
+            // If set to false, after execute, should set back to true
+            ((RepoViewCommonNavigator) repView).setShouldCheckRepositoryDirty(shouldFlag);
+        }
     }
 }
