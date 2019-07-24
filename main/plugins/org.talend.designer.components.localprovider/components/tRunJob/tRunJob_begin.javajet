@@ -5,6 +5,8 @@ imports="
 	org.talend.designer.codegen.config.CodeGeneratorArgument
 	org.talend.designer.runprocess.ProcessorUtilities
 	org.talend.designer.runprocess.ProcessorException
+	java.util.Map
+	java.util.List
 "
 %>
 <%
@@ -35,6 +37,10 @@ if(isLog4jEnabled){
 } else {
 	codeOptions = new String[] {"\"--father_pid=\"+pid", "\"--root_pid=\"+rootPid", "\"--father_node="+ cid + "\""};
 }
+
+boolean use_custom_jvm_setting = "true".equals(ElementParameterParser.getValue(node, "__USE_CUSTOM_JVM_SETTING__"));
+List<Map<String, String>> jvm_arguments = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__JVM_ARGUMENTS__");
+
 if(useDynamicJob || useIndependentProcess){
 %>
 class DealChildJobLibrary_<%=cid%> {
@@ -86,7 +92,140 @@ class DealChildJobLibrary_<%=cid%> {
 }
 	DealChildJobLibrary_<%=cid%> dealChildJobLibrary_<%=cid %> = new DealChildJobLibrary_<%=cid%>();
 
-<%
+	class JVMArgumentHelper_<%=cid%> {
+		
+		<%
+		if(use_custom_jvm_setting) {
+		%>
+		private boolean stop_replace;
+		
+		private boolean have_set_custom_argument;
+		
+		private java.util.List<String> custom_arguments;
+		
+		boolean have_set_file_encoding;
+		boolean have_set_jmxremote;
+		boolean have_set_jmxremote_port;
+		boolean have_set_jmxremote_ssl;
+		boolean have_set_jmxremote_authenticate;
+		boolean have_set_tacokit_component_m2;
+		<%}%>
+		
+		public void addArgumentsTo(java.util.List<String> target_argument_list, String argument_from_child) {
+			<%if(use_custom_jvm_setting) {%>
+			if(!have_set_custom_argument) {
+				custom_arguments = new java.util.ArrayList<>();
+				<%
+				for (int i=0; i<jvm_arguments.size(); i++) {
+					Map<String, String> one = jvm_arguments.get(i);
+					String jvm_argument = one.get("ARGUMENT");
+					%>
+					String custom_argument = <%=jvm_argument%>;
+					if(!custom_argument.startsWith("-cp") && !custom_argument.startsWith("-libjars")) {
+						custom_arguments.add(custom_argument);
+					}
+				<%
+				}
+				%>
+				
+				for(String current_custom_argument : custom_arguments) {
+					target_argument_list.add(current_custom_argument);
+					
+					if(current_custom_argument.startsWith("-Dfile.encoding=")) {
+						have_set_file_encoding = true;
+					}
+					
+					if(current_custom_argument.equals("-Dcom.sun.management.jmxremote")) {
+						have_set_jmxremote = true;
+					}
+					
+					if(current_custom_argument.startsWith("-Dcom.sun.management.jmxremote.port=")) {
+						have_set_jmxremote_port = true;
+					}
+					
+					if(current_custom_argument.startsWith("-Dcom.sun.management.jmxremote.ssl=")) {
+						have_set_jmxremote_ssl = true;
+					}
+					
+					if(current_custom_argument.startsWith("-Dcom.sun.management.jmxremote.authenticate=")) {
+						have_set_jmxremote_authenticate = true;
+					}
+					
+					if(current_custom_argument.startsWith("-Dtalend.component.manager.m2.repository=")) {
+						have_set_tacokit_component_m2 = true;
+					}
+				}
+				
+				have_set_custom_argument = true;
+			}
+			
+			if(argument_from_child == null) {
+				return;
+			}
+			
+			if(argument_from_child.equals("-cp") || argument_from_child.equals("-libjars")) {
+				stop_replace = true;
+			}
+			
+			if(stop_replace) {
+				target_argument_list.add(argument_from_child);
+				return;
+			}
+			
+			if(argument_from_child.startsWith("-Dfile.encoding=") && !have_set_file_encoding) {
+				target_argument_list.add(argument_from_child);
+				return;
+			}
+			
+			if(argument_from_child.equals("-Dcom.sun.management.jmxremote") && !have_set_jmxremote) {
+				target_argument_list.add(argument_from_child);
+				return;
+			}
+			
+			if(argument_from_child.startsWith("-Dcom.sun.management.jmxremote.port=") && !have_set_jmxremote_port) {
+				target_argument_list.add(argument_from_child);
+				return;
+			}
+			
+			if(argument_from_child.startsWith("-Dcom.sun.management.jmxremote.ssl=") && !have_set_jmxremote_ssl) {
+				target_argument_list.add(argument_from_child);
+				return;
+			}
+			
+			if(argument_from_child.startsWith("-Dcom.sun.management.jmxremote.authenticate=") && !have_set_jmxremote_authenticate) {
+				target_argument_list.add(argument_from_child);
+				return;
+			}
+			
+			if(argument_from_child.startsWith("-Dtalend.component.manager.m2.repository=") && !have_set_tacokit_component_m2) {
+				target_argument_list.add(argument_from_child);
+				return;
+			}
+			<%} else {%>
+			target_argument_list.add(argument_from_child);
+			<%}%>
+		}
+		
+		<%
+		if(use_custom_jvm_setting) {
+		%>
+		public void reset() {
+			stop_replace = false;
+			have_set_custom_argument = false;
+			custom_arguments.clear();
+			
+			have_set_file_encoding = false;
+			have_set_jmxremote = false;
+			have_set_jmxremote_port = false;
+			have_set_jmxremote_ssl = false;
+			have_set_jmxremote_authenticate = false;
+			have_set_tacokit_component_m2 = false;
+		}
+		<%}%>
+	}
+	
+	JVMArgumentHelper_<%=cid%> jvm_argument_helper_<%=cid%> = new JVMArgumentHelper_<%=cid%>();
+	<%
 }
 try {
 	if(useDynamicJob){
@@ -130,25 +269,31 @@ try {
 				    if (commandLine[j].indexOf("\"") >= 0){
 				    	if(commandLine[j].indexOf(".jar")>=0){
 				    %>
-				      		childJob_commandLine_<%=cid%>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=commandLine[j] %>).replaceAll(";",classpathSeparator_<%=cid%>));
+				      		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=commandLine[j] %>).replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}else{
 				    %>
-				    		childJob_commandLine_<%=cid%>.add(<%=commandLine[j] %>.replaceAll(";",classpathSeparator_<%=cid%>));
+				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, <%=commandLine[j] %>.replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}
 				    }else{
 				    	if(commandLine[j].indexOf(".jar")>=0){
 				    %>
-				    		childJob_commandLine_<%=cid%>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap("<%=commandLine[j] %>").replaceAll(";",classpathSeparator_<%=cid%>));
+				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap("<%=commandLine[j] %>").replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}else{
 				    %>
-				    		childJob_commandLine_<%=cid%>.add("<%=commandLine[j] %>".replaceAll(";",classpathSeparator_<%=cid%>));
+				    		jvm_argument_helper_<%=cid%>.addArgumentsTo(childJob_commandLine_<%=cid%>, "<%=commandLine[j] %>".replaceAll(";",classpathSeparator_<%=cid%>));
 				    <%
 				    	}
 				    }
 				  }
+				}
+				
+				if(use_custom_jvm_setting) {
+				%>
+				jvm_argument_helper_<%=cid%>.reset();
+				<%
 				}
 				
 				//find the job name and classpath, the job name in front of codeOptions
