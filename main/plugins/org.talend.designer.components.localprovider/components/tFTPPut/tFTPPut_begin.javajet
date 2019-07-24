@@ -46,6 +46,7 @@ boolean ftps = false;
 
 String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
 String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
+String timeoutValue = ElementParameterParser.getValue(node, "__CONNECTION_TIMEOUT__");
 boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
@@ -62,8 +63,11 @@ if (("true").equals(useExistingConn)) {
   }
 } else {
   sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
-  ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__")); 
-}  
+  ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
+%>
+  int connectionTimeout_<%=cid %> = Integer.valueOf(<%=timeoutValue %>);
+<%
+}
 
 //The following part support the socks proxy for FTP and SFTP (Socks V4 or V5, they are all OK). 
 //And it can not work with the FTP proxy directly, only support the socks proxy.
@@ -260,6 +264,11 @@ int nb_file_<%=cid%> = 0;
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" +<%=user %>+ "'.");
 			<%}%>
+
+			if (connectionTimeout_<%=cid %> > 0) {
+				ftp_<%=cid %>.setTimeout(connectionTimeout_<%=cid %>);
+			}
+
 		    ftp_<%=cid %>.connect();  
 		    
         	<%
@@ -367,6 +376,11 @@ int nb_file_<%=cid%> = 0;
 					log.info("<%=cid%> -FTPS security Mode is <%=securityMode%>.");
 					log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
 				<%}%>
+
+				if (connectionTimeout_<%=cid %> > 0) {
+					ftp_<%=cid %>.setDefaultTimeout(connectionTimeout_<%=cid %>);
+				}
+
 				ftp_<%=cid %>.connect(<%=host %>,<%=ftpsPort %>);
 				<%if(isLog4jEnabled){%>
 					log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");

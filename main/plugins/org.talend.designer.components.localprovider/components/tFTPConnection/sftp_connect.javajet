@@ -1,17 +1,12 @@
 <%@ jet
 %>
 
-<%
-String timeoutValue = ElementParameterParser.getValue(node, "__SFTP_TIMEOUT__");
-%>
-
 boolean retry_<%=cid%> = false;
 int retry_count_<%=cid%> = 0;
 int retry_max_<%=cid%> = 5;
 
 com.jcraft.jsch.Session session_<%=cid%> = null;
 com.jcraft.jsch.Channel channel_<%=cid%> = null;
-int connectionTimeout_<%=cid %> = Integer.valueOf(<%=timeoutValue %>);
 do {
     retry_<%=cid%> = false;
 
