@@ -325,7 +325,6 @@ public class MavenJavaProcessor extends JavaProcessor {
                         List<String> jobIds = service.getSerivceRelatedJobIds(serviceItem.getProperty().getItem());
                         if (jobIds.contains(itemProperty.getId())) {
                             buildTypeName = "OSGI";
-                            service.setOperatingDataService(true);
                             break;
                         }
                     }
