@@ -69,22 +69,10 @@ public class ExcelReader implements Callable {
         task = new Thread(futureTask);
     }
 
-    public void parse(String fileURL, String charset) {
-        this.fileURL = fileURL;
-        this.charset = charset;
-        task.start();
-    }
-
     public void parse(String fileURL, String charset, String password) {
         this.fileURL = fileURL;
         this.charset = charset;
         this.password = password;
-        task.start();
-    }
-
-    public void parse(java.io.InputStream is, String charset) {
-        this.is = is;
-        this.charset = charset;
         task.start();
     }
 
