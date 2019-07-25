@@ -111,7 +111,7 @@ public class JSONUtil {
         return true;
     }
 
-    public static String changeJsonToXml(String jsonPath) {
+    public static String changeJsonToXml(String jsonPath, String encoding) {
         Project project = ProjectManager.getInstance().getCurrentProject();
         IProject fsProject = null;
         try {
@@ -166,15 +166,14 @@ public class JSONUtil {
         }
 
         try {
-            String jsonStr = IOUtils.toString(input);
+            String jsonStr = IOUtils.toString(input, encoding);
 
             convertJSON.setJsonString(jsonStr);
-
             convertJSON.generate();
             jsonStr = convertJSON.getJsonString4XML();
-            inStream = new ByteArrayInputStream(jsonStr.getBytes());
-            javax.xml.stream.XMLEventReader xmlEventReader = jsonXMLInputFactory.createXMLEventReader(inStream);
-            javax.xml.stream.XMLEventWriter xmLEventWriter = xmlOutputFactory.createXMLEventWriter(outStream);
+            inStream = new ByteArrayInputStream(jsonStr.getBytes(encoding));
+            javax.xml.stream.XMLEventReader xmlEventReader = jsonXMLInputFactory.createXMLEventReader(inStream, encoding);
+            javax.xml.stream.XMLEventWriter xmLEventWriter = xmlOutputFactory.createXMLEventWriter(outStream, encoding);
             xmLEventWriter.add(xmlEventReader);
             String xmlStr = outStream.toString();
 

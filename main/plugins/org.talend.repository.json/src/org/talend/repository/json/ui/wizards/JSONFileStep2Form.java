@@ -222,6 +222,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
             jsonXPathLoopDescriptor.setLimitBoucle(XmlArray.getRowLimit());
 
         }
+        treePopulator.setEncoding(getConnection().getEncoding());
         treePopulator.populateTree(wizard.getTempJsonPath(), treeNode);
         fieldsModel.setJSONXPathLoopDescriptor(jsonXPathLoopDescriptor.getSchemaTargets());
         fieldsTableEditorView.getTableViewerCreator().layout();
@@ -947,6 +948,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
             // fix bug: when the JSON file is changed, the linker doesn't work.
             resetStatusIfNecessary();
             String tempJson = this.wizard.getTempJsonPath();
+            this.treePopulator.setEncoding(getConnection().getEncoding());
             this.treePopulator.populateTree(tempJson, treeNode);
 
             ScrollBar verticalBar = availableJSONTree.getVerticalBar();

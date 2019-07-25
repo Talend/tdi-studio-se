@@ -328,7 +328,7 @@ public class JSONFileStep3Form extends AbstractJSONFileStepForm {
                 processDescription = JSONShadowProcessHelper.getProcessDescription(connection2, connection2.getJSONFilePath());
             } else {
                 processDescription = JSONShadowProcessHelper.getProcessDescription(connection2,
-                        JSONUtil.changeJsonToXml(connection2.getJSONFilePath()));
+                        JSONUtil.changeJsonToXml(connection2.getJSONFilePath(), getConnection().getEncoding()));
             }
         }
         return processDescription;
