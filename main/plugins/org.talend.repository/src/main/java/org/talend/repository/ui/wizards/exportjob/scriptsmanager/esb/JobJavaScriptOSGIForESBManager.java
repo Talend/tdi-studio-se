@@ -30,8 +30,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,9 +84,14 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsM
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.TemplateProcessor;
 
+import aQute.bnd.header.Attrs;
 import aQute.bnd.osgi.Analyzer;
+import aQute.bnd.osgi.Descriptors;
 import aQute.bnd.osgi.FileResource;
 import aQute.bnd.osgi.Jar;
+import aQute.bnd.service.AnalyzerPlugin;
+import aQute.bnd.service.Plugin;
+import aQute.service.reporter.Reporter;
 
 /**
  * DOC ycbai class global comment. Detailled comment
@@ -806,6 +813,11 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             bundleNativeCode.setLength(bundleNativeCode.length() - 1);
             analyzer.setProperty(Analyzer.BUNDLE_NATIVECODE, bundleNativeCode.toString());
         }
+        
+        // TESB-24730 set specific version for "javax.annotation"
+        ImportedPackageRangeReplacer r = new ImportedPackageRangeReplacer();
+        r.addRange("javax.annotation", "[1.3,2)");
+        analyzer.addBasicPlugin(r); 
 
         return analyzer;
     }
@@ -999,5 +1011,117 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             e.printStackTrace();
         }
         return imports;
+    }
+    
+    private class ImportedPackageRangeReplacer implements AnalyzerPlugin, Plugin {
+
+        private Set<Range> ranges = new TreeSet<>();
+
+        public void addRange(String packageName, String packageVersion) {
+            ranges.add(new Range(packageName, packageVersion));
+        }
+
+        /**
+         * Analyzes the jar and update the version range.
+         *
+         * @param analyzer the analyzer
+         * @return {@code false}
+         * @throws Exception if the analaysis fails.
+         */
+        @Override
+        public boolean analyzeJar(Analyzer analyzer) throws Exception {
+
+            if (analyzer.getReferred() == null) {
+                return false;
+            }
+
+            for (Map.Entry<Descriptors.PackageRef, Attrs> entry : analyzer.getReferred().entrySet()) {
+                for (Range range : ranges) {
+                    if (range.matches(entry.getKey().getFQN())) {
+                        String value = range.getRange(analyzer);
+                        if (value != null) {
+                            entry.getValue().put("version", value);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+
+        private class Range implements Comparable<Range> {
+            final String name;
+            final String value;
+            final Pattern regex;
+
+            private String foundRange;
+
+            private Range(String name, String value) {
+                this.name = name;
+                this.value = value;
+                this.regex = Pattern.compile(name.trim().replace(".", "\\.").replace("*", ".*"));
+            }
+
+            private boolean matches(String pck) {
+                return regex.matcher(pck).matches();
+            }
+
+            private String getRange(Analyzer analyzer) throws Exception {
+                if (foundRange != null) {
+                    return foundRange;
+                }
+                if (null == value || value.isEmpty()) {
+                    for (Jar jar : analyzer.getClasspath()) {
+                        if (isProvidedByJar(jar) && jar.getVersion() != null) {
+                            foundRange = jar.getVersion();
+                            return jar.getVersion();
+                        }
+                    }
+                    return null;
+                } else {
+                    return value;
+                }
+            }
+
+            private boolean isProvidedByJar(Jar jar) {
+                for (String s : jar.getPackages()) {
+                    if (matches(s)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public int compareTo(Range o) {
+                return Integer.compare(this.regex.pattern().length(), o.regex.pattern().length());
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) {
+                    return true;
+                }
+                if (o == null || getClass() != o.getClass()) {
+                    return false;
+                }
+                Range range = (Range) o;
+                return Objects.equals(name, range.name) &&
+                        Objects.equals(value, range.value);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hashCode(name + value);
+            }
+        }
+
+        @Override
+        public void setReporter(Reporter processor) {
+        }
+
+        @Override
+        public void setProperties(Map<String, String> map) throws Exception {
+        }
     }
 }
