@@ -153,6 +153,7 @@ import org.talend.designer.core.utils.UpgradeParameterHelper;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.hadoop.distribution.constants.HiveConstant;
 import org.talend.hadoop.distribution.constants.ImpalaConstant;
+import org.talend.metadata.managment.repository.ManagerConnection;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IMetadataService;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -1564,6 +1565,10 @@ public abstract class AbstractElementPropertySectionController implements Proper
             dbName = ""; //$NON-NLS-1$
         }
         connParameters.setDbName(dbName);
+        EDatabaseTypeName dbtype = EDatabaseTypeName.getTypeFromDbType(type);
+        if (ManagerConnection.isSchemaFromSidOrDatabase(dbtype)) {
+        	connParameters.setSchema(dbName);
+        }
         if (connParameters.getDbType().equals(EDatabaseTypeName.SQLITE.getXmlName())
                 || connParameters.getDbType().equals(EDatabaseTypeName.ACCESS.getXmlName())
                 || connParameters.getDbType().equals(EDatabaseTypeName.FIREBIRD.getXmlName())) {
@@ -1776,6 +1781,11 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 EConnectionParameterName.PROPERTIES_STRING.getName(), context, basePropertyParameter));
         connParameters.setDatasource(getParameterValueWithContext(element, EConnectionParameterName.DATASOURCE.getName(),
                 context, basePropertyParameter));
+        EDatabaseTypeName dbtypeName = EDatabaseTypeName.getTypeFromDbType(dbType);
+        if (ManagerConnection.isSchemaFromSidOrDatabase(dbtypeName) 
+        		&& (connParameters.getSchema() == null || connParameters.getSchema().length() <= 0)) {
+        	connParameters.setSchema(dbName);
+        }
     }
 
     private String getParameterValueWithContext(IElement elem, String key, IContext context,

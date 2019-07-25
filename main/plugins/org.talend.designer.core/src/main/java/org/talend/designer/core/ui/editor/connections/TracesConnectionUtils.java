@@ -377,6 +377,11 @@ public class TracesConnectionUtils {
                 connection.getParameters().put(para.getKey(), para.getValue());
             }
         }
+        
+        EDatabaseTypeName typeName = EDatabaseTypeName.getTypeFromDbType(dbType);
+        if (ManagerConnection.isSchemaFromSidOrDatabase(typeName)) {
+        	connection.setUiSchema(schema);
+        }
 
         return connection;
     }
