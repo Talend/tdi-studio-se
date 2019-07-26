@@ -15,12 +15,10 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.Collections.*;
+import static java.util.Optional.*;
+import static java.util.function.Function.*;
+import static java.util.stream.Collectors.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -230,12 +228,16 @@ public class SettingVisitor implements PropertyVisitor {
                 settings.put(inSchema.getName(), inSchema);
                 break;
             case TACOKIT_VALUE_SELECTION:
-                final TaCoKitElementParameter valueSelection = visitValueSelection(node);
-                settings.put(valueSelection.getName(), valueSelection);
+                final TaCoKitElementParameter textAreaSelection = visitValueSelection(node);
+                settings.put(textAreaSelection.getName(), textAreaSelection);
                 break;
             case PREV_COLUMN_LIST:
                 final TaCoKitElementParameter prevColumnList = visitPrevColumnList(node);
                 settings.put(prevColumnList.getName(), prevColumnList);
+                break;
+            case TACOKIT_TEXT_AREA_SELECTION:
+                final TaCoKitElementParameter valueSelection = visitTextAreaSelection(node);
+                settings.put(valueSelection.getName(), valueSelection);
                 break;
             default:
                 final IElementParameter text;
@@ -479,6 +481,13 @@ public class SettingVisitor implements PropertyVisitor {
         final SuggestionsResolver resolver = new SuggestionsResolver(action, node, actions);
         parameterResolvers.add(resolver);
         return action;
+    }
+
+    private TextAreaSelectionParameter visitTextAreaSelection(final PropertyNode node) {
+        final SuggestionsAction action = createSuggestionsAction(node);
+        final TextAreaSelectionParameter parameter = new TextAreaSelectionParameter(element, action);
+        commonSetup(parameter, node);
+        return parameter;
     }
 
     protected TaCoKitElementParameter createSchemaParameter(final String connectionName, final String schemaName,

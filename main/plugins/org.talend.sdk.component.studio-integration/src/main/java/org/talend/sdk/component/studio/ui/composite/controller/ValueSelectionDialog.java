@@ -49,11 +49,14 @@ public class ValueSelectionDialog extends Dialog {
 
     private String selectedValue;
 
-    public ValueSelectionDialog(final Shell parentShell, final Map<String, String> possibleValues) {
+    private boolean isMultiple = false;
+
+    public ValueSelectionDialog(final Shell parentShell, final Map<String, String> possibleValues, final boolean isMultiple) {
         super(parentShell);
         if (possibleValues != null) {
             values.putAll(possibleValues);
         }
+        this.isMultiple = isMultiple;
         setShellStyle(getShellStyle() | SWT.RESIZE | SWT.MIN | SWT.APPLICATION_MODAL);
     }
 
@@ -87,7 +90,7 @@ public class ValueSelectionDialog extends Dialog {
                     }
                 };
             };
-        }.setMultipleSelection(false).create();
+        }.setMultipleSelection(isMultiple).create();
         selectionComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         selectionComposite.setViewerData(getLabels());
 
@@ -136,8 +139,15 @@ public class ValueSelectionDialog extends Dialog {
         if (selectionComposite.isEnabled()) {
             List<String> selectedElements = selectionComposite.getSelectedElements();
             if (selectedElements.size() > 0) {
-                final String selectedLabel = selectedElements.get(0);
-                return values.get(selectedLabel);
+                StringBuffer sber = new StringBuffer();
+                for (String selectedLabel : selectedElements) {
+                    sber.append(values.get(selectedLabel));
+                    if (!isMultiple) {
+                        break;
+                    }
+                    sber.append("\n"); //$NON-NLS-1$
+                }
+                return sber.toString();
             } else {
                 return ""; //$NON-NLS-1$
             }
