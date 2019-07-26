@@ -1,10 +1,6 @@
 package org.talend;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +17,8 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbookType;
 
 public class ExcelTool {
 
@@ -110,21 +108,7 @@ public class ExcelTool {
                 initPreXlsx(fileName);
             }
             if (appendWorkbook) {
-                InputStream inp = new FileInputStream(fileName);
-                wb = WorkbookFactory.create(inp);
-                sheet = wb.getSheet(sheetName);
-                if (sheet != null) {
-                    if (appendSheet) {
-                        if (sheet.getLastRowNum() != 0 || sheet.getRow(0) != null) {
-                            curY = sheet.getLastRowNum() + 1;
-                        }
-                    } else {
-                        wb.removeSheetAt(wb.getSheetIndex(sheetName));
-                        sheet = wb.createSheet(sheetName);
-                    }
-                } else {
-                    sheet = wb.createSheet(sheetName);
-                }
+                appendActionForFile(fileName);
             } else {
                 xlsxFile.delete();
                 wb = new SXSSFWorkbook(rowAccessWindowSize);
@@ -137,6 +121,47 @@ public class ExcelTool {
         if (isAbsY) {
             startX = absX;
             curY = absY;
+        }
+    }
+
+    public void prepareXlsmFile(String fileName) throws Exception {
+        File xlsmFile = new File(fileName);
+        if (xlsmFile.exists()) {
+            if (isAbsY && keepCellFormat) {
+                initPreXlsx(fileName);
+            }
+            if (appendWorkbook) {
+                appendActionForFile(fileName);
+            } else {
+                xlsmFile.delete();
+                wb = new SXSSFWorkbook(new XSSFWorkbook(XSSFWorkbookType.XLSM), rowAccessWindowSize);
+                sheet = wb.createSheet(sheetName);
+            }
+        } else {
+            wb = new SXSSFWorkbook(new XSSFWorkbook(XSSFWorkbookType.XLSM), rowAccessWindowSize);
+            sheet = wb.createSheet(sheetName);
+        }
+        if (isAbsY) {
+            startX = absX;
+            curY = absY;
+        }
+    }
+
+    private void appendActionForFile(String fileName) throws IOException {
+        InputStream inp = new FileInputStream(fileName);
+        wb = WorkbookFactory.create(inp);
+        sheet = wb.getSheet(sheetName);
+        if (sheet != null) {
+            if (appendSheet) {
+                if (sheet.getLastRowNum() != 0 || sheet.getRow(0) != null) {
+                    curY = sheet.getLastRowNum() + 1;
+                }
+            } else {
+                wb.removeSheetAt(wb.getSheetIndex(sheetName));
+                sheet = wb.createSheet(sheetName);
+            }
+        } else {
+            sheet = wb.createSheet(sheetName);
         }
     }
 
