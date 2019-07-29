@@ -155,13 +155,6 @@
     <PARAMETER NAME="PASSWORD" FIELD="PASSWORD"	REQUIRED="true" SHOW_IF="isShow[PROTECT_FILE] AND (PROTECT_FILE == 'true')" NUM_ROW="72">
         <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    <PARAMETER NAME="ENCRYPTION_MODE" FIELD="CLOSED_LIST" REQUIRED="true" SHOW_IF="isShow[PROTECT_FILE] AND (PROTECT_FILE == 'true')" NUM_ROW="72">
-        <ITEMS DEFAULT="agile">
-            <ITEM NAME="binaryRC4" VALUE="binaryRC4" />
-            <ITEM NAME="standard" VALUE="standard" />
-            <ITEM NAME="agile" VALUE="agile" />
-        </ITEMS>
-    </PARAMETER>
 
       <PARAMETER
       NAME="SCHEMA"

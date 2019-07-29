@@ -73,11 +73,9 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		boolean protectFile = ("true").equals(ElementParameterParser.getValue(node, "__PROTECT_FILE__")) ? true : false;
 		if (protectFile) {
             String passwordFieldName = "__PASSWORD__";
-            String encryptionMode = ElementParameterParser.getValue(node, "__ENCRYPTION_MODE__");
         %>
         <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
         String password_<%=cid%> = decryptedPassword_<%=cid%>;
-        String encryptionMode_<%=cid%> = "<%=encryptionMode%>";
         <%
         }
 
@@ -773,7 +771,7 @@ if(!hasDynamic && isIncludeHeader){
 		int nb_line_<%=cid%> = 0;
 		org.talend.ExcelTool xlsxTool_<%=cid%> = new org.talend.ExcelTool();
 		<% if (protectFile) { %>
-        xlsxTool_<%=cid%>.setPasswordProtection(password_<%=cid%>, encryptionMode_<%=cid%>);
+        xlsxTool_<%=cid%>.setPasswordProtection(password_<%=cid%>);
         <%}%>
 <%	 
 		if(flushOnRow && (useStream || !isAppendFile)){
