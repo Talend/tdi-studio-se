@@ -76,8 +76,6 @@ public class ExcelTool {
 
     private String password = null;
 
-    private EncryptionMode encryptionMode = EncryptionMode.agile;
-
     public ExcelTool() {
         cellStylesMapping = new HashMap<>();
     }
@@ -337,7 +335,7 @@ public class ExcelTool {
                 wb.write(fileOutput);
             } else {
                 fs = new POIFSFileSystem();
-                Encryptor encryptor = new EncryptionInfo(encryptionMode).getEncryptor();
+                Encryptor encryptor = new EncryptionInfo(EncryptionMode.agile).getEncryptor();
                 encryptor.confirmPassword(password);
                 OutputStream encryptedDataStream = encryptor.getDataStream(fs);
                 wb.write(encryptedDataStream);
@@ -373,9 +371,8 @@ public class ExcelTool {
         }
     }
 
-    public void setPasswordProtection(String password, String encryptionMode) {
+    public void setPasswordProtection(String password) {
         this.password = password;
-        this.encryptionMode = EncryptionMode.valueOf(encryptionMode);
     }
 
 }
