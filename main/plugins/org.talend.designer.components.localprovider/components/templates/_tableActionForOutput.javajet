@@ -378,7 +378,7 @@ if (!isParallelize) {
                                     if(conns_dynamic!=null && conns_dynamic.size()>0){
                                         String query=manager.getCreateTableSQL(stmtStructure);
                                         %>
-                                        stmtCreate_<%=cid%>.execute((("<%=query%>").replace("{TALEND_DYNAMIC_COLUMN}",DynamicUtils.getCreateTableSQL(<%=conns_dynamic.get(0).getName()%>.<%=getDynamicColumn()%>, "<%=dbms==null?"":dbms.toLowerCase()%>")<%if(convertToUppercase_tableAction){%>.toUpperCase()<%}else if(convertToLowercase_tableAction){%>.toLowerCase()<%}%>)+")<%=ending%>"));
+                                        stmtCreate_<%=cid%>.execute((("<%=query%>").replace("{TALEND_DYNAMIC_COLUMN}",DynamicUtils.getCreateTableSQL(<%=conns_dynamic.get(0).getName()%>.<%=getDynamicColumn()%>, "<%=dbms==null?"":dbms.toLowerCase()%>"))+")<%=ending%>")<%if(convertToUppercase_tableAction){%>.toUpperCase()<%}else if(convertToLowercase_tableAction){%>.toLowerCase()<%}%>);
                                     <%
                                     }
                                 } else {
