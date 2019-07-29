@@ -115,7 +115,6 @@
      	<ITEMS DEFAULT="DEFAULT">
         	<ITEM NAME="DEFAULT" VALUE="DEFAULT" />
 	        <ITEM NAME="GovCloud" VALUE="&quot;us-gov-west-1&quot;" />
-	        <ITEM NAME="US_GOV_EAST_1" VALUE="&quot;us-gov-east-1&quot;" />
 	        <ITEM NAME="US_EAST_1" VALUE="&quot;us-east-1&quot;" />
 	        <ITEM NAME="US_WEST_1" VALUE="&quot;us-west-1&quot;" />
 	        <ITEM NAME="US_WEST_2" VALUE="&quot;us-west-2&quot;" />
