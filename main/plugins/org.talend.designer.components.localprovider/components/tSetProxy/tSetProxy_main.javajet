@@ -15,6 +15,7 @@ imports="
    String proxyType = (String)ElementParameterParser.getObjectValue(node,"_PROXY_TYPE_");
    String proxyHost = ElementParameterParser.getValue(node,"__PROXY_HOST__");
    String proxyPort = ElementParameterParser.getValue(node,"__PROXY_PORT__");
+   boolean useAuth = "true".equals(ElementParameterParser.getValue(node,"__USE_AUTH__"));
    String proxyUser = ElementParameterParser.getValue(node,"__PROXY_USERNAME__");
    String proxyPassword = ElementParameterParser.getValue(node,"__PROXY_PASSWORD__");
    String nonProxyHosts = ElementParameterParser.getValue(node,"__NONPROXYHOSTS__");
@@ -66,15 +67,16 @@ imports="
 			
 			System.setProperty("https.proxyHost", <%=proxyHost %>);
             System.setProperty("https.proxyPort", <%=proxyPort %>);  
-            System.setProperty("jdk.http.auth.tunneling.disabledSchemes","");
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-            java.net.Authenticator.setDefault(new java.net.Authenticator() { 
-                public java.net.PasswordAuthentication getPasswordAuthentication(){
-                    return new java.net.PasswordAuthentication(<%=proxyUser %>, decryptedPassword_<%=cid%>.toCharArray()); 
+                <%if(useAuth){%>
+                    System.setProperty("jdk.http.auth.tunneling.disabledSchemes","");
+                    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+                    java.net.Authenticator.setDefault(new java.net.Authenticator() { 
+                        public java.net.PasswordAuthentication getPasswordAuthentication(){
+                            return new java.net.PasswordAuthentication(<%=proxyUser %>, decryptedPassword_<%=cid%>.toCharArray()); 
+                        }
+                    });
+            <%
                 }
-            });
-            
-<%
 			}else if ("FTP_PROXY".equals(proxyType)) {
 %>			
 			//set it, though in some cases, it is not useful. 
