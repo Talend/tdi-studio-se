@@ -36,6 +36,12 @@ imports="
         <%
 			for (Map<String, String> paramACL : paramsACL) {
 				String aclAccountId = paramACL.get("ID");
+				if (aclAccountId.startsWith("\"")) {
+					aclAccountId = aclAccountId.substring(1);
+                }
+				if (aclAccountId.endsWith("\"")) {
+					aclAccountId = aclAccountId.substring(0, aclAccountId.length() - 1);
+                }
 				if ("true".equalsIgnoreCase(paramACL.get("READ"))) {
         %> 
                     accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee("<%=aclAccountId%>"), com.amazonaws.services.s3.model.Permission.Read);
