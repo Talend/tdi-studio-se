@@ -1185,7 +1185,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             if ((!isExternalUse() && isStandardJob()) || isGuessSchemaJob(property)) {
                 String localM2Path = "-Dtalend.component.manager.m2.repository="; //$NON-NLS-1$
                 if (EnvironmentUtils.isWindowsSystem()) {
-                    localM2Path = localM2Path + "\"" + PomUtil.getLocalRepositoryPath() + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+                    localM2Path = localM2Path + PomUtil.getLocalRepositoryPath().replaceAll("%20", " "); //$NON-NLS-1$ //$NON-NLS-2$
                 } else {
                     localM2Path = localM2Path + PomUtil.getLocalRepositoryPath();
                 }
