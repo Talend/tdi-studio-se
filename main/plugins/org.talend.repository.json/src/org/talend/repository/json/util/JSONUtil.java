@@ -171,9 +171,9 @@ public class JSONUtil {
             convertJSON.setJsonString(jsonStr);
             convertJSON.generate();
             jsonStr = convertJSON.getJsonString4XML();
-            inStream = new ByteArrayInputStream(jsonStr.getBytes(encoding));
-            javax.xml.stream.XMLEventReader xmlEventReader = jsonXMLInputFactory.createXMLEventReader(inStream, encoding);
-            javax.xml.stream.XMLEventWriter xmLEventWriter = xmlOutputFactory.createXMLEventWriter(outStream, encoding);
+            inStream = new ByteArrayInputStream(jsonStr.getBytes());
+            javax.xml.stream.XMLEventReader xmlEventReader = jsonXMLInputFactory.createXMLEventReader(inStream);
+            javax.xml.stream.XMLEventWriter xmLEventWriter = xmlOutputFactory.createXMLEventWriter(outStream);
             xmLEventWriter.add(xmlEventReader);
             String xmlStr = outStream.toString();
 

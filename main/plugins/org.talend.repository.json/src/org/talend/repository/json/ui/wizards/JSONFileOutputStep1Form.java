@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.MatchResult;
 import org.apache.oro.text.regex.Pattern;
@@ -54,8 +55,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
+import org.talend.commons.CommonsPlugin;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.swt.formtools.Form;
 import org.talend.commons.ui.swt.formtools.LabelledCombo;
 import org.talend.commons.ui.swt.formtools.LabelledFileField;
@@ -722,7 +724,17 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
         }
         String str;
         try {
-            Charset guessCharset = CharsetToolkit.guessEncoding(file, 4096);
+            Charset guessCharset = null;
+            try {
+                guessCharset = Charset.forName(getConnection().getEncoding());
+            } catch (Exception e) {
+                if (CommonsPlugin.isDebugMode()) {
+                    ExceptionHandler.process(e, Priority.INFO);
+                }
+            }
+            if (guessCharset == null) {
+                guessCharset = CharsetToolkit.guessEncoding(file, 4096);
+            }
             in = new BufferedReader(new InputStreamReader(new FileInputStream(file), guessCharset.displayName()));
 
             while ((str = in.readLine()) != null) {

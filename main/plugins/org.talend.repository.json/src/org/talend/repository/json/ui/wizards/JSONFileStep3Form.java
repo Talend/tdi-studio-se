@@ -357,10 +357,18 @@ public class JSONFileStep3Form extends AbstractJSONFileStepForm {
             informationLabel.setText("   " + "Guess in progress...");
 
             CsvArray csvArray = null;
+            ProcessDescription processDescription = getProcessDescription(false);
             if (EJsonReadbyMode.JSONPATH.getValue().equals(connection2.getReadbyMode())) {
-                csvArray = JSONShadowProcessHelper.getCsvArray(getProcessDescription(false), "FILE_JSON"); //$NON-NLS-1$
+                csvArray = JSONShadowProcessHelper.getCsvArray(processDescription, "FILE_JSON"); //$NON-NLS-1$
             } else {
-                csvArray = JSONShadowProcessHelper.getCsvArray(getProcessDescription(false), "FILE_XML"); //$NON-NLS-1$
+                /**
+                 * JSON XPATH mode uses the temp generated xml file to execute the preview, the generated xml file is
+                 * encoded using UTF-8. <br/>
+                 * (The generated xml file can't be encoded using other charset, otherwise the converted xml file will
+                 * be empty)
+                 */
+                processDescription.setEncoding(TalendQuoteUtils.addQuotes("UTF-8"));
+                csvArray = JSONShadowProcessHelper.getCsvArray(processDescription, "FILE_XML"); //$NON-NLS-1$
             }
             if (csvArray == null) {
                 informationLabel.setText("   " + "Guess failure");
