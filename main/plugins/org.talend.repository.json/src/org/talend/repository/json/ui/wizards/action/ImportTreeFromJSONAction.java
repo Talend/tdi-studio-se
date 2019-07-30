@@ -59,7 +59,7 @@ public class ImportTreeFromJSONAction extends SelectionProviderAction {
 
         boolean changed = true;
         try {
-            String encoding = null;
+            String encoding = "UTF-8";
             if (this.form != null) {
                 ConnectionItem connectionItem = this.form.getConnectionItem();
                 if (connectionItem != null) {
