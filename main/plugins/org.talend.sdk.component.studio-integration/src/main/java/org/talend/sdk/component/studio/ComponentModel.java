@@ -15,11 +15,9 @@
  */
 package org.talend.sdk.component.studio;
 
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static org.talend.sdk.component.studio.model.ReturnVariables.AFTER;
-import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_ERROR_MESSAGE;
-import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_TOTAL_RECORD_COUNT;
+import static java.util.Collections.*;
+import static java.util.stream.Collectors.*;
+import static org.talend.sdk.component.studio.model.ReturnVariables.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -308,7 +306,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         returnVariables.add(errorMessage);
 
         NodeReturn numberLinesMessage = new NodeReturn();
-        numberLinesMessage.setType(JavaTypesManager.INTEGER.getLabel());
+        numberLinesMessage.setType(JavaTypesManager.INTEGER.getId());
         numberLinesMessage.setDisplayName(ComponentReturnVariableUtils
                 .getTranslationForVariable(RETURN_TOTAL_RECORD_COUNT, RETURN_TOTAL_RECORD_COUNT));
         numberLinesMessage.setName(ComponentReturnVariableUtils.getStudioNameFromVariable(RETURN_TOTAL_RECORD_COUNT));
