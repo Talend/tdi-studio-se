@@ -26,6 +26,7 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
 import org.talend.sdk.component.studio.ui.composite.problemmanager.IProblemManager;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -169,6 +170,14 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     @Override
     public void onEvent(final String event, final Object... parameters) {
         // nothing to do
+    }
+
+    @Override
+    public Object func(String funcName, Object... params) throws Exception {
+        if (TaCoKitUtil.equals(funcName, "isPersisted")) { //$NON-NLS-1$
+            return isPersisted();
+        }
+        return IAdditionalInfo.super.func(funcName, params);
     }
 
     @Override
