@@ -319,7 +319,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                                 } else {
                                     Object value = RepositoryToComponentProperty.getValue(
                                             ((ConnectionItem) item).getConnection(), param.getRepositoryValue(),
-                                            newOutputMetadata);
+                                            newOutputMetadata, componentName, null);
                                     if (value != null) {
                                         value = getParamValueForOldJDBC(param, value);
                                         param.setValue(value);
