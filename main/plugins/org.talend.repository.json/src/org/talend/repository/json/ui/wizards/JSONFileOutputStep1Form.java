@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.MatchResult;
 import org.apache.oro.text.regex.Pattern;
@@ -54,8 +55,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
+import org.talend.commons.CommonsPlugin;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.swt.formtools.Form;
 import org.talend.commons.ui.swt.formtools.LabelledCombo;
 import org.talend.commons.ui.swt.formtools.LabelledFileField;
@@ -79,6 +81,7 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.json.i18n.Messages;
 import org.talend.repository.json.util.JSONUtil;
 import org.talend.repository.ui.wizards.metadata.connection.files.xml.TreePopulator;
+
 import orgomg.cwm.resource.record.RecordFactory;
 import orgomg.cwm.resource.record.RecordFile;
 
@@ -151,7 +154,7 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
             }
             if (JSONFileOutputStep1Form.this.tempPath == null) {
                 if (jsonXmlPath != null && !jsonXmlPath.equals("")) {
-                    JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(jsonXmlPath);
+                    JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(jsonXmlPath, getConnection().getEncoding());
                 } else {
                     JSONFileOutputStep1Form.this.tempPath = "";
                 }
@@ -315,7 +318,7 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
 
         List<FOXTreeNode> rootFoxTreeNodes = null;
         if (JSONFileOutputStep1Form.this.tempPath == null) {
-            JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(text);
+            JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(text, getConnection().getEncoding());
         }
         if (treeNode == null) {
             rootFoxTreeNodes = TreeUtil.getFoxTreeNodes(JSONFileOutputStep1Form.this.tempPath);
@@ -362,12 +365,12 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
                 }
                 // getConnection().setJSONFilePath(PathUtils.getPortablePath(JSONXsdFilePath.getText()));
                 if (JSONFileOutputStep1Form.this.tempPath == null) {
-                    JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(text);
+                    JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(text, getConnection().getEncoding());
                 }
                 File file = new File(text);
                 if (file.exists()) {
                     List<ATreeNode> treeNodes = new ArrayList<ATreeNode>();
-                    valid = treePopulator.populateTree(JSONUtil.changeJsonToXml(text), treeNode);
+                    valid = treePopulator.populateTree(JSONUtil.changeJsonToXml(text, getConnection().getEncoding()), treeNode);
                     checkFieldsValue();
                     if (!valid) {
                         return;
@@ -391,130 +394,7 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
 
             @Override
             public void modifyText(ModifyEvent event) {
-                String text = jsonFilePath.getText();
-                if (isContextMode()) {
-                    ContextType contextType = ConnectionContextHelper.getContextTypeForContextMode(
-                            connectionItem.getConnection(), true);
-                    text = TalendQuoteUtils.removeQuotes(ConnectionContextHelper.getOriginalValue(contextType, text));
-                }
-
-                if (getConnection().getJSONFilePath() != null && !getConnection().getJSONFilePath().equals(text)) {
-                    getConnection().getLoop().clear();
-                    getConnection().getRoot().clear();
-                    getConnection().getGroup().clear();
-                    xsdPathChanged = true;
-                } else {
-                    xsdPathChanged = false;
-                }
-                if (Path.fromOSString(jsonFilePath.getText()).toFile().isFile()) {
-                    getConnection().setJSONFilePath(PathUtils.getPortablePath(jsonFilePath.getText()));
-                } else {
-                    getConnection().setJSONFilePath(jsonFilePath.getText());
-                }
-
-                // updateConnection(text);
-
-                StringBuilder fileContent = new StringBuilder();
-                BufferedReader in = null;
-                File file = null;
-                if (tempJSONPath != null && getConnection().getFileContent() != null
-                        && getConnection().getFileContent().length > 0 && !isModifing) {
-                    file = new File(tempJSONPath);
-                    if (!file.exists()) {
-                        try {
-                            file.createNewFile();
-                        } catch (IOException e2) {
-                            ExceptionHandler.process(e2);
-                        }
-                        FileOutputStream outStream;
-                        try {
-                            outStream = new FileOutputStream(file);
-                            outStream.write(getConnection().getFileContent());
-                            outStream.close();
-                        } catch (FileNotFoundException e1) {
-                            ExceptionHandler.process(e1);
-                        } catch (IOException e) {
-                            ExceptionHandler.process(e);
-                        }
-                    }
-
-                } else {
-                    file = new File(text);
-                }
-                String str;
-                try {
-                    Charset guessCharset = CharsetToolkit.guessEncoding(file, 4096);
-                    in = new BufferedReader(new InputStreamReader(new FileInputStream(file), guessCharset.displayName()));
-
-                    while ((str = in.readLine()) != null) {
-                        fileContent.append(str + "\n");
-                        // for encoding
-                        if (str.contains("encoding")) {
-                            String regex = "^<\\?JSON\\s*version=\\\"[^\\\"]*\\\"\\s*encoding=\\\"([^\\\"]*)\\\"\\?>$";
-                            Perl5Compiler compiler = new Perl5Compiler();
-                            Perl5Matcher matcher = new Perl5Matcher();
-                            Pattern pattern = null;
-                            try {
-                                pattern = compiler.compile(regex);
-                                if (matcher.contains(str, pattern)) {
-                                    MatchResult matchResult = matcher.getMatch();
-                                    if (matchResult != null) {
-                                        encoding = matchResult.group(1);
-                                    }
-                                }
-                            } catch (MalformedPatternException malE) {
-                                ExceptionHandler.process(malE);
-                            }
-                        }
-                    }
-
-                    fileContentText.setText(new String(fileContent));
-
-                } catch (Exception e) {
-                    String msgError = "File" + " \"" + jsonFilePath.getText().replace("\\\\", "\\") + "\"\n";
-                    if (e instanceof FileNotFoundException) {
-                        msgError = msgError + "is not found";
-                    } else if (e instanceof EOFException) {
-                        msgError = msgError + "have an incorrect character EOF";
-                    } else if (e instanceof IOException) {
-                        msgError = msgError + "is locked by another soft";
-                    } else {
-                        msgError = msgError + "doesn't exist";
-                    }
-                    fileContentText.setText(msgError);
-                    if (!isReadOnly()) {
-                        updateStatus(IStatus.ERROR, msgError);
-                    }
-                } finally {
-                    try {
-                        if (in != null) {
-                            in.close();
-                        }
-                    } catch (Exception exception) {
-                        ExceptionHandler.process(exception);
-                    }
-                }
-                if (getConnection().getEncoding() == null || "".equals(getConnection().getEncoding())) {
-                    getConnection().setEncoding(encoding);
-                    if (encoding != null && !"".equals(encoding)) {
-                        encodingCombo.setText(encoding);
-                    } else {
-                        encodingCombo.setText("UTF-8");
-                    }
-                }
-
-                // if (tempJSONXsdPath != null && getConnection().getFileContent() != null
-                // && getConnection().getFileContent().length > 0 && !isModifing) {
-                // valid = treePopulator.populateTree(tempJSONXsdPath, treeNode);
-                // } else {
-                // valid = treePopulator.populateTree(text, treeNode);
-                // }
-                if (file.exists()) {
-                    valid = treePopulator.populateTree(JSONUtil.changeJsonToXml(text), treeNode);
-                    updateConnection(text);
-                }
-                checkFieldsValue();
-                isModifing = true;
+                validateJsonFile();
             }
         });
 
@@ -523,6 +403,16 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
             @Override
             public void modifyText(ModifyEvent e) {
                 getConnection().setEncoding(encodingCombo.getText());
+                String encoding = getConnection().getEncoding();
+                try {
+                    Charset charSet = Charset.forName(encoding);
+                    if (charSet != null) {
+                        validateJsonFile();
+                        return;
+                    }
+                } catch (Exception ex) {
+                    // ignore
+                }
                 checkFieldsValue();
             }
         });
@@ -540,7 +430,8 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
                     labelLimitation.setToolTipText(MessageFormat.format(Messages.JSONLimitToolTip, str));
                 }
                 if (JSONFileOutputStep1Form.this.tempPath == null) {
-                    JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(jsonFilePath.getText());
+                    JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(jsonFilePath.getText(),
+                            getConnection().getEncoding());
                 }
 
                 File file = new File(JSONFileOutputStep1Form.this.tempPath);
@@ -778,5 +669,142 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
         }
         // valid = this.treePopulator.populateTree(tempJSONXsdPath, treeNode);
 
+    }
+
+    private void validateJsonFile() {
+        String text = jsonFilePath.getText();
+        if (isContextMode()) {
+            ContextType contextType = ConnectionContextHelper.getContextTypeForContextMode(
+                    connectionItem.getConnection(), true);
+            text = TalendQuoteUtils.removeQuotes(ConnectionContextHelper.getOriginalValue(contextType, text));
+        }
+
+        if (getConnection().getJSONFilePath() != null && !getConnection().getJSONFilePath().equals(text)) {
+            getConnection().getLoop().clear();
+            getConnection().getRoot().clear();
+            getConnection().getGroup().clear();
+            xsdPathChanged = true;
+        } else {
+            xsdPathChanged = false;
+        }
+        if (Path.fromOSString(jsonFilePath.getText()).toFile().isFile()) {
+            getConnection().setJSONFilePath(PathUtils.getPortablePath(jsonFilePath.getText()));
+        } else {
+            getConnection().setJSONFilePath(jsonFilePath.getText());
+        }
+
+        // updateConnection(text);
+
+        StringBuilder fileContent = new StringBuilder();
+        BufferedReader in = null;
+        File file = null;
+        if (tempJSONPath != null && getConnection().getFileContent() != null
+                && getConnection().getFileContent().length > 0 && !isModifing) {
+            file = new File(tempJSONPath);
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (IOException e2) {
+                    ExceptionHandler.process(e2);
+                }
+                FileOutputStream outStream;
+                try {
+                    outStream = new FileOutputStream(file);
+                    outStream.write(getConnection().getFileContent());
+                    outStream.close();
+                } catch (FileNotFoundException e1) {
+                    ExceptionHandler.process(e1);
+                } catch (IOException e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+
+        } else {
+            file = new File(text);
+        }
+        String str;
+        try {
+            Charset guessCharset = null;
+            try {
+                guessCharset = Charset.forName(getConnection().getEncoding());
+            } catch (Exception e) {
+                if (CommonsPlugin.isDebugMode()) {
+                    ExceptionHandler.process(e, Priority.INFO);
+                }
+            }
+            if (guessCharset == null) {
+                guessCharset = CharsetToolkit.guessEncoding(file, 4096);
+            }
+            in = new BufferedReader(new InputStreamReader(new FileInputStream(file), guessCharset.displayName()));
+
+            while ((str = in.readLine()) != null) {
+                fileContent.append(str + "\n");
+                // for encoding
+                if (str.contains("encoding")) {
+                    String regex = "^<\\?JSON\\s*version=\\\"[^\\\"]*\\\"\\s*encoding=\\\"([^\\\"]*)\\\"\\?>$";
+                    Perl5Compiler compiler = new Perl5Compiler();
+                    Perl5Matcher matcher = new Perl5Matcher();
+                    Pattern pattern = null;
+                    try {
+                        pattern = compiler.compile(regex);
+                        if (matcher.contains(str, pattern)) {
+                            MatchResult matchResult = matcher.getMatch();
+                            if (matchResult != null) {
+                                encoding = matchResult.group(1);
+                            }
+                        }
+                    } catch (MalformedPatternException malE) {
+                        ExceptionHandler.process(malE);
+                    }
+                }
+            }
+
+            fileContentText.setText(new String(fileContent));
+
+        } catch (Exception e) {
+            String msgError = "File" + " \"" + jsonFilePath.getText().replace("\\\\", "\\") + "\"\n";
+            if (e instanceof FileNotFoundException) {
+                msgError = msgError + "is not found";
+            } else if (e instanceof EOFException) {
+                msgError = msgError + "have an incorrect character EOF";
+            } else if (e instanceof IOException) {
+                msgError = msgError + "is locked by another soft";
+            } else {
+                msgError = msgError + "doesn't exist";
+            }
+            fileContentText.setText(msgError);
+            if (!isReadOnly()) {
+                updateStatus(IStatus.ERROR, msgError);
+            }
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (Exception exception) {
+                ExceptionHandler.process(exception);
+            }
+        }
+        if (getConnection().getEncoding() == null || "".equals(getConnection().getEncoding())) {
+            getConnection().setEncoding(encoding);
+            if (encoding != null && !"".equals(encoding)) {
+                encodingCombo.setText(encoding);
+            } else {
+                encodingCombo.setText("UTF-8");
+            }
+        }
+
+        // if (tempJSONXsdPath != null && getConnection().getFileContent() != null
+        // && getConnection().getFileContent().length > 0 && !isModifing) {
+        // valid = treePopulator.populateTree(tempJSONXsdPath, treeNode);
+        // } else {
+        // valid = treePopulator.populateTree(text, treeNode);
+        // }
+        if (file.exists()) {
+            valid = treePopulator.populateTree(JSONUtil.changeJsonToXml(text, getConnection().getEncoding()), treeNode);
+            updateConnection(text);
+        }
+        checkFieldsValue();
+        isModifing = true;
     }
 }
