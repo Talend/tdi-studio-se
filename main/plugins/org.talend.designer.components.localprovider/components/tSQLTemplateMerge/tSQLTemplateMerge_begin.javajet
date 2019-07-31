@@ -39,7 +39,6 @@ skeleton="../templates/db_output_bulk.skeleton"
     
     boolean convertToUppercase = ("true").equals(ElementParameterParser.getValue(node, "__CONVERT_COLUMN_TABLE_TO_UPPERCASE__"));//??
 %>
-// <%= connection %> - <%= conn %> - <%=dbType%>
 java.sql.Connection conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 java.sql.Statement stmt_<%=cid%> = conn_<%=cid%>.createStatement();
 <%
