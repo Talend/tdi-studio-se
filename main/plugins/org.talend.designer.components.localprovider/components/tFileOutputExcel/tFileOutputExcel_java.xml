@@ -214,11 +214,11 @@
   	<PARAMETER NAME="DELETE_EMPTYFILE" FIELD="CHECK" REQUIRED="true" NUM_ROW="70" SHOW_IF="(USESTREAM=='false')">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
-
+    
   	<PARAMETER NAME="RECALCULATE_FORMULA" FIELD="CHECK" REQUIRED="true" NUM_ROW="80" SHOW_IF="(VERSION_2007 == 'true') AND (USESTREAM=='false') AND (APPEND_FILE=='true') AND (APPEND_SHEET=='true')">
       <DEFAULT>false</DEFAULT>
-    </PARAMETER>
-
+    </PARAMETER>    
+    
     <PARAMETER NAME="SCHEMA_OPT_NUM" FIELD="TEXT" NUM_ROW="100" REQUIRED="true" SHOW="false">
         <DEFAULT>100</DEFAULT>
      </PARAMETER>
@@ -228,6 +228,7 @@
     <IMPORTS>
       <IMPORT NAME="Java_Excel" MODULE="jxl.jar" MVN="mvn:org.talend.libraries/jxl/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jexcel/lib/jxl.jar" REQUIRED_IF="(VERSION_2007 == 'false')" />
       <IMPORT NAME="TALEND_EXCEL" MODULE="talendExcel-1.5-20190723.jar" MVN="mvn:org.talend.libraries/talendExcel-1.5-20190723/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/talendExcel-1.5-20190723.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
+      <IMPORT NAME="TALEND_EXCEL" MODULE="talendExcel-1.5-20190726.jar" MVN="mvn:org.talend.libraries/talendExcel-1.5-20190726/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.excel/lib/talendExcel-1.5-20190726.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
       <IMPORT NAME="commons-lang3" MODULE="commons-lang3-3.8.1.jar" MVN="mvn:org.apache.commons/commons-lang3/3.8.1" REQUIRED_IF="(VERSION_2007 == 'true')" />
       <IMPORT NAME="dom4j" MODULE="dom4j-1.6.1.jar" MVN="mvn:dom4j/dom4j/1.6.1"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/dom4j-1.6.1.jar" REQUIRED_IF="(VERSION_2007 == 'true')" BundleID="" />
       <IMPORT NAME="geronimo-stax-api" MODULE="geronimo-stax-api_1.0_spec-1.0.1.jar" MVN="mvn:org.talend.libraries/geronimo-stax-api_1.0_spec-1.0.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/geronimo-stax-api_1.0_spec-1.0.1.jar" REQUIRED_IF="(VERSION_2007 == 'true')" BundleID="" />
@@ -238,7 +239,7 @@
       <IMPORT NAME="poi-scratchpad" MODULE="poi-scratchpad-4.1.0-20190523141255_modified_talend.jar" MVN="mvn:org.apache.poi/poi-scratchpad/4.1.0-20190523141255_modified_talend" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/poi-scratchpad-4.1.0-20190523141255_modified_talend.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
       <IMPORT NAME="xmlbeans" MODULE="xmlbeans-3.1.0.jar" MVN="mvn:org.apache.xmlbeans/xmlbeans/3.1.0" REQUIRED_IF="(VERSION_2007 == 'true')" />
       <IMPORT NAME="commons-collections4" MODULE="commons-collections4-4.1.jar" MVN="mvn:org.talend.libraries/commons-collections4-4.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/commons-collections4-4.1.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
-
+      
       <IMPORT NAME="commons-compress" MODULE="commons-compress-1.18.jar" MVN="mvn:org.apache.commons/commons-compress/1.18" REQUIRED_IF="(VERSION_2007 == 'true')" />
       <IMPORT NAME="commons-math3" MODULE="commons-math3-3.6.1.jar" MVN="mvn:org.apache.commons/commons-math3/3.6.1" REQUIRED_IF="(VERSION_2007 == 'true')" />
     </IMPORTS>

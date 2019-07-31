@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SDK studio-integration test
+Bundle-SymbolicName: org.talend.sdk.component.studio-integration.test
+Bundle-Version: 7.3.1.qualifier
+Fragment-Host: org.talend.sdk.component.studio-integration
+Automatic-Module-Name: org.talend.sdk.component.studio-integration.test
+Bundle-Vendor: .Talend SA.
+Export-Package: org.talend.sdk.component.studio;
+  uses:="org.talend.sdk.component.studio.debounce,
+   org.talend.sdk.component.studio.metadata,
+   org.talend.sdk.component.studio.service,
+   org.talend.sdk.component.studio.websocket",
+ org.talend.sdk.component.studio.debounce,
+ org.talend.sdk.component.studio.lang,
+ org.talend.sdk.component.studio.model.connector,
+ org.talend.sdk.component.studio.model.parameter;uses:="org.talend.sdk.component.studio,org.talend.sdk.component.studio.model.parameter.command",
+ org.talend.sdk.component.studio.model.parameter.listener;uses:="org.talend.sdk.component.studio.model.action,org.talend.sdk.component.studio.model.parameter",
+ org.talend.sdk.component.studio.service
+Require-Bundle: org.junit,
+ org.junit.jupiter.api,
+ org.talend.testutils,
+ org.eclipse.jdt.core

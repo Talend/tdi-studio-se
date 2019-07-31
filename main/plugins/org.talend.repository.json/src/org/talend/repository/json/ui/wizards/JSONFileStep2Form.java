@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -52,6 +53,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.ui.command.CommandStackForComposite;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
@@ -222,6 +224,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
             jsonXPathLoopDescriptor.setLimitBoucle(XmlArray.getRowLimit());
 
         }
+        treePopulator.setEncoding(getConnection().getEncoding());
         treePopulator.populateTree(wizard.getTempJsonPath(), treeNode);
         fieldsModel.setJSONXPathLoopDescriptor(jsonXPathLoopDescriptor.getSchemaTargets());
         fieldsTableEditorView.getTableViewerCreator().layout();
@@ -608,7 +611,22 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
             }
         };
 
-        previewLoader.load(getProcessDescription(false));
+        ProcessDescription processDescription = getProcessDescription(false);
+        EJsonReadbyMode mode = null;
+        String readbyMode = getConnection().getReadbyMode();
+        if (StringUtils.isNotBlank(readbyMode)) {
+            mode = EJsonReadbyMode.getEJsonReadbyModeByValue(readbyMode);
+        }
+        if (EJsonReadbyMode.XPATH.equals(mode)) {
+            /**
+             * JSON XPATH mode uses the temp generated xml file to execute the preview, the generated xml file is
+             * encoded using UTF-8. <br/>
+             * (The generated xml file can't be encoded using other charset, otherwise the converted xml file will be
+             * empty)
+             */
+            processDescription.setEncoding(TalendQuoteUtils.addQuotes("UTF-8"));
+        }
+        previewLoader.load(processDescription);
 
     }
 
@@ -871,10 +889,20 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
                     }
                 }
 
-                Charset guessedCharset = CharsetToolkit.guessEncoding(file, 4096);
+                Charset guessedCharset = null;
+                try {
+                    guessedCharset = Charset.forName(getConnection().getEncoding());
+                } catch (Exception e) {
+                    if (CommonsPlugin.isDebugMode()) {
+                        ExceptionHandler.process(e, Priority.WARN);
+                    }
+                }
+                if (guessedCharset == null) {
+                    guessedCharset = CharsetToolkit.guessEncoding(file, 4096);
+                }
 
                 String str;
-                in = new BufferedReader(new InputStreamReader(new FileInputStream(pathStr), guessedCharset.displayName()));
+                in = new BufferedReader(new InputStreamReader(new FileInputStream(pathStr), guessedCharset));
 
                 while ((str = in.readLine()) != null) {
                     previewRows.append(str + "\n"); //$NON-NLS-1$
@@ -947,6 +975,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
             // fix bug: when the JSON file is changed, the linker doesn't work.
             resetStatusIfNecessary();
             String tempJson = this.wizard.getTempJsonPath();
+            this.treePopulator.setEncoding(getConnection().getEncoding());
             this.treePopulator.populateTree(tempJson, treeNode);
 
             ScrollBar verticalBar = availableJSONTree.getVerticalBar();

@@ -15,31 +15,10 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Locale.ROOT;
-import static org.talend.core.model.process.EParameterFieldType.CHECK;
-import static org.talend.core.model.process.EParameterFieldType.CLOSED_LIST;
-import static org.talend.core.model.process.EParameterFieldType.DATE;
-import static org.talend.core.model.process.EParameterFieldType.MEMO;
-import static org.talend.core.model.process.EParameterFieldType.MEMO_JAVA;
-import static org.talend.core.model.process.EParameterFieldType.MEMO_PERL;
-import static org.talend.core.model.process.EParameterFieldType.MEMO_SQL;
-import static org.talend.core.model.process.EParameterFieldType.PASSWORD;
-import static org.talend.core.model.process.EParameterFieldType.PREV_COLUMN_LIST;
-import static org.talend.core.model.process.EParameterFieldType.SCHEMA_TYPE;
-import static org.talend.core.model.process.EParameterFieldType.TABLE;
-import static org.talend.core.model.process.EParameterFieldType.TACOKIT_INPUT_SCHEMA;
-import static org.talend.core.model.process.EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE;
-import static org.talend.core.model.process.EParameterFieldType.TACOKIT_VALUE_SELECTION;
-import static org.talend.core.model.process.EParameterFieldType.TEXT;
-import static org.talend.core.model.process.EParameterFieldType.TEXT_AREA;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_CODE;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_STRUCTURE_TYPE;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_STRUCTURE_VALUE;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_TEXTAREA;
-import static org.talend.sdk.component.studio.model.parameter.PropertyTypes.ARRAY;
-import static org.talend.sdk.component.studio.model.parameter.PropertyTypes.BOOLEAN;
-import static org.talend.sdk.component.studio.model.parameter.PropertyTypes.ENUM;
-import static org.talend.sdk.component.studio.model.parameter.PropertyTypes.STRING;
+import static java.util.Locale.*;
+import static org.talend.core.model.process.EParameterFieldType.*;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.*;
+import static org.talend.sdk.component.studio.model.parameter.PropertyTypes.*;
 
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
@@ -74,6 +53,8 @@ public class WidgetTypeMapper {
             return getTextType();
         } else if (property.isCredential()) {
             return getCredentialType();
+        } else if (isTextAreaSelection(property)) {
+            return getTextAreaSelectionType();
         } else if (isTextArea(property)) {
             return getTextAreaType();
         } else if (isCheck(property)) {
@@ -197,6 +178,14 @@ public class WidgetTypeMapper {
 
     protected EParameterFieldType getTextAreaType() {
         return TEXT_AREA;
+    }
+
+    private boolean isTextAreaSelection(final PropertyDefinitionDecorator property) {
+        return isTextArea(property) && property.hasSuggestions();
+    }
+
+    protected EParameterFieldType getTextAreaSelectionType() {
+        return TACOKIT_TEXT_AREA_SELECTION;
     }
 
     protected EParameterFieldType getCredentialType() {
