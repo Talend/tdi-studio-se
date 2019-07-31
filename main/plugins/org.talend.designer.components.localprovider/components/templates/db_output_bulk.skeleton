@@ -4991,12 +4991,6 @@ public class CLASS {
         public SnowflakeELTManager(String cid) {
             super(cid);
         }
-        protected String getLProtectedChar() {
-            return "";
-        }
-        protected String getRProtectedChar() {
-            return "";
-        }
     }
     
     public Manager getELTManager(String dbmsId, String cid) {
