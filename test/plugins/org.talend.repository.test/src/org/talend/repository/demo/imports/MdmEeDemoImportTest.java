@@ -133,17 +133,17 @@ public class MdmEeDemoImportTest extends DemosImportTest {
 		Assert.assertTrue(demoViewtemsFiles.size() > 0);
 		Assert.assertEquals(demoViewtemsFiles.size(), currentViewItemsSize);
 
-		boolean isInstalledBonitaBPM = Platform.getBundle("org.bonitasoft.studio.application") != null;
-		if(isInstalledBonitaBPM) {
-			// 6.test the item under MDM/workflow
-			int currentWorkflowItemsSize = ProxyRepositoryFactory.getInstance()
-					.getAll(ERepositoryObjectType.valueOf(ERepositoryObjectType.class, "MDM.Workflow")).size();
-			Assert.assertTrue(currentWorkflowItemsSize > 0);
-			File tempWorkflowItemsFolder = new File(rootPath + File.separator + mdmWorkflowPath);
-			List<File> demoWorkflowtemsFiles = getDemoItemFileList(rootPath + File.separator + mdmWorkflowPath);
-			Assert.assertTrue(demoWorkflowtemsFiles.size() > 0);
-			Assert.assertEquals(demoWorkflowtemsFiles.size(), currentWorkflowItemsSize);
-		}
+//		boolean isInstalledBonitaBPM = Platform.getBundle("org.bonitasoft.studio.application") != null;
+//		if(isInstalledBonitaBPM) {
+//			// 6.test the item under MDM/workflow
+//			int currentWorkflowItemsSize = ProxyRepositoryFactory.getInstance()
+//					.getAll(ERepositoryObjectType.valueOf(ERepositoryObjectType.class, "MDM.Workflow")).size();
+//			Assert.assertTrue(currentWorkflowItemsSize > 0);
+//			File tempWorkflowItemsFolder = new File(rootPath + File.separator + mdmWorkflowPath);
+//			List<File> demoWorkflowtemsFiles = getDemoItemFileList(rootPath + File.separator + mdmWorkflowPath);
+//			Assert.assertTrue(demoWorkflowtemsFiles.size() > 0);
+//			Assert.assertEquals(demoWorkflowtemsFiles.size(), currentWorkflowItemsSize);
+//		}
 		
 	}
 
