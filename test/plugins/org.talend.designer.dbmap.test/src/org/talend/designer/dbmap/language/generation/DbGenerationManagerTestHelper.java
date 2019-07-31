@@ -151,6 +151,8 @@ public class DbGenerationManagerTestHelper {
         tName = TalendTextUtils.removeQuotes(tName);
         when(connection.getName()).thenReturn(tName);
         when(connection.getSource()).thenReturn(node);
+        when(connection.getMetaName()).thenReturn(tName);
+        when(connection.getUniqueName()).thenReturn(tName);
         IMetadataTable table = new MetadataTable();
         table.setLabel(tableName);
         table.setTableName(tableName);
