@@ -17,8 +17,8 @@ imports="
     String connection = ElementParameterParser.getValue(node,"__CONNECTION_" + dbType + "__");
     
     String conn = "conn_" + connection;
-    if("SNOWFLAKE".equals(dbType)){
-       conn = connection+"_Connection";
+    if ("SNOWFLAKE".equals(dbType)) {
+       conn = connection + "_Connection";
     }
 %>
 java.sql.Connection conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
