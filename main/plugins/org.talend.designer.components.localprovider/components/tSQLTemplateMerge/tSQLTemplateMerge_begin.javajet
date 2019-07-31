@@ -27,7 +27,10 @@ skeleton="../templates/db_output_bulk.skeleton"
     String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");	
 
     String conn = "conn_" + connection;
-    
+    if("SNOWFLAKE".equals(dbType)){
+       conn = connection+"_Connection";
+    }
+
     String createTable = ElementParameterParser.getValue(node,"__STAGING_TABLE_CREATION__");
     
     String tableName = ElementParameterParser.getValue(node,"__ELT_TABLE_NAME__");
@@ -36,6 +39,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     
     boolean convertToUppercase = ("true").equals(ElementParameterParser.getValue(node, "__CONVERT_COLUMN_TABLE_TO_UPPERCASE__"));//??
 %>
+// <%= connection %> - <%= conn %> - <%=dbType%>
 java.sql.Connection conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 java.sql.Statement stmt_<%=cid%> = conn_<%=cid%>.createStatement();
 <%
