@@ -132,7 +132,6 @@
 	        <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />
 	        <ITEM NAME="AP_NORTHEAST_1" VALUE="&quot;ap-northeast-1&quot;" />
 	        <ITEM NAME="AP_NORTHEAST_2" VALUE="&quot;ap-northeast-2&quot;" />
-	        <ITEM NAME="AP_NORTHEAST_3" VALUE="&quot;ap-northeast-3&quot;" />
         	<ITEM NAME="AP_SOUTH_1" VALUE="&quot;ap-south-1&quot;" />
 	        <ITEM NAME="CA_CENTRAL_1" VALUE="&quot;ca-central-1&quot;" />
     	</ITEMS>
