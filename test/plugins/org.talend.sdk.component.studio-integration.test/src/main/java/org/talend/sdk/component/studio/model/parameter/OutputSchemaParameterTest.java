@@ -1,7 +1,7 @@
 package org.talend.sdk.component.studio.model.parameter;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -108,7 +108,7 @@ public class OutputSchemaParameterTest {
     @Test
     public void testIsPersisted() {
         final OutputSchemaParameter parameter = new OutputSchemaParameter(null, "schema", CONNECTOR_NAME, null, true);
-        assertFalse(parameter.isPersisted());
+        assertTrue(parameter.isPersisted());
     }
 
     @Test

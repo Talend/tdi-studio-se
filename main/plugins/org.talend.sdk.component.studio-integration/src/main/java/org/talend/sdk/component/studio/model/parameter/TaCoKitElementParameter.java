@@ -220,6 +220,16 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         return true;
     }
 
+    @Override
+    public boolean isSerialized() {
+        if (isPersisted()) {
+            return super.isSerialized();
+        } else {
+            // return true to skip serialization
+            return true;
+        }
+    }
+
     /**
      * Creates IActionParameter
      *

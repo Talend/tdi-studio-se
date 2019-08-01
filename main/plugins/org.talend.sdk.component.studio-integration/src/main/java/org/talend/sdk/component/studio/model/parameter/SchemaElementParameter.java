@@ -124,17 +124,6 @@ public abstract class SchemaElementParameter extends TaCoKitElementParameter {
     }
 
     /**
-     * Denotes whether parameter should be persisted.
-     * SchemaElementParameter should not be persisted.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isPersisted() {
-        return false;
-    }
-
-    /**
      * Creates name for Guess Schema button ElementParameter
      * TODO move to OutputSchemaParameter class
      *
