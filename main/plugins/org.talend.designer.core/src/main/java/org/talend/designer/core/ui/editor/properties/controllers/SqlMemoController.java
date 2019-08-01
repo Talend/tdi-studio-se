@@ -76,6 +76,7 @@ import org.talend.core.ui.services.ISQLBuilderService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.cmd.RepositoryChangeQueryCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -222,14 +223,8 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
             openSQLEditorButton.setEnabled(ExtractMetaDataUtils.getInstance().haveLoadMetadataNode());
         }
 
-        // Added by Marvin Wang on Dec.13, 2012 for bug TDI-7559.
-        IElementParameter typePara = elem.getElementParameter("TYPE"); //$NON-NLS-1$
-        if (typePara != null && "Hive".equalsIgnoreCase((String) typePara.getValue())) { //$NON-NLS-1$
-            openSQLEditorButton.setVisible(false);
-        }
-        if (typePara != null && "Impala".equalsIgnoreCase((String) typePara.getValue())) { //$NON-NLS-1$
-            openSQLEditorButton.setVisible(false);
-        }
+        openSQLEditorButton.setVisible(visibleOpenSQLEditorButton());// visible
+
         FormData data1 = new FormData();
         data1.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
         data1.left = new FormAttachment(100, -(ITabbedPropertyConstants.HSPACE + STANDARD_BUTTON_WIDTH));
@@ -454,7 +449,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
 
         connParameters.setNodeReadOnly(false);
         connParameters.setFromRepository(true);
-        ISQLBuilderService sqlBuilderService = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(
+        ISQLBuilderService sqlBuilderService = GlobalServiceRegister.getDefault().getService(
                 ISQLBuilderService.class);
         Dialog sqlBuilder = sqlBuilderService.openSQLBuilderDialog(composite.getShell(), processName, connParameters);
 
@@ -572,4 +567,25 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
         }
     }
 
+    public boolean visibleOpenSQLEditorButton() {
+        IElementParameter typeParam = elem.getElementParameter("TYPE"); //$NON-NLS-1$
+        if (typeParam != null) {
+            String typeParamValue = String.valueOf(typeParam.getValue());
+            if ("Hive".equalsIgnoreCase(typeParamValue) || "Impala".equalsIgnoreCase(typeParamValue)) { //$NON-NLS-1$//$NON-NLS-2$
+                return false;
+            }
+        }
+        if (curParameter != null) {
+            if (curParameter instanceof ElementParameter) {
+                Object sourceName = ((ElementParameter) curParameter).getTaggedValue("org.talend.sdk.component.source");//$NON-NLS-1$
+                if ("tacokit".equalsIgnoreCase(String.valueOf(sourceName))) {//$NON-NLS-1$
+                    Object familyValue = elem.getPropertyValue(EParameterName.FAMILY.getName());
+                    if (isInWizard() || "jdbc".equalsIgnoreCase(String.valueOf(familyValue))) { //$NON-NLS-1$
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 }
