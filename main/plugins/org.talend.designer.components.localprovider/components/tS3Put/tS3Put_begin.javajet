@@ -83,31 +83,19 @@ imports="
         <%
 			for (Map<String, String> paramACL : paramsACL) {
 				String aclAccountId = paramACL.get("ID");
-				if (aclAccountId.startsWith("\"")) {
-					aclAccountId = aclAccountId.substring(1);
-                }
-				if (aclAccountId.endsWith("\"")) {
-					aclAccountId = aclAccountId.substring(0, aclAccountId.length() - 1);
-                }
-                                }
 				if ("true".equalsIgnoreCase(paramACL.get("READ"))) {
         %> 
-                    accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee("<%=aclAccountId%>"), com.amazonaws.services.s3.model.Permission.Read);
+                    accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee(<%=aclAccountId%>), com.amazonaws.services.s3.model.Permission.Read);
         <%
 				}
 				if ("true".equalsIgnoreCase(paramACL.get("READ_ACL"))) {
         %> 
-accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee("<%=aclAccountId%>"), com.amazonaws.services.s3.model.Permission.ReadAcp);
-        <%
-				}
-				if ("true".equalsIgnoreCase(paramACL.get("WRITE"))) {
-        %> 
-accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee("<%=aclAccountId%>"), com.amazonaws.services.s3.model.Permission.Write);
+accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee(<%=aclAccountId%>), com.amazonaws.services.s3.model.Permission.ReadAcp);
         <%
 				}
 				if ("true".equalsIgnoreCase(paramACL.get("WRITE_ACL"))) {
         %> 
-accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee("<%=aclAccountId%>"), com.amazonaws.services.s3.model.Permission.WriteAcp);
+accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee(<%=aclAccountId%>), com.amazonaws.services.s3.model.Permission.WriteAcp);
         <%
 				}
 					
