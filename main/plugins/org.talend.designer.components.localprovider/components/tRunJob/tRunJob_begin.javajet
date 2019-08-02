@@ -103,12 +103,12 @@ class DealChildJobLibrary_<%=cid%> {
 		
 		private java.util.List<String> custom_arguments;
 		
-		boolean have_set_file_encoding;
-		boolean have_set_jmxremote;
-		boolean have_set_jmxremote_port;
-		boolean have_set_jmxremote_ssl;
-		boolean have_set_jmxremote_authenticate;
-		boolean have_set_tacokit_component_m2;
+		boolean custom_file_encoding;
+		boolean custom_jmxremote;
+		boolean custom_jmxremote_port;
+		boolean custom_jmxremote_ssl;
+		boolean custom_jmxremote_authenticate;
+		boolean custom_tacokit_component_m2;
 		<%}%>
 		
 		public void addArgumentsTo(java.util.List<String> target_argument_list, String argument_from_child) {
@@ -133,27 +133,27 @@ class DealChildJobLibrary_<%=cid%> {
 					target_argument_list.add(current_custom_argument);
 					
 					if(current_custom_argument.startsWith("-Dfile.encoding=")) {
-						have_set_file_encoding = true;
+						custom_file_encoding = true;
 					}
 					
 					if(current_custom_argument.equals("-Dcom.sun.management.jmxremote")) {
-						have_set_jmxremote = true;
+						custom_jmxremote = true;
 					}
 					
 					if(current_custom_argument.startsWith("-Dcom.sun.management.jmxremote.port=")) {
-						have_set_jmxremote_port = true;
+						custom_jmxremote_port = true;
 					}
 					
 					if(current_custom_argument.startsWith("-Dcom.sun.management.jmxremote.ssl=")) {
-						have_set_jmxremote_ssl = true;
+						custom_jmxremote_ssl = true;
 					}
 					
 					if(current_custom_argument.startsWith("-Dcom.sun.management.jmxremote.authenticate=")) {
-						have_set_jmxremote_authenticate = true;
+						custom_jmxremote_authenticate = true;
 					}
 					
 					if(current_custom_argument.startsWith("-Dtalend.component.manager.m2.repository=")) {
-						have_set_tacokit_component_m2 = true;
+						custom_tacokit_component_m2 = true;
 					}
 				}
 				
@@ -173,32 +173,32 @@ class DealChildJobLibrary_<%=cid%> {
 				return;
 			}
 			
-			if(argument_from_child.startsWith("-Dfile.encoding=") && !have_set_file_encoding) {
+			if(argument_from_child.startsWith("-Dfile.encoding=") && !custom_file_encoding) {
 				target_argument_list.add(argument_from_child);
 				return;
 			}
 			
-			if(argument_from_child.equals("-Dcom.sun.management.jmxremote") && !have_set_jmxremote) {
+			if(argument_from_child.equals("-Dcom.sun.management.jmxremote") && !custom_jmxremote) {
 				target_argument_list.add(argument_from_child);
 				return;
 			}
 			
-			if(argument_from_child.startsWith("-Dcom.sun.management.jmxremote.port=") && !have_set_jmxremote_port) {
+			if(argument_from_child.startsWith("-Dcom.sun.management.jmxremote.port=") && !custom_jmxremote_port) {
 				target_argument_list.add(argument_from_child);
 				return;
 			}
 			
-			if(argument_from_child.startsWith("-Dcom.sun.management.jmxremote.ssl=") && !have_set_jmxremote_ssl) {
+			if(argument_from_child.equals("-Dcom.sun.management.jmxremote.ssl=false") && !custom_jmxremote_ssl) {
 				target_argument_list.add(argument_from_child);
 				return;
 			}
 			
-			if(argument_from_child.startsWith("-Dcom.sun.management.jmxremote.authenticate=") && !have_set_jmxremote_authenticate) {
+			if(argument_from_child.equals("-Dcom.sun.management.jmxremote.authenticate=false") && !custom_jmxremote_authenticate) {
 				target_argument_list.add(argument_from_child);
 				return;
 			}
 			
-			if(argument_from_child.startsWith("-Dtalend.component.manager.m2.repository=") && !have_set_tacokit_component_m2) {
+			if(argument_from_child.startsWith("-Dtalend.component.manager.m2.repository=") && !custom_tacokit_component_m2) {
 				target_argument_list.add(argument_from_child);
 				return;
 			}
@@ -215,12 +215,12 @@ class DealChildJobLibrary_<%=cid%> {
 			have_set_custom_argument = false;
 			custom_arguments.clear();
 			
-			have_set_file_encoding = false;
-			have_set_jmxremote = false;
-			have_set_jmxremote_port = false;
-			have_set_jmxremote_ssl = false;
-			have_set_jmxremote_authenticate = false;
-			have_set_tacokit_component_m2 = false;
+			custom_file_encoding = false;
+			custom_jmxremote = false;
+			custom_jmxremote_port = false;
+			custom_jmxremote_ssl = false;
+			custom_jmxremote_authenticate = false;
+			custom_tacokit_component_m2 = false;
 		}
 		<%}%>
 	}
