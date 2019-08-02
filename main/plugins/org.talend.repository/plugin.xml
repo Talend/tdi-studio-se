@@ -3217,10 +3217,20 @@
         </projecttask>
         <projecttask
               beforeLogon="false"
+              breaks="7.3.0"
               class="org.talend.repository.model.migration.AddEncodingTypeForDQComponentsTask"
               description="Add the encoding type for some dq components"
               id="org.talend.repository.model.migration.AddEncodingTypeForDQComponentsTask"
               name="AddEncodingTypeForDQComponentsTask"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.AddRAWFlowTPatternMasking"
+              description="Add the check box to seperate the output"
+              id="org.talend.repository.model.migration.AddRAWFlowTPatternMasking"
+              name="AddRAWFlowTPatternMasking"
               version="7.3.1">
         </projecttask>
    </extension>
