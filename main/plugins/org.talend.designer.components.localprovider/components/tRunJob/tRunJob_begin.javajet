@@ -126,6 +126,10 @@ class DealChildJobLibrary_<%=cid%> {
 				%>
 				
 				for(String current_custom_argument : custom_arguments) {
+					if(current_custom_argument == null || current_custom_argument.isEmpty()) {
+						continue;
+					}
+					
 					if(current_custom_argument.startsWith("-cp") || current_custom_argument.startsWith("-libjars")) {
 						continue;
 					}
