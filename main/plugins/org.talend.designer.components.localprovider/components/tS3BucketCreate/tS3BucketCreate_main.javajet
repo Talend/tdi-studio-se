@@ -34,28 +34,33 @@ imports="
 			accessCtrlList.setOwner(conn_<%=cid%>.getS3AccountOwner());
 			accessCtrlList.setRequesterCharged(true); 
         <%
+                        int grantee_id = 1;
 			for (Map<String, String> paramACL : paramsACL) {
 				String aclAccountId = paramACL.get("ID");
+        %> 
+                    com.amazonaws.services.s3.model.Grantee grantee_<%=cid%>_<%=grantee_id%> = (<%=aclAccountId%>.indexOf('@') > -1) ? new com.amazonaws.services.s3.model.EmailAddressGrantee(<%=aclAccountId%>) : new com.amazonaws.services.s3.model.CanonicalGrantee(<%=aclAccountId%>);
+        <%
 				if ("true".equalsIgnoreCase(paramACL.get("READ"))) {
         %> 
-                    accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee(<%=aclAccountId%>), com.amazonaws.services.s3.model.Permission.Read);
+                    accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.services.s3.model.Permission.Read);
         <%
 				}
 				if ("true".equalsIgnoreCase(paramACL.get("READ_ACL"))) {
         %> 
-accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee(<%=aclAccountId%>), com.amazonaws.services.s3.model.Permission.ReadAcp);
+accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.services.s3.model.Permission.ReadAcp);
         <%
 				}
 				if ("true".equalsIgnoreCase(paramACL.get("WRITE"))) {
         %> 
-accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee(<%=aclAccountId%>), com.amazonaws.services.s3.model.Permission.Write);
+accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.services.s3.model.Permission.Write);
         <%
 				}
 				if ("true".equalsIgnoreCase(paramACL.get("WRITE_ACL"))) {
         %> 
-accessCtrlList.grantPermission( new com.amazonaws.services.s3.model.CanonicalGrantee(<%=aclAccountId%>), com.amazonaws.services.s3.model.Permission.WriteAcp);
+accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.services.s3.model.Permission.WriteAcp);
         <%
 				}
+                                grantee_id++;
 					
 			}
 		}
