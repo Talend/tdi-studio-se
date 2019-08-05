@@ -60,6 +60,8 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
      */
     private boolean editableText = false;
 
+    private Text text;
+
     public AbstractValueSelectionController(IDynamicProperty dp) {
         super(dp);
     }
@@ -108,7 +110,7 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
         final Button button = createEditButton(subComposite, param);
         setupButtonLayout(button, numInRow, nbInRow, label);
 
-        final Text text = createTextField(subComposite, param);
+        text = createTextField(subComposite, param);
         final int labelWidth = computeLabelWidth(label, param);
         setupTextLayout(text, labelWidth, label, button, numInRow, lastControl);
         setupText(text, param);
@@ -247,6 +249,7 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
     private void setupText(final Text text, final IElementParameter param) {
         text.setData(PARAMETER_NAME, param.getName());
         text.setEditable(editableText);
+        editionControlHelper.register(param.getName(), text);
         addDragAndDropTarget(text);
         if (elem instanceof Node) {
             text.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());

@@ -48,6 +48,8 @@ public abstract class AbstractTextAreaSelectionController extends AbstractElemen
 
     private boolean editableTextArea = false;
 
+    private Text text;
+
     public AbstractTextAreaSelectionController(IDynamicProperty dp) {
         super(dp);
     }
@@ -65,7 +67,7 @@ public abstract class AbstractTextAreaSelectionController extends AbstractElemen
         final Button button = createEditButton(subComposite, param);
         setupButtonLayout(button, numInRow, nbInRow, label);
 
-        final Text text = createTextField(subComposite, param);
+        text = createTextField(subComposite, param);
         final int labelWidth = computeLabelWidth(label, param);
         setupTextLayout(text, labelWidth, label, button, numInRow, lastControl);
         setupText(text, param);
@@ -187,6 +189,7 @@ public abstract class AbstractTextAreaSelectionController extends AbstractElemen
     private void setupText(final Text text, final IElementParameter param) {
         text.setData(PARAMETER_NAME, param.getName());
         text.setEditable(editableTextArea);
+        editionControlHelper.register(param.getName(), text);
         addDragAndDropTarget(text);
         if (elem instanceof Node) {
             text.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
