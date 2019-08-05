@@ -66,7 +66,6 @@ public class AddEncodingTypeForDQComponentsTask extends AbstractJobMigrationTask
                         add("tDataMasking"); //$NON-NLS-1$
                         add("tPatternMasking"); //$NON-NLS-1$
                         add("tPatternUnmasking"); //$NON-NLS-1$
-                        add("tRuleSurvivorship"); //$NON-NLS-1$
                     }
                 };
 
