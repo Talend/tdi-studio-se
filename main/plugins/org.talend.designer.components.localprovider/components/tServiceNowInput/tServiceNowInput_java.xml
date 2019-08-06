@@ -395,7 +395,8 @@
             
             <TABLE IF="TABLENAME=='custom_table'" />
         </PARAMETER>
-        <PARAMETER FIELD="TABLE" NAME="CONDITIONS" NB_LINES="3" NUM_ROW="60" REQUIRED="false">
+        <PARAMETER FIELD="TABLE" NAME="CONDITIONS" NB_LINES="3" NUM_ROW="60" REQUIRED="false"
+                   SHOW_IF="ENABLE_ADVANCED_CONDITIONS=='false'">
             <ITEMS>
                 <ITEM FIELD="COLUMN_LIST" NAME="INPUT_COLUMN"/>
                 <ITEM FIELD="CLOSED_LIST" NAME="OPERATOR">
@@ -421,6 +422,13 @@
         </PARAMETER>
         <PARAMETER COLOR="0;0;0" FIELD="LABEL" NAME="INFO" NUM_ROW="51" REQUIRED="true">
             <DEFAULT>If limit set to empty "" string or 0 it will be disabled.</DEFAULT>
+        </PARAMETER>
+        <PARAMETER FIELD="CHECK" NAME="ENABLE_ADVANCED_CONDITIONS" NUM_ROW="90" >
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+        <PARAMETER NAME="ADVANCED_CONDITIONS" FIELD="MEMO_SQL" NUM_ROW="91"
+                   REQUIRED="false" SHOW_IF="ENABLE_ADVANCED_CONDITIONS=='true'">
+            <DEFAULT>"select id, name from employee"</DEFAULT>
         </PARAMETER>
     </ADVANCED_PARAMETERS>
     <CODEGENERATION>
