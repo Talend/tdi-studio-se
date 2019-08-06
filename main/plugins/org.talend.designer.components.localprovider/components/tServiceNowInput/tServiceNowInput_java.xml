@@ -428,7 +428,7 @@
         </PARAMETER>
         <PARAMETER NAME="ADVANCED_CONDITIONS" FIELD="MEMO_SQL" NUM_ROW="91"
                    REQUIRED="false" SHOW_IF="ENABLE_ADVANCED_CONDITIONS=='true'">
-            <DEFAULT>"select id, name from employee"</DEFAULT>
+            <DEFAULT>""</DEFAULT>
         </PARAMETER>
     </ADVANCED_PARAMETERS>
     <CODEGENERATION>
