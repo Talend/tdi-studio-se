@@ -32,6 +32,7 @@ String sEncoding = ElementParameterParser.getValue(node, "__ENCODING__");
 String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
 String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
+String timeoutValue = ElementParameterParser.getValue(node, "__CONNECTION_TIMEOUT__");
 boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 String passwordFieldName = "";
@@ -60,7 +61,9 @@ if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
   });
 <%
 }
-
+%>
+int connectionTimeout_<%=cid %> = Integer.valueOf(<%=timeoutValue %>);
+<%
 if (!sftp && !ftps) { // *** ftp *** //
   	if(isLog4jEnabled){%>
 		log.debug("<%=cid%> - " + <%=(("ACTIVE").equals(connectMode))?"\"Using the active mode.\"":"\"Using the passive mode.\""%>);
@@ -78,6 +81,11 @@ if (!sftp && !ftps) { // *** ftp *** //
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" +<%=user %>+ "'.");
 	<%}%>
+
+	if (connectionTimeout_<%=cid %> > 0) {
+		ftp_<%=cid %>.setTimeout(connectionTimeout_<%=cid %>);
+	}
+
 	ftp_<%=cid %>.connect();  
 	
 	<%
@@ -179,6 +187,11 @@ if (!sftp && !ftps) { // *** ftp *** //
 			log.info("<%=cid%> -FTPS security Mode is <%=securityMode%>.");
 			log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
 		<%}%>
+
+		if (connectionTimeout_<%=cid %> > 0) {
+			ftp_<%=cid %>.setDefaultTimeout(connectionTimeout_<%=cid %>);
+		}
+
 		ftp_<%=cid %>.connect(<%=host %>,<%=ftpsPort%>);
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");

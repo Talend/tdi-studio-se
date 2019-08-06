@@ -69,6 +69,16 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     if (metadata!=null) {
     	List<IMetadataColumn> columns = metadata.getListColumns();
 		boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+
+		boolean protectFile = ("true").equals(ElementParameterParser.getValue(node, "__PROTECT_FILE__")) ? true : false;
+		if (protectFile) {
+            String passwordFieldName = "__PASSWORD__";
+        %>
+        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+        String password_<%=cid%> = decryptedPassword_<%=cid%>;
+        <%
+        }
+
 		boolean hasDynamic = false;
 		int dynamic_index = 0;
 		String datePattern = "\"dd-MM-yyyy\"";
@@ -416,13 +426,13 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 <%
 			}
 		}
-%>       
+%>
 
         writableSheet_<%=cid %> = writeableWorkbook_<%=cid %>.getSheet(<%=sheetname %>);
         if(writableSheet_<%=cid %> == null){
         	writableSheet_<%=cid %> = writeableWorkbook_<%=cid %>.createSheet(<%=sheetname %>, writeableWorkbook_<%=cid %>.getNumberOfSheets());
 		}
-		
+
 <%if(!useStream && isAppendFile && !isAppendSheet){%>
         else {
 
@@ -479,7 +489,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				}else{
 %>
 		if(true){
-			throw new RuntimeException("Date pattern must be set for column <%=column.getLabel() %> in the schema of component <%=cid %>!");
+			throw new RuntimeException("Date pattern must be set for column <%=column.getLabel() %> in the schema of component <%=cid %>! ");
 		}
 <%				}
 			}
@@ -760,6 +770,9 @@ if(!hasDynamic && isIncludeHeader){
 %>
 		int nb_line_<%=cid%> = 0;
 		org.talend.ExcelTool xlsxTool_<%=cid%> = new org.talend.ExcelTool();
+		<% if (protectFile) { %>
+        xlsxTool_<%=cid%>.setPasswordProtection(password_<%=cid%>);
+        <%}%>
 <%	 
 		if(flushOnRow && (useStream || !isAppendFile)){
 %>
@@ -780,7 +793,15 @@ if(!hasDynamic && isIncludeHeader){
 		java.util.concurrent.ConcurrentHashMap<java.lang.Object, java.lang.Object> chm_<%=cid%> = (java.util.concurrent.ConcurrentHashMap<java.lang.Object, java.lang.Object>) globalMap.get("concurrentHashMap");
 		java.lang.Object lockObj_<%=cid%> = chm_<%=cid%>.computeIfAbsent("EXCEL_OUTPUT_LOCK_OBJ_<%=cid%>", k -> new Object());
 		synchronized (lockObj_<%=cid%>) {
-			xlsxTool_<%=cid%>.prepareXlsxFile(fileName_<%=cid%>);
+			<%
+			String rowFileName = filename.replaceAll("\"", "");
+            String fileExtension = rowFileName.substring(rowFileName.lastIndexOf(".") + 1);
+			if (fileExtension.equalsIgnoreCase("xlsm")){
+			%>
+				xlsxTool_<%=cid%>.prepareXlsmFile(fileName_<%=cid%>);
+            <%} else {%>
+				xlsxTool_<%=cid%>.prepareXlsxFile(fileName_<%=cid%>);
+			<%}%>
 		}
 		<%}else{%>
 		xlsxTool_<%=cid%>.prepareStream();

@@ -12,11 +12,10 @@
  */
 package org.talend.sdk.component.studio.metadata.model;
 
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_ID;
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_PARENT_ID;
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_PARENT_ITEM_ID;
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.*;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +39,7 @@ import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
+import org.talend.sdk.component.studio.model.parameter.ValueConverter;
 import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
@@ -239,6 +239,33 @@ public class TaCoKitConfigurationModel {
             }
         }
         return Optional.empty();
+    }
+
+    public Object convertParameterValue(String currentKey, String parentKey, String objectValue) {
+        if (objectValue == null || StringUtils.isEmpty(currentKey) || StringUtils.isEmpty(parentKey)) {
+            return objectValue;
+        }
+        boolean update = false;
+        final List<Map<String, Object>> tableValues = ValueConverter.toTable(objectValue);
+        final List<Map<String, Object>> converted = new ArrayList<>(tableValues.size());
+        for (Object current : tableValues) {
+            if (current != null && current instanceof Map) {
+                Map<String, Object> line = (Map<String, Object>) current;
+                Map<String, Object> convertedLine = new HashMap<>();
+                for (String key : line.keySet()) {
+                    if (key.startsWith(parentKey)) {
+                        final String newKey = key.replace(parentKey, currentKey);
+                        convertedLine.put(newKey, line.get(key));
+                        update = true;
+                    }
+                }
+                converted.add(convertedLine);
+            }
+        }
+        if (update) {
+            return converted.toString();
+        }
+        return objectValue;
     }
 
     public EParameterFieldType getEParameterFieldType(String key) {

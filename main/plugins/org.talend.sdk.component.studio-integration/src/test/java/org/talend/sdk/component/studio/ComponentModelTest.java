@@ -15,11 +15,10 @@
  */
 package org.talend.sdk.component.studio;
 
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.apache.ziplock.JarLocation.jarLocation;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.Collections.*;
+import static java.util.Optional.*;
+import static org.apache.ziplock.JarLocation.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -231,7 +230,7 @@ class ComponentModelTest {
         INodeReturn numberLines = returnVariables.get(1);
         assertEquals("Number of line", numberLines.getDisplayName());
         assertEquals("!!!NodeReturn.Availability.AFTER!!!", numberLines.getAvailability());
-        assertEquals("int | Integer", numberLines.getType());
+        assertEquals("id_Integer", numberLines.getType());
     }
 
     @Test
