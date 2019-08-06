@@ -231,8 +231,8 @@
         <ITEMS>
             <ITEM NAME="ID" FIELD="TEXT"/>
             <ITEM NAME="READ" FIELD="CHECK"/>
-            <ITEM NAME="READ_ACL" FIELD="CHECK"/>
             <ITEM NAME="WRITE" FIELD="CHECK"/>
+            <ITEM NAME="READ_ACL" FIELD="CHECK"/>
             <ITEM NAME="WRITE_ACL" FIELD="CHECK"/>
         </ITEMS>
     </PARAMETER>
