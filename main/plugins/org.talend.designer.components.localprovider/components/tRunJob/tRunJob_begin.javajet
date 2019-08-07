@@ -120,8 +120,7 @@ class DealChildJobLibrary_<%=cid%> {
 			if(!have_set_custom_argument) {
 				custom_arguments = new java.util.ArrayList<>();
 				<%
-				for (int i=0; i<jvm_arguments.size(); i++) {
-					Map<String, String> one = jvm_arguments.get(i);
+				for (Map<String, String> one : jvm_arguments) {
 					String jvm_argument = one.get("ARGUMENT");
 					%>
 					custom_arguments.add(<%=jvm_argument%>);
