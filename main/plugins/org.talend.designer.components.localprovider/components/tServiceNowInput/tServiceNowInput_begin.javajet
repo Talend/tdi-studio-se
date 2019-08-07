@@ -164,7 +164,7 @@ int <%=cid%>_obj_line = 0;
             if(!("").equals(keyColumn.get("RVALUE"))) {
               %>
               <%=cid%>_obj_line ++;
-                if(<%=cid%>_obj_line == 1) {
+              if(<%=cid%>_obj_line == 1) {
                 <%=cid%>_conditions += "&sysparm_query=";
               }
               if(<%=cid%>_obj_line > 1) {
