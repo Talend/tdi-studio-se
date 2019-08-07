@@ -12,9 +12,9 @@
  */
 package org.talend.sdk.component.studio.metadata.handler;
 
-import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.addQuotesIfNecessary;
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
-import static org.talend.sdk.component.studio.util.TaCoKitUtil.isEmpty;
+import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.*;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
+import static org.talend.sdk.component.studio.util.TaCoKitUtil.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -114,6 +114,9 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())
                 && !EParameterFieldType.CLOSED_LIST.equals(fieldType)) {
             return addQuotesIfNecessary(connection, valueModel.getValue());
+        } else if (EParameterFieldType.TABLE.equals(fieldType)
+                || EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE.equals(fieldType)) {
+            return model.convertParameterValue(repositoryKey, key, valueModel.getValue());
         } else {
             return valueModel.getValue();
         }
