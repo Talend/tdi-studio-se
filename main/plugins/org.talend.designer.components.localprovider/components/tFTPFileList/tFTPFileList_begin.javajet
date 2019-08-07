@@ -237,10 +237,10 @@ if (sftp) {// *** sftp *** //
 		nb_file_<%=cid%>++;
 <%
 } else if (ftps) { // *** ftps *** //
-	if (("false").equals(useExistingConn)) {
 %>
-        org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
+    org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
 <%
+	if (("false").equals(useExistingConn)) {
 		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
 		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 %>
