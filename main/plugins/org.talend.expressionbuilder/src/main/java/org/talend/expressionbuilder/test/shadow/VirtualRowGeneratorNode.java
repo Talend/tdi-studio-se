@@ -111,7 +111,7 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
                     }
                     String currentValue = varible.getValue();
                     String newValue = renameVaribleValue(currentValue, type);
-                    if (valueContains(expression, varible.getName())) {
+                    if (valueContains(expression, varible.getName()) && !newValue.equals("null")) {
                         if (currentValue != null && !currentValue.equals(newValue)) {
                             expression = renameValues(expression, varible.getName(), newValue);
                         } else {
@@ -182,12 +182,17 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
     }
 
     private String renameVaribleValue(String newValue, String type) {
+        if (newValue == null || newValue.equals("null")) {
+            return newValue;
+        }
         if (JavaTypesManager.BIGDECIMAL.getLabel().equals(type)) {
             newValue = " new " + JavaTypesManager.BIGDECIMAL.getNullableClass().getName() + "(" + newValue + ")";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         } else if (JavaTypesManager.CHARACTER.getLabel().contains(type)) {
             if (newValue.length() == 1) {
                 newValue = " new " + JavaTypesManager.CHARACTER.getNullableClass().getName() + "('" + newValue.charAt(0) + "')";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
+        } else if (JavaTypesManager.DATE.getLabel().equals(type)) {
+            newValue = " ParserUtils.parseTo_Date(" + newValue + ", \"dd-MM-yyyy\")";
         }
         return newValue;
     }
