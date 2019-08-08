@@ -704,8 +704,10 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     @Override
     public void createStatsLogAndImplicitParamter(Project project) {
-        ProjectSettingManager.createStatsAndLogsElement(project);
-        ProjectSettingManager.createImplicitContextLoadElement(project);
+        Element createStatsAndLogsElement = ProjectSettingManager.createStatsAndLogsElement(project);
+        ProjectSettingManager.saveStatsAndLogToProjectSettings(createStatsAndLogsElement, project);
+        Element createImplicitContextLoadElement = ProjectSettingManager.createImplicitContextLoadElement(project);
+        ProjectSettingManager.saveImplicitValuesToProjectSettings(createImplicitContextLoadElement, project);
     }
 
     @Override

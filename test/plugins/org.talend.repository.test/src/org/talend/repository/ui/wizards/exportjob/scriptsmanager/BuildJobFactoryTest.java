@@ -12,9 +12,6 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.talend.commons.utils.VersionUtils;
@@ -26,12 +23,10 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
-import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
-import org.talend.repository.ui.wizards.exportjob.handler.BuildOSGiBundleHandler;
 
 /**
  * DOC ggu class global comment. Detailled comment
@@ -117,23 +112,5 @@ public class BuildJobFactoryTest {
                 JobScriptsManagerFactory.getDefaultExportChoiceMap(), (String) null);
         Assert.assertNotNull("Can't build job for standalone job", handler);
         Assert.assertEquals(BuildJobHandler.class.getName(), handler.getClass().getName());
-    }
-
-    @Test
-    public void test_createBuildJobHandler_String_default_withOSGiSetting() {
-        List<String> esbComponents = Arrays.asList("tRESTClient", "tRESTRequest", "tRESTResponse", "tESBConsumer",
-                "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse", "tRouteInput", "tREST");
-        ProcessItem processItem = createTestProcessItem();
-        NodeType node = TalendFileFactory.eINSTANCE.createNodeType();
-        processItem.getProcess().getNode().add(node);
-        Property property = processItem.getProperty();
-        property.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "OSGI");
-        for (String componentName : esbComponents) {
-            node.setComponentName(componentName);
-            IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(processItem, "Default", property.getVersion(),
-                    JobScriptsManagerFactory.getDefaultExportChoiceMap(), (String) null);
-            Assert.assertNotNull("Can't build job for OSGI bundle", handler);
-            Assert.assertEquals(BuildOSGiBundleHandler.class.getName(), handler.getClass().getName());
-        }
     }
 }

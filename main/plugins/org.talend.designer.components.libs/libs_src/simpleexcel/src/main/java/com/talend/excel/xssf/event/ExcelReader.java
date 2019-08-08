@@ -12,17 +12,21 @@
 // ============================================================================
 package com.talend.excel.xssf.event;
 
+import org.apache.poi.ooxml.util.PackageHelper;
 import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.poifs.crypt.Decryptor;
+import org.apache.poi.poifs.crypt.EncryptionInfo;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.StylesTable;
-import org.apache.poi.ooxml.util.PackageHelper;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -32,7 +36,6 @@ import java.util.concurrent.FutureTask;
 
 /**
  * created by wwang on 2012-9-27 Detailled comment
- *
  */
 public class ExcelReader implements Callable {
 
@@ -45,6 +48,8 @@ public class ExcelReader implements Callable {
     private String fileURL = null;
 
     private String charset = "UTF-8";
+
+    private String password = null;
 
     private java.io.InputStream is;
 
@@ -64,15 +69,17 @@ public class ExcelReader implements Callable {
         task = new Thread(futureTask);
     }
 
-    public void parse(String fileURL, String charset) {
+    public void parse(String fileURL, String charset, String password) {
         this.fileURL = fileURL;
         this.charset = charset;
+        this.password = password;
         task.start();
     }
 
-    public void parse(java.io.InputStream is, String charset) {
+    public void parse(java.io.InputStream is, String charset, String password) {
         this.is = is;
         this.charset = charset;
+        this.password = password;
         task.start();
     }
 
@@ -120,11 +127,25 @@ public class ExcelReader implements Callable {
 
     public Object call() throws Exception {
         OPCPackage pkg = null;
+        POIFSFileSystem fs = null;
         try {
-            if (fileURL != null) {
-                pkg = OPCPackage.open(fileURL);
+            if (password != null) {
+                if (fileURL != null) {
+                    fs = new POIFSFileSystem(new File(fileURL));
+                } else {
+                    fs = new POIFSFileSystem(is);
+                }
+                Decryptor d = Decryptor.getInstance(new EncryptionInfo(fs));
+                if (!d.verifyPassword(password)) {
+                    throw new RuntimeException("Error: Cannot decrypt Excel file. Invalid password.");
+                }
+                pkg = OPCPackage.open(d.getDataStream(fs));
             } else {
-                pkg = PackageHelper.open(is);
+                if (fileURL != null) {
+                    pkg = OPCPackage.open(fileURL);
+                } else {
+                    pkg = PackageHelper.open(is);
+                }
             }
             XSSFReader r = new XSSFReader(pkg);
 
@@ -203,6 +224,9 @@ public class ExcelReader implements Callable {
         } finally {
             if (pkg != null) {
                 pkg.revert();
+            }
+            if (fs != null) {
+                fs.close();
             }
             cache.notifyErrorOccurred();
         }

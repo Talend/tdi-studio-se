@@ -24,7 +24,6 @@ package org.talend.repository.ui.wizards.exportjob.handler;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +35,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.designer.maven.launch.MavenPomCommandLauncher;
 import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
@@ -161,7 +159,7 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
                         fileExtension = esbExportType;
                     }
 
-                    if (fileExtension.equals(file.getFileExtension()) && file.getName().contains("bundle")) {
+                    if (fileExtension.equals(file.getFileExtension())) {
                         bundleFile = file;
                         break;
                     }

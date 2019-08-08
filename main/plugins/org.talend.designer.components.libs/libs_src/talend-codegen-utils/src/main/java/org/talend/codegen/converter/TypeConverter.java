@@ -51,6 +51,8 @@ public final class TypeConverter {
 
     public static final String LIST = "id_List";
 
+    public static final String OBJECT = "id_Object";
+
     private TypeConverter() {
         // Class provides static utility methods and shouldn't be instantiated
     }
@@ -167,6 +169,8 @@ public final class TypeConverter {
             return SHORT;
         case "java.util.Date":
             return DATE;
+        case "java.lang.Object":
+            return OBJECT;
         default:
             throw new UnsupportedOperationException("Unrecognized java class " + javaClass);
         }

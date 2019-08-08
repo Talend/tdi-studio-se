@@ -37,6 +37,17 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		}else{
 			globalMap.put("<%=cid %>_EXPORTED_FILE_PATH",<%=directory%>);
 		}
+
+		// create output directory if not exists
+		String path = <%=directory%>;
+		if(!path.endsWith("/")){
+			path = path + "/";
+		}
+		java.io.File outputDir = new java.io.File(path);
+		if (!outputDir.exists()) {
+			outputDir.mkdirs();
+		}
+
 		boolean hasData_<%=cid%> = false;
 		<%
 		if("MIME".equals(mailType)) {

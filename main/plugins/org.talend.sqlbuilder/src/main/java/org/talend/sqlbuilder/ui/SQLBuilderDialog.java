@@ -85,7 +85,6 @@ import org.talend.sqlbuilder.dbstructure.nodes.INode;
 import org.talend.sqlbuilder.editors.MultiPageSqlBuilderEditor;
 import org.talend.sqlbuilder.repository.utility.SQLBuilderRepositoryNodeManager;
 import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
-import org.talend.sqlbuilder.util.ImageUtil;
 import org.talend.sqlbuilder.util.UIUtils;
 import org.talend.utils.sql.ConnectionUtils;
 
@@ -244,7 +243,6 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
     public SQLBuilderDialog(Shell parentShell) {
         super(parentShell);
         setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.RESIZE | SWT.MIN | SWT.MAX | SWT.APPLICATION_MODAL);
-        parentShell.setImage(ImageUtil.getImage("Images.title")); //$NON-NLS-1$
         SqlBuilderPlugin.getDefault().getRepositoryService().registerRepositoryChangedListener(this);
     }
 
@@ -253,7 +251,6 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
         this.node = node;
         this.selectedContext = selectedContext;
         setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.RESIZE | SWT.MIN | SWT.MAX | SWT.APPLICATION_MODAL);
-        parentShell.setImage(ImageUtil.getImage("Images.title")); //$NON-NLS-1$
         SqlBuilderPlugin.getDefault().getRepositoryService().registerRepositoryChangedListener(this);
     }
 

@@ -3,6 +3,7 @@ package org.talend;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
@@ -10,17 +11,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.poifs.crypt.EncryptionInfo;
+import org.apache.poi.poifs.crypt.EncryptionMode;
+import org.apache.poi.poifs.crypt.Encryptor;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbookType;
 
 public class ExcelTool {
 
@@ -70,6 +77,8 @@ public class ExcelTool {
 
     private boolean isTrackAllColumns = false;
 
+    private String password = null;
+
     public ExcelTool() {
         cellStylesMapping = new HashMap<>();
     }
@@ -110,21 +119,7 @@ public class ExcelTool {
                 initPreXlsx(fileName);
             }
             if (appendWorkbook) {
-                InputStream inp = new FileInputStream(fileName);
-                wb = WorkbookFactory.create(inp);
-                sheet = wb.getSheet(sheetName);
-                if (sheet != null) {
-                    if (appendSheet) {
-                        if (sheet.getLastRowNum() != 0 || sheet.getRow(0) != null) {
-                            curY = sheet.getLastRowNum() + 1;
-                        }
-                    } else {
-                        wb.removeSheetAt(wb.getSheetIndex(sheetName));
-                        sheet = wb.createSheet(sheetName);
-                    }
-                } else {
-                    sheet = wb.createSheet(sheetName);
-                }
+                appendActionForFile(fileName);
             } else {
                 xlsxFile.delete();
                 wb = new SXSSFWorkbook(rowAccessWindowSize);
@@ -137,6 +132,47 @@ public class ExcelTool {
         if (isAbsY) {
             startX = absX;
             curY = absY;
+        }
+    }
+
+    public void prepareXlsmFile(String fileName) throws Exception {
+        File xlsmFile = new File(fileName);
+        if (xlsmFile.exists()) {
+            if (isAbsY && keepCellFormat) {
+                initPreXlsx(fileName);
+            }
+            if (appendWorkbook) {
+                appendActionForFile(fileName);
+            } else {
+                xlsmFile.delete();
+                wb = new SXSSFWorkbook(new XSSFWorkbook(XSSFWorkbookType.XLSM), rowAccessWindowSize);
+                sheet = wb.createSheet(sheetName);
+            }
+        } else {
+            wb = new SXSSFWorkbook(new XSSFWorkbook(XSSFWorkbookType.XLSM), rowAccessWindowSize);
+            sheet = wb.createSheet(sheetName);
+        }
+        if (isAbsY) {
+            startX = absX;
+            curY = absY;
+        }
+    }
+
+    private void appendActionForFile(String fileName) throws IOException {
+        InputStream inp = new FileInputStream(fileName);
+        wb = WorkbookFactory.create(inp);
+        sheet = wb.getSheet(sheetName);
+        if (sheet != null) {
+            if (appendSheet) {
+                if (sheet.getLastRowNum() != 0 || sheet.getRow(0) != null) {
+                    curY = sheet.getLastRowNum() + 1;
+                }
+            } else {
+                wb.removeSheetAt(wb.getSheetIndex(sheetName));
+                sheet = wb.createSheet(sheetName);
+            }
+        } else {
+            sheet = wb.createSheet(sheetName);
         }
     }
 
@@ -302,13 +338,14 @@ public class ExcelTool {
     }
 
     public void writeExcel(OutputStream outputStream) throws Exception {
-    	try {
-    		wb.write(outputStream);
-    	} finally {
-    		if(outputStream != null) {
-    			outputStream.close();
-    		}
-    	}
+        try {
+            wb.write(outputStream);
+            wb.close();
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+        }
     }
 
     public void writeExcel(String fileName, boolean createDir) throws Exception {
@@ -319,14 +356,29 @@ public class ExcelTool {
                 pFile.mkdirs();
             }
         }
-        FileOutputStream fileOutput = new FileOutputStream(fileName);
         if (appendWorkbook && appendSheet && recalculateFormula) {
             evaluateFormulaCell();
         }
+        FileOutputStream fileOutput = new FileOutputStream(fileName);
+        POIFSFileSystem fs = null;
         try {
-        	wb.write(fileOutput);
+            if (password == null) {
+                wb.write(fileOutput);
+            } else {
+                fs = new POIFSFileSystem();
+                Encryptor encryptor = new EncryptionInfo(EncryptionMode.agile).getEncryptor();
+                encryptor.confirmPassword(password);
+                OutputStream encryptedDataStream = encryptor.getDataStream(fs);
+                wb.write(encryptedDataStream);
+                encryptedDataStream.close(); // this is mandatory to do that at that point
+                fs.writeFilesystem(fileOutput);
+            }
         } finally {
-        	fileOutput.close();
+            wb.close();
+            fileOutput.close();
+            if (fs != null) {
+                fs.close();
+            }
         }
     }
 
@@ -349,4 +401,9 @@ public class ExcelTool {
             ((SXSSFSheet) sheet).flushRows();
         }
     }
+
+    public void setPasswordProtection(String password) {
+        this.password = password;
+    }
+
 }

@@ -30,6 +30,7 @@ import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.context.JobContextParameter;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
@@ -39,6 +40,7 @@ import org.talend.core.model.properties.ByteArray;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.User;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.model.resources.ResourcesFactory;
@@ -67,24 +69,19 @@ public class ResourceDependenciesUtilTest {
 
     File fakefile;
 
+    private Project refProject;
+
+    private ResourceItem refItem;
+
     @Before
     public void before() {
         ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         item = ResourcesFactory.eINSTANCE.createResourceItem();
         item2 = ResourcesFactory.eINSTANCE.createResourceItem();
-        Property property = PropertiesFactory.eINSTANCE.createProperty();
-        property.setId(factory.getNextId());
-        item.setProperty(property);
-        property.setLabel("myResource");
-        property.setVersion("0.1");
-        property.setItem(item);
-
-        Property property2 = PropertiesFactory.eINSTANCE.createProperty();
-        property2.setId(factory.getNextId());
-        item2.setProperty(property2);
-        property2.setLabel("myResource2");
-        property2.setVersion("0.1");
-        property2.setItem(item2);
+        refItem = ResourcesFactory.eINSTANCE.createResourceItem();
+        Property property = createItemProerty(factory.getNextId(), "myResource", "0.1", item);
+        Property property2 = createItemProerty(factory.getNextId(), "myResource2", "0.1", item2);
+        Property refproperty = createItemProerty(factory.getNextId(), "refResource", "0.1", refItem);
 
         ByteArray byteArray = PropertiesFactory.eINSTANCE.createByteArray();
         byteArray.setInnerContent(new byte[0]);
@@ -92,7 +89,20 @@ public class ResourceDependenciesUtilTest {
         item.setBindingExtension("txt");
         item2.setContent(byteArray);
         item2.setBindingExtension("txt");
+        refItem.setContent(byteArray);
+        refItem.setBindingExtension("txt");
         createJobProperty();
+
+        // for another project
+        Project refproject = new Project();
+        refproject.setLabel("testprojectref");
+        refproject.setDescription("no desc");
+        refproject.setLanguage(ECodeLanguage.JAVA);
+        User user = PropertiesFactory.eINSTANCE.createUser();
+        user.setLogin("test@talend.com");
+        refproject.setAuthor(user);
+
+
         try {
             factory.create(item, new Path(""));
             factory.create(item2, new Path(""));
@@ -106,11 +116,24 @@ public class ResourceDependenciesUtilTest {
             if (!fakefile.exists()) {
                 fakefile.createNewFile();
             }
+
+            refProject = factory.createProject(refproject);
+            factory.create(refProject, refItem, new Path(""));
         } catch (Exception e) {
             e.printStackTrace();
             fail("Test ResourceDependenciesUtilTest failure.");
         }
 
+    }
+
+    private Property createItemProerty(String id, String label, String version, ResourceItem item) {
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        property.setId(id);
+        item.setProperty(property);
+        property.setLabel(label);
+        property.setVersion(version);
+        property.setItem(item);
+        return property;
     }
 
     @Test
@@ -212,6 +235,16 @@ public class ResourceDependenciesUtilTest {
         }
     }
 
+    @Test
+    public void testCopyToExtResourceFolder_getRightWorkspace() {
+        org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(refItem);
+        Assert.assertEquals(refProject.getTechnicalLabel(), project.getTechnicalLabel());
+
+        Project currentProject = ProjectManager.getInstance().getCurrentProject();
+        org.talend.core.model.properties.Project jobproject = ProjectManager.getInstance().getProject(jobItem);
+        Assert.assertEquals(currentProject.getTechnicalLabel(), jobproject.getTechnicalLabel());
+    }
+
 
     @After
     public void after() {
@@ -224,7 +257,11 @@ public class ResourceDependenciesUtilTest {
             if (fakefile != null && fakefile.exists()) {
                 fakefile.delete();
             }
-        } catch (PersistenceException e) {
+
+            factory.deleteObjectPhysical(refProject, factory.getLastVersion(refProject, refItem.getProperty().getId()));
+            final IProject project2 = ResourceUtils.getProject(refProject);
+            project2.delete(true, null);
+        } catch (Exception e) {
             e.printStackTrace();
             fail("Test ResourceDependenciesUtilTest failure, cannot delete ResourceItem.");
         }
