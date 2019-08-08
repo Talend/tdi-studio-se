@@ -142,6 +142,9 @@ public class ExternalNodeChangeCommand extends Command {
         }
 
         for (Connection connection : (List<Connection>) node.getIncomingConnections()) {
+            if (!connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+                continue;
+            }
             String schemaType = (String) connection.getSource().getPropertyValue(EParameterName.SCHEMA_TYPE.getName());
             if (schemaType != null) {
                 if (schemaType.equals(EmfComponent.REPOSITORY)) {
