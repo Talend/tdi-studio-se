@@ -49,7 +49,6 @@ import org.talend.repository.viewer.content.VisitResourceHelper;
 import org.talend.repository.viewer.content.listener.ResourceCollectorVisitor;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
@@ -300,29 +299,17 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
 
                         Container<String, IRepositoryViewObject> container = TaCoKitUtil.getContainer(tacokitRootContainer,
                                 edgeNode);
-                        loadFromStorage((ITaCoKitRepositoryNode) parentNode, objs, usedSet, container, tacokitRootContainer);
+                        loadFromStorage(parentNode, objs, usedSet, container, tacokitRootContainer);
                         ((RepositoryNode) parentNode).setInitialized(true);
-                        TaCoKitConfigurationRepositoryNode deprecatedNode = null;
                         if (isRootConfigType) {
                             objs.removeAll(usedSet);
                             if (!objs.isEmpty()) {
-                                deprecatedNode = createConfigurationRepositoryNode((RepositoryNode) parentNode, parentNode,
-                                        configTypeNode);
-                                deprecatedNode.setLabel(Messages.getString("repository.node.missingparent")); //$NON-NLS-1$
-                                deprecatedNode.setDeprecated(true);
                                 for (IRepositoryViewObject repObj : objs) {
-                                    ConnectionItem item = (ConnectionItem) repObj.getProperty().getItem();
-                                    TaCoKitConfigurationItemModel itemModule = new TaCoKitConfigurationItemModel(item);
-                                    TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
-                                    TaCoKitLeafRepositoryNode deprecatedLeafNode = createLeafRepositoryNode(deprecatedNode,
-                                            deprecatedNode, itemModule, module.getConfigTypeNode(), repObj);
-                                    initTaCoKitNode(deprecatedLeafNode, new HashSet<>(), new HashSet<>(), tacokitRootContainer,
-                                            true);
-                                    deprecatedNode.getChildren().add(deprecatedLeafNode);
+                                    if (!repObj.isDeleted()) {
+                                        ProxyRepositoryFactory.getInstance().deleteObjectLogical(repObj);
+                                        initTaCoKitNode(repoNode, new HashSet<>(), new HashSet<>(), tacokitRootContainer, true);
+                                    }
                                 }
-                                List<IRepositoryNode> children = parentNode.getChildren();
-                                children.add(children.size(), deprecatedNode);
-                                ((RepositoryNode) deprecatedNode).setInitialized(true);
                             }
                         }
                     }
