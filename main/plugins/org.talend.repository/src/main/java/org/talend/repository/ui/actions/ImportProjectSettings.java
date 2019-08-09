@@ -29,7 +29,7 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.model.properties.Status;
 import org.talend.core.model.properties.impl.PropertiesFactoryImpl;
-import org.talend.daikon.security.CryptoHelper;
+import org.talend.utils.security.StudioEncryption;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.repository.ProjectManager;
@@ -197,7 +197,7 @@ public class ImportProjectSettings {
          * If the value is raw (before 5.6.0), the decrypted value will be null.
          */
         if (PasswordEncryptUtil.isPasswordField(foundType.getField())) {
-            String decValue = CryptoHelper.getDefault().decrypt(value);
+            String decValue = StudioEncryption.decrypt(value);
             if (decValue != null) {
                 value = decValue;
             }

@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.daikon.security.CryptoHelper;
+import org.talend.utils.security.StudioEncryption;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
@@ -177,7 +177,7 @@ public class TaCoKitConfigurationModel {
         try {
             if (!TaCoKitUtil.isBlank(value) && contains(key)
                     && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
-                decryptedValue = CryptoHelper.getDefault().decrypt(value);
+                decryptedValue = StudioEncryption.decrypt(value);
                 if (decryptedValue == null) {
                     // if null, means error occurs, just reuse the original value
                     decryptedValue = value;
@@ -293,7 +293,7 @@ public class TaCoKitConfigurationModel {
 
             try {
                 if (contains(key) && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
-                    storeValue = CryptoHelper.getDefault().encrypt(originalValue);
+                    storeValue = StudioEncryption.encrypt(originalValue);
                 }
             } catch (Exception e) {
                 ExceptionHandler.process(e);

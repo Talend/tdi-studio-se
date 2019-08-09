@@ -36,6 +36,7 @@ import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.utils.security.CryptoHelperWrapper;
 
 /**
  * DOC hwang  class global comment. Detailled comment
@@ -60,6 +61,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
             ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
             DatabaseConnectionItem connectionItem = (DatabaseConnectionItem) item;
             DatabaseConnection connection = (DatabaseConnection) connectionItem.getConnection();
+            connection.setEncryptAndDecryptFuncPair(CryptoHelperWrapper.encryptFunc(), CryptoHelperWrapper.decryptFunc());
             if (connection instanceof DatabaseConnection) {
                 DatabaseConnection dbConnection = connection;
                 String dbType = dbConnection.getDatabaseType();

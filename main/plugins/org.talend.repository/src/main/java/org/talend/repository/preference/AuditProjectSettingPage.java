@@ -55,7 +55,7 @@ import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.ICommandLineService;
-import org.talend.daikon.security.CryptoHelper;
+import org.talend.utils.security.StudioEncryption;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -466,7 +466,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             driverText.setText(prefManager.getValue(AuditManager.AUDIT_DRIVER));
             urlText.setText(prefManager.getValue(AuditManager.AUDIT_URL));
             usernameText.setText(prefManager.getValue(AuditManager.AUDIT_USERNAME));
-            passwordText.setText(CryptoHelper.getDefault().decrypt(prefManager.getValue(AuditManager.AUDIT_PASSWORD)));
+            passwordText.setText(StudioEncryption.decrypt(prefManager.getValue(AuditManager.AUDIT_PASSWORD)));
         }
         hideControl(!savedInDBButton.getSelection());
     }
@@ -491,7 +491,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             prefManager.setValue(AuditManager.AUDIT_DRIVER, driverText.getText());
             prefManager.setValue(AuditManager.AUDIT_URL, urlText.getText());
             prefManager.setValue(AuditManager.AUDIT_USERNAME, usernameText.getText());
-            prefManager.setValue(AuditManager.AUDIT_PASSWORD, CryptoHelper.getDefault().encrypt(passwordText.getText()));
+            prefManager.setValue(AuditManager.AUDIT_PASSWORD, StudioEncryption.encrypt(passwordText.getText()));
             prefManager.setValue(AuditManager.AUDIT_SAVEDINDB, savedInDBButton.getSelection());
             prefManager.save();
         }
