@@ -272,6 +272,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
                     }
 
                     if (originalValue != null) {
+                        loadItemDataForLazyLoad(loopTableEditorView);
                         createLoopLinks(originalValue, tableItem, monitorWrap);
                     }
 
@@ -311,6 +312,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
             List<SchemaTarget> schemaTargetList, int startTableItem, int tableItemLength) {
         monitorWrap.beginTask("Fields links creation ...", totalWork);
 
+        loadItemDataForLazyLoad(fieldsTableEditorView);
         TableItem[] fieldsTableItems = fieldsTableEditorView.getTable().getItems();
         for (int i = startTableItem, indexShemaTarget = 0; i < startTableItem + tableItemLength; i++, indexShemaTarget++) {
 
@@ -332,6 +334,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
         }
         getLinksManager().sortLinks(getDrawingLinksComparator());
         getBackgroundRefresher().refreshBackground();
+        fieldsTableEditorView.getTableViewerCreator().getTableViewer().refresh();
     }
 
     private IModifiedBeanListener loopModelModifiedBeanListener;
