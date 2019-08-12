@@ -104,7 +104,7 @@ if(isEnableType2) {
 
     String updateForType2_<%=cid%> = "UPDATE " + tableName_<%=cid%>
                                     + " FROM " + sourceTable_<%=cid%> + " t"
-                                    + " SET <%=endDateField%> = "+ changeDateTime_<%=cid%><%if(isEnableActive) {%>, <%=activeField%> = 0<%}%> "
+                                    + " SET <%=endDateField%> = " + changeDateTime_<%=cid%> + "<%if(isEnableActive) {%>, <%=activeField%> = 0<%}%> "
                                     + " WHERE <%=updateJoinClauseString%> AND (<%=updateWhereClauseString%>) AND " + tableName_<%=cid%> + ".<%=endDateField%> <% if ("NULL".equals(l2EndDateFieldType)) { %> IS NULL "<% } else { %> = " + timestampFormattedString_<%=cid%><%}%>;
     java.sql.Statement stmtType2Update_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType2Update_<%=cid%>.executeUpdate(updateForType2_<%=cid%>);
@@ -138,7 +138,7 @@ if(isEnableType2) {
     columnNameString = StringUtils.join(columnNames.toArray(), ", ");
     %>
     String insertForType2_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + "(<%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%><%=surrogateKey%>, <%}%><%=columnNameString%>) SELECT <%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%>" + <%=sequenceName%> + ".NEXTVAL, <%}%>t.<%=selectColumnString%>, "
-    + changeDateTime_<%=cid%> ", <% if("NULL".equals(l2EndDateFieldType)) { %> NULL <% } else {%> " + timestampFormattedString_<%=cid%> + "<%} if(isEnableActive) {%>, 1<%}%><%if(isEnableVersion) {%>, d.<%=versionField%> + 1<%}%> FROM " +
+    + changeDateTime_<%=cid%> + ", <% if("NULL".equals(l2EndDateFieldType)) { %> NULL <% } else {%> " + timestampFormattedString_<%=cid%> + "<%} if(isEnableActive) {%>, 1<%}%><%if(isEnableVersion) {%>, d.<%=versionField%> + 1<%}%> FROM " +
     sourceTable_<%=cid%> + " t, " + tableName_<%=cid%> + " d WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.<%=endDateField%> = " + changeDateTime_<%=cid%>;
     java.sql.Statement stmtType2Insert_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType2Insert_<%=cid%>.executeUpdate(insertForType2_<%=cid%>);
