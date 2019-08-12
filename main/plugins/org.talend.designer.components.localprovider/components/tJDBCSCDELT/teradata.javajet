@@ -96,7 +96,7 @@ if(isEnableType2) {
     String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
     String updateWhereClauseString = StringUtils.join(updateWhereClause.toArray(), " OR ");
     if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) { %>
-      String customEndDate_<%=cid%> = java.sql.Timestamp.valueOf(<%=text_util.wrap(l2EndDateFieldFixedDateValue)%> +" 00:00:00").toString();
+      String customEndDate_<%=cid%> = java.sql.Timestamp.valueOf(<%=l2EndDateFieldFixedDateValue%> +" 00:00:00").toString();
       String timestampFormattedString_<%=cid%> = "cast('" + customEndDate_<%=cid%> + "' as timestamp format 'YYYY-MM-DDBHH:MI:SS.S(F)')";
     <%}%>
     String changeDateTime_<%=cid%> = "cast('" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>")))

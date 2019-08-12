@@ -88,7 +88,7 @@ if(isEnableType2) {
     }
     String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
     if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) { %>
-      String customEndDate_<%=cid%> = java.sql.Timestamp.valueOf(<%=text_util.wrap(l2EndDateFieldFixedDateValue)%> +" 00:00:00").toString();
+      String customEndDate_<%=cid%> = java.sql.Timestamp.valueOf(<%=l2EndDateFieldFixedDateValue%> +" 00:00:00").toString();
     <%}%>
     String updateForType2_<%=cid%> = "UPDATE \"" + tableName_<%=cid%> + "\" d SET \"<%=endDateField%>\" = '" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))) + "'<%if(isEnableActive) {%>, \"<%=activeField%>\" = 0<%}%> FROM \"" + sourceTable_<%=cid%> + "\" t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.\"<%=endDateField%>\" <% if ("NULL".equals(l2EndDateFieldType)) { %> IS NULL "<% } else { %> = '" + customEndDate_<%=cid%> + "'"<%}%>;
     java.sql.Statement stmtType2Update_<%=cid%> = conn_<%=cid%>.createStatement();

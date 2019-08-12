@@ -98,7 +98,7 @@ if(isEnableType2) {
     %>        
     String changeDateTime_<%=cid%> = (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString();
     <% if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) { %>
-      String customEndDate_<%=cid%> = java.sql.Timestamp.valueOf(<%=text_util.wrap(l2EndDateFieldFixedDateValue)%> +" 00:00:00").toString();
+    String customEndDate_<%=cid%> = java.sql.Timestamp.valueOf(<%=l2EndDateFieldFixedDateValue%> +" 00:00:00").toString();
     <%}%>
 	<%if(isEnableDebug){%>
     String changeDateTime_<%=cid%>_begin = changeDateTime_<%=cid%>;
