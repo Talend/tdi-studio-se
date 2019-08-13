@@ -423,7 +423,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
 
                         String requiredParentId = module.getParentItemId();
                         boolean isDeleted = false;
-                        if (requiredParentId != null) {
+                        if (requiredParentId != null && !requiredParentId.trim().isEmpty()) {
                             IRepositoryViewObject parentObj = factory.getLastVersion(requiredParentId);
                             if (parentObj != null) {
                                 isDeleted = parentObj.isDeleted();
