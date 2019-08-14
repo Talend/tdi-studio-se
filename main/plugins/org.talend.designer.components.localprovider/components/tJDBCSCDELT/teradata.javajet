@@ -97,7 +97,7 @@ if(isEnableType2) {
     String updateWhereClauseString = StringUtils.join(updateWhereClause.toArray(), " OR ");
     if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) { %>
       String customEndDate_<%=cid%> = java.sql.Timestamp.valueOf(<%=l2EndDateFieldFixedDateValue%> +" 00:00:00").toString();
-      String timestampFormattedString_<%=cid%> = "cast('" + customEndDate_<%=cid%> + "' as timestamp format 'YYYY-MM-DDBHH:MI:SS.S(F)')";
+      String timestampFormattedString_<%=cid%> = "cast('" + (customEndDate_<%=cid%>) + "' as timestamp format 'YYYY-MM-DDBHH:MI:SS.S(F)')";
     <%}%>
     String changeDateTime_<%=cid%> = "cast('" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>")))
     + "' as timestamp format 'YYYY-MM-DDBHH:MI:SS.S(F)')";
@@ -105,7 +105,7 @@ if(isEnableType2) {
     String updateForType2_<%=cid%> = "UPDATE " + tableName_<%=cid%>
                                     + " FROM " + sourceTable_<%=cid%> + " t"
                                     + " SET <%=endDateField%> = " + changeDateTime_<%=cid%> + "<%if(isEnableActive) {%>, <%=activeField%> = 0<%}%> "
-                                    + " WHERE <%=updateJoinClauseString%> AND (<%=updateWhereClauseString%>) AND " + tableName_<%=cid%> + ".<%=endDateField%> <% if ("NULL".equals(l2EndDateFieldType)) { %> IS NULL "<% } else { %> = " + timestampFormattedString_<%=cid%><%}%>;
+                                    + " WHERE <%=updateJoinClauseString%> AND (<%=updateWhereClauseString%>) AND " + tableName_<%=cid%> + ".<%=endDateField%><% if ("NULL".equals(l2EndDateFieldType)) { %> IS NULL"<% } else { %> = " + (timestampFormattedString_<%=cid%>)<%}%>;
     java.sql.Statement stmtType2Update_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType2Update_<%=cid%>.executeUpdate(updateForType2_<%=cid%>);
     stmtType2Update_<%=cid%>.close();
@@ -138,7 +138,7 @@ if(isEnableType2) {
     columnNameString = StringUtils.join(columnNames.toArray(), ", ");
     %>
     String insertForType2_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + "(<%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%><%=surrogateKey%>, <%}%><%=columnNameString%>) SELECT <%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%>" + <%=sequenceName%> + ".NEXTVAL, <%}%>t.<%=selectColumnString%>, "
-    + changeDateTime_<%=cid%> + ", <% if("NULL".equals(l2EndDateFieldType)) { %> NULL <% } else {%> " + timestampFormattedString_<%=cid%> + "<%} if(isEnableActive) {%>, 1<%}%><%if(isEnableVersion) {%>, d.<%=versionField%> + 1<%}%> FROM " +
+    + changeDateTime_<%=cid%> + ",<% if("NULL".equals(l2EndDateFieldType)) { %> NULL<% } else {%> " + (timestampFormattedString_<%=cid%>) + "<%} if(isEnableActive) {%>, 1<%}%><%if(isEnableVersion) {%>, d.<%=versionField%> + 1<%}%> FROM " +
     sourceTable_<%=cid%> + " t, " + tableName_<%=cid%> + " d WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.<%=endDateField%> = " + changeDateTime_<%=cid%>;
     java.sql.Statement stmtType2Insert_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType2Insert_<%=cid%>.executeUpdate(insertForType2_<%=cid%>);
@@ -153,7 +153,7 @@ for (Map<String, String> sk : sourceKeys) {
 String outerWhereClauseString = StringUtils.join(outerWhereClause.toArray(), " AND ");
 %>
 String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + "(<%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%><%=surrogateKey%>, <%}%><%=columnNameString%>) SELECT <%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%>" + <%=sequenceName%> + ".NEXTVAL, <%}%>t.<%=selectColumnString%>"<%if(isEnableType2) {%> + ", "
-+ changeDateTime_<%=cid%> +", <% if ("NULL".equals(l2EndDateFieldType)) { %>NULL"<% } else {%> "+ timestampFormattedString_<%=cid%><%}}%>
++ changeDateTime_<%=cid%> + ",<% if ("NULL".equals(l2EndDateFieldType)) { %> NULL"<% } else {%> " + (timestampFormattedString_<%=cid%>)<%}}%>
 + "<%if(isEnableType2 && isEnableActive) {%>, 1<%}%><%if(isEnableType2 && isEnableVersion) {%>, 1<%}%> FROM " +
 sourceTable_<%=cid%> + " t LEFT JOIN " + tableName_<%=cid%> + " d ON <%=joinClauseString%> WHERE (<%=outerWhereClauseString%>)";
 java.sql.Statement stmtInsert_<%=cid%> = conn_<%=cid%>.createStatement();

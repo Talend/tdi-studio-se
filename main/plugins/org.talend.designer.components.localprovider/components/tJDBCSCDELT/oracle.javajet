@@ -116,7 +116,7 @@ if(isEnableType2) {
     <%
   }else if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) {
     %>
-     "= to_date ('" + <%=l2EndDateFieldFixedYearValue%> +"', 'yyyy-mm-dd')";
+     "= to_date ('" + <%=l2EndDateFieldFixedYearValue%> + "', 'yyyy-mm-dd')";
     <%
     }%>
     java.sql.Statement stmtType2Update_<%=cid%> = conn_<%=cid%>.createStatement();
@@ -173,7 +173,7 @@ if(isEnableType2) {
      <%
    }else if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) {
      %>
-     ", to_date('"+<%=l2EndDateFieldFixedYearValue%>+"', 'yyyy-mm-dd')"
+     ", to_date('" + <%=l2EndDateFieldFixedYearValue%> + "', 'yyyy-mm-dd')"
      <%
      }%>
      +"
@@ -227,7 +227,7 @@ String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + "(<%if(("DB_SEQUE
 	<%
 }else if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) {
 	%>
-		 ", to_date('"+<%=l2EndDateFieldFixedYearValue%>+"', 'yyyy-mm-dd')"
+		 ", to_date('" + <%=l2EndDateFieldFixedYearValue%> + "', 'yyyy-mm-dd')"
 	<%
 	}%>
 
