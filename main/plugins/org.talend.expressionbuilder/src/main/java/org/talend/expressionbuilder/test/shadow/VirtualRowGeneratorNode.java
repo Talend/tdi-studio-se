@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.expressionbuilder.test.shadow;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +90,14 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
 
     }
 
+    protected List<Variable> getVariableList() {
+        return ExpressionBuilderDialog.getTestComposite().getVariableList();
+    }
+
+    protected String getExpression() {
+        return ExpressionBuilderDialog.getExpressionComposite().getExpression();
+    }
+
     /**
      * yzhang Comment method "initArray".
      */
@@ -99,8 +108,8 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
             VirtualMetadataColumn ext = (VirtualMetadataColumn) col;
             Map<String, String> value = new HashMap<String, String>();
             value.put(RowGeneratorComponent.COLUMN_NAME, ext.getLabel());
-            List<Variable> variables = ExpressionBuilderDialog.getTestComposite().getVariableList();
-            String expression = ExpressionBuilderDialog.getExpressionComposite().getExpression();
+            List<Variable> variables = getVariableList();
+            String expression = getExpression();
             // modify for bug 9471
             try {
                 for (Variable varible : variables) {
@@ -192,7 +201,7 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
                 newValue = " new " + JavaTypesManager.CHARACTER.getNullableClass().getName() + "('" + newValue.charAt(0) + "')";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
         } else if (JavaTypesManager.DATE.getLabel().equals(type)) {
-            newValue = " ParserUtils.parseTo_Date(" + newValue + ", \"dd-MM-yyyy\")";
+            newValue = " ParserUtils.parseTo_Date(" + (newValue.equals("") ? "\"\"" : newValue) + ", \"dd-MM-yyyy\")";
         }
         return newValue;
     }
