@@ -72,6 +72,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
@@ -83,15 +85,18 @@ import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
+import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.ui.context.nattableTree.ContextNatTableUtils;
 import org.talend.core.ui.export.ArchiveFileExportOperationFullPath;
 import org.talend.core.ui.export.FileSystemExporterFullPath;
+import org.talend.core.views.IComponentSettingsView;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.repository.ProjectManager;
@@ -1409,7 +1414,11 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
      */
     @Override
     public boolean finish() {
-        // TODO
+        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        IComponentSettingsView compSettings = (IComponentSettingsView) page.findView(IComponentSettingsView.ID);
+        if (compSettings != null) {
+            compSettings.cleanDisplay();
+        }
         if (treeViewer != null) {
             treeViewer.removeCheckStateListener(checkStateListener);
         }
