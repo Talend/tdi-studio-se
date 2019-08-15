@@ -91,6 +91,7 @@ import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.Problem;
 import org.talend.core.model.process.Problem.ProblemStatus;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -127,6 +128,8 @@ import org.talend.designer.core.model.components.NodeReturn;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.ActiveProcessTracker;
 import org.talend.designer.core.ui.editor.AbstractTalendEditor;
@@ -4312,6 +4315,7 @@ public class Node extends Element implements IGraphicalNode {
             checkNodeProblems();
 
             checkDependencyLibraries();
+            checkTRunjobRecursiveLoop();
 
             // feature 2,add a new extension point to intercept the validation action for Uniserv
             List<ICheckNodesService> checkNodeServices = CheckNodeManager.getCheckNodesService();
@@ -4546,6 +4550,71 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
 
+    }
+    
+    private void checkTRunjobRecursiveLoop() {
+    	List<String> idList = new ArrayList<>();
+    	try {
+    		if (getComponent() != null && "tRunJob".equals(getComponent().getName())) {  //$NON-NLS-1$
+                IElementParameter thisElement = this.getElementParameter(EParameterName.PROCESS.getName());
+                if(thisElement != null && !StringUtils.isBlank(thisElement.getValue().toString())) {
+                	Object idObj = thisElement.getChildParameters().get(EParameterName.PROCESS_TYPE_PROCESS.getName()).getValue();
+                	if(!StringUtils.isBlank(idObj.toString())) {
+                		int loop = 0;
+                		String id = idObj.toString().substring(idObj.toString().indexOf(":") + 1);
+                		String proId = loop + "&" + id;  //$NON-NLS-1$
+                		idList.add(proId);
+                		IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(id);
+                		Item item = obj.getProperty().getItem();
+                		if(item instanceof ProcessItem) {
+                			ProcessType process = ((ProcessItem)item).getProcess();
+                			boolean result = isInLoop(process, id, idList, loop + 1);
+                			if(result) {
+                				String message = Messages.getString("Node.inLoop", this.getUniqueName()); //$NON-NLS-1$
+                                Problems.add(ProblemStatus.WARNING, this, message);
+                			}
+                		}
+                	}
+                }
+                
+            }
+		} catch (PersistenceException e) {
+			ExceptionHandler.process(e);
+		}
+    }
+    
+    private boolean isInLoop(ProcessType process, String processId, List<String> idList, int loop) throws PersistenceException{
+    	List<NodeType> nodeList = process.getNode();
+		for(NodeType nodeTye : nodeList) {
+			List<ElementParameterType> typeList = nodeTye.getElementParameter();
+	    	for(ElementParameterType eType : typeList) {
+	    		if("PROCESS:PROCESS_TYPE_PROCESS".equals(eType.getName())) {//$NON-NLS-1$
+	    			String id = eType.getValue();
+	    			id = id.substring(id.indexOf(":") + 1);//$NON-NLS-1$
+	    			String subid = loop + "&" +id;//$NON-NLS-1$
+	    			for(String pid : idList) {
+	    				int parent = Integer.parseInt(pid.substring(0, pid.indexOf("&")));//$NON-NLS-1$
+	    				String child = pid.substring(pid.indexOf("&") + 1, pid.length());//$NON-NLS-1$
+	    				if(parent != loop && child.equals(id)) {
+	    					return true;
+	    				}
+	    			}
+	    			idList.add(subid);
+	    			
+	    			IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(id);
+	        		Item item = obj.getProperty().getItem();
+	        		if(item instanceof ProcessItem) {
+	        			ProcessType subprocess = ((ProcessItem)item).getProcess();
+	        			boolean result = isInLoop(subprocess, id, idList, loop + 1);
+	        			if(result) {
+	        				return result;
+	        			}
+	        		}
+	    		}
+	    	}
+		}
+    	
+    	return false;
     }
 
     /**
