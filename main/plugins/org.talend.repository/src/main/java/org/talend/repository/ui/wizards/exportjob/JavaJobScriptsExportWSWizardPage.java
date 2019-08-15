@@ -961,6 +961,9 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 log4jLevelCombo.select(2);
             }
         }
+        // contextCombo applyToChildrenButton control by contextbutton
+        contextCombo.setEnabled(contextButton.getSelection());
+        applyToChildrenButton.setEnabled(contextButton.getSelection());
     }
 
     private void restoreWidgetValuesForImage() {
