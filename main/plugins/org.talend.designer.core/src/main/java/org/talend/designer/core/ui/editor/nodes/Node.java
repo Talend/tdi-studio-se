@@ -52,8 +52,10 @@ import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
+import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IMultipleComponentItem;
@@ -4568,7 +4570,7 @@ public class Node extends Element implements IGraphicalNode {
                 		Item item = obj.getProperty().getItem();
                 		if(item instanceof ProcessItem) {
                 			ProcessType process = ((ProcessItem)item).getProcess();
-                			boolean result = isInLoop(process, id, idList, loop + 1);
+                			boolean result = isInLoop(process, idList, loop + 1);
                 			if(result) {
                 				String message = Messages.getString("Node.inLoop", this.getUniqueName()); //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, message);
@@ -4577,15 +4579,27 @@ public class Node extends Element implements IGraphicalNode {
                 	}
                 }
                 
+            }else {
+            	 IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                         IJobletProviderService.class);
+                 if (service != null && service.isJobletComponent(this)) {
+                	 ProcessType processType = service.getJobletProcess(getComponent());
+                	 boolean result = isInLoop(processType, idList, 1);
+         			if(result) {
+         				String message = Messages.getString("Node.inLoop", this.getUniqueName()); //$NON-NLS-1$
+                         Problems.add(ProblemStatus.WARNING, this, message);
+         			}
+                 }
             }
 		} catch (PersistenceException e) {
 			ExceptionHandler.process(e);
 		}
     }
     
-    private boolean isInLoop(ProcessType process, String processId, List<String> idList, int loop) throws PersistenceException{
+    private boolean isInLoop(ProcessType process, List<String> idList, int loop) throws PersistenceException{
     	List<NodeType> nodeList = process.getNode();
 		for(NodeType nodeTye : nodeList) {
+			boolean isJoblet = false;
 			List<ElementParameterType> typeList = nodeTye.getElementParameter();
 	    	for(ElementParameterType eType : typeList) {
 	    		if("PROCESS:PROCESS_TYPE_PROCESS".equals(eType.getName())) {//$NON-NLS-1$
@@ -4605,13 +4619,42 @@ public class Node extends Element implements IGraphicalNode {
 	        		Item item = obj.getProperty().getItem();
 	        		if(item instanceof ProcessItem) {
 	        			ProcessType subprocess = ((ProcessItem)item).getProcess();
-	        			boolean result = isInLoop(subprocess, id, idList, loop + 1);
+	        			boolean result = isInLoop(subprocess, idList, loop + 1);
 	        			if(result) {
 	        				return result;
 	        			}
 	        		}
+	    		}else if("FAMILY".equals(eType.getName()) && "Joblets".equals(eType.getValue())) {
+	    			isJoblet = true;
+	    			break;
 	    		}
 	    	}
+	    	
+	    	if(isJoblet) {
+	    		String jobletPaletteType = null;
+		        String frameWork = process.getFramework();
+		        if (StringUtils.isBlank(frameWork)) {
+		            jobletPaletteType = ComponentCategory.CATEGORY_4_DI.getName();
+		        } else if (frameWork.equals(HadoopConstants.FRAMEWORK_SPARK)) {
+		            jobletPaletteType = ComponentCategory.CATEGORY_4_SPARK.getName();
+		        } else if (frameWork.equals(HadoopConstants.FRAMEWORK_SPARK_STREAMING)) {
+		            jobletPaletteType = ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName();
+		        }
+		    	
+		    	IJobletProviderService service =
+	                    (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+	                            IJobletProviderService.class);
+	            if (service != null) {
+	                IComponent jobletComponent = service.getJobletComponent(nodeTye, jobletPaletteType);
+	                ProcessType jobletProcess = service.getJobletProcess(jobletComponent);
+	                
+	    			boolean result = isInLoop(jobletProcess, idList, loop + 1);
+	    			if(result) {
+	    				return result;
+	    			}
+	            }
+	    	}
+	    	
 		}
     	
     	return false;
