@@ -8,13 +8,13 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
+
 
 public class TalendProxySelector extends ProxySelector {
     private static TalendProxySelector instance;
 
-    private static final Logger log = LoggerFactory.getLogger(TalendProxySelector.class);
+    private static final Logger log = Logger.getLogger(TalendProxySelector.class);
 
     private ThreadLocal<ProxyHolder> myHolder;
 
@@ -44,12 +44,12 @@ public class TalendProxySelector extends ProxySelector {
     @Override
     public List<Proxy> select(URI uri) {
         String uriString = uri.getHost() + ":" + uri.getPort();
-        log.debug("Network request hadling from Talend proxy selector. Thread {}. URI to connect: {}", Thread.currentThread().getName(), uriString);
+        log.debug("Network request hadling from Talend proxy selector. Thread " + Thread.currentThread().getName() + ". URI to connect: " + uriString);
         if (myHolder != null && myHolder.get() != null && myHolder.get().getProxyMap().containsKey(uri.toString())) {
-            log.debug("Proxy {} is using to connect to URI {}", myHolder.get().getProxyMap().get(uriString), uriString);
+            log.debug("Proxy " + myHolder.get().getProxyMap().get(uriString) + " is using to connect to URI " + uriString);
             return Collections.singletonList(myHolder.get().getProxyMap().get(uriString));
         } else {
-            log.debug("No proxy is using to connect to URI {}", uriString);
+            log.debug("No proxy is using to connect to URI " + uriString);
             return Collections.singletonList(Proxy.NO_PROXY);
         }
     }
@@ -59,7 +59,7 @@ public class TalendProxySelector extends ProxySelector {
         if (ioe != null) {
             log.warn("Connect failed when use Talend ProxySelector to the URI:" + uri.toString(), ioe);
         } else {
-            log.warn("Connect failed when use Talend ProxySelector to the {}", uri);
+            log.warn("Connect failed when use Talend ProxySelector to the " + uri);
         }
     }
 }
