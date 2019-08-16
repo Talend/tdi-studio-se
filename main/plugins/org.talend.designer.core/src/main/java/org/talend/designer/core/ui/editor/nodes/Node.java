@@ -148,6 +148,7 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.ui.projectsetting.ElementParameter2ParameterType;
 import org.talend.designer.core.ui.views.problems.Problems;
+import org.talend.designer.core.utils.TRunjobUtil;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.core.utils.UpgradeElementHelper;
 import org.talend.designer.joblet.model.JobletNode;
@@ -4317,7 +4318,7 @@ public class Node extends Element implements IGraphicalNode {
             checkNodeProblems();
 
             checkDependencyLibraries();
-            checkTRunjobRecursiveLoop();
+            new TRunjobUtil().checkTRunjobRecursiveLoop(this);
 
             // feature 2,add a new extension point to intercept the validation action for Uniserv
             List<ICheckNodesService> checkNodeServices = CheckNodeManager.getCheckNodesService();
@@ -4554,111 +4555,6 @@ public class Node extends Element implements IGraphicalNode {
 
     }
     
-    private void checkTRunjobRecursiveLoop() {
-    	List<String> idList = new ArrayList<>();
-    	try {
-    		if (getComponent() != null && "tRunJob".equals(getComponent().getName())) {  //$NON-NLS-1$
-                IElementParameter thisElement = this.getElementParameter(EParameterName.PROCESS.getName());
-                if(thisElement != null && !StringUtils.isBlank(thisElement.getValue().toString())) {
-                	Object idObj = thisElement.getChildParameters().get(EParameterName.PROCESS_TYPE_PROCESS.getName()).getValue();
-                	if(!StringUtils.isBlank(idObj.toString())) {
-                		int loop = 0;
-                		String id = idObj.toString().substring(idObj.toString().indexOf(":") + 1);
-                		String proId = loop + "&" + id;  //$NON-NLS-1$
-                		idList.add(proId);
-                		IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(id);
-                		Item item = obj.getProperty().getItem();
-                		if(item instanceof ProcessItem) {
-                			ProcessType process = ((ProcessItem)item).getProcess();
-                			boolean result = isInLoop(process, idList, loop + 1);
-                			if(result) {
-                				String message = Messages.getString("Node.inLoop", this.getUniqueName()); //$NON-NLS-1$
-                                Problems.add(ProblemStatus.WARNING, this, message);
-                			}
-                		}
-                	}
-                }
-                
-            }else {
-            	 IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                         IJobletProviderService.class);
-                 if (service != null && service.isJobletComponent(this)) {
-                	 ProcessType processType = service.getJobletProcess(getComponent());
-                	 boolean result = isInLoop(processType, idList, 1);
-         			if(result) {
-         				String message = Messages.getString("Node.inLoop", this.getUniqueName()); //$NON-NLS-1$
-                         Problems.add(ProblemStatus.WARNING, this, message);
-         			}
-                 }
-            }
-		} catch (PersistenceException e) {
-			ExceptionHandler.process(e);
-		}
-    }
-    
-    private boolean isInLoop(ProcessType process, List<String> idList, int loop) throws PersistenceException{
-    	List<NodeType> nodeList = process.getNode();
-		for(NodeType nodeTye : nodeList) {
-			boolean isJoblet = false;
-			List<ElementParameterType> typeList = nodeTye.getElementParameter();
-	    	for(ElementParameterType eType : typeList) {
-	    		if("PROCESS:PROCESS_TYPE_PROCESS".equals(eType.getName())) {//$NON-NLS-1$
-	    			String id = eType.getValue();
-	    			id = id.substring(id.indexOf(":") + 1);//$NON-NLS-1$
-	    			String subid = loop + "&" +id;//$NON-NLS-1$
-	    			for(String pid : idList) {
-	    				int parent = Integer.parseInt(pid.substring(0, pid.indexOf("&")));//$NON-NLS-1$
-	    				String child = pid.substring(pid.indexOf("&") + 1, pid.length());//$NON-NLS-1$
-	    				if(parent != loop && child.equals(id)) {
-	    					return true;
-	    				}
-	    			}
-	    			idList.add(subid);
-	    			
-	    			IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(id);
-	        		Item item = obj.getProperty().getItem();
-	        		if(item instanceof ProcessItem) {
-	        			ProcessType subprocess = ((ProcessItem)item).getProcess();
-	        			boolean result = isInLoop(subprocess, idList, loop + 1);
-	        			if(result) {
-	        				return result;
-	        			}
-	        		}
-	    		}else if("FAMILY".equals(eType.getName()) && "Joblets".equals(eType.getValue())) {
-	    			isJoblet = true;
-	    			break;
-	    		}
-	    	}
-	    	
-	    	if(isJoblet) {
-	    		String jobletPaletteType = null;
-		        String frameWork = process.getFramework();
-		        if (StringUtils.isBlank(frameWork)) {
-		            jobletPaletteType = ComponentCategory.CATEGORY_4_DI.getName();
-		        } else if (frameWork.equals(HadoopConstants.FRAMEWORK_SPARK)) {
-		            jobletPaletteType = ComponentCategory.CATEGORY_4_SPARK.getName();
-		        } else if (frameWork.equals(HadoopConstants.FRAMEWORK_SPARK_STREAMING)) {
-		            jobletPaletteType = ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName();
-		        }
-		    	
-		    	IJobletProviderService service =
-	                    (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-	                            IJobletProviderService.class);
-	            if (service != null) {
-	                IComponent jobletComponent = service.getJobletComponent(nodeTye, jobletPaletteType);
-	                ProcessType jobletProcess = service.getJobletProcess(jobletComponent);
-	                
-	    			boolean result = isInLoop(jobletProcess, idList, loop + 1);
-	    			if(result) {
-	    				return result;
-	    			}
-	            }
-	    	}
-	    	
-		}
-    	
-    	return false;
-    }
 
     /**
      * DOC xye Comment method "checkParallelizeStates".
