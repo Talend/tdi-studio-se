@@ -60,7 +60,11 @@
                 <ITEM NAME="HOST" VALUE="&quot;&quot;"/>
             </ITEMS>
         </PARAMETER>
-	</PARAMETERS>
-	<CODEGENERATION/>
-	<RETURNS/>
+    </PARAMETERS>
+    <CODEGENERATION>
+        <IMPORTS>
+            <IMPORT NAME="customProxy" MODULE="talend-proxy-1.0.0-SNAPSHOT.jar" MVN="mvn:org.talend.components.lib/talend-proxy/1.0.0-SNAPSHOT" REQUIRED_IF="(PROXY_GLOBAL == 'false')" />
+        </IMPORTS>
+    </CODEGENERATION>
+    <RETURNS/>
 </COMPONENT>
