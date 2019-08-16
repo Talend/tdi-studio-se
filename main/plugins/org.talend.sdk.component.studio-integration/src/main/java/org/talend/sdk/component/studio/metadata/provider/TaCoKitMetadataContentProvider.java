@@ -310,19 +310,27 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
                                         configTypeNode);
                                 deprecatedNode.setLabel(Messages.getString("repository.node.missingparent")); //$NON-NLS-1$
                                 deprecatedNode.setDeprecated(true);
+                                boolean add = false;
                                 for (IRepositoryViewObject repObj : objs) {
                                     ConnectionItem item = (ConnectionItem) repObj.getProperty().getItem();
                                     TaCoKitConfigurationItemModel itemModule = new TaCoKitConfigurationItemModel(item);
                                     TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
+                                    // Not be add if parent object was deleted
+                                    if (checkParentObjectDeleted(module.getParentItemId())) {
+                                        continue;
+                                    }
                                     TaCoKitLeafRepositoryNode deprecatedLeafNode = createLeafRepositoryNode(deprecatedNode,
                                             deprecatedNode, itemModule, module.getConfigTypeNode(), repObj);
                                     initTaCoKitNode(deprecatedLeafNode, new HashSet<>(), new HashSet<>(), tacokitRootContainer,
                                             true);
                                     deprecatedNode.getChildren().add(deprecatedLeafNode);
+                                    add = true;
                                 }
-                                List<IRepositoryNode> children = parentNode.getChildren();
-                                children.add(children.size(), deprecatedNode);
-                                ((RepositoryNode) deprecatedNode).setInitialized(true);
+                                if (add) {
+                                    List<IRepositoryNode> children = parentNode.getChildren();
+                                    children.add(children.size(), deprecatedNode);
+                                    ((RepositoryNode) deprecatedNode).setInitialized(true);
+                                }
                             }
                         }
                     }
@@ -332,6 +340,23 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
             }
         }
         repoNode.setInitialized(true);
+    }
+
+    private boolean checkParentObjectDeleted(String requiredParentId) throws Exception {
+        if (!TaCoKitUtil.isBlank(requiredParentId)) {
+            IRepositoryViewObject parentObj = ProxyRepositoryFactory.getInstance().getLastVersion(requiredParentId, null,
+                    TaCoKitConst.METADATA_TACOKIT);
+            if (parentObj != null) {
+                if (parentObj.isDeleted()) {
+                    return true;
+                } else {
+                    ConnectionItem item = (ConnectionItem) parentObj.getProperty().getItem();
+                    TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
+                    return checkParentObjectDeleted(module.getParentItemId());
+                }
+            }
+        }
+        return false;
     }
 
     private void mapRootNode(ProjectRepositoryNode projectRootNode, Map<String, ConfigTypeNode> nodes, String nodeId,
@@ -417,21 +442,12 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
             for (IRepositoryViewObject member : members) {
                 if (factory.getStatus(member) != ERepositoryStatus.DELETED) {
                     try {
+                        allObjs.add(member);
                         ConnectionItem item = (ConnectionItem) member.getProperty().getItem();
                         TaCoKitConfigurationItemModel itemModule = new TaCoKitConfigurationItemModel(item);
                         TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
 
                         String requiredParentId = module.getParentItemId();
-                        boolean isDeleted = false;
-                        if (requiredParentId != null && !requiredParentId.trim().isEmpty()) {
-                            IRepositoryViewObject parentObj = factory.getLastVersion(requiredParentId);
-                            if (parentObj != null) {
-                                isDeleted = parentObj.isDeleted();
-                            }
-                        }
-                        if (!isDeleted) {
-                            allObjs.add(member);
-                        }
                         if (requiredParentId == null || requiredParentId.isEmpty()) {
                             // if parent type is family, then create node; else continue
                             ConfigTypeNode moduleTypeNode = itemModule.getConfigTypeNode();
@@ -446,9 +462,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
                         } else if (!requiredParentId.equals(parentId)) {
                             continue;
                         }
-                        if (!isDeleted) {
-                            usedObjs.add(member);
-                        }
+                        usedObjs.add(member);
 
                         TaCoKitLeafRepositoryNode leafRepositoryNode = createLeafRepositoryNode((RepositoryNode) parentNode,
                                 parentNode, itemModule, configTypeNodeMap.get(module.getConfigurationId()), member);
