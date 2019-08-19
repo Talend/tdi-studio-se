@@ -3169,8 +3169,8 @@ public class Node extends Element implements IGraphicalNode {
 
     private void checkValidationParameterValue(IElementParameter param) {
         // Just for generic parameter now
-        if (param.isShow(getElementParameters()) && param.getFieldType().equals(EParameterFieldType.TEXT)
-                && param instanceof IGenericElementParameter) {
+        if (param instanceof IGenericElementParameter && param.getFieldType().equals(EParameterFieldType.TEXT)
+                && param.isShow(getElementParameters())) {
             String paramValue = String.valueOf(param.getValue());
             if (!ContextParameterUtils.isContainContextParam(paramValue)) {
                 org.talend.daikon.properties.property.Property property = ((IGenericElementParameter) param).getProperty();
