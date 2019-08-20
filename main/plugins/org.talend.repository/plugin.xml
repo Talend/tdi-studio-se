@@ -3154,7 +3154,17 @@
               name="CleanCustomerMatcherField"
               version="7.1.2">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.0"
+              class="org.talend.repository.model.migration.changeDBVersionForMapROJAIOutputMigrationTask"
+              description="Changed DB version in MapROJAI output component"
+              id="org.talend.repository.model.migration.changeDBVersionForMapROJAIOutputMigrationTask"
+              name="changeDBVersionForMapROJAIOutputMigrationTask"
+              version="7.0.1">
+        </projecttask>
    </extension>
+   
 
    <extension
          point="org.talend.core.runtime.librariesNeeded">
