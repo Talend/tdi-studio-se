@@ -600,6 +600,11 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
                         StringTokenizer token = new StringTokenizer(var.getName(), "."); //$NON-NLS-1$
                         String className = token.nextToken();
                         if (token.hasMoreTokens()) {
+                            String subVarName = var.getName().substring(className.length() + 1);
+                            if (subVarName.contains("(") && subVarName.contains("")) {
+                                // no need for method like TalendDate.addDate(row1.test,arg2,arg3)
+                                continue;
+                            }
                             String newVarName = token.nextToken();
                             Variable newVar = new Variable(newVarName, var.getValue(), var.getTalendType(), var.isNullable());
                             if (!classesToGenerate.containsKey(className)) {
