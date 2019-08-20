@@ -156,6 +156,7 @@
 		<module>test/plugins/org.talend.designer.webservice.test</module>
 		<module>test/plugins/org.talend.designer.scd.test</module>
 		<module>test/plugins/org.talend.designer.unifiedcomponent.test</module>
+		<module>test/plugins/org.talend.expressionbuilder.test</module>
 	</modules>
 	<build>
 		<plugins>
