@@ -71,6 +71,7 @@ import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
 import org.talend.commons.utils.data.list.ListenableListEvent.TYPE;
 import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.datatools.xml.utils.ATreeNode;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.XmlExtractorBgRefresher;
@@ -331,7 +332,9 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
             TableItem tableItem = fieldsTableItems[i];
             SchemaTarget schemaTarget = schemaTargetList.get(indexShemaTarget);
             String relativeXpathQuery = schemaTarget.getRelativeXPathQuery();
-            createFieldLinks(relativeXpathQuery, tableItem, monitorWrap, schemaTarget);
+            if(fieldToExtract(schemaTarget.getTagName(), treePopulator.getAllNodes())) {
+            	createFieldLinks(relativeXpathQuery, tableItem, monitorWrap, schemaTarget);
+            }
             monitorWrap.worked(1);
         }
         fieldsTableEditorView.getTableViewerCreator().getTableViewer().refresh();
@@ -344,6 +347,15 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
     private IExtendedControlListener loopTableExtendedControlListener;
 
     private ILineSelectionListener afterLineSelectionListener;
+    
+    private boolean fieldToExtract(String relativeXpathQuery, List<ATreeNode> nodes) {
+    	for(ATreeNode node : nodes) {
+    		if(relativeXpathQuery.equals(node.getLabel())) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
     /**
      * DOC amaumont Comment method "initListeners".
