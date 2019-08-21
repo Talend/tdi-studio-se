@@ -7,6 +7,7 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
@@ -47,21 +48,29 @@ public class TalendProxySelector extends ProxySelector {
         }
     }
 
+    /**
+     * Finds and return proxy was set for specific host
+     * @param uriString host:port
+     * @return Optional of Proxy if such proxy setting was set
+     */
+    public Optional<Proxy> getProxyForUriString(String uriString) {
+        if (globalProxyHolder.getProxyMap().containsKey(uriString)) {
+            log.debug("All threads proxy " + globalProxyHolder.getProxyMap().get(uriString) + " is using to connect to URI " + uriString);
+            return Optional.ofNullable(globalProxyHolder.getProxyMap().get(uriString));
+        } else if (threadLocalProxyHolder != null && threadLocalProxyHolder.get() != null && threadLocalProxyHolder.get().getProxyMap().containsKey(uriString)) {
+            log.debug("Proxy " + threadLocalProxyHolder.get().getProxyMap().get(uriString) + " is using to connect to URI " + uriString);
+            return Optional.ofNullable(threadLocalProxyHolder.get().getProxyMap().get(uriString));
+        } else {
+            log.debug("No proxy is using to connect to URI " + uriString);
+            return Optional.of(Proxy.NO_PROXY);
+        }
+    }
+
     @Override
     public List<Proxy> select(URI uri) {
         String uriString = uri.getHost() + ":" + uri.getPort();
         log.debug("Network request hadling from Talend proxy selector. Thread " + Thread.currentThread().getName() + ". URI to connect: " + uriString);
-        if (globalProxyHolder.getProxyMap().containsKey(uriString)) {
-            log.debug("All threads proxy " + globalProxyHolder.getProxyMap().get(uriString) + " is using to connect to URI " + uriString);
-            return Collections.singletonList(globalProxyHolder.getProxyMap().get(uriString));
-        } else if (threadLocalProxyHolder != null && threadLocalProxyHolder.get() != null && threadLocalProxyHolder.get().getProxyMap().containsKey(uriString))
-        {
-            log.debug("Proxy " + threadLocalProxyHolder.get().getProxyMap().get(uriString) + " is using to connect to URI " + uriString);
-            return Collections.singletonList(threadLocalProxyHolder.get().getProxyMap().get(uriString));
-        } else {
-            log.debug("No proxy is using to connect to URI " + uriString);
-            return Collections.singletonList(Proxy.NO_PROXY);
-        }
+        return Collections.singletonList(getProxyForUriString(uriString).orElse(Proxy.NO_PROXY));
     }
 
     @Override
