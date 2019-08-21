@@ -982,7 +982,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
             if (verticalBar != null) {
                 verticalBar.setSelection(0);
             }
-
+            availableJSONTreeViewer.expandAll();
             if (this.linker == null) {
                 this.linker = prepareJsonLinker();
 
