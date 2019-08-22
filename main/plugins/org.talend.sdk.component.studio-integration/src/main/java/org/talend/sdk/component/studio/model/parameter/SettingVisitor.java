@@ -201,7 +201,7 @@ public class SettingVisitor implements PropertyVisitor {
      */
     @Override
     public void visit(final PropertyNode node) {
-        if (node.isLeaf()) {
+        if (node.isLeaf() && !PropertyTypes.OBJECT.equalsIgnoreCase(node.getProperty().getType())) {
             switch (node.getFieldType()) {
             case CHECK:
                 final CheckElementParameter check = visitCheck(node);
