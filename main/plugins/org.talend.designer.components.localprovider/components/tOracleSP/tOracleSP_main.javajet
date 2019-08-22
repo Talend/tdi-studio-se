@@ -148,21 +148,44 @@ if (canGenerate) {
 			// Search Java type of argument, based on schema column
 			String typeToGenerate = null;
 			boolean nullable = false;
+
+			// Oracle type if define directly.
+			String databaseType = null;
+            String oracleType = null;
+
 			for (IMetadataColumn column : columnList) {
 				if (column.getLabel().equals(argName)) {
 					typeToGenerate = JavaTypesManager.getTypeToGenerate(
 						column.getTalendType(), column.isNullable());
+
+					databaseType  = column.getType();
+
+					oracleType = databaseType;
+					if (oracleType != null) {   // case of "TIMESTAMP WITH TIME ZONE" for example
+												// to convert to java.sql.Types.TIMESTAMP.
+						int firstSpace = oracleType.indexOf(' ');
+						if (firstSpace >= 0) {
+							oracleType = oracleType.substring(0, firstSpace);
+						}
+					}
+					else {
+						oracleType = converter.convert(typeToGenerate);
+					}
+
 					nullable = column.isNullable();
 					break;
 				}
 			}
 			
-			if (typeToGenerate == null)
+			if (typeToGenerate == null && databaseType == null)
 				continue;
 			
 			// Note: first argument in JDBC is arg #1, and for functions, arg #1 is return value
 			int argIndex = i + 1;
-			
+%>
+
+				// Code for field <%=inConnectionName%>.<%=argName%>
+<%
 			// Input argument
 			if (("IN").equals(argType) || ("INOUT").equals(argType)) {
 				// input type is custom defined
@@ -177,11 +200,10 @@ if (canGenerate) {
 				}else{ // the db types 
     				if (nullable) {
     					%>
-    					if (<%=inConnectionName%>.<%=argName%> == null) {
-    						statement_<%=cid%>.setNull(<%=argIndex%>, java.sql.Types.<%=converter.convert(typeToGenerate)%>);
-    					} else {
-    					<%
-    				}
+    				if (<%=inConnectionName%>.<%=argName%> == null) {
+					statement_<%=cid%>.setNull(<%=argIndex%>, java.sql.Types.<%=oracleType%>);
+    				} else { <%
+    				} // end of "if (nullable)"
     				
     				String method;
     				if (("byte[]").equals(typeToGenerate)) {
@@ -202,9 +224,16 @@ if (canGenerate) {
     					}
     					<%
     				} else if (("java.util.Date").equals(typeToGenerate)) {
+						if (databaseType == null || databaseType.startsWith("TIMESTAMP")) {
     					%>
     					statement_<%=cid%>.setTimestamp(<%=argIndex%>, new java.sql.Timestamp(<%=inConnectionName%>.<%=argName%>.getTime()));
     					<%
+						}
+						else if ("DATE".equals(databaseType)) {
+                        %>
+    					statement_<%=cid%>.setDate(<%=argIndex%>, new java.sql.Date(<%=inConnectionName%>.<%=argName%>.getTime()));
+    					<%
+                            }
     				} else if ("XMLTYPE".equals(dbType)){
 						%>
 						oracle.xdb.XMLType xmlType_<%=cid%> = oracle.xdb.XMLType.createXML(connection_<%=cid%>, <%=inConnectionName%>.<%=argName%>);
@@ -217,8 +246,7 @@ if (canGenerate) {
     				}
     				
     				if (nullable) {
-    					%>
-    					}
+    					%>}
     					<%
     				}
     			}
@@ -231,11 +259,9 @@ if (canGenerate) {
 				statement_<%=cid%>.registerOutParameter(<%=argIndex%>, java.sql.Types.<%=customeType %>,<%=argCustom %>);
 <%
 				}else{
-					if ("AUTOMAPPING".equals(dbType)) {
-%>
-					statement_<%=cid%>.registerOutParameter(<%=argIndex%>, java.sql.Types.<%=converter.convert(typeToGenerate)%>);
-<%
-					} else if("XMLTYPE".equals(dbType)) {
+					if ("AUTOMAPPING".equals(dbType)) { %>
+					statement_<%=cid%>.registerOutParameter(<%=argIndex%>, java.sql.Types.<%=oracleType%>);
+<%					} else if("XMLTYPE".equals(dbType)) {
 %>
 					statement_<%=cid%>.registerOutParameter(<%=argIndex%>, oracle.jdbc.OracleTypes.OPAQUE, "SYS.XMLTYPE");
 <%
@@ -253,6 +279,8 @@ if (canGenerate) {
 		}
 		
 		%>
+
+		// call stock procedure.
 		statement_<%=cid%>.execute();
 		<%
 		
