@@ -270,6 +270,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         destinationNameField.setLayoutData(data);
         destinationNameField.setFont(font);
+        destinationNameField.setTextDirection(SWT.RIGHT_TO_LEFT);
         BidiUtils.applyBidiProcessing(destinationNameField, "file"); //$NON-NLS-1$
 
         // destination browse button
