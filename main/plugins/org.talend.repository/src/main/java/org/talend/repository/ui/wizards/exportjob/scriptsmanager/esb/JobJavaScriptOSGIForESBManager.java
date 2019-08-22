@@ -14,6 +14,7 @@ package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,6 +84,7 @@ import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JarBuilder;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsManager;
 import org.talend.repository.utils.EmfModelUtils;
+import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.repository.utils.TemplateProcessor;
 
 import aQute.bnd.header.Attrs;
@@ -101,15 +103,35 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     protected static final char MANIFEST_ITEM_SEPARATOR = ',';
 
+    protected static final String OSGI_EXCLUDE_PROP_FILENAME = "osgi-exclude.properties"; ////$NON-NLS-1$
+
     @SuppressWarnings("serial")
     private static final Collection<String> EXCLUDED_MODULES = new ArrayList<String>() {
         {
-            try (InputStream is = RepositoryPlugin.getDefault().getBundle()
-                    .getEntry("/resources/osgi-exclude.properties").openStream()) { //$NON-NLS-1$
-                final Properties p = new Properties();
-                p.load(is);
-                for (Enumeration<?> e = p.propertyNames(); e.hasMoreElements();) {
-                    add((String) e.nextElement());
+            File propFile = null;
+            File esbConfigurationLocation = EsbConfigUtils.getEclipseEsbFolder();
+            
+            if (esbConfigurationLocation != null && esbConfigurationLocation.exists()
+                    && esbConfigurationLocation.isDirectory()) {
+                propFile = new File(esbConfigurationLocation.getAbsolutePath(), OSGI_EXCLUDE_PROP_FILENAME);
+            }
+
+            InputStream is = null;
+            try {
+                if (propFile != null && propFile.exists() && propFile.isFile()) {
+                    is = new FileInputStream(propFile);
+                } else {
+                    is = RepositoryPlugin.getDefault().getBundle()
+                            .getEntry("/resources/" + OSGI_EXCLUDE_PROP_FILENAME)
+                            .openStream();
+                }
+    
+                if (is != null) {
+                    final Properties p = new Properties();
+                    p.load(is);
+                    for (Enumeration<?> e = p.propertyNames(); e.hasMoreElements();) {
+                        add((String) e.nextElement());
+                    }
                 }
             } catch (IOException e) {
                 RepositoryPlugin.getDefault().getLog()
