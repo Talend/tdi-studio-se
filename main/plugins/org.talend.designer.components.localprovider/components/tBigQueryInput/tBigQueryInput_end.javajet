@@ -24,7 +24,9 @@ imports="
   	} else if (authMode.equals("SERVICEACCOUNT")) {
   	%>
   		}
-  		bigquery_<%=cid%>.delete(com.google.cloud.bigquery.TableId.of(dataset, temp_table));
+         if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {   
+             bigquery_<%=cid%>.delete(com.google.cloud.bigquery.TableId.of(dataset, temp_table));
+         } 
   	<%
   	} else {
 		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
