@@ -16,6 +16,7 @@ imports="
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
+final boolean allowEmptyStrings = ("true").equals(ElementParameterParser.getValue(node, "__ALLOW_EMPTY_STRINGS__"));
 
 List<IMetadataTable> metadatas = node.getMetadataList();
 if ((metadatas!=null)&&(metadatas.size()>0)) {
@@ -33,6 +34,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			    xmlSerializer_<%=cid%>.clearNamespaces();
 			    xmlSerializer_<%=cid%>.setSkipNamespaces(true);
 			    xmlSerializer_<%=cid%>.setForceTopLevelObject(<%=(removeRoot?false:true)%>);
+				xmlSerializer_<%=cid%>.setUseEmptyStrings(<%=allowEmptyStrings%>);
 				<%
 				INode sourceNode = node.getIncomingConnections(EConnectionType.ON_COMPONENT_OK).get(0).getSource();
 				String virtualSourceCid = sourceNode.getUniqueName();
