@@ -241,10 +241,10 @@ public class LoginHelper {
     }
 
     /**
-     * if the connection is Cloud US/EU/APAC/Custom
+     * if the connection is Cloud US/EU/APAC/US-West/Custom
      *
      * @param connectionBean
-     * @return true if connection is Cloud US or Cloud EU or Cloud APAC or Cloud Custom
+     * @return true if connection is Cloud US or Cloud EU or Cloud APAC or Cloud US-West or Cloud Custom
      */
     public static boolean isCloudConnection(ConnectionBean connectionBean) {
         if (connectionBean == null) {
@@ -275,6 +275,13 @@ public class LoginHelper {
         return RepositoryConstants.REPOSITORY_CLOUD_APAC_ID.equals(connectionBean.getRepositoryId());
     }
 
+    public static boolean isCloudUSWestConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return RepositoryConstants.REPOSITORY_CLOUD_US_WEST_ID.equals(connectionBean.getRepositoryId());
+    }
+
     public static boolean isCloudCustomConnection(ConnectionBean connectionBean) {
         if (connectionBean == null) {
             return false;
@@ -284,7 +291,7 @@ public class LoginHelper {
 
     public static boolean isCloudRepository(String repositoryId) {
         return isCloudUSRepository(repositoryId) || isCloudEURepository(repositoryId) || isCloudAPACRepository(repositoryId)
-                || isCloudCustomRepository(repositoryId);
+                || isCloudCustomRepository(repositoryId) || isCloudUSWestRepository(repositoryId);
     }
 
     public static boolean isCloudUSRepository(String repositoryId) {
@@ -297,6 +304,10 @@ public class LoginHelper {
 
     public static boolean isCloudAPACRepository(String repositoryId) {
         return RepositoryConstants.REPOSITORY_CLOUD_APAC_ID.equals(repositoryId);
+    }
+
+    public static boolean isCloudUSWestRepository(String repositoryId) {
+        return RepositoryConstants.REPOSITORY_CLOUD_US_WEST_ID.equals(repositoryId);
     }
 
     public static boolean isCloudCustomRepository(String repositoryId) {
