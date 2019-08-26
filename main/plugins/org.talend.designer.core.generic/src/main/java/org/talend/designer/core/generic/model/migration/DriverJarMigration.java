@@ -19,14 +19,17 @@ import java.util.List;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.utils.PasswordEncryptUtil;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.migration.IMigrationTask.ExecutionResult;
 
 /**
  * DOC hwang  class global comment. Detailled comment
@@ -71,7 +74,7 @@ public class DriverJarMigration extends AbstractJobMigrationTask {
 //                    else if(PasswordEncryptUtil.isPasswordField(parameterType.getField())) {
 //                        String pass = parameterType.getRawValue();
 //                        if (pass != null && pass.length() > 0){
-                    // String encryptValue = CryptoHelperWrapper.encrypt(TalendQuoteUtils.removeQuotesIfExist(pass));
+//                            String encryptValue = CryptoHelper.getDefault().encrypt(TalendQuoteUtils.removeQuotesIfExist(pass));
 //                            parameterType.setValue(TalendQuoteUtils.addQuotesIfNotExist(encryptValue));
 //                            modified = true;
 //                        }

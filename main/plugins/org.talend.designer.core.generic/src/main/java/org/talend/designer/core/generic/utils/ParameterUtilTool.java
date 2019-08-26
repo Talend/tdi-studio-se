@@ -27,6 +27,8 @@ import org.talend.utils.security.StudioEncryption;
  */
 public final class ParameterUtilTool {
 
+    private static StudioEncryption se = StudioEncryption.getStudioEncryption(null);
+
     public static ElementParameterType findParameterType(NodeType node, String paramName) {
         for (Object param : node.getElementParameter()) {
             ElementParameterType paramType = (ElementParameterType) param;
@@ -101,7 +103,7 @@ public final class ParameterUtilTool {
             // Check param name
         	if (EParameterFieldType.PASSWORD.getName().equals(paramType.getField())) {
             	try{
-                    return StudioEncryption.decrypt(paramValue);
+                    return se.decrypt(paramValue);
             	}catch(Exception e){
             		return paramValue;
             	}

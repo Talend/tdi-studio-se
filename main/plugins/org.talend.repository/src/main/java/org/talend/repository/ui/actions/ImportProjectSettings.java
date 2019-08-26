@@ -29,10 +29,10 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.model.properties.Status;
 import org.talend.core.model.properties.impl.PropertiesFactoryImpl;
-import org.talend.utils.security.StudioEncryption;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.repository.ProjectManager;
+import org.talend.utils.security.StudioEncryption;
 import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -50,6 +50,8 @@ public class ImportProjectSettings {
     private String path;
 
     private Project pro;
+
+    private StudioEncryption se = StudioEncryption.getStudioEncryption(null);
 
     public ImportProjectSettings(String path) {
         this.path = path;
@@ -197,7 +199,7 @@ public class ImportProjectSettings {
          * If the value is raw (before 5.6.0), the decrypted value will be null.
          */
         if (PasswordEncryptUtil.isPasswordField(foundType.getField())) {
-            String decValue = StudioEncryption.decrypt(value);
+            String decValue = se.decrypt(value);
             if (decValue != null) {
                 value = decValue;
             }

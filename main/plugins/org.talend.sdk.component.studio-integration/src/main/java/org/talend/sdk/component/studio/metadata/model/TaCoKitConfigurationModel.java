@@ -12,8 +12,10 @@
  */
 package org.talend.sdk.component.studio.metadata.model;
 
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.*;
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_ID;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_PARENT_ID;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_PARENT_ITEM_ID;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +35,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.utils.security.StudioEncryption;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
@@ -42,6 +43,7 @@ import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.ValueConverter;
 import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.utils.security.StudioEncryption;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -59,6 +61,8 @@ public class TaCoKitConfigurationModel {
     private String parentConfigurationModelItemId;
 
     private boolean printEncryptionException = true;
+
+    private StudioEncryption se = StudioEncryption.getStudioEncryption(null);
 
     public TaCoKitConfigurationModel(final Connection connection) {
         this(connection, Lookups.taCoKitCache().getConfigTypeNode(getConfigId(connection)));
@@ -177,7 +181,7 @@ public class TaCoKitConfigurationModel {
         try {
             if (!TaCoKitUtil.isBlank(value) && contains(key)
                     && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
-                decryptedValue = StudioEncryption.decrypt(value);
+                decryptedValue = se.decrypt(value);
                 if (decryptedValue == null) {
                     // if null, means error occurs, just reuse the original value
                     decryptedValue = value;
@@ -293,7 +297,7 @@ public class TaCoKitConfigurationModel {
 
             try {
                 if (contains(key) && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
-                    storeValue = StudioEncryption.encrypt(originalValue);
+                    storeValue = se.encrypt(originalValue);
                 }
             } catch (Exception e) {
                 ExceptionHandler.process(e);
