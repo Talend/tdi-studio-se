@@ -85,6 +85,16 @@ class JavaToDbType {
 			return "OTHER";
 		}
 	}
+
+	public String toSQLType(String oracleType) {
+		try {
+			java.sql.Types.class.getField(oracleType);
+			return "java.sql.Types." + oracleType;
+		}
+        catch (NoSuchFieldException ex) {
+            throw new RuntimeException("java.sql.Types." + oracleType + " does not exist");
+        }
+	}
 }
 JavaToDbType converter = new JavaToDbType();
 
@@ -161,7 +171,7 @@ if (canGenerate) {
 					databaseType  = column.getType();
 
 					oracleType = databaseType;
-					if (oracleType != null) {   // case of "TIMESTAMP WITH TIME ZONE" for example
+					if (oracleType != null) {   // case of "TIMESTAMP WITH TIMEZONE" for example
 												// to convert to java.sql.Types.TIMESTAMP.
 						int firstSpace = oracleType.indexOf(' ');
 						if (firstSpace >= 0) {
@@ -201,7 +211,7 @@ if (canGenerate) {
     				if (nullable) {
     					%>
     				if (<%=inConnectionName%>.<%=argName%> == null) {
-					statement_<%=cid%>.setNull(<%=argIndex%>, java.sql.Types.<%=oracleType%>);
+					statement_<%=cid%>.setNull(<%=argIndex%>, <%=converter.toSQLType(oracleType)%>);
     				} else { <%
     				} // end of "if (nullable)"
     				
@@ -260,7 +270,7 @@ if (canGenerate) {
 <%
 				}else{
 					if ("AUTOMAPPING".equals(dbType)) { %>
-					statement_<%=cid%>.registerOutParameter(<%=argIndex%>, java.sql.Types.<%=oracleType%>);
+					statement_<%=cid%>.registerOutParameter(<%=argIndex%>, <%=converter.toSQLType(oracleType)%>);
 <%					} else if("XMLTYPE".equals(dbType)) {
 %>
 					statement_<%=cid%>.registerOutParameter(<%=argIndex%>, oracle.jdbc.OracleTypes.OPAQUE, "SYS.XMLTYPE");
