@@ -997,7 +997,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
         return table;
     }
 
-    private static List<String> getPrevColumnList(INode node, Map<String, Boolean> customColMap) {
+    public static List<String> getPrevColumnList(INode node, Map<String, Boolean> customColMap) {
         List<String> columnList = new ArrayList<String>();
 
         IConnection connection = null;
