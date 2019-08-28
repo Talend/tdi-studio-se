@@ -20,17 +20,21 @@ public class TalendProxyAuthenticator extends Authenticator {
 
     }
 
-    private Map<String, ProxyCreds> proxyCredsSet = new HashMap<>();
+    private Map<String, ProxyCreds> proxyCredsMap = new HashMap<>();
 
     public void addAuthForProxy(String host, String port, String userName, String pass) {
-        proxyCredsSet.put(host + ":" + port, new ProxyCreds(userName, pass));
+        proxyCredsMap.put(host + ":" + port, new ProxyCreds(userName, pass));
+    }
+
+    public ProxyCreds getCredsForProxyURI(String proxyURI) {
+        return proxyCredsMap.get(proxyURI);
     }
 
     @Override
     protected PasswordAuthentication getPasswordAuthentication() {
         String requestURI = super.getRequestingHost() + ":" + super.getRequestingPort();
-        if (proxyCredsSet.containsKey(requestURI)) {
-            return new PasswordAuthentication(proxyCredsSet.get(requestURI).getUser(), proxyCredsSet.get(requestURI).getPass().toCharArray());
+        if (proxyCredsMap.containsKey(requestURI)) {
+            return new PasswordAuthentication(proxyCredsMap.get(requestURI).getUser(), proxyCredsMap.get(requestURI).getPass().toCharArray());
         } else {
             return super.getPasswordAuthentication(); //don't use authentication
         }

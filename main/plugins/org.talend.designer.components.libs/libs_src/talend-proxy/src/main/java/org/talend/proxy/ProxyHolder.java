@@ -15,8 +15,16 @@ public class ProxyHolder {
         proxyMap = new HashMap<>();
     }
 
-    public void putNewHosts(Proxy proxy, String... hosts) {
-        for (String host: hosts) {
+    /**
+     *
+     * @param proxy HTTP or SOCKS proxy instance to use
+     * @param host without protocol
+     * @param port -1 to apply proxy for every port
+     */
+    public void putNewHost(Proxy proxy, String host, int port) {
+        if (port != -1) {
+            proxyMap.put(host + ":" + port, proxy);
+        } else {
             proxyMap.put(host, proxy);
         }
     }
