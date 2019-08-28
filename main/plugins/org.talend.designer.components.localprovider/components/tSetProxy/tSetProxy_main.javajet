@@ -100,7 +100,7 @@ imports="
 <%
         if ("HTTP_PROXY".equals(proxyType) || "HTTPS_PROXY".equals(proxyType)) {
             if ("HTTP_PROXY".equals(proxyType)) {
->%
+%>
                 System.setProperty("http.proxySet","local");
                 
 <%
@@ -119,7 +119,7 @@ imports="
             String hostToUseProxy = hostURI.get("HOST");
             String portToUseProxy = hostURI.get("PORT");
 %>
-            talendProxySelector_<%=cid %>.addProxySettingsForThread(proxy_<%=cid %>, <%=!"true".equals(hostURI.get("THREAD_ONLY")) %>, <%=hostToUseProxy %> + ":" + <%=portToUseProxy %>);
+            talendProxySelector_<%=cid %>.addProxySettings(proxy_<%=cid %>, <%=!"true".equals(hostURI.get("THREAD_ONLY")) %>, <%=hostToUseProxy %> , Integer.valueOf(<%=portToUseProxy %>));
 <%
         }
         if (("HTTP_PROXY".equals(proxyType) || "HTTPS_PROXY".equals(proxyType) || "SOCKS_PROXY".equals(proxyType)) && proxyUser != null && !proxyUser.isEmpty()) {
