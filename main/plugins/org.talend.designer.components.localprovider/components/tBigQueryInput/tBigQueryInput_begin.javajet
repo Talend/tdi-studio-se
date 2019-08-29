@@ -256,7 +256,7 @@
 		<%
 		}
 		%>    
-        com.google.cloud.bigquery.DatasetInfo datasetInfo = com.google.cloud.bigquery.DatasetInfo.newBuilder(tempDataset).build();
+        com.google.cloud.bigquery.DatasetInfo.newBuilder(tempDataset).build();
         queryConfiguration_<%=cid%>.setDestinationTable(com.google.cloud.bigquery.TableId.of(tempDataset, tempTable)).setAllowLargeResults(true);
 		<%}%>
 		com.google.cloud.bigquery.JobId jobId_<%=cid%> = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
