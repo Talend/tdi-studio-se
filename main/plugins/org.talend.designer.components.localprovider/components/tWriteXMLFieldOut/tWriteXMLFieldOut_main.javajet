@@ -29,6 +29,7 @@ String destination4JSON = ElementParameterParser.getValue(node, "__DESTINATION__
 boolean istWriteJSONField = destination4JSON == null ? false : destination4JSON.contains("tWriteJSONField_");
 boolean isQuoteAllValues = ("true").equals(ElementParameterParser.getValue(node, "__QUOTE_ALL_VALUES__"));
 boolean isCompactFormat = ("true").equals(ElementParameterParser.getValue(node, "__COMPACT_FORMAT__"));
+final boolean allowEmptyStrings = ("true").equals(ElementParameterParser.getValue(node, "__ALLOW_EMPTY_STRINGS__"));
 final String whiteSpace;
 final String rowSeparator;
 if(!isCompactFormat) { // pretty format
@@ -262,6 +263,14 @@ class GenerateToolByDom4j{
 		if(<%tool.getValue(node);%>!=null){
 			nestXMLTool_<%=cid%> .setText(<%=currEleName%>_<%=cid%>,<%tool.getValue(node);%>);
 <%
+			if(istWriteJSONField && allowEmptyStrings) {
+				if (javaType == JavaTypesManager.STRING) {
+				%>
+			<%=currEleName%>_<%=cid%>.addAttribute("type", "string");
+			<%=currEleName%>_<%=cid%>.addAttribute("class", "string");
+				<%
+				}
+			}
                 boolean hasCustomAttrs = false;
                 for (XMLNode attribute : node.attributes) {
                     if (!"type".equals(attribute.name) && !"class".equals(attribute.name)) {
@@ -283,7 +292,13 @@ class GenerateToolByDom4j{
                 }
 %>
 		}
+<% 			if(istWriteJSONField && allowEmptyStrings) { %>
+		else {
+			nestXMLTool_<%=cid%> .setText(<%=currEleName%>_<%=cid%>,"null");
+			<%=currEleName%>_<%=cid%>.addAttribute("null", "true");
+		}
 <%
+			}
 				if(outputAsXSD){
 %>
 		else{
