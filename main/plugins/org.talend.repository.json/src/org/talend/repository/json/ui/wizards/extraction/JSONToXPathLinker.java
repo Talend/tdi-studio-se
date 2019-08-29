@@ -348,7 +348,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     private ILineSelectionListener afterLineSelectionListener;
     
-    private boolean fieldToExtract(String relativeXpathQuery, List<ATreeNode> nodes) {
+    public boolean fieldToExtract(String relativeXpathQuery, List<ATreeNode> nodes) {
     	for(ATreeNode node : nodes) {
     		if(relativeXpathQuery.equals(node.getLabel())) {
     			return true;
@@ -792,7 +792,10 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
         } else {
             fullPath = relativeXpath;
         }
-        TreeItem treeItemFromAbsoluteXPath = treePopulator.getTreeItem(fullPath);
+        TreeItem treeItemFromAbsoluteXPath = null;
+        if(fieldToExtract(relativeXpath, treePopulator.getAllNodes())) {
+        	treeItemFromAbsoluteXPath = treePopulator.getTreeItem(fullPath);
+        }
         if (treeItemFromAbsoluteXPath != null && !alreadyProcessedXPath.contains(fullPath)) {
             addFieldLink(treeItemFromAbsoluteXPath, treeItemFromAbsoluteXPath.getData(), tableItemTarget.getParent(),
                     (SchemaTarget) tableItemTarget.getData());
