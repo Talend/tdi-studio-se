@@ -153,7 +153,7 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
     @SuppressWarnings("nls")
     public boolean install(IProgressMonitor progress) throws Exception {
         String tckCarPath = getCar(progress).getCarFile().getAbsolutePath();
-        String installationPath = URIUtil.toFile(Platform.getInstallLocation().getURL().toURI()).getAbsolutePath();
+        String installationPath = URIUtil.toFile(URIUtil.toURI(Platform.getInstallLocation().getURL())).getAbsolutePath();
 
         StringBuilder commandBuilder = new StringBuilder();
         commandBuilder.append("java -jar "); //$NON-NLS-1$
