@@ -172,8 +172,8 @@ public class DirectoryController extends AbstractElementPropertySectionControlle
         Point labelSize = gc.stringExtent(param.getDisplayName());
         gc.dispose();
 
-        if ((labelSize.x + (ITabbedPropertyConstants.HSPACE * 2)) > currentLabelWidth) {
-            currentLabelWidth = labelSize.x + (ITabbedPropertyConstants.HSPACE * 2);
+        if ((labelSize.x + ITabbedPropertyConstants.HSPACE * 2) > currentLabelWidth) {
+            currentLabelWidth = labelSize.x + ITabbedPropertyConstants.HSPACE * 2;
         }
 
         if (numInRow == 1) {
