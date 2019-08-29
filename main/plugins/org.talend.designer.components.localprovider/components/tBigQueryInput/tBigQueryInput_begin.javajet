@@ -235,7 +235,6 @@
 				.getService();
 		
 		com.google.cloud.bigquery.QueryJobConfiguration.Builder queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>);
-		String resultSizeType = "<%=resultSizeType%>";
 		<%if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {%>
 		String tempDataset = java.util.UUID.randomUUID().toString().replaceAll("-", "")
          + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt())
