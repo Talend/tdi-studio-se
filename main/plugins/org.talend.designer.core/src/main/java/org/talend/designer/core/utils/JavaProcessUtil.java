@@ -437,7 +437,7 @@ public class JavaProcessUtil {
                                             if (var.equals(contextPara.getName())) {
                                                 String value =
                                                         context.getContextParameter(contextPara.getName()).getValue();
-                                                if (StringUtils.isEmpty(value)) {
+                                                if (StringUtils.isBlank(value)) {
                                                     continue;
                                                 }
                                                 if (curParam.getName().equals(EParameterName.DRIVER_JAR.getName())

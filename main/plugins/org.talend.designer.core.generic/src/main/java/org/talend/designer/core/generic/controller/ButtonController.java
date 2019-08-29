@@ -127,7 +127,7 @@ public class ButtonController extends AbstractElementPropertySectionController {
                 	continue;
                 }
                 for(String path : listString){
-                    if (!StringUtils.isEmpty(path)) {
+                    if (!StringUtils.isBlank(path)) {
                         jars.add(GenericTableUtils.getDriverJarPath(path));
                     }
                 }
