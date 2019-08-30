@@ -15,6 +15,7 @@ package org.talend.repository.model.migration;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EList;
@@ -28,6 +29,7 @@ import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.core.model.utils.emf.talendfile.ColumnType;
 import org.talend.designer.core.model.utils.emf.talendfile.ConnectionType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
@@ -58,6 +60,16 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2019, 8, 1, 0, 0, 0);
         return gc.getTime();
+    }
+
+    @Override
+    public List<ERepositoryObjectType> getTypes() {
+        List<ERepositoryObjectType> toReturn = super.getTypes();
+        // PROCESS_MR stands for Map/Reduce and Spark.
+        toReturn.add(ERepositoryObjectType.PROCESS_MR);
+        // PROCESS_STORM stands for Storm and Spark Streaming.
+        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
+        return toReturn;
     }
 
     /*
