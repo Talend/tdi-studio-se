@@ -29,8 +29,8 @@ for(String lib_<%=cid %>:libPaths_<%=cid %>) {
 	}
 }
 java.net.URL[] libURLArray_<%=cid %> = libURL_<%=cid %>.toArray(new java.net.URL[] {});
-ClassLoader sysloader_<%=cid %> = Thread.currentThread().getContextClassLoader();
-java.net.URLClassLoader newSysLoader_<%=cid %> = new java.net.URLClassLoader(libURLArray_<%=cid %>, sysloader_<%=cid %>);
-Thread.currentThread().setContextClassLoader(newSysLoader_<%=cid %>);
+ClassLoader threadClassLoader_<%=cid %> = Thread.currentThread().getContextClassLoader();
+java.net.URLClassLoader newthreadClassLoader_<%=cid %> = new java.net.URLClassLoader(libURLArray_<%=cid %>, threadClassLoader_<%=cid %>);
+Thread.currentThread().setContextClassLoader(newthreadClassLoader_<%=cid %>);
 <%}%>
 

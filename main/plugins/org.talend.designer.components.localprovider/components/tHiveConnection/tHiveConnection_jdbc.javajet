@@ -254,9 +254,9 @@ imports="
 					String hadoopConfDir_<%=cid%> = System.getenv("HADOOP_CONF_DIR");
 					if(hadoopConfDir_<%=cid%> != null){
 						final java.net.URL[] urlHadoop = new java.net.URL[] { new java.io.File(hadoopConfDir_<%=cid%>).toURI().toURL() };
-						final ClassLoader sysloader = Thread.currentThread().getContextClassLoader();
-						final java.net.URLClassLoader newSysLoader = new java.net.URLClassLoader(urlHadoop, sysloader);
-						Thread.currentThread().setContextClassLoader(newSysLoader);
+						final ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
+						final java.net.URLClassLoader newThreadClassLoader = new java.net.URLClassLoader(urlHadoop, threadClassLoader);
+						Thread.currentThread().setContextClassLoader(newThreadClassLoader);
 					}
 					org.apache.hadoop.conf.Configuration conf_<%=cid%> = new org.apache.hadoop.conf.Configuration();
 
