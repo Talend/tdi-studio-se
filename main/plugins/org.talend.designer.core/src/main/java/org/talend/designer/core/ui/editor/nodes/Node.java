@@ -83,7 +83,6 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalData;
 import org.talend.core.model.process.IExternalNode;
-import org.talend.core.model.process.IGenericElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.INodeReturn;
@@ -104,7 +103,6 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.runtime.CoreRuntimePlugin;
-import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.service.IMRProcessService;
 import org.talend.core.service.IStormProcessService;
 import org.talend.core.services.ICoreTisService;
@@ -3023,8 +3021,6 @@ public class Node extends Element implements IGraphicalNode {
             checktAggregateRow(param);
 
             checkDynamicJobUsage(param);
-
-            checkValidationParameterValue(param);
         }
 
         checkJobletConnections();
@@ -3165,25 +3161,6 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
 
-    }
-
-    private void checkValidationParameterValue(IElementParameter param) {
-        // Just for generic parameter now
-        if (param instanceof IGenericElementParameter && param.getFieldType().equals(EParameterFieldType.TEXT)
-                && param.isShow(getElementParameters())) {
-            String paramValue = String.valueOf(param.getValue());
-            if (!ContextParameterUtils.isContainContextParam(paramValue)) {
-                org.talend.daikon.properties.property.Property property = ((IGenericElementParameter) param).getProperty();
-                if (property != null && GenericTypeUtils.isIntegerType(property)) {
-                    boolean isDigits = org.apache.commons.lang.math.NumberUtils.isDigits(paramValue);
-                    if (!isDigits) {
-                        String errorMessage = Messages.getString("Node.parameter.value.validation.integer", //$NON-NLS-1$
-                                param.getDisplayName());
-                        Problems.add(ProblemStatus.ERROR, this, errorMessage);
-                    }
-                }
-            }
-        }
     }
 
     private void checkJobletConnections() {
