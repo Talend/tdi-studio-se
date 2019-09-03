@@ -20,12 +20,15 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.utils.security.CryptoHelperWrapper;
+import org.talend.utils.security.StudioEncryption;
 import org.talend.repository.RepositoryPlugin;
 
 /**
  * DOC ggu class global comment. Detailled comment
  */
 public class RepositoryProjectDateMigrationTask extends AbstractProjectMigrationTask {
+
+    private static StudioEncryption se = StudioEncryption.getStudioEncryption(null);
 
     @Override
     public Date getOrder() {
@@ -43,7 +46,7 @@ public class RepositoryProjectDateMigrationTask extends AbstractProjectMigration
         if (StringUtils.isBlank(value)) {
             // re-use product date, else will be current
             String v = System.getProperty(prodKey, String.valueOf(System.currentTimeMillis()));
-            projectPrefManager.setValue(prjKey, CryptoHelperWrapper.encrypt(v));
+            projectPrefManager.setValue(prjKey, se.encrypt(v));
             projectPrefManager.save();
             return ExecutionResult.SUCCESS_NO_ALERT;
         }
