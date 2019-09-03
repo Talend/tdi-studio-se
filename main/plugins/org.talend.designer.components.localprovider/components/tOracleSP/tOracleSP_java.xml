@@ -226,6 +226,9 @@
 	            <ITEM NAME="DECIMAL" VALUE="DECIMAL"/>
 	            <ITEM NAME="NUMERIC" VALUE="NUMERIC"/>
 	            <ITEM NAME="XMLTYPE" VALUE="XMLTYPE"/>
+                <ITEM NAME="DATE" VALUE="DATE"/>
+				<ITEM NAME="TIMESTAMP" VALUE="TIMESTAMP"/>
+                <ITEM NAME="TIMESTAMP_WITH_TIMEZONE" VALUE="TIMESTAMP_WITH_TIMEZONE"/>
 	          </ITEMS>
     </PARAMETER>
 
@@ -253,6 +256,9 @@
 	            <ITEM NAME="CLOB" VALUE="CLOB"/>
 	            <ITEM NAME="BLOB" VALUE="BLOB"/>
 	          	<ITEM NAME="DECIMAL" VALUE="DECIMAL"/>
+                <ITEM NAME="DATE" VALUE="DATE"/>
+				<ITEM NAME="TIMESTAMP" VALUE="TIMESTAMP"/>
+                <ITEM NAME="TIMESTAMP_WITH_TIMEZONE" VALUE="TIMESTAMP_WITH_TIMEZONE"/>
 	            <ITEM NAME="NUMERIC" VALUE="NUMERIC"/>
 	            <ITEM NAME="XMLTYPE" VALUE="XMLTYPE"/>
 	          </ITEMS>
@@ -295,14 +301,6 @@
 	  SHOW_IF="(SPECIFY_DATASOURCE_ALIAS=='true' AND USE_EXISTING_CONNECTION=='false')"
     >      
 		<DEFAULT>""</DEFAULT>
-    </PARAMETER>
-
-    <PARAMETER
-        NAME="MAPPING"
-        FIELD="MAPPING_TYPE"
-        NUM_ROW="130"
-        SHOW="false">
-        <DEFAULT>oracle_id</DEFAULT>
     </PARAMETER>
     
   </PARAMETERS>
