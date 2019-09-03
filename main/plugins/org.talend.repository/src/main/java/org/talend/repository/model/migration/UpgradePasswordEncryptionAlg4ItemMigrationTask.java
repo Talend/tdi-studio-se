@@ -321,9 +321,8 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
     protected static boolean reencryptValueIfNeeded(ElementParameterType param) throws Exception {
         String value = param.getValue();
         if (value != null) {
-            value = PasswordMigrationUtil.getEncryptPasswordIfNeed(value);
-            param.setValue(value);
-            param.setRawValue(value);
+            String decryptValue = PasswordMigrationUtil.getDecryptPassword(value);
+            param.setRawValue(decryptValue);
             return true;
         }
         return false;
@@ -332,9 +331,8 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
     private boolean reencryptValueIfNeeded(ContextParameterType param) throws Exception {
         String value = param.getValue();
         if (value != null) {
-            value = PasswordMigrationUtil.getEncryptPasswordIfNeed(value);
-            param.setValue(value);
-            param.setRawValue(value);
+            String decryptValue = PasswordMigrationUtil.getDecryptPassword(value);
+            param.setRawValue(decryptValue);
             return true;
         }
         return false;
