@@ -218,7 +218,7 @@
 		
 		<!-- IAM Setting -->
 		<PARAMETER
-			NAME="ASSUME_ROLE_REDSHIFT"
+			NAME="ASSUME_ROLE"
 			FIELD="CHECK"
 			NUM_ROW="100"
 			REQUIRED="true"
@@ -231,7 +231,7 @@
 			NAME="ROLE_TABLE"
 			FIELD="TABLE"
 			NUM_ROW="105"
-			SHOW_IF="ASSUME_ROLE_REDSHIFT == 'true'"
+			SHOW_IF="ASSUME_ROLE == 'true'"
 			GROUP="REDSHIFT_IAM_CONFIG"
         >
           <ITEMS>
