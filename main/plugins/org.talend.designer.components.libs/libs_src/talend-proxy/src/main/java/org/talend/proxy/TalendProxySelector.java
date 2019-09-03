@@ -54,19 +54,19 @@ public class TalendProxySelector extends ProxySelector {
      * @param uriString host:port
      * @return Optional of Proxy if such proxy setting was set
      */
-    public Optional<Proxy> getProxyForUriString(String uriString) {
+    public Proxy getProxyForUriString(String uriString) {
         if (proxyHolderContainsHost(globalProxyHolder, uriString)) {
             log.debug("All threads proxy " + globalProxyHolder.getProxyMap().get(uriString) + " is using to connect to URI " + uriString);
-            return globalProxyHolder.getProxyMap().containsKey(uriString) ? Optional.of(globalProxyHolder.getProxyMap().get(uriString)) :
-                    Optional.of(globalProxyHolder.getProxyMap().get(uriString.substring(0, uriString.lastIndexOf(":"))));
+            return globalProxyHolder.getProxyMap().containsKey(uriString) ? globalProxyHolder.getProxyMap().get(uriString) :
+                    globalProxyHolder.getProxyMap().get(uriString.substring(0, uriString.lastIndexOf(":")));
         } else if (threadLocalProxyHolder != null && proxyHolderContainsHost(threadLocalProxyHolder.get(), uriString)) {
             log.debug("Proxy " + threadLocalProxyHolder.get().getProxyMap().get(uriString) + " is using to connect to URI " + uriString);
             return threadLocalProxyHolder.get().getProxyMap().containsKey(uriString) ?
-                    Optional.of(threadLocalProxyHolder.get().getProxyMap().get(uriString)) :
-                    Optional.of(threadLocalProxyHolder.get().getProxyMap().get(uriString.substring(0, uriString.lastIndexOf(":"))));
+                    threadLocalProxyHolder.get().getProxyMap().get(uriString) :
+                    threadLocalProxyHolder.get().getProxyMap().get(uriString.substring(0, uriString.lastIndexOf(":")));
         } else {
             log.debug("No proxy is using to connect to URI " + uriString);
-            return Optional.of(Proxy.NO_PROXY);
+            return Proxy.NO_PROXY;
         }
     }
 
@@ -77,7 +77,7 @@ public class TalendProxySelector extends ProxySelector {
             uriString += ":" + uri.getPort() ;
         }
         log.debug("Network request hadling from Talend proxy selector. Thread " + Thread.currentThread().getName() + ". URI to connect: " + uriString);
-        return Collections.singletonList(getProxyForUriString(uriString).orElse(Proxy.NO_PROXY));
+        return Collections.singletonList(getProxyForUriString(uriString));
     }
 
     @Override
