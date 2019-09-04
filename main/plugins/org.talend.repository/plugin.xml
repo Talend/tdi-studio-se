@@ -3242,6 +3242,24 @@
               name="changeDBVersionForMapROJAIOutputMigrationTask"
               version="7.0.1">
         </projecttask>
+         <projecttask
+              beforeLogon="false"
+              breaks="7.2.1"
+              class="org.talend.repository.model.migration.UpgradePasswordEncryptionAlg4ItemMigrationTask"
+              description="Upgrade password encryption Alg 4 item migration task"
+              id="org.talend.repository.model.migration.UpgradePasswordEncryptionAlg4ItemMigrationTask"
+              name="UpgradePasswordEncryptionAlg4ItemMigrationTask"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="true"
+              breaks="7.2.1"
+              class="org.talend.repository.model.migration.UpgradePasswordEncrytionAlg4ProjectMigrationTask"
+              description="Upgrade password encryption Alg 4 project migration task"
+              id="org.talend.repository.model.migration.UpgradePasswordEncrytionAlg4ProjectMigrationTask"
+              name="UpgradePasswordEncrytionAlg4ProjectMigrationTask"
+              version="7.3.1">
+        </projecttask>
    </extension>
 
    <extension
