@@ -59,10 +59,15 @@
             <ITEMS>
                 <ITEM NAME="HOST" VALUE="&quot;&quot;"/>
                 <ITEM NAME="PORT" VALUE="-1"/>
-                <ITEM NAME="THREAD_ONLY" FIELD="CHECK" VALUE="false"/>
             </ITEMS>
         </PARAMETER>
     </PARAMETERS>
+
+    <ADVANCED_PARAMETERS>
+        <PARAMETER NAME="THREAD_ONLY" FIELD="CHECK" REQUIRED="true" NUM_ROW="10" SHOW_IF="PROXY_GLOBAL == 'false'">
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+    </ADVANCED_PARAMETERS>
     <CODEGENERATION>
         <IMPORTS>
             <IMPORT NAME="talend-proxy" MODULE="talend-proxy-1.0.0-SNAPSHOT.jar" MVN="mvn:org.talend.components.lib/talend-proxy/1.0.0-SNAPSHOT" REQUIRED_IF="(PROXY_GLOBAL == 'false')" />

@@ -21,6 +21,7 @@ imports="
    String proxyPassword = ElementParameterParser.getValue(node,"__PROXY_PASSWORD__");
    String nonProxyHosts = ElementParameterParser.getValue(node,"__NONPROXYHOSTS__");
    boolean setProxyGlobal = "true".equals(ElementParameterParser.getValue(node,"__PROXY_GLOBAL__"));
+   boolean threadSpecificProxy = "true".equals(ElementParameterParser.getValue(node,"__THREAD_ONLY__"));
    List<Map<String, String>> proxyHostsList =
     (List<Map<String,String>>)ElementParameterParser.getObjectValue(
         node,
@@ -29,6 +30,7 @@ imports="
 
     if (setProxyGlobal) {
 %>
+            java.net.ProxySelector.setDefault(talendProxySelector_<%=cid %>);
            java.util.Properties props_<%=cid %> = System.getProperties();
 <%
            if ("HTTP_PROXY".equals(proxyType)) {
@@ -119,7 +121,7 @@ imports="
             String hostToUseProxy = hostURI.get("HOST");
             String portToUseProxy = hostURI.get("PORT");
 %>
-            talendProxySelector_<%=cid %>.addProxySettings(proxy_<%=cid %>, <%=!"true".equals(hostURI.get("THREAD_ONLY")) %>, <%=hostToUseProxy %> , Integer.valueOf(<%=portToUseProxy %>));
+            talendProxySelector_<%=cid %>.addProxySettings(proxy_<%=cid %>, <%=threadSpecificProxy %>, <%=hostToUseProxy %> , Integer.valueOf(<%=portToUseProxy %>));
 <%
         }
         if (("HTTP_PROXY".equals(proxyType) || "HTTPS_PROXY".equals(proxyType) || "SOCKS_PROXY".equals(proxyType)) && proxyUser != null && !proxyUser.isEmpty()) {
