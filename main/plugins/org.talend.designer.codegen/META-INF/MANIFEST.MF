@@ -22,6 +22,7 @@ Require-Bundle: org.talend.core.repository,
  org.apache.log4j,
  org.talend.components.api,
  org.talend.daikon,
+ org.talend.daikon.crypto.utils,
  org.talend.designer.core.generic
 Eclipse-LazyStart: true
 Bundle-ClassPath: .

@@ -326,6 +326,13 @@ public class TestProcessor implements IProcessor {
 
         return null;
     }
+    
+    @Override
+    public String[] getCommandLine(boolean needContext, boolean externalUse, int statOption, int traceOption, boolean ignoreCustomJVMSetting,
+            String... codeOptions) {
+
+        return null;
+    }
 
     /*
      * (non-Javadoc)

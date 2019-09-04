@@ -192,6 +192,12 @@ public class RowGenContextManager implements IContextManager, Cloneable {
             // TODO Auto-generated method stub
             return null;
         }
+
+        @Override
+        public boolean containsSameParameterIgnoreCase(String parameterName) {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     public void saveToEmf(EList contextTypeList) {

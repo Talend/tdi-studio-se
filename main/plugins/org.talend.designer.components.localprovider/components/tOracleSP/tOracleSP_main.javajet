@@ -43,6 +43,10 @@ String cid = node.getUniqueName();
 List<Map<String, String>> spArgs =
 	(List<Map<String, String>>) ElementParameterParser.getObjectValue(node, "__SP_ARGS__");
 
+String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__");
+// La TZ n'est compatible qu'avec ojdbc8, qui n'est reliee qu'avec ORACLE 18 (tOracle_SP.xml).
+boolean isTimeZoneCompatible = "ORACLE_18".equals(dbVersion);
+
 // Functions have an additionnal output parameter
 boolean isFunction = ("true").equals(ElementParameterParser.getValue(node, "__IS_FUNCTION__"));
 if (isFunction) {
@@ -84,6 +88,42 @@ class JavaToDbType {
 		} else {
 			return "OTHER";
 		}
+	}
+
+    /** 
+     * transform type defined in mapping file https://github.com/Talend/tcommon-studio-se/blob/master/main/plugins/org.talend.core.runtime/mappings/mapping_Oracle.xml  
+     * in constant that exist in java.sql.Types java class (https://docs.oracle.com/javase/8/docs/api/java/sql/Types.html)
+     */
+	public String toSQLType(String databaseType, boolean isTimeZoneCompatible) {
+
+		// special case due to https://github.com/Talend/tcommon-studio-se/blob/master/main/plugins/org.talend.core.runtime/mappings/mapping_Oracle.xml
+		if ("TIMESTAMP WITH TIME ZONE".equals(databaseType)) {
+			if (isTimeZoneCompatible) {
+				return "java.sql.Types.TIMESTAMP_WITH_TIMEZONE";
+			}
+			else {
+				return "java.sql.Types.TIMESTAMP";
+			}
+		}
+		if ("LONG RAW".equals(databaseType)) {
+			return "java.sql.Types.LONGVARBINARY";
+		}
+		if ("RAW".equals(databaseType)) {
+			return "java.sql.Types.VARBINARY";
+		}
+		if ("DOUBLE PRECISION".equals(databaseType)) {
+			return "java.sql.Types.DOUBLE";
+		}
+		if ("DEC".equals(databaseType)) {
+			return "java.sql.Types.DECIMAL";
+		}
+		try {
+			java.sql.Types.class.getField(databaseType);
+			return "java.sql.Types." + databaseType;
+		}
+        catch (NoSuchFieldException ex) {
+            throw new RuntimeException("java.sql.Types." + databaseType + " does not exist");
+        }
 	}
 }
 JavaToDbType converter = new JavaToDbType();
@@ -148,21 +188,34 @@ if (canGenerate) {
 			// Search Java type of argument, based on schema column
 			String typeToGenerate = null;
 			boolean nullable = false;
+
+			// Oracle type if define directly.
+			String databaseType = null;
+
 			for (IMetadataColumn column : columnList) {
 				if (column.getLabel().equals(argName)) {
 					typeToGenerate = JavaTypesManager.getTypeToGenerate(
 						column.getTalendType(), column.isNullable());
+
+					databaseType  = column.getType();
+					if (databaseType == null) {
+						databaseType = converter.convert(typeToGenerate);
+					}
+
 					nullable = column.isNullable();
 					break;
 				}
 			}
 			
-			if (typeToGenerate == null)
+			if (typeToGenerate == null && databaseType == null)
 				continue;
 			
 			// Note: first argument in JDBC is arg #1, and for functions, arg #1 is return value
 			int argIndex = i + 1;
-			
+%>
+
+				// Code for field <%=inConnectionName%>.<%=argName%>
+<%
 			// Input argument
 			if (("IN").equals(argType) || ("INOUT").equals(argType)) {
 				// input type is custom defined
@@ -177,11 +230,10 @@ if (canGenerate) {
 				}else{ // the db types 
     				if (nullable) {
     					%>
-    					if (<%=inConnectionName%>.<%=argName%> == null) {
-    						statement_<%=cid%>.setNull(<%=argIndex%>, java.sql.Types.<%=converter.convert(typeToGenerate)%>);
-    					} else {
-    					<%
-    				}
+    				if (<%=inConnectionName%>.<%=argName%> == null) {
+					statement_<%=cid%>.setNull(<%=argIndex%>, <%=converter.toSQLType(databaseType, isTimeZoneCompatible)%>);
+    				} else { <%
+    				} // end of "if (nullable)"
     				
     				String method;
     				if (("byte[]").equals(typeToGenerate)) {
@@ -202,9 +254,21 @@ if (canGenerate) {
     					}
     					<%
     				} else if (("java.util.Date").equals(typeToGenerate)) {
+						if ("TIMESTAMP WITH TIME ZONE".equals(databaseType) && isTimeZoneCompatible) {  // Oracle specific
+    					%>
+						((oracle.jdbc.OracleCallableStatement) statement_<%=cid%>).setTIMESTAMPTZ(3, ((oracle.jdbc.OracleConnection) connection_<%=cid%>).createTIMESTAMPTZ(new java.sql.Timestamp(<%=inConnectionName%>.<%=argName%>.getTime())));
+    					<%
+						}
+						else if (databaseType == null || databaseType.startsWith("TIMESTAMP")) {
     					%>
     					statement_<%=cid%>.setTimestamp(<%=argIndex%>, new java.sql.Timestamp(<%=inConnectionName%>.<%=argName%>.getTime()));
     					<%
+						}
+						else if ("DATE".equals(databaseType)) {
+                        %>
+    					statement_<%=cid%>.setDate(<%=argIndex%>, new java.sql.Date(<%=inConnectionName%>.<%=argName%>.getTime()));
+    					<%
+                            }
     				} else if ("XMLTYPE".equals(dbType)){
 						%>
 						oracle.xdb.XMLType xmlType_<%=cid%> = oracle.xdb.XMLType.createXML(connection_<%=cid%>, <%=inConnectionName%>.<%=argName%>);
@@ -217,8 +281,7 @@ if (canGenerate) {
     				}
     				
     				if (nullable) {
-    					%>
-    					}
+    					%>}
     					<%
     				}
     			}
@@ -231,11 +294,9 @@ if (canGenerate) {
 				statement_<%=cid%>.registerOutParameter(<%=argIndex%>, java.sql.Types.<%=customeType %>,<%=argCustom %>);
 <%
 				}else{
-					if ("AUTOMAPPING".equals(dbType)) {
-%>
-					statement_<%=cid%>.registerOutParameter(<%=argIndex%>, java.sql.Types.<%=converter.convert(typeToGenerate)%>);
-<%
-					} else if("XMLTYPE".equals(dbType)) {
+					if ("AUTOMAPPING".equals(dbType)) { %>
+					statement_<%=cid%>.registerOutParameter(<%=argIndex%>, <%=converter.toSQLType(databaseType, isTimeZoneCompatible)%>);
+<%					} else if("XMLTYPE".equals(dbType)) {
 %>
 					statement_<%=cid%>.registerOutParameter(<%=argIndex%>, oracle.jdbc.OracleTypes.OPAQUE, "SYS.XMLTYPE");
 <%
@@ -253,6 +314,8 @@ if (canGenerate) {
 		}
 		
 		%>
+
+		// call stock procedure.
 		statement_<%=cid%>.execute();
 		<%
 		

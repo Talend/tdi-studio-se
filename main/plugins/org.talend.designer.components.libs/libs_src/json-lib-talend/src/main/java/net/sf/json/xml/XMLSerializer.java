@@ -164,6 +164,11 @@ public class XMLSerializer {
    private boolean useLongDecimals;
 
    /**
+    * flag for if parse empty elements as empty strings
+    */
+   private boolean useEmptyStrings;
+
+   /**
     * Creates a new XMLSerializer with default options.<br>
     * <ul>
     * <li><code>objectName</code>: 'o'</li>
@@ -803,6 +808,8 @@ public class XMLSerializer {
             clazz = JSONTypes.OBJECT;
          }else if( JSONTypes.ARRAY.compareToIgnoreCase( clazzText ) == 0 ){
             clazz = JSONTypes.ARRAY;
+         } else if(JSONTypes.STRING.equalsIgnoreCase(clazzText)) {
+            clazz = JSONTypes.STRING;
          }
       }
       return clazz;
@@ -1414,6 +1421,8 @@ public class XMLSerializer {
                String text = element.getValue();
                params = StringUtils.split( paramsAttribute.getValue(), "," );
                setOrAccumulate( jsonObject, key, new JSONFunction( params, text ) );
+            } else if( useEmptyStrings && clazz != null && clazz.equalsIgnoreCase(JSONTypes.STRING) ) {
+               setTextValue(jsonObject, key, element);
             }else{
                if( isArray( element, false ) ){
                   setOrAccumulate( jsonObject, key, processArrayElement( element, defaultType ) );
@@ -1421,17 +1430,21 @@ public class XMLSerializer {
                   setOrAccumulate( jsonObject, key, simplifyValue( jsonObject,
                         processObjectElement( element, defaultType ) ) );
                }else{
-                  String value;
-                  if( isKeepCData && isCData( element ) ){
-                     value = "<![CDATA[" + element.getValue() + "]]>";
-                  }else{
-                     value = element.getValue();
-                  }
-                  setOrAccumulate( jsonObject, key, trimSpaceFromValue( value ) );
+                  setTextValue(jsonObject, key, element);
                }
             }
          }
       }
+   }
+
+   private void setTextValue(final JSONObject jsonObject, final String key, final Element element) {
+      String value;
+      if( isKeepCData && isCData( element ) ){
+         value = "<![CDATA[" + element.getValue() + "]]>";
+      }else{
+         value = element.getValue();
+      }
+      setOrAccumulate( jsonObject, key, trimSpaceFromValue( value ) );
    }
 
    private boolean isCData( Element element ) {
@@ -1491,6 +1504,14 @@ public class XMLSerializer {
          throw new JSONException( uee );
       }
       return str;
+   }
+
+   public void setUseEmptyStrings(boolean useEmptyStrings) {
+      this.useEmptyStrings = useEmptyStrings;
+   }
+
+   public boolean isUseEmptyStrings() {
+      return this.useEmptyStrings;
    }
 
    private static class CustomElement extends Element {

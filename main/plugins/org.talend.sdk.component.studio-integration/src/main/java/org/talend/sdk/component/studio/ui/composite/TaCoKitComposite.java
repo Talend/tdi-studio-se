@@ -15,8 +15,8 @@
  */
 package org.talend.sdk.component.studio.ui.composite;
 
-import static java.util.stream.Stream.of;
-import static org.talend.sdk.component.studio.model.parameter.SchemaElementParameter.guessButtonName;
+import static java.util.stream.Stream.*;
+import static org.talend.sdk.component.studio.model.parameter.SchemaElementParameter.*;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -40,6 +40,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.FakeElement;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
 import org.talend.sdk.component.studio.model.parameter.Layout;
@@ -199,8 +200,9 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
      */
     protected Composite addCommonWidgets() {
         final Composite propertyComposite = addPropertyType(composite);
-        final Composite lastSchemaComposite = addSchemas(composite, propertyComposite);
-        return lastSchemaComposite;
+        final Composite schemaComposite = addSchemas(composite, propertyComposite);
+        final Composite lastComposite = addStatCatcher(schemaComposite);
+        return lastComposite;
     }
 
     protected Composite addPropertyType(final Composite parent) {
@@ -238,6 +240,14 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
             addSchemaWidget(schemaComposite, schema);
         }
         return previousComposite;
+    }
+
+    protected Composite addStatCatcher(final Composite parent) {
+        final IElementParameter parameter = elem.getElementParameter(EParameterName.TSTATCATCHER_STATS.getName());
+        if (doShow(parameter)) {
+            addWidget(parent, parameter, null);
+        }
+        return parent;
     }
 
     private boolean isNotPresentOnLayout(final IElementParameter schema) {

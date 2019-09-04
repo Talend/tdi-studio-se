@@ -105,4 +105,10 @@ public class EmptyContext implements IContext, Cloneable {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public boolean containsSameParameterIgnoreCase(String parameterName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

@@ -296,6 +296,14 @@
     >      
 		<DEFAULT>""</DEFAULT>
     </PARAMETER>
+
+    <PARAMETER
+        NAME="MAPPING"
+        FIELD="MAPPING_TYPE"
+        NUM_ROW="130"
+        SHOW="false">
+        <DEFAULT>oracle_id</DEFAULT>
+    </PARAMETER>
     
   </PARAMETERS>
 

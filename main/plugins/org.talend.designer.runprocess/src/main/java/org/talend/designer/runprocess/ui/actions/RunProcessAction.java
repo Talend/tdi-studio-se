@@ -21,6 +21,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.ui.ERunprocessImages;
 import org.talend.designer.runprocess.ui.ProcessComposite;
@@ -49,6 +50,10 @@ public class RunProcessAction extends Action implements IWorkbenchWindowActionDe
 
             IWorkbench workbench = PlatformUI.getWorkbench();
             IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+            ComponentSettingsView compSettings = (ComponentSettingsView) page.findView(ComponentSettingsView.ID);
+            if (compSettings != null) {
+                compSettings.cleanDisplay();
+            }
             // TODO SML Use getInstance
             ShowRunProcessViewAction action = new ShowRunProcessViewAction();
             action.run();

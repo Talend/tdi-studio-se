@@ -15,6 +15,7 @@ package org.talend.designer.runprocess;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +32,6 @@ import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
-import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.IContainerEntry;
 import org.talend.core.model.process.IProcess;
@@ -61,15 +61,15 @@ public class JobErrorsChecker {
 
     public static List<IContainerEntry> getErrors() {
         List<IContainerEntry> input = new ArrayList<IContainerEntry>();
-        if(LastGenerationInfo.getInstance() == null  ||
-        		LastGenerationInfo.getInstance().getLastMainJob() == null) {
-        	return input;
+        if (LastGenerationInfo.getInstance() == null || LastGenerationInfo.getInstance().getLastMainJob() == null) {
+            return input;
         }
         try {
             Item item = null;
-            IProxyRepositoryFactory proxyRepositoryFactory = CorePlugin.getDefault().getRepositoryService()
-                    .getProxyRepositoryFactory();
-            ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
+            IProxyRepositoryFactory proxyRepositoryFactory =
+                    CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
+            ITalendSynchronizer synchronizer =
+                    CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
 
             Set<String> jobIds = new HashSet<String>();
             HashSet<JobInfo> jobInfos = new HashSet<>();
@@ -94,14 +94,15 @@ public class JobErrorsChecker {
                 }
                 jobIds.add(item.getProperty().getId());
 
-                // Property property = process.getProperty();
                 Problems.addJobRoutineFile(sourceFile, ProblemType.JOB, item, true);
             }
             if (!CommonsPlugin.isHeadless()) {
-                List<IRepositoryViewObject> routinesObjects = proxyRepositoryFactory.getAll(ERepositoryObjectType.ROUTINES, false);
-                Set<String> dependentRoutines = LastGenerationInfo.getInstance().getRoutinesNeededWithSubjobPerJob(
-                        LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
-                        LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
+                List<IRepositoryViewObject> routinesObjects =
+                        proxyRepositoryFactory.getAll(ERepositoryObjectType.ROUTINES, false);
+                Set<String> dependentRoutines = LastGenerationInfo
+                        .getInstance()
+                        .getRoutinesNeededWithSubjobPerJob(LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
+                                LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
                 if (routinesObjects != null) {
                     for (IRepositoryViewObject obj : routinesObjects) {
                         Property property = obj.getProperty();
@@ -110,7 +111,7 @@ public class JobErrorsChecker {
                             IFile routineFile = synchronizer.getFile(routinesitem);
                             Problems.addJobRoutineFile(routineFile, ProblemType.ROUTINE, routinesitem, true);
                         } else {
-                        	Problems.clearAllComliationError(property.getLabel());
+                            Problems.clearAllComliationError(property.getLabel());
                         }
                     }
                 }
@@ -153,11 +154,11 @@ public class JobErrorsChecker {
 
     public static boolean checkExportErrors(IStructuredSelection selection, boolean isJob) {
         if (!selection.isEmpty()) {
-            final ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService()
-                    .createRoutineSynchronizer();
+            final ITalendSynchronizer synchronizer =
+                    CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
             Set<String> jobIds = new HashSet<String>();
 
-            List<RepositoryNode> nodes = selection.toList();
+            List<RepositoryNode> nodes = extractNodes(selection);
             if (nodes.size() > 1) {
                 // in case it's a multiple export, only check the status of the latest job to export
                 for (RepositoryNode node : nodes) {
@@ -189,22 +190,35 @@ public class JobErrorsChecker {
                         }
                         if (ret) {
                             if (isJob) {
-                                throw new ProcessorException(Messages.getString("JobErrorsChecker_compile_errors") + '\n' + //$NON-NLS-1$
-                                        Messages.getString("JobErrorsChecker_compile_error_content", item.getProperty() //$NON-NLS-1$
-                                                .getLabel()) + '\n' + message);
+                                throw new ProcessorException(
+                                        Messages.getString("JobErrorsChecker_compile_errors") + '\n' + //$NON-NLS-1$
+                                                Messages
+                                                        .getString("JobErrorsChecker_compile_error_content", //$NON-NLS-1$
+                                                                item.getProperty().getLabel())
+                                                + '\n' + message);
                             } else {
-                                throw new ProcessorException(Messages.getString("CamelJobErrorsChecker_compile_errors") + '\n' + //$NON-NLS-1$
-                                        Messages.getString("CamelJobErrorsChecker_compile_error_content", item.getProperty() //$NON-NLS-1$
-                                                .getLabel()) + '\n' + message);
+                                throw new ProcessorException(
+                                        Messages.getString("CamelJobErrorsChecker_compile_errors") + '\n' + //$NON-NLS-1$
+                                                Messages
+                                                        .getString("CamelJobErrorsChecker_compile_error_content", //$NON-NLS-1$
+                                                                item.getProperty().getLabel())
+                                                + '\n' + message);
                             }
                         }
 
                         jobIds.add(item.getProperty().getId());
 
-                        Problems.addRoutineFile(sourceFile, ProblemType.JOB, item.getProperty().getLabel(), item.getProperty()
-                                .getVersion(), true);
+                        Problems
+                                .addRoutineFile(sourceFile, ProblemType.JOB, item.getProperty().getLabel(),
+                                        item.getProperty().getVersion(), true);
                     } catch (Exception e) {
-                        MessageBoxExceptionHandler.process(e);
+                        CommonExceptionHandler.process(e);
+                        if (CommonsPlugin.isHeadless()) {
+                            // [TESB-8953] avoid SWT invoked and also throw Exception let Command Executor to have
+                            // detailed
+                            // trace in command status.
+                            throw new RuntimeException(e);
+                        }
                         return true;
                     }
 
@@ -214,13 +228,12 @@ public class JobErrorsChecker {
                 try {
                     checkLastGenerationHasCompilationError(true);
                 } catch (Exception e) {
+                    CommonExceptionHandler.process(e);
                     if (CommonsPlugin.isHeadless()) {
-                        CommonExceptionHandler.process(e);
                         // [TESB-8953] avoid SWT invoked and also throw Exception let Command Executor to have detailed
                         // trace in command status.
                         throw new RuntimeException(e);
                     }
-                    MessageBoxExceptionHandler.process(e);
                     return true;
                 }
             }
@@ -249,7 +262,12 @@ public class JobErrorsChecker {
                     }
                 }
             } catch (Exception e) {
-                MessageBoxExceptionHandler.process(e);
+                CommonExceptionHandler.process(e);
+                if (CommonsPlugin.isHeadless()) {
+                    // [TESB-8953] avoid SWT invoked and also throw Exception let Command Executor to have detailed
+                    // trace in command status.
+                    throw new RuntimeException(e);
+                }
                 return true;
             }
 
@@ -264,9 +282,10 @@ public class JobErrorsChecker {
         boolean hasError = false;
         boolean isJob = true;
         Item item = null;
-        final IProxyRepositoryFactory proxyRepositoryFactory = CorePlugin.getDefault().getRepositoryService()
-                .getProxyRepositoryFactory();
-        final ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
+        final IProxyRepositoryFactory proxyRepositoryFactory =
+                CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
+        final ITalendSynchronizer synchronizer =
+                CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
         Integer line = null;
         String errorMessage = null;
         try {
@@ -299,7 +318,7 @@ public class JobErrorsChecker {
                 // one job
                 final IResource[] members = file.getParent().members();
                 for (IResource member : members) {
-                    if (member instanceof IFile && "java".equals(member.getFileExtension())) {
+                    if (member instanceof IFile && "java".equals(member.getFileExtension())) { //$NON-NLS-1$
                         IMarker[] markers = ((IFile) member).findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
                         for (IMarker marker : markers) {
                             Integer lineNr = (Integer) marker.getAttribute(IMarker.LINE_NUMBER);
@@ -322,8 +341,9 @@ public class JobErrorsChecker {
                     }
                 }
                 if (updateProblemsView) {
-                    Problems.addRoutineFile(file, ProblemType.JOB, item.getProperty().getLabel(),
-                            item.getProperty().getVersion(), true);
+                    Problems
+                            .addRoutineFile(file, ProblemType.JOB, item.getProperty().getLabel(),
+                                    item.getProperty().getVersion(), true);
                 }
                 if (hasError) {
                     break;
@@ -335,17 +355,17 @@ public class JobErrorsChecker {
         }
         if (hasError && item != null) {
             if (isJob) {
-                throw new ProcessorException(Messages.getString("JobErrorsChecker_compile_errors") + " " + '\n' + //$NON-NLS-1$
-                        Messages.getString("JobErrorsChecker_compile_error_message", item.getProperty().getLabel()) + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + errorMessage + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_jvmmessage")); //$NON-NLS-1$
+                throw new ProcessorException(Messages.getString("JobErrorsChecker_compile_errors") + ' ' + '\n' + //$NON-NLS-1$
+                        Messages.getString("JobErrorsChecker_compile_error_message", item.getProperty().getLabel()) //$NON-NLS-1$
+                        + '\n' + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
+                        + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + errorMessage //$NON-NLS-1$
+                        + '\n' + Messages.getString("JobErrorsChecker_compile_error_jvmmessage")); //$NON-NLS-1$
             } else {
-                throw new ProcessorException(Messages.getString("CamelJobErrorsChecker_compile_errors") + " " + '\n' + //$NON-NLS-1$
-                        Messages.getString("JobErrorsChecker_compile_error_message", item.getProperty().getLabel()) + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + errorMessage + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_jvmmessage")); //$NON-NLS-1$
+                throw new ProcessorException(Messages.getString("CamelJobErrorsChecker_compile_errors") + ' ' + '\n' + //$NON-NLS-1$
+                        Messages.getString("JobErrorsChecker_compile_error_message", item.getProperty().getLabel()) //$NON-NLS-1$
+                        + '\n' + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
+                        + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + errorMessage //$NON-NLS-1$
+                        + '\n' + Messages.getString("JobErrorsChecker_compile_error_jvmmessage")); //$NON-NLS-1$
             }
         }
 
@@ -356,44 +376,48 @@ public class JobErrorsChecker {
     }
 
     private static void checkRoutinesCompilationError() throws ProcessorException {
-    	if(LastGenerationInfo.getInstance() == null  || LastGenerationInfo.getInstance().getLastMainJob() == null) {
-    		return;
-    	}
-        Set<String> dependentRoutines = LastGenerationInfo.getInstance().getRoutinesNeededWithSubjobPerJob(
-                LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
-                LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
+        if (LastGenerationInfo.getInstance() == null || LastGenerationInfo.getInstance().getLastMainJob() == null) {
+            return;
+        }
+        Set<String> dependentRoutines = LastGenerationInfo
+                .getInstance()
+                .getRoutinesNeededWithSubjobPerJob(LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
+                        LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
 
         // from Problems
         List<Problem> errors = Problems.getProblemList().getProblemsBySeverity(ProblemStatus.ERROR);
         for (Problem p : errors) {
             if (p instanceof TalendProblem) {
                 TalendProblem talendProblem = (TalendProblem) p;
-                if (talendProblem.getType() == ProblemType.ROUTINE && dependentRoutines.contains(talendProblem.getJavaUnitName())) {
+                if (talendProblem.getType() == ProblemType.ROUTINE
+                        && dependentRoutines.contains(talendProblem.getJavaUnitName())) {
                     int line = talendProblem.getLineNumber();
                     String errorMessage = talendProblem.getDescription();
-                    throw new ProcessorException(Messages.getString(
-                            "JobErrorsChecker_routines_compile_errors", talendProblem.getJavaUnitName()) + '\n'//$NON-NLS-1$
-                            + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
-                            + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + errorMessage); //$NON-NLS-1$
+                    throw new ProcessorException(Messages
+                            .getString("JobErrorsChecker_routines_compile_errors", talendProblem.getJavaUnitName()) //$NON-NLS-1$
+                            + '\n' + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
+                            + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' //$NON-NLS-1$
+                            + errorMessage);
                 }
             } else {
                 // for now not to check components errors when building jobs in studio/commandline
-                // throw new ProcessorException(Messages.getString("JobErrorsChecker_jobDesign_errors", p.getType().getTypeName(), //$NON-NLS-1$
-                //      p.getJobInfo().getJobName(), p.getComponentName(), p.getDescription()));
+                // throw new ProcessorException(Messages.getString("JobErrorsChecker_jobDesign_errors",
+                // p.getType().getTypeName(), //$NON-NLS-1$
+                // p.getJobInfo().getJobName(), p.getComponentName(), p.getDescription()));
             }
         }
 
         // if can't find the routines problem, try to check the file directly(mainly for commandline)
         try {
-            final ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService()
-                    .createRoutineSynchronizer();
+            final ITalendSynchronizer synchronizer =
+                    CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
             IProxyRepositoryFactory factory = CorePlugin.getDefault().getProxyRepositoryFactory();
             List<IRepositoryViewObject> routinesObjects = factory.getAll(ERepositoryObjectType.ROUTINES, false);
             if (routinesObjects != null) {
                 for (IRepositoryViewObject obj : routinesObjects) {
                     Property property = obj.getProperty();
                     if (!dependentRoutines.contains(property.getLabel())) {
-                    	continue;
+                        continue;
                     }
                     Item routinesitem = property.getItem();
                     IFile routinesFile = synchronizer.getFile(routinesitem);
@@ -407,10 +431,12 @@ public class JobErrorsChecker {
                         if (lineNr != null && message != null && severity != null && start != null && end != null) {
                             switch (severity) {
                             case IMarker.SEVERITY_ERROR:
-                                throw new ProcessorException(
-                                        Messages.getString("JobErrorsChecker_routines_compile_errors", property.getLabel()) + '\n'//$NON-NLS-1$
-                                                + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + lineNr + '\n' //$NON-NLS-1$
-                                                + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + message); //$NON-NLS-1$
+                                throw new ProcessorException(Messages
+                                        .getString("JobErrorsChecker_routines_compile_errors", property.getLabel()) //$NON-NLS-1$
+                                        + '\n' + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' //$NON-NLS-1$
+                                        + lineNr + '\n'
+                                        + Messages.getString("JobErrorsChecker_compile_error_detailmessage") //$NON-NLS-1$
+                                        + ':' + ' ' + message);
                             default:
                                 break;
                             }
@@ -440,8 +466,9 @@ public class JobErrorsChecker {
                 if (lineNr != null && message != null && severity != null && start != null && end != null) {
                     switch (severity) {
                     case IMarker.SEVERITY_ERROR:
-                        throw new ProcessorException(Messages.getString("JobErrorsChecker_compile_error_errormessage") + ": " //$NON-NLS-1$
-                                + message);
+                        throw new ProcessorException(
+                                Messages.getString("JobErrorsChecker_compile_error_errormessage") + ": " //$NON-NLS-1$ //$NON-NLS-2$
+                                        + message);
                     default:
                         break;
                     }
@@ -454,9 +481,10 @@ public class JobErrorsChecker {
     }
 
     protected static void checkSubJobMultipleVersionsError() throws ProcessorException {
-    	if(LastGenerationInfo.getInstance() == null  || LastGenerationInfo.getInstance().getLastGeneratedjobs() == null) {
-    		return;
-    	}
+        if (LastGenerationInfo.getInstance() == null
+                || LastGenerationInfo.getInstance().getLastGeneratedjobs() == null) {
+            return;
+        }
         Set<JobInfo> jobInfos = LastGenerationInfo.getInstance().getLastGeneratedjobs();
         Map<String, Set<String>> jobInfoMap = new HashMap<>();
         for (JobInfo jobInfo : jobInfos) {
@@ -481,6 +509,16 @@ public class JobErrorsChecker {
                 throw new ProcessorException(errorMsg);
             }
         }
+    }
+
+    private static List<RepositoryNode> extractNodes(IStructuredSelection selection) {
+        List<RepositoryNode> nodes = new ArrayList<>();
+        for (Iterator<?> iterator = selection.iterator(); iterator.hasNext();) {
+            Object o = iterator.next();
+            if (o instanceof RepositoryNode)
+                nodes.add((RepositoryNode) o);
+        }
+        return nodes;
     }
 
 }

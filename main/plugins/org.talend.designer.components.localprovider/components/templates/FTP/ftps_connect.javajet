@@ -21,6 +21,7 @@
             String httpProxyPass = System.getProperty("http.proxyPassword");
 
             ftp_<%=cid %> = new org.talend.ftp.HTTPProxyFTPSClient(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>, httpProxyHost, httpProxyPort, httpProxyUser, httpProxyPass);
+
         } else if ("local".equals(System.getProperty("http.proxySet"))) {
             String uriString = <%=host %> + ":" + <%=ftpsPort%>;
             java.net.Proxy proxyToUse = org.talend.proxy.TalendProxySelector.getInstance().getProxyForUriString(uriString);

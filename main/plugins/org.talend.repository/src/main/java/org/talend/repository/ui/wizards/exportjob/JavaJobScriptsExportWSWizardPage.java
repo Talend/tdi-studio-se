@@ -270,6 +270,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         destinationNameField.setLayoutData(data);
         destinationNameField.setFont(font);
+        destinationNameField.setTextDirection(SWT.RIGHT_TO_LEFT);
         BidiUtils.applyBidiProcessing(destinationNameField, "file"); //$NON-NLS-1$
 
         // destination browse button
@@ -961,6 +962,9 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 log4jLevelCombo.select(2);
             }
         }
+        // contextCombo applyToChildrenButton control by contextbutton
+        contextCombo.setEnabled(contextButton.getSelection());
+        applyToChildrenButton.setEnabled(contextButton.getSelection());
     }
 
     private void restoreWidgetValuesForImage() {

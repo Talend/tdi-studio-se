@@ -4633,9 +4633,24 @@ public class CLASS {
             }
             return createSQL.toString();
         }
-        
+
     }
-    
+
+    public class SnowflakeManager extends Manager {
+       public SnowflakeManager(String cid) {
+          super(cid);
+       }
+       protected String getDBMSId() {
+          return SNOWFLAKE;
+       }
+       protected String getLProtectedChar() {
+          return "";
+       }
+       protected String getRProtectedChar() {
+          return "";
+       }
+    }
+
     public class UnDefinedManager extends Manager{
         
         private String dbmsId = "";
@@ -4971,6 +4986,12 @@ public class CLASS {
             return "";
         }
     }
+
+    public class SnowflakeELTManager extends SnowflakeManager {
+        public SnowflakeELTManager(String cid) {
+            super(cid);
+        }
+    }
     
     public Manager getELTManager(String dbmsId, String cid) {
         Manager manager = managerMap.get(dbmsId + cid);
@@ -5027,6 +5048,8 @@ public class CLASS {
                 manager = new ExasolELTManager(cid);
             } else if(dbmsId.equalsIgnoreCase(SAPHANA)) {
                 manager = new SAPHanaELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(SNOWFLAKE)) {
+                manager = new SnowflakeELTManager(cid);
             } else {
                 manager = new UnDefinedManager(cid);
                 ((UnDefinedManager)manager).setDBMSId(dbmsId);
@@ -5101,6 +5124,8 @@ public class CLASS {
                 manager = new ExasolManager(cid);
             } else if(dbmsId.equalsIgnoreCase(SAPHANA)) {
                 manager = new SAPHanaManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(SNOWFLAKE)) {
+                manager = new SnowflakeManager(cid);
             } else {
                 manager = new UnDefinedManager(cid);
                 ((UnDefinedManager)manager).setDBMSId(dbmsId);
