@@ -445,6 +445,7 @@
                 lastStr = "";
             }
         }
+        enableLogStash = "true".equalsIgnoreCase(System.getProperty("monitoring"));
 
         <%if(isLog4jEnabled){%>
 	        if(!"".equals(log4jLevel)){
@@ -494,6 +495,10 @@
 				properties_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxbackup", "20");
 				properties_<%=jobCatcherNode.getUniqueName()%>.setProperty("host", "false");
 				
+				System.getProperties().stringPropertyNames().stream()
+					.filter(it -> it.startsWith("monitoring.audit.logger.properties."))
+					.forEach(key -> properties_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("monitoring.audit.logger.properties.".length()), System.getProperty(key)));
+
 				auditLogger_<%=jobCatcherNode.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(properties_<%=jobCatcherNode.getUniqueName()%>);
 			}
 		<%
@@ -1535,12 +1540,10 @@ if (execStat) {
             }
         } else if (arg.startsWith("--log4jLevel=")) {
             log4jLevel = arg.substring(13);
-		} else if (arg.startsWith("--monitoring=")) {//for trunjob call
-			enableLogStash = "true".equalsIgnoreCase(arg.substring(13));
-		}
-		
-		if(!enableLogStash) {
-			enableLogStash = "true".equalsIgnoreCase(System.getProperty("monitoring"));
+		} else if (arg.startsWith("--monitoring") && arg.contains("=")) {//for trunjob call
+		    final int equal = arg.indexOf('=');
+			final String key = arg.substring("--".length(), equal);
+			System.setProperty(key, arg.substring(equal + 1));
 		}
     }
     
