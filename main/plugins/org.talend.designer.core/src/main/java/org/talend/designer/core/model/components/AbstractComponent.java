@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -113,7 +113,7 @@ public abstract class AbstractComponent extends AbstractLayerComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getInputType()
      */
     @Override
@@ -123,7 +123,7 @@ public abstract class AbstractComponent extends AbstractLayerComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getOutputType()
      */
     @Override
@@ -133,7 +133,7 @@ public abstract class AbstractComponent extends AbstractLayerComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPartitioning()
      */
     @Override
@@ -158,7 +158,7 @@ public abstract class AbstractComponent extends AbstractLayerComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getCONNECTORList()
      */
     @Override
@@ -189,7 +189,7 @@ public abstract class AbstractComponent extends AbstractLayerComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#setOriginalFamilyName()
      */
     @Override
@@ -199,7 +199,7 @@ public abstract class AbstractComponent extends AbstractLayerComponent {
 
     /**
      * Sets the translatedFamilyName.
-     * 
+     *
      * @param translatedFamilyName the translatedFamilyName to set
      */
     @Override

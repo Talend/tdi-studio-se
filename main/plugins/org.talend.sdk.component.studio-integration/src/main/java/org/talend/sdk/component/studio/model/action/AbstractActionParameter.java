@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public abstract class AbstractActionParameter implements IActionParameter {
 
     /**
      * Creates ActionParameter
-     * 
+     *
      * @param name ElementParameter name
      * @param parameter Action parameter name
      */

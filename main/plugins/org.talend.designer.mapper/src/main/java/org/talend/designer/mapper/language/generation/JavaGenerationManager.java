@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,9 +25,9 @@ import org.talend.designer.mapper.utils.DataMapExpressionParser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: GenerationManager.java 1299 2007-01-05 14:53:10Z amaumont $
- * 
+ *
  */
 public class JavaGenerationManager extends GenerationManager {
 
@@ -39,9 +39,9 @@ public class JavaGenerationManager extends GenerationManager {
 
     /**
      * DOC amaumont Comment method "buildLookupDataInstance".
-     * 
+     *
      * @param name
-     * 
+     *
      * @param tableName
      * @param keysValues
      * @param keysValues2
@@ -71,9 +71,9 @@ public class JavaGenerationManager extends GenerationManager {
 
     /**
      * DOC amaumont Comment method "buildConditions".
-     * 
+     *
      * @param gm
-     * 
+     *
      * @param constraintTableEntries
      * @param expressionParser
      * @return
@@ -121,24 +121,24 @@ public class JavaGenerationManager extends GenerationManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont MapperManager class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public enum PROBLEM_KEY_FIELD {
         GLOBAL_MAP("globalMap variable"), //$NON-NLS-1$
         METADATA_COLUMN("column"), //$NON-NLS-1$
         FILTER("filter"), //$NON-NLS-1$
         ;
-        
+
         private String label;
 
         private PROBLEM_KEY_FIELD(String label) {
             this.label = label;
         }
-        
+
         public String getLabel() {
             return label;
         }

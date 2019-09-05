@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,7 +41,7 @@ import org.talend.designer.mapper.utils.MapperHelper;
 
 /**
  * DOC YeXiaowei class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class DesignerMapperService implements IDesignerMapperService {
 
@@ -50,7 +50,7 @@ public class DesignerMapperService implements IDesignerMapperService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.IDesignerMapperSerivce#isVirtualComponent(org.talend.core.model.process.INode)
      */
     public boolean isVirtualComponent(INode node) {
@@ -59,7 +59,7 @@ public class DesignerMapperService implements IDesignerMapperService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.IDesignerMapperService#renameJoinTable(java.lang.Process,
      * org.talend.core.model.process.IExternalData, java.util.List)
      */
@@ -121,7 +121,7 @@ public class DesignerMapperService implements IDesignerMapperService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.mapper.IDesignerMapperService#getJoinTableNames(org.talend.core.model.process.IExternalData)
      */
@@ -435,7 +435,7 @@ public class DesignerMapperService implements IDesignerMapperService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.core.service.IDesignerMapperService#getExpressionFilter(org.talend.core.model.process.IExternalNode)
      */

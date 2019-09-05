@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,9 +48,9 @@ import org.talend.designer.core.utils.ConnectionUtil;
 /**
  * Action that manage to create a connection from the context menu. A connection type is used to know which kind of
  * connection will be created. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnectionCreateAction extends SelectionAction {
 
@@ -74,7 +74,7 @@ public class ConnectionCreateAction extends SelectionAction {
 
     /**
      * Define the type of the connection and the workbench part who will manage the connection.
-     * 
+     *
      * @param part
      * @param connecType
      */
@@ -98,7 +98,7 @@ public class ConnectionCreateAction extends SelectionAction {
 
     /**
      * Test if the selected item is a node.
-     * 
+     *
      * @return true/false
      */
     @SuppressWarnings("unchecked")
@@ -286,7 +286,7 @@ public class ConnectionCreateAction extends SelectionAction {
 
     /**
      * DOC qzhang Comment method "addDefaultName".
-     * 
+     *
      * @param node
      */
     private boolean addDefaultName() {
@@ -305,7 +305,7 @@ public class ConnectionCreateAction extends SelectionAction {
 
     /**
      * DOC qzhang Comment method "getDefaultTableName".
-     * 
+     *
      * @param node
      * @param removeQuotes
      * @return
@@ -357,7 +357,7 @@ public class ConnectionCreateAction extends SelectionAction {
                     removeQuotes.append(" (");
                     removeQuotes.append(curNodeConnector.getMenuName());
                     removeQuotes.append(")");
-                    //                    removeQuotes = name2 + " (" + curNodeConnector.getMenuName() + ")"; //$NON-NLS-1$ // //$NON-NLS-2$ 
+                    //                    removeQuotes = name2 + " (" + curNodeConnector.getMenuName() + ")"; //$NON-NLS-1$ // //$NON-NLS-2$
                 }
 
             }
@@ -376,7 +376,7 @@ public class ConnectionCreateAction extends SelectionAction {
 
     /**
      * DOC gcui Comment method "getDefaultSchemaName".
-     * 
+     *
      * @param node
      * @param removeQuotes
      * @return
@@ -497,7 +497,7 @@ public class ConnectionCreateAction extends SelectionAction {
 
     /**
      * DOC gcui Comment method "askForConnectionNameAndSchema".
-     * 
+     *
      * @param nodeLabel
      * @param oldName
      * @return
@@ -507,7 +507,7 @@ public class ConnectionCreateAction extends SelectionAction {
         String outName = ""; //$NON-NLS-1$
         ConnectionTableAndSchemaNameDialog id = new ConnectionTableAndSchemaNameDialog(getWorkbenchPart().getSite().getShell(),
                 nodeLabel + Messages.getString("ConnectionCreateAction.dialogTitle"), //$NON-NLS-1$
-                Messages.getString("ConnectionCreateAction.dialogMessage"), oldName); //$NON-NLS-1$ 
+                Messages.getString("ConnectionCreateAction.dialogMessage"), oldName); //$NON-NLS-1$
         id.open();
         if (id.getReturnCode() == InputDialog.CANCEL) {
             return ""; //$NON-NLS-1$
@@ -539,7 +539,7 @@ public class ConnectionCreateAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,9 +32,9 @@ import org.talend.sqlbuilder.ui.ISQLBuilderDialog;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: MetadataRefreshAction.java,v 1.22 2006/11/09 01:21:53 qiang.zhang Exp $
- * 
+ *
  */
 public class MetadataRefreshAction extends SelectionProviderAction {
 
@@ -50,7 +50,7 @@ public class MetadataRefreshAction extends SelectionProviderAction {
 
     /**
      * DOC dev MetadataRefreshAction constructor comment.
-     * 
+     *
      * @param selectionProvider
      */
     public MetadataRefreshAction(ISelectionProvider selectionProvider, ISQLBuilderDialog d) {
@@ -68,7 +68,7 @@ public class MetadataRefreshAction extends SelectionProviderAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.actions.SelectionProviderAction#selectionChanged(org.eclipse.jface.viewers.IStructuredSelection)
      */
     @Override
@@ -78,9 +78,9 @@ public class MetadataRefreshAction extends SelectionProviderAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
-     * 
+     *
      */
     @Override
     public void run() {

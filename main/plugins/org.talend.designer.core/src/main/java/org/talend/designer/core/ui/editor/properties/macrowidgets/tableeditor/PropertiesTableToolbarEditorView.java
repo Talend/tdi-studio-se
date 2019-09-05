@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,7 +56,7 @@ import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.Pr
 
 /**
  * $Id$
- * 
+ *
  */
 public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
@@ -66,7 +66,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /**
      * DOC amaumont MetadataToolbarEditorView constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param extendedTableViewer
@@ -79,7 +79,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createComponents(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -90,7 +90,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createAddPushButton()
      */
     @Override
@@ -208,7 +208,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createAddAllPushButton()
      */
     @Override
@@ -339,7 +339,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createPastButton()
      */
     @Override
@@ -401,7 +401,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createExportPushButton()
      */
     @Override
@@ -411,7 +411,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createPastButton()
      */
     @Override
@@ -474,7 +474,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createMoveUpPushButton()
      */
     @Override
@@ -487,7 +487,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createMoveDownPushButton()
      */
     @Override

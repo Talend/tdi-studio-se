@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,9 +47,9 @@ import org.talend.sqlbuilder.ui.proposal.SQLEditorProposalProvider;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2007-3-7 上午10:52:44 (星期五, 29 九月 2006) qzhang $
- * 
+ *
  */
 public class SqlEditDialog extends Dialog {
 
@@ -65,7 +65,7 @@ public class SqlEditDialog extends Dialog {
 
     /**
      * qzhang SqlEditDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     public SqlEditDialog(Shell parentShell, String title, String sql, RepositoryNode repositoryNode) {
@@ -88,7 +88,7 @@ public class SqlEditDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -126,7 +126,7 @@ public class SqlEditDialog extends Dialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
              */
             @Override
@@ -139,7 +139,7 @@ public class SqlEditDialog extends Dialog {
     }
 
     /**
-     * 
+     *
      * When dispose the control, dispose resource at the same time. (bug 6916)
      */
     protected void addResourceDisposeListener(final Control parent, final Resource res) {

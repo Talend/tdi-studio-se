@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -57,9 +57,9 @@ import org.talend.designer.core.ui.editor.properties.controllers.creator.SelectA
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FileController.java 1 2006-12-12 上午11:18:38 +0000 (上午11:18:38) yzhang $
- * 
+ *
  */
 public class FileController extends AbstractElementPropertySectionController {
 
@@ -69,7 +69,7 @@ public class FileController extends AbstractElementPropertySectionController {
 
     /**
      * yzhang FileController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public FileController(IDynamicProperty dp) {
@@ -78,7 +78,7 @@ public class FileController extends AbstractElementPropertySectionController {
 
     /*
      * This method will never be called.
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#createCommand
      * ()
@@ -89,7 +89,7 @@ public class FileController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
@@ -143,7 +143,7 @@ public class FileController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -268,7 +268,7 @@ public class FileController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -284,7 +284,7 @@ public class FileController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

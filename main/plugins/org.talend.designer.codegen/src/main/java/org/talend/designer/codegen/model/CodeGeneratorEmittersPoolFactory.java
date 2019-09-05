@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -84,9 +84,9 @@ import org.talend.designer.core.model.components.EmfComponent;
 /**
  * Pool of initialized Jet Emitters. There are as many Emitters in this pool as Templzte available. Used for generation
  * performance constraint.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public final class CodeGeneratorEmittersPoolFactory {
 
@@ -297,7 +297,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
         /**
          * DOC nrousseau Comment method "initializeJetEmittersProject".
-         * 
+         *
          * @throws CoreException
          */
         private void initializeJetEmittersProject(IProgressMonitor progressMonitor) throws CoreException {
@@ -371,10 +371,10 @@ public final class CodeGeneratorEmittersPoolFactory {
     }
 
     /**
-     * 
+     *
      * Utility method that create a {@link DelegateClassLoader} made of a given parent {@link ClassLoader} and a
      * delegate one given a bundle name and a class name.
-     * 
+     *
      * @param baseClassLoader the parent ClassLoader
      * @param bundleName the name of the bundle to load the className from.
      * @param className the className to load in order to get its ClassLoader
@@ -394,7 +394,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
     /**
      * initialization of available templates.
-     * 
+     *
      * @param template
      * @param codeLanguage
      * @return
@@ -429,7 +429,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
     /**
      * initialization of the available components.
-     * 
+     *
      * @param codeLanguage
      * @param jetBeans
      * @param codePart
@@ -529,9 +529,9 @@ public final class CodeGeneratorEmittersPoolFactory {
     }
 
     /**
-     * 
+     *
      * Initialization of the generic components.
-     * 
+     *
      * @param codeLanguage
      * @param jetBeans
      * @param codePart
@@ -584,9 +584,9 @@ public final class CodeGeneratorEmittersPoolFactory {
 
     /**
      * real pool initialization.
-     * 
+     *
      * @param monitorWrap
-     * 
+     *
      * @return
      * @throws JETException
      */
@@ -703,7 +703,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
     /**
      * DOC mhirt Comment method "extractEmfPersistenData".
-     * 
+     *
      * @param alreadyCompiledEmitters
      * @return
      */
@@ -720,7 +720,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
     /**
      * DOC mhirt Comment method "extractTemplateHashCode".
-     * 
+     *
      * @param unit
      * @return
      * @throws MalformedURLException
@@ -800,7 +800,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
     /**
      * Getter for emitterPool.
-     * 
+     *
      * @return the emitterPool
      */
     public static HashMap<JetBean, JETEmitter> getEmitterPool() {
@@ -812,7 +812,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
     /**
      * DOC xtan Comment method "getJETEmitter".
-     * 
+     *
      * @param jetBean
      * @return
      */
@@ -840,7 +840,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
     /**
      * Getter for initialized.
-     * 
+     *
      * @return the initialized
      */
     public static boolean isInitialized() {
@@ -849,7 +849,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
     /**
      * Sets the initialized.
-     * 
+     *
      * @param initialized the initialized to set
      */
     public static void setInitialized(boolean initialized) {
@@ -971,7 +971,7 @@ public final class CodeGeneratorEmittersPoolFactory {
      * A simple classloader that permits a "delegate" to be added to a "parent" classloader. With the model used by the
      * Java ClassLoader, this permits classes that are in the delegate to be instantiated, and are able to use objects
      * created from the parent ClassLoader.
-     * 
+     *
      * Objects in the parent ClassLoader must not use objects instantiated from the delegate.
      */
     public static class DelegateClassLoader extends ClassLoader {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -299,14 +299,14 @@ public class ComponentsUtilsTest {
         testProperty.setValue(null);
         parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
         assertEquals("\"\"", parameterValue); //$NON-NLS-1$
-        
+
         List<String> cList = new ArrayList<String>();
         cList.add("mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0");
         testProperty.setStoredValue(cList);
         parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
         assertEquals(null, parameterValue); //$NON-NLS-1$
-        
-        
+
+
         cList = new ArrayList<String>();
         cList.add("context.jdbc5_drivers");
         testProperty.setStoredValue(cList);

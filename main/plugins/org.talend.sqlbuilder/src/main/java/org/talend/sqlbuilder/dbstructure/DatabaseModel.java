@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,7 @@ import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 /**
  * DatabaseModel container for the database node and used to set as the input for the treeViewer in the database
  * structure outline.
- * 
+ *
  * @modified Davy Vanherbergen
  */
 public class DatabaseModel implements INode {
@@ -36,7 +36,7 @@ public class DatabaseModel implements INode {
 
     /*
      * Create new DatabaseModel for a database session
-     * 
+     *
      * @param sessionNode @param pm
      */
     public DatabaseModel(SessionTreeNode sessionNode) {
@@ -54,7 +54,7 @@ public class DatabaseModel implements INode {
 
     /**
      * Returns an array of all root nodes..
-     * 
+     *
      * @see net.sourceforge.sqlexplorer.dbviewer.model.IDbModel#getChildren()
      * @return INode[]
      */
@@ -108,7 +108,7 @@ public class DatabaseModel implements INode {
 
     /**
      * Always returns null, since this is the root...
-     * 
+     *
      * @see net.sourceforge.sqlexplorer.dbviewer.model.IDbModel#getParent()
      * @return Parent.
      */
@@ -154,7 +154,7 @@ public class DatabaseModel implements INode {
 
     /**
      * Returns "model" as the type for this node. This method is not used and only implemented for the interface.
-     * 
+     *
      * @see org.talend.sqlbuilder.dbstructure.nodes.INode#getType()
      * @return Type.
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,9 +36,9 @@ import org.talend.repository.model.json.SchemaTarget;
 
 /**
  * Create a ProcessDescription to use in the step2 & step3 of CSV File Wizard on Shadow mode.
- * 
+ *
  * $Id: ShadowProcessHelper.java 51244 2010-11-15 03:28:34Z cli $
- * 
+ *
  */
 public class JSONShadowProcessHelper {
 
@@ -89,11 +89,11 @@ public class JSONShadowProcessHelper {
 
     /**
      * Create a ProcessDescription and set it width the value of JSONFileConnection.
-     * 
+     *
      * This method is usefull to adapt a processDescription before run the shadow process.
-     * 
+     *
      * @param JSONFileConnection
-     * 
+     *
      * @return ProcessDescription
      */
     public static ProcessDescription getProcessDescription(final JSONFileConnection connection, String tempJsonFile) {
@@ -115,7 +115,7 @@ public class JSONShadowProcessHelper {
             while (iterate.hasNext()) {
                 SchemaTarget schemaTarget = iterate.next();
                 Map<String, String> lineMapping = new HashMap<String, String>();
-                lineMapping.put("QUERY", TalendQuoteUtils.addQuotes(schemaTarget.getRelativeXPathQuery())); //$NON-NLS-1$ 
+                lineMapping.put("QUERY", TalendQuoteUtils.addQuotes(schemaTarget.getRelativeXPathQuery())); //$NON-NLS-1$
                 mapping.add(lineMapping);
             }
         }
@@ -132,7 +132,7 @@ public class JSONShadowProcessHelper {
 
     /**
      * parse a file describe by a processDescription in XmlArray.
-     * 
+     *
      * @param processDescription
      * @return xmlArray
      */
@@ -150,7 +150,7 @@ public class JSONShadowProcessHelper {
 
     /**
      * parse a file describe by a processDescription in XmlArray.
-     * 
+     *
      * @param processDescription
      * @return xmlArray
      */
@@ -169,7 +169,7 @@ public class JSONShadowProcessHelper {
 
     /**
      * DOC amaumont Comment method "createPreview".
-     * 
+     *
      * @param configurationElements
      * @return
      * @throws CoreException
@@ -180,7 +180,7 @@ public class JSONShadowProcessHelper {
 
     /**
      * DOC amaumont Comment method "createPreview".
-     * 
+     *
      * @param configurationElements
      * @return
      * @throws CoreException

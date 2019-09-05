@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -64,7 +64,7 @@ public class AddArrayIndexDialog extends Dialog {
 
     /**
      * DOC Administrator ErrorMessageDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     protected AddArrayIndexDialog(Shell parentShell) {
@@ -126,7 +126,7 @@ public class AddArrayIndexDialog extends Dialog {
                 // String com = text.getText();
                 // int index = Integer.valueOf(com);
                 // if(index<0||index>arraySize){
-                //                    
+                //
                 // }
             }
 

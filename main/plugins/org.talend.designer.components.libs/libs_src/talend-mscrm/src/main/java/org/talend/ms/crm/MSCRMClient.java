@@ -44,7 +44,7 @@ import com.microsoft.schemas.xrm._2011.contracts.discovery.RetrieveOrganizationR
 
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -57,7 +57,7 @@ import com.microsoft.schemas.xrm._2011.contracts.discovery.RetrieveOrganizationR
 
 /**
  * created by bchen on Jun 26, 2013 Detailled comment
- * 
+ *
  */
 public class MSCRMClient {
 
@@ -127,7 +127,7 @@ public class MSCRMClient {
      * https://dev.crm.dynamics.com/XRMServices/2011/Discovery.svc Microsoft office 365, discovery service url is
      * https://disco.crm.dynamics.com/XRMServices/2011/Discovery.svc To use appropriate discovery service url for other
      * environments refer http://technet.microsoft.com/en-us/library/gg309401.aspx
-     * 
+     *
      * @throws Exception
      */
     public OrganizationServiceStub doGetOnlineConnection(String discoveryServiceURL) throws Exception {

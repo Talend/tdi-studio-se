@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -143,9 +143,9 @@ import org.talend.designer.mapper.utils.ParseExpressionResult;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class UIManager extends AbstractUIManager {
 
@@ -201,7 +201,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont UIManager constructor comment.
-     * 
+     *
      * @param tableManager
      * @param manager
      */
@@ -213,7 +213,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * Select a table view.
-     * 
+     *
      * @param dataMapTableView
      * @param useNewCommand
      * @param selectAllEntries TODO
@@ -298,7 +298,7 @@ public class UIManager extends AbstractUIManager {
 
                     /**
                      * DOC acer Comment method "handleEvent".
-                     * 
+                     *
                      * @param event
                      */
                     public void handleEvent(ListenableListEvent event) {
@@ -482,7 +482,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "updateToolbarButtonsStates".
-     * 
+     *
      * @param currentZone
      */
     public void updateToolbarButtonsStates(Zone currentZone) {
@@ -665,7 +665,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "refreshBackground".
-     * 
+     *
      * @param firstExecutionAfterTime
      */
     @Override
@@ -728,7 +728,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "setDialogResponse".
-     * 
+     *
      * @param ok
      */
     public void setMapperResponse(int mapperResponse) {
@@ -741,7 +741,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "closeMapperDialog".
-     * 
+     *
      * @param ok
      */
     public void closeMapper(int response) {
@@ -791,7 +791,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "saveDataBeforeClose".
-     * 
+     *
      * @param response
      */
     public void prepareClosing(int response) {
@@ -946,7 +946,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "selectTableEntries".
-     * 
+     *
      * @param metadataTable
      * @param selectedTableEntries
      * @param selectionIndices
@@ -967,7 +967,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "selectTableEntries".
-     * 
+     *
      * @param view
      * @param selectedTableEntries
      * @param selectionIndices
@@ -1018,7 +1018,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * Highlight links and linked cells which have are referenced by the selected items.
-     * 
+     *
      * @param dataMapTableView
      * @param forceResetHighlightLinksForOtherTables TODO
      * @param selectAllTableLinks TODO
@@ -1215,7 +1215,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "extractTableEntries".
-     * 
+     *
      * @param selection
      * @return
      */
@@ -1227,7 +1227,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "getTableEntryPosition".
-     * 
+     *
      * @param manager TODO
      * @param tableEntry
      * @param forceRecalculate TODO
@@ -1241,7 +1241,7 @@ public class UIManager extends AbstractUIManager {
         TableItem[] tableItems = new TableItem[0];
         if (tableEntry instanceof InputColumnTableEntry || tableEntry instanceof OutputColumnTableEntry) {
             tableItems = dataMapTableView.getTableViewerCreatorForColumns().getTable().getItems();
-        
+
             AbstractInOutTable abstractInOutTable = (AbstractInOutTable) dataMapTableView.getDataMapTable();
             if (dataMapTableView.getZone() == Zone.OUTPUTS) {
                 OutputTable outputTable = (OutputTable) abstractInOutTable;
@@ -1259,7 +1259,7 @@ public class UIManager extends AbstractUIManager {
         Display display = dataMapTableView.getDisplay();
         Point returnedPoint = new Point(0, 0);
         TableEntryProperties tableEntryProperties = null;
-        
+
         int itemIndex = 0;
         if (tableEntry instanceof IColumnEntry || tableEntry instanceof FilterTableEntry || tableEntry instanceof GlobalMapEntry) {
             tableEntryProperties = mapperManager.getTableEntryProperties(tableEntry);
@@ -1274,7 +1274,7 @@ public class UIManager extends AbstractUIManager {
                     if (tableItems[i].getData() == tableEntry) {
                         itemIndex= i;
                         break;
-                    } 
+                    }
                 }
                 boolean allIsNull = false;
                 if(tableItem == null && (isIntputEntry || isOutputEntry)){
@@ -1290,7 +1290,7 @@ public class UIManager extends AbstractUIManager {
                     Table table = tableItem.getParent();
                     Rectangle boundsTableItem = tableItem.getBounds(1);// FIX for issue 1225 ("1" parameter added)
                     y = boundsTableItem.y + table.getItemHeight() / 2  + dataMapTableView.getBorderWidth();
-             
+
                     if(isOutputEntry || isIntputEntry) {
                         if( entriesSize != tableItems.length) {
                             y = boundsTableItem.y + table.getItemHeight() / 2  + dataMapTableView.getBorderWidth();
@@ -1304,9 +1304,9 @@ public class UIManager extends AbstractUIManager {
                     if (y < 0) {
                         y = 0;
                     }
-    
+
                     Point point = new Point(x, y);
-    
+
                     pointFromTableViewOrigin = display.map(tableItem.getParent(), dataMapTableView, point);
                 } else {
                     Text columnFilterText = dataMapTableView.getColumnNameFilterText();
@@ -1359,7 +1359,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "processNewExpression".
-     * 
+     *
      * @param appliedOrCanceled TODO
      * @param text
      * @param newSelectedDataMapTableView
@@ -1372,7 +1372,7 @@ public class UIManager extends AbstractUIManager {
         }
 
     }
-    
+
     public void parseNewFilterColumn(String expression, ITableEntry currentModifiedITableEntry, boolean appliedOrCanceled) {
         ParseExpressionResult result = parseFilterColumn(expression, currentModifiedITableEntry, true, true, appliedOrCanceled);
 //        if (result.isAtLeastOneLinkHasBeenAddedOrRemoved()) {
@@ -1395,7 +1395,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "processAllExpressions".
-     * 
+     *
      * @param newLinksMustHaveSelectedState TODO
      */
     @SuppressWarnings("unchecked")
@@ -1430,8 +1430,8 @@ public class UIManager extends AbstractUIManager {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param expression
      * @param currentModifiedITableEntry
      * @param linkMustHaveSelectedState
@@ -1515,7 +1515,7 @@ public class UIManager extends AbstractUIManager {
         return new ParseExpressionResult(linkHasBeenAdded, linkHasBeenRemoved);
     }
 
-    
+
 
     public ParseExpressionResult parseFilterColumn(String expression, ITableEntry currentModifiedITableEntry,
             boolean linkMustHaveSelectedState, boolean checkInputKeyAutomatically, boolean inputExpressionAppliedOrCanceled) {
@@ -1530,7 +1530,7 @@ public class UIManager extends AbstractUIManager {
         DataMapTableView dataMapTableView = mapperManager.retrieveDataMapTableView(currentModifiedITableEntry);
         boolean linkHasBeenAdded = false;
         boolean linkHasBeenRemoved = false;
-       
+
         DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(LanguageProvider.getCurrentLanguage());
         TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser.parseTableEntryLocations(expression);
         Set<TableEntryLocation> alreadyProcessed = new HashSet<TableEntryLocation>();
@@ -1538,7 +1538,7 @@ public class UIManager extends AbstractUIManager {
         Set<ITableEntry> sourcesForTargetToDelete = new HashSet<ITableEntry>(sourcesForTarget);
 
         boolean isInputEntry = currentModifiedITableEntry instanceof InputColumnTableEntry;
-        
+
         ECodeLanguage codeLanguage = LanguageProvider.getCurrentLanguage().getCodeLanguage();
 
         for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
@@ -1559,7 +1559,7 @@ public class UIManager extends AbstractUIManager {
                         for (IMapperLink link : linksFromTarget) {
                                 link.calculate();
                         }
-                } 
+                }
             }
         }
 
@@ -1578,11 +1578,11 @@ public class UIManager extends AbstractUIManager {
 
         return new ParseExpressionResult(linkHasBeenAdded, linkHasBeenRemoved);
     }
-    
-    
+
+
     /**
      * DOC amaumont Comment method "removeInvalidKeys".
-     * 
+     *
      * @param newSelectedDataMapTableView
      */
     private void removeInvalidInputKeys(InputDataMapTableView inputDataMapTableView) {
@@ -1596,9 +1596,9 @@ public class UIManager extends AbstractUIManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "hasInvalidInputKeys".
-     * 
+     *
      * @param newSelectedDataMapTableView
      * @return
      */
@@ -1619,9 +1619,9 @@ public class UIManager extends AbstractUIManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "checkTargetInputKey".
-     * 
+     *
      * @param currentModifiedTableEntry
      * @param inputDataMapTableView
      * @param checkInputKeyAutomatically
@@ -1642,7 +1642,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "refreshInOutTableAndMetaTable".
-     * 
+     *
      * @param currentModifiedTableEntry can be null
      */
     private void refreshInOutTableAndMetaTable(AbstractInOutTableEntry currentModifiedTableEntry) {
@@ -1658,9 +1658,9 @@ public class UIManager extends AbstractUIManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "refreshInOutTableAndMetaTable".
-     * 
+     *
      * @param dataMapTableView
      */
     private void refreshInOutTableAndMetaTable(DataMapTableView dataMapTableView) {
@@ -1676,7 +1676,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "processNewProcessColumnName".
-     * 
+     *
      * @param previousColumnName TODO
      * @param dataMapTableView
      * @param text
@@ -1781,7 +1781,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "getMetadataEditorView".
-     * 
+     *
      * @param newSelectedDataMapTableView
      */
     public MetadataTableEditorView getMetadataEditorView(Zone zone) {
@@ -1835,7 +1835,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "openAddNewOutputDialog".
-     * 
+     *
      * return tableName--joinTableName if creating join table
      */
     public String openNewOutputCreationDialog() {
@@ -1872,7 +1872,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "openAddNewOutputDialog".
-     * 
+     *
      * @param inputDataMapTableView
      */
     private void openChangeKeysDialog(final InputDataMapTableView inputDataMapTableView) {
@@ -1898,7 +1898,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "getTablesZoneView".
-     * 
+     *
      * @param dataMapTableViewTarget
      */
     public TablesZoneView getTablesZoneView(DataMapTableView dataMapTableViewTarget) {
@@ -1916,7 +1916,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "getTablesZoneView".
-     * 
+     *
      * @param dataMapTableViewTarget
      */
     public ScrolledComposite getScrolledZoneView(DataMapTableView dataMapTableViewTarget) {
@@ -1981,9 +1981,9 @@ public class UIManager extends AbstractUIManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "moveSelectedTable".
-     * 
+     *
      * @param zone
      * @param moveUp true to move up, else false to move down
      */
@@ -2020,7 +2020,7 @@ public class UIManager extends AbstractUIManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.abstractmap.managers.AbstractUIManager#openAutoMapDialog()
      */
     @Override
@@ -2079,9 +2079,9 @@ public class UIManager extends AbstractUIManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "moveSelectTableUp".
-     * 
+     *
      * @param currentSelectedTableView
      * @param tablesView
      * @param indexStartMovedAuthorized
@@ -2160,7 +2160,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "checkProblemsForMovedTables".
-     * 
+     *
      * @param currentSelectedTableView
      * @param nextTableView
      */
@@ -2169,7 +2169,7 @@ public class UIManager extends AbstractUIManager {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.lang.Thread#run()
              */
             @Override
@@ -2240,7 +2240,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * Call mapperManager.removeSelectedOutput() to remove a table view.
-     * 
+     *
      * @param dataMapTableViewToRemove
      */
     public void removeOutputTableView(DataMapTableView dataMapTableViewToRemove) {
@@ -2287,7 +2287,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * Getter for drawableLinkFactory.
-     * 
+     *
      * @return the drawableLinkFactory
      */
     public StyleLinkFactory getStyleLinkFactory() {
@@ -2360,7 +2360,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "createUI".
-     * 
+     *
      * @param parent
      * @param mapperModel
      */
@@ -2372,7 +2372,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "createUI".
-     * 
+     *
      * @param display
      * @param mapperModel
      * @return
@@ -2386,7 +2386,7 @@ public class UIManager extends AbstractUIManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.managers.AbstractUIManager#getAbstractMapperManager()
      */
     @Override
@@ -2404,7 +2404,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * DOC amaumont Comment method "checkLocationIsValid".
-     * 
+     *
      * @param couple
      * @param currentModifiedITableEntry
      * @param manager TODO
@@ -2449,7 +2449,7 @@ public class UIManager extends AbstractUIManager {
 
     /**
      * Getter for closeWithoutPrompt.
-     * 
+     *
      * @return the closeWithoutPrompt
      */
     public boolean isCloseWithoutPrompt() {
@@ -2464,9 +2464,9 @@ public class UIManager extends AbstractUIManager {
     }
 
     /**
-     * 
+     *
      * "applyActivatedCellEditorsForAllTables".
-     * 
+     *
      * @param exceptThisTableViewerCreator
      */
     public void applyActivatedCellEditorsForAllTables(TableViewerCreator exceptThisTableViewerCreator) {

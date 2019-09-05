@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -99,9 +99,9 @@ public class JavaJobExportReArchieveCreator {
     }
 
     /**
-     * 
+     *
      * DOC aiming Comment method "getJobFolerName".
-     * 
+     *
      * @return
      */
     public String getJobFolerName() {
@@ -109,9 +109,9 @@ public class JavaJobExportReArchieveCreator {
     }
 
     /**
-     * 
+     *
      * DOC aiming Comment method "setJobFolerName".
-     * 
+     *
      * @param jobFolerName
      */
     public void setJobFolerName(String jobFolerName) {
@@ -119,9 +119,9 @@ public class JavaJobExportReArchieveCreator {
     }
 
     /**
-     * 
+     *
      * change .sh & .bat file's contents
-     * 
+     *
      * @throws FileNotFoundException
      */
     private void changeScriptFile(File file) {
@@ -223,7 +223,7 @@ public class JavaJobExportReArchieveCreator {
 
                 @Override
                 public boolean accept(File dir, String name) {
-                    return name.toLowerCase().endsWith(".drl") //$NON-NLS-1$ 
+                    return name.toLowerCase().endsWith(".drl") //$NON-NLS-1$
                     ? true
                             : false;
                 }
@@ -243,7 +243,7 @@ public class JavaJobExportReArchieveCreator {
 
                 @Override
                 public boolean accept(File dir, String name) {
-                    return name.toLowerCase().endsWith(".xls") //$NON-NLS-1$ 
+                    return name.toLowerCase().endsWith(".xls") //$NON-NLS-1$
                     ? true
                             : false;
                 }
@@ -273,7 +273,7 @@ public class JavaJobExportReArchieveCreator {
     }
 
     /**
-     * 
+     *
      * get jobFolder, libFolder, batFile, shFile
      */
     private void initJobFolder() {
@@ -348,7 +348,7 @@ public class JavaJobExportReArchieveCreator {
         // String[] drls = getDrlFilenames();
         // String[] xlss = getXLSFilenames();
         // if (drls != null || xlss != null) {
-        sb.append("../" + RULES_ROOT + "/"); //$NON-NLS-1$ //$NON-NLS-2$ 
+        sb.append("../" + RULES_ROOT + "/"); //$NON-NLS-1$ //$NON-NLS-2$
         // }
 
         //            sb.append("../" + XLS + "/"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -385,11 +385,11 @@ public class JavaJobExportReArchieveCreator {
 
     /**
      * DOC zli Comment method "getTmpDestinationFolder".
-     * 
+     *
      * @return
      */
     public static String getTmpDestinationFolder() {
-        String tmp = ExportJobUtil.getTmpFolderPath() + "/newExportFolder";//$NON-NLS-1$ 
+        String tmp = ExportJobUtil.getTmpFolderPath() + "/newExportFolder";//$NON-NLS-1$
         tmp = tmp.replace('\\', '/');
         File f = new File(tmp);
         if (!f.exists()) {
@@ -411,7 +411,7 @@ public class JavaJobExportReArchieveCreator {
     }
 
     /**
-     * 
+     *
      * only build the 'manifest.mf' to the classpath.jar
      */
     private class NewJarBuilder {
@@ -424,7 +424,7 @@ public class JavaJobExportReArchieveCreator {
 
         /**
          * Constructure.
-         * 
+         *
          * @param root
          * @param jarFile
          * @param jarName
@@ -448,7 +448,7 @@ public class JavaJobExportReArchieveCreator {
 
         /**
          * Builds the jar file.
-         * 
+         *
          * @throws Exception
          */
         public void buildJar() throws Exception {

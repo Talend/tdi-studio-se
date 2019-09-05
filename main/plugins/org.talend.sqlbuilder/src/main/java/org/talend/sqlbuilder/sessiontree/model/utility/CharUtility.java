@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,7 +28,7 @@ class CharUtility {
     private static final int NUMBER_89 = 89;
     private static final int NUMBER_65 = 65;
 
-    /** 
+    /**
      * Returns an int value that is negative if cCompare comes before cRef in the alphabet, zero if
 	 * the two are equal, and positive if cCompare comes after cRef in the alphabet.
      * @param cCompare cCompare
@@ -38,7 +38,7 @@ class CharUtility {
 	public static int compareCharsAlphabetically(char cCompare, char cRef) {
 		return (alphabetizeChar(cCompare) - alphabetizeChar(cRef));
 	}
-	
+
     /**
      * @param c char.
      * @return int
@@ -58,5 +58,5 @@ class CharUtility {
         }
 		return c;
 	}
-	
+
 }

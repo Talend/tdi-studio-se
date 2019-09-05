@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
 
 
     /**
-     * Return the text that will be displayed in the context popup menu for this action. 
+     * Return the text that will be displayed in the context popup menu for this action.
      */
     public String getText() {
         return Messages.getString("DataSetTable.Actions.Export.CSV"); //$NON-NLS-1$
@@ -59,15 +59,15 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
     public void run() {
 
         // get filename
-        FileDialog fileDialog = new FileDialog(ptable.getShell(), SWT.SAVE);        
+        FileDialog fileDialog = new FileDialog(ptable.getShell(), SWT.SAVE);
         String[] filterExtensions = new String[] {"*.csv"}; //$NON-NLS-1$
-        fileDialog.setFilterExtensions(filterExtensions);       
-        
+        fileDialog.setFilterExtensions(filterExtensions);
+
         final String fileName = fileDialog.open();
         if (fileName == null || fileName.trim().length() == 0) {
             return;
         }
-        
+
         // let's show the fancy wait cursor..
         BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
@@ -82,27 +82,27 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                         // overwrite existing files
                         file.delete();
                     }
-                    
+
                     file.createNewFile();
                     BufferedWriter writer = new BufferedWriter(new FileWriter(file));
                     StringBuffer buffer = new StringBuffer(""); //$NON-NLS-1$
-                    
+
                     // get column header and separator preferences
                     String columnSeparator = SqlBuilderPlugin.getDefault().getPreferenceStore().getString(IConstants.CLIP_EXPORT_SEPARATOR);
                     boolean includeColumnNames = SqlBuilderPlugin.getDefault().getPreferenceStore().getBoolean(
                             IConstants.CLIP_EXPORT_COLUMNS);
-                                       
+
                     // check if there is somethign in our table
-                    TableItem[] items = ptable.getItems();                    
+                    TableItem[] items = ptable.getItems();
                     DataSet dataSet = (DataSet) ptable.getData();
-                    
+
                     if (items == null || dataSet == null) {
                         return;
                     }
-                    
-                    // export column names if we need to 
+
+                    // export column names if we need to
                     if (includeColumnNames) {
-                        
+
                         String[] columnNames = dataSet.getColumnLabels();
                         for (int i = 0; i < columnNames.length; i++) {
                             buffer.append(columnNames[i]);
@@ -115,9 +115,9 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                     // export column data
                     int columnCount = ptable.getColumnCount();
                     for (int i = 0; i < items.length; i++) {
-                                           
+
                         buffer = new StringBuffer(""); //$NON-NLS-1$
-                        
+
                         for (int j = 0; j < columnCount; j++) {
                             buffer.append(items[i].getText(j));
                             buffer.append(columnSeparator);

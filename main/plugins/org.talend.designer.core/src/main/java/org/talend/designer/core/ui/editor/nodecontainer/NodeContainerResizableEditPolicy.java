@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,15 +31,15 @@ import org.talend.designer.core.ui.editor.nodes.NodeFigure;
 
 /**
  * This class describes the figures that will be used for drag and drop each objects on the diagram. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeContainerResizableEditPolicy extends ResizableEditPolicy {
 
     /**
      * Creates the figure used for feedback.
-     * 
+     *
      * @return the new feedback figure
      */
     @Override
@@ -80,7 +80,7 @@ public class NodeContainerResizableEditPolicy extends ResizableEditPolicy {
 
     /**
      * This will take the figure of the node and set it as feedback figure.
-     * 
+     *
      * @param modelPart
      * @return
      */
@@ -112,7 +112,7 @@ public class NodeContainerResizableEditPolicy extends ResizableEditPolicy {
 
     /**
      * Returns the layer used for displaying feedback.
-     * 
+     *
      * @return the feedback layer
      */
     @Override
@@ -122,7 +122,7 @@ public class NodeContainerResizableEditPolicy extends ResizableEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.NonResizableEditPolicy#getInitialFeedbackBounds()
      */
     @Override
@@ -132,7 +132,7 @@ public class NodeContainerResizableEditPolicy extends ResizableEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.ResizableEditPolicy#createSelectionHandles()
      */
     @Override

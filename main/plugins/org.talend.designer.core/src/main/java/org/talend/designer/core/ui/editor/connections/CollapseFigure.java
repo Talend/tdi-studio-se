@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,17 +38,17 @@ public class CollapseFigure extends Clickable {
 
     /**
      * isCollapsed Utility method to determine if the IFigure is collapse or not.
-     * 
+     *
      * @return true if collapse, false otherwise.
      */
     public boolean isCollapsed() {
         return collapsed;
     }
-    
+
     protected Image getCollapseFigure() {
         return ImageProvider.getImage(EImage.TRACES_COLLAPSE);
     }
-    
+
     protected Image getExpandFigure() {
         return ImageProvider.getImage(EImage.TRACES_EXPAND);
     }
@@ -56,7 +56,7 @@ public class CollapseFigure extends Clickable {
     /**
      * setCollapsed Setter method to change collapsed state of the figure. Will force update to repaint the figure to
      * reflect the changes.
-     * 
+     *
      * @param b boolean true to set collapsed, false to uncollapse.
      */
     public void setCollapsed(boolean b) {
@@ -74,7 +74,7 @@ public class CollapseFigure extends Clickable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.Clickable#paintClientArea(org.eclipse.draw2d.Graphics)
      */
     @Override

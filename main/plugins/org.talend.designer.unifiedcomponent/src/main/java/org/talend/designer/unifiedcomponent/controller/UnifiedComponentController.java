@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,9 +51,9 @@ public class UnifiedComponentController extends AbstractElementPropertySectionCo
     private int VSPACE = 4;
 
     /**
-     * 
+     *
      * DOC wchen UnifiedComponentController constructor comment.
-     * 
+     *
      * @param dp
      */
     public UnifiedComponentController(IDynamicProperty dp) {
@@ -62,7 +62,7 @@ public class UnifiedComponentController extends AbstractElementPropertySectionCo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -161,7 +161,7 @@ public class UnifiedComponentController extends AbstractElementPropertySectionCo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -226,7 +226,7 @@ public class UnifiedComponentController extends AbstractElementPropertySectionCo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

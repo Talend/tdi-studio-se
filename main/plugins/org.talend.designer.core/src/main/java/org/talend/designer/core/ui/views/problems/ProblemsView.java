@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -72,9 +72,9 @@ import org.talend.repository.ui.actions.routines.AbstractRoutineAction;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
@@ -176,7 +176,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#dispose()
      */
     @Override
@@ -188,7 +188,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
     /**
      * initialize the Menu of problem view.
-     * 
+     *
      * @param menuManager
      */
     private void initMenu(IMenuManager menu) {
@@ -244,7 +244,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.views.markers.internal.TableView#getDialogSettings()
      */
     protected IPreferenceStore getDialogSettings() {
@@ -254,7 +254,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
     /**
      * An internal Action that can be used to group the problems.
-     * 
+     *
      */
     private class GroupingAction extends Action {
 
@@ -264,7 +264,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
         /**
          * Creates a new instance of the receiver.
-         * 
+         *
          * @param label
          * @param field
          * @param view
@@ -279,7 +279,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.action.Action#run()
          */
         @Override
@@ -294,7 +294,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
     }
 
     /**
-     * 
+     *
      * DOC denny ProblemsView class global comment. Detailled comment
      */
     private class OpenRoutineAction extends AbstractRoutineAction {
@@ -303,7 +303,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.commons.ui.swt.actions.ITreeContextualAction#init(org.eclipse.jface.viewers.TreeViewer,
          * org.eclipse.jface.viewers.IStructuredSelection)
          */
@@ -333,9 +333,9 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
         }
 
         /**
-         * 
+         *
          * ggu Comment method "focusMarkerForRoutineEditor".
-         * 
+         *
          * focus to the marker position.
          */
         private void focusMarkerForRoutineEditor(IEditorPart editor) {
@@ -358,7 +358,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
         /**
          * bqian Comment method "getRoutineItem".
-         * 
+         *
          * @return
          */
         private RoutineItem getRoutineItem() throws PersistenceException {
@@ -379,9 +379,9 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
          * Check whether the routine name is correct. <br>
          * For example: routineLabel AAA <br>
          * resourceName AAA.java| AAA.pem
-         * 
+         *
          * @param string
-         * 
+         *
          * @param name
          * @param string
          * @return
@@ -408,7 +408,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.commons.ui.swt.actions.ITreeContextualAction#init(org.eclipse.jface.viewers.TreeViewer,
          * org.eclipse.jface.viewers.IStructuredSelection)
          */
@@ -421,7 +421,7 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -447,9 +447,9 @@ public class ProblemsView extends ViewPart implements PropertyChangeListener {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "restoreProblem".
-     * 
+     *
      * when restore the item, check the problem.
      */
     private void restoreProblem(RoutineItem item) {

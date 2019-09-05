@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,9 @@ import org.talend.spagic.engines.client.Activator;
 
 /**
  * Preference for the SpagoBiServer values.
- * 
+ *
  * $Id: SpagoBiPreferencePage.java 2738 2007-04-26 13:12:27Z cantoine $
- * 
+ *
  */
 public class SpagicPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -44,9 +44,9 @@ public class SpagicPreferencePage extends FieldEditorPreferencePage implements I
 
     /**
      * SpagoBiPreferencePage.
-     * 
+     *
      * $Id: SpagoBiPreferencePage.java 2738 2007-04-26 13:12:27Z cantoine $
-     * 
+     *
      */
 
     public SpagicPreferencePage() {
@@ -57,7 +57,8 @@ public class SpagicPreferencePage extends FieldEditorPreferencePage implements I
     /*
      * @Override protected IPreferenceStore doGetPreferenceStore() { // SpagoPreferenceStore preferenceStore = new
      * SpagoPreferenceStore(ProxyRepositoryFactory.getInstance()); // try { // preferenceStore.load(); // } catch
-     * (PersistenceException e) { // String detailError = e.getMessage(); // new ErrorDialogWidthDetailArea(new Shell(),
+     * (PersistenceException e) { // String detailError = e.getMessage(); // new
+     * ErrorDialogWidthDetailArea(DisplayUtils.getDefaultShell(false),
      * RepositoryPlugin.PLUGIN_ID, Messages // .getString("CommonWizard.persistenceException"), detailError);
      * //$NON-NLS-1$ // log.error(Messages.getString("CommonWizard.persistenceException") + "\n" + detailError);
      * //$NON-NLS-1$ // //$NON-NLS-2$ // } // return preferenceStore; return
@@ -130,7 +131,7 @@ public class SpagicPreferencePage extends FieldEditorPreferencePage implements I
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performDefaults()
      */
     @Override

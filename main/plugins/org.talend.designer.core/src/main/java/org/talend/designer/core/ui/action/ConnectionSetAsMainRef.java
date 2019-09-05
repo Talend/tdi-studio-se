@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.INode;
@@ -30,9 +30,9 @@ import org.talend.designer.core.ui.editor.connections.ConnectionPart;
 
 /**
  * Action to set a connection to main or to ref.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnectionSetAsMainRef extends SelectionAction {
 
@@ -51,7 +51,7 @@ public class ConnectionSetAsMainRef extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
     @Override
@@ -117,14 +117,14 @@ public class ConnectionSetAsMainRef extends SelectionAction {
                         .size() != 0) {
             MessageDialog
                     .openError(
-                            new Shell(),
+                            DisplayUtils.getDefaultShell(false),
                             Messages.getString("ConnectionSetAsMainRef.ERROR"), Messages.getString("ConnectionSetAsMainRef.ConnectionModifyError")); //$NON-NLS-1$ //$NON-NLS-2$
             return;
         }
         if (checkConnectionStatus(connection.getTarget())) {
             MessageDialog
                     .openError(
-                            new Shell(),
+                            DisplayUtils.getDefaultShell(false),
                             Messages.getString("ConnectionSetAsMainRef.ERROR"), Messages.getString("ConnectionSetAsMainRef.ConnectionModifyError")); //$NON-NLS-1$ //$NON-NLS-2$
             return;
         }

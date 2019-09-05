@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class PropertyTreeCreator {
      * There may be different types of node (different {@link PropertyNode} implementations)
      * Node type is defined by {@link PropertyDefinitionDecorator}, so it should be known during
      * node creation <br>
-     * 
+     *
      * Tree is created according following algorithm:
      * <ol>
      * <li>Find root {@link PropertyDefinitionDecorator}</li>
@@ -60,9 +60,9 @@ public class PropertyTreeCreator {
      * <li>Create other nodes, but not root</li>
      * <li>Create links between nodes</li>
      * </ol>
-     * 
+     *
      * Note, there are 3 traversals through Collection
-     * 
+     *
      * @param properties a collections of {@link PropertyDefinitionDecorator} retrieved from ComponentModel
      * @return root node of created tree
      */
@@ -86,7 +86,7 @@ public class PropertyTreeCreator {
     /**
      * Creates tree representation of {@link ConfigTypeNode}.<br>
      * Also see {@link #createPropertyTree(Collection)}
-     * 
+     *
      * @param configTypeNode configuration type node: {@link ConfigTypeNode}
      * @return root node of created tree: {@link PropertyNode}
      */
@@ -98,7 +98,7 @@ public class PropertyTreeCreator {
 
     /**
      * Creates all nodes and put them into <code>nodes</code> except root node, as it is already there
-     * 
+     *
      * @param properties all {@link PropertyDefinitionDecorator}
      * @param nodes stores all created {@link PropertyNode}
      */
@@ -109,7 +109,7 @@ public class PropertyTreeCreator {
 
     /**
      * Links child nodes with their parent nodes. Only root node has no parent node, so it is skipped
-     * 
+     *
      * @param properties all {@link PropertyDefinitionDecorator}
      * @param nodes all {@link PropertyNode}
      */
@@ -125,7 +125,7 @@ public class PropertyTreeCreator {
 
     /**
      * Factory method, which creates specific {@link PropertyNode} implementation according Property type
-     * 
+     *
      * @param property Property Definition
      * @param isRoot specifies whether this Node is root Node
      * @return {@link PropertyNode} implementation
@@ -149,7 +149,7 @@ public class PropertyTreeCreator {
 
     /**
      * Creates and returns root PropertyNode
-     * 
+     *
      * @param properties all {@link PropertyDefinitionDecorator}
      * @return root PropertyNode
      */
@@ -185,10 +185,10 @@ public class PropertyTreeCreator {
             return 0;
         });
     }
-    
+
     /**
      * Finds all roots of specified {@code properties}
-     * 
+     *
      * @param properties all properties
      * @return root properties
      */
@@ -197,10 +197,10 @@ public class PropertyTreeCreator {
                 .collect(Collectors.toMap(SimplePropertyDefinition::getPath, Function.identity()));
         return properties.stream().map(p -> getRoot(p, nodes)).distinct().collect(Collectors.toList());
     }
-    
+
     /**
      * Returns root of {@code property} or {@code property} itself, if it is root
-     * 
+     *
      * @param property property whose root will be return
      * @param properties all properties to search for a root in
      * @return root PropertyDefinitionDecorator

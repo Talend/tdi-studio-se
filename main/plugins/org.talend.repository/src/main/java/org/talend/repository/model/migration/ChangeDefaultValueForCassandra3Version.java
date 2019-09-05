@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,7 +37,7 @@ public class ChangeDefaultValueForCassandra3Version extends AbstractAllJobMigrat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override
@@ -48,14 +48,14 @@ public class ChangeDefaultValueForCassandra3Version extends AbstractAllJobMigrat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @Override
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
         String[] compNames = {
-                "tCassandraConnection", "tCassandraInput", "tCassandraOutput", "tCassandraRow", "tCassandraOutputBulk", "tCassandraOutputBulkExec", "tCassandraBulkExec" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ 
+                "tCassandraConnection", "tCassandraInput", "tCassandraOutput", "tCassandraRow", "tCassandraOutputBulk", "tCassandraOutputBulkExec", "tCassandraBulkExec" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 
         IComponentConversion conversion = new IComponentConversion() {
 

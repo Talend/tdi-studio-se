@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,10 +53,10 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: Processor.java 52559 2010-12-13 04:14:06Z nrousseau $
- * 
- * 
+ *
+ *
  */
 public abstract class Processor implements IProcessor, IEclipseProcessor, TalendProcessOptionConstants {
 
@@ -113,9 +113,9 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /**
      * Construct a new Processor.
-     * 
+     *
      * @param process
-     * 
+     *
      * @param process Process to be run.
      */
     public Processor(IProcess process) {
@@ -130,7 +130,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#run(int, int, java.lang.String)
      */
     @Deprecated
@@ -141,7 +141,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#run(java.lang.String[], int, int)
      */
     @Override
@@ -151,7 +151,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#run(int, int, java.lang.String,
      * org.eclipse.core.runtime.IProgressMonitor, org.talend.designer.runprocess.IProcessMessageManager)
      */
@@ -164,7 +164,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#run(java.lang.String[], int, int,
      * org.eclipse.core.runtime.IProgressMonitor, org.talend.designer.runprocess.IProcessMessageManager)
      */
@@ -208,7 +208,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /**
      * Debug the process using a given context.
-     * 
+     *
      * @param context Context to be used.
      * @return The configuration to be launched in debug mode.
      * @throws ProcessorException Process failed.
@@ -231,9 +231,9 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     }
 
     /**
-     * 
+     *
      * DOC xzhang Comment method "getDebugConfiguration". For the bug 5430
-     * 
+     *
      * @param statOption
      * @param traceOption
      * @param codeOptions
@@ -273,7 +273,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /**
      * Get the executable commandLine.
-     * 
+     *
      * @param contextName
      * @param statOption
      * @param traceOption
@@ -283,10 +283,17 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     @Override
     public String[] getCommandLine(boolean needContext, boolean externalUse, int statOption, int traceOption,
             String... codeOptions) {
+        return getCommandLine(needContext, externalUse, statOption, traceOption, false,
+                codeOptions);
+    }
+    
+    @Override
+    public String[] getCommandLine(boolean needContext, boolean externalUse, int statOption, int traceOption, boolean ignoreCustomJVMSetting,
+            String... codeOptions) {
         setExternalUse(externalUse);
         String[] cmd = null;
         try {
-            cmd = getCommandLine();
+            cmd = getCommandLine(ignoreCustomJVMSetting);
 
         } catch (ProcessorException e) {
             ExceptionHandler.process(e);
@@ -306,7 +313,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /**
      * Add the attchment condition to commmandline .
-     * 
+     *
      * @param commandLine
      * @param contextName
      * @param statOption
@@ -338,7 +345,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /**
      * Code Execution, used, when you know where the code stands.
-     * 
+     *
      * @param Perl Absolute Code Path
      * @param Context Name
      * @param Port Statistics
@@ -377,7 +384,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     /**
      * (TUP-20459)For a job which dependencies resources need set the working dir DOC jding
      * Comment method "getSpecialWorkingDir".
-     * 
+     *
      * @return
      */
     private File getSpecialWorkingDir() {
@@ -434,7 +441,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /**
      * Sets the externalUse.
-     * 
+     *
      * @param externalUse the externalUse to set
      */
     public static void setExternalUse(boolean externalUse) {
@@ -447,7 +454,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getInterpreter()
      */
     @Override
@@ -457,7 +464,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setInterpreter(java.lang.String )
      */
     @Override
@@ -467,7 +474,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setLibraryPath(java.lang.String )
      */
     @Override
@@ -477,7 +484,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getCodeLocation()
      */
     @Override
@@ -487,7 +494,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setCodeLocation(java.lang.String )
      */
     @Override
@@ -517,7 +524,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#generateCode(org.talend.core .model.process.IContext, boolean,
      * boolean, boolean)
      */
@@ -542,7 +549,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getCodeContext()
      */
     @Override
@@ -550,7 +557,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getCodePath()
      */
     @Override
@@ -558,17 +565,19 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getCodeProject()
      */
     @Override
     public abstract IProject getCodeProject();
 
     public abstract String[] getCommandLine() throws ProcessorException;
+    
+    public abstract String[] getCommandLine(boolean ignoreCustomJVMSetting) throws ProcessorException;
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getContextPath()
      */
     @Override
@@ -576,7 +585,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getDataSetPath()
      */
     @Override
@@ -584,7 +593,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getLineNumber(java.lang.String)
      */
     @Override
@@ -592,7 +601,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getProcessorType()
      */
     @Override
@@ -600,7 +609,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getTypeName()
      */
     @Override
@@ -608,14 +617,14 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#initPaths(org.talend.core.model .process.IContext)
      */
     public abstract void initPaths(IContext context) throws ProcessorException;
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#saveLaunchConfiguration()
      */
     @Override
@@ -623,14 +632,14 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.Processor#saveLaunchConfigurationWithParam ()
      */
     public abstract Object saveLaunchConfigurationWithParam(String parameterStr) throws CoreException;
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setProcessorStates(java.lang .String)
      */
     @Override
@@ -638,7 +647,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setContext(org.talend.core. model.process.IContext)
      */
     @Override
@@ -723,7 +732,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     /**
      * Delete file from the file system if there is another file with different case (lowercase or uppercase) which may
      * cause problem in windows system. See bug 0003592 for more detail.
-     * 
+     *
      * @param codeFile The file that contains source codes that are generated by tos.
      * @throws CoreException
      */
@@ -737,7 +746,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /**
      * Check if the code has been generated at least once. Will be false if the code has never been generated.
-     * 
+     *
      * @return boolean to tell if any code has been generated already or not for this job.
      */
     @Override
@@ -748,7 +757,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     /**
      * Add the possibility to force the flag for the code generated. <br>
      * This can be usefull to force to generate the code.
-     * 
+     *
      * @param codeGenerated boolean to tell if any code has been generated already or not for this job.
      */
     @Override
@@ -758,7 +767,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#generateContextCode()
      */
     @Override

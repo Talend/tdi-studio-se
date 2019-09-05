@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -72,9 +72,9 @@ import org.talend.designer.dbmap.utils.problems.ProblemsAnalyser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: MapperComponent.java 1782 2007-02-03 07:57:38Z bqian $
- * 
+ *
  */
 public class DbMapComponent extends AbstractMapComponent {
 
@@ -95,7 +95,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#initialize()
      */
     @Override
@@ -107,7 +107,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#getPersistentData()
      */
     @Override
@@ -126,7 +126,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#open(org.eclipse.swt.widgets.Display)
      */
     @Override
@@ -226,7 +226,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#open()
      */
     @Override
@@ -240,7 +240,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#setPersistentData(java.lang.Object)
      */
     @Override
@@ -250,7 +250,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getGeneratedCode()
      */
     public String getGeneratedCode() {
@@ -266,7 +266,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getMetadataList()
      */
     @Override
@@ -276,7 +276,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#setMetadataList(java.util.List)
      */
     @Override
@@ -371,7 +371,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractNode#removeInput(org.talend.core.model.process.IConnection)
      */
     @Override
@@ -400,7 +400,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractNode#addInput(org.talend.core.model.process.IConnection)
      */
     @Override
@@ -494,7 +494,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /**
      * DOC amaumont Comment method "replaceLocations".
-     * 
+     *
      * @param oldLocation
      * @param newLocation
      * @param tableRenamed TODO
@@ -553,7 +553,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#getProblems()
      */
     @Override
@@ -567,7 +567,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /**
      * Getter for mapperMain.
-     * 
+     *
      * @return the mapperMain
      */
     public MapperMain getMapperMain() {
@@ -586,7 +586,7 @@ public class DbMapComponent extends AbstractMapComponent {
                 generationManager = new MysqlGenerationManager();
             } else if (value.contains("tELTPostgresqlMap") || value.contains("tELTGreenplumMap")) { //$NON-NLS-1$  //$NON-NLS-2$
                 generationManager = new PostgresGenerationManager();
-            } else if (value.contains("tELTHiveMap")) { //$NON-NLS-1$ 
+            } else if (value.contains("tELTHiveMap")) { //$NON-NLS-1$
                 generationManager = new HiveGenerationManager();
             } else if (value.startsWith("tELT") && value.endsWith("Map")) //$NON-NLS-1$ //$NON-NLS-2$
             {
@@ -627,7 +627,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getComponentDocumentation(java.lang.String, java.lang.String)
      */
     @Override
@@ -643,9 +643,9 @@ public class DbMapComponent extends AbstractMapComponent {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "hasOrRenameData".
-     * 
+     *
      * @param oldName
      * @param newName can be null if <code>renameAction</code> is false
      * @param renameAction true to rename in all expressions, false to get boolean if present in one of the expressions
@@ -709,7 +709,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getTMapExternalData()
      */
     @Override
@@ -720,7 +720,7 @@ public class DbMapComponent extends AbstractMapComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#metadataInputChanged(org.talend.core.model.components.
      * IODataComponent, java.lang.String)
      */

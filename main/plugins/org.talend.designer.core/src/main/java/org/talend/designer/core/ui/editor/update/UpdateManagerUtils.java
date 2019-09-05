@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -99,7 +99,7 @@ import org.talend.repository.RepositoryWorkUnit;
 public final class UpdateManagerUtils {
 
     /**
-     * 
+     *
      * used for get repository id and child name, such as "xxxxxxxxxxx - metadata".
      */
     public static String[] getSourceIdAndChildName(final String idAndName) {
@@ -129,7 +129,7 @@ public final class UpdateManagerUtils {
 
     /**
      * qzhang Comment method "getNewOutputTableForConnection".
-     * 
+     *
      * @param newOutputTableList
      * @param attachedConnector
      * @return
@@ -146,10 +146,10 @@ public final class UpdateManagerUtils {
 
     /**
      * qzhang Comment method "getNewInputTableForConnection".
-     * 
+     *
      * @param newInputTableList
      * @param connector
-     * 
+     *
      * @return
      */
     public static IMetadataTable getNewInputTableForConnection(List<IMetadataTable> newInputTableList, String connector) {
@@ -164,10 +164,10 @@ public final class UpdateManagerUtils {
 
     /**
      * qzhang Comment method "getElemParam".
-     * 
+     *
      * @param elemParams
      * @param string
-     * 
+     *
      * @return
      */
     public static IElementParameter getElemParam(List<IElementParameter> elemParams, String string) {
@@ -290,7 +290,7 @@ public final class UpdateManagerUtils {
     private static boolean doExecuteUpdates(final List<UpdateResult> results, final boolean updateAllJobs) {
         return doExecuteUpdates(results, updateAllJobs, false);
     }
-    
+
     private static boolean doExecuteUpdates(final List<UpdateResult> results, final boolean updateAllJobs,
             final boolean executeWithoutShow) {
         if (results == null || results.isEmpty()) {
@@ -450,7 +450,7 @@ public final class UpdateManagerUtils {
                                     } else {
                                         ((ProcessItem) item).setProcess(processType);
                                     }
-                                    factory.save(item);
+                                    factory.save(item, true);
                                 } catch (IOException e) {
                                     ExceptionHandler.process(e);
                                 } catch (PersistenceException e) {
@@ -494,7 +494,7 @@ public final class UpdateManagerUtils {
                     monitor.done();
                 }
             };
-            
+
             final IRunnableWithProgress iRunnableWithProgress = new IRunnableWithProgress() {
 
                 @Override
@@ -524,7 +524,7 @@ public final class UpdateManagerUtils {
             results.clear();
         }
     }
-    
+
     private static void doExecuteBuiltIn(final List<UpdateResult> unChecked, final boolean updateAllJobs,
             final boolean executeWithoutShow) {
         if (unChecked == null || unChecked.isEmpty()) {
@@ -716,7 +716,7 @@ public final class UpdateManagerUtils {
                 }
             }
         };
-        
+
         try {
             if (!CommonsPlugin.isHeadless() && ProxyRepositoryFactory.getInstance().isFullLogonFinished()
                     && !executeWithoutShow) {
@@ -733,7 +733,7 @@ public final class UpdateManagerUtils {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "refreshViewers".
      */
     @SuppressWarnings("unchecked")
@@ -953,7 +953,7 @@ public final class UpdateManagerUtils {
 
     /**
      * DOC hyWang Comment method "checkandRefreshProcess".
-     * 
+     *
      * @param results
      */
     private static void checkandRefreshProcess(final List<UpdateResult> results) {

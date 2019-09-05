@@ -26,6 +26,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String dbhost = ElementParameterParser.getValue(node, "__HOST__");
 	String dbport = ElementParameterParser.getValue(node, "__PORT__");
 	String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+	String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 	String dbuser = ElementParameterParser.getValue(node, "__USER__");
 	String dbtable = ElementParameterParser.getValue(node, "__TABLE__");
 	String tableAction = ElementParameterParser.getValue(node, "__TABLE_ACTION__");
@@ -116,7 +117,17 @@ skeleton="../templates/db_output_bulk.skeleton"
 		%>
 		String driverClass_<%=cid%> = "org.netezza.Driver";
 		java.lang.Class.forName(driverClass_<%=cid%>);
-		String url_<%=cid%> = "jdbc:netezza://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+		<%
+        if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+            %>
+			String url_<%=cid%> = "jdbc:netezza://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+			<%
+        } else {
+            %>
+            String url_<%=cid%> = "jdbc:netezza://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+            <%
+        }       
+        %>
 		String dbUser_<%=cid %> = <%=dbuser%>;
 	        
 		<%
@@ -398,10 +409,15 @@ skeleton="../templates/db_output_bulk.skeleton"
 				
 				// added "print command" feature
 				<% if (printCommand == true) { %>
-				    System.out.println("INFO: executing nzload command:");
-				    for( String cmd : cmds ) {
-					       System.out.print(cmd + " ");
-					 }
+					System.out.println("INFO: executing nzload command:");
+					for(int i = 0; i < cmds.length; i++) {
+						if ("-pw".equals(cmds[i]) && decryptedPwd_<%=cid %>.equals(cmds[i+1])) {
+							System.out.print(cmds[i] + " " + routines.system.PasswordEncryptUtil.PASSWORD_FOR_LOGS_VALUE + " ");
+							i++;
+						} else {
+							System.out.print(cmds[i] + " ");
+						}
+					}
 				<% } %>
 				
 				Runtime rt = Runtime.getRuntime();

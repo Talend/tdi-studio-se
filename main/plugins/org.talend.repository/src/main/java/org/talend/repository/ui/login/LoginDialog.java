@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -68,9 +68,9 @@ import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
 
 /**
  * Login dialog. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  * @deprecated use LoginDialogV2 instead
  */
 @Deprecated
@@ -89,7 +89,7 @@ public class LoginDialog extends TrayDialog {
 
     /**
      * Construct a new LoginDialog.
-     * 
+     *
      * @param parentShell Parent shell.
      */
     public LoginDialog(Shell parentShell) {
@@ -259,7 +259,7 @@ public class LoginDialog extends TrayDialog {
 
     /**
      * DOC smallet Comment method "logIn".
-     * 
+     *
      * @param project
      * @throws Exception
      */
@@ -427,9 +427,9 @@ public class LoginDialog extends TrayDialog {
 
     /**
      * Canvas displaying an image.<br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class ImageCanvas extends Canvas {
 
@@ -466,7 +466,7 @@ public class LoginDialog extends TrayDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.swt.widgets.Widget#dispose()
          */
         @Override

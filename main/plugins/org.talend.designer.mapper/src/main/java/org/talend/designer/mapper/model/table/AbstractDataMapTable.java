@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,9 +23,9 @@ import org.talend.designer.mapper.managers.MapperManager;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public abstract class AbstractDataMapTable implements IDataMapTable {
 
@@ -45,9 +45,9 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * DOC amaumont DataMapTable constructor comment.
-     * 
+     *
      * @param persistentTable
-     * 
+     *
      * @param metadataTable
      * @param externalMapperTable
      */
@@ -71,7 +71,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
     }
 
     /**
-     * 
+     *
      * @return a <code>List</code> of entries.
      */
     public List<IColumnEntry> getColumnEntries() {
@@ -104,7 +104,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * Getter for columnsEntriesModel.
-     * 
+     *
      * @return the columnsEntriesModel
      */
     public ExtendedTableModel<IColumnEntry> getTableColumnsEntriesModel() {
@@ -113,7 +113,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * DOC amaumont Comment method "swapElements".
-     * 
+     *
      * @param indicesOrigin
      * @param listIndexTarget
      */
@@ -123,7 +123,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * Getter for mapperManager.
-     * 
+     *
      * @return the mapperManager
      */
     public MapperManager getMapperManager() {
@@ -132,7 +132,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * DOC amaumont Comment method "isReadOnly".
-     * 
+     *
      * @return
      */
     public boolean isReadOnly() {
@@ -141,7 +141,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * Sets the readOnly.
-     * 
+     *
      * @param readOnly the readOnly to set
      */
     public void setReadOnly(boolean readOnly) {
@@ -150,7 +150,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * Getter for sizeState.
-     * 
+     *
      * @return the sizeState
      */
     public SIZE_STATE getSizeState() {
@@ -159,7 +159,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * Sets the sizeState.
-     * 
+     *
      * @param sizeState the sizeState to set
      */
     public void setSizeState(SIZE_STATE sizeState) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,9 +33,9 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 
 /**
- * 
+ *
  * created by jjzhou on 2012-12-21 Detailled comment
- * 
+ *
  */
 
 public class SettingValuesIntoHadoopPropertiesFortHiveConnection extends AbstractJobMigrationTask {
@@ -54,7 +54,7 @@ public class SettingValuesIntoHadoopPropertiesFortHiveConnection extends Abstrac
                     				NodeType tHiveConnNode = searchNodeTypeByUniqName(processType, connNamePara.getValue());
                     				moveValuesFromHiveMap2HiveConn(node, tHiveConnNode);
                     			}
-                    			
+
                     		}
                     	}
                     }));
@@ -65,7 +65,7 @@ public class SettingValuesIntoHadoopPropertiesFortHiveConnection extends Abstrac
             return ExecutionResult.FAILURE;
         }
     }
-	
+
     /*
      * seach the Node in the process according to the unique name of the node
      */
@@ -87,7 +87,7 @@ public class SettingValuesIntoHadoopPropertiesFortHiveConnection extends Abstrac
 
 		return searchNode;
 	}
-	
+
 	/* <p>
 	 * Copy the values of these parameters:SET_MAPRED_JT, MAPRED_JT, SET_FS_DEFAULT_NAME, FS_DEFAULT_NAME and HADOOP_ADVANCED_PROPERTIES
 	 * From the tELTHiveMap to the tHiveConnection when the "Use Existing Connection" in tELTHiveMap is ticked.
@@ -97,9 +97,9 @@ public class SettingValuesIntoHadoopPropertiesFortHiveConnection extends Abstrac
 		if (tHiveMapNode == null || tHiveConnNode == null) {
 			return;
 		}
-		
+
 		ElementParameterType setMapredJt = ComponentUtilities.getNodeProperty(tHiveMapNode, "SET_MAPRED_JT"); //$NON-NLS-1$
-		ElementParameterType mapredJt = ComponentUtilities.getNodeProperty(tHiveMapNode, "MAPRED_JT"); //$NON-NLS-1$	
+		ElementParameterType mapredJt = ComponentUtilities.getNodeProperty(tHiveMapNode, "MAPRED_JT"); //$NON-NLS-1$
 		if ((setMapredJt != null && "true".equalsIgnoreCase(setMapredJt.getValue())) && mapredJt != null) {
 			ElementParameterType setMapredJt2 = ComponentUtilities.getNodeProperty(tHiveConnNode, "SET_MAPRED_JT"); //$NON-NLS-1$
 			ElementParameterType mapredJt2 = ComponentUtilities.getNodeProperty(tHiveConnNode, "MAPRED_JT"); //$NON-NLS-1$
@@ -112,7 +112,7 @@ public class SettingValuesIntoHadoopPropertiesFortHiveConnection extends Abstrac
 			}
 			ComponentUtilities.setNodeValue(tHiveConnNode, "MAPRED_JT", mapredJt.getValue());
 		}
-		
+
 		ElementParameterType setFsDefaultName = ComponentUtilities.getNodeProperty(tHiveMapNode, "SET_FS_DEFAULT_NAME"); //$NON-NLS-1$
 		ElementParameterType fsDefaultName = ComponentUtilities.getNodeProperty(tHiveMapNode, "FS_DEFAULT_NAME"); //$NON-NLS-1$
 		if ((setFsDefaultName != null && "true".equalsIgnoreCase(setFsDefaultName.getValue())) && fsDefaultName != null) {
@@ -127,15 +127,15 @@ public class SettingValuesIntoHadoopPropertiesFortHiveConnection extends Abstrac
 			}
 			ComponentUtilities.setNodeValue(tHiveConnNode, "FS_DEFAULT_NAME", fsDefaultName.getValue());
 		}
-		
-		ElementParameterType hadoopAdvancedPropertiesParam = 
+
+		ElementParameterType hadoopAdvancedPropertiesParam =
 			ComponentUtilities.getNodeProperty(tHiveMapNode, "HADOOP_ADVANCED_PROPERTIES"); //$NON-NLS-1$
         if (hadoopAdvancedPropertiesParam != null) { //$NON-NLS-1$
             EList<ElementValueType> hadoopAdvancedProperties = hadoopAdvancedPropertiesParam.getElementValue();
             ElementValueType columnNamePropertyElement = null;
             ElementValueType columnNameValueElement = null;
             if (hadoopAdvancedProperties != null && hadoopAdvancedProperties.size() > 0) {
-            	ElementParameterType hadoopAdvancedPropertiesParam2 = 
+            	ElementParameterType hadoopAdvancedPropertiesParam2 =
             		ComponentUtilities.getNodeProperty(tHiveConnNode, "HADOOP_ADVANCED_PROPERTIES"); //$NON-NLS-1$
             	if (hadoopAdvancedPropertiesParam2 == null) {
             		ComponentUtilities.addNodeProperty(tHiveConnNode, "HADOOP_ADVANCED_PROPERTIES", "TABLE");
@@ -155,7 +155,7 @@ public class SettingValuesIntoHadoopPropertiesFortHiveConnection extends Abstrac
         }
     }
 
-	
+
 
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2012, 11, 21, 12, 41, 10);

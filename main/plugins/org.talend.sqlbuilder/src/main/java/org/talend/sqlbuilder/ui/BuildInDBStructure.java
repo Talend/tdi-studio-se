@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,9 +53,9 @@ import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2007-3-20 下午05:42:58 (星期五, 29 九月 2006) qzhang $
- * 
+ *
  */
 public class BuildInDBStructure extends SashForm {
 
@@ -96,7 +96,7 @@ public class BuildInDBStructure extends SashForm {
 
     /**
      * DOC qiang.zhang Comment method "getTableName".
-     * 
+     *
      * @param connectionParameters
      * @return
      */
@@ -250,7 +250,7 @@ public class BuildInDBStructure extends SashForm {
 
     /**
      * qzhang BuildInDBStructure class global comment. Detailled comment <br/>
-     * 
+     *
      */
     public class GenerateSqlAction extends SelectionProviderAction {
 
@@ -258,7 +258,7 @@ public class BuildInDBStructure extends SashForm {
 
         /**
          * qzhang GenerateSqlAction constructor comment.
-         * 
+         *
          * @param provider
          * @param text
          */
@@ -299,7 +299,7 @@ public class BuildInDBStructure extends SashForm {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.action.Action#run()
          */
         @Override
@@ -317,7 +317,7 @@ public class BuildInDBStructure extends SashForm {
 
         /**
          * qzhang Comment method "getSchemaSql".
-         * 
+         *
          * @return
          */
         private String getSchemaSql() {
@@ -344,15 +344,15 @@ public class BuildInDBStructure extends SashForm {
 
     /**
      * qzhang BuildInDBStructure class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: talend-code-templates.xml 1 2007-3-21 上午11:08:52 (星期五, 29 九月 2006) qzhang $
-     * 
+     *
      */
     public class SchemaTreePrivder extends LabelProvider implements ITableLabelProvider, ITreeContentProvider {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
          */
         public Image getColumnImage(Object element, int columnIndex) {
@@ -365,7 +365,7 @@ public class BuildInDBStructure extends SashForm {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
          */
         public String getColumnText(Object element, int columnIndex) {
@@ -383,7 +383,7 @@ public class BuildInDBStructure extends SashForm {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
          */
         public Object[] getChildren(Object parentElement) {
@@ -392,7 +392,7 @@ public class BuildInDBStructure extends SashForm {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
          */
         public Object getParent(Object element) {
@@ -406,7 +406,7 @@ public class BuildInDBStructure extends SashForm {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
          */
         public boolean hasChildren(Object element) {
@@ -422,7 +422,7 @@ public class BuildInDBStructure extends SashForm {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
          */
         public Object[] getElements(Object inputElement) {
@@ -436,7 +436,7 @@ public class BuildInDBStructure extends SashForm {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
          * java.lang.Object, java.lang.Object)
          */

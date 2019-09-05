@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,9 +17,9 @@ import org.talend.core.model.components.IMultipleComponentItem;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MultipleComponentConnection implements IMultipleComponentConnection {
 
@@ -38,7 +38,7 @@ public class MultipleComponentConnection implements IMultipleComponentConnection
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentConnection#getConnectionType()
      */
     public String getConnectionType() {
@@ -47,7 +47,7 @@ public class MultipleComponentConnection implements IMultipleComponentConnection
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentConnection#setConnectionType(org.talend.core.model.process.EConnectionType)
      */
     public void setConnectionType(String connectionType) {
@@ -56,7 +56,7 @@ public class MultipleComponentConnection implements IMultipleComponentConnection
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentConnection#getNameTarget()
      */
     public String getNameTarget() {
@@ -65,7 +65,7 @@ public class MultipleComponentConnection implements IMultipleComponentConnection
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentConnection#setNameTarget(java.lang.String)
      */
     public void setNameTarget(String nameTarget) {
@@ -74,7 +74,7 @@ public class MultipleComponentConnection implements IMultipleComponentConnection
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentConnection#getSource()
      */
     public IMultipleComponentItem getSource() {
@@ -83,7 +83,7 @@ public class MultipleComponentConnection implements IMultipleComponentConnection
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentConnection#setSource(org.talend.core.model.components.IMultipleComponentItem)
      */
     public void setSource(IMultipleComponentItem source) {
@@ -92,7 +92,7 @@ public class MultipleComponentConnection implements IMultipleComponentConnection
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentConnection#getTarget()
      */
     public IMultipleComponentItem getTarget() {
@@ -101,7 +101,7 @@ public class MultipleComponentConnection implements IMultipleComponentConnection
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentConnection#setTarget(org.talend.core.model.components.IMultipleComponentItem)
      */
     public void setTarget(IMultipleComponentItem target) {

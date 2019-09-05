@@ -27,6 +27,7 @@ import net.sf.json.processors.PropertyNameProcessor;
 import net.sf.json.sample.BeanA;
 import net.sf.json.sample.BeanB;
 import net.sf.json.sample.BeanC;
+import net.sf.json.sample.BeanD;
 import net.sf.json.sample.BeanFoo;
 import net.sf.json.sample.BeanWithFunc;
 import net.sf.json.sample.ChildBean;
@@ -1042,6 +1043,17 @@ public class TestJSONObject extends TestCase {
             JSONArray.toArray( jsonObject.getJSONArray( "intarray" ) ) );
    }
 
+   public void testToBean_BeanD() {
+      String json = "{bool:true,integer:1,string:\"json\",doublearray:[4.2424245783E7, 123456789.2424245783E7, 6.0]}";
+      JSONObject jsonObject = JSONObject.fromObject( json );
+      BeanD bean = (BeanD) JSONObject.toBean( jsonObject, BeanD.class );
+      assertEquals( jsonObject.get( "bool" ), Boolean.valueOf( bean.isBool() ) );
+      assertEquals( jsonObject.get( "integer" ), new Integer( bean.getInteger() ) );
+      assertEquals( jsonObject.get( "string" ), bean.getString() );
+      Assertions.assertEquals( bean.getDoublearray(),
+              JSONArray.toArray( jsonObject.getJSONArray( "doublearray" ) ) );
+   }
+
    public void testToBean_ClassBean() {
       JSONObject json = new JSONObject();
       json.element( "klass", "java.lang.Object" );
@@ -1050,9 +1062,29 @@ public class TestJSONObject extends TestCase {
       assertEquals( Object.class, bean.getKlass() );
    }
 
-   public void testToBean_DynaBean__BigInteger_BigDecimal() {
+   public void testToBean_DynaBean__BigInteger_Double() {
       BigInteger l = new BigDecimal( "1.7976931348623157E308" ).toBigInteger();
       BigDecimal m = new BigDecimal( "1.7976931348623157E307" ).add( new BigDecimal( "0.0001" ) );
+      JSONObject json = new JSONObject().element( "i", BigInteger.ZERO )
+              .element( "d", MorphUtils.BIGDECIMAL_ONE )
+              .element( "bi", l )
+              .element( "bd", m );
+      Object bean = JSONObject.toBean( json );
+      Object i = ((MorphDynaBean) bean).get( "i" );
+      Object d = ((MorphDynaBean) bean).get( "d" );
+      assertTrue( i instanceof Integer );
+      assertTrue( d instanceof Integer );
+
+      Object bi = ((MorphDynaBean) bean).get( "bi" );
+      Object bd = ((MorphDynaBean) bean).get( "bd" );
+      assertTrue( bi instanceof BigInteger );
+      assertTrue( bd instanceof Double );
+   }
+
+
+   public void testToBean_DynaBean__BigInteger_BigDecimal() {
+      BigInteger l = new BigDecimal( "1.7976931348623157E308" ).toBigInteger();
+      BigDecimal m = new BigDecimal( "-1.7976931348623157E309" ).add( new BigDecimal( "0.0001" ) );
       JSONObject json = new JSONObject().element( "i", BigInteger.ZERO )
             .element( "d", MorphUtils.BIGDECIMAL_ONE )
             .element( "bi", l )

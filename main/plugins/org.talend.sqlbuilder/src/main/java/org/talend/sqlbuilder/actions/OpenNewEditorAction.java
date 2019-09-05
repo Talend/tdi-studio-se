@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,9 +33,9 @@ import org.talend.sqlbuilder.ui.ISQLBuilderDialog;
 
 /**
  * This class is responsible for opening new editor. <br/>
- * 
+ *
  * @author ftang
- * 
+ *
  */
 public class OpenNewEditorAction extends SelectionProviderAction {
 
@@ -51,7 +51,7 @@ public class OpenNewEditorAction extends SelectionProviderAction {
 
     /**
      * OpenNewEditorAction constructor.
-     * 
+     *
      * @param selectionProvider
      * @param editorComposite
      * @param connParam
@@ -133,7 +133,7 @@ public class OpenNewEditorAction extends SelectionProviderAction {
 
     /**
      * Getter for connParam.
-     * 
+     *
      * @return the connParam
      */
     public ConnectionParameters getConnParam() {

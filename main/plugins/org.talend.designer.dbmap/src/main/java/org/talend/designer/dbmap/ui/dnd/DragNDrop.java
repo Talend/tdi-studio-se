@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,11 +36,11 @@ import org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView;
 
 /**
  * Used to manage drag and drop on tables of MetadataColumns and DataMapTableEntries.
- * 
+ *
  * <br/>
- * 
+ *
  * $Id: DragNDrop.java 898 2006-12-07 11:06:17Z amaumont $
- * 
+ *
  */
 public class DragNDrop {
 
@@ -56,7 +56,7 @@ public class DragNDrop {
 
     /**
      * Set source and target listeners.
-     * 
+     *
      * @param mapperManager
      * @param draggedTable
      */
@@ -65,7 +65,7 @@ public class DragNDrop {
     }
 
     /**
-     * 
+     *
      * @param mapperManager
      * @param draggedTable
      * @param canBeSourceOfDragging
@@ -164,9 +164,9 @@ public class DragNDrop {
     };
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "createDragSource".
-     * 
+     *
      * @param sourceListener
      */
     private void createDragSource(DragSourceListener sourceListener) {
@@ -179,7 +179,7 @@ public class DragNDrop {
     }
 
     /**
-     * 
+     *
      * create DropTarget.
      */
     private void createDropTarget(DropTargetListener targetListener) {

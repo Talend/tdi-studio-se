@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,9 +20,9 @@ import org.talend.sqlbuilder.erdiagram.ui.nodes.Table;
 
 /**
  * qzhang class Move a given node to another location. <br/>
- * 
+ *
  * $Id: MoveNodeCommand.java 1 2006-09-29 17:06:40 +0000 (星期五, 29 九月 2006) nrousseau $
- * 
+ *
  */
 public class EditTableCommand extends Command {
 
@@ -34,7 +34,7 @@ public class EditTableCommand extends Command {
 
     /**
      * Move the given node to another location.
-     * 
+     *
      * @param node
      * @param newPos
      */

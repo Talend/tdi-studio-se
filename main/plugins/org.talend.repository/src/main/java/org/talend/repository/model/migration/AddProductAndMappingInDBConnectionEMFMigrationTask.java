@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,13 +31,13 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 /**
  * this Task for: add two attributes (product and mapping) in DatabaseConnection's model of Emf . qzhang class global
  * comment. Detailled comment <br/>
- * 
+ *
  */
 public class AddProductAndMappingInDBConnectionEMFMigrationTask extends AbstractItemMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
     public ExecutionResult execute(Item item) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,7 +26,7 @@ import org.talend.core.language.ECodeLanguage;
 
 /**
  * DOC Administrator class global comment. Detailled comment <br/>
- * 
+ *
  */
 
 public class DemoProjectBean {
@@ -62,7 +62,7 @@ public class DemoProjectBean {
 
     /**
      * Getter for archiveFilePath.
-     * 
+     *
      * @return the archiveFilePath
      */
     public String getDemoProjectFilePath() {
@@ -71,7 +71,7 @@ public class DemoProjectBean {
 
     /**
      * Sets the archiveFilePath.
-     * 
+     *
      * @param archiveFilePath the archiveFilePath to set
      */
     public void setDemoProjectFilePath(String archiveFilePath) {
@@ -80,7 +80,7 @@ public class DemoProjectBean {
 
     /**
      * Getter for language.
-     * 
+     *
      * @return the language
      * @deprecated no need, only support java currently
      */
@@ -91,7 +91,7 @@ public class DemoProjectBean {
 
     /**
      * Sets the language.
-     * 
+     *
      * @param language the language to set
      * @deprecated no need, only support java currently
      */
@@ -102,7 +102,7 @@ public class DemoProjectBean {
 
     /**
      * Getter for projectName.
-     * 
+     *
      * @return the projectName
      */
     public String getProjectName() {
@@ -111,7 +111,7 @@ public class DemoProjectBean {
 
     /**
      * Sets the projectName.
-     * 
+     *
      * @param projectName the projectName to set
      */
     public void setProjectName(String projectName) {
@@ -128,7 +128,7 @@ public class DemoProjectBean {
 
     /**
      * Getter for demoProjectFileType.
-     * 
+     *
      * @return the demoProjectFileType
      */
     public EDemoProjectFileType getDemoProjectFileType() {
@@ -137,7 +137,7 @@ public class DemoProjectBean {
 
     /**
      * Sets the demoProjectFileType.
-     * 
+     *
      * @param demoProjectFileType the demoProjectFileType to set
      */
     public void setDemoProjectFileType(EDemoProjectFileType demoProjectFileType) {

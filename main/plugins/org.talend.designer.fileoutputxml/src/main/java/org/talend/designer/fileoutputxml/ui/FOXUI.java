@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -82,9 +82,9 @@ import org.talend.metadata.managment.ui.wizard.metadata.xml.utils.StringUtil;
 
 /**
  * DOC bqian class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FOXUI.java,v 1.1 2007/06/12 07:20:38 gke Exp $
- * 
+ *
  */
 public class FOXUI {
 
@@ -153,7 +153,7 @@ public class FOXUI {
 
     /**
      * Comment method "createContent".
-     * 
+     *
      * @param child
      */
     private void createContent(Composite mainComposite) {
@@ -208,9 +208,9 @@ public class FOXUI {
 
 
     /**
-     * 
+     *
      * wzhang Comment method "createCombo".
-     * 
+     *
      * @param mainComposite
      */
     protected void createCombo(Composite mainComposite) {
@@ -218,9 +218,9 @@ public class FOXUI {
     }
 
     /**
-     * 
+     *
      * wzhang Comment method "getConnection".
-     * 
+     *
      * @return
      */
     public IConnection getConnection() {
@@ -234,7 +234,7 @@ public class FOXUI {
 
     /**
      * DOC ke Comment method "initLinker".
-     * 
+     *
      * @param node
      * @param tableItems
      */
@@ -348,7 +348,7 @@ public class FOXUI {
 
     /**
      * create xml viewer.
-     * 
+     *
      * @param mainComposite
      * @param form
      * @param width
@@ -377,7 +377,7 @@ public class FOXUI {
 
         // Related Column
         TreeColumn column2 = new TreeColumn(tree, SWT.CENTER);
-        column2.setText(Messages.getString("FOXUI.2")); //$NON-NLS-1$ 
+        column2.setText(Messages.getString("FOXUI.2")); //$NON-NLS-1$
         column2.setWidth(100);
 
         TreeColumn column3 = new TreeColumn(tree, SWT.CENTER);
@@ -476,7 +476,7 @@ public class FOXUI {
 
     /**
      * Comment method "fillContextMenu".
-     * 
+     *
      * @param manager
      */
     protected void fillContextMenu(IMenuManager manager) {
@@ -597,7 +597,7 @@ public class FOXUI {
 
     /**
      * DOC gke FOXUI class global comment. Detailled comment <br/>
-     * 
+     *
      */
     class DialogErrorXMLLabelCellEditor implements ICellEditorListener {
 

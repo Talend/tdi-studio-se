@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,7 +39,7 @@ public class EncryptPasswordInProjectSettingsMigrationTask extends AbstractMigra
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override
@@ -50,7 +50,7 @@ public class EncryptPasswordInProjectSettingsMigrationTask extends AbstractMigra
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#isApplicableOnItems()
      */
     @Override
@@ -61,7 +61,7 @@ public class EncryptPasswordInProjectSettingsMigrationTask extends AbstractMigra
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
     @Override
@@ -154,7 +154,7 @@ public class EncryptPasswordInProjectSettingsMigrationTask extends AbstractMigra
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project, boolean)
      */
     @Override
@@ -164,7 +164,7 @@ public class EncryptPasswordInProjectSettingsMigrationTask extends AbstractMigra
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project,
      * org.talend.core.model.properties.Item)
      */

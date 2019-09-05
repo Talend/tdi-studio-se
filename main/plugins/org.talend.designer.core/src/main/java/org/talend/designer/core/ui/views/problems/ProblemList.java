@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.talend.core.model.process.TalendProblem;
 
 /**
  * DOC bqian class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class ProblemList {
 
@@ -32,7 +32,7 @@ public class ProblemList {
 
     /**
      * Getter for problemList.
-     * 
+     *
      * @return the problemList
      */
     public List<Problem> getProblemList() {
@@ -57,7 +57,7 @@ public class ProblemList {
 
     /**
      * DOC bqian Comment method "getProblemsBySeverity".
-     * 
+     *
      * @param status
      */
     public List<Problem> getProblemsBySeverity(ProblemStatus status) {
@@ -102,7 +102,7 @@ public class ProblemList {
 
     /**
      * DOC bqian Comment method "add".
-     * 
+     *
      * @param problem
      */
     public void add(Problem problem) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,7 +17,7 @@ import java.io.IOException;
 import routines.system.IPersistableLookupRow;
 
 /**
- * 
+ *
  * Lookup Manager Unit.
  * @param <B> bean
  */
@@ -27,7 +27,7 @@ public interface ILookupManagerUnit<B extends Comparable<B> & IPersistableLookup
 
     /**
      * DOC slanglois Comment method "hasNext".
-     * 
+     *
      * @return
      * @throws IOException
      */
@@ -35,7 +35,7 @@ public interface ILookupManagerUnit<B extends Comparable<B> & IPersistableLookup
 
     /**
      * DOC slanglois Comment method "next".
-     * 
+     *
      * @return
      * @throws IOException
      */
@@ -43,7 +43,7 @@ public interface ILookupManagerUnit<B extends Comparable<B> & IPersistableLookup
 
     /**
      * DOC slanglois Comment method "close".
-     * 
+     *
      * @throws IOException
      */
     public abstract void close() throws IOException;

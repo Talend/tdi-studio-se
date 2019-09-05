@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,9 +47,9 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * Page for new project details. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NewProjectWizardPage extends WizardPage {
 
@@ -76,7 +76,7 @@ public class NewProjectWizardPage extends WizardPage {
 
     /**
      * Constructs a new NewProjectWizardPage.
-     * 
+     *
      * @param server
      * @param password
      * @param author
@@ -296,7 +296,7 @@ public class NewProjectWizardPage extends WizardPage {
 
     /**
      * DOC smallet Comment method "languageEnable".
-     * 
+     *
      * @param language
      * @return
      */

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -16,8 +16,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -45,7 +47,10 @@ import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.PropertyTreeCreator;
 import org.talend.sdk.component.studio.model.parameter.SettingVisitor;
 import org.talend.sdk.component.studio.model.parameter.VersionParameter;
+import org.talend.sdk.component.studio.ui.composite.TaCoKitComposite;
 import org.talend.sdk.component.studio.ui.composite.TaCoKitWizardComposite;
+import org.talend.sdk.component.studio.ui.composite.problemmanager.WizardProblemManager;
+import org.talend.sdk.component.studio.ui.composite.problemmanager.WizardProblemManager.IWizardHandler;
 import org.talend.sdk.component.studio.ui.wizard.TaCoKitConfigurationRuntimeData;
 
 /**
@@ -57,7 +62,7 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
 
     private Element element;
 
-    private TaCoKitWizardComposite tacokitComposite;
+    private TaCoKitComposite tacokitComposite;
 
     private TaCoKitConfigurationModel configurationModel;
 
@@ -67,16 +72,17 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
 
     private final EComponentCategory category;
 
+    private WizardProblemManager problemManager;
+
     public TaCoKitConfigurationWizardPage(final TaCoKitConfigurationRuntimeData runtimeData, final String form,
             final boolean isNew) {
         super(Messages.getString("WizardPage.TaCoKitConfiguration"), runtimeData); //$NON-NLS-1$
         this.isNew = isNew;
         final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
-        setTitle(Messages.getString("TaCoKitConfiguration.wizard.title", configTypeNode.getConfigurationType(), // $NON-NLS-1$
-                configTypeNode.getDisplayName()));
-        setDescription(Messages.getString("TaCoKitConfiguration.wizard.description.edit",
-                configTypeNode.getConfigurationType(), // $NON-NLS-1$
-                configTypeNode.getDisplayName()));
+        setTitle(Messages.getString("TaCoKitConfiguration.wizard.title.str", configTypeNode.getDisplayName(), //$NON-NLS-1$
+                configTypeNode.getConfigurationType()));
+        setDescription(Messages.getString("TaCoKitConfiguration.wizard.description.edit.str", //$NON-NLS-1$
+                configTypeNode.getDisplayName(), configTypeNode.getConfigurationType()));
         this.form = form;
         this.category = Metadatas.MAIN_FORM.equals(form) ? EComponentCategory.BASIC : EComponentCategory.ADVANCED;
         if (!runtimeData.isReadonly()) {
@@ -88,6 +94,9 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
                 ExceptionHandler.process(e);
             }
         }
+        problemManager = new WizardProblemManager();
+        runtimeData.registProblemManager(problemManager);
+        problemManager.setWizardHandler(new WizardHandler());
     }
 
     @Override
@@ -103,8 +112,7 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
             final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
             final DummyComponent component = new DummyComponent(configTypeNode.getDisplayName());
             final DataNode node = new DataNode(component, component.getName());
-            final PropertyNode root =
-                    new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);
+            final PropertyNode root = new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);
             element = new FakeElement(runtimeData.getTaCoKitRepositoryNode().getConfigTypeNode().getDisplayName());
             element.setReadOnly(runtimeData.isReadonly());
             final ElementParameter updateParameter = createUpdateComponentsParameter(element);
@@ -131,9 +139,8 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
                     .forEach(p -> configurationModel.setValue(p));
             element.setElementParameters(parameters);
             tacokitComposite = new TaCoKitWizardComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
-                    element, configurationModel, true, container.getBackground(), isNew);
+                    element, configurationModel, true, container.getBackground(), isNew, problemManager);
             tacokitComposite.setLayoutData(createMainFormData(runtimeData.isAddContextFields()));
-
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -197,4 +204,43 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
         return status.toArray(new IStatus[0]);
     }
 
+    @Override
+    public boolean isPageComplete() {
+        if (problemManager != null) {
+            return !problemManager.hasError() && !problemManager.hasUnresolvedRequiredElem();
+        }
+        return super.isPageComplete();
+    }
+
+    private class WizardHandler implements IWizardHandler {
+
+        @Override
+        public void showError(String error) {
+            getCurrentPage().ifPresent(c -> c.setMessage(error, WizardPage.ERROR));
+        }
+
+        @Override
+        public void showWarn(String warn) {
+            getCurrentPage().ifPresent(c -> c.setMessage(warn, WizardPage.WARNING));
+        }
+
+        @Override
+        public void showInfo(String info) {
+            getCurrentPage().ifPresent(c -> c.setMessage(info, WizardPage.INFORMATION));
+        }
+
+        @Override
+        public void updateStatus() {
+            getContainer().updateButtons();
+        }
+
+        private Optional<WizardPage> getCurrentPage() {
+            // IWizardContainer container = getContainer();
+            // if (container != null) {
+            // return Optional.ofNullable((WizardPage) container.getCurrentPage());
+            // }
+            return Optional.ofNullable(TaCoKitConfigurationWizardPage.this);
+        }
+
+    }
 }

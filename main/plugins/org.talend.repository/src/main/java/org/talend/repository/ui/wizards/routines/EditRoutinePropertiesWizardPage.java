@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,7 +38,7 @@ public class EditRoutinePropertiesWizardPage extends PropertiesWizardPage {
 
     /**
      * DOC marvin EditRoutinePropertiesWizardPage constructor comment.
-     * 
+     *
      * @param pageName
      * @param property
      * @param destinationPath
@@ -91,7 +91,7 @@ public class EditRoutinePropertiesWizardPage extends PropertiesWizardPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.wizards.PropertiesWizardPage#getRepositoryObjectType()
      */
     @Override

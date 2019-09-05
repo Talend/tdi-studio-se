@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,9 +23,9 @@ import org.talend.utils.json.JSONException;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: MetadataColumnExt.java,v 1.7 2007/02/02 07:47:00 pub Exp $
- * 
+ *
  */
 public class MetadataColumnExt extends MetadataColumn {
 
@@ -96,7 +96,7 @@ public class MetadataColumnExt extends MetadataColumn {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.metadata.MetadataColumn#clone()
      */
     @Override
@@ -113,7 +113,7 @@ public class MetadataColumnExt extends MetadataColumn {
 
     /**
      * Getter for preview.
-     * 
+     *
      * @return the preview
      */
     public String getPreview() {
@@ -122,7 +122,7 @@ public class MetadataColumnExt extends MetadataColumn {
 
     /**
      * Sets the preview.
-     * 
+     *
      * @param preview the preview to set
      */
     public void setPreview(String preview) {
@@ -156,7 +156,7 @@ public class MetadataColumnExt extends MetadataColumn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.metadata.MetadataColumn#setLabel(java.lang.String)
      */
     @Override

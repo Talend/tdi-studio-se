@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -64,9 +64,9 @@ public final class UpgradeParameterHelper {
     public static final String PROCESS = "PROCESS"; //$NON-NLS-1$
 
     /**
-     * 
+     *
      * ggu Comment method "upgradeItem".
-     * 
+     *
      * upgrade the item parameters.
      */
     @SuppressWarnings("unchecked")//$NON-NLS-1$
@@ -100,9 +100,9 @@ public final class UpgradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "upgradeMainParameters".
-     * 
+     *
      * only process the job main parameters.
      */
     private static boolean upgradeMainParameters(List<ElementParameterType> elemParamList) {
@@ -138,9 +138,9 @@ public final class UpgradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "upgradeNodes".
-     * 
+     *
      * upgrade the nodes parameters.
      */
     @SuppressWarnings("unchecked")//$NON-NLS-1$
@@ -158,9 +158,9 @@ public final class UpgradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "upgradeParameters".
-     * 
+     *
      * process the node parameters.
      */
     private static boolean upgradeNodeParameters(List<ElementParameterType> elemParamList) {
@@ -229,9 +229,9 @@ public final class UpgradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "upgradeRelatedParameters".
-     * 
+     *
      * "type =null" is only for property type parameter.
      */
     private static boolean upgradeRelatedParameters(ElementParameterType repositoryParam, String repositoryParamName,
@@ -266,9 +266,9 @@ public final class UpgradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "updateParameterValue".
-     * 
+     *
      * only update the value for existed parent
      */
     private static boolean updateParameterValue(ElementParameterType repositoryParam, final String typeParamName,
@@ -280,9 +280,9 @@ public final class UpgradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "updateParameterValue".
-     * 
+     *
      * update the related paramters value.
      */
     private static boolean updateParameterValue(ElementParameterType repositoryParam, ElementParameterType typeParam,
@@ -404,9 +404,9 @@ public final class UpgradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "findParameter".
-     * 
+     *
      * find the name of parameter for parent name.
      */
     private static ElementParameterType findParameter(String paramName, String parentName,
@@ -439,10 +439,10 @@ public final class UpgradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "getChildIdFormParent".
-     * 
-     * 
+     *
+     *
      */
     private static String getChildIdFormParent(final String parentId, final String childName, final ERepositoryObjectType type) {
         if (parentId == null || childName == null || type == null) {
@@ -461,7 +461,7 @@ public final class UpgradeParameterHelper {
                 }
             }
         } catch (PersistenceException e) {
-            // 
+            //
         }
         return null;
     }
@@ -502,9 +502,9 @@ public final class UpgradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "getIdFormLabel".
-     * 
+     *
      * get label of id by type.
      */
     private static String getIdFormLabel(final String label, ERepositoryObjectType type) {
@@ -521,7 +521,7 @@ public final class UpgradeParameterHelper {
                 }
             }
         } catch (PersistenceException e) {
-            // 
+            //
         }
         return null;
     }

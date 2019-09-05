@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,7 +19,7 @@ import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 
 /**
  * All nodes displayed in the database structure outline should implement this interface.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public interface INode {
@@ -36,14 +36,14 @@ public interface INode {
 
     /**
      * The returned image is displayed in the database structure outline for this node when the node is expanded.
-     * 
+     *
      * @return Image to be used for this node.
      */
     public Image getExpandedImage();
 
     /**
      * The returned image is displayed in the database structure outline for this node.
-     * 
+     *
      * @return Image to be used for this node.
      */
     public Image getImage();
@@ -61,9 +61,9 @@ public interface INode {
 
     /**
      * Get the clumn label text.
-     * 
+     *
      * method description.
-     * 
+     *
      * @param i -- the column number.
      * @return -- the label text.
      * @exception
@@ -112,7 +112,7 @@ public interface INode {
 
     /**
      * Initialize this node.
-     * 
+     *
      * @param parent the parent INode of this node.
      * @param name the name of this node.
      * @param sessionNode the session this node belongs too.
@@ -136,7 +136,7 @@ public interface INode {
 
     /**
      * Set expanded state of element.
-     * 
+     *
      * @param expanded expanded.
      */
     public void setExpanded(boolean expanded);

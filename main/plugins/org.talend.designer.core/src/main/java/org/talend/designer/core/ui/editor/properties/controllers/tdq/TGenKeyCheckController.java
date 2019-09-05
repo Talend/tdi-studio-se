@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,7 +31,7 @@ public class TGenKeyCheckController extends CheckController {
 
     /**
      * DOC zshen TGenKeyCheckController constructor comment.
-     * 
+     *
      * @param dp
      */
     public TGenKeyCheckController(IDynamicProperty dp) {
@@ -40,7 +40,7 @@ public class TGenKeyCheckController extends CheckController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#executeCommand
      * (org.eclipse.gef.commands.Command)
@@ -75,7 +75,7 @@ public class TGenKeyCheckController extends CheckController {
 
     /**
      * DOC zshen Comment method "getNextTgenKeyNode".
-     * 
+     *
      * @param source
      */
     private Node getNextTgenKeyNode(Node source) {
@@ -93,7 +93,7 @@ public class TGenKeyCheckController extends CheckController {
 
     /**
      * DOC zshen Comment method "changeKeyColumnLabel".
-     * 
+     *
      * @param changeNode
      * @param isLink
      */

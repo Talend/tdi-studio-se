@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,7 +27,7 @@ import org.talend.components.common.component.runtime.RootRecordUtils;
  * This is Decorator for {@link Reader}. It adds additional functionality for {@link Reader#getCurrent()} method of wrapped
  * Reader.
  * All other methods remain unchanged.
- * 
+ *
  * <p>
  * This class's {@link Reader#getCurrent()} method does following:
  * 1. Checks whether outgoing {@link IndexedRecord} is Root record
@@ -59,7 +59,7 @@ public class FlowVariablesReader implements Reader<Object> {
 
     /**
      * Constructor sets wrapped {@link Reader} and global map
-     * 
+     *
      * @param reader component {@link Reader}
      * @param runtimeContainer runtime container
      */
@@ -82,7 +82,7 @@ public class FlowVariablesReader implements Reader<Object> {
      * Checks whether outgoing {@link IndexedRecord} is Root record and chooses appropriate processing strategy
      * Retrieves Main and Flow variables (aka Out of band) data from Root record,
      * stores Flow variables in {@link RuntimeContainer} in case of Root record
-     * 
+     *
      * @return Main data
      */
     @Override

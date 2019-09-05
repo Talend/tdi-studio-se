@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,10 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.utils.threading.ExecutionLimiter;
 import org.talend.commons.utils.threading.ExecutionLimiterImproved;
 import org.talend.core.GlobalServiceRegister;
@@ -308,7 +309,7 @@ public class PropertyChangeCommand extends Command {
                 String componentName = targetNode.getComponent().getName();
                 if (componentName.matches("tELT.+Map")) { //$NON-NLS-1$
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IDbMapDesignerService.class)) {
-                        IDbMapDesignerService service = (IDbMapDesignerService) GlobalServiceRegister.getDefault().getService(
+                        IDbMapDesignerService service = GlobalServiceRegister.getDefault().getService(
                                 IDbMapDesignerService.class);
                         updateELTMapComponentCommand = service.getUpdateELTMapComponentCommand(targetNode, connection,
                                 oldELTValue, newELTValue);
@@ -396,7 +397,7 @@ public class PropertyChangeCommand extends Command {
             // Node jobletNode = null;
             IJobletProviderService service = null;
             if (PluginChecker.isJobLetPluginLoaded()) {
-                service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
+                service = GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
             }
             if (elem instanceof Node) {
                 // jobletNode = (Node) elem;
@@ -746,21 +747,31 @@ public class PropertyChangeCommand extends Command {
             // if the field is not a schema type, then use standard "set value".
             if (!(testedParam.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE) || testedParam.getFieldType().equals(
                     EParameterFieldType.SCHEMA_REFERENCE))) {
-                String oldMapping = ""; //$NON-NLS-1$
+                String oldValue = ""; //$NON-NLS-1$
                 if (!testedParam.getFieldType().equals(EParameterFieldType.CHECK)
                         && !testedParam.getFieldType().equals(EParameterFieldType.RADIO)) {
-                    oldMapping = (String) testedParam.getValue();
+                    oldValue = (String) testedParam.getValue();
                 }
                 testedParam.setValueToDefault(elementParameters);
                 if (testedParam.getFieldType().equals(EParameterFieldType.MAPPING_TYPE)) {
                     String newMapping = (String) testedParam.getValue();
-                    if (!oldMapping.equals(newMapping)) {
+                    if (!oldValue.equals(newMapping)) {
                         Node node = (Node) referenceNode;
                         if (node.getMetadataList().size() > 0) {
                             // to change with:
                             // IMetadataTable metadataTable = node.getMetadataFromConnector(testedParam.getContext());
                             IMetadataTable metadataTable = node.getMetadataList().get(0);
                             metadataTable.setDbms(newMapping);
+                        }
+                    }
+                } else if (testedParam.getFieldType().equals(EParameterFieldType.TEXT)) {
+                    String newValue = (String) testedParam.getValue();
+                    if (StringUtils.isNotEmpty(oldValue) && !oldValue.equals(newValue)
+                            && !isDefaultValue(testedParam, oldValue)) {
+                        Node node = (Node) referenceNode;
+                        String label = node.getLabel();
+                        if (label != null && label.startsWith("tHDFS")) { //$NON-NLS-1$
+                            testedParam.setValue(oldValue);
                         }
                     }
                 }
@@ -1052,7 +1063,18 @@ public class PropertyChangeCommand extends Command {
     }
 
     private boolean getTakeSchema() {
-        return MessageDialog.openQuestion(new Shell(), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
+        return MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    private boolean isDefaultValue(IElementParameter param, String paraValue) {
+        if (StringUtils.isEmpty(paraValue)) {
+            return false;
+        }
+        for (IElementParameterDefaultValue defaultValue : param.getDefaultValues()) {
+            if (paraValue.equals(defaultValue.getDefaultValue())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,9 +25,9 @@ import org.talend.sqlbuilder.util.URLUtil;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: CloseSQLResultTabAction.java,v 1.6 2006/11/03 10:09:21 yi.zhang Exp $
- * 
+ *
  */
 public class CloseSQLResultTabAction extends Action {
 
@@ -40,7 +40,7 @@ public class CloseSQLResultTabAction extends Action {
 
     /**
      * Default Constructor.
-     * 
+     *
      */
     public CloseSQLResultTabAction() {
         super();
@@ -48,7 +48,7 @@ public class CloseSQLResultTabAction extends Action {
 
     /**
      * Constructor.
-     * 
+     *
      * @param tabItem
      */
     public CloseSQLResultTabAction(CTabItem tabItem) {
@@ -81,7 +81,7 @@ public class CloseSQLResultTabAction extends Action {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override

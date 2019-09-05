@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,7 +31,7 @@ import org.talend.sqlbuilder.dataset.actions.CopyTableAction;
 /**
  * ActionGroup for DataSetTable. This group controls what context
  * menu actions are being shown.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public class DataSetTableActionGroup extends ActionGroup {
@@ -39,19 +39,19 @@ public class DataSetTableActionGroup extends ActionGroup {
     private Table ptable;
 
     private TableCursor pcursor;
-    
+
     private CopyTableAction pcopyTableAction;
-    
+
     /**
      * Construct a new action group for a given Table.
-     * 
+     *
      * @param table Table that displays the context menu
      * @param cursor TableCursor that displays the context menu
      */
     public DataSetTableActionGroup(Table table, TableCursor cursor) {
         ptable = table;
         pcursor = cursor;
-        
+
         pcopyTableAction = new CopyTableAction();
         pcopyTableAction.setTable(ptable);
         pcopyTableAction.setTableCursor(pcursor);
@@ -63,13 +63,13 @@ public class DataSetTableActionGroup extends ActionGroup {
      * @see org.eclipse.ui.actions.ActionGroup#fillContextMenu(org.eclipse.jface.action.IMenuManager)
      */
     public void fillContextMenu(IMenuManager menu) {
-        
+
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "dataSetTableContextAction"); //$NON-NLS-1$ //$NON-NLS-2$
         IExtension[] extensions = point.getExtensions();
 
         // add basic actions
-        
+
         for (int i = 0; i < extensions.length; i++) {
 
             IExtension e = extensions[i];
@@ -78,10 +78,10 @@ public class DataSetTableActionGroup extends ActionGroup {
 
             for (int j = 0; j < ces.length; j++) {
                 try {
-                    
+
                     String group = ces[j].getAttribute("group"); //$NON-NLS-1$
                     if (group == null || !group.equalsIgnoreCase("export")) { //$NON-NLS-1$
-                    
+
                         // check if the action thinks it is suitable..
                         AbstractDataSetTableContextAction action = (AbstractDataSetTableContextAction) ces[j]
                                 .createExecutableExtension("class"); //$NON-NLS-1$
@@ -91,7 +91,7 @@ public class DataSetTableActionGroup extends ActionGroup {
                             menu.add(action);
                         }
                     }
-                        
+
                 } catch (Throwable ex) {
                     SqlBuilderPlugin.log(Messages.getString("DataSetTableActionGroup.logMessage1"), ex); //$NON-NLS-1$
                 }
@@ -99,10 +99,10 @@ public class DataSetTableActionGroup extends ActionGroup {
         }
 
         menu.add(new Separator());
-        
+
         // add export options
-        
-        
+
+
         MenuManager subMenu = new MenuManager(Messages.getString("DataSetTable.Actions.ExportSubMenu"));     //$NON-NLS-1$
 
         for (int i = 0; i < extensions.length; i++) {
@@ -113,10 +113,10 @@ public class DataSetTableActionGroup extends ActionGroup {
 
             for (int j = 0; j < ces.length; j++) {
                 try {
-                    
+
                     String group = ces[j].getAttribute("group"); //$NON-NLS-1$
                     if (group != null && group.equalsIgnoreCase("export")) { //$NON-NLS-1$
-                    
+
                         // check if the action thinks it is suitable..
                         AbstractDataSetTableContextAction action = (AbstractDataSetTableContextAction) ces[j]
                                 .createExecutableExtension("class"); //$NON-NLS-1$
@@ -126,15 +126,15 @@ public class DataSetTableActionGroup extends ActionGroup {
                             subMenu.add(action);
                         }
                     }
-                        
+
                 } catch (Throwable ex) {
                     SqlBuilderPlugin.log(Messages.getString("DataSetTableActionGroup.logMessage1"), ex); //$NON-NLS-1$
                 }
             }
         }
-        
+
         menu.add(subMenu);
-        
+
         menu.add(new Separator());
         menu.add(pcopyTableAction);
     }

@@ -38,6 +38,7 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     String dbhost = ElementParameterParser.getValue(node, "__HOST__");
     String dbport = ElementParameterParser.getValue(node, "__PORT__");
     String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+    String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
     String dbuser = ElementParameterParser.getValue(node, "__USER__");
 
     String dbtable = ElementParameterParser.getValue(node, "__TABLE__");
@@ -72,8 +73,17 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
         %>
         String dbSchema_<%=cid%> = <%=ElementParameterParser.getValue(node, "__SCHEMA_DB__")%>;
         java.lang.Class.forName("org.postgresql.Driver");
-        String connectionString_<%=cid%> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
-	        
+        <%
+        if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+            %>
+            String connectionString_<%=cid%> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+            <%
+        } else {
+            %>
+            String connectionString_<%=cid%> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+            <%
+        }       
+        %>
 		<%
 		String passwordFieldName = "__PASS__";
 		%>

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Spss Plug-in
 Bundle-SymbolicName: org.talend.designer.spss;singleton:=true
-Bundle-Version: 7.2.1.qualifier
+Bundle-Version: 7.3.1.qualifier
 Eclipse-LazyStart: true
 Require-Bundle: org.eclipse.core.runtime,
  org.talend.commons.ui,
@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.metadata.managment.ui,
  org.talend.model,
  org.apache.log4j,
- org.talend.components.api
+ org.talend.components.api,
+ org.talend.core.runtime
 Bundle-ClassPath: JSPSS.jar,
  .
 Bundle-Vendor: .Talend SA.

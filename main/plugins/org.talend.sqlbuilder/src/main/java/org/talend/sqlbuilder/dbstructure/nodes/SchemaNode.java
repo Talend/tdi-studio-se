@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,9 +31,9 @@ import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SchemaNode.java,v 1.4 2006/11/01 05:40:59 peiqin.hou Exp $
- * 
+ *
  */
 public class SchemaNode extends AbstractNode {
 
@@ -45,7 +45,7 @@ public class SchemaNode extends AbstractNode {
 
     /**
      * Create new database Schema node.
-     * 
+     *
      * @param parent node
      * @param name of this node
      * @param sessionNode session for this node
@@ -145,7 +145,7 @@ public class SchemaNode extends AbstractNode {
 
     /**
      * Location extenstion nodes for a given tableType.
-     * 
+     *
      * @param tableType for which to find extension node
      * @return INode or null if no extensions found
      */
@@ -237,7 +237,7 @@ public class SchemaNode extends AbstractNode {
 
     /**
      * Returns "schema" as the type for this node.
-     * 
+     *
      * @return Type.
      * @see org.talend.sqlbuilder.dbstructure.nodes.INode#getType()
      */
@@ -256,7 +256,7 @@ public class SchemaNode extends AbstractNode {
 
     /**
      * Checks if a node name should be filtered.
-     * 
+     *
      * @param name to check for filtering
      * @return true if the name should be filtered
      */

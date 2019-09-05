@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,9 +38,9 @@ import org.talend.designer.rowgenerator.managers.UIManager;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: LogRowNode.java,v 1.4 2007/02/02 07:59:31 pub Exp $
- * 
+ *
  */
 public class LogRowNode extends AbstractNode {
 
@@ -96,7 +96,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getIncomingConnections()
      */
     public List<? extends IConnection> getIncomingConnections() {
@@ -105,7 +105,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getMetadataList()
      */
     public List<IMetadataTable> getMetadataList() {
@@ -123,7 +123,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getOutgoingConnections()
      */
     public List<? extends IConnection> getOutgoingConnections() {
@@ -132,7 +132,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getPluginFullName()
      */
     public String getPluginFullName() {
@@ -141,7 +141,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getPluginFullName()
      */
     public void setPluginFullName(String pluginFullName) {
@@ -150,7 +150,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getUniqueName()
      */
     public String getUniqueName() {
@@ -159,7 +159,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isActivate()
      */
     public boolean isActivate() {
@@ -168,7 +168,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isStart()
      */
     public boolean isStart() {
@@ -177,7 +177,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isSubProcessStart()
      */
     public boolean isSubProcessStart() {
@@ -186,7 +186,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getGeneratedCode()
      */
     public String getGeneratedCode() {
@@ -214,7 +214,7 @@ public class LogRowNode extends AbstractNode {
 
     /**
      * Getter for process.
-     * 
+     *
      * @return the process
      */
     public IProcess getProcess() {
@@ -223,7 +223,7 @@ public class LogRowNode extends AbstractNode {
 
     /**
      * Sets the process.
-     * 
+     *
      * @param process the process to set
      */
     public void setProcess(IProcess process) {
@@ -232,7 +232,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#renameMetadataColumnName(java.lang.String, java.lang.String,
      * java.lang.String)
      */
@@ -250,7 +250,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getComponent()
      */
     public IComponent getComponent() {
@@ -259,7 +259,7 @@ public class LogRowNode extends AbstractNode {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.INode#setComponent(org.talend.core.model.components.IComponent)
      */
     public void setComponent(IComponent component) {

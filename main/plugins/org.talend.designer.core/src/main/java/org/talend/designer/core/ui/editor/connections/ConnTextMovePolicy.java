@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,15 +25,15 @@ import org.talend.designer.core.ui.editor.cmd.MoveConnTraceCommand;
 
 /**
  * Policy that will allow to move the label of the connection. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnTextMovePolicy extends NonResizableEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.gef.editpolicies.NonResizableEditPolicy#getMoveCommand(org.eclipse.gef.requests.ChangeBoundsRequest)
      */

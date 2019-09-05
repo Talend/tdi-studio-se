@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.database.EDatabaseTypeName;
@@ -34,8 +35,8 @@ import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.core.sqlbuilder.util.TextUtil;
 import org.talend.metadata.managment.ui.wizard.metadata.ContextSetsSelectionDialog;
 import org.talend.repository.model.IProxyRepositoryFactory;
-import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.IRepositoryNode.EProperties;
+import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.actions.AContextualAction;
 import org.talend.sqlbuilder.Messages;
 import org.talend.sqlbuilder.ui.SQLBuilderDialog;
@@ -43,9 +44,9 @@ import org.talend.sqlbuilder.util.UIUtils;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public class ReadQueriesAction extends AContextualAction {
 
@@ -67,7 +68,7 @@ public class ReadQueriesAction extends AContextualAction {
 
         DatabaseConnectionItem dbConnectionItem = null;
         ConnectionParameters connParameters = new ConnectionParameters();
-        if (repositoryNode.getObjectType() == ERepositoryObjectType.METADATA_CONNECTIONS || 
+        if (repositoryNode.getObjectType() == ERepositoryObjectType.METADATA_CONNECTIONS ||
                 repositoryNode.getProperties(EProperties.CONTENT_TYPE) == ERepositoryObjectType.METADATA_CONNECTIONS) {
             dbConnectionItem = (DatabaseConnectionItem) repositoryNode.getObject().getProperty().getItem();
             connParameters.setRepositoryName(repositoryNode.getObject().getLabel());
@@ -87,7 +88,7 @@ public class ReadQueriesAction extends AContextualAction {
         if (display == null) {
             display = Display.getDefault();
         }
-        Shell parentShell = new Shell(display);
+        Shell parentShell = DisplayUtils.getDefaultShell(false);
         TextUtil.setDialogTitle(TextUtil.SQL_BUILDER_TITLE_REP);
         Connection connection = dbConnectionItem.getConnection();
         String selectedContext = null;

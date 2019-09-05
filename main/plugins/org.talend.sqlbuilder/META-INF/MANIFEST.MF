@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SQL Builder Plug-in
-Bundle-Version: 7.2.1.qualifier
+Bundle-Version: 7.3.1.qualifier
 Bundle-Activator: org.talend.sqlbuilder.SqlBuilderPlugin
 Bundle-Vendor: .Talend SA.
 Bundle-Localization: plugin
@@ -20,7 +20,9 @@ Require-Bundle: org.talend.core.repository,
  org.eclipse.draw2d,
  org.eclipse.gef,
  org.talend.designer.core,
- org.talend.libraries.sqlbuilder
+ org.talend.libraries.sqlbuilder,
+ org.talend.commons.runtime,
+ org.talend.core.runtime
 Eclipse-LazyStart: true
 Bundle-SymbolicName: org.talend.sqlbuilder; singleton:=true
 Export-Package: org.talend.sqlbuilder,

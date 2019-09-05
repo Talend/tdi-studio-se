@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -54,7 +54,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IProxyRepositoryService;
 
 /**
- * 
+ *
  * created by ycbai on 2015年9月21日 Detailled comment
  *
  */
@@ -173,7 +173,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
     /**
      * Loads the repository view objects that are used to check if the name of job(Opened in the current properties
      * wizard dialog) can be found. Added by Marvin Wang on Feb 22, 2013.
-     * 
+     *
      * @return a list includes the instance of <code>IRepositoryViewObject</code>, which are used to check if a given
      * job name is present in the list.
      * @throws PersistenceException
@@ -192,7 +192,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
     /**
      * Loads the repository view objects, which have the same repository type as the current job that are opened in
      * properties wizard dialog. Added by Marvin Wang on Feb 22, 2013.
-     * 
+     *
      * @return
      * @throws PersistenceException
      */
@@ -228,7 +228,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

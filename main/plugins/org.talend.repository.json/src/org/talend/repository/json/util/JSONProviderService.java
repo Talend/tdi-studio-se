@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,7 +29,7 @@ public class JSONProviderService implements IJSONProviderService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.IProviderService#newWizard(org.eclipse.ui.IWorkbench, boolean,
      * org.talend.repository.model.RepositoryNode, java.lang.String[])
      */
@@ -41,7 +41,7 @@ public class JSONProviderService implements IJSONProviderService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IJSONProviderService#isJSONNode(org.talend.core.model.process.INode)
      */
     @Override
@@ -52,7 +52,7 @@ public class JSONProviderService implements IJSONProviderService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IJSONProviderService#isRepositorySchemaLine(org.talend.core.model.process.INode,
      * java.util.Map)
      */
@@ -64,7 +64,7 @@ public class JSONProviderService implements IJSONProviderService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IJSONProviderService#getJSONRepositoryType()
      */
     @Override

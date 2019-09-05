@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -71,7 +71,7 @@ public class StartMonitorJobAction extends Action implements ISelectionChangedLi
 
     /**
      * Gets the state indicating if this action is visible.
-     * 
+     *
      * @return <tt>true</tt> if this action is visible
      */
     protected boolean getVisible() {
@@ -145,7 +145,7 @@ public class StartMonitorJobAction extends Action implements ISelectionChangedLi
 
     /**
      * Gets the currently opened properties view.
-     * 
+     *
      * @return The properties views
      */
     private static List<PropertySheet> getProperriesView() {
@@ -162,7 +162,7 @@ public class StartMonitorJobAction extends Action implements ISelectionChangedLi
 
     /**
      * Gets the properties view showing the given JVM from the given properties views.
-     * 
+     *
      * @param jvm The JVM
      * @param views The properties views
      * @return The properties view
@@ -182,7 +182,7 @@ public class StartMonitorJobAction extends Action implements ISelectionChangedLi
 
     /**
      * Gets the non-pinned properties view.
-     * 
+     *
      * @param views The properties view
      * @return The non-pinned properties view
      */
@@ -197,7 +197,7 @@ public class StartMonitorJobAction extends Action implements ISelectionChangedLi
 
     /**
      * Opens the properties view.
-     * 
+     *
      * @param jvm The JVM
      * @throws PartInitException
      */
@@ -217,7 +217,7 @@ public class StartMonitorJobAction extends Action implements ISelectionChangedLi
 
     /**
      * Brings the properties view to front.
-     * 
+     *
      * @param view The properties view
      * @throws PartInitException
      */
@@ -228,7 +228,7 @@ public class StartMonitorJobAction extends Action implements ISelectionChangedLi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.SelectionChangedEvent
      * )

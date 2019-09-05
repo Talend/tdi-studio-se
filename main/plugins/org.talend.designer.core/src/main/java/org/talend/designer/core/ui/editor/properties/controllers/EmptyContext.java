@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,15 +20,15 @@ import org.talend.core.model.process.IContextParameter;
 
 /**
  * Empty IContext implementation. <br/>
- * 
+ *
  * $Id: FileinToXmlProcess.java 3737 2007-06-09 08:19:35 +0000 (星期六, 09 六月 2007) nrousseau $
- * 
+ *
  */
 public class EmptyContext implements IContext, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContext#getContextParameterList()
      */
     public List<IContextParameter> getContextParameterList() {
@@ -37,7 +37,7 @@ public class EmptyContext implements IContext, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContext#getName()
      */
     public String getName() {
@@ -46,7 +46,7 @@ public class EmptyContext implements IContext, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContext#isConfirmationNeeded()
      */
     public boolean isConfirmationNeeded() {
@@ -55,7 +55,7 @@ public class EmptyContext implements IContext, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContext#setConfirmationNeeded(boolean)
      */
     public void setConfirmationNeeded(boolean confirmationNeeded) {
@@ -64,7 +64,7 @@ public class EmptyContext implements IContext, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContext#setContextParameterList(java.util.List)
      */
     public void setContextParameterList(List<IContextParameter> contextParameterList) {
@@ -73,7 +73,7 @@ public class EmptyContext implements IContext, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContext#setName(java.lang.String)
      */
     public void setName(String name) {
@@ -97,12 +97,18 @@ public class EmptyContext implements IContext, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContext#getContextParameter(java.lang.String, java.lang.String)
      */
     @Override
     public IContextParameter getContextParameter(String sourceId, String paraName) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public boolean containsSameParameterIgnoreCase(String parameterName) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

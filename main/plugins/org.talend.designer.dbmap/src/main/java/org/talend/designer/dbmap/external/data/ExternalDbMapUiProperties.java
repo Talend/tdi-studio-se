@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,14 +18,14 @@ import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExternalMapperUiProperties.java 34 2006-10-02 15:08:32Z amaumont $
- * 
+ *
  */
 public class ExternalDbMapUiProperties implements Serializable, Cloneable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -6720565045409231632L;
 
@@ -65,7 +65,7 @@ public class ExternalDbMapUiProperties implements Serializable, Cloneable {
 
     /**
      * Setter for array of exactly three values which represents width pixels of each zone (input, var and output).
-     * 
+     *
      * @param weightsDatasFlowViewSashForm array of three values which represents width pixels of each zone (input, var
      * and output)
      */
@@ -82,7 +82,7 @@ public class ExternalDbMapUiProperties implements Serializable, Cloneable {
 
     /**
      * Setter for array of exactly two values which represents height pixels of each zone (flow view, tabs view).
-     * 
+     *
      * @param weightsMainSashForm
      */
     public void setWeightsMainSashForm(int[] weightsMainSashForm) {
@@ -94,7 +94,7 @@ public class ExternalDbMapUiProperties implements Serializable, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,7 +46,7 @@ import org.talend.designer.mapper.i18n.Messages;
 
 /**
  * This class is used for generating HTML file for Component 'tMap'. <br/>
- * 
+ *
  */
 public class MapperComponentDocumentation implements IComponentDocumentation {
 
@@ -64,7 +64,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#getHTMLFile()
      */
     public URL getHTMLFile() {
@@ -103,7 +103,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#setComponentLabel(java.lang.String)
      */
     public void setComponentName(String componentLabel) {
@@ -112,7 +112,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#setPath(java.lang.String)
      */
     public void setTempFolderPath(String tempFolderPath) {
@@ -121,7 +121,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /**
      * Sets the <code>externalData</code>.
-     * 
+     *
      * @param externalData
      */
     public void setExternalData(ExternalMapperData externalData) {
@@ -205,7 +205,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /**
      * Generates input tables information.
-     * 
+     *
      * @param mapperTableType
      */
     private void handleMapperTablesInfo(List<ExternalMapperTable> inputTables, Element externalNodeElement, String mapperTableType) {
@@ -218,7 +218,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /**
      * This method used for generating all mapper tables information into xml file.
-     * 
+     *
      * @param externalNodeElement
      * @param tables
      * @param mapperTableType
@@ -260,7 +260,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /**
      * Generates metadata tables entries information.
-     * 
+     *
      * @param metadataTableEntriesElement
      * @param entry
      */
@@ -279,7 +279,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /**
      * Generates the summary information for table.
-     * 
+     *
      * @param mapperTableElement
      * @param tableElement
      * @param table
@@ -303,7 +303,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /**
      * Sets the preview picture of component.
-     * 
+     *
      * @param previewPicPath
      */
     public void setPreviewPicPath(String previewPicPath) {

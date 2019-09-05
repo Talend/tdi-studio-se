@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -64,7 +64,7 @@ public class RadioFieldEditor extends BooleanFieldEditor {
 
     /**
      * Creates a boolean field editor in the given style.
-     * 
+     *
      * @param name the name of the preference this field editor works on
      * @param labelText the label text of the field editor
      * @param style the style, either <code>DEFAULT</code> or <code>SEPARATE_LABEL</code>
@@ -147,7 +147,7 @@ public class RadioFieldEditor extends BooleanFieldEditor {
 
     /**
      * Returns this field editor's current value.
-     * 
+     *
      * @return the value
      */
     @Override
@@ -193,7 +193,7 @@ public class RadioFieldEditor extends BooleanFieldEditor {
     /**
      * Informs this field editor's listener, if it has one, about a change to the value (<code>VALUE</code> property)
      * provided that the old and new values are different.
-     * 
+     *
      * @param oldValue the old value
      * @param newValue the new value
      */

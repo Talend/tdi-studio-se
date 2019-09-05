@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -226,7 +226,7 @@ public class ToolBarButtonImageFigure extends ImageFigure {
 
     /**
      * Calculates the necessary size to display the Image within the figure's client area.
-     * 
+     *
      * @see org.eclipse.draw2d.Figure#getPreferredSize(int, int)
      */
     @Override
@@ -303,7 +303,7 @@ public class ToolBarButtonImageFigure extends ImageFigure {
     /**
      * Sets the alignment of the Image within this Figure. The alignment comes into play when the ImageFigure is larger
      * than the Image. The alignment could be any valid combination of the following:
-     * 
+     *
      * <UL>
      * <LI>PositionConstants.NORTH</LI>
      * <LI>PositionConstants.SOUTH</LI>
@@ -311,7 +311,7 @@ public class ToolBarButtonImageFigure extends ImageFigure {
      * <LI>PositionConstants.WEST</LI>
      * <LI>PositionConstants.CENTER or PositionConstants.NONE</LI>
      * </UL>
-     * 
+     *
      * @param flag A constant indicating the alignment
      */
     @Override
@@ -323,7 +323,7 @@ public class ToolBarButtonImageFigure extends ImageFigure {
      * Sets the Image that this ImageFigure displays.
      * <p>
      * IMPORTANT: Note that it is the client's responsibility to dispose the given image.
-     * 
+     *
      * @param image The Image to be displayed. It can be <code>null</code>.
      */
     @Override

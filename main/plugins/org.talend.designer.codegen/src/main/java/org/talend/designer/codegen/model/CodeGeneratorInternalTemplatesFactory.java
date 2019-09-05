@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,9 +32,9 @@ import org.talend.designer.codegen.exception.CodeGeneratorException;
 
 /**
  * Create a list of Available templates in the application.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class CodeGeneratorInternalTemplatesFactory {
 
@@ -108,7 +108,7 @@ public class CodeGeneratorInternalTemplatesFactory {
 
     /**
      * Return list of available templates.
-     * 
+     *
      * @return
      */
     public List<TemplateUtil> getTemplates() {
@@ -121,7 +121,7 @@ public class CodeGeneratorInternalTemplatesFactory {
 
     /**
      * DOC nrousseau Comment method "getTemplateFromType".
-     * 
+     *
      * @param type
      * @return
      * @throws CodeGeneratorException

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,9 +39,9 @@ public class FileInputExcelNode extends FileInputNode {
     private String versionCheck; // hywang add for excel2007 wizard
 
     /**
-     * 
+     *
      * DOC YeXiaowei FileInputExcelNode constructor comment.
-     * 
+     *
      * @param filename
      * @param metadatas
      * @param encoding
@@ -150,7 +150,7 @@ public class FileInputExcelNode extends FileInputNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.shadow.ShadowNode#getMetadataList()
      */
     @Override
@@ -160,7 +160,7 @@ public class FileInputExcelNode extends FileInputNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.shadow.ShadowNode#setMetadataList(java.util.List)
      */
     @Override

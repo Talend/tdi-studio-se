@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,15 +50,13 @@ public class PropertyNode {
     private final PropertyDefinitionDecorator property;
 
     private final EParameterFieldType fieldType;
-    
+
     /**
      * Denotes whether this node is root in current tree
      */
     private final boolean root;
 
-    public PropertyNode(final PropertyDefinitionDecorator property,
-                        final EParameterFieldType fieldType,
-                        final boolean root) {
+    public PropertyNode(final PropertyDefinitionDecorator property, final EParameterFieldType fieldType, final boolean root) {
         this.property = property;
         this.fieldType = fieldType;
         this.root = root;
@@ -115,7 +113,7 @@ public class PropertyNode {
 
     /**
      * Traverses all nodes
-     * 
+     *
      * @param visitor the property visitor to use to traverse the nodes.
      */
     public <T extends PropertyVisitor> T accept(final T visitor) {
@@ -151,10 +149,10 @@ public class PropertyNode {
         final Set<String> childrenNames = new HashSet<>(getChildrenNames(form));
         return children.stream().filter(node -> childrenNames.contains(node.property.getName())).collect(Collectors.toList());
     }
-    
+
     /**
      * Checks whether subtree rooted by this node has leaves, which belongs to specified {@code form}
-     * 
+     *
      * @param form Name of form
      * @return true, if it has leaves
      */
@@ -446,35 +444,44 @@ public class PropertyNode {
 
     @Override
     public boolean equals(final Object o) {
-        if (o == this)
+        if (o == this) {
             return true;
-        if (!(o instanceof PropertyNode))
+        }
+        if (!(o instanceof PropertyNode)) {
             return false;
+        }
         final PropertyNode other = (PropertyNode) o;
-        if (!other.canEqual(this))
+        if (!other.canEqual(this)) {
             return false;
+        }
         final Object this$parent = this.getParent();
         final Object other$parent = other.getParent();
-        if (this$parent == null ? other$parent != null : !this$parent.equals(other$parent))
+        if (this$parent == null ? other$parent != null : !this$parent.equals(other$parent)) {
             return false;
+        }
         final Object this$children = this.getChildren();
         final Object other$children = other.getChildren();
-        if (this$children == null ? other$children != null : !this$children.equals(other$children))
+        if (this$children == null ? other$children != null : !this$children.equals(other$children)) {
             return false;
+        }
         final Object this$layouts = this.getLayouts();
         final Object other$layouts = other.getLayouts();
-        if (this$layouts == null ? other$layouts != null : !this$layouts.equals(other$layouts))
+        if (this$layouts == null ? other$layouts != null : !this$layouts.equals(other$layouts)) {
             return false;
+        }
         final Object this$property = this.getProperty();
         final Object other$property = other.getProperty();
-        if (this$property == null ? other$property != null : !this$property.equals(other$property))
+        if (this$property == null ? other$property != null : !this$property.equals(other$property)) {
             return false;
+        }
         final Object this$fieldType = this.getFieldType();
         final Object other$fieldType = other.getFieldType();
-        if (this$fieldType == null ? other$fieldType != null : !this$fieldType.equals(other$fieldType))
+        if (this$fieldType == null ? other$fieldType != null : !this$fieldType.equals(other$fieldType)) {
             return false;
-        if (this.isRoot() != other.isRoot())
+        }
+        if (this.isRoot() != other.isRoot()) {
             return false;
+        }
         return true;
     }
 

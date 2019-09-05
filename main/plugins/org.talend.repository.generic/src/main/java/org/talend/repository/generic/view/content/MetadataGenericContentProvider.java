@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,7 +49,7 @@ public class MetadataGenericContentProvider extends ProjectRepoDirectChildrenNod
         protected Set<RepositoryNode> getTopNodes() {
             return makeUpHideNodes(getTopLevelNodes());
         }
-        
+
         private Set<RepositoryNode> makeUpHideNodes(Set<RepositoryNode> topNodes){
             Set<RepositoryNode> nodes = new HashSet<RepositoryNode>(topNodes);
             List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();

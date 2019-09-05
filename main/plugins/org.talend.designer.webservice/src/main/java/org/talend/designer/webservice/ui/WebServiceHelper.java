@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -72,7 +72,7 @@ public class WebServiceHelper implements IWebServiceTos {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.ui.wizards.metadata.connection.wsdl.IWebService#getWebServiceUI(org.eclipse.swt.widgets
      * .Composite, org.talend.core.model.components.IComponent)
@@ -248,7 +248,7 @@ public class WebServiceHelper implements IWebServiceTos {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IWebService#getCurrentFunction()
      */
     @Override
@@ -262,7 +262,7 @@ public class WebServiceHelper implements IWebServiceTos {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IWebService#getTabFolder()
      */
     public CTabFolder getTabFolder() {
@@ -272,7 +272,7 @@ public class WebServiceHelper implements IWebServiceTos {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IWebService#getTable()
      */
     @Override
@@ -283,7 +283,7 @@ public class WebServiceHelper implements IWebServiceTos {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.wizards.metadata.connection.wsdl.webService.tree.WebServiceSaveListener#saveValue()
      */
     @Override
@@ -300,7 +300,7 @@ public class WebServiceHelper implements IWebServiceTos {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.service.IWebServiceTos#refreshUI()
      */
     @Override

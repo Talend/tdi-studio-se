@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -58,9 +58,9 @@ import org.talend.expressionbuilder.ui.proposal.ExpressionContentProposal;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: CategoryComposite.java 上午10:10:58 2007-7-24 +0000 (2007-7-24) yzhang $
- * 
+ *
  */
 public class CategoryComposite extends Composite {
 
@@ -78,7 +78,7 @@ public class CategoryComposite extends Composite {
 
     /**
      * Getter for selectedFunction.
-     * 
+     *
      * @return the selectedFunction
      */
     public static Function getSelectedFunction() {
@@ -91,7 +91,7 @@ public class CategoryComposite extends Composite {
 
     /**
      * Create the composite
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -223,7 +223,7 @@ public class CategoryComposite extends Composite {
 
     /**
      * bqian Comment method "initializeData".
-     * 
+     *
      * @param categoryViewer
      */
     private void initializeData(ListViewer categoryViewer) {
@@ -240,9 +240,9 @@ public class CategoryComposite extends Composite {
 
     /**
      * yzhang CategoryComposite class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: CategoryComposite.java 上午10:11:21 2007-7-24 +0000 (2007-7-24) yzhang $
-     * 
+     *
      */
     class UIRelationShipLinker {
 
@@ -366,7 +366,7 @@ public class CategoryComposite extends Composite {
 
     /**
      * yzhang Comment method "getProposals".
-     * 
+     *
      * @return
      */
     public IContentProposal[] getProposals(String categoryFunction, int position) {
@@ -447,15 +447,15 @@ public class CategoryComposite extends Composite {
 
     /**
      * yzhang CategoryComposite class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: CategoryComposite.java 下午01:57:54 2007-7-30 +0000 (2007-7-30) yzhang $
-     * 
+     *
      */
     class CategoryFunctionCompartor implements Comparator<IContentProposal> {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
         @Override

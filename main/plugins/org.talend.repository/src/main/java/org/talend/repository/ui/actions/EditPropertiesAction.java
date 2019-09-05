@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -87,9 +87,9 @@ import org.talend.repository.ui.wizards.routines.EditRoutinePropertiesWizard;
 
 /**
  * smallet class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public class EditPropertiesAction extends AContextualAction {
 
@@ -195,7 +195,7 @@ public class EditPropertiesAction extends AContextualAction {
     /**
      * delete the used routine java file if the routine is renamed. This method is added for solving bug 1321, only
      * supply to talend java version.
-     * 
+     *
      * @param path
      * @param node
      * @param originalName
@@ -324,7 +324,7 @@ public class EditPropertiesAction extends AContextualAction {
 
     /**
      * Find the editor that is related to the node.
-     * 
+     *
      * @param node
      * @return
      */

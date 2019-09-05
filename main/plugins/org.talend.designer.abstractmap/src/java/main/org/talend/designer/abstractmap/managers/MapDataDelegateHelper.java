@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,9 +60,9 @@ public class MapDataDelegateHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "getExpressionColumns".
-     * 
+     *
      * @param expression -> if null, will return the all table for type
      * @param types ->
      * @return
@@ -113,9 +113,9 @@ public class MapDataDelegateHelper {
     }
 
     /**
-     * 
+     *
      * cli Comment method "getExpressionColumns".
-     * 
+     *
      */
     private Map<IExternalMapTable, List<IExternalMapEntry>> getExpressionColumns(List<? extends IExternalMapTable> checkedTables,
             String expression) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,7 +46,7 @@ public class ExpressionFigure extends Label implements IExpressionBuilderCell {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.Label#paintFigure(org.eclipse.draw2d.Graphics)
      */
     @Override

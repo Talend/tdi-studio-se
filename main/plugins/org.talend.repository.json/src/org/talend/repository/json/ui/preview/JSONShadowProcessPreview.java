@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,9 +29,9 @@ import org.talend.repository.model.json.SchemaTarget;
 
 /**
  * Create SWT Table to show the content of a file. <br/>
- * 
+ *
  * $Id:JSONShadowProcessPreview.java 1185 2006-12-22 10:43:29 +0000 (閺勭喐婀℃禍锟�22 閸椾椒绨╅張锟�006) amaumont $
- * 
+ *
  */
 public class JSONShadowProcessPreview {
 
@@ -68,7 +68,7 @@ public class JSONShadowProcessPreview {
 
     /**
      * Create Object to manage Preview and MetaData.
-     * 
+     *
      * @param compositeFileViewer
      * @param filepath (null or path)
      */
@@ -81,9 +81,9 @@ public class JSONShadowProcessPreview {
 
     /**
      * Create Table to show the content of a file.
-     * 
+     *
      * @return
-     * 
+     *
      */
     public void newTablePreview() {
         table = new Table(composite, SWT.BORDER);
@@ -102,7 +102,7 @@ public class JSONShadowProcessPreview {
 
     /**
      * refresh Header of table Preview.
-     * 
+     *
      * @param columns
      */
     public void refreshPreviewHeader(final String[] columns) {
@@ -133,7 +133,7 @@ public class JSONShadowProcessPreview {
 
     /**
      * refresh TablePreview width the first rows of the file.
-     * 
+     *
      * @param csvArray
      * @param firstRowIsLabel
      */
@@ -226,7 +226,7 @@ public class JSONShadowProcessPreview {
 
     /**
      * refresh TablePreview width the first rows of the file.
-     * 
+     *
      * @param csvArray
      * @param firstRowIsLabel
      */
@@ -289,7 +289,7 @@ public class JSONShadowProcessPreview {
 
     /**
      * refresh TablePreview width the first rows of the file.
-     * 
+     *
      * @param csvArray
      * @param firstRowIsLabel
      */
@@ -326,7 +326,7 @@ public class JSONShadowProcessPreview {
 
     /**
      * refresh TablePreview width the first rows of the file.
-     * 
+     *
      * @param csvArray
      * @param firstRowIsLabel
      */
@@ -415,7 +415,7 @@ public class JSONShadowProcessPreview {
 
     /**
      * refresh the Item of Preview.
-     * 
+     *
      * @param csvRows
      * @param firstRowIsLabel
      */
@@ -452,7 +452,7 @@ public class JSONShadowProcessPreview {
 
     /**
      * Getter for filePath.
-     * 
+     *
      * @return the filePath
      */
     public String getFilePath() {
@@ -461,7 +461,7 @@ public class JSONShadowProcessPreview {
 
     /**
      * Sets the filePath.
-     * 
+     *
      * @param filePath the filePath to set
      */
     public void setFilePath(String filePath) {
@@ -470,7 +470,7 @@ public class JSONShadowProcessPreview {
 
     /**
      * Getter for header.
-     * 
+     *
      * @return the header
      */
     public String[] getHeader() {

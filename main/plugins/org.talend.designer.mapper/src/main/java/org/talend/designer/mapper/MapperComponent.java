@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -80,9 +80,9 @@ import org.talend.designer.mapper.utils.problems.ProblemsAnalyser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MapperComponent extends AbstractMapComponent implements IHashableInputConnections {
 
@@ -103,7 +103,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#initialize()
      */
     @Override
@@ -120,7 +120,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#getPersistentData()
      */
     @Override
@@ -139,7 +139,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#open(org.eclipse.swt.widgets.Display)
      */
     public int open(final Display display) {
@@ -262,7 +262,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#open()
      */
     public int open(final Composite parent) {
@@ -275,7 +275,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#setPersistentData(java.lang.Object)
      */
     public void setExternalData(IExternalData externalData) {
@@ -284,7 +284,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getGeneratedCode()
      */
     public String getGeneratedCode() {
@@ -300,7 +300,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getMetadataList()
      */
     @Override
@@ -310,7 +310,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#setMetadataList(java.util.List)
      */
     @Override
@@ -320,7 +320,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#setExternalXmlData(java.io.InputStream)
      */
     // public void loadDataIn(InputStream in, Reader stringReader) throws IOException, ClassNotFoundException {
@@ -345,7 +345,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#loadDataOut(java.io.OutputStream, java.io.Writer)
      */
     // public void loadDataOut(final OutputStream out, Writer writer) throws IOException {
@@ -480,11 +480,17 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         ExternalMapperData data = mapperMain.buildExternalData();
         if (mapperMain != null && data != null) {
             if (externalData != null) {
-                this.externalData = data;// fwang fixed bug TDI-8027
+                if(!isConnectionEmpty()) {
+                    this.externalData = data;// fwang fixed bug TDI-8027
+                }
                 MapperHelper.saveDataToEmf(data, emfMapperData);
             }
         }
         return emfMapperData;
+    }
+
+    private boolean isConnectionEmpty() {
+        return getIncomingConnections().isEmpty() && getOutgoingConnections().isEmpty();
     }
 
     public void renameInputConnection(String oldConnectionName, String newConnectionName) {
@@ -557,7 +563,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /**
      * DOC amaumont Comment method "replaceLocations".
-     * 
+     *
      * @param oldLocation
      * @param newLocation
      * @param tableRenamed TODO
@@ -634,7 +640,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#getProblems()
      */
     @Override
@@ -646,7 +652,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /**
      * Getter for mapperMain.
-     * 
+     *
      * @return the mapperMain
      */
     public MapperMain getMapperMain() {
@@ -655,7 +661,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getComponentDocumentation(java.lang.String, java.lang.String)
      */
     public IComponentDocumentation getComponentDocumentation(String componentLabel, String tempFolderPath) {
@@ -689,7 +695,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IHashableInputConnections#getHashConfiguration(java.lang.String)
      */
     public IHashConfiguration getHashConfiguration(String connectionName) {
@@ -747,9 +753,9 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "hasOrRenameData".
-     * 
+     *
      * @param oldName
      * @param newName can be null if <code>renameAction</code> is false
      * @param renameAction true to rename in all expressions, false to get boolean if present in one of the expressions
@@ -814,7 +820,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#isRunRefSubProcessAtStart(java.lang.String)
      */
     @Override
@@ -836,7 +842,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isUseLoopOnConditionalOutput(java.lang.String)
      */
     @Override
@@ -909,10 +915,10 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         return routinesToAdd;
 
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#getIODataComponents()
      */
     @Override

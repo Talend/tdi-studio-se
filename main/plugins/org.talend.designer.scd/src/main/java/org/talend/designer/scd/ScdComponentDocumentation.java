@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,7 @@ import org.talend.core.model.process.IComponentDocumentation;
 
 /**
  * This class is used for generating HTML file for t*SCD Component .
- * 
+ *
  */
 public class ScdComponentDocumentation implements IComponentDocumentation {
 
@@ -47,7 +47,7 @@ public class ScdComponentDocumentation implements IComponentDocumentation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#getHTMLFile()
      */
     public URL getHTMLFile() {
@@ -85,7 +85,7 @@ public class ScdComponentDocumentation implements IComponentDocumentation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#setComponentName(java.lang.String)
      */
     public void setComponentName(String componentName) {
@@ -94,7 +94,7 @@ public class ScdComponentDocumentation implements IComponentDocumentation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#setTempFolderPath(java.lang.String)
      */
     public void setTempFolderPath(String tempFolderpath) {
@@ -114,7 +114,7 @@ public class ScdComponentDocumentation implements IComponentDocumentation {
 
     /**
      * Sets the preview picture path of component.
-     * 
+     *
      * @param previewPicPath
      */
     public void setPreviewPicPath(String previewPicPath) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -115,7 +115,7 @@ public class MigrateDeprecatedHadoopDistribution1 extends AbstractAllJobMigratio
             EList elementParameters = parameters.getElementParameter();
             for (int i = 0; i < elementParameters.size(); i++) {
                 ElementParameterType param = (ElementParameterType) elementParameters.get(i);
-                if ("MR_VERSION".equals(param.getName())) { //$NON-NLS-1$ 
+                if ("MR_VERSION".equals(param.getName())) { //$NON-NLS-1$
                     if (values.containsKey(param.getValue())) {
                         param.setValue(values.get(param.getValue()));
                         modified = true;

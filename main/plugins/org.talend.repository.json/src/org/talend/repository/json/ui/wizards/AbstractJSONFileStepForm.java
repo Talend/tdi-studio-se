@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,9 +53,9 @@ import org.talend.repository.model.json.JsonFactory;
 
 /**
  * DOC cantoine class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: AbstractJSONFileStepForm.java 48226 2010-09-14 10:04:12Z hywang $
- * 
+ *
  */
 public abstract class AbstractJSONFileStepForm extends AbstractJSONStepForm {
 
@@ -77,7 +77,7 @@ public abstract class AbstractJSONFileStepForm extends AbstractJSONStepForm {
 
     /**
      * DOC cantoine AbstractJSONFileStepForm constructor comment. Use to step2
-     * 
+     *
      * @param parent
      * @param connection2
      */

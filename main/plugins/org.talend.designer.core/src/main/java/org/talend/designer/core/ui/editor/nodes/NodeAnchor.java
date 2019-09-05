@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -50,7 +50,7 @@ public class NodeAnchor extends ChopboxAnchor {
 
     /**
      * bqian NodeAnchor constructor comment.
-     * 
+     *
      * @param owner
      */
     public NodeAnchor(NodeFigure owner, IGraphicalNode source, boolean isTargetAnchor) {
@@ -72,7 +72,7 @@ public class NodeAnchor extends ChopboxAnchor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.ChopboxAnchor#getLocation(org.eclipse.draw2d.geometry.Point)
      */
     @Override
@@ -140,7 +140,7 @@ public class NodeAnchor extends ChopboxAnchor {
 
     /**
      * DOC nrousseau Comment method "getViewport".
-     * 
+     *
      * @return
      */
     private FreeformViewport getViewport() {
@@ -303,7 +303,7 @@ public class NodeAnchor extends ChopboxAnchor {
 
     /**
      * DOC nrousseau Comment method "calculateLocationFromRef".
-     * 
+     *
      * @param sourceRect
      * @param targetRect
      * @param sourcePoint
@@ -422,7 +422,7 @@ public class NodeAnchor extends ChopboxAnchor {
 
     /**
      * Sets the connection.
-     * 
+     *
      * @param connection the connection to set
      */
     public void setConnection(Connection connection) {

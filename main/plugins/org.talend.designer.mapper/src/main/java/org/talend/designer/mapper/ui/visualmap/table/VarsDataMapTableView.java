@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -61,9 +61,9 @@ import org.talend.designer.mapper.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class VarsDataMapTableView extends DataMapTableView {
 
@@ -79,7 +79,7 @@ public class VarsDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#createContent()
      */
     @Override
@@ -137,7 +137,7 @@ public class VarsDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#notifyFocusLost()
      */
     @Override
@@ -299,7 +299,7 @@ public class VarsDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#initTableConstraints()
      */
     @Override
@@ -309,7 +309,7 @@ public class VarsDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#addEntriesActionsComponents()
      */
     @Override
@@ -320,7 +320,7 @@ public class VarsDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#getZone()
      */
     @Override
@@ -340,7 +340,7 @@ public class VarsDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#toolbarNeededToBeRightStyle()
      */
     @Override
@@ -501,7 +501,7 @@ public class VarsDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#hasDropDownToolBarItem()
      */
     @Override
@@ -511,7 +511,7 @@ public class VarsDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#getValidZonesForExpressionFilterField()
      */
     @Override
@@ -521,7 +521,7 @@ public class VarsDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#loaded()
      */
     @Override

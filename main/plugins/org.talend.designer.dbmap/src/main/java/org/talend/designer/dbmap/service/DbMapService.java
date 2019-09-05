@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,7 +60,7 @@ public class DbMapService implements IDbMapService {
                     }
                 }
             }
-            
+
             // do this when no alias in expression(or has alias which alias = old tableName, when tableName change to new, don't change alias in expression)
             for (OutputTable output : dbMapData.getOutputTables()) {
                 List<DBMapperTableEntry> entries = output.getDBMapperTableEntries();
@@ -72,7 +72,7 @@ public class DbMapService implements IDbMapService {
                 }
             }
         }
-        
+
     }
 
     @Override

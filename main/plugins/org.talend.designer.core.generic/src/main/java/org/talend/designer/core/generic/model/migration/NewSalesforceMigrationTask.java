@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,7 +56,7 @@ public class NewSalesforceMigrationTask extends NewComponentFrameworkMigrationTa
         }
         return props;
     }
-    
+
     @Override
     protected ElementParameterType getParameterType(NodeType node, String paramName) {
     	ElementParameterType paramType = ParameterUtilTool.findParameterType(node, paramName);
@@ -90,13 +90,13 @@ public class NewSalesforceMigrationTask extends NewComponentFrameworkMigrationTa
             		paramType.setValue("Basic");
             	} else if("OAUTH".equals(value)) {
             		paramType.setValue("OAuth");
-            		
+
             	}
             }
     	}
     	return paramType;
     }
-    
+
 	public Object getTableValue(ElementParameterType paramType) {
 
 		List<Map<String, Object>> tableValue = null;
@@ -130,7 +130,7 @@ public class NewSalesforceMigrationTask extends NewComponentFrameworkMigrationTa
 		}
 		return tableValue;
 	}
-	
+
     @Override
     protected void processUnmappedElementParameter(Properties props, NodeType nodeType, GenericElementParameter param,
             NamedThing currNamedThing) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.talend.commons.ui.swt.colorstyledtext.jedit.Modes;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40Z nrousseau $
- * 
+ *
  */
 public class KeyWordProposalProvider implements IContentProposalProvider {
 
@@ -35,9 +35,9 @@ public class KeyWordProposalProvider implements IContentProposalProvider {
     private String[] keyWorkKeysToLoad;
 
     /**
-     * 
+     *
      * DOC amaumont KeyWordProposalProvider constructor comment.
-     * 
+     *
      * @param languageMode
      * @param keyWorkKeysToLoad (ex: "KEYWORD1" or "KEYWORD2" or ...)
      */
@@ -61,7 +61,7 @@ public class KeyWordProposalProvider implements IContentProposalProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposalProvider#getProposals(java.lang.String, int)
      */
     public IContentProposal[] getProposals(String contents, int position) {

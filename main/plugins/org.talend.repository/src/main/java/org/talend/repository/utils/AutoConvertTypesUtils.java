@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,6 +33,8 @@ import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.model.metadata.types.AutoConversionType;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.utils.files.FileUtils;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -42,11 +44,9 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 /**
- * 
+ *
  * created by hcyi on Aug 22, 2016 Detailled comment
  *
  */
@@ -72,7 +72,7 @@ public class AutoConvertTypesUtils {
     public static List<AutoConversionType> load(File file) {
         beanList = new ArrayList<>();
         try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory documentBuilderFactory = XmlUtils.getSecureDocumentBuilderFactory();
             DocumentBuilder analyseur = documentBuilderFactory.newDocumentBuilder();
             analyseur.setErrorHandler(new ErrorHandler() {
 
@@ -110,7 +110,7 @@ public class AutoConvertTypesUtils {
     }
 
     public static boolean save(List<AutoConversionType> beans, File file) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = XmlUtils.getSecureDocumentBuilderFactory();
         OutputStreamWriter output = null;
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -147,13 +147,8 @@ public class AutoConvertTypesUtils {
 
             // save into file
             if (document != null) {
-                XMLSerializer serializer = new XMLSerializer();
-                OutputFormat outputFormat = new OutputFormat();
-                outputFormat.setIndenting(true);
-                serializer.setOutputFormat(outputFormat);
                 output = new OutputStreamWriter(new FileOutputStream(file));
-                serializer.setOutputCharStream(output);
-                serializer.serialize(document);
+                FileUtils.writeXMLFile(document, output);
                 // update
                 beanList = new ArrayList<>();
                 beanList.addAll(beans);

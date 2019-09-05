@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,7 +36,7 @@ import org.talend.designer.core.generic.model.GenericElementParameter;
  */
 public class DBDynamicComposite extends DynamicComposite{
 
-    public DBDynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element, 
+    public DBDynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element,
             ConnectionItem connectionItem, boolean isCompactView, Color backgroundColor, Form form, boolean drivedByForm) {
         super(parentComposite, styles, section, element, connectionItem, isCompactView, backgroundColor, form, drivedByForm);
     }

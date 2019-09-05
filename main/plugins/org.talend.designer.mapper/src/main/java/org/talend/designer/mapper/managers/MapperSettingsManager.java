@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,12 +30,12 @@ public class MapperSettingsManager {
 
     public static final String ROWS_BUFFER_SIZE = "ROWS_BUFFER_SIZE"; //$NON-NLS-1$
 
-    public static final String LOOKUP_IN_PARALLEL = "LKUP_PARALLELIZE"; //$NON-NLS-1$    
+    public static final String LOOKUP_IN_PARALLEL = "LKUP_PARALLELIZE"; //$NON-NLS-1$
 
     public static final String ENABLE_AUTO_CONVERT_TYPE = "ENABLE_AUTO_CONVERT_TYPE"; //$NON-NLS-1$
 
     public static final String LEVENSHTEIN = "LEVENSHTEIN"; //$NON-NLS-1$
-    
+
     public static final String JACCARD = "JACCARD"; //$NON-NLS-1$
 
     private static MapperSettingsManager instance = null;
@@ -50,7 +50,7 @@ public class MapperSettingsManager {
 
     /**
      * DOC ycbai Comment method "getInstance".
-     * 
+     *
      * @param manager
      * @return
      */
@@ -63,7 +63,7 @@ public class MapperSettingsManager {
 
     /**
      * DOC ycbai Comment method "getNewInstance".
-     * 
+     *
      * @param manager
      * @return
      */
@@ -210,7 +210,7 @@ public class MapperSettingsManager {
 
     /**
      * Getter for originalModel.
-     * 
+     *
      * @return the originalModel
      */
     public MapperSettingModel getOriginalModel() {
@@ -219,7 +219,7 @@ public class MapperSettingsManager {
 
     /**
      * Getter for currnentModel.
-     * 
+     *
      * @return the currnentModel
      */
     public MapperSettingModel getCurrnentModel() {
@@ -228,7 +228,7 @@ public class MapperSettingsManager {
 
     /**
      * Getter for defaultModel.
-     * 
+     *
      * @return the defaultModel
      */
     public MapperSettingModel getDefaultModel() {

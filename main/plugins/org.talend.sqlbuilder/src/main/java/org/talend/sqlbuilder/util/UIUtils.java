@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,9 +36,9 @@ import org.talend.sqlbuilder.ui.SQLBuilderDialog;
 
 /**
  * DOC qianbing class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: UIUtils.java,v 1.3 2006/11/07 07:37:22 qianbing Exp $
- * 
+ *
  */
 public class UIUtils {
 
@@ -50,7 +50,7 @@ public class UIUtils {
 
     /**
      * Display a error message if the db connection is failed DOC Comment method "checkConnection".
-     * 
+     *
      * @param parentShell
      * @param imetadataConnection
      */
@@ -73,7 +73,7 @@ public class UIUtils {
 
     /**
      * Open a error dialog.
-     * 
+     *
      * @param msg String
      * @param e Exception
      */
@@ -97,11 +97,11 @@ public class UIUtils {
      * run, and closed after it completes. It is recommended that <code>fork</code> is set to true in most cases. If
      * <code>fork</code> is set to <code>false</code>, the runnable will run in the UI thread and it is the runnable's
      * responsibility to call <code>Display.readAndDispatch()</code> to ensure UI responsiveness.
-     * 
-     * 
+     *
+     *
      * <pre>
      * final IRunnableWithProgress r = new IRunnableWithProgress() {
-     * 
+     *
      *     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
      *         monitor.beginTask(&quot;test task&quot;, 100);
      *         for (int i = 0; i &lt; 100; i++) {
@@ -119,7 +119,7 @@ public class UIUtils {
      */
     /**
      * DOC dev Comment method "runWithProgress".
-     * 
+     *
      * @param operation
      * @param fork
      * @param monitor

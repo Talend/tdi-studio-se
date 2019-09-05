@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.talend.repository.model.IRepositoryService;
 
 /**
  * Activator for Code Generator.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class CodeGeneratorActivator extends AbstractUIPlugin {
 
@@ -52,7 +52,7 @@ public class CodeGeneratorActivator extends AbstractUIPlugin {
 
     /**
      * DOC get a implement of RunProcessService.
-     * 
+     *
      * @return
      */
     public IRunProcessService getRunProcessService() {
@@ -62,7 +62,7 @@ public class CodeGeneratorActivator extends AbstractUIPlugin {
 
     /**
      * DOC qian Gets the RepositoryService.
-     * 
+     *
      * @return IRepositoryService
      */
     public IRepositoryService getRepositoryService() {
@@ -72,7 +72,7 @@ public class CodeGeneratorActivator extends AbstractUIPlugin {
 
     /**
      * DOC Gets the DesignerCoreService.
-     * 
+     *
      * @return IDesignerCoreService
      */
     public IDesignerCoreService getDesignerCoreService() {

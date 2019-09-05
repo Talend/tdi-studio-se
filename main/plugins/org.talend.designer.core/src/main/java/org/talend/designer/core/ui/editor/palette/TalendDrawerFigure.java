@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,7 +48,7 @@ import org.talend.themes.core.elements.stylesettings.CommonCSSStyleSetting;
 import org.talend.themes.core.elements.stylesettings.TalendPaletteCSSStyleSetting;
 
 /**
- * 
+ *
  */
 public class TalendDrawerFigure extends DrawerFigure {
 
@@ -481,7 +481,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for titleBorder.
-         * 
+         *
          * @return the titleBorder
          */
         public Border getTitleBorder() {
@@ -490,7 +490,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the titleBorder.
-         * 
+         *
          * @param titleBorder the titleBorder to set
          */
         public void setTitleBorder(Border titleBorder) {
@@ -503,7 +503,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for baseColor.
-         * 
+         *
          * @return the baseColor
          */
         public Color getBaseColor() {
@@ -512,7 +512,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the baseColor.
-         * 
+         *
          * @param baseColor the baseColor to set
          */
         public void setBaseColor(Color baseColor) {
@@ -521,7 +521,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for cOLOR_INCREMENT.
-         * 
+         *
          * @return the cOLOR_INCREMENT
          */
         public int getColorIncrement() {
@@ -530,7 +530,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the cOLOR_INCREMENT.
-         * 
+         *
          * @param cOLOR_INCREMENT the cOLOR_INCREMENT to set
          */
         public void setColorIncrement(int colorIncrement) {
@@ -539,7 +539,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for x_OFFSET.
-         * 
+         *
          * @return the x_OFFSET
          */
         public int getXOffset() {
@@ -548,7 +548,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the x_OFFSET.
-         * 
+         *
          * @param x_OFFSET the x_OFFSET to set
          */
         public void setXOffset(int xOffset) {
@@ -557,7 +557,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for titleMarginBorder.
-         * 
+         *
          * @return the titleMarginBorder
          */
         public Border getTitleMarginBorder() {
@@ -566,7 +566,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the titleMarginBorder.
-         * 
+         *
          * @param titleMarginBorder the titleMarginBorder to set
          */
         public void setTitleMarginBorder(Border titleMarginBorder) {
@@ -579,7 +579,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for collapseTopBorderForgroundLineColor1.
-         * 
+         *
          * @return the collapseTopBorderForgroundLineColor1
          */
         public Color getCollapseTopBorderForgroundLineColor1() {
@@ -588,7 +588,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the collapseTopBorderForgroundLineColor1.
-         * 
+         *
          * @param collapseTopBorderForgroundLineColor1 the collapseTopBorderForgroundLineColor1 to set
          */
         public void setCollapseTopBorderForgroundLineColor1(Color collapseTopBorderForgroundLineColor1) {
@@ -597,7 +597,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for collapseTopBorderForgroundLineColor2.
-         * 
+         *
          * @return the collapseTopBorderForgroundLineColor2
          */
         public Color getCollapseTopBorderForgroundLineColor2() {
@@ -606,7 +606,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the collapseTopBorderForgroundLineColor2.
-         * 
+         *
          * @param collapseTopBorderForgroundLineColor2 the collapseTopBorderForgroundLineColor2 to set
          */
         public void setCollapseTopBorderForgroundLineColor2(Color collapseTopBorderForgroundLineColor2) {
@@ -615,7 +615,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for collapseExpandedLineForgroundColor.
-         * 
+         *
          * @return the collapseExpandedLineForgroundColor
          */
         public Color getCollapseExpandedLineForgroundColor() {
@@ -624,7 +624,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the collapseExpandedLineForgroundColor.
-         * 
+         *
          * @param collapseExpandedLineForgroundColor the collapseExpandedLineForgroundColor to set
          */
         public void setCollapseExpandedLineForgroundColor(Color collapseExpandedLineForgroundColor) {
@@ -633,7 +633,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for collapseNotExpandedLineForgroundColor.
-         * 
+         *
          * @return the collapseNotExpandedLineForgroundColor
          */
         public Color getCollapseNotExpandedLineForgroundColor() {
@@ -642,7 +642,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the collapseNotExpandedLineForgroundColor.
-         * 
+         *
          * @param collapseNotExpandedLineForgroundColor the collapseNotExpandedLineForgroundColor to set
          */
         public void setCollapseNotExpandedLineForgroundColor(Color collapseNotExpandedLineForgroundColor) {
@@ -651,7 +651,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for expandedBackgroundColor.
-         * 
+         *
          * @return the expandedBackgroundColor
          */
         public Color getExpandedBackgroundColor() {
@@ -660,7 +660,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the expandedBackgroundColor.
-         * 
+         *
          * @param expandedBackgroundColor the expandedBackgroundColor to set
          */
         public void setExpandedBackgroundColor(Color expandedBackgroundColor) {
@@ -669,7 +669,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for mouseOverForgroundColor1.
-         * 
+         *
          * @return the mouseOverForgroundColor1
          */
         public Color getMouseOverForgroundColor1() {
@@ -678,7 +678,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the mouseOverForgroundColor1.
-         * 
+         *
          * @param mouseOverForgroundColor1 the mouseOverForgroundColor1 to set
          */
         public void setMouseOverForgroundColor1(Color mouseOverForgroundColor1) {
@@ -687,7 +687,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for mouseOverForgroundColor2.
-         * 
+         *
          * @return the mouseOverForgroundColor2
          */
         public Color getMouseOverForgroundColor2() {
@@ -696,7 +696,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the mouseOverForgroundColor2.
-         * 
+         *
          * @param mouseOverForgroundColor2 the mouseOverForgroundColor2 to set
          */
         public void setMouseOverForgroundColor2(Color mouseOverForgroundColor2) {
@@ -705,7 +705,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for mouseOverForgroundColor3.
-         * 
+         *
          * @return the mouseOverForgroundColor3
          */
         public Color getMouseOverForgroundColor3() {
@@ -714,7 +714,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the mouseOverForgroundColor3.
-         * 
+         *
          * @param mouseOverForgroundColor3 the mouseOverForgroundColor3 to set
          */
         public void setMouseOverForgroundColor3(Color mouseOverForgroundColor3) {
@@ -723,7 +723,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for mouseOverBackgroundColor1.
-         * 
+         *
          * @return the mouseOverBackgroundColor1
          */
         public Color getMouseOverBackgroundColor1() {
@@ -732,7 +732,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the mouseOverBackgroundColor1.
-         * 
+         *
          * @param mouseOverBackgroundColor1 the mouseOverBackgroundColor1 to set
          */
         public void setMouseOverBackgroundColor1(Color mouseOverBackgroundColor1) {
@@ -741,7 +741,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for mouseOverBackgroundColor2.
-         * 
+         *
          * @return the mouseOverBackgroundColor2
          */
         public Color getMouseOverBackgroundColor2() {
@@ -750,7 +750,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the mouseOverBackgroundColor2.
-         * 
+         *
          * @param mouseOverBackgroundColor2 the mouseOverBackgroundColor2 to set
          */
         public void setMouseOverBackgroundColor2(Color mouseOverBackgroundColor2) {
@@ -759,7 +759,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for mouseOverBackgroundColor3.
-         * 
+         *
          * @return the mouseOverBackgroundColor3
          */
         public Color getMouseOverBackgroundColor3() {
@@ -768,7 +768,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the mouseOverBackgroundColor3.
-         * 
+         *
          * @param mouseOverBackgroundColor3 the mouseOverBackgroundColor3 to set
          */
         public void setMouseOverBackgroundColor3(Color mouseOverBackgroundColor3) {
@@ -777,7 +777,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for collapsedForgroundColor.
-         * 
+         *
          * @return the collapsedForgroundColor
          */
         public Color getCollapsedForgroundColor() {
@@ -786,7 +786,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the collapsedForgroundColor.
-         * 
+         *
          * @param collapsedForgroundColor the collapsedForgroundColor to set
          */
         public void setCollapsedForgroundColor(Color collapsedForgroundColor) {
@@ -795,7 +795,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for collapsedBackgroundColor.
-         * 
+         *
          * @return the collapsedBackgroundColor
          */
         public Color getCollapsedBackgroundColor() {
@@ -804,7 +804,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the collapsedBackgroundColor.
-         * 
+         *
          * @param collapsedBackgroundColor the collapsedBackgroundColor to set
          */
         public void setCollapsedBackgroundColor(Color collapsedBackgroundColor) {
@@ -813,7 +813,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for scrollPaneBorder.
-         * 
+         *
          * @return the scrollPaneBorder
          */
         public Border getScrollPaneBorder() {
@@ -822,7 +822,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the scrollPaneBorder.
-         * 
+         *
          * @param scrollPaneBorder the scrollPaneBorder to set
          */
         public void setScrollPaneBorder(Border scrollPaneBorder) {
@@ -835,7 +835,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Getter for scrollPaneListBorder.
-         * 
+         *
          * @return the scrollPaneListBorder
          */
         public Border getScrollPaneListBorder() {
@@ -844,7 +844,7 @@ public class TalendDrawerFigure extends DrawerFigure {
 
         /**
          * Sets the scrollPaneListBorder.
-         * 
+         *
          * @param scrollPaneListBorder the scrollPaneListBorder to set
          */
         public void setScrollPaneListBorder(Border scrollPaneListBorder) {

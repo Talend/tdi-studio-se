@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,9 +23,9 @@ import org.talend.repository.model.RepositoryNode;
 
 /**
  * Page of the Job Scripts Export Wizard. <br/>
- * 
+ *
  * @referto WizardArchiveFileResourceExportPage1 $Id: JobScriptsExportWizardPage.java 1 2006-12-13 下午03:09:07 bqian
- * 
+ *
  */
 public abstract class ConfigExternalLibPage extends WizardPage {
 
@@ -33,7 +33,7 @@ public abstract class ConfigExternalLibPage extends WizardPage {
 
     /**
      * Getter for selection.
-     * 
+     *
      * @return the selection
      */
     public IStructuredSelection getSelection() {
@@ -42,7 +42,7 @@ public abstract class ConfigExternalLibPage extends WizardPage {
 
     /**
      * An abstract class for import external Lib.
-     * 
+     *
      * @param pageName
      * @param title
      * @param titleImage
@@ -65,7 +65,7 @@ public abstract class ConfigExternalLibPage extends WizardPage {
 
     /**
      * Subclasses should implement this for its own business.
-     * 
+     *
      * @return
      */
     public boolean finish() {

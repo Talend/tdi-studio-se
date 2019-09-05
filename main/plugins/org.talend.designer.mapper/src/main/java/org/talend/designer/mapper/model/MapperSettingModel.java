@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -52,7 +52,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Getter for isDieOnError.
-     * 
+     *
      * @return the isDieOnError
      */
     public boolean isDieOnError() {
@@ -61,7 +61,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Sets the isDieOnError.
-     * 
+     *
      * @param isDieOnError the isDieOnError to set
      */
     public void setDieOnError(boolean isDieOnError) {
@@ -70,7 +70,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Getter for isLookInParallel.
-     * 
+     *
      * @return the isLookInParallel
      */
     public boolean isLookInParallel() {
@@ -79,7 +79,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Sets the isLookInParallel.
-     * 
+     *
      * @param isLookInParallel the isLookInParallel to set
      */
     public void setLookInParallel(boolean isLookInParallel) {
@@ -96,7 +96,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Getter for tempDataDir.
-     * 
+     *
      * @return the tempDataDir
      */
     public String getTempDataDir() {
@@ -105,7 +105,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Sets the tempDataDir.
-     * 
+     *
      * @param tempDataDir the tempDataDir to set
      */
     public void setTempDataDir(String tempDataDir) {
@@ -114,7 +114,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Getter for rowBufferSize.
-     * 
+     *
      * @return the rowBufferSize
      */
     public String getRowBufferSize() {
@@ -123,7 +123,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Sets the rowBufferSize.
-     * 
+     *
      * @param rowBufferSize the rowBufferSize to set
      */
     public void setRowBufferSize(String rowBufferSize) {
@@ -225,7 +225,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Getter for levenshteinWeight.
-     * 
+     *
      * @return the levenshteinWeight
      */
     public int getLevenshteinWeight() {
@@ -234,7 +234,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Sets the levenshteinWeight.
-     * 
+     *
      * @param levenshteinWeight the levenshteinWeight to set
      */
     public void setLevenshteinWeight(int levenshteinWeight) {
@@ -243,7 +243,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Getter for jaccardWeight.
-     * 
+     *
      * @return the jaccardWeight
      */
     public int getJaccardWeight() {
@@ -252,7 +252,7 @@ public class MapperSettingModel implements Cloneable {
 
     /**
      * Sets the jaccardWeight.
-     * 
+     *
      * @param jaccardWeight the jaccardWeight to set
      */
     public void setJaccardWeight(int jaccardWeight) {

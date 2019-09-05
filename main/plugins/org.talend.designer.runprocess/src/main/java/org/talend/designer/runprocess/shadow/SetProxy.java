@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,16 +22,16 @@ public class SetProxy extends ShadowNode {
 
     /**
      * DOC Administrator SetProxy constructor comment.
-     * 
+     *
      * @param componentName
      */
     public SetProxy(String type, String host, String port, String username, String pass, String nonproxy) {
         super("tSetProxy");
-        TextElementParameter param0 = new TextElementParameter("PROXY_TYPE", TalendTextUtils.addQuotes(type)); //$NON-NLS-1$ 
+        TextElementParameter param0 = new TextElementParameter("PROXY_TYPE", TalendTextUtils.addQuotes(type)); //$NON-NLS-1$
         TextElementParameter param1 = new TextElementParameter("PROXY_HOST", TalendTextUtils.addQuotes(host)); //$NON-NLS-1$
         TextElementParameter param2 = new TextElementParameter("PROXY_PORT", TalendTextUtils.addQuotes(port)); //$NON-NLS-1$
-        TextElementParameter param3 = new TextElementParameter("PROXY_USERNAME", TalendTextUtils.addQuotes(username)); //$NON-NLS-1$ 
-        TextElementParameter param4 = new TextElementParameter("PROXY_PASSWORD", TalendTextUtils.addQuotes(pass)); //$NON-NLS-1$ 
+        TextElementParameter param3 = new TextElementParameter("PROXY_USERNAME", TalendTextUtils.addQuotes(username)); //$NON-NLS-1$
+        TextElementParameter param4 = new TextElementParameter("PROXY_PASSWORD", TalendTextUtils.addQuotes(pass)); //$NON-NLS-1$
         TextElementParameter param5 = new TextElementParameter("NONPROXYHOSTS", TalendTextUtils.addQuotes(nonproxy)); //$NON-NLS-1$ //$NON-NLS-2$
 
         addParameter(param0);

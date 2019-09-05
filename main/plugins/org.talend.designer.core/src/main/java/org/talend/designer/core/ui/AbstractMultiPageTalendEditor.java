@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -411,7 +411,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.MultiPageEditorPart#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
      */
     @Override
@@ -508,7 +508,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * Refresh the editor/process to the given refreshedItem version
-     * 
+     *
      * @param refreshedItem
      * @param force
      */
@@ -572,7 +572,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.editor.INameRefresher#refreshName()
      */
     @Override
@@ -625,7 +625,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * DOC bqian Comment method "selectNode".
-     * 
+     *
      * @param node
      */
     @SuppressWarnings("unchecked")
@@ -656,7 +656,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * DOC bqian Comment method "selectNode".
-     * 
+     *
      * @param node
      */
     @SuppressWarnings("unchecked")
@@ -871,7 +871,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * Move Cursor to Selected Node.
-     * 
+     *
      * @param processor
      */
     private void moveCursorToSelectedComponent() {
@@ -901,7 +901,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.MultiPageEditorPart#createPages()
      */
     @Override
@@ -1098,7 +1098,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * get the current project generating code language.
-     * 
+     *
      * @return the current generating code language
      */
     private ECodeLanguage getCurrentLang() {
@@ -1484,13 +1484,13 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * Move Cursor to Selected Node.
-     * 
+     *
      * @param processor
      */
 
     /**
      * Get the selected Node if any.
-     * 
+     *
      * @return the component selected name or null if component is not found or is not activated
      */
     public String getSelectedNodeName() {
@@ -1522,9 +1522,9 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "isVirtualNode".
-     * 
+     *
      * @param node
      * @return
      */
@@ -1562,7 +1562,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * DOC amaumont Comment method "getSelectedNode".
-     * 
+     *
      * @return
      */
     public Node getSelectedGraphicNode() {
@@ -1688,7 +1688,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * Getter for process.
-     * 
+     *
      * @return the process
      */
     @Override
@@ -1708,7 +1708,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * DOC bqian Comment method "selectNode".
-     * 
+     *
      * @param node
      */
     public void selectNode(INode node) {
@@ -1750,14 +1750,14 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * DOC qzhang Comment method "getEditorId".
-     * 
+     *
      * @return
      */
     public abstract String getEditorId();
 
     /**
      * Getter for keepPropertyLocked.
-     * 
+     *
      * @return the keepPropertyLocked
      */
     public boolean isKeepPropertyLocked() {
@@ -1766,7 +1766,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * Sets the keepPropertyLocked.
-     * 
+     *
      * @param keepPropertyLocked the keepPropertyLocked to set
      */
     public void setKeepPropertyLocked(boolean keepPropertyLocked) {
@@ -1775,7 +1775,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /**
      * Getter for codeEditor.
-     * 
+     *
      * @return the codeEditor
      */
     public TalendJavaEditor getCodeEditor() {
@@ -1868,7 +1868,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.MultiPageEditorPart#initializePageSwitching()
      */
     @Override

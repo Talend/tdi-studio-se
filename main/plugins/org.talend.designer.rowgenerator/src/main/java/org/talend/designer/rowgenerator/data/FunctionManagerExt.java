@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.utils.json.JSONObject;
 
 /**
  * class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FunctionManager.java,v 1.13 2007/01/31 05:20:51 pub Exp $
- * 
+ *
  */
 public class FunctionManagerExt extends FunctionManager {
 
@@ -160,7 +160,7 @@ public class FunctionManagerExt extends FunctionManager {
 
     /**
      * qzhang Comment method "isAvailableSubValue".
-     * 
+     *
      * @param value
      * @return
      */
@@ -252,7 +252,7 @@ public class FunctionManagerExt extends FunctionManager {
 
     /**
      * qzhang Comment method "createPureFunctions".
-     * 
+     *
      * @param value
      * @param funs
      * @param currentFun

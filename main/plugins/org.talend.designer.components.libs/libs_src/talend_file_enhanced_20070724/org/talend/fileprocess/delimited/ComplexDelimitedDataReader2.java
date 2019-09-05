@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,9 +29,9 @@ import java.text.NumberFormat;
  * A stream based parser for parsing delimited text data from a reader. this
  * class only works when the field delimiter is a String which length is > 1,
  * and the record delimiter is a single character.<br/>
- * 
+ *
  * @author gke
- * 
+ *
  */
 final class ComplexDelimitedDataReader2 extends DelimitedDataReader {
 
@@ -371,7 +371,7 @@ final class ComplexDelimitedDataReader2 extends DelimitedDataReader {
 
 	/**
 	 * A buffer structure that used to load data from stream for processing.
-	 * 
+	 *
 	 * @author gke
 	 */
 	private class StreamBuffer {

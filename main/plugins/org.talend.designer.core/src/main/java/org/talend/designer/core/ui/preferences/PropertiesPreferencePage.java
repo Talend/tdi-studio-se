@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.talend.designer.core.i18n.Messages;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: PropertiesPreferencePage.java 下午02:13:35 2007-8-24 +0000 (2007-8-24) yzhang $
- * 
+ *
  * @deprecated moved to AppearancePreferencePage
  */
 public class PropertiesPreferencePage extends FieldEditorPreferencePage {
@@ -44,7 +44,7 @@ public class PropertiesPreferencePage extends FieldEditorPreferencePage {
 
     /**
      * yzhang Comment method "createPageLayout".
-     * 
+     *
      * @param parent
      * @return
      */
@@ -57,7 +57,7 @@ public class PropertiesPreferencePage extends FieldEditorPreferencePage {
 
     /**
      * yzhang Comment method "createFontAndColorGroup".
-     * 
+     *
      * @param parent
      * @return
      */

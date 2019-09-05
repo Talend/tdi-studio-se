@@ -23,6 +23,7 @@ import org.talend.designer.runtime.visualization.IJvmAttachHandler;
 import org.talend.designer.runtime.visualization.JvmCoreException;
 import org.talend.designer.runtime.visualization.tools.Activator;
 
+
 /**
  * The JVM attach handler that contributes to the extension point <tt>org.jvmmonitor.core.jvmAttachHandler</tt>.
  */
@@ -162,7 +163,7 @@ public class JvmAttachHandler implements IJvmAttachHandler, IPropertyChangeListe
             mainClass = getMainClass(monitoredVm, pid);
             try {
                 localConnectorAddress = getLocalConnectorAddress(monitoredVm, pid);
-            } catch (JvmCoreException e) {
+            } catch (JvmCoreException  e) {
                 stateMessage = e.getMessage();
                 String message = NLS.bind(Messages.getLocalConnectorAddressFailedMsg, pid);
                 Activator.log(IStatus.WARNING, message, e);
@@ -215,7 +216,7 @@ public class JvmAttachHandler implements IJvmAttachHandler, IPropertyChangeListe
         }
         return mainClass;
     }
-
+    
     /**
      * Gets the local connector address.
      * 
@@ -232,21 +233,26 @@ public class JvmAttachHandler implements IJvmAttachHandler, IPropertyChangeListe
         Object virtualMachine = null;
         try {
             virtualMachine = tools.invokeAttach(pid);
+            if (virtualMachine != null) {
+                try {
+                    url = (String) tools.invokeStartLocalManagementAgent(virtualMachine);
+                } catch (JvmCoreException e) {
+                    // ignore
+                }
+                if (url == null) {
+                    String javaHome = ((Properties) tools.invokeGetSystemProperties(virtualMachine))
+                            .getProperty(IConstants.JAVA_HOME_PROPERTY_KEY);
+                    File file = new File(javaHome + IConstants.MANAGEMENT_AGENT_JAR);
+                    if (!file.exists()) {
+                        String message = NLS.bind(Messages.fileNotFoundMsg, file.getPath());
+                        throw new JvmCoreException(IStatus.ERROR, message, new Exception());
+                    }
+                    tools.invokeLoadAgent(virtualMachine, file.getAbsolutePath(), IConstants.JMX_REMOTE_AGENT);
 
-            String javaHome = ((Properties) tools.invokeGetSystemProperties(virtualMachine))
-                    .getProperty(IConstants.JAVA_HOME_PROPERTY_KEY);
-
-            File file = new File(javaHome + IConstants.MANAGEMENT_AGENT_JAR);
-
-            if (!file.exists()) {
-                String message = NLS.bind(Messages.fileNotFoundMsg, file.getPath());
-                throw new JvmCoreException(IStatus.ERROR, message, new Exception());
+                    Properties props = tools.invokeGetAgentProperties(virtualMachine);
+                    url = (String) props.get(LOCAL_CONNECTOR_ADDRESS);
+                }
             }
-
-            tools.invokeLoadAgent(virtualMachine, file.getAbsolutePath(), IConstants.JMX_REMOTE_AGENT);
-
-            Properties props = tools.invokeGetAgentProperties(virtualMachine);
-            url = (String) props.get(LOCAL_CONNECTOR_ADDRESS);
         } finally {
             if (virtualMachine != null) {
                 try {

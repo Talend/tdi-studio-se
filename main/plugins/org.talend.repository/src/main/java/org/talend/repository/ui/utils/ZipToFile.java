@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,9 +51,9 @@ public class ZipToFile {
     }
 
     /**
-     * 
+     *
      * DOC wzhang Comment method "copyFile".
-     * 
+     *
      * @param src
      * @param dest
      */
@@ -93,9 +93,9 @@ public class ZipToFile {
     }
 
     /**
-     * 
+     *
      * DOC aiming Comment method "zipFile".
-     * 
+     *
      * @param baseDir
      * @param zipFile
      * @throws Exception
@@ -126,9 +126,9 @@ public class ZipToFile {
     }
 
     /**
-     * 
+     *
      * DOC aiming Comment method "getAbsFileName".
-     * 
+     *
      * @param baseDir
      * @param realFileName
      * @return
@@ -158,9 +158,9 @@ public class ZipToFile {
     }
 
     /**
-     * 
+     *
      * DOC aiming Comment method "getSubFiles".
-     * 
+     *
      * @param baseDir
      * @return
      */
@@ -196,9 +196,9 @@ public class ZipToFile {
     }
 
     /**
-     * 
+     *
      * DOC aiming Comment method "unZipFile".
-     * 
+     *
      * @param zipfile
      * @param unzipdir
      * @throws Exception

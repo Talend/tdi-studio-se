@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ public final class JavaSampleCodeFactory implements ISampleCodeFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.utils.ISampleCodeFactory#generateCode(org.talend.designer.core.ui.editor.nodes.Node)
      */
@@ -66,9 +66,9 @@ public final class JavaSampleCodeFactory implements ISampleCodeFactory {
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "generateJavaRowCode". Generates Java code for the tJavaRow component in DI and BD.
-     * 
+     *
      * @param node
      * @return
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,22 +12,7 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.CLASSPATH_FILE_NAME;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_BEANS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_CODES;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS_SPARK;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBLETS_SPARK_STREAMING;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_JOBS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PIGUDFS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_MR;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_ROUTES;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_SERVICES;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_PROCESS_STORM;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_ROUTELETS;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.DIR_ROUTINES;
-import static org.talend.designer.maven.model.TalendJavaProjectConstants.PROJECT_FILE_NAME;
+import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
 
 import java.io.File;
 import java.util.HashMap;
@@ -78,6 +63,7 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.IDesignerCoreService;
+import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
@@ -207,6 +193,7 @@ public class TalendJavaProjectManager {
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
                 AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IFolder codeProjectFolder = helper.getProjectPomsFolder().getFolder(type.getFolder());
+                cleanUpCodeProject(monitor, codeProjectFolder);
                 IProject codeProject = root.getProject((projectTechName + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
                     // always enable maven nature for code projects.
@@ -218,7 +205,6 @@ public class TalendJavaProjectManager {
                 }
                 helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
                 talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
-                talendCodeJavaProject.cleanMavenFiles(monitor);
                 BuildCacheManager.getInstance().clearCodesCache(type);
                 talendCodeJavaProjects.put(codeProjectId, talendCodeJavaProject);
             } catch (Exception e) {
@@ -229,6 +215,41 @@ public class TalendJavaProjectManager {
         MavenPomSynchronizer.addChangeLibrariesListener();
 
         return talendCodeJavaProject;
+    }
+
+    private static void cleanUpCodeProject(IProgressMonitor monitor, IFolder codeProjectFolder) throws CoreException {
+        // empty the src/main/java...
+        IFolder srcFolder = codeProjectFolder.getFolder(MavenSystemFolders.JAVA.getPath());
+        cleanFolder(monitor, srcFolder);
+
+        // empty src/main/ext-resources
+        IFolder extResourcesFolder = codeProjectFolder.getFolder(MavenSystemFolders.EXT_RESOURCES.getPath());
+        cleanFolder(monitor, extResourcesFolder);
+
+        // empty src/main/resources
+        IFolder resourcesFolder = codeProjectFolder.getFolder(MavenSystemFolders.RESOURCES.getPath());
+        cleanFolder(monitor, resourcesFolder);
+
+        // empty the src/test/java
+        IFolder testSrcFolder = codeProjectFolder.getFolder(MavenSystemFolders.JAVA_TEST.getPath());
+        cleanFolder(monitor, testSrcFolder);
+
+        // empty the src/test/resources
+        IFolder testResourcesFolder = codeProjectFolder.getFolder(MavenSystemFolders.RESOURCES_TEST.getPath());
+        cleanFolder(monitor, testResourcesFolder);
+
+        // empty target
+        IFolder targetFolder = codeProjectFolder.getFolder(MavenSystemFolders.TARGET.getPath());
+        cleanFolder(monitor, targetFolder);
+    }
+
+    private static void cleanFolder(IProgressMonitor monitor, IFolder folder) throws CoreException {
+        if (folder != null && folder.exists()) {
+            IResource[] childrenRecs = folder.members();
+            for (IResource child : childrenRecs) {
+                child.delete(true, monitor);
+            }
+        }
     }
 
     public static ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
@@ -244,7 +265,7 @@ public class TalendJavaProjectManager {
         }
         boolean isService = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-            IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            IESBService service = GlobalServiceRegister.getDefault().getService(IESBService.class);
             isService = service.isServiceItem(property.getItem().eClass().getClassifierID());
         }
         if (!(property.getItem() instanceof ProcessItem) && !isService) {
@@ -253,7 +274,7 @@ public class TalendJavaProjectManager {
         ITalendProcessJavaProject talendJobJavaProject = null;
         try {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                ITestContainerProviderService testContainerService = GlobalServiceRegister
                         .getDefault().getService(ITestContainerProviderService.class);
                 if (testContainerService.isTestContainerItem(property.getItem())) {
                     property = testContainerService.getParentJobItem(property.getItem()).getProperty();
@@ -370,6 +391,8 @@ public class TalendJavaProjectManager {
                 }
                 if (property.getItem() instanceof JobletProcessItem) {
                     BuildCacheManager.getInstance().removeJobletCache(property);
+                } else {
+                    BuildCacheManager.getInstance().preRemoveJobCache(property);
                 }
                 IFile pomFile = AggregatorPomsHelper.getItemPomFolder(property, realVersion)
                         .getFile(TalendMavenConstants.POM_FILE_NAME);
@@ -518,8 +541,9 @@ public class TalendJavaProjectManager {
             public void run(IProgressMonitor monitor) throws CoreException {
                 IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
                 for (IProject project : projects) {
-                    if ("Builtin".equals(project.getName()) && project.hasNature("com.oaklandsw.transform.runtime.nature")) { //$NON-NLS-1$ //$NON-NLS-2$
-                        // never delete TDM Builtin project ref com.oaklandsw.data.transform.builtin
+                    if (project.hasNature("com.oaklandsw.transform.runtime.nature")) { //$NON-NLS-1$
+                        // never delete TDM Builtin, Examples and Examples EDI project ref
+                        // com.oaklandsw.data.transform.builtin
                         continue;
                     }
                     if (project.getLocation() == null || !project.getLocation().toFile().exists()
@@ -585,7 +609,7 @@ public class TalendJavaProjectManager {
             } else {
                 // SOAP service, when the process is null
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-                    IESBService soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                    IESBService soapService = GlobalServiceRegister.getDefault().getService(IESBService.class);
                     if (item != null && soapService.isServiceItem(item.eClass().getClassifierID())) {
                         IProcessor processor = ProcessorUtilities.getProcessor(process, item.getProperty());
                         generatePom(item, option, processor);

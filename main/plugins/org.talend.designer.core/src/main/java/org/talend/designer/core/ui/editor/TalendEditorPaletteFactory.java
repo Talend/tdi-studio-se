@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -89,9 +89,9 @@ import org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate;
 
 /**
  * This class creates the palette in the Gef Editor. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public final class TalendEditorPaletteFactory {
 
@@ -660,7 +660,7 @@ public final class TalendEditorPaletteFactory {
 
     /**
      * DOC cmeng Comment method "createRecentlyUsedEntry".
-     * 
+     *
      * @param componentsDrawer
      * @param ht
      * @param recentlyUsedList
@@ -875,7 +875,7 @@ public final class TalendEditorPaletteFactory {
 
             families.add(1, RECENTLY_USED);
             familyMap.put(RECENTLY_USED, RECENTLY_USED);
-            
+
             //for TUP-19604 upper the priority of full matched component family
             if (matchComponent != null) {
                 String[] matchFamily = matchComponent.getTranslatedFamilyName()
@@ -959,11 +959,11 @@ public final class TalendEditorPaletteFactory {
             if (xmlComponent.isLoaded()) {
                 name = UnifiedComponentUtil.getComponentDisplayNameForPalette(xmlComponent, filter);
                 longName = xmlComponent.getLongName();
-                
+
                 if(!isDBCommonVisible(xmlComponent, name)){
                     continue;
                 }
-                
+
                 ImageDescriptor imageSmall = xmlComponent.getIcon16();
                 ImageDescriptor imageLarge;
                 if (largeIconsSize.equals("24")) { //$NON-NLS-1$
@@ -1050,7 +1050,7 @@ public final class TalendEditorPaletteFactory {
         }
         setFilter(""); //$NON-NLS-1$
     }
-    
+
     private static boolean isDBCommonVisible(IComponent xmlComponent, String name){
         if(xmlComponent == null || name == null){
             return true;
@@ -1176,7 +1176,7 @@ public final class TalendEditorPaletteFactory {
 
     /**
      * DOC cmeng Comment method "deleteRecentlyUsedComponentFromPreference".
-     * 
+     *
      * @param jobletName
      */
     protected static void deleteRecentlyUsedComponentFromPreference(String jobletName) {
@@ -1206,7 +1206,7 @@ public final class TalendEditorPaletteFactory {
 
     /**
      * yzhang Comment method "getFilterRegex".
-     * 
+     *
      * @return
      */
     private static String getFilterRegex(String nameFilter) {
@@ -1255,7 +1255,7 @@ public final class TalendEditorPaletteFactory {
 
     /**
      * DOC nrousseau Comment method "loadFamilyState".
-     * 
+     *
      * @param family
      * @return
      */
@@ -1297,7 +1297,7 @@ public final class TalendEditorPaletteFactory {
     /**
      * Creates the PaletteRoot and adds all palette elements. Use this factory method to create a new palette for your
      * graphical editor.
-     * 
+     *
      * @return a new PaletteRoot
      */
     public static PaletteRoot createPalette(final IComponentsFactory compFac) {
@@ -1453,7 +1453,7 @@ public final class TalendEditorPaletteFactory {
 
     /**
      * yzhang Comment method "setFilter".
-     * 
+     *
      * @param filter
      */
     public static void setFilter(String filter) {
@@ -1562,7 +1562,7 @@ public final class TalendEditorPaletteFactory {
 
     /**
      * DOC guanglong.du Comment method "createEmptyPalette".
-     * 
+     *
      * @return
      */
     public static PaletteRoot createEmptyPalette() {
@@ -1581,7 +1581,7 @@ public final class TalendEditorPaletteFactory {
 
         /**
          * Getter for name.
-         * 
+         *
          * @return the name
          */
         public String getName() {
@@ -1590,7 +1590,7 @@ public final class TalendEditorPaletteFactory {
 
         /**
          * Sets the name.
-         * 
+         *
          * @param name the name to set
          */
         public void setName(String name) {
@@ -1599,7 +1599,7 @@ public final class TalendEditorPaletteFactory {
 
         /**
          * Sets the displayName.
-         * 
+         *
          * @param displayName the displayName to set
          */
         public void setDisplayName(String displayName) {
@@ -1608,7 +1608,7 @@ public final class TalendEditorPaletteFactory {
 
         /**
          * Getter for displayName.
-         * 
+         *
          * @return the displayName
          */
         public String getDisplayName() {
@@ -1617,7 +1617,7 @@ public final class TalendEditorPaletteFactory {
 
         /**
          * Getter for timestamp.
-         * 
+         *
          * @return the timestamp
          */
         public Date getTimestamp() {
@@ -1626,7 +1626,7 @@ public final class TalendEditorPaletteFactory {
 
         /**
          * Sets the timestamp.
-         * 
+         *
          * @param timestamp the timestamp to set
          */
         public void setTimestamp(Date timestamp) {
@@ -1653,7 +1653,7 @@ public final class TalendEditorPaletteFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#toString()
          */
         @Override

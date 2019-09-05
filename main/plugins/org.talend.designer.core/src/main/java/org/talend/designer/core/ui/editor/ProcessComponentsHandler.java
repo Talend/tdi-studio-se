@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,7 +26,7 @@ public class ProcessComponentsHandler implements IComponentsHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.TComponentsHandler#filterComponents(java.util.List)
      */
     @Override
@@ -46,7 +46,7 @@ public class ProcessComponentsHandler implements IComponentsHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.TComponentsHandler#sortComponents(java.util.List)
      */
     @Override
@@ -56,7 +56,7 @@ public class ProcessComponentsHandler implements IComponentsHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponentsHandler#extractComponentsCategory()
      */
     @Override

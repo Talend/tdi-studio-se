@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -121,7 +121,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessFactory#getSyntaxChecker(org.talend.core.model.temp.ECodeLanguage)
      */
     @Override
@@ -131,7 +131,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessFactory#setActiveProcess(org.talend.core.model.process.IProcess)
      */
     @Override
@@ -146,7 +146,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getSelectedContext()
      */
     @Override
@@ -166,7 +166,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessFactory#exec(java.lang.StringBuffer, java.lang.StringBuffer,
      * org.eclipse.core.runtime.IPath, java.lang.String, org.apache.log4j.Level, java.lang.String, int, int,
      * java.lang.String)
@@ -182,7 +182,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.runprocess.IRunProcessFactory#createCodeProcessor(org.talend.core.model.process.IProcess,
      * boolean)
@@ -208,8 +208,8 @@ public class DefaultRunProcessService implements IRunProcessService {
     protected IProcessor createJavaProcessor(IProcess process, Property property, boolean filenameFromLabel) {
         boolean isTestContainer = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
-                    .getDefault().getService(ITestContainerProviderService.class);
+            ITestContainerProviderService testContainerService = GlobalServiceRegister.getDefault()
+                    .getService(ITestContainerProviderService.class);
             if (testContainerService != null && property != null && property.getItem() != null) {
                 isTestContainer = testContainerService.isTestContainerItem(property.getItem());
             }
@@ -219,7 +219,7 @@ public class DefaultRunProcessService implements IRunProcessService {
         }
         // check for ESB Runtime
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRunContainerService.class)) {
-            IESBRunContainerService runContainerService = (IESBRunContainerService) GlobalServiceRegister.getDefault()
+            IESBRunContainerService runContainerService = GlobalServiceRegister.getDefault()
                     .getService(IESBRunContainerService.class);
             if (runContainerService != null) {
                 IProcessor processor = runContainerService.createJavaProcessor(process, property, filenameFromLabel);
@@ -236,7 +236,7 @@ public class DefaultRunProcessService implements IRunProcessService {
         IESBService soapService = null;
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
-            microService = (IESBMicroService) GlobalServiceRegister.getDefault().getService(IESBMicroService.class);
+            microService = GlobalServiceRegister.getDefault().getService(IESBMicroService.class);
 
             if (ProcessorUtilities.isExportJobAsMicroService()) {
                 if (microService != null) {
@@ -258,12 +258,12 @@ public class DefaultRunProcessService implements IRunProcessService {
         }
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRouteService.class)) {
-            routeService = (IESBRouteService) GlobalServiceRegister.getDefault().getService(IESBRouteService.class);
+            routeService = GlobalServiceRegister.getDefault().getService(IESBRouteService.class);
         }
 
         // Create maven processer for SOAP service, @see org.talend.designer.runprocess.java.TalendJavaProjectManager
         if (process == null && GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-            soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            soapService = GlobalServiceRegister.getDefault().getService(IESBService.class);
             if (property.getItem() != null && soapService.isServiceItem(property.getItem().eClass().getClassifierID())) {
                 return (IProcessor) soapService.createJavaProcessor(process, property, filenameFromLabel);
             }
@@ -294,46 +294,54 @@ public class DefaultRunProcessService implements IRunProcessService {
 
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
-            // If OSGI contains new processor, need to add built type in args map
-
             if (property != null) {
-                boolean servicePart = false;
-                List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
-                        property.getVersion(), RelationshipItemBuilder.JOB_RELATION);
+                if (!ProcessorUtilities.isGeneratePomOnly()) {
+                    // for esb type only
+                    boolean servicePart = false;
+                    List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
+                            property.getVersion(), RelationshipItemBuilder.JOB_RELATION);
 
-                for (Relation relation : relations) {
-                    if (RelationshipItemBuilder.SERVICES_RELATION.equals(relation.getType())) {
-                        servicePart = true;
-                        break;
+                    for (Relation relation : relations) {
+                        if (RelationshipItemBuilder.SERVICES_RELATION.equals(relation.getType())) {
+                            servicePart = true;
+                            break;
+                        }
+                    }
+
+                    JobInfo lastMainJob = LastGenerationInfo.getInstance().getLastMainJob();
+                    boolean isBuildFromRoute = lastMainJob != null && ComponentCategory.CATEGORY_4_CAMEL.getName()
+                            .equals(lastMainJob.getProcessor().getProcess().getComponentsType());
+                    boolean isRouteReferenceJob = false;
+                    if (isBuildFromRoute) {
+                        List<Relation> relation = RelationshipItemBuilder.getInstance().getItemsHaveRelationWith(property.getId(),
+                                property.getVersion());
+                        IProcess routeProcess = lastMainJob.getProcessor().getProcess();
+                        if (!relation.isEmpty()) {
+                            for (Relation r : relation) {
+                                if (r.getId().equals(routeProcess.getId())) {
+                                    isRouteReferenceJob = true;
+                                }
+                            }
+                        }
+                    }
+
+                    boolean isOSGI = "OSGI"
+                            .equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
+                    // TESB-25116 The microservice jar which is built from route with ctalendjob is only 2kb
+                    boolean isMicroservice = lastMainJob != null && lastMainJob.getProcessor().getProperty() != null
+                            && "ROUTE_MICROSERVICE".equals(lastMainJob.getProcessor().getProperty().getAdditionalProperties()
+                                    .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE));
+                    if (isOSGI || servicePart || (isRouteReferenceJob && !isMicroservice)) {
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+                            soapService = GlobalServiceRegister.getDefault().getService(IESBService.class);
+                            return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
+                        }
                     }
                 }
-
-                JobInfo mainJobInfo = LastGenerationInfo.getInstance().getLastMainJob();
-
-                boolean needOSGIProcessor = true;
-
-                if (mainJobInfo == null) {
-                    needOSGIProcessor = false;
-                } else {
-                    if (mainJobInfo.getJobId().equals(property.getId())) {
-                        needOSGIProcessor = false;
-                    }
-                }
-
-                if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))
-                        || servicePart || needOSGIProcessor) {
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-                        soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
-                        return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
-                    }
-                }
-
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
-
             } else {
                 return new MavenJavaProcessor(process, property, filenameFromLabel);
             }
-
         }
     }
 
@@ -367,7 +375,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.designer.runprocess.IRunProcessService#setDelegateService(org.talend.designer.runprocess.
      * IRunProcessService)
      */
@@ -378,12 +386,12 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     @Override
     public void updateLibraries(Set<ModuleNeeded> jobModuleList, IProcess process) {
-        JavaProcessorUtilities.computeLibrariesPath(new HashSet<ModuleNeeded>(jobModuleList), process);
+        JavaProcessorUtilities.computeLibrariesPath(new HashSet<>(jobModuleList), process);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.runprocess.IRunProcessService#updateLibraries(org.talend.core.model.properties.RoutineItem)
      */
@@ -395,21 +403,22 @@ public class DefaultRunProcessService implements IRunProcessService {
             return;
         }
         ILibraryManagerService repositoryBundleService = CorePlugin.getDefault().getRepositoryBundleService();
-        repositoryBundleService.retrieve(modulesForRoutine, libDir.getAbsolutePath(), true);
+        repositoryBundleService.retrieve(ERepositoryObjectType.getItemType(routineItem), modulesForRoutine,
+                libDir.getAbsolutePath(), true);
         repositoryBundleService.installModules(modulesForRoutine, null);
         CorePlugin.getDefault().getLibrariesService().checkLibraries();
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#updateLibraries(java.util.Set,
      * org.talend.core.model.process.IProcess, java.util.Set)
      */
     @Override
     public void updateLibraries(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules)
             throws ProcessorException {
-        JavaProcessorUtilities.computeLibrariesPath(new HashSet<ModuleNeeded>(jobModuleList), process, alreadyRetrievedModules);
+        JavaProcessorUtilities.computeLibrariesPath(new HashSet<>(jobModuleList), process, alreadyRetrievedModules);
     }
 
     @Override
@@ -430,7 +439,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getPauseTime()
      */
     @Override
@@ -440,7 +449,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#needDeleteAllJobs()
      */
     @Override
@@ -450,7 +459,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#deleteAllJobx(boolean)
      */
     @Override
@@ -460,7 +469,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getRunProcessAction()
      */
     @Override
@@ -470,7 +479,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#enableTraceForActiveRunProcess()
      */
     @Override
@@ -480,7 +489,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#saveJobBeforeRun(org.talend.core.model.process.IProcess)
      */
     @Override
@@ -491,7 +500,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getPreferenceStore()
      */
     @Override
@@ -516,7 +525,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#checkLastGenerationHasCompilationError(boolean)
      */
     @Override
@@ -526,7 +535,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getResourceFile(java.lang.String)
      */
     @Override
@@ -548,7 +557,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getTemplateStrFromPreferenceStore(java.lang.String)
      */
     @Override
@@ -558,7 +567,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#updateLogFiles(org.eclipse.core.resources.IProject)
      */
     @Override
@@ -611,7 +620,7 @@ public class DefaultRunProcessService implements IRunProcessService {
     public String getLogTemplate(String path) {
         IRunProcessService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            service = GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
         }
         if (service == null) {
             return "";
@@ -649,7 +658,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#buildJavaProject()
      */
     @Override
@@ -659,7 +668,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getTalendProcessJavaProject()
      */
     @Override
@@ -761,6 +770,7 @@ public class DefaultRunProcessService implements IRunProcessService {
         return ProcessorUtilities.isExportConfig();
     }
 
+    @Override
     public boolean isdebug() {
         return ProcessorUtilities.isdebug();
     }
@@ -792,7 +802,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#initializeRootPoms()
      */
     @Override
@@ -859,7 +869,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.runprocess.IRunProcessService#handleJobDependencyLoop(org.talend.core.model.process.JobInfo,
      * java.util.List, org.eclipse.core.runtime.IProgressMonitor)
@@ -870,8 +880,8 @@ public class DefaultRunProcessService implements IRunProcessService {
         IProject mainProject = mainJobInfo.getCodeFile().getProject();
 
         ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-        Set<String> childJobDependencies = new HashSet<String>();
-        List<IFile> childPoms = new ArrayList<IFile>();
+        Set<String> childJobDependencies = new HashSet<>();
+        List<IFile> childPoms = new ArrayList<>();
         for (JobInfo info : listJobs) {
             IRepositoryViewObject specificVersion = factory.getSpecificVersion(info.getJobId(), info.getJobVersion(), true);
             Property property = specificVersion.getProperty();
@@ -897,6 +907,18 @@ public class DefaultRunProcessService implements IRunProcessService {
         }
 
         PomUtil.updateMainJobDependencies(mainJobInfo.getPomFile(), childPoms, childJobDependencies, progressMonitor);
+
+        // since all the dependencies of subJob already added to mainJob
+        // need to clean job dependencies of joblet
+        IRepositoryViewObject mainJobObject = factory.getSpecificVersion(mainJobInfo.getJobId(), mainJobInfo.getJobVersion(),
+                true);
+        if (mainJobObject != null && mainJobObject.getProperty() != null) {
+            Set<Property> itemChecked = new HashSet<>();
+            // clear bak cache
+            PomUtil.clearBakJobletCache();
+            PomUtil.checkJobRelatedJobletDependencies(mainJobObject.getProperty(), RelationshipItemBuilder.JOB_RELATION,
+                    childJobDependencies, itemChecked, progressMonitor);
+        }
     }
 
 }

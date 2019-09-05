@@ -16,6 +16,11 @@
 	<%
 	String passwordFieldName = "__PASSWORD__";
 	String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
+	boolean isV2018 = ("ONLINE".equals(authenticationType) && "API_2018_ODATA".equals(crmOnlineVersion)) || ("ON_PREMISE".equals(authenticationType) && "CRM_2018".equals(crmVersion));
+	if(isV2018){
+		entitySetName = ElementParameterParser.getValue(node, "__ENTITYSETV2018__").trim();
+	}
+
  	String customEntityName = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
  	if("CustomEntitySet".equals(entitySetName)){
 	%>

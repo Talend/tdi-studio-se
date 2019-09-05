@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -50,9 +50,9 @@ import org.talend.designer.xmlmap.parts.directedit.proposal.ExpressionProposalPr
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: StyledTextHandler.java 54939 2011-02-11 01:34:57Z mhirt $
- * 
+ *
  */
 public class StyledTextHandler {
 
@@ -202,7 +202,7 @@ public class StyledTextHandler {
 
     /**
      * DOC amaumont Comment method "setText".
-     * 
+     *
      * @param text
      * @param cursorPosition
      */

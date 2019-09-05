@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,9 +32,9 @@ import org.talend.designer.dbmap.managers.MapperManager;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TabFolderEditors.java 2053 2007-02-13 15:41:54Z amaumont $
- * 
+ *
  */
 public class TabFolderEditors extends CTabFolder {
 
@@ -55,7 +55,7 @@ public class TabFolderEditors extends CTabFolder {
     private StyledTextHandler styledTextHandler;
 
     private StyledText styledSqlText;
-    
+
     private String dbmsId;
 
     public TabFolderEditors(Composite parent, int style, MapperManager mapperManager, String dbmsId) {
@@ -65,7 +65,7 @@ public class TabFolderEditors extends CTabFolder {
         this.dbmsId = dbmsId;
         createComponents();
     }
-    
+
     public TabFolderEditors(Composite parent, int style, MapperManager mapperManager) {
         this(parent, style, mapperManager, null);
     }
@@ -182,7 +182,7 @@ public class TabFolderEditors extends CTabFolder {
 
     /**
      * Getter for styledSqlText.
-     * 
+     *
      * @return the styledSqlText
      */
     public StyledText getStyledSqlText() {

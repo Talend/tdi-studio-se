@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,7 +37,7 @@ public class UnifyParameterOfDatastaxAndHectorForCassandra extends AbstractAllJo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override
@@ -48,13 +48,13 @@ public class UnifyParameterOfDatastaxAndHectorForCassandra extends AbstractAllJo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @Override
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
-        String[] compNames = { "tCassandraInput", "tCassandraOutput", "tCassandraRow", "tCassandraLookupInput" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ 
+        String[] compNames = { "tCassandraInput", "tCassandraOutput", "tCassandraRow", "tCassandraLookupInput" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
         IComponentConversion conversion = new IComponentConversion() {
 
@@ -69,7 +69,7 @@ public class UnifyParameterOfDatastaxAndHectorForCassandra extends AbstractAllJo
                     if (ComponentUtilities.getNodeProperty(node, "COLUMN_FAMILY") == null) { //$NON-NLS-1$
                         ComponentUtilities.addNodeProperty(node, "COLUMN_FAMILY", "TEXT"); //$NON-NLS-1$ //$NON-NLS-2$
                     }
-                    ComponentUtilities.getNodeProperty(node, "COLUMN_FAMILY").setValue(cf.getValue()); //$NON-NLS-1$ 
+                    ComponentUtilities.getNodeProperty(node, "COLUMN_FAMILY").setValue(cf.getValue()); //$NON-NLS-1$
                 }
 
                 ElementParameterType actionForCF = ComponentUtilities.getNodeProperty(node, "TABLE_ACTION"); //$NON-NLS-1$
@@ -77,7 +77,7 @@ public class UnifyParameterOfDatastaxAndHectorForCassandra extends AbstractAllJo
                     if (ComponentUtilities.getNodeProperty(node, "ACTION_ON_COLUMN_FAMILY") == null) { //$NON-NLS-1$
                         ComponentUtilities.addNodeProperty(node, "ACTION_ON_COLUMN_FAMILY", "TEXT"); //$NON-NLS-1$ //$NON-NLS-2$
                     }
-                    ComponentUtilities.getNodeProperty(node, "ACTION_ON_COLUMN_FAMILY").setValue(actionForCF.getValue()); //$NON-NLS-1$ 
+                    ComponentUtilities.getNodeProperty(node, "ACTION_ON_COLUMN_FAMILY").setValue(actionForCF.getValue()); //$NON-NLS-1$
                 }
 
             }

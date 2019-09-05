@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.TaCoKitGenericProvider;
 
@@ -31,7 +31,7 @@ public class ReloadAction extends AbstractHandler {
     public Object execute(final ExecutionEvent executionEvent) {
         Display.getDefault().asyncExec(() -> {
             final String status = reload(new NullProgressMonitor());
-            MessageDialog.openInformation(new Shell(), "Reload ended", status);
+            MessageDialog.openInformation(DisplayUtils.getDefaultShell(false), "Reload ended", status);
         });
         return null;
     }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -76,7 +76,7 @@ public class LoginAgreementPage extends AbstractLoginActionPage {
         titleLabel.setLayoutData(titleLabelFormData);
 
         acceptButton = new Button(container, SWT.CENTER);
-        acceptButton.setBackground(backgroundColor);
+        acceptButton.setBackground(backgroundBtnColor);
         acceptButton.setFont(LoginDialogV2.fixedFont);
         acceptButton.setText(Messages.getString("LoginAgreementPage.accept")); //$NON-NLS-1$
 

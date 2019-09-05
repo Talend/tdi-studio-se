@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,10 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Locale.ROOT;
-import static org.talend.core.model.process.EParameterFieldType.CHECK;
-import static org.talend.core.model.process.EParameterFieldType.CLOSED_LIST;
-import static org.talend.core.model.process.EParameterFieldType.MEMO;
-import static org.talend.core.model.process.EParameterFieldType.MEMO_JAVA;
-import static org.talend.core.model.process.EParameterFieldType.MEMO_PERL;
-import static org.talend.core.model.process.EParameterFieldType.MEMO_SQL;
-import static org.talend.core.model.process.EParameterFieldType.PASSWORD;
-import static org.talend.core.model.process.EParameterFieldType.PREV_COLUMN_LIST;
-import static org.talend.core.model.process.EParameterFieldType.SCHEMA_TYPE;
-import static org.talend.core.model.process.EParameterFieldType.TABLE;
-import static org.talend.core.model.process.EParameterFieldType.TACOKIT_INPUT_SCHEMA;
-import static org.talend.core.model.process.EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE;
-import static org.talend.core.model.process.EParameterFieldType.TACOKIT_VALUE_SELECTION;
-import static org.talend.core.model.process.EParameterFieldType.TEXT;
-import static org.talend.core.model.process.EParameterFieldType.TEXT_AREA;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_CODE;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_CREDENTIAL;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_STRUCTURE_TYPE;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_STRUCTURE_VALUE;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_TEXTAREA;
-import static org.talend.sdk.component.studio.model.parameter.PropertyTypes.ARRAY;
-import static org.talend.sdk.component.studio.model.parameter.PropertyTypes.BOOLEAN;
-import static org.talend.sdk.component.studio.model.parameter.PropertyTypes.ENUM;
-import static org.talend.sdk.component.studio.model.parameter.PropertyTypes.STRING;
+import static java.util.Locale.*;
+import static org.talend.core.model.process.EParameterFieldType.*;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.*;
+import static org.talend.sdk.component.studio.model.parameter.PropertyTypes.*;
 
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
@@ -58,7 +37,7 @@ public class WidgetTypeMapper {
      * Implementation note: Most possible types are located first.
      * All checks are implemented in separate methods
      * Only one checker method returns {@code true} for particular Property Definition
-     * 
+     *
      * @param property Property, which field type should be defined
      * @return widget type
      */
@@ -72,12 +51,12 @@ public class WidgetTypeMapper {
             return getInputSchemaType();
         } else if (isText(property)) {
             return getTextType();
-        } else if (isCredential(property)) {
+        } else if (property.isCredential()) {
             return getCredentialType();
+        } else if (isTextAreaSelection(property)) {
+            return getTextAreaSelectionType();
         } else if (isTextArea(property)) {
             return getTextAreaType();
-        } else if (isValueSelection(property)) {
-            return getValueSelectionType();
         } else if (isCheck(property)) {
             return getCheckType();
         } else if (isClosedList(property)) {
@@ -88,6 +67,18 @@ public class WidgetTypeMapper {
             return getSuggestableTableType();
         } else if (isTable(property)) {
             return getTableType();
+        } else if (isValueSelection(property)) {
+            return getValueSelectionType();
+        } else if (isDate(property)) {
+            final String type = property.getMetadata().getOrDefault("ui::datetime", "datetime");
+            switch (type) {
+                case "time": // HH:MM:ss
+                case "date": // YYYY-MM-dd
+                case "datetime": // YYYY-MM-dd HH:MM:ss
+                case "zoneddatetime": // YYYY-MM-dd HH:MM:ss+offset[zone]
+                default: // FIXME: today we don't completely map all the widgets
+                    return getDateType();
+            }
         }
         final String codeStyle = property.getMetadata().get(UI_CODE);
         if (codeStyle != null) {
@@ -163,7 +154,7 @@ public class WidgetTypeMapper {
 
     /**
      * Checks whether widget type is {@link EParameterFieldType#TEXT}
-     * 
+     *
      * @param property SimplePropertyDefinition to test
      * @return check result
      */
@@ -177,7 +168,7 @@ public class WidgetTypeMapper {
 
     /**
      * Checks whether widget type is {@link EParameterFieldType#TEXT_AREA}
-     * 
+     *
      * @param property SimplePropertyDefinition to test
      * @return check result
      */
@@ -189,14 +180,12 @@ public class WidgetTypeMapper {
         return TEXT_AREA;
     }
 
-    /**
-     * Checks whether widget type is {@link EParameterFieldType#PASSWORD}
-     * 
-     * @param property SimplePropertyDefinition to test
-     * @return check result
-     */
-    private boolean isCredential(final SimplePropertyDefinition property) {
-        return property.getMetadata().containsKey(UI_CREDENTIAL);
+    private boolean isTextAreaSelection(final PropertyDefinitionDecorator property) {
+        return isTextArea(property) && property.hasSuggestions();
+    }
+
+    protected EParameterFieldType getTextAreaSelectionType() {
+        return TACOKIT_TEXT_AREA_SELECTION;
     }
 
     protected EParameterFieldType getCredentialType() {
@@ -205,7 +194,7 @@ public class WidgetTypeMapper {
 
     /**
      * Checks whether widget type is {@link EParameterFieldType#CHECK}
-     * 
+     *
      * @param property SimplePropertyDefinition to test
      * @return check result
      */
@@ -219,7 +208,7 @@ public class WidgetTypeMapper {
 
     /**
      * Checks whether widget type is {@link EParameterFieldType#CLOSED_LIST}
-     * 
+     *
      * @param property SimplePropertyDefinition to test
      * @return check result
      */
@@ -233,7 +222,7 @@ public class WidgetTypeMapper {
 
     /**
      * Checks whether widget type is {@link EParameterFieldType#TABLE}
-     * 
+     *
      * @param property SimplePropertyDefinition to test
      * @return check result
      */
@@ -241,8 +230,16 @@ public class WidgetTypeMapper {
         return ARRAY.equals(property.getType());
     }
 
+    private boolean isDate(final SimplePropertyDefinition property) {
+        return property.getMetadata().containsKey("ui::datetime");
+    }
+
     protected EParameterFieldType getTableType() {
         return TABLE;
+    }
+
+    protected EParameterFieldType getDateType() {
+        return DATE;
     }
 
     private boolean isValueSelection(final PropertyDefinitionDecorator property) {

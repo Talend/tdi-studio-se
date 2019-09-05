@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,9 @@ import org.talend.designer.abstractmap.i18n.Messages;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DraggingInfosPopup.java 54939 2011-02-11 01:34:57Z mhirt $
- * 
+ *
  */
 public final class DraggingInfosPopup {
 
@@ -56,11 +56,11 @@ public final class DraggingInfosPopup {
     }
 
     /**
-     * 
+     *
      * DOC amaumont DraggingInfosPopup class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: DraggingInfosPopup.java 54939 2011-02-11 01:34:57Z mhirt $
-     * 
+     *
      */
     private class Popup extends PopupDialog {
 
@@ -156,7 +156,7 @@ public final class DraggingInfosPopup {
 
         /**
          * DOC amaumont Comment method "setVisible".
-         * 
+         *
          * @param visible
          */
         public void setVisible(boolean visible) {
@@ -171,7 +171,7 @@ public final class DraggingInfosPopup {
 
         /**
          * DOC amaumont Comment method "setText".
-         * 
+         *
          * @param text
          */
         public void setCountEntriesText(String text) {
@@ -183,7 +183,7 @@ public final class DraggingInfosPopup {
 
         /**
          * DOC amaumont Comment method "setText".
-         * 
+         *
          * @param text
          */
         public void setWriteModeText(String text) {
@@ -195,7 +195,7 @@ public final class DraggingInfosPopup {
 
         /**
          * DOC amaumont Comment method "setMappingModeText".
-         * 
+         *
          * @param mode
          */
         public void setMappingModeText(String text) {
@@ -207,7 +207,7 @@ public final class DraggingInfosPopup {
 
         /**
          * DOC amaumont Comment method "setMappingModeText".
-         * 
+         *
          * @param mode
          */
         public void setInsertionEntryText(String text) {
@@ -219,7 +219,7 @@ public final class DraggingInfosPopup {
 
         /**
          * DOC amaumont Comment method "setMappingModeText".
-         * 
+         *
          * @param mode
          */
         public void setDropInvalidText(String text) {
@@ -249,7 +249,7 @@ public final class DraggingInfosPopup {
 
     /**
      * DOC amaumont Comment method "init".
-     * 
+     *
      * @param parentShell
      */
     private void init(Shell parentShell) {
@@ -267,7 +267,7 @@ public final class DraggingInfosPopup {
 
     /**
      * DOC amaumont Comment method "getBounds".
-     * 
+     *
      * @return
      */
     public Rectangle getBounds() {
@@ -276,7 +276,7 @@ public final class DraggingInfosPopup {
 
     /**
      * DOC amaumont Comment method "setVisible".
-     * 
+     *
      * @param b
      */
     public void setVisible(boolean visible) {
@@ -285,7 +285,7 @@ public final class DraggingInfosPopup {
 
     /**
      * DOC amaumont Comment method "setCountDragginEntries".
-     * 
+     *
      * @param countEntries
      */
     public void setCountDraggingEntries(int countEntries) {
@@ -300,7 +300,7 @@ public final class DraggingInfosPopup {
 
     /**
      * DOC amaumont Comment method "setCountDragginEntries".
-     * 
+     *
      * @param countEntries
      */
     public void setOverwriteMode(boolean overwrite) {
@@ -319,9 +319,9 @@ public final class DraggingInfosPopup {
 
     /**
      * method "setCountDragginEntries".
-     * 
+     *
      * if mapOneToOneAuthorized, mapOneToOne is forced to false
-     * 
+     *
      * @param isMapOneToOne
      * @param mapOneToOneAuthorized
      */
@@ -362,7 +362,7 @@ public final class DraggingInfosPopup {
 
     /**
      * DOC amaumont Comment method "setCursorPosition".
-     * 
+     *
      * @param x
      * @param y
      */

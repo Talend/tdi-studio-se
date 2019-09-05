@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -52,7 +52,7 @@ public class JobHierarchy {
 
     /**
      * DOC bqian Comment method "getSubtypes".
-     * 
+     *
      * @param type
      * @return
      */
@@ -89,7 +89,7 @@ public class JobHierarchy {
 
     /**
      * DOC bqian Comment method "refresh".
-     * 
+     *
      * @param pm
      */
     public synchronized void refresh(IProgressMonitor monitor) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,8 +51,8 @@ import org.talend.designer.core.utils.ConnectionUtil;
 
 /**
  * Command that creates a new connection. <br/>
- * 
- * 
+ *
+ *
  * $Id$
  */
 public class ConnectionCreateCommand extends Command {
@@ -76,12 +76,12 @@ public class ConnectionCreateCommand extends Command {
     private static boolean creatingConnection = false;
 
     private boolean insertTMap;
-    
+
     private Map<EParameterName, Object> connectionParameters;
 
     /**
      * Initialisation of the creation of the connection with a source and style of connection.
-     * 
+     *
      * @param nodeSource source of the connection
      * @param lineStyle line style
      * @param meta
@@ -110,7 +110,7 @@ public class ConnectionCreateCommand extends Command {
 
     /**
      * Set the target of the connection, the source has already been set before.
-     * 
+     *
      * @param target
      */
     public void setTarget(Node targetNode) {
@@ -145,7 +145,7 @@ public class ConnectionCreateCommand extends Command {
         }
         if (source.isELTComponent()) {
             InputDialog id = new InputDialog(null, nodeLabel + Messages.getString("ConnectionCreateAction.dialogTitle"), //$NON-NLS-1$
-                    Messages.getString("ConnectionCreateAction.dialogMessage"), oldName, new IInputValidator() { //$NON-NLS-1$ 
+                    Messages.getString("ConnectionCreateAction.dialogMessage"), oldName, new IInputValidator() { //$NON-NLS-1$
 
                         @Override
                         public String isValid(String newText) {
@@ -166,7 +166,7 @@ public class ConnectionCreateCommand extends Command {
             return id.getValue();
         } else {
             InputDialog id = new InputDialog(null, nodeLabel + Messages.getString("ConnectionCreateAction.dialogTitle"), //$NON-NLS-1$
-                    Messages.getString("ConnectionCreateAction.dialogMessage"), oldName, new IInputValidator() { //$NON-NLS-1$ 
+                    Messages.getString("ConnectionCreateAction.dialogMessage"), oldName, new IInputValidator() { //$NON-NLS-1$
 
                         @Override
                         public String isValid(String newText) {
@@ -190,7 +190,7 @@ public class ConnectionCreateCommand extends Command {
 
     /**
      * DOC gcui Comment method "askForConnectionSchemaAndTableName".
-     * 
+     *
      * @param nodeLabel
      * @param oldName
      * @return
@@ -498,7 +498,7 @@ public class ConnectionCreateCommand extends Command {
         nodeConnectorTarget = connection.getTargetNodeConnector();
         if (nodeConnectorTarget != null) {
             nodeConnectorTarget.setCurLinkNbInput(nodeConnectorTarget.getCurLinkNbInput() - 1);
-        }       
+        }
         if (source.isExternalNode()) {
             IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)source);
             externalNode.removeOutput(connection);
@@ -510,7 +510,7 @@ public class ConnectionCreateCommand extends Command {
             externalNode.removeInput(connection);
             ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
             cmd.execute();
-        }   
+        }
         if (newMetadata != null) {
             source.getMetadataList().remove(newMetadata);
         }
@@ -527,7 +527,7 @@ public class ConnectionCreateCommand extends Command {
 
     /**
      * Getter for creatingConnection.
-     * 
+     *
      * @return the creatingConnection
      */
     public static boolean isCreatingConnection() {
@@ -536,7 +536,7 @@ public class ConnectionCreateCommand extends Command {
 
     /**
      * Sets the creatingConnection.
-     * 
+     *
      * @param creatingConnection the creatingConnection to set
      */
     public static void setCreatingConnection(boolean creatingConnection) {

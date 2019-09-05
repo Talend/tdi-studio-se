@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,17 +30,17 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 
 /**
  * Add quote marks to separator after feature 1192 added to trunk.
- * 
+ *
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: AddQutoMigrationTask.java 下午01:23:38 2007-7-4 +0000 (2007-7-4) yzhang $
- * 
+ *
  */
 public class AddQuoteMarkMigrationTask extends AbstractItemMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
     public ExecutionResult execute(Item item) {
@@ -63,9 +63,9 @@ public class AddQuoteMarkMigrationTask extends AbstractItemMigrationTask {
 
     /**
      * Add quote marks to the separators.
-     * 
+     *
      * yzhang Comment method "addQuote".
-     * 
+     *
      * @throws PersistenceException
      */
     private void addQuote(ConnectionItem connItem) throws PersistenceException {
@@ -111,9 +111,9 @@ public class AddQuoteMarkMigrationTask extends AbstractItemMigrationTask {
 
     /**
      * To see whehter the string is surrounded with double quote mark.
-     * 
+     *
      * yzhang Comment method "isWithinQuot".
-     * 
+     *
      * @param string
      * @return
      */
@@ -132,9 +132,9 @@ public class AddQuoteMarkMigrationTask extends AbstractItemMigrationTask {
 
     /**
      * Surround the old string with double quote.
-     * 
+     *
      * yzhang Comment method "surroundQuote".
-     * 
+     *
      * @param old
      * @return
      */

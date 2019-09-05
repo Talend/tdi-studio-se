@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Image;
 import org.talend.sqlbuilder.Messages;
 import org.talend.sqlbuilder.SqlBuilderPlugin;
 /**
- * 
+ *
  * DOC dev  class global comment. Detailled comment
  * <br/>
  *
@@ -37,7 +37,7 @@ public class ImageUtil {
     /**
      * Dispose of an image in cache. Once there are no more open handles to the
      * image it will be disposed of.
-     * 
+     *
      */
     @SuppressWarnings("unchecked") //$NON-NLS-1$
 	public static void disposeImage(String propertyName) {
@@ -73,7 +73,7 @@ public class ImageUtil {
     /**
      * Create an image descriptor for the given image property in the
      * text.properties file.
-     * 
+     *
      * @param propertyName
      * @return
      */
@@ -84,7 +84,7 @@ public class ImageUtil {
             if (propertyName == null) {
                 return null;
             }
-            
+
             // get image path
             String path = Messages.getString(propertyName);
 
@@ -108,7 +108,7 @@ public class ImageUtil {
      * Get an image object from cache or create one if it doesn't exist yet.
      * Everytime an object is retrieved, it should be disposed of using the
      * ImageUtil.disposeImage method.
-     * 
+     *
      * @param propertyName
      */
     @SuppressWarnings("unchecked") //$NON-NLS-1$
@@ -139,15 +139,15 @@ public class ImageUtil {
 
         return image;
     }
-    
+
     public static ImageDescriptor getFragmentDescriptor(String fragmentId, String path) {
-        
+
         try {
 
             if (path == null || path.trim().length() == 0) {
                 return null;
             }
-            
+
             // create image
             URL url = URLUtil.getFragmentResourceURL(fragmentId, path);
             return ImageDescriptor.createFromURL(url);
@@ -156,17 +156,17 @@ public class ImageUtil {
             SqlBuilderPlugin.log(Messages.getString("ImageUtil.logMessage3") + fragmentId + ": " + path, e); //$NON-NLS-1$ //$NON-NLS-2$
             return null;
         }
-        
+
     }
-    
+
     public static Image getFragmentImage(String fragmentId, String path) {
-        
+
         try {
 
             if (path == null || path.trim().length() == 0) {
                 return null;
             }
-            
+
             // create image
             URL url = URLUtil.getFragmentResourceURL(fragmentId, path);
             ImageDescriptor descriptor = ImageDescriptor.createFromURL(url);

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,11 +28,11 @@ public class ItemVersionObject {
     private String oldVersion;
 
     private String newVersion;
-    
+
     private boolean useSnapshotOld;
 
     private boolean useSnapshotNew;
-    
+
     public ItemVersionObject(Property property, RepositoryNode repositoryNode, String oldVersion) {
         this(property, repositoryNode, oldVersion, false);
     }
@@ -66,14 +66,14 @@ public class ItemVersionObject {
     public String getOldVersion() {
         return this.oldVersion;
     }
-    
+
     /**
      * @return the useSnapshotNew
      */
     public boolean isUseSnapshotNew() {
         return useSnapshotNew;
     }
-    
+
     /**
      * @param useSnapshotNew the useSnapshotNew to set
      */

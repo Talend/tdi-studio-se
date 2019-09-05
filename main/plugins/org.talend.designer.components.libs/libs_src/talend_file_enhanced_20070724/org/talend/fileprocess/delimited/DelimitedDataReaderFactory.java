@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,14 +33,14 @@ import java.io.InputStreamReader;
  * and record delimiter(or row separator). All the APIs that needed by tFileInputDelimited are provided by
  * DelimitedDataReader. And we can not directly creat the instance of subclasses of DelimitedDataReader, in fact, all
  * the subclasses are invisible out of this package.<br/>
- * 
+ *
  * @author gke
  */
 public class DelimitedDataReaderFactory {
 
     /**
      * DOC ke Comment method "createDelimitedDataReader".
-     * 
+     *
      * @param inputStream A java Reader source of delimited data
      * @param delimiter the field delimiter(field separator)
      * @param recordDelimiter the record delimiter(row separator)
@@ -82,7 +82,7 @@ public class DelimitedDataReaderFactory {
 
     /**
      * DOC ke Comment method "createDelimitedDataReader".
-     * 
+     *
      * @param file a delimited file
      * @param delimiter the field delimiter(field separator)
      * @param recordDelimiter the record delimiter(row separator)
@@ -100,7 +100,7 @@ public class DelimitedDataReaderFactory {
 
     /**
      * DOC ke Comment method "createDelimitedDataReader".
-     * 
+     *
      * @param file a delimited file
      * @param encoding
      * @param delimiter the field delimiter(field separator)
@@ -119,7 +119,7 @@ public class DelimitedDataReaderFactory {
 
     /**
      * DOC ke Comment method "createDelimitedDataReader".
-     * 
+     *
      * @param inputStream A java stream source of delimited data
      * @param delimiter the field delimiter(field separator)
      * @param recordDelimiter the record delimiter(row separator)
@@ -137,7 +137,7 @@ public class DelimitedDataReaderFactory {
 
     /**
      * DOC ke Comment method "createDelimitedDataReader".
-     * 
+     *
      * @param inputStream A java stream source of delimited data
      * @param encoding
      * @param delimiter the field delimiter(field separator)

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.INode;
@@ -32,7 +32,7 @@ import org.talend.designer.core.ui.editor.nodes.NodePart;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class ModifyMergeOrderAction extends SelectionAction {
 
@@ -49,7 +49,7 @@ public class ModifyMergeOrderAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
     @Override
@@ -87,7 +87,7 @@ public class ModifyMergeOrderAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
@@ -100,13 +100,15 @@ public class ModifyMergeOrderAction extends SelectionAction {
                 if (connection.getSource().isStart()
                         && (connection.getSource().getOutgoingConnections(EConnectionType.ON_SUBJOB_ERROR).size() != 0 || connection
                                 .getSource().getOutgoingConnections(EConnectionType.ON_SUBJOB_OK).size() != 0)) {
-                    MessageDialog.openError(new Shell(), Messages.getString("ModifyMergeOrderAction.ERROE"), //$NON-NLS-1$
+                    MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                            Messages.getString("ModifyMergeOrderAction.ERROE"), //$NON-NLS-1$
                             Messages.getString("ModifyMergeOrderAction.ConnectionModifyError")); //$NON-NLS-1$
                     return;
                 }
                 if (connection.getSource().getIncomingConnections(EConnectionType.ON_SUBJOB_ERROR).size() != 0
                         || connection.getSource().getIncomingConnections(EConnectionType.ON_SUBJOB_OK).size() != 0) {
-                    MessageDialog.openError(new Shell(), Messages.getString("ModifyMergeOrderAction.ERROE"), //$NON-NLS-1$
+                    MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                            Messages.getString("ModifyMergeOrderAction.ERROE"), //$NON-NLS-1$
                             Messages.getString("ModifyMergeOrderAction.ConnectionModifyError")); //$NON-NLS-1$
                     return;
                 }

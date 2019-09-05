@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -54,6 +54,7 @@ import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
+import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IPerformance;
@@ -66,7 +67,6 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.runprocess.IEclipseProcessor;
 import org.talend.core.model.runprocess.data.PerformanceData;
-import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.designer.core.model.components.EParameterName;
@@ -100,10 +100,10 @@ import routines.system.TraceStatusBean;
 
 /**
  * Context of a running process. <br/>
- * 
+ *
  * $Id$
- * 
- * 
+ *
+ *
  */
 public class RunProcessContext {
 
@@ -205,7 +205,7 @@ public class RunProcessContext {
 
     /**
      * Constrcuts a new RunProcessContext.
-     * 
+     *
      * @param process The process.
      */
     public RunProcessContext(IProcess2 process) {
@@ -284,7 +284,7 @@ public class RunProcessContext {
 
     /**
      * Getter for monitorPerf.
-     * 
+     *
      * @return the monitorPerf
      */
     public boolean isMonitorPerf() {
@@ -293,7 +293,7 @@ public class RunProcessContext {
 
     /**
      * Sets the monitorPerf.
-     * 
+     *
      * @param monitorPerf the monitorPerf to set
      */
     public void setMonitorPerf(boolean monitorPerf) {
@@ -308,7 +308,7 @@ public class RunProcessContext {
 
     /**
      * Getter for monitorTrace.
-     * 
+     *
      * @return the monitorTrace
      */
     public boolean isMonitorTrace() {
@@ -317,7 +317,7 @@ public class RunProcessContext {
 
     /**
      * Sets the monitorTrace.
-     * 
+     *
      * @param monitorTrace the monitorTraceto set
      */
     public void setMonitorTrace(boolean monitorTrace) {
@@ -330,9 +330,9 @@ public class RunProcessContext {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "hasConnectionTrace".
-     * 
+     *
      * bug 11227
      */
     protected boolean hasConnectionTrace() {
@@ -362,7 +362,7 @@ public class RunProcessContext {
 
     /**
      * Getter for running.
-     * 
+     *
      * @return the running
      */
     public boolean isRunning() {
@@ -371,7 +371,7 @@ public class RunProcessContext {
 
     /**
      * Sets the running.
-     * 
+     *
      * @param running the running to set
      */
     public void setRunning(boolean running) {
@@ -383,7 +383,7 @@ public class RunProcessContext {
 
     /**
      * Getter for monitoring.
-     * 
+     *
      * @return the monitoring
      */
     public boolean isMonitoring() {
@@ -392,7 +392,7 @@ public class RunProcessContext {
 
     /**
      * Sets the monitoring.
-     * 
+     *
      * @param monitoring the monitoring to set
      */
     public void setMonitoring(boolean monitoring) {
@@ -459,11 +459,11 @@ public class RunProcessContext {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "allowMonitorTrace".
-     * 
+     *
      * feature 6355, enable trace.
-     * 
+     *
      * about the variable "monitorTrace", It used for a global trace.
      */
     public boolean allowMonitorTrace() {
@@ -471,9 +471,9 @@ public class RunProcessContext {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "checkTraces".
-     * 
+     *
      * feature 6355
      */
     private void checkTraces() {
@@ -757,7 +757,7 @@ public class RunProcessContext {
 
     /**
      * DOC amaumont Comment method "getProcessor".
-     * 
+     *
      * @return
      */
     protected IProcessor getProcessor(IProcess process, Property property) {
@@ -770,7 +770,7 @@ public class RunProcessContext {
 
     /**
      * Kill the process.
-     * 
+     *
      * @return Exit code of the process.
      */
     public synchronized int kill(Integer returnExitValue) {
@@ -800,7 +800,7 @@ public class RunProcessContext {
 
     /**
      * DOC yexiaowei Comment method "displayJobEndMessage".
-     * 
+     *
      * @param exitCode
      */
     private void displayJobEndMessage(int exitCode) {
@@ -885,9 +885,9 @@ public class RunProcessContext {
 
     /**
      * Process activity monitor. <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     protected class ProcessMonitor implements IProcessMonitor {
 
@@ -1002,7 +1002,7 @@ public class RunProcessContext {
 
         /**
          * Extract a message from a stream.
-         * 
+         *
          * @param is Input stream to be read.
          * @param type Type of message read.
          * @param flush
@@ -1040,7 +1040,7 @@ public class RunProcessContext {
 
     /**
      * DOC ycbai Comment method "isLastData".
-     * 
+     *
      * @param reader
      * @param previousData
      * @return
@@ -1060,9 +1060,9 @@ public class RunProcessContext {
 
     /**
      * Performance monitor. <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public class PerformanceMonitor implements Runnable {
 
@@ -1274,9 +1274,9 @@ public class RunProcessContext {
 
     /**
      * Trace monitor. <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class TraceMonitor implements Runnable {
 
@@ -1599,7 +1599,7 @@ public class RunProcessContext {
 
     /**
      * Getter for watchAllowed.
-     * 
+     *
      * @return the watchAllowed
      */
     public boolean isWatchAllowed() {
@@ -1608,7 +1608,7 @@ public class RunProcessContext {
 
     /**
      * Sets the watchAllowed.
-     * 
+     *
      * @param watchAllowed the watchAllowed to set
      */
     public void setWatchAllowed(boolean watchAllowed) {
@@ -1644,7 +1644,7 @@ public class RunProcessContext {
 
     /**
      * DOC amaumont Comment method "createProcessMonitor".
-     * 
+     *
      * @param process
      * @return
      */
@@ -1671,7 +1671,7 @@ public class RunProcessContext {
 
     /**
      * Getter for saveBeforeRun.
-     * 
+     *
      * @return the saveBeforeRun
      */
     public boolean isSaveBeforeRun() {
@@ -1688,7 +1688,7 @@ public class RunProcessContext {
 
     /**
      * Getter for isTracPause.
-     * 
+     *
      * @return the isTracPause
      */
     public boolean isTracPause() {
@@ -1697,7 +1697,7 @@ public class RunProcessContext {
 
     /**
      * Sets the isTracPause.
-     * 
+     *
      * @param isTracPause the isTracPause to set
      */
     public void setTracPause(boolean isTracPause) {
@@ -1744,7 +1744,7 @@ public class RunProcessContext {
 
     /**
      * DOC Administrator Comment method "isNextPoint".
-     * 
+     *
      * @return
      */
     private boolean isNextPoint() {
@@ -1754,7 +1754,7 @@ public class RunProcessContext {
 
     /**
      * DOC Administrator Comment method "setNextRow".
-     * 
+     *
      * @param b
      */
     public void setNextRow(boolean b) {
@@ -1767,7 +1767,7 @@ public class RunProcessContext {
 
     /**
      * DOC Administrator Comment method "setPreviousRow".
-     * 
+     *
      * @param b
      */
     public void setPreviousRow(boolean b) {
@@ -1913,37 +1913,61 @@ public class RunProcessContext {
      * Foe ESB related processes, add a message to the console indicating the endpoint (domain + port) currently used.
      */
     private void addEndpointURL() {
+
+        String defaultRestUri = Platform
+                .getPreferencesService()
+                .getString("org.talend.designer.esb.components.rs.provider", "restServiceDefaultUri",
+                        "http://127.0.0.1:8090/", null);
+
         Collection<NodeType> restComponents = EmfModelUtils
                 .getComponentsByName((ProcessItem) process.getProperty().getItem(), "cREST", "tRESTRequest");
         if (!restComponents.isEmpty() && running) {
             NodeType restComponent = restComponents.iterator().next();
             String endpoint;
             String url = null;
+
             if ("cREST".equals(restComponent.getComponentName()))
                 endpoint = ComponentUtilities.getNodePropertyValue(restComponent, "URL");
             else
                 endpoint = ComponentUtilities.getNodePropertyValue(restComponent, "REST_ENDPOINT");
+
+            String decodedEndpoint = "";
+
             if (!StringUtils.isEmpty(endpoint)) {
-                if (TalendTextUtils.removeQuotes(endpoint).startsWith("http"))
-                    url = TalendTextUtils.removeQuotes(endpoint);
-                else if (ContextParameterUtils.containContextVariables(endpoint)) {
-                    String variable = ContextParameterUtils.getVariableFromCode(endpoint);
-                    if (selectedContext != null) {
-                        url = TalendTextUtils.removeQuotes(selectedContext.getContextParameter(variable).getValue());
+
+                String[] allStrings = endpoint.split("[\\+]");
+
+                for (String endpointElement : allStrings) {
+
+                    endpointElement = endpointElement.trim();
+
+                    if (endpointElement.startsWith("context.")) {
+
+                        // Context parameter
+                        String contextParamId = endpointElement.replaceFirst("context.", "");
+
+                        for (IContextParameter param : selectedContext.getContextParameterList()) {
+                            if (param.getName().equals(contextParamId)) {
+                                decodedEndpoint += TalendTextUtils
+                                        .removeQuotes(selectedContext.getContextParameter(param.getName()).getValue());
+                                break;
+                            }
+                        }
+
+                    } else {
+                        decodedEndpoint += TalendTextUtils.removeQuotes(endpointElement);
                     }
+                }
+
+                if (decodedEndpoint.startsWith("http")) {
+                    url = decodedEndpoint;
                 } else {
-                    String defaultRestUri = Platform
-                            .getPreferencesService()
-                            .getString("org.talend.designer.esb.components.rs.provider", "restServiceDefaultUri",
-                                    "http://127.0.0.1:8090/", null);
-                    endpoint = TalendTextUtils.removeQuotes(endpoint);
-                    if (endpoint.startsWith("/"))
-                        endpoint = endpoint.substring(1);
-                    String fullURL = defaultRestUri + endpoint;
+                    String fullURL = defaultRestUri + decodedEndpoint;
                     url = fullURL.replaceAll("(?<!(http:|https:))//", "/");
                 }
+
                 if (url != null)
-                    addMessage(new ProcessMessage(MsgType.CORE_OUT, "Endpoint deployed at: " + url));
+                    addMessage(new ProcessMessage(MsgType.STD_OUT, "Endpoint deployed at: " + url));
             }
 
         }

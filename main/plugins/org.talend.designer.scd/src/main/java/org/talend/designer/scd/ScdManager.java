@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -78,7 +78,7 @@ public class ScdManager {
 
     /**
      * DOC hcw ScdManager constructor comment.
-     * 
+     *
      * @param scdComponent
      */
     public ScdManager(ScdComponent scdComponent) {
@@ -149,7 +149,7 @@ public class ScdManager {
 
     /**
      * DOC hcw Comment method "getOutputColumns".
-     * 
+     *
      * @param node
      * @return
      */
@@ -167,7 +167,7 @@ public class ScdManager {
 
     /**
      * DOC hcw Comment method "removeAll".
-     * 
+     *
      * @param unused
      * @param usedColumns
      * @return
@@ -229,7 +229,7 @@ public class ScdManager {
 
     /**
      * DOC hcw Comment method "getUsedColumn".
-     * 
+     *
      * @return
      */
     private List<String> getUsedColumns() {
@@ -252,7 +252,7 @@ public class ScdManager {
 
     /**
      * DOC hcw Comment method "getUsedColumns".
-     * 
+     *
      * @param surrogateKeys2
      * @return
      */
@@ -277,7 +277,7 @@ public class ScdManager {
 
     /**
      * DOC hcw Comment method "getUsedType3Columns".
-     * 
+     *
      * @param type3Table2
      * @return
      */
@@ -316,7 +316,7 @@ public class ScdManager {
 
     /**
      * DOC hcw Comment method "getUsedColumns".
-     * 
+     *
      * @param versionData2
      * @return
      */
@@ -349,7 +349,7 @@ public class ScdManager {
 
     /**
      * DOC hcw Comment method "convertParameterValue".
-     * 
+     *
      * @param values
      * @return
      */
@@ -395,7 +395,7 @@ public class ScdManager {
 
     /**
      * DOC hcw Comment method "initParamsMap".
-     * 
+     *
      * @param list
      */
     private void initParamsMap(List<? extends IElementParameter> list) {
@@ -423,7 +423,7 @@ public class ScdManager {
 
     /**
      * DOC hcw Comment method "createTableFieldValues".
-     * 
+     *
      * @param itemName
      * @param keys
      * @return
@@ -741,7 +741,7 @@ public class ScdManager {
 
     /**
      * DOC chuang Comment method "removeGeneratedColumns".
-     * 
+     *
      * @param metadataList
      * @param unusedFields
      * @return
@@ -779,7 +779,7 @@ public class ScdManager {
 
     /**
      * DOC chuang Comment method "cloneColumn".
-     * 
+     *
      * @param column
      * @param label
      * @return
@@ -796,7 +796,7 @@ public class ScdManager {
 
     /**
      * DOC chuang Comment method "createOutputSchema".
-     * 
+     *
      * @param unusedFields
      */
     public void createOutputSchema() {
@@ -898,7 +898,7 @@ public class ScdManager {
 
     /**
      * DOC chuang Comment method "fixKeyColumnsInOutputSchema".
-     * 
+     *
      * @param schema
      * @param inputColumnsMap
      * @param lang
@@ -982,7 +982,7 @@ public class ScdManager {
 
     /**
      * DOC chuang Comment method "removeVersionFieldsFromOutput".
-     * 
+     *
      * @param outputColumns
      * @param schema
      * @param strings
@@ -1000,11 +1000,11 @@ public class ScdManager {
 
     /**
      * DOC chuang Comment method "createMetadataColumn".
-     * 
+     *
      * @param outputColumns
-     * 
+     *
      * @param schema
-     * 
+     *
      * @param lang
      * @return
      */

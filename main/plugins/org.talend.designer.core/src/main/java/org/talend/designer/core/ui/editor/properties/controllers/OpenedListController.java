@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,7 +53,7 @@ public class OpenedListController extends AbstractElementPropertySectionControll
 
     /**
      * DOC zli OpenedListController constructor comment.
-     * 
+     *
      * @param dp
      */
     public OpenedListController(IDynamicProperty dp) {
@@ -62,7 +62,7 @@ public class OpenedListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
@@ -127,7 +127,7 @@ public class OpenedListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -208,7 +208,7 @@ public class OpenedListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -224,7 +224,7 @@ public class OpenedListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {
@@ -251,7 +251,7 @@ public class OpenedListController extends AbstractElementPropertySectionControll
 
     /**
      * This method is used for getting command base on component type.
-     * 
+     *
      * @param e
      * @return
      */
@@ -265,7 +265,7 @@ public class OpenedListController extends AbstractElementPropertySectionControll
 
     /**
      * DOC zli Comment method "modifyCommand".
-     * 
+     *
      * @param event
      * @return
      */
@@ -382,7 +382,7 @@ public class OpenedListController extends AbstractElementPropertySectionControll
 
     /**
      * DOC zli Comment method "getListToDisplay".
-     * 
+     *
      * @param param
      * @return
      */

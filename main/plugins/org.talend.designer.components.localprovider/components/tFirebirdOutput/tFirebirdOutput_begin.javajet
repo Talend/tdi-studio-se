@@ -31,6 +31,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 
     String dbname= ElementParameterParser.getValue(node, "__DBNAME__");
 
+	String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
+
     String dbhost = ElementParameterParser.getValue(node, "__HOST__");
 
     String dbport = ElementParameterParser.getValue(node, "__PORT__");
@@ -149,8 +151,16 @@ if(("true").equals(useExistingConn)) {
     <%dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");%>
     <%
 } else {
+	if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
     %>
-    String url_<%=cid %> ="jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=dbname%>;
+    	String url_<%=cid %> ="jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=dbname%>;
+	<%
+	} else {
+    %>
+    	String url_<%=cid %> ="jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=dbname%> + "?" + <%=dbproperties%>;
+    <%
+	}
+	%>
     String dbUser_<%=cid %> = <%=dbuser%>;
     <%
     String passwordFieldName = "__PASS__";

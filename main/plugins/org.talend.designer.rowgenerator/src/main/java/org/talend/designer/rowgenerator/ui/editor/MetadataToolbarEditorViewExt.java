@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -61,9 +61,9 @@ import org.talend.designer.rowgenerator.i18n.Messages;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: MetadataToolbarEditorViewExt.java,v 1.9 2007/01/31 07:33:40 pub Exp $
- * 
+ *
  */
 public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
@@ -71,7 +71,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
     /**
      * qzhang MetadataToolbarEditorViewExt constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param extendedTableViewer
@@ -136,9 +136,9 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
     }
 
     /**
-     * 
+     *
      * yexiaowei Comment method "rowNumberWidth".
-     * 
+     *
      * @return
      */
     private int rowNumberWidth() {
@@ -175,7 +175,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
             /*
              * (non-Java)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
             @Override
@@ -217,7 +217,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createAddPushButton()
      */
     @Override
@@ -235,7 +235,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createRemovePushButton()
      */
     @Override
@@ -246,7 +246,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createPastButton()
      */
     @Override
@@ -263,7 +263,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createExportPushButton()
      */
     @Override
@@ -282,7 +282,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createPastButton()
      */
     @Override
@@ -301,7 +301,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createMoveDownPushButton()
      */
     @Override
@@ -311,7 +311,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createMoveUpPushButton()
      */
     @Override
@@ -321,7 +321,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createSaveAsGenericSchemaButton()
      */
     @Override
@@ -336,7 +336,7 @@ public class MetadataToolbarEditorViewExt extends MetadataToolbarEditorView {
 
     /**
      * qzhang Comment method "updateColumnsList".
-     * 
+     *
      * @param hideColumnsList
      */
     public void updateColumnsList(String[] hideColumnsList) {

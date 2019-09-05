@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -91,9 +91,9 @@ import org.talend.repository.model.RepositoryConstants;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MapperManager extends AbstractMapperManager {
 
@@ -145,9 +145,9 @@ public class MapperManager extends AbstractMapperManager {
     }
 
     /**
-     * 
+     *
      * Remove the <code>DataMapTableView</code>-<code>DataMapTable</code> pair.
-     * 
+     *
      * @param view
      */
     public void removeTablePair(DataMapTableView view) {
@@ -165,9 +165,9 @@ public class MapperManager extends AbstractMapperManager {
     }
 
     /**
-     * 
+     *
      * Remove the <code>DataMapTable</code>-<code>DataMapTableView</code> pair.
-     * 
+     *
      * @param view
      */
     public void removeTablePair(IDataMapTable dataTable) {
@@ -251,7 +251,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "addLink".
-     * 
+     *
      * @param link
      */
     public void addLink(IMapperLink link) {
@@ -267,7 +267,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "removeLink".
-     * 
+     *
      * @param link
      */
     public void removeLink(IMapperLink link, ITableEntry entryCauseOfRemove) {
@@ -276,9 +276,9 @@ public class MapperManager extends AbstractMapperManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "changeDependentSourcesAndTargetEntriesState".
-     * 
+     *
      * @param entryCauseOfChange
      * @param currentLink
      * @param removedLink
@@ -318,9 +318,9 @@ public class MapperManager extends AbstractMapperManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "changeDependentEntriesState".
-     * 
+     *
      * @param link
      * @param currentEntry
      * @param removedLink
@@ -344,7 +344,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "removeLink".
-     * 
+     *
      * @param link
      */
     public Set<ITableEntry> getSourcesForTarget(ITableEntry dataMapTableEntry) {
@@ -353,7 +353,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "removeLink".
-     * 
+     *
      * @param link
      */
     public Set<IMapperLink> getGraphicalLinksFromSource(ITableEntry dataMapTableEntry) {
@@ -370,7 +370,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "retrieveTableFromTableEntry".
-     * 
+     *
      * @param dataMapTableEntry
      * @return
      */
@@ -388,7 +388,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * Return all table data. Order is not assured. DOC amaumont Comment method "getTablesData".
-     * 
+     *
      * @return
      */
     public Collection<IDataMapTable> getTablesData() {
@@ -422,7 +422,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "renameProcessColumnName".
-     * 
+     *
      * @param currentModifiedTableEntry
      * @param newColumnName
      * @param newColumnName2
@@ -437,7 +437,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "removeLinksFrom".
-     * 
+     *
      * @param dataMapTableEntry
      */
     public void removeLinksOf(ITableEntry dataMapTableEntry) {
@@ -458,7 +458,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "getTableEntryProperties".
-     * 
+     *
      * @param dataMapTableEntry
      * @return
      */
@@ -469,7 +469,7 @@ public class MapperManager extends AbstractMapperManager {
     /**
      * This method is called when "addMetadataTableEditorEntry" is called (event on list of MetadataEditor) , so if you
      * want keep synchronisation between inputs/outputs DataMaps and MetadataEditors don't call this method.
-     * 
+     *
      * @param dataMapTableView
      * @param metadataColumn, can be null if added in VarsTable
      * @param index
@@ -496,10 +496,10 @@ public class MapperManager extends AbstractMapperManager {
     /**
      * This method is called when "addMetadataTableEditorEntry" is called (event on list of MetadataEditor) , so if you
      * want keep synchronisation between inputs/outputs DataMaps and MetadataEditors don't call this method.
-     * 
+     *
      * For other uses such as add an entry to VarsTable or add entries to inputs or outputs DataMaps when
      * MetadataEditors are not active, call it.
-     * 
+     *
      * @param dataMapTableView
      * @param index
      * @param type TODO
@@ -521,7 +521,7 @@ public class MapperManager extends AbstractMapperManager {
     }
 
     /**
-     * 
+     *
      * @param dataMapTableView
      * @param index
      * @param type TODO
@@ -545,7 +545,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "addTableEntry".
-     * 
+     *
      * @param dataMapTableEntry
      * @param index
      */
@@ -765,7 +765,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "isTableOfInputMetadataEditor".
-     * 
+     *
      * @param table
      * @return
      */
@@ -777,7 +777,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "isTableOfOutputMetadataEditor".
-     * 
+     *
      * @param table
      * @return
      */
@@ -820,7 +820,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "changeEntryExpression".
-     * 
+     *
      * @param currentEntry
      * @param text
      */
@@ -854,7 +854,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "getPreviewPath".
-     * 
+     *
      * @return
      */
     public String getPreviewFilePath() {
@@ -864,7 +864,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "getPreviewFileName".
-     * 
+     *
      * @return
      */
     private String getPreviewFileName() {
@@ -931,9 +931,9 @@ public class MapperManager extends AbstractMapperManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "replaceLocation".
-     * 
+     *
      * @param previousLocation
      * @param newLocation
      * @param dataMapExpressionParser
@@ -994,7 +994,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * Sets the commandStack.
-     * 
+     *
      * @param commandStack the commandStack to set
      */
     public void setCommandStack(CommandStack commandStack) {
@@ -1011,7 +1011,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "checkEntryHasValidKey".
-     * 
+     *
      * @param inputEntry
      */
     public boolean checkEntryHasInvalidCheckedKey(InputColumnTableEntry inputEntry) {
@@ -1020,7 +1020,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "checkEntryHasValidKey".
-     * 
+     *
      * @param inputEntry
      */
     public boolean checkEntryHasInvalidUncheckedKey(InputColumnTableEntry inputEntry) {
@@ -1042,7 +1042,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "buildKey".
-     * 
+     *
      * @param tableName
      * @param entryName
      * @return
@@ -1053,7 +1053,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * Getter for problemsManager.
-     * 
+     *
      * @return the problemsManager
      */
     public ProblemsManager getProblemsManager() {
@@ -1071,7 +1071,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "isAdvancedMap".
-     * 
+     *
      * @return
      */
     public boolean isAdvancedMap() {
@@ -1081,7 +1081,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /**
      * DOC amaumont Comment method "isTableHasAtLeastOneHashKey".
-     * 
+     *
      * @param inputTable
      */
     public boolean isTableHasAtLeastOneHashKey(InputTable inputTable) {
@@ -1098,7 +1098,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.managers.AbstractMapperManager#getLinkManager()
      */
     @Override
@@ -1108,7 +1108,7 @@ public class MapperManager extends AbstractMapperManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.abstractmap.managers.AbstractMapperManager#isMapperChanged()
      */
     @Override

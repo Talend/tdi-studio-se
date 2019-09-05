@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,13 +26,13 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * set "PARALLELIZE_KEEP_EMPTY" default value to "true" in db components on paralleize mode, see issue tdi bug 21708.
- * 
+ *
  */
 public class ChangeDefaultValueTDIBug21708 extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.core.model.migration.AbstractJobMigrationTask#executeOnProcess(org.talend.core.model.properties.
      * ProcessItem)
      */

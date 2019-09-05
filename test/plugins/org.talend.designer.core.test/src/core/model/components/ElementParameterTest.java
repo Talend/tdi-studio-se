@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,9 +21,9 @@ import org.talend.designer.core.model.components.ElementParameter;
 
 /**
  * Test of the ElementParameter class with the Expression.
- * 
+ *
  * $Id: ElementParameterTest.java 38013 2010-03-05 14:21:59Z mhirt $
- * 
+ *
  */
 public class ElementParameterTest {
 
@@ -37,7 +37,7 @@ public class ElementParameterTest {
 
     /**
      * DOC nrousseau Comment method "main".
-     * 
+     *
      * @param args
      */
     public static void main(String[] args) {

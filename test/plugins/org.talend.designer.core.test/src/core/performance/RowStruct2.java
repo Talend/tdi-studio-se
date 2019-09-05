@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,16 +14,16 @@ package core.performance;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 /**
- * 
+ *
  * DOC amaumont THashStartJavajet class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class RowStruct2 {
 
@@ -57,7 +57,7 @@ public class RowStruct2 {
 
     /**
      * DOC amaumont BeanStruct constructor comment.
-     * 
+     *
      * @param id1
      * @param name
      * @param id2
@@ -77,7 +77,7 @@ public class RowStruct2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -106,7 +106,7 @@ public class RowStruct2 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

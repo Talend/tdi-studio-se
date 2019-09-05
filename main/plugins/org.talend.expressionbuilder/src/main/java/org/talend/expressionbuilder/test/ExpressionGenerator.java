@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.commons.runtime.model.expressionbuilder.Variable;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExpressionGenerator.java 上午10:06:29 2007-7-24 +0000 (2007-7-24) yzhang $
- * 
+ *
  */
 public class ExpressionGenerator {
 
@@ -43,7 +43,7 @@ public class ExpressionGenerator {
             + NL
             + "//" //$NON-NLS-1$
             + NL
-            + "// Copyright (C) 2006-2018 Talend Inc. - www.talend.com" //$NON-NLS-1$
+            + "// Copyright (C) 2006-2019 Talend Inc. - www.talend.com" //$NON-NLS-1$
             + NL
             + "//" //$NON-NLS-1$
             + NL

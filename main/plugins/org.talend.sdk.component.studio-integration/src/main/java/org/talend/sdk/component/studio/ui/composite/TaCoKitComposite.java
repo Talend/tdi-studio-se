@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 package org.talend.sdk.component.studio.ui.composite;
 
-import static java.util.stream.Stream.of;
-import static org.talend.sdk.component.studio.model.parameter.SchemaElementParameter.guessButtonName;
+import static java.util.stream.Stream.*;
+import static org.talend.sdk.component.studio.model.parameter.SchemaElementParameter.*;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
@@ -39,12 +40,14 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.FakeElement;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
 import org.talend.sdk.component.studio.model.parameter.Layout;
 import org.talend.sdk.component.studio.model.parameter.LayoutParameter;
 import org.talend.sdk.component.studio.model.parameter.Level;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
+import org.talend.sdk.component.studio.ui.composite.problemmanager.IProblemManager;
 
 /**
  * Registers PropertyChangeListener for each IElementParameter during instantiation
@@ -52,7 +55,14 @@ import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
  */
 public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite {
 
+    /**
+     * Indent between component options on properties form
+     */
+    private static final int OPTIONS_INDENT = Platform.getOS().equals(Platform.OS_LINUX) ? 0 : 2;
+
     private List<? extends IElementParameter> parameters;
+
+    private final IProblemManager problemManager;
 
     private PropertyChangeListener redrawListener = evt -> {
         if (!"show".equals(evt.getPropertyName())) {
@@ -62,15 +72,35 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
     };
 
     public TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
-            final Element element, final boolean isCompactView) {
+            final Element element, final boolean isCompactView, final IProblemManager problemManager) {
         super(parentComposite, styles, section, element, isCompactView);
+        this.problemManager = problemManager;
+        registProblemManager();
         postInit();
     }
 
-    TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
-            final Element element, final boolean isCompactView, final Color backgroundColor) {
+    TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section, final Element element,
+            final boolean isCompactView, final Color backgroundColor, final IProblemManager problemManager) {
         super(parentComposite, styles, section, element, isCompactView, backgroundColor);
+        this.problemManager = problemManager;
+        registProblemManager();
         postInit();
+    }
+
+    private void registProblemManager() {
+        if (this.problemManager != null) {
+            this.problemManager.registTckComposite(this);
+        }
+        elem.getElementParameters().stream().filter(Objects::nonNull).filter(TaCoKitElementParameter.class::isInstance)
+                .map(TaCoKitElementParameter.class::cast).forEach(p -> p.setProblemManager(problemManager));
+    }
+
+    private void unregistProblemManager() {
+        if (this.problemManager != null) {
+            this.problemManager.unregistTckComposite(this);
+        }
+        elem.getElementParameters().stream().filter(Objects::nonNull).filter(TaCoKitElementParameter.class::isInstance)
+                .map(TaCoKitElementParameter.class::cast).forEach(p -> p.setProblemManager(null));
     }
 
     protected void postInit() {
@@ -93,6 +123,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
 
     @Override
     public synchronized void dispose() {
+        unregistProblemManager();
         preDispose();
         super.dispose();
     }
@@ -169,8 +200,9 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
      */
     protected Composite addCommonWidgets() {
         final Composite propertyComposite = addPropertyType(composite);
-        final Composite lastSchemaComposite = addSchemas(composite, propertyComposite);
-        return lastSchemaComposite;
+        final Composite schemaComposite = addSchemas(composite, propertyComposite);
+        final Composite lastComposite = addStatCatcher(schemaComposite);
+        return lastComposite;
     }
 
     protected Composite addPropertyType(final Composite parent) {
@@ -208,6 +240,14 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
             addSchemaWidget(schemaComposite, schema);
         }
         return previousComposite;
+    }
+
+    protected Composite addStatCatcher(final Composite parent) {
+        final IElementParameter parameter = elem.getElementParameter(EParameterName.TSTATCATCHER_STATS.getName());
+        if (doShow(parameter)) {
+            addWidget(parent, parameter, null);
+        }
+        return parent;
     }
 
     private boolean isNotPresentOnLayout(final IElementParameter schema) {
@@ -299,7 +339,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
     protected Control addWidget(final Composite parent, final IElementParameter parameter, final Control previous) {
         final AbstractElementPropertySectionController controller =
                 generator.getController(parameter.getFieldType(), this);
-        return controller.createControl(parent, parameter, 1, 1, 0, previous);
+        return controller.createControl(parent, parameter, 1, 1, OPTIONS_INDENT, previous);
     }
 
     /**

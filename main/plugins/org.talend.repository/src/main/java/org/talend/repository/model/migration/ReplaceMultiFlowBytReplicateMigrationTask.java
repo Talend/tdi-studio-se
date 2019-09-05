@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,7 +49,7 @@ public class ReplaceMultiFlowBytReplicateMigrationTask extends AbstractJobMigrat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.core.model.migration.AbstractJobMigrationTask#executeOnProcess(org.talend.core.model.properties.
      * ProcessItem)
      */
@@ -87,7 +87,7 @@ public class ReplaceMultiFlowBytReplicateMigrationTask extends AbstractJobMigrat
 
     /**
      * DOC nrousseau Comment method "checkMaxOutputAndUpdate".
-     * 
+     *
      * @param processItem
      * @param processType
      * @param component
@@ -138,7 +138,7 @@ public class ReplaceMultiFlowBytReplicateMigrationTask extends AbstractJobMigrat
 
     /**
      * DOC nrousseau Comment method "addtReplicateComponent".
-     * 
+     *
      * @param processType
      * @param replicatePos
      * @param connections
@@ -156,7 +156,7 @@ public class ReplaceMultiFlowBytReplicateMigrationTask extends AbstractJobMigrat
 
     /**
      * DOC nrousseau Comment method "createConnectionType".
-     * 
+     *
      * @param processType
      * @param sourceName
      * @param nodeConnector
@@ -190,7 +190,7 @@ public class ReplaceMultiFlowBytReplicateMigrationTask extends AbstractJobMigrat
 
     /**
      * DOC nrousseau Comment method "createNodeType".
-     * 
+     *
      * @param processType
      * @param replicatePos
      * @param nodeTypeSource
@@ -272,7 +272,7 @@ public class ReplaceMultiFlowBytReplicateMigrationTask extends AbstractJobMigrat
 
     /**
      * DOC nrousseau Comment method "findLocationForNode".
-     * 
+     *
      * @param processType
      * @param point
      * @return
@@ -295,7 +295,7 @@ public class ReplaceMultiFlowBytReplicateMigrationTask extends AbstractJobMigrat
 
     /**
      * DOC nrousseau Comment method "getNodePosition".
-     * 
+     *
      * @param nodeUniqueName
      * @return
      */
@@ -307,7 +307,7 @@ public class ReplaceMultiFlowBytReplicateMigrationTask extends AbstractJobMigrat
 
     /**
      * DOC nrousseau Comment method "getTargetsPosition".
-     * 
+     *
      * @param connections
      * @return
      */
@@ -321,7 +321,7 @@ public class ReplaceMultiFlowBytReplicateMigrationTask extends AbstractJobMigrat
 
     /**
      * DOC nrousseau Comment method "getConnectionsToMove".
-     * 
+     *
      * @param processType
      * @param nodeUniqueName
      * @return

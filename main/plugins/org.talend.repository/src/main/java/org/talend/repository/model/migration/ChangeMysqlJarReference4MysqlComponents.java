@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,15 +42,15 @@ public class ChangeMysqlJarReference4MysqlComponents extends
                 "tCreateTable", "tELTMysqlMap", "tMondrianInput", "tMysqlBulkExec", "tMysqlConnection", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
                 "tMysqlInput", "tMysqlOutput", "tMysqlOutputBulkExec", "tMysqlRow", "tMysqlSCD", "tMysqlSCDELT", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
                 "tMysqlSP", "tMySQLInvalidRows", "tMySQLValidRows", "tMysqlCDC"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        	
-        	
+
+
     	IComponentConversion changeOracleDriverJarType = new IComponentConversion() {
 
 	        public void transform(NodeType node) {
 	            if(node == null) {
 	                return;
 	            }
-	            
+
 	            if("tCreateTable".equals(node.getComponentName())) { //$NON-NLS-1$
 	                ElementParameterType dbVersion = ComponentUtilities.getNodeProperty(node, "DB_MYSQL_VERSION"); //$NON-NLS-1$
 	                if (dbVersion != null) {
@@ -62,7 +62,7 @@ public class ChangeMysqlJarReference4MysqlComponents extends
 	                    }
 	                }
 	            }
-	            
+
 	        	ElementParameterType dbVersion = ComponentUtilities.getNodeProperty(node, "DB_VERSION"); //$NON-NLS-1$
 	        	if (dbVersion != null) {
 	        		String jarValue = dbVersion.getValue();
@@ -73,9 +73,9 @@ public class ChangeMysqlJarReference4MysqlComponents extends
 	        		}
 	        	}
 	        }
-        
+
     	};
-    	
+
     	for (String name : mysqlCompNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 

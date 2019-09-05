@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,14 +16,14 @@ import org.talend.designer.core.i18n.Messages;
 
 /**
  * Enumeration that describes all the standard name used in the properties.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public enum EParameterName {
     PROJECT_TECHNICAL_NAME(Messages.getString("EParameterName.Project_Technical_Name")), //$NON-NLS-1$
     NAME(Messages.getString("EParameterName.Name")), //$NON-NLS-1$
-    UNIQUE_NAME(Messages.getString("EParameterName.uniqueName")), //$NON-NLS-1$    
+    UNIQUE_NAME(Messages.getString("EParameterName.uniqueName")), //$NON-NLS-1$
     TRANSLATED_UNIQUE_NAME("Translated Unique Name"), //$NON-NLS-1$
     AUTHOR(Messages.getString("EParameterName.Author")), //$NON-NLS-1$
     PURPOSE(Messages.getString("EParameterName.Purpose")), //$NON-NLS-1$
@@ -221,7 +221,7 @@ public enum EParameterName {
      * For Job Settings extra parameters.
      */
     MULTI_THREAD_EXECATION(Messages.getString("EParameterName.MultiThread")), //$NON-NLS-1$
-    IMPLICIT_TCONTEXTLOAD(Messages.getString("EParameterName.ImplicitContextLoad")), //$NON-NLS-1$    
+    IMPLICIT_TCONTEXTLOAD(Messages.getString("EParameterName.ImplicitContextLoad")), //$NON-NLS-1$
     IMPLICIT_TCONTEXTLOAD_FILE(Messages.getString("EParameterName.FromFile")), //$NON-NLS-1$
     FIELDSEPARATOR(Messages.getString("EParameterName.FieldSeparator")), //$NON-NLS-1$
     ROWSEPARATOR(Messages.getString("EParameterName.RowSeparator")), //$NON-NLS-1$
@@ -260,7 +260,7 @@ public enum EParameterName {
      * PERL_CATCH_USER_ERRORS(Messages.getString("EParameterName.catchUserErrors")), //$NON-NLS-1$
      * PERL_CATCH_USER_WARNING(Messages.getString("EParameterName.catchUserWarning")), //$NON-NLS-1$
      * PERL_CATCH_REALTIME_STATS(Messages.getString("EParameterName.catchRealtimeStats")), //$NON-NLS-1$
-     * 
+     *
      * JAVA_ON_FILES_FLAG(Messages.getString("EParameterName.onFileFlag")), //$NON-NLS-1$
      * JAVA_FILE_PATH(Messages.getString("EParameterName.filePath")), //$NON-NLS-1$
      * JAVA_FILENAME_STATS(Messages.getString("EParameterName.fileNameStats")), //$NON-NLS-1$

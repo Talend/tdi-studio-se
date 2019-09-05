@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,7 +27,7 @@ public class DbOperator implements IDbOperator {
 
     /**
      * amaumont DbOperator constructor comment.
-     * 
+     *
      * @param operator
      * @param expressionPattern
      * @param monoOperand
@@ -41,7 +41,7 @@ public class DbOperator implements IDbOperator {
 
     /**
      * amaumont DbOperator constructor comment.
-     * 
+     *
      * @param operator
      * @param associatedExpression
      * @param monoOperand
@@ -52,7 +52,7 @@ public class DbOperator implements IDbOperator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.IDbOperator#getValue()
      */
     public String getOperator() {
@@ -61,7 +61,7 @@ public class DbOperator implements IDbOperator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.IDbOperator#getAssociatedExpression()
      */
     public String getAssociatedExpression() {
@@ -70,7 +70,7 @@ public class DbOperator implements IDbOperator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.IDbOperator#isMonoOperand()
      */
     public boolean isMonoOperand() {

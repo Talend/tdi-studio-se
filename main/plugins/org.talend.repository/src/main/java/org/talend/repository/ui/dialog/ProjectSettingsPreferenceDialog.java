@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.PluginChecker;
@@ -67,12 +68,12 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
     public static final int IMPORT = 97;
 
     public static final int EXPORT = 98;
-    
+
     private static boolean isInReopen = false;
 
     /**
      * wchen ProjectSettingsPreferenceDialog constructor comment.
-     * 
+     *
      * @param parentShell
      * @param manager
      */
@@ -143,7 +144,7 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
 
     /**
      * roll back if click cancel button and delete temp file.
-     * 
+     *
      * @param rollback
      */
     private void rollBack(boolean rollback) {
@@ -217,7 +218,7 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
     }
 
     private void showErrorMessage() {
-        MessageBox message = new MessageBox(new Shell(getShell()), SWT.ICON_ERROR | SWT.OK);
+        MessageBox message = new MessageBox(DisplayUtils.getDefaultShell(false), SWT.ICON_ERROR | SWT.OK);
         message.setMessage(Messages.getString("ImportProjectSettings.Error")); //$NON-NLS-1$
         message.open();
     }
@@ -270,7 +271,7 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
                 String message = JFaceResources.getString("SafeRunnable.errorMessage"); //$NON-NLS-1$
 
                 Policy.getStatusHandler().show(new Status(IStatus.ERROR, Policy.JFACE, message, e),
-                        JFaceResources.getString("Error")); //$NON-NLS-1$ 
+                        JFaceResources.getString("Error")); //$NON-NLS-1$
 
             }
         });

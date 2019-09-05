@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,7 +15,6 @@ package org.talend.repository.ui.wizards.newproject.copyfromeclipse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -43,16 +42,12 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.dialogs.WorkingSetConfigurationBlock;
-import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.ILeveledImportStructureProvider;
 import org.eclipse.ui.internal.wizards.datatransfer.TarEntry;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
-import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage;
-import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
@@ -65,6 +60,7 @@ import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
+import org.talend.repository.items.importexport.ui.managers.TalendZipLeveledStructureProvider;
 import org.talend.repository.model.migration.ChangeProjectTechinicalNameMigrationTask;
 import org.talend.repository.ui.actions.importproject.ImportProjectBean;
 import org.talend.repository.ui.actions.importproject.ImportProjectHelper;
@@ -80,7 +76,7 @@ import org.w3c.dom.Node;
 /**
  * DOC zhangchao.wang class global comment. Detailled comment
  */
-public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
+public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImportPage {
 
     public TalendWizardProjectsImportPage() {
 
@@ -89,11 +85,11 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
     private String sourcePath;
 
     private ILeveledImportStructureProvider structureProvider;
-    
+
     private Map<String,String> oldToNewSource = new HashMap<>();
 
     /**
-     * 
+     *
      * DOC guanglong.du TalendWizardProjectsImportPage class global comment. Detailled comment
      */
     public class TalendProjectRecord {
@@ -114,7 +110,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
 
         /**
          * Create a record for a project based on the info in the file.
-         * 
+         *
          * @param file
          */
         TalendProjectRecord(File file) {
@@ -185,7 +181,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
 
         /**
          * Returns whether the given project description file path is in the default location for a project
-         * 
+         *
          * @param path The path to examine
          * @return Whether the given path is the default location for a project
          */
@@ -200,7 +196,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
 
         /**
          * Get the name of the project
-         * 
+         *
          * @return String
          */
         public String getProjectName() {
@@ -209,7 +205,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
 
         /**
          * Gets the label to be used when rendering this project record in the UI.
-         * 
+         *
          * @return String the label
          * @since 3.4
          */
@@ -238,10 +234,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
 
         try {
             // hide 'search for nested projects'
-            Field nestedProjectsCheckboxField = WizardProjectsImportPage.class.getDeclaredField("nestedProjectsCheckbox"); //$NON-NLS-1$
-            nestedProjectsCheckboxField.setAccessible(true);
-            Object nestedProjectsCheckboxObj = nestedProjectsCheckboxField.get(this);
-            Button nestedProjectsCheckbox = (Button) nestedProjectsCheckboxObj;
+            Button nestedProjectsCheckbox = super.getNestedProjectsCheckbox();
             Object gridDataObj = nestedProjectsCheckbox.getLayoutData();
             GridData gridData = null;
             if (gridDataObj == null) {
@@ -251,37 +244,10 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                 gridData = (GridData) gridDataObj;
             }
             gridData.exclude = true;
-
-            // hide 'Working sets'
-            Field workingSetGroupField = WizardProjectsImportPage.class.getDeclaredField("workingSetGroup"); //$NON-NLS-1$
-            workingSetGroupField.setAccessible(true);
-            Object workingSetGroupObj = workingSetGroupField.get(this);
-            Field workingSetBlockField = WorkingSetGroup.class.getDeclaredField("workingSetBlock"); //$NON-NLS-1$
-            workingSetBlockField.setAccessible(true);
-            Object workingSetBlockObj = workingSetBlockField.get(workingSetGroupObj);
-            Field enableButtonField = WorkingSetConfigurationBlock.class.getDeclaredField("enableButton"); //$NON-NLS-1$
-            enableButtonField.setAccessible(true);
-            Object enableButtonObj = enableButtonField.get(workingSetBlockObj);
-            Button enableButton = (Button) enableButtonObj;
-            Object layoutData = enableButton.getParent().getParent().getLayoutData();
-            if (layoutData == null) {
-                gridData = new GridData();
-                enableButton.getParent().getParent().setLayoutData(gridData);
-            } else {
-                gridData = (GridData) layoutData;
-            }
-            gridData.exclude = true;
-
-        } catch (NoSuchFieldException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (SecurityException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -295,9 +261,19 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
         getProjectsList().setComparator(comparator);
     }
 
+    @Override
+    protected void addToWorkingSets() {
+        // no need
+    }
+
+    @Override
+    protected void createWorkingSetGroup(Composite workArea) {
+        // hide workingSetGroup
+    }
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage#updateProjectsList(java.lang.String)
      */
     @Override
@@ -327,7 +303,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
         }
     }
     /**
-     * 
+     *
      * DOC xlwang Comment method "items2Projects".
      */
     public String items2Projects(String sourcePath) throws Exception {
@@ -425,7 +401,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                 if (sourceFile == null) {
                     return new ProjectRecord[0];
                 }
-                structureProvider = new ZipLeveledStructureProvider(sourceFile);
+                structureProvider = new TalendZipLeveledStructureProvider(sourceFile);
                 Object child = structureProvider.getRoot();
                 collectProjectFilesFromProvider(files, child, 0);
                 selected = new ProjectRecord[files.size()];
@@ -494,9 +470,9 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
 
     /**
      * This method must not be called outside the workbench.
-     * 
+     *
      * Utility method for creating status.
-     * 
+     *
      * @param severity
      * @param message
      * @return {@link IStatus}

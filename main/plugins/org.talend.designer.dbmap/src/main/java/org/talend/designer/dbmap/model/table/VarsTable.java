@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,9 +29,9 @@ import org.talend.designer.dbmap.model.tableentry.VarTableEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: VarsTable.java 1782 2007-02-03 07:57:38Z bqian $
- * 
+ *
  */
 public class VarsTable extends AbstractDataMapTable {
 
@@ -64,7 +64,7 @@ public class VarsTable extends AbstractDataMapTable {
 
     /**
      * Manage to find a unique name with the given name.
-     * 
+     *
      * @param titleName
      */
     public String findUniqueColumnName(String baseName) {
@@ -88,7 +88,7 @@ public class VarsTable extends AbstractDataMapTable {
     /**
      * Check if the given name will be unique in the process. If another link already exists with that name, false will
      * be returned.
-     * 
+     *
      * @param uniqueName
      * @return true if the name is unique
      */
@@ -117,9 +117,9 @@ public class VarsTable extends AbstractDataMapTable {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "validateColumnName".
-     * 
+     *
      * @param columnName
      * @return true if columnName has a valid value
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,7 +60,7 @@ public class SQLSourceViewerConfiguration extends SourceViewerConfiguration {
 	/**
 	 * Creates a new SQL source viewer configuration for viewers in the given
 	 * editor using the given SQLTextTools.
-	 * 
+	 *
 	 * @param tools
 	 *            the SQL tools to be used
 	 */
@@ -150,11 +150,11 @@ public class SQLSourceViewerConfiguration extends SourceViewerConfiguration {
 		 * assistant.setProposalSelectorForeground(c); c= getColor(store,
 		 * PROPOSALS_BACKGROUND, manager);
 		 * assistant.setProposalSelectorBackground(c);
-		 * 
+		 *
 		 * c= getColor(store, PARAMETERS_FOREGROUND, manager);
 		 * assistant.setContextInformationPopupForeground(c);
 		 * assistant.setContextSelectorForeground(c);
-		 * 
+		 *
 		 * c= getColor(store, PARAMETERS_BACKGROUND, manager);
 		 * assistant.setContextInformationPopupBackground(c);
 		 * assistant.setContextSelectorBackground(c);
@@ -172,7 +172,7 @@ public class SQLSourceViewerConfiguration extends SourceViewerConfiguration {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getInformationPresenter(org.eclipse.jface.text.source.ISourceViewer)
 	 */
 	public IInformationPresenter getInformationPresenter(

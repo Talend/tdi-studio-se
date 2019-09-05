@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -235,7 +235,7 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
 
         /**
          * Creates a new color menu image descriptor
-         * 
+         *
          * @param basicIcon The basic Image data
          * @param rgb The color bar RGB value
          */
@@ -271,7 +271,7 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.views.properties.tabbed.ISection#createControls(org.eclipse.swt.widgets.Composite,
      * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
      */
@@ -280,9 +280,9 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
     }
 
     /**
-     * 
+     *
      * Sets up controls with proper layouts and groups
-     * 
+     *
      * @param parent
      */
     private void initializeControls(Composite parent) {
@@ -515,7 +515,7 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
 
     /**
      * Creates group with ruler units and grid spacing controls
-     * 
+     *
      * @param composite
      */
     private void createMeasurementGroup(Composite composite) {
@@ -566,9 +566,9 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
     }
 
     /**
-     * 
+     *
      * converts fromUnits to toUnits (e.g. inches to pixels)
-     * 
+     *
      * @param fromUnits
      * @param toUnits
      * @return equivalent number of toUnits for the given fromUnits
@@ -661,9 +661,9 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
     };
 
     /**
-     * 
+     *
      * converts the current units used to a base unit value to be used (e.g. in validation)
-     * 
+     *
      * @param number Units to be converted to the base unit
      * @return
      */
@@ -689,7 +689,7 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.views.properties.tabbed.ISection#setInput(org.eclipse.ui.IWorkbenchPart,
      * org.eclipse.jface.viewers.ISelection)
      */
@@ -744,7 +744,7 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.views.properties.tabbed.ISection#dispose()
      */
     public void dispose() {
@@ -784,7 +784,7 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
 
     /**
      * Creates group with ruler and grid visibility and grid order controls
-     * 
+     *
      * @param composite
      */
     private void createDisplayGroup(Composite composite) {
@@ -823,7 +823,7 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
 
     /**
      * Creates group with line color and style controls
-     * 
+     *
      * @param composite
      */
     private void createGridlineGroup(Composite composite) {
@@ -875,7 +875,7 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
          */
@@ -886,7 +886,7 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
 
     /**
      * Handles workspace property changes
-     * 
+     *
      * @param event
      */
     private void handleWorkspacePropertyChanged(PropertyChangeEvent event) {
@@ -962,7 +962,7 @@ public class BusinessRulersAndGridComposite extends AbstractTabComposite {
     /**
      * The NumberFormatter.parse() could return a Long or Double We are storing all values related to the page setup as
      * doubles so we call this function when ever we are getting values from the dialog.
-     * 
+     *
      * @param number
      * @return
      */

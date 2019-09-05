@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.designer.runprocess.IRunProcessService;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class JavaLanguage extends AbstractLanguage {
 
@@ -102,7 +102,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getCouplePattern()
      */
     public String getLocationPattern() {
@@ -111,7 +111,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getPREFIX_FIELD_NAME_REGEXP()
      */
     public String getPrefixFieldRegexp() {
@@ -120,7 +120,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getPREFIX_TABLE_NAME_REGEXP()
      */
     public String getPrefixTableRegexp() {
@@ -129,7 +129,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getSUFFIX_FIELD_NAME_REGEXP()
      */
     public String getSuffixFieldRegexp() {
@@ -138,7 +138,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getSUFFIX_TABLE_NAME_REGEXP()
      */
     public String getSuffixTableRegexp() {
@@ -147,7 +147,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getSubstPatternForPrefixColumnName()
      */
     public String getSubstPatternForPrefixColumnName() {
@@ -156,7 +156,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getSubstPatternForReplaceLocation()
      */
     public String getSubstPatternForReplaceLocation() {
@@ -165,7 +165,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getTEMPLATE_TABLE_COLUMN_VARIABLE()
      */
     public String getTemplateTableColumnVariable() {
@@ -174,7 +174,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getTEMPLATE_PROCESS_COLUMN_VARIABLE()
      */
     public String getTemplateVarsColumnVariable() {
@@ -183,7 +183,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getTemplateGeneratedCodeTableColumnVariable()
      */
     public String getTemplateGeneratedCodeTableColumnVariable() {
@@ -192,7 +192,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getTemplateGeneratedCodeTableColumnVariableWithComponentName()
      */
     public String getTemplateGeneratedCodeTableColumnVariableWithComponentNamePrefix() {
@@ -201,7 +201,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getAndCondition()
      */
     public String getAndCondition() {
@@ -210,7 +210,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getPrefixField()
      */
     public String getPrefixField() {
@@ -219,7 +219,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getPrefixTable()
      */
     public String getPrefixTable() {
@@ -228,7 +228,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getSuffixField()
      */
     public String getSuffixField() {
@@ -238,7 +238,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getSuffixTable()
      */
     public String getSuffixTable() {
@@ -247,7 +247,7 @@ public class JavaLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getTemplateTableVariable()
      */
     public String getTemplateTableVariable() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,7 +29,7 @@ public class MonitorConnectionLabel extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.Element#getElementName()
      */
     @Override
@@ -39,7 +39,7 @@ public class MonitorConnectionLabel extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#isReadOnly()
      */
     public boolean isReadOnly() {
@@ -48,7 +48,7 @@ public class MonitorConnectionLabel extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#setReadOnly(boolean)
      */
     public void setReadOnly(boolean readOnly) {
@@ -58,7 +58,7 @@ public class MonitorConnectionLabel extends Element {
 
     /**
      * Get the connection parent of the label.
-     * 
+     *
      * @return Connection
      */
     public Connection getConnection() {
@@ -67,7 +67,7 @@ public class MonitorConnectionLabel extends Element {
 
     /**
      * Getter for labelText.
-     * 
+     *
      * @return the labelText
      */
     public String getLabelText() {

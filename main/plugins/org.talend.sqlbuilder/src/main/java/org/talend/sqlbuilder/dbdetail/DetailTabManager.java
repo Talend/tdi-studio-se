@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,7 +41,7 @@ import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 
 /**
  * Controls creation of detail tabs for all nodes. All detail tabs are cached.
- * 
+ *
  * <br/>
  *
  * @author yzhang
@@ -56,7 +56,7 @@ public class DetailTabManager {
 
     /**
      * Clear the detail tab cache for a given node.
-     * 
+     *
      * @param node INode to remove from cache.
      */
     public static void clearCacheForNode(INode node) {
@@ -74,7 +74,7 @@ public class DetailTabManager {
     /**
      * Clear cache of a given session. This method is called when a session is
      * closed or when the database node is refreshed.
-     * 
+     *
      * @param session SessionTreeNode
      */
     public static void clearCacheForSession(SessionTreeNode session) {
@@ -90,7 +90,7 @@ public class DetailTabManager {
     /**
      * Creates all the tabs in the detail pane to display the information for a
      * given node.
-     * 
+     *
      * @param composite
      * @param node
      */
@@ -186,7 +186,7 @@ public class DetailTabManager {
     /**
      * Returns a list of all available tabs for a given node. These tabs can be
      * standard or plugin tabs.
-     * 
+     *
      * @param node for which to find tabs.
      * @return List of tabs
      */
@@ -347,7 +347,7 @@ public class DetailTabManager {
      * This method returns the tabs for a given node from the cache. Tabs are
      * cached per sessionTreeNode. If the tabs don't exist in the cache, they
      * are created.
-     * 
+     *
      * @param node INode for which to retrieve tabs.
      * @return List of tabs.
      */
@@ -386,7 +386,7 @@ public class DetailTabManager {
     /**
      * Store the name of the active tab, so that we can reselect it when a
      * different node is selected.
-     * 
+     *
      * @param name tab label
      */
     public static void setActiveTabName(String name) {

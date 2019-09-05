@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
         // we need to get the locale from display language. We might have a "en_US"/"en-US" or something different
         // as an incoming locale String
         final Locale expLocale = Locales.fromLanguagePresentation(language);
-        
+
         // let's build map of component families.
         final Map<String, TaCoKitContribution> familyContributionsMap = new HashMap<>();
         Stream<Pair<ComponentIndex, ComponentDetail>> details =
@@ -68,8 +68,8 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
             topic.setLabel(index.getDisplayName());
             familyContribution.getToc().addTopic(topic);
         });
-        
-        
+
+
         contributions = familyContributionsMap.values().toArray(new ITocContribution[0]);
         languagePack.put(language, contributions);
         return contributions;

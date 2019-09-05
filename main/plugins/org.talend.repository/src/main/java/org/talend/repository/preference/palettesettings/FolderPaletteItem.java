@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,7 +26,7 @@ public class FolderPaletteItem extends AbstractPaletteItem implements IPaletteIt
 
     /**
      * Create fodler palette item.
-     * 
+     *
      * @param label : from translated family name
      * @param orignalLabel : from original family in component
      * @param category

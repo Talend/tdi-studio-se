@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -62,7 +62,7 @@ public class SubjobContainerFigure extends Figure {
 
     /**
      * DOC nrousseau SubjobContainerFigure constructor comment.
-     * 
+     *
      * @param model
      */
     public SubjobContainerFigure(SubjobContainer subjobContainerTmp) {
@@ -154,7 +154,7 @@ public class SubjobContainerFigure extends Figure {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.Figure#paint(org.eclipse.draw2d.Graphics)
      */
     @Override
@@ -273,7 +273,7 @@ public class SubjobContainerFigure extends Figure {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.Figure#setBounds(org.eclipse.draw2d.geometry.Rectangle)
      */
     @Override
@@ -283,7 +283,7 @@ public class SubjobContainerFigure extends Figure {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.Figure#setLocation(org.eclipse.draw2d.geometry.Point)
      */
     @Override
@@ -294,7 +294,7 @@ public class SubjobContainerFigure extends Figure {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.Figure#setSize(int, int)
      */
     @Override

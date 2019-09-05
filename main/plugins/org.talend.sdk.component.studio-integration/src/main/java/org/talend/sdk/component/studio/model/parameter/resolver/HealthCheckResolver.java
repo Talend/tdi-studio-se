@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
-import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
 import org.talend.sdk.component.studio.model.parameter.ButtonParameter;
 import org.talend.sdk.component.studio.model.parameter.PathCollector;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
@@ -91,16 +90,17 @@ public class HealthCheckResolver {
 
     /**
      * Finds parameter alias (which is value of Option annotation in HealthCheck method)
-     * 
+     *
      * This method builds property tree and assumes that root node path is a required alias
      *
-     * 
-     * 
+     *
+     *
      * @return parameter alias
      */
     private String getParameterAlias() {
         final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator.wrap(action.getProperties());
-        final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper()).createPropertyTree(properties);
+        final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper())
+                .createPropertyTree(properties);
         return root.getProperty().getPath();
     }
 }

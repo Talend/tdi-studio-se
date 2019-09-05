@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
@@ -55,7 +55,7 @@ public class SetParallelizationCommand extends Command {
         setParallelization(this.node);
         setParallelParametersForConn();
         if (!isExistParalInSubjob(existParallelMap, node.getProcessStartNode(false))) {
-            MessageDialog.openInformation(new Shell(), Messages.getString("Node.setPartitioning"),
+            MessageDialog.openInformation(DisplayUtils.getDefaultShell(false), Messages.getString("Node.setPartitioning"),
                     Messages.getString("Node.nothingDoForPartitioning"));
         }
     }

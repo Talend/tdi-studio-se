@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,12 +24,12 @@ import org.talend.sqlbuilder.SqlBuilderPlugin;
 
 /**
  * Label Provider for DataSet.
- * 
+ *
  * @author Davy Vanherbergen
  */
 /**
  * @author Davy Vanherbergen
- * 
+ *
  */
 public class DataSetTableLabelProvider implements ITableLabelProvider {
 
@@ -48,7 +48,7 @@ public class DataSetTableLabelProvider implements ITableLabelProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
      */
     public void addListener(ILabelProviderListener listener) {
@@ -58,7 +58,7 @@ public class DataSetTableLabelProvider implements ITableLabelProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
      */
     public void dispose() {
@@ -69,7 +69,7 @@ public class DataSetTableLabelProvider implements ITableLabelProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
      */
     public Image getColumnImage(Object element, int columnIndex) {
@@ -79,7 +79,7 @@ public class DataSetTableLabelProvider implements ITableLabelProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
      */
     public String getColumnText(Object element, int columnIndex) {
@@ -114,7 +114,7 @@ public class DataSetTableLabelProvider implements ITableLabelProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
      */
     public boolean isLabelProperty(Object element, String property) {
@@ -124,7 +124,7 @@ public class DataSetTableLabelProvider implements ITableLabelProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -132,7 +132,7 @@ public class DataStringConnection {
                 "jdbc:ingres://" + host + ":" + port + "/" + sid, "II7"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
         dataConnection[DBTYPE_INTERBASE] = new DataConnection("Interbase", "jdbc:interbase://<host>/<sid>", //$NON-NLS-1$ //$NON-NLS-2$
-                "jdbc:interbase://" + host + "/" + sid); //$NON-NLS-1$ //$NON-NLS-2$ 
+                "jdbc:interbase://" + host + "/" + sid); //$NON-NLS-1$ //$NON-NLS-2$
 
         // dataConnection[11] = new DataConnection("Microsoft SQL Server", "jdbc:jtds:sqlserver://<host>:<port>/<sid>",
         // "jdbc:jtds:sqlserver://" + host + ":" + port + "/" + sid, "1433"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -140,7 +140,7 @@ public class DataStringConnection {
                 "jdbc:jtds:sqlserver://" + host + ":" + port + "/" + sid + ";" + addParam, "1433"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
         dataConnection[DBTYPE_FIREBIRD] = new DataConnection("FireBird", "jdbc:firebirdsql:<host>:<filename>", //$NON-NLS-1$ //$NON-NLS-2$
-                "jdbc:firebirdsql:" + host + ":" + file); //$NON-NLS-1$ //$NON-NLS-2$ 
+                "jdbc:firebirdsql:" + host + ":" + file); //$NON-NLS-1$ //$NON-NLS-2$
 
         dataConnection[DBTYPE_INFORMIX] = new DataConnection("Informix", //$NON-NLS-1$
                 "jdbc:informix-sqli://<host>:<port>/<sid>:informixserver=<datasource>;<property>", //$NON-NLS-1$
@@ -148,7 +148,7 @@ public class DataStringConnection {
 
         dataConnection[DBTYPE_ACCESS] = new DataConnection("Access", //$NON-NLS-1$
                 "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=<filename>", //$NON-NLS-1$
-                "jdbc:odbc:Driver={Microsoft Access Driver \\(\\*\\.mdb, \\*\\.accdb\\)};DBQ=" + file); //$NON-NLS-1$ 
+                "jdbc:odbc:Driver={Microsoft Access Driver \\(\\*\\.mdb, \\*\\.accdb\\)};DBQ=" + file); //$NON-NLS-1$
 
         dataConnection[DBTYPE_TERDATA] = new DataConnection(
                 "Teradata", "jdbc:teradata://<host>/<sid>", "jdbc:teradata://" + host + "/" + sid); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -188,7 +188,7 @@ public class DataStringConnection {
                 ":" + port + "/" + sid, "557"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         dataConnection[26] = new DataConnection("SAS", "jdbc:sasiom://<host>:<port>", "jdbc:sasiom://" + host //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                + ":" + port, "7070"); //$NON-NLS-1$ //$NON-NLS-2$ 
+                + ":" + port, "7070"); //$NON-NLS-1$ //$NON-NLS-2$
 
         dataConnection[27] = new DataConnection("Greenplum", "jdbc:postgresql://<host>:<port>/<sid>", "jdbc:postgresql://" + host //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 + ":" + port + "/" + sid, "5432"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -199,11 +199,11 @@ public class DataStringConnection {
                 + ":" + port + "/" + sid, "5480"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         // General jdbc
-        dataConnection[30] = new DataConnection(GENERAL_JDBC, "jdbc:xxx://<xxx>:<xxx>", "jdbc:xxx://" + host //$NON-NLS-1$ //$NON-NLS-2$ 
-                + ":" + port, "xxxx"); //$NON-NLS-1$ //$NON-NLS-2$ 
+        dataConnection[30] = new DataConnection(GENERAL_JDBC, "jdbc:xxx://<xxx>:<xxx>", "jdbc:xxx://" + host //$NON-NLS-1$ //$NON-NLS-2$
+                + ":" + port, "xxxx"); //$NON-NLS-1$ //$NON-NLS-2$
         // // hshen
-        //        dataConnection[31] = new DataConnection(EXASOL, "jdbc:exa:<host>:<port>:schema=<sid>", "jdbc:exa:" + host //$NON-NLS-1$ //$NON-NLS-2$ 
-        //                + ":" + port + ":schema=" + sid, "8563"); //$NON-NLS-1$ //$NON-NLS-2$ 
+        //        dataConnection[31] = new DataConnection(EXASOL, "jdbc:exa:<host>:<port>:schema=<sid>", "jdbc:exa:" + host //$NON-NLS-1$ //$NON-NLS-2$
+        //                + ":" + port + ":schema=" + sid, "8563"); //$NON-NLS-1$ //$NON-NLS-2$
 
         // dataConnection[8] = new DataConnection("Sybase IQ", "jdbc:sybase:Tds:<host>:<port>/<sid>", "jdbc:sybase:Tds:"
         // + host + ":" + port //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -263,7 +263,7 @@ public class DataStringConnection {
 
     /**
      * SetVisible fields : Serveur, Login, Password.
-     * 
+     *
      * @param int dbTypeItemIndex
      * @param String host
      * @param String login
@@ -272,7 +272,7 @@ public class DataStringConnection {
      * @param String sid
      * @param String filename
      * @param String datasource
-     * 
+     *
      * @return string
      */
     public String getString(final int dbTypeItemIndex, final String host, final String login, final String password,
@@ -351,7 +351,7 @@ public class DataStringConnection {
 
     /**
      * Method getAnalyse extact serveur, port, sid of stringConnection and check the dbType.
-     * 
+     *
      * @param stringConnection
      * @return string[] { selectionIndex, serveur, port, sid }
      */
@@ -395,7 +395,7 @@ public class DataStringConnection {
 
     /**
      * method searchGoodRegex search the regex corresponding at the string of connection.
-     * 
+     *
      * @param stringConnection
      * @return selectionIndex
      */
@@ -418,7 +418,7 @@ public class DataStringConnection {
 
     /**
      * method getIndexOfLabel return the index of a Connection String label.
-     * 
+     *
      * @param string label
      */
     public int getIndexOfLabel(String label) {
@@ -444,7 +444,7 @@ public class DataStringConnection {
 
     /**
      * set selectionIndex (the index of the StringConnection in the Array DataConnection).
-     * 
+     *
      * @param selectionIndex
      */
     public void setSelectionIndex(int selectionIndex) {
@@ -453,7 +453,7 @@ public class DataStringConnection {
 
     /**
      * set gelectionIndex (the index of the StringConnection in the Array DataConnection).
-     * 
+     *
      * @return selectionIndex
      */
     public int getSelectionIndex() {
@@ -462,7 +462,7 @@ public class DataStringConnection {
 
     /**
      * Return true when the String Connection contains "jdbc:oracle:".
-     * 
+     *
      * @return
      */
     public boolean isSchemaNeeded() {
@@ -479,7 +479,7 @@ public class DataStringConnection {
 
     /**
      * Return true when the String Connection contains "jdbc:jtds:sqlserver".
-     * 
+     *
      * @return
      */
     public boolean isAddtionParamsNeeded() {
@@ -517,7 +517,7 @@ public class DataStringConnection {
 
     /**
      * DOC qiang.zhang Comment method "getString".
-     * 
+     *
      * @param selectionIndex2
      * @param text
      * @param text2
@@ -572,9 +572,9 @@ public class DataStringConnection {
     }
 
     /**
-     * 
+     *
      * DOC wzhang Comment method "getUrlConnectionStr".
-     * 
+     *
      * @param conn
      * @return
      */

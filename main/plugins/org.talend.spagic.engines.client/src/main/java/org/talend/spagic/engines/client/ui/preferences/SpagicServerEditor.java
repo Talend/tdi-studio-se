@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,15 +32,15 @@ import org.talend.spagic.engines.client.i18n.Messages;
 
 /**
  * DOC cantoine class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SpagoBiServerEditor.java 2738 2007-04-27 13:12:27Z cantoine $
- * 
+ *
  */
 public class SpagicServerEditor extends TableEditor {
 
     /**
      * DOC tguiu SpagoBiServerEditor constructor comment.
-     * 
+     *
      * @param name
      * @param labelText
      * @param parent
@@ -159,7 +159,7 @@ public class SpagicServerEditor extends TableEditor {
 
     /**
      * DOC tguiu Comment method "computeCodeList".
-     * 
+     *
      * @return
      */
     private List computeCodeList() {

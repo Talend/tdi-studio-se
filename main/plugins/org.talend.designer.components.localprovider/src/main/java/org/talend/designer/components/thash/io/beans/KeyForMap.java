@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -13,11 +13,11 @@
 package org.talend.designer.components.thash.io.beans;
 
 /**
- * 
+ *
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class KeyForMap {
 
@@ -36,7 +36,7 @@ public class KeyForMap {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -46,7 +46,7 @@ public class KeyForMap {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -67,7 +67,7 @@ public class KeyForMap {
     }
 
     /**
-     * 
+     *
      * @return
      * @author
      */

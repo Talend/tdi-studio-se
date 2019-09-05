@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -55,7 +55,7 @@ public abstract class JobHierarchyViewer extends ProblemTreeViewer {
     /**
      * Returns true if the hierarchy contains elements. Returns one of them With member filtering it is possible that no
      * elements are visible
-     * 
+     *
      * @return one of the elements contained
      */
     public Object containsElements() {
@@ -71,7 +71,7 @@ public abstract class JobHierarchyViewer extends ProblemTreeViewer {
 
     /**
      * Attaches a contextmenu listener to the tree
-     * 
+     *
      * @param menuListener the menu listener
      * @param popupId the popup id
      * @param viewSite the view site
@@ -88,7 +88,7 @@ public abstract class JobHierarchyViewer extends ProblemTreeViewer {
 
     /**
      * DOC bqian Comment method "getHierarchyContentProvider".
-     * 
+     *
      * @return
      */
     private JobHierarchyContentProvider getHierarchyContentProvider() {
@@ -97,7 +97,7 @@ public abstract class JobHierarchyViewer extends ProblemTreeViewer {
 
     /**
      * Returns the title for the current view
-     * 
+     *
      * @return the title
      */
     public String getTitle() {

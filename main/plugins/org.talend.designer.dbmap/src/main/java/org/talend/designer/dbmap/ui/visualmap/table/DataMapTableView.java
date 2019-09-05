@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -120,9 +120,9 @@ import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DataMapTableView.java 2010 2007-02-12 13:18:38Z amaumont $
- * 
+ *
  */
 public abstract class DataMapTableView extends Composite implements IDataMapTableView {
 
@@ -219,9 +219,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     // protected GridData tableForConstraintsGridData;
 
     /**
-     * 
+     *
      * Call finalizeInitialization(...) after instanciate this class.
-     * 
+     *
      * @param parent
      * @param style
      * @param abstractDataMapTable
@@ -361,7 +361,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "getTitle".
-     * 
+     *
      * @return
      */
     protected String getTitle() {
@@ -380,7 +380,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "createTableForColumns".
-     * 
+     *
      * @param parent
      */
     private void createTableForColumns(Composite parent) {
@@ -394,7 +394,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.talend.commons.ui.swt.extended.table.AbstractExtendedTableViewer#initTableListeners()
              */
             @Override
@@ -420,7 +420,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.talend.commons.ui.swt.extended.macrotable.AbstractExtendedTableViewer#setTableViewerCreatorOptions
              * (org.talend.commons.ui.swt.tableviewer.TableViewerCreator)
@@ -472,7 +472,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
                     /**
                      * DOC amaumont Comment method "getColumnImageExecute".
-                     * 
+                     *
                      * @param element
                      * @param columnIndex
                      * @return
@@ -497,7 +497,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.talend.commons.ui.swt.extended.table.AbstractExtendedTableViewer#initModelListeners()
              */
             @Override
@@ -691,7 +691,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "initShowMessageErrorListener".
-     * 
+     *
      * @param table
      */
     protected void initShowMessageErrorListener(final Table table) {
@@ -748,7 +748,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             /**
              * DOC amaumont Comment method "setTableToolTipText".
-             * 
+             *
              * @param table
              * @param tableColumn
              * @param text
@@ -763,14 +763,14 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "addEntriesActionsComponents".
-     * 
+     *
      * @return true if one or more ToolItem has been added
      */
     protected abstract boolean addToolItems();
 
     /**
      * DOC amaumont Comment method "initTableConstraints".
-     * 
+     *
      * @param parent
      */
     protected abstract void initTableFilters(Composite parent);
@@ -860,7 +860,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "addManualTableResizeListeners".
-     * 
+     *
      * @param uiManager
      */
     private void addManualTableResizeListeners(final UIManager uiManager) {
@@ -1067,9 +1067,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     }
 
     /**
-     * 
+     *
      * Change size of the DataMapTableView.
-     * 
+     *
      * @param newWidth
      * @param newHeight
      * @param refreshNow refresh background with links if true
@@ -1110,7 +1110,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "setTableSelection".
-     * 
+     *
      * @param selectionIndices
      */
     public void setTableSelection(int[] selectionIndices) {
@@ -1202,9 +1202,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     }
 
     /**
-     * 
+     *
      * Return current size of DataMapTableView.
-     * 
+     *
      * @return
      */
     public Point getPreferredSize() {
@@ -1212,9 +1212,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "getPreferredSize".
-     * 
+     *
      * @param newTableEntryWillBeAdded
      * @param expandedSize
      * @param newConstraintEntryWillBeAdded
@@ -1264,7 +1264,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "attachCellExpressionToStyledTextEditor".
-     * 
+     *
      * @param tableViewerCreator TODO
      * @param styledTextHandler
      * @param expressionEditorText2
@@ -1291,7 +1291,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.KeyListener#keyPressed(org.eclipse.swt.events.KeyEvent)
              */
             @Override
@@ -1433,9 +1433,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     }
 
     /**
-     * 
+     *
      * Init proposals of Text control, and StyledText in tab "Expression editor".
-     * 
+     *
      * @param textControl
      * @param zones
      * @param tableViewerCreator
@@ -1650,7 +1650,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.widgets.Control#setCursor(org.eclipse.swt.graphics.Cursor)
      */
     @Override
@@ -1675,20 +1675,20 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     }
 
     /**
-     * 
+     *
      * Provide a color provider for Constraints table and dataMap table.
-     * 
-     * 
+     *
+     *
      * <br/>
-     * 
+     *
      * $Id: DataMapTableView.java 2010 2007-02-12 13:18:38Z amaumont $
-     * 
+     *
      */
     class ExpressionColorProvider {
 
         /**
          * DOC amaumont Comment method "getBackgroundColor".
-         * 
+         *
          * @param isBackground TODO
          * @param keyProblem
          * @param expression
@@ -1738,7 +1738,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "getCommonBackgroundColor".
-     * 
+     *
      * @param element
      * @param columnIndex
      * @return
@@ -1749,7 +1749,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "getCellColor".
-     * 
+     *
      * @param tableViewerCreator
      * @param element
      * @param columnIndex
@@ -1770,7 +1770,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "getCommonBackgroundColor".
-     * 
+     *
      * @param element
      * @param columnIndex
      * @return
@@ -1781,7 +1781,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "unselectAllEntriesIfErrorDetected".
-     * 
+     *
      * @param e
      */
     protected void unselectAllEntriesIfErrorDetected(TableCellValueModifiedEvent e) {
@@ -1805,7 +1805,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "processEnterKeyDown".
-     * 
+     *
      * @param tableViewer
      * @param event
      */
@@ -1830,7 +1830,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * DOC amaumont Comment method "parseExpression".
-     * 
+     *
      * @param event
      * @param tableViewerCreator
      * @param tableEntry
@@ -1854,7 +1854,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * Getter for extendedTableViewerForColumns.
-     * 
+     *
      * @return the extendedTableViewerForColumns
      */
     public AbstractExtendedTableViewer<IColumnEntry> getExtendedTableViewerForColumns() {
@@ -1863,7 +1863,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * Getter for extendedTableViewerForFilters.
-     * 
+     *
      * @return the extendedTableViewerForFilters
      */
     // public AbstractExtendedTableViewer<FilterTableEntry> getExtendedTableViewerForFilters() {
@@ -1884,7 +1884,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.widgets.Composite#setLayout(org.eclipse.swt.widgets.Layout)
      */
     @Override
@@ -1894,7 +1894,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.widgets.Control#setLayoutData(java.lang.Object)
      */
     @Override
@@ -1904,7 +1904,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * Getter for extendedTableViewerForFilters.
-     * 
+     *
      * @return the extendedTableViewerForFilters
      */
     public AbstractExtendedTableViewer<FilterTableEntry> getExtendedTableViewerForWhereFilters() {
@@ -1913,7 +1913,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     /**
      * Getter for entendedTableViewerForOtherClauses.
-     * 
+     *
      * @return the entendedTableViewerForOtherClauses
      */
     public AbstractExtendedTableViewer<FilterTableEntry> getEntendedTableViewerForOtherClauses() {

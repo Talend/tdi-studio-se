@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,23 +27,23 @@ import org.talend.designer.alfrescooutput.ui.AlfrescoModelElementsChangeListener
  * Model of XML Elements representing Alfresco typing concepts
  * for the UI's various providers. Handles an ordered map of
  * alfresco model XML elements (properties or associations).
- * 
+ *
  * @author Marc Dutoo - Open Wide SA
  *
  * $Id: AlfrescoModelElements.java,v 1.1 2008/10/07 21:27:31 mdutoo Exp $
  */
 public class AlfrescoModelElements {
-	
+
 	private Map<String,Element> alfrescoModelElementMap = new HashMap<String,Element>();
 	private List<Element> orderedAlfrescoModelElements = new ArrayList<Element>();
 
 	private Set<AlfrescoModelElementsChangeListener> listeners = new HashSet<AlfrescoModelElementsChangeListener>();
 
 	public AlfrescoModelElements() {
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Returns the map of all alfresco model elements.
 	 * @return
@@ -93,13 +93,13 @@ public class AlfrescoModelElements {
 		this.removeAllAlfrescoModelElement(new ArrayList<Element>(this.orderedAlfrescoModelElements));
 	}
 
-	
+
 	public void addListener(AlfrescoModelElementsChangeListener listener) {
 		listeners.add(listener);
 	}
-	
+
 	public void removeListener(AlfrescoModelElementsChangeListener listener) {
 		listeners.remove(listener);
 	}
-	
+
 }

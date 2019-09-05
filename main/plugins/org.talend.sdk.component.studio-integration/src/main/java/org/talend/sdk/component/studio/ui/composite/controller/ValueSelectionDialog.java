@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,20 +40,23 @@ import org.talend.core.ui.composite.ElementsSelectionComposite;
 import org.talend.sdk.component.studio.i18n.Messages;
 
 public class ValueSelectionDialog extends Dialog {
-    
+
     private ElementsSelectionComposite<String> selectionComposite;
-    
+
     private final Map<String, String> values = new LinkedHashMap<>();
-    
+
     private LabelledText customValueText;
-    
+
     private String selectedValue;
-    
-    public ValueSelectionDialog(final Shell parentShell, final Map<String, String> possibleValues) {
+
+    private boolean isMultiple = false;
+
+    public ValueSelectionDialog(final Shell parentShell, final Map<String, String> possibleValues, final boolean isMultiple) {
         super(parentShell);
         if (possibleValues != null) {
             values.putAll(possibleValues);
         }
+        this.isMultiple = isMultiple;
         setShellStyle(getShellStyle() | SWT.RESIZE | SWT.MIN | SWT.APPLICATION_MODAL);
     }
 
@@ -62,7 +65,7 @@ public class ValueSelectionDialog extends Dialog {
         super.configureShell(newShell);
         newShell.setSize(450, 550);
     }
-    
+
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite dialogArea = (Composite) super.createDialogArea(parent);
@@ -87,7 +90,7 @@ public class ValueSelectionDialog extends Dialog {
                     }
                 };
             };
-        }.setMultipleSelection(false).create();
+        }.setMultipleSelection(isMultiple).create();
         selectionComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         selectionComposite.setViewerData(getLabels());
 
@@ -107,13 +110,13 @@ public class ValueSelectionDialog extends Dialog {
         updateFieldsStatus(useCustomButton.getSelection());
         return dialogArea;
     }
-    
+
     private List<String> getLabels() {
         final List<String> labels = new ArrayList<>(values.size());
         labels.addAll(values.keySet());
         return labels;
     }
-    
+
     @Override
     protected void initializeBounds() {
         super.initializeBounds();
@@ -121,23 +124,30 @@ public class ValueSelectionDialog extends Dialog {
         Point location = getInitialLocation(size);
         getShell().setBounds(getConstrainedShellBounds(new Rectangle(location.x, location.y, size.x, size.y)));
     }
-    
+
     @Override
     protected void okPressed() {
         selectedValue = computedSelectedValue();
         super.okPressed();
     }
-    
+
     public String getSelectedValue() {
         return this.selectedValue;
     }
-    
+
     private String computedSelectedValue() {
         if (selectionComposite.isEnabled()) {
             List<String> selectedElements = selectionComposite.getSelectedElements();
             if (selectedElements.size() > 0) {
-                final String selectedLabel = selectedElements.get(0);
-                return values.get(selectedLabel);
+                StringBuffer sber = new StringBuffer();
+                for (String selectedLabel : selectedElements) {
+                    sber.append(values.get(selectedLabel));
+                    if (!isMultiple) {
+                        break;
+                    }
+                    sber.append("\n"); //$NON-NLS-1$
+                }
+                return sber.toString();
             } else {
                 return ""; //$NON-NLS-1$
             }
@@ -145,7 +155,7 @@ public class ValueSelectionDialog extends Dialog {
             return customValueText.getText();
         }
     }
-    
+
     private void updateFieldsStatus(boolean usesCustom) {
         selectionComposite.setEnabled(!usesCustom);
         customValueText.getTextControl().setEditable(usesCustom);

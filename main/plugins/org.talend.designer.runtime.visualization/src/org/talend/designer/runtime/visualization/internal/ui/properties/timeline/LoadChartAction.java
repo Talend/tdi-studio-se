@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,7 +53,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * The constructor.
-     * 
+     *
      * @param section The property section
      */
     public LoadChartAction(Composite composite) {
@@ -95,7 +95,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Loads the default chart set.
-     * 
+     *
      * @throws JvmCoreException
      */
     public void loadDefaultChartSet() throws JvmCoreException {
@@ -110,7 +110,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Stores the default chart set.
-     * 
+     *
      * @param defaultChartSet The default chart set
      */
     private static void storeDefaultChartSet(String defaultChartSet) {
@@ -119,7 +119,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Gets the default chart set.
-     * 
+     *
      * @return The default chart set
      * @throws IOException
      * @throws WorkbenchException
@@ -136,7 +136,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Gets the chart sets including predefined chart sets.
-     * 
+     *
      * @return The chart sets
      * @throws WorkbenchException
      * @throws IOException
@@ -151,7 +151,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Loads the given chart set.
-     * 
+     *
      * @param chartSet The chart set
      * @throws JvmCoreException
      */
@@ -181,7 +181,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Loads the given memento of chart set.
-     * 
+     *
      * @param memento The memento
      * @throws JvmCoreException
      */
@@ -214,7 +214,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Gets the state indicating if the given attribute exists.
-     * 
+     *
      * @param objectName The object name
      * @param attributeName The attribute name
      * @return <tt>true</tt> if the given attribute exists
@@ -235,7 +235,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Loads the given predefined chat set. If the given chart set is not predefined one, does nothing.
-     * 
+     *
      * @param chartSet The chart set
      * @throws JvmCoreException
      */
@@ -249,7 +249,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Loads the overview chart set.
-     * 
+     *
      * @throws JvmCoreException
      */
     private void loadOverviewChartSet() throws JvmCoreException {
@@ -278,7 +278,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Loads the memory chart set.
-     * 
+     *
      * @throws JvmCoreException
      */
     private void loadMemoryChartSet() throws JvmCoreException {
@@ -308,7 +308,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Gets the memory pool object names that contains the given filter text.
-     * 
+     *
      * @param filters The filters
      * @return The memory pool object names
      * @throws JvmCoreException
@@ -335,7 +335,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Saves the given chart sets that can be subset of previous chart sets.
-     * 
+     *
      * @param chartSets The chart sets
      * @throws WorkbenchException
      * @throws IOException
@@ -366,7 +366,7 @@ public class LoadChartAction extends AbstractChartAction {
 
     /**
      * Gets the RGB integer array corresponding to the given RGB string.
-     * 
+     *
      * @param rgbString The RGB string "r,g,b" (e.g. "225,225,0")
      * @return The RGB integer array
      */

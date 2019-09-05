@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -136,7 +136,7 @@ public class ItemRecord {
 
     /**
      * Getter for migrationTasksToApply.
-     * 
+     *
      * @return the migrationTasksToApply
      */
     public List<MigrationTask> getMigrationTasksToApply() {
@@ -145,7 +145,7 @@ public class ItemRecord {
 
     /**
      * Sets the migrationTasksToApply.
-     * 
+     *
      * @param migrationTasksToApply the migrationTasksToApply to set
      */
     public void setMigrationTasksToApply(List<MigrationTask> migrationTasksToApply) {
@@ -186,7 +186,7 @@ public class ItemRecord {
     }
 
     /**
-     * 
+     *
      * DOC hcw ItemRecord class global comment. Detailled comment
      */
     public enum State {

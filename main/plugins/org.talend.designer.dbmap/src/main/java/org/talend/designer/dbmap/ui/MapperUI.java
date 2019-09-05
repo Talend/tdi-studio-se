@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -76,9 +76,9 @@ import org.talend.designer.dbmap.ui.visualmap.zone.scrollable.VarsTableZoneView;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: MapperUI.java 1744 2007-01-31 13:05:30Z amaumont $
- * 
+ *
  */
 public class MapperUI {
 
@@ -552,7 +552,7 @@ public class MapperUI {
 
     /**
      * DOC amaumont Comment method "getCommonMinimizedStateOfTables".
-     * 
+     *
      * @param tables
      * @return new Boolean(true) if button state should be to minimize, else new Boolean(false)
      */
@@ -724,11 +724,11 @@ public class MapperUI {
     }
 
     /**
-     * 
+     *
      * DOC amaumont MapperUI class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: MapperUI.java 1744 2007-01-31 13:05:30Z amaumont $
-     * 
+     *
      */
     public class MapperBgDrawableComposite extends BgDrawableComposite {
 
@@ -738,7 +738,7 @@ public class MapperUI {
 
         /**
          * DOC amaumont MapperBackgroundRefresher constructor comment.
-         * 
+         *
          * @param commonParent
          */
         public MapperBgDrawableComposite(Composite commonParent) {
@@ -747,7 +747,7 @@ public class MapperUI {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.commons.ui.swt.drawing.link.BackgroundRefresher#drawBackground(org.eclipse.swt.graphics.GC)
          */
         @Override
@@ -785,7 +785,7 @@ public class MapperUI {
 
         /**
          * Getter for antialias.
-         * 
+         *
          * @return the antialias
          */
         public boolean isAntialias() {
@@ -794,7 +794,7 @@ public class MapperUI {
 
         /**
          * Sets the antialias.
-         * 
+         *
          * @param antialias the antialias to set
          */
         public void setAntialias(boolean antialias) {
@@ -803,7 +803,7 @@ public class MapperUI {
 
         /**
          * Getter for forceRecalculate.
-         * 
+         *
          * @return the forceRecalculate
          */
         public boolean isForceRecalculate() {
@@ -812,7 +812,7 @@ public class MapperUI {
 
         /**
          * Sets the forceRecalculate.
-         * 
+         *
          * @param forceRecalculate the forceRecalculate to set
          */
         public void setForceRecalculate(boolean forceRecalculate) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Table;
 /**
  * Abstract implementation for a context menu action of a DataSetTable. Extend this class to add new actions to the
  * DataSetTable.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public abstract class AbstractDataSetTableContextAction extends Action {
@@ -30,7 +30,7 @@ public abstract class AbstractDataSetTableContextAction extends Action {
 
     /**
      * Store table for use in the actions.
-     * 
+     *
      * @param table
      */
     public final void setTable(Table table) {
@@ -39,7 +39,7 @@ public abstract class AbstractDataSetTableContextAction extends Action {
 
     /**
      * Store table cursor for use in the actions.
-     * 
+     *
      * @param tableCursor
      */
     public final void setTableCursor(TableCursor cursor) {
@@ -49,7 +49,7 @@ public abstract class AbstractDataSetTableContextAction extends Action {
     /**
      * Implement this method to return true when your action is available for the active table. When true, the action
      * will be included in the context menu, when false it will be ignored.
-     * 
+     *
      * @return true if the action should be included in the context menu
      */
     public boolean isAvailable() {

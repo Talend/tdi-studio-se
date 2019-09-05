@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.designer.runprocess.IRunProcessService;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class PerlLanguage extends AbstractLanguage {
 
@@ -66,7 +66,7 @@ public class PerlLanguage extends AbstractLanguage {
      */
     private static final String SUBST_PATTERN_TO_ADD_REF_ARRAY_PONITER = PREFIX_TABLE_NAME_REGEXP + "\\s*({0})\\s*" //$NON-NLS-1$
     + PREFIX_FIELD_NAME_REGEXP + "\\s*(\\$?\\w+)\\s*" + SUFFIX_FIELD_NAME_REGEXP; //$NON-NLS-1$
-    
+
     /**
      * {0} and {1} must be replaced respectively by the table name and the column name.
      */
@@ -99,7 +99,7 @@ public class PerlLanguage extends AbstractLanguage {
     private static final String TEMPLATE_GENERATED_CODE_TABLE_COLUMN_VARIABLE = PREFIX_TABLE_NAME
     + "{1}->" + PREFIX_FIELD_NAME + "{0}__{1}__{2}" //$NON-NLS-1$ //$NON-NLS-2$
     + SUFFIX_FIELD_NAME;
-    
+
     /**
      * {0} and {1} must be replaced respectively by the table name and the column name.
      */
@@ -118,7 +118,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getCouplePattern()
      */
     public String getLocationPattern() {
@@ -128,10 +128,10 @@ public class PerlLanguage extends AbstractLanguage {
     public String getLocationPatternValidColumnName() {
         return LOCATION_PATTERN_VALID_COLUMN_NAME;
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getPREFIX_FIELD_NAME_REGEXP()
      */
     public String getPrefixFieldRegexp() {
@@ -140,7 +140,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getPREFIX_TABLE_NAME_REGEXP()
      */
     public String getPrefixTableRegexp() {
@@ -149,7 +149,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getSUFFIX_FIELD_NAME_REGEXP()
      */
     public String getSuffixFieldRegexp() {
@@ -158,7 +158,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getSUFFIX_TABLE_NAME_REGEXP()
      */
     public String getSuffixTableRegexp() {
@@ -167,7 +167,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getSubstPatternForPrefixColumnName()
      */
     public String getSubstPatternForPrefixColumnName() {
@@ -177,10 +177,10 @@ public class PerlLanguage extends AbstractLanguage {
     public String getSubstPatternToAddRefArrayPointer() {
         return SUBST_PATTERN_TO_ADD_REF_ARRAY_PONITER;
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getSubstPatternForReplaceLocation()
      */
     public String getSubstPatternForReplaceLocation() {
@@ -189,7 +189,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.language.ILanguage#getTEMPLATE_TABLE_COLUMN_VARIABLE()
      */
     public String getTemplateTableColumnVariable() {
@@ -198,7 +198,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getTEMPLATE_PROCESS_COLUMN_VARIABLE()
      */
     public String getTemplateVarsColumnVariable() {
@@ -207,7 +207,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getTemplateGeneratedCodeTableColumnVariableWithComponentName()
      */
     public String getTemplateGeneratedCodeTableColumnVariableWithComponentNamePrefix() {
@@ -216,16 +216,16 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getTemplateGeneratedCodeTableColumnVariable()
      */
     public String getTemplateGeneratedCodeTableColumnVariable() {
         return TEMPLATE_GENERATED_CODE_TABLE_COLUMN_VARIABLE;
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getAndCondition()
      */
     public String getAndCondition() {
@@ -234,7 +234,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getPrefixField()
      */
     public String getPrefixField() {
@@ -243,7 +243,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getPrefixTable()
      */
     public String getPrefixTable() {
@@ -252,7 +252,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getSuffixField()
      */
     public String getSuffixField() {
@@ -262,7 +262,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getSuffixTable()
      */
     public String getSuffixTable() {
@@ -271,7 +271,7 @@ public class PerlLanguage extends AbstractLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getTemplateTableVariable()
      */
     public String getTemplateTableVariable() {

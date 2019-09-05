@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ public class ChangeVersionValue4HDFSComponents extends AbstractJobMigrationTask 
         String[] hdfsCompNames = { "tHDFSCompare", "tHDFSConnection", "tHDFSCopy", "tHDFSDelete", "tHDFSExist", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
                 "tHDFSGet", "tHDFSInput", "tHDFSList", "tHDFSOutput", "tHDFSProperties", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
                 "tHDFSPut", "tHDFSRename", "tHDFSRowCount"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                
+
 
         IComponentConversion changeHDFSVersionValue = new IComponentConversion() {
 
@@ -51,10 +51,10 @@ public class ChangeVersionValue4HDFSComponents extends AbstractJobMigrationTask 
                     if(value == null) {
                         return;
                     }
-                    
+
                     if (value.equals("hadoop-core-1.0.0.jar;commons-logging-1.1.1.jar;commons-configuration-1.6.jar;commons-lang-2.4.jar;hdp-dummy.jar")) { //$NON-NLS-1$
                         version.setValue("HDP_1_0"); //$NON-NLS-1$
-                    } else if (value.equals("hadoop-core-1.0.0.jar;commons-logging-1.1.1.jar;commons-configuration-1.6.jar;commons-lang-2.4.jar")) { //$NON-NLS-1$ 
+                    } else if (value.equals("hadoop-core-1.0.0.jar;commons-logging-1.1.1.jar;commons-configuration-1.6.jar;commons-lang-2.4.jar")) { //$NON-NLS-1$
                         version.setValue("APACHE_1_0_0"); //$NON-NLS-1$
                     } else if (value.startsWith("hadoop-core-0.20.204.0.jar")) { //$NON-NLS-1$
                         version.setValue("APACHE_0_20_204"); //$NON-NLS-1$

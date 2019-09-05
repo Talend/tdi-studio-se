@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -71,7 +71,6 @@ import org.talend.core.IService;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IProcess;
-import org.talend.core.model.properties.Project;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -79,7 +78,6 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.viewer.ReconcilerViewer;
 import org.talend.designer.runprocess.IRunProcessService;
-import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryService;
 
@@ -91,7 +89,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
     private String filename;
 
     private static String className;
-    
+
     private Process process;
 
     public static final String VIEWER_CLASS_NAME = "TalendJavaSourceViewer"; //$NON-NLS-1$
@@ -133,9 +131,9 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
     /**
      * DOC nrousseau TalendJavaSourceViewer2 constructor comment.
-     * 
+     *
      * @param parent
-     * @param process 
+     * @param process
      * @param verticalRuler
      * @param overviewRuler
      * @param showAnnotationsOverview
@@ -233,7 +231,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
             buff.append("new org.apache.camel.model.RouteDefinition()\n");
         }
         // End of https://jira.talendforge.org/browse/TESB-7615
-
+        buff.append(" ");
         int documentOffset = buff.toString().length();
         buff.append("){\n\t}"); //$NON-NLS-1$
         buff.append("\n\t\n}\n}"); //$NON-NLS-1$
@@ -245,7 +243,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
     /**
      * if the current process is a route process or not
-     * 
+     *
      * @return
      */
     private static boolean isRouteProcess() {
@@ -273,10 +271,10 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
         buff.append("\tpublic void myFunction(){\n"); //$NON-NLS-1$
         buff.append("\t  if( \n"); //$NON-NLS-1$
-
+        buff.append(" ");
         int documentOffset = buff.toString().length();
-        buff.append("){\n\t}"); //$NON-NLS-1$
-        buff.append("\n\t\n}\n}"); //$NON-NLS-1$
+        buff.append("\n){\n\t}"); //$NON-NLS-1$
+        buff.append("\n\t\n}}"); //$NON-NLS-1$
 
         IDocument document = new Document();
         document.set(buff.toString());
@@ -335,7 +333,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
             buff.append("\t\treturn \n"); //$NON-NLS-1$
         }
-
+        buff.append(" ");
         int length = buff.toString().length();
         String defaultValue = ""; //$NON-NLS-1$
         buff.append(defaultValue + "\n;\t\n}\n}"); //$NON-NLS-1$
@@ -422,7 +420,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         buff.append(globalFields);
         buff.append("\tpublic void myFunction(){\n"); //$NON-NLS-1$
         buff.append(localFields);
-
+        buff.append(" ");
         documentOffset = buff.toString().length();
         buff.append("\n\t\n}\n}"); //$NON-NLS-1$
 
@@ -464,7 +462,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         if (!GlobalServiceRegister.getDefault().isServiceRegistered(IRepositoryService.class)) {
             return imports;
         }
-        IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
+        IRepositoryService service = GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
 
         IProxyRepositoryFactory repositoryFactory = service.getProxyRepositoryFactory();
         try {
@@ -475,7 +473,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
                     imports += "import routines." + routine.getLabel() + ";\n"; //$NON-NLS-1$ //$NON-NLS-2$
                 } else {
-                    imports += "import routines." + routine.getLabel() + ";\n"; //$NON-NLS-1$ //$NON-NLS-2$ 
+                    imports += "import routines." + routine.getLabel() + ";\n"; //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
         } catch (PersistenceException e) {
@@ -497,7 +495,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.viewer.ReconcilerViewer#initializeModel(IDocument document)
      */
     @Override
@@ -532,7 +530,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.viewer.ReconcilerViewer#installViewerConfiguration()
      */
     @Override
@@ -545,7 +543,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.viewer.ReconcilerViewer#setContents(org.eclipse.jface.text.IDocument)
      */
     @Override
@@ -584,7 +582,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
     /**
      * DOC nrousseau Comment method "parseVariables".
-     * 
+     *
      * @param variables
      * @return
      */
@@ -600,6 +598,11 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
                         StringTokenizer token = new StringTokenizer(var.getName(), "."); //$NON-NLS-1$
                         String className = token.nextToken();
                         if (token.hasMoreTokens()) {
+                            String subVarName = var.getName().substring(className.length() + 1);
+                            if (subVarName.contains("(") && subVarName.contains("")) {
+                                // no need for method like TalendDate.addDate(row1.test,arg2,arg3)
+                                continue;
+                            }
                             String newVarName = token.nextToken();
                             Variable newVar = new Variable(newVarName, var.getValue(), var.getTalendType(), var.isNullable());
                             if (!classesToGenerate.containsKey(className)) {
@@ -628,7 +631,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         if (variables != null) {
             for (String className : classesToGenerate.keySet()) {
                 for (Variable var : classesToGenerate.get(className)) {
-                    buff.append("\t\t" + className + "." + var.getName() + " =  " + var.getValue() + ";\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ 
+                    buff.append("\t\t" + className + "." + var.getName() + " =  " + var.getValue() + ";\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 }
             }
         }
@@ -639,7 +642,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
     /**
      * Getter for compilationUnit.
-     * 
+     *
      * @return the compilationUnit
      */
     public ICompilationUnit getCompilationUnit() {
@@ -648,7 +651,7 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
     /**
      * Sets the compilationUnit.
-     * 
+     *
      * @param compilationUnit the compilationUnit to set
      */
     public void setCompilationUnit(ICompilationUnit compilationUnit) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,7 +24,7 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 /**
  * Generic DataSet to hold values for TableViewer.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public class DataSet {
@@ -60,7 +60,7 @@ public class DataSet {
 
     /**
      * Create a new dataSet based on an existing ResultSet.
-     * 
+     *
      * @param columnLabels String[] of column labels [mandatory]
      * @param resultSet ResultSet with values [mandatory]
      * @param relevantIndeces int[] of all columns to add to the dataSet, use null if all columns should be included.
@@ -73,7 +73,7 @@ public class DataSet {
 
     /**
      * Create new dataset based on sql query.
-     * 
+     *
      * @param columnLabels string[] of columnLabels, use null if the column name can be used as label
      * @param sql query string
      * @param relevantIndeces int[] of all columns to add to the dataSet, use null if all columns should be included.
@@ -95,7 +95,7 @@ public class DataSet {
 
     /**
      * Create new dataset based on String[][].
-     * 
+     *
      * @param columnLabels string[] of columnLabels [mandatory]
      * @param data string[][] with values for dataset [mandatory]
      * @param columnTypes int[] with valid column types (e.g. DataSet.TYPE_STRING) [mandatory]
@@ -115,7 +115,7 @@ public class DataSet {
 
     /**
      * Get the column index for a given column name.
-     * 
+     *
      * @param name
      * @return index of column whose name matches or 0 if none found
      */
@@ -151,7 +151,7 @@ public class DataSet {
 
     /**
      * Initialize dataSet based on an existing ResultSet.
-     * 
+     *
      * @param columnLabels String[] of column labels [mandatory]
      * @param resultSet ResultSet with values [mandatory]
      * @param relevantIndeces int[] of all columns to add to the dataSet, use null if all columns should be included.
@@ -288,7 +288,7 @@ public class DataSet {
 
     /**
      * Resort the data using the given column and sortdirection.
-     * 
+     *
      * @param columnIndex primary sort column index
      * @param sortDirection SWT.UP | SWT.DOWN
      */

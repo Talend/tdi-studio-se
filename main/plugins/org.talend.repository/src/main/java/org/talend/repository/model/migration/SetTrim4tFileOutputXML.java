@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,23 +38,23 @@ public class SetTrim4tFileOutputXML extends
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
         String[] compNames = {"tFileOutputXML"}; //$NON-NLS-1$
-        
+
     	IComponentConversion action = new IComponentConversion() {
 
 	        public void transform(NodeType node) {
 	            if(node == null) {
 	                return;
 	            }
-	        	
+
 	        	if (ComponentUtilities.getNodeProperty(node, "TRIM") == null) {//$NON-NLS-1$
 	        	    ComponentUtilities.addNodeProperty(node, "TRIM", "CHECK");//$NON-NLS-1$ //$NON-NLS-2$
 	        	    ComponentUtilities.getNodeProperty(node, "TRIM").setValue("true");//$NON-NLS-1$ //$NON-NLS-2$
 	        	}
-	        	
+
 	        }
-        
+
     	};
-    	
+
     	for (String name : compNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 

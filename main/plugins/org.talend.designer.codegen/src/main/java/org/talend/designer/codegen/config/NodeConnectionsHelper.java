@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,7 +23,7 @@ import org.talend.core.model.process.INode;
  * Use for wrap a {@link INode} to provide faster and convenient methods to get
  * connections, such as {@link #inputConn}, {@link #connResponse},
  * {@link #connFault}, {@link #dataOutputs}.
- * 
+ *
  * @author GaoZone
  * @update 2013-9-12 [TESB-11028]
  */
@@ -46,7 +46,7 @@ public class NodeConnectionsHelper {
 
 	/**
 	 * Gets the input conn.
-	 * 
+	 *
 	 * @return the input conn
 	 */
 	public IConnection getInputConn() {
@@ -55,7 +55,7 @@ public class NodeConnectionsHelper {
 
 	/**
 	 * Gets the output conn response.
-	 * 
+	 *
 	 * @return the output conn response
 	 */
 	public IConnection getOutputConnResponse() {
@@ -64,7 +64,7 @@ public class NodeConnectionsHelper {
 
 	/**
 	 * Gets the output conn fault.
-	 * 
+	 *
 	 * @return the output conn fault
 	 */
 	public IConnection getOutputConnFault() {
@@ -73,7 +73,7 @@ public class NodeConnectionsHelper {
 
 	/**
 	 * Gets the data outputs.
-	 * 
+	 *
 	 * @return the data outputs
 	 */
 	public List<IConnection> getDataOutputs() {
@@ -82,7 +82,7 @@ public class NodeConnectionsHelper {
 
 	/**
 	 * Instantiates a new node connections helper.
-	 * 
+	 *
 	 * @param node
 	 *            the node
 	 */
@@ -92,7 +92,7 @@ public class NodeConnectionsHelper {
 
 	/**
 	 * Instantiates a new node connections helper.
-	 * 
+	 *
 	 * @param node
 	 *            the node
 	 * @param stopInitialWhenNoInput
@@ -105,7 +105,7 @@ public class NodeConnectionsHelper {
 
 	/**
 	 * Inits the connections.
-	 * 
+	 *
 	 * @param stopInitialWhenNoInput
 	 *            the stop initial when no input
 	 */

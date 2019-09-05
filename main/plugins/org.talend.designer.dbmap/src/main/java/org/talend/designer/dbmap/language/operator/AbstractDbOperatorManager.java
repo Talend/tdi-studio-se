@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,7 +29,7 @@ public abstract class AbstractDbOperatorManager implements IDbOperatorManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.operator.IDbOperatorManager#getDefaultEqualOperator()
      */
     public IDbOperator getDefaultEqualOperator() {
@@ -38,7 +38,7 @@ public abstract class AbstractDbOperatorManager implements IDbOperatorManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.IDbOperatorManager#getOperatorFromValue(java.lang.String)
      */
     public IDbOperator getOperatorFromValue(String operatorValue) {
@@ -53,7 +53,7 @@ public abstract class AbstractDbOperatorManager implements IDbOperatorManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.operator.IDbOperatorManager#getOperators()
      */
     public IDbOperator[] getOperators() {

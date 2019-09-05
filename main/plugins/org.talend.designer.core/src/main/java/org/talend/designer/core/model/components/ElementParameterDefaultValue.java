@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.core.model.process.IElementParameterDefaultValue;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ElementParameterDefaultValue implements IElementParameterDefaultValue {
 
@@ -30,7 +30,7 @@ public class ElementParameterDefaultValue implements IElementParameterDefaultVal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IElementParameterDefaultValue#getDefaultValue()
      */
     public Object getDefaultValue() {
@@ -39,7 +39,7 @@ public class ElementParameterDefaultValue implements IElementParameterDefaultVal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IElementParameterDefaultValue#setDefaultValue(java.lang.String)
      */
     public void setDefaultValue(Object defaultValue) {
@@ -48,7 +48,7 @@ public class ElementParameterDefaultValue implements IElementParameterDefaultVal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IElementParameterDefaultValue#getIfCondition()
      */
     public String getIfCondition() {
@@ -57,7 +57,7 @@ public class ElementParameterDefaultValue implements IElementParameterDefaultVal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IElementParameterDefaultValue#setIfCondition(java.lang.String)
      */
     public void setIfCondition(String ifCondition) {
@@ -66,7 +66,7 @@ public class ElementParameterDefaultValue implements IElementParameterDefaultVal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IElementParameterDefaultValue#getNotIfCondition()
      */
     public String getNotIfCondition() {
@@ -75,7 +75,7 @@ public class ElementParameterDefaultValue implements IElementParameterDefaultVal
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IElementParameterDefaultValue#setNotIfCondition(java.lang.String)
      */
     public void setNotIfCondition(String notIfCondition) {

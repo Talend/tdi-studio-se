@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,15 +53,15 @@ import org.talend.designer.business.model.business.provider.BusinessItemProvider
 
 /**
  * DOC mhelleboid class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ElementHelper {
 
     /**
      * DOC mhelleboid Comment method "getElement".
-     * 
+     *
      * @param editPart
      * @return
      */
@@ -79,7 +79,7 @@ public class ElementHelper {
 
     /**
      * DOC Administrator Comment method "getTooltipFigure".
-     * 
+     *
      * @param figure
      */
     public void updateTooltipFigure(Figure figure, BusinessTooltipFigure tooltipFigure, EditPart editPart) {

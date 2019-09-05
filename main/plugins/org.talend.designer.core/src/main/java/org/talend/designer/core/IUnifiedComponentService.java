@@ -14,7 +14,7 @@ import org.talend.core.model.utils.IComponentName;
 
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,9 +36,9 @@ public interface IUnifiedComponentService extends IService {
     public boolean isUnifiedComponent(IComponent component);
 
     /**
-     * 
+     *
      * This function is used for drag&drop items from repository
-     * 
+     *
      * @param setting
      * @param selectedComponent
      * @return
@@ -46,18 +46,18 @@ public interface IUnifiedComponentService extends IService {
     public String getUnifiedComponetName4DndFromRepository(IComponentName setting, IComponent selectedComponent);
 
     /**
-     * 
+     *
      * Get the delegate component
-     * 
+     *
      * @param component
      * @return
      */
     public IComponent getDelegateComponent(IComponent component);
 
     /**
-     * 
+     *
      * Get the delegate component from name
-     * 
+     *
      * @param delegateCompName
      * @param paletteType
      * @return
@@ -67,9 +67,9 @@ public interface IUnifiedComponentService extends IService {
     public Collection<IComponent> getDelegateComponents(String paletteType);
 
     /**
-     * 
+     *
      * Create parameters for delegate component
-     * 
+     *
      * @param node
      * @param listParams
      * @param delegateComp

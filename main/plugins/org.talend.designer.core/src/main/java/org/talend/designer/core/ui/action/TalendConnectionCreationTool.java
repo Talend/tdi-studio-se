@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,9 +41,9 @@ import org.talend.designer.core.ui.editor.process.ProcessPart;
 /**
  * This tool is used to create a connection in the context menu. After the constructor, the function
  * "performConnectionStartWith" must be called, it will define the first point for the connection. <br/>
- * 
+ *
  * $Id: TalendConnectionCreationTool.java 7038 2007-11-15 14:05:48Z plegall $
- * 
+ *
  */
 public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
@@ -61,7 +61,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /**
      * The node part of the source must be given in argument. This will define the fist point of the connection.
-     * 
+     *
      * @param sourcePart the edit part that will be the source of the connection
      */
     public void performConnectionStartWith(EditPart sourcePart) {
@@ -94,7 +94,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * override this method for issue 1253.
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#handleCreateConnection()
      */
     @Override
@@ -199,7 +199,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.ConnectionCreationTool#handleButtonDown(int)
      */
     @Override
@@ -212,7 +212,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#handleButtonUp(int)
      */
     @Override
@@ -231,7 +231,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#handleCommandStackChanged()
      */
     @Override
@@ -242,7 +242,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#handleDrag()
      */
     @Override
@@ -253,7 +253,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#handleDragInProgress()
      */
     @Override
@@ -264,7 +264,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#handleHover()
      */
     @Override
@@ -275,7 +275,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#handleInvalidInput()
      */
     @Override
@@ -286,7 +286,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#handleMove()
      */
     @Override
@@ -297,7 +297,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#handleSourceDeactivated()
      */
     @Override
@@ -308,7 +308,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#handleDragStarted()
      */
     @Override
@@ -319,7 +319,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#handleFinished()
      */
     @Override
@@ -330,7 +330,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#handleFocusGained()
      */
     @Override
@@ -341,7 +341,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#handleKeyTraversed(org.eclipse.swt.events.TraverseEvent)
      */
     @Override
@@ -352,7 +352,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#handleKeyUp(org.eclipse.swt.events.KeyEvent)
      */
     @Override
@@ -363,7 +363,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#handleNativeDragFinished(org.eclipse.swt.dnd.DragSourceEvent)
      */
     @Override
@@ -374,7 +374,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#handleNativeDragStarted(org.eclipse.swt.dnd.DragSourceEvent)
      */
     @Override
@@ -385,7 +385,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#handleViewerEntered()
      */
     @Override
@@ -396,7 +396,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#mouseDoubleClick(org.eclipse.swt.events.MouseEvent,
      * org.eclipse.gef.EditPartViewer)
      */
@@ -408,7 +408,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#mouseDown(org.eclipse.swt.events.MouseEvent,
      * org.eclipse.gef.EditPartViewer)
      */
@@ -420,7 +420,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#mouseDrag(org.eclipse.swt.events.MouseEvent,
      * org.eclipse.gef.EditPartViewer)
      */
@@ -432,7 +432,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#mouseHover(org.eclipse.swt.events.MouseEvent,
      * org.eclipse.gef.EditPartViewer)
      */
@@ -444,7 +444,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#mouseMove(org.eclipse.swt.events.MouseEvent,
      * org.eclipse.gef.EditPartViewer)
      */
@@ -456,7 +456,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#mouseUp(org.eclipse.swt.events.MouseEvent,
      * org.eclipse.gef.EditPartViewer)
      */
@@ -468,7 +468,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#movedPastThreshold()
      */
     @Override
@@ -479,7 +479,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#nativeDragFinished(org.eclipse.swt.dnd.DragSourceEvent,
      * org.eclipse.gef.EditPartViewer)
      */
@@ -491,7 +491,7 @@ public class TalendConnectionCreationTool extends ConnectionCreationTool {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractTool#nativeDragStarted(org.eclipse.swt.dnd.DragSourceEvent,
      * org.eclipse.gef.EditPartViewer)
      */

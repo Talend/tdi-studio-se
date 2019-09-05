@@ -11,12 +11,13 @@
     RELEASE_DATE="20070326A"
     STARTABLE="true"
     LOG4J_ENABLED="true"
+    VISIBLE="false"
   >
     <SIGNATURE/>
   </HEADER>
   
   <FAMILIES>
-    <FAMILY>Databases/DB Specifics/Sas</FAMILY>
+    <FAMILY>Deprecated</FAMILY>
   </FAMILIES>
   
   <DOCUMENTATION>

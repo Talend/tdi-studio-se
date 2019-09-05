@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,9 +36,9 @@ import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * Delete a list of nodes in the process. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class DeleteNodeContainerCommand extends Command {
 
@@ -49,7 +49,7 @@ public class DeleteNodeContainerCommand extends Command {
     private List<String> joinTableNames = new ArrayList<String>();
 
     private MultiKeyMap connectionDeletedInfosMap;
-    
+
     public DeleteNodeContainerCommand(IProcess2 process, List<INode> nodeList) {
         this.process = process;
         this.nodeList = nodeList;
@@ -216,7 +216,7 @@ public class DeleteNodeContainerCommand extends Command {
 						externalNode.addOutput(connection);
 						ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) prevNode, externalNode);
 						cmd.execute();
-					}			
+					}
 					boolean builtInPrevNode = prevNode.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
 							| node.getConnectorFromType(EConnectionType.TABLE).isMultiSchema();
 					if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.UNIQUE_NAME)

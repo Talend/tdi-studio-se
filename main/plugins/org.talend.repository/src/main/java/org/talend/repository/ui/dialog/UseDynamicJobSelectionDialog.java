@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,7 +51,7 @@ import org.talend.repository.viewer.ui.provider.RepoCommonViewerProvider;
 
 /**
  * DOC yhch class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class UseDynamicJobSelectionDialog extends Dialog {
 
@@ -84,7 +84,7 @@ public class UseDynamicJobSelectionDialog extends Dialog {
 
     /**
      * Configures the shell
-     * 
+     *
      * @param shell the shell
      */
     @Override
@@ -99,7 +99,7 @@ public class UseDynamicJobSelectionDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -205,7 +205,7 @@ public class UseDynamicJobSelectionDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     @Override
@@ -362,7 +362,7 @@ public class UseDynamicJobSelectionDialog extends Dialog {
 
     /**
      * DOC hcw Comment method "createSelectionButton".
-     * 
+     *
      * @param itemComposite
      */
     private void createSelectionButton(Composite itemComposite) {

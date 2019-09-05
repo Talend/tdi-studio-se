@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,7 +56,7 @@ public final class CustomizeJetFilesProviderManager {
         for (IExtension extension : extensions) {
             IConfigurationElement[] configurationElements = extension.getConfigurationElements();
             for (IConfigurationElement configurationElement : configurationElements) {
-                String id = configurationElement.getAttribute("id"); //$NON-NLS-1$               
+                String id = configurationElement.getAttribute("id"); //$NON-NLS-1$
                 try {
                     AbstractJetFileProvider jetProvider = (AbstractJetFileProvider) configurationElement
                             .createExecutableExtension("class"); //$NON-NLS-1$

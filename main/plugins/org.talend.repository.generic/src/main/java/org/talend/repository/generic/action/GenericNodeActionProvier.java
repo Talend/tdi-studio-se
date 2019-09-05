@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ import org.talend.repository.view.di.metadata.action.MetedataNodeActionProvier;
  *
  */
 public class GenericNodeActionProvier extends MetedataNodeActionProvier {
-    
+
     private Map<String, ITreeContextualAction> actionsMap = null;
 
     public GenericNodeActionProvier() {
@@ -103,7 +103,7 @@ public class GenericNodeActionProvier extends MetedataNodeActionProvier {
             manager.add(action);
         }
     }
-    
+
     private boolean allowedCreateAndAdd(IStructuredSelection sel){
         Object o = sel.getFirstElement();
         if (sel.isEmpty() || sel.size() != 1 || !(o instanceof RepositoryNode)) {

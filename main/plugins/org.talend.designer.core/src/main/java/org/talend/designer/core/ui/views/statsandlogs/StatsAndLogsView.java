@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,7 @@ import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * class global comment. Detailed comment <br/>
- * 
+ *
  * @deprecated remove to job settings
  */
 public class StatsAndLogsView extends ViewPart {
@@ -57,7 +57,7 @@ public class StatsAndLogsView extends ViewPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -73,7 +73,7 @@ public class StatsAndLogsView extends ViewPart {
 
     /**
      * Creates a empty composite if no job opened.
-     * 
+     *
      * @param parent
      */
     private void createEmptyPartControl(Composite parent) {
@@ -96,7 +96,7 @@ public class StatsAndLogsView extends ViewPart {
 
     /**
      * Creates a full composite if job is opened.
-     * 
+     *
      * @param parent
      */
     private void createFullPartControl(Composite parentComposite, Process process) {
@@ -115,7 +115,7 @@ public class StatsAndLogsView extends ViewPart {
 
     /**
      * ftang Comment method "createStatsAndLogsView".
-     * 
+     *
      */
     public void createStatsAndLogsView() {
         IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
@@ -125,7 +125,7 @@ public class StatsAndLogsView extends ViewPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
      */
     @Override
@@ -150,7 +150,7 @@ public class StatsAndLogsView extends ViewPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.ViewPart#setPartName(java.lang.String)
      */
     public void setPartName(String title) {

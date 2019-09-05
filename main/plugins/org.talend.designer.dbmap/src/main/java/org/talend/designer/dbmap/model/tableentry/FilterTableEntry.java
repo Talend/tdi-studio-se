@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.designer.abstractmap.model.table.IDataMapTable;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FilterTableEntry.java 898 2006-12-07 11:06:17Z amaumont $
- * 
+ *
  */
 public class FilterTableEntry extends TableEntry {
 
@@ -40,7 +40,7 @@ public class FilterTableEntry extends TableEntry {
 
     /**
      * Getter for filterKind.
-     * 
+     *
      * @return the filterKind
      */
     public String getFilterKind() {
@@ -49,7 +49,7 @@ public class FilterTableEntry extends TableEntry {
 
     /**
      * Sets the filterKind.
-     * 
+     *
      * @param filterKind the filterKind to set, can be :<br>
      * FilterTableEntry.WHERE_FILTER<br>
      * FilterTableEntry.OTHER_FILTER

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,9 +35,9 @@ import org.talend.designer.mapper.utils.DataMapExpressionParser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class OutputTable extends AbstractInOutTable {
 
@@ -127,7 +127,7 @@ public class OutputTable extends AbstractInOutTable {
 
     /**
      * Getter for rejectInnerJoin.
-     * 
+     *
      * @return the rejectInnerJoin
      */
     public boolean isRejectInnerJoin() {
@@ -136,7 +136,7 @@ public class OutputTable extends AbstractInOutTable {
 
     /**
      * Sets the rejectInnerJoin.
-     * 
+     *
      * @param rejectInnerJoin the rejectInnerJoin to set
      */
     public void setRejectInnerJoin(boolean rejectInnerJoin) {
@@ -145,7 +145,7 @@ public class OutputTable extends AbstractInOutTable {
 
     /**
      * Getter for tableFiltersEntriesModel.
-     * 
+     *
      * @return the tableFiltersEntriesModel
      */
     public ExtendedTableModel<FilterTableEntry> getTableFiltersEntriesModel() {
@@ -154,7 +154,7 @@ public class OutputTable extends AbstractInOutTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.table.AbstractInOutTable#hasReadOnlyMetadataColumns()
      */
     @Override

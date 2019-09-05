@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,8 +15,8 @@ package org.talend.designer.core.ui.action;
 import java.util.List;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.dialog.FilterColumnDialog;
 import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
@@ -50,7 +50,7 @@ public class FilterTraceColumnAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
     @Override
@@ -95,7 +95,8 @@ public class FilterTraceColumnAction extends SelectionAction {
 
     @Override
     public void run() {
-        FilterColumnDialog dialog = new FilterColumnDialog(new Shell(part.getSite().getShell()), connection, this
+        FilterColumnDialog dialog = new FilterColumnDialog(DisplayUtils.getDefaultShell(false), connection,
+                this
                 .getCommandStack());
         dialog.open();
     }

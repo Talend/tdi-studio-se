@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -145,7 +145,7 @@ public class JobSettingsManagerTest {
     public void testGetSeparatorsRegexp11() {
         String separator = "(";
         Assert.assertEquals("\"^([^\"+\"\\\\(\"+\"]*)\"+\"\\\\(\"+\"(.*)$\"",
-                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));       
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
     }
 
     @Test
@@ -271,13 +271,13 @@ public class JobSettingsManagerTest {
         String separator = "?";
         Assert.assertEquals("\"\\\\?\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
     }
-    
+
     @Test
     public void testDoRegexpQuoteQuotation() {
         String separator = "\"";
         Assert.assertEquals("\"\\\\\\\"\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
     }
-    
+
 
     @Test
     public void testDoRegexpQuoteDoublePipe() {
@@ -310,14 +310,14 @@ public class JobSettingsManagerTest {
         Assert.assertEquals("\"^([^\"+String.valueOf((char) 31)+\"]*)\"+String.valueOf((char) 31)+\"(.*)$\"",
                 JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
     }
-    
+
     @Test
     public void testGetSeparatorsRegexpDoublePipe() {
         String separator = "||";
         Assert.assertEquals("\"^([^\"+\"\\\\|\\\\|\"+\"]*)\"+\"\\\\|\\\\|\"+\"(.*)$\"",
                 JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
     }
-    
+
     @Test
     public void testGetSeparatorsRegexpQuotation() {
         String separator = "\"";

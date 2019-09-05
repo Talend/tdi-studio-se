@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.designer.abstractmap.ui.dnd.TableEntriesTransfer;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DefaultDropTargetListener.java 898 2006-12-07 11:06:17Z amaumont $
- * 
+ *
  */
 public class DefaultDropTargetListener implements TransferDropTargetListener {
 
@@ -117,7 +117,7 @@ public class DefaultDropTargetListener implements TransferDropTargetListener {
 
     /**
      * DOC amaumont Comment method "detectPressedKeys".
-     * 
+     *
      * @param event
      */
     protected void detectPressedKeys(DropTargetEvent event) {
@@ -241,7 +241,7 @@ public class DefaultDropTargetListener implements TransferDropTargetListener {
 
     /**
      * DOC amaumont Comment method "isSubclassed".
-     * 
+     *
      * @return
      */
     private boolean isSubclassed() {
@@ -254,7 +254,7 @@ public class DefaultDropTargetListener implements TransferDropTargetListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.util.TransferDropTargetListener#getTransfer()
      */
     public Transfer getTransfer() {
@@ -263,7 +263,7 @@ public class DefaultDropTargetListener implements TransferDropTargetListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.util.TransferDropTargetListener#isEnabled(org.eclipse.swt.dnd.DropTargetEvent)
      */
     public boolean isEnabled(DropTargetEvent event) {

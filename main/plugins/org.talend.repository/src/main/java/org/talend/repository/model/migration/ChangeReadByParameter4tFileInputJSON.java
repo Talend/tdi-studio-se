@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,24 +39,24 @@ public class ChangeReadByParameter4tFileInputJSON extends
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
         String[] compNames = {"tFileInputJSON"}; //$NON-NLS-1$
-        
+
     	IComponentConversion action = new IComponentConversion() {
 
 	        public void transform(NodeType node) {
 	            if(node == null) {
 	                return;
 	            }
-	            
+
 	        	ElementParameterType originalElement = ComponentUtilities.getNodeProperty(node, "READBYXPATH"); //$NON-NLS-1$
 	        	if (originalElement == null) {
 	        		return;
 	        	}
-	        	
+
         		String content = originalElement.getValue();
         		if(content == null) {
         		    return;
         		}
-        		
+
         		ComponentUtilities.addNodeProperty(node, "READ_BY","CLOSED_LIST");
         		if("false".equals(content)) {
         			ComponentUtilities.setNodeValue(node, "READ_BY", "JSONPATH_WITHOUTPUT_LOOP");
@@ -64,9 +64,9 @@ public class ChangeReadByParameter4tFileInputJSON extends
         			ComponentUtilities.setNodeValue(node, "READ_BY", "XPATH");
         		}
 	        }
-        
+
     	};
-    	
+
     	for (String name : compNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -57,9 +57,9 @@ import org.talend.designer.runprocess.IRunProcessService;
 
 /**
  * Class that define the connection. It's the model part of the Gef element <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class Connection extends Element implements IConnection, IPerformance, IAdditionalInfo {
 
@@ -109,7 +109,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
     private boolean monitorConnection = false;
 
     public boolean setNullColumn = false;
-    
+
     private Map<EParameterName, Object> paramValues = new HashMap<EParameterName, Object>();
 
     /**
@@ -134,13 +134,13 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         this.uniqueName = uniqueName;
         init(source, target, lineStyle, connectorName, metaName, linkName, monitorConnection);
     }
-    
+
     public Connection(INode source, INode target, EConnectionType lineStyle, String connectorName, String metaName,
             String linkName, String uniqueName, final boolean monitorConnection, final Map<EParameterName, Object> paramValues) {
         this.uniqueName = uniqueName;
         this.paramValues = paramValues;
         init(source, target, lineStyle, connectorName, metaName, linkName, monitorConnection);
-    }    
+    }
 
     // used only in ConnectionManager to test if we can connect or not.
     public Connection(INode source, INode target, EConnectionType lineStyle, final boolean monitorConnection) {
@@ -169,9 +169,9 @@ public class Connection extends Element implements IConnection, IPerformance, IA
     }
 
     /**
-     * 
+     *
      * Return true if link matches one of types.
-     * 
+     *
      * @param link
      * @param types
      * @return
@@ -274,13 +274,13 @@ public class Connection extends Element implements IConnection, IPerformance, IA
             param.setListItemsDisplayCodeName(strList);
             param.setNbLines(1);
             param.setFieldType(EParameterFieldType.CLOSED_LIST);
-            
+
             if (supportedLanguages != null) {
-                param.setValue(supportedLanguages.getValue());	
+                param.setValue(supportedLanguages.getValue());
             } else {
                 param.setValue("");
             }
-            
+
             param.setShow(true);
             param.setNumRow(1);
             addElementParameter(param);
@@ -544,19 +544,19 @@ public class Connection extends Element implements IConnection, IPerformance, IA
     }
 
     private void updateParametersValues() {
-    	
+
     	if (paramValues == null) {
     		return;
     	}
-    	
+
         for (Map.Entry<EParameterName, Object> param : paramValues.entrySet()) {
         	if (param.getValue() != null) {
         		setPropertyValue(param.getKey().getName(), param.getValue());
         	}
-			
-		}        
+
+		}
     }
-    
+
     private void updateInputConnection() {
         IComponent component = null;
         if (this.target != null) {
@@ -692,9 +692,9 @@ public class Connection extends Element implements IConnection, IPerformance, IA
     }
 
     /**
-     * 
+     *
      * cLi Comment method "createTraceParamters".
-     * 
+     *
      * feature 6355
      */
     private void createTraceParamters() {
@@ -842,7 +842,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * YeXiaowei Comment method "updateMonitorLabel".
-     * 
+     *
      * @param param
      */
     private void updateMonitorLabel(IElementParameter param) {
@@ -856,7 +856,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Get the name/label of the connection.
-     * 
+     *
      * @return Connection Name
      */
     @Override
@@ -865,9 +865,9 @@ public class Connection extends Element implements IConnection, IPerformance, IA
     }
 
     /**
-     * 
+     *
      * Only works for FLOW_MAIN, FLOW_REF or TABLE link.
-     * 
+     *
      * @return
      */
     @Override
@@ -886,7 +886,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Set the name/label of the connection.
-     * 
+     *
      * @param name
      */
     @Override
@@ -1302,7 +1302,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Sets the isConnected.
-     * 
+     *
      * @param isConnected the isConnected to set
      */
     public void setConnected(boolean isConnected) {
@@ -1311,7 +1311,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Reconnect a connection to a new source and target.
-     * 
+     *
      * @param newSource
      * @param newTarget
      */
@@ -1330,7 +1330,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Set a new style for a given line.
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.connections.IConnectionType
      * @param lineStyle
      */
@@ -1342,7 +1342,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Return the given style of the connection.
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.connections.EConnectionType
      * @return int value of the style
      */
@@ -1352,7 +1352,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.connections.IDesignerConnection#getLineStyle()
      */
     @Override
@@ -1362,7 +1362,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#setPropertyValue(java.lang.Object, java.lang.Object)
      */
     @Override
@@ -1436,7 +1436,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getPropertyValue(java.lang.Object)
      */
     @Override
@@ -1451,7 +1451,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.connections.IDesignerConnection#getMetadataTable()
      */
     @Override
@@ -1498,7 +1498,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getElementName()
      */
     @Override
@@ -1678,7 +1678,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * This function will change the merge order of the connection.
-     * 
+     *
      * @param id
      */
     @Override
@@ -1704,7 +1704,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Getter for nodeConnector.
-     * 
+     *
      * @return the nodeConnector
      */
     @Override
@@ -1724,7 +1724,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Getter for connectionType.
-     * 
+     *
      * @return the connectionType
      */
     @Override
@@ -1734,7 +1734,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Sets the connectionType.
-     * 
+     *
      * @param connectionType the connectionType to set
      */
     @Override
@@ -1746,7 +1746,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Getter for performance.
-     * 
+     *
      * @return the performance
      */
     public ConnectionPerformance getPerformance() {
@@ -1755,7 +1755,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IPerformance#setPerformanceData(java.lang.String)
      */
     @Override
@@ -1792,7 +1792,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Getter for isSubjobConnection.
-     * 
+     *
      * @return the isSubjobConnection
      */
     @Override
@@ -1802,7 +1802,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Sets the isSubjobConnection.
-     * 
+     *
      * @param isSubjobConnection the isSubjobConnection to set
      */
     public void setSubjobConnection(boolean isSubjobConnection) {
@@ -1811,7 +1811,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Getter for monitorConnection.
-     * 
+     *
      * @return the monitorConnection
      */
     @Override
@@ -1821,7 +1821,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Sets the monitorConnection.
-     * 
+     *
      * @param monitorConnection the monitorConnection to set
      */
     public void setMonitorConnection(boolean monitorConnection) {
@@ -1962,7 +1962,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Getter for monitorLabel.
-     * 
+     *
      * @return the monitorLabel
      */
     public MonitorConnectionLabel getMonitorLabel() {
@@ -1971,7 +1971,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     /**
      * Sets the monitorLabel.
-     * 
+     *
      * @param monitorLabel the monitorLabel to set
      */
     public void setMonitorLabel(MonitorConnectionLabel monitorLabel) {

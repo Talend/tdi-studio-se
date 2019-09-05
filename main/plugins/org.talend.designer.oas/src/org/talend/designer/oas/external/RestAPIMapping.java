@@ -5,7 +5,7 @@ import java.util.List;
 
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -45,7 +45,7 @@ public class RestAPIMapping {
 
     /**
      * Getter for id.
-     * 
+     *
      * @return the id
      */
     public String getId() {
@@ -54,7 +54,7 @@ public class RestAPIMapping {
 
     /**
      * Getter for outputFlow.
-     * 
+     *
      * @return the outputFlow
      */
     public String getOutputFlow() {
@@ -63,7 +63,7 @@ public class RestAPIMapping {
 
     /**
      * Sets the outputFlow.
-     * 
+     *
      * @param outputFlow the outputFlow to set
      */
     public void setOutputFlow(String outputFlow) {
@@ -72,7 +72,7 @@ public class RestAPIMapping {
 
     /**
      * Getter for httpVerb.
-     * 
+     *
      * @return the httpVerb
      */
     public String getHttpVerb() {
@@ -81,7 +81,7 @@ public class RestAPIMapping {
 
     /**
      * Sets the httpVerb.
-     * 
+     *
      * @param httpVerb the httpVerb to set
      */
     public void setHttpVerb(String httpVerb) {
@@ -90,7 +90,7 @@ public class RestAPIMapping {
 
     /**
      * Getter for uriPattern.
-     * 
+     *
      * @return the uriPattern
      */
     public String getUriPattern() {
@@ -99,7 +99,7 @@ public class RestAPIMapping {
 
     /**
      * Sets the uriPattern.
-     * 
+     *
      * @param uriPattern the uriPattern to set
      */
     public void setUriPattern(String uriPattern) {
@@ -108,7 +108,7 @@ public class RestAPIMapping {
 
     /**
      * Getter for consumes.
-     * 
+     *
      * @return the consumes
      */
     public EESBMediaType getConsumes() {
@@ -117,7 +117,7 @@ public class RestAPIMapping {
 
     /**
      * Sets the consumes.
-     * 
+     *
      * @param consumes the consumes to set
      */
     public void setConsumes(EESBMediaType consumes) {
@@ -126,7 +126,7 @@ public class RestAPIMapping {
 
     /**
      * Getter for produces.
-     * 
+     *
      * @return the produces
      */
     public EESBMediaType getProduces() {
@@ -135,7 +135,7 @@ public class RestAPIMapping {
 
     /**
      * Sets the produces.
-     * 
+     *
      * @param produces the produces to set
      */
     public void setProduces(EESBMediaType produces) {
@@ -148,7 +148,7 @@ public class RestAPIMapping {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -161,7 +161,7 @@ public class RestAPIMapping {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

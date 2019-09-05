@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,9 +36,9 @@ import org.talend.sqlbuilder.util.QueryTokenizer;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  */
 public class OracleExplainPlanAction extends AbstractEditorAction {
 
@@ -74,7 +74,7 @@ public class OracleExplainPlanAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getText()
      */
     @Override
@@ -84,7 +84,7 @@ public class OracleExplainPlanAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#run()
      */
     @SuppressWarnings("unchecked")//$NON-NLS-1$
@@ -195,7 +195,7 @@ public class OracleExplainPlanAction extends AbstractEditorAction {
 
     /**
      * Gets sql for executing.
-     * 
+     *
      * @return string
      */
     public String getSQLToBeExecuted() {

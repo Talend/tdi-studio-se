@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -73,7 +73,7 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.items.importexport.handlers.imports.ImportRepTypeHandler#afterImportingItemRecords(org
      * .eclipse.core.runtime.IProgressMonitor,
      * org.talend.repository.items.importexport.ui.wizard.imports.managers.ResourcesManager,
@@ -169,7 +169,7 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.items.importexport.handlers.imports.IImportResourcesHandler#prePopulate(org.eclipse.core
      * .runtime.IProgressMonitor, org.talend.repository.items.importexport.manager.ResourcesManager)
@@ -181,7 +181,7 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.items.importexport.handlers.imports.IImportResourcesHandler#postPopulate(org.eclipse.core
      * .runtime.IProgressMonitor, org.talend.repository.items.importexport.manager.ResourcesManager,
@@ -195,7 +195,7 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.items.importexport.handlers.imports.IImportResourcesHandler#preImport(org.eclipse.core.
      * runtime.IProgressMonitor, org.talend.repository.items.importexport.manager.ResourcesManager,
@@ -210,7 +210,7 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.items.importexport.handlers.imports.IImportResourcesHandler#postImport(org.eclipse.core
      * .runtime.IProgressMonitor, org.talend.repository.items.importexport.manager.ResourcesManager,
@@ -232,7 +232,7 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.items.importexport.handlers.imports.ImportRepTypeHandler#valid(org.talend.repository.items
      * .importexport.handlers.model.ImportItem)

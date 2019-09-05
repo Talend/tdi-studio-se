@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.eclipse.ui.part.MultiPageSelectionProvider;
 /**
  * Extension of the standard MultiPageSelectionProvider. This class avoid to send all events to the TalendEditor (Gef
  * part) <br/>
- * 
+ *
  * $Id: MultiPageTalendSelectionProvider.java 7038 2007-11-15 14:05:48Z plegall $
- * 
+ *
  */
 public class MultiPageTalendSelectionProvider extends MultiPageSelectionProvider implements ISelectionProvider {
 

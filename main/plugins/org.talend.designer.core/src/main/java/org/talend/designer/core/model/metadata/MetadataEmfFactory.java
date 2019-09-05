@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,9 +42,9 @@ import org.talend.designer.core.model.utils.emf.talendfile.util.TalendFileResour
 /**
  * Class that will take either a metadata or an emf object for the metadata, and that can return after the emf object or
  * the metadata object.
- * 
+ *
  * $Id: MetadataEmfFactory.java 51271 2010-11-15 08:40:42Z nrousseau $
- * 
+ *
  */
 public class MetadataEmfFactory {
 

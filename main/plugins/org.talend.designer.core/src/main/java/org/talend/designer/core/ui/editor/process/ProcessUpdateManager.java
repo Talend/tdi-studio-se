@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -122,6 +122,7 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.update.UpdateCheckResult;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
@@ -414,6 +415,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
         Map<ContextItem, Set<String>> existedParams = new HashMap<ContextItem, Set<String>>();
 
+        List<String> contextItemGroupNames = new ArrayList<String>();
+
         for (IContext context : contextManager.getListContext()) {
             for (IContextParameter param : context.getContextParameterList()) {
                 if (!param.isBuiltIn()) {
@@ -437,6 +440,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         boolean builtin = true;
                         if (contextItem != null) {
                             if (contextItem instanceof ContextItem) {
+                                contextItemGroupNames.clear();
+                                EList<?> contextGroups = ((ContextItem) contextItem).getContext();
+                                for (Object contextGroup : contextGroups) {
+                                    if (contextGroup instanceof ContextTypeImpl) {
+                                        String name = ((ContextTypeImpl) contextGroup).getName();
+                                        contextItemGroupNames.add(name);
+                                    }
+                                }
                                 final ContextType contextType = ContextUtils.getContextTypeByName((ContextItem) contextItem,
                                         context.getName(), true);
                                 if (contextType != null) {
@@ -448,8 +459,10 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                             existedParams.put(repositoryContext, new HashSet<String>());
                                         }
                                         existedParams.get(repositoryContext).add(paramName);
-                                        if (onlySimpleShow
-                                                || !ContextUtils.samePropertiesForContextParameter(param, contextParameterType)) {
+                                        String jobContextGroupName = context.getName();
+                                        boolean contains = contextItemGroupNames.contains(jobContextGroupName);
+                                        if (contains && (onlySimpleShow || !ContextUtils.samePropertiesForContextParameter(param,
+                                                contextParameterType))) {
                                             unsameMap.add(contextItem, paramName);
                                         }
                                         builtin = false;
@@ -592,7 +605,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
     /**
      * propagate when add or remove a variable in a repository context to jobs/joblets.
-     * 
+     *
      * @param contextResults
      * @param contextManager
      * @param deleteParams
@@ -894,7 +907,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         return jobSettingsResults;
 
     }
-    
+
     private List<UpdateResult> checkJobSettingsParameters(EComponentCategory category, EUpdateItemType type,
             boolean onlySimpleShow) {
         return checkJobSettingsParameters(category, type, onlySimpleShow, new HashMap<Object, Object>());
@@ -1080,7 +1093,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
     /**
      * DOC ycbai Comment method "checkNodeValidationRuleFromRepository".
-     * 
+     *
      * @param node
      * @param onlySimpleShow
      * @return
@@ -1238,9 +1251,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "checkNodeSAPFunctionFromRepository".
-     * 
+     *
      * @param node
      * @return
      */
@@ -1319,9 +1332,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * nrousseau Comment method "checkNodeSchemaFromRepository".
-     * 
+     *
      * @param nc
      * @param metadataTable
      * @return true if the data have been modified
@@ -1580,7 +1593,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
     /**
      * DOC ycbai Comment method "checkNodeSchemaFromRepositoryForTMap".
-     * 
+     *
      * @param node
      * @param onlySimpleShow
      * @return
@@ -1662,9 +1675,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * nrousseau Comment method "checkNodeSchemaFromRepositoryForEBCDIC".
-     * 
+     *
      * @param node
      * @return
      */
@@ -1805,11 +1818,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         }
         return schemaResults;
     }
-    
+
     /**
-     * 
+     *
      * nrousseau Comment method "checkNodePropertiesFromRepository".
-     * 
+     *
      * @param node
      * @return true if the data have been modified
      */
@@ -1819,9 +1832,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * nrousseau Comment method "checkNodePropertiesFromRepository".
-     * 
+     *
      * @param node
      * @return true if the data have been modified
      */
@@ -2495,7 +2508,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
     /**
      * ggu Comment method "checkParameterContextMode".
-     * 
+     *
      * for bug 5198
      */
     private List<UpdateResult> checkParameterContextMode(final List<? extends IElementParameter> parameters,
@@ -2643,11 +2656,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "checkNodesPropertyChanger".
-     * 
+     *
      * If this is not relational joblet node to update. filter it.
-     * 
+     *
      * @deprecated seems have unused it.
      */
     @Deprecated
@@ -2759,7 +2772,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     public List<UpdateResult> getUpdatesNeeded(IUpdateItemType type) {
         return getUpdatesNeeded(type, false);
     }
-    
+
     @Override
     public List<UpdateResult> getUpdatesNeeded(IUpdateItemType itemType, boolean onlySimpleShow) {
         return getUpdatesNeeded(itemType, onlySimpleShow, new HashMap<Object, Object>());
@@ -2823,7 +2836,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * DOC hcw ProcessUpdateManager class global comment. Detailled comment
      */
     static class ContextItemParamMap {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -65,9 +65,9 @@ import org.talend.spagic.engines.client.i18n.Messages;
 
 /**
  * Page of the Job Scripts Export Wizard. <br/>
- * 
+ *
  * @referto WizardArchiveFileResourceExportPage1 $Id: JobScriptsExportWizardPage.java 1 2006-12-13 涓嬪�?3:09:07 bqian
- * 
+ *
  */
 public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExportPage1 {
 
@@ -100,7 +100,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
 
     /**
      * Create an instance of this class.
-     * 
+     *
      * @param name java.lang.String
      */
     protected SpagicDeployWizardPage(String name, IStructuredSelection selection) {
@@ -180,7 +180,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
     /*
      * It's not a good method to resovle the problem of null pointer, which is led by commenting the //
      * createResourcesGroup(composite); and createButtonsGroup(composite); (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1#validateSourceGroup()
      */
     @Override
@@ -190,7 +190,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
 
     /**
      * Create the export options specification widgets.
-     * 
+     *
      */
     @Override
     protected void createOptionsGroupButtons(Group optionsGroup) {
@@ -210,7 +210,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
 
     /**
      * Create the buttons for the group that determine if the entire or selected directory structure should be created.
-     * 
+     *
      * @param optionsGroup
      * @param font
      */
@@ -382,7 +382,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
     /**
      * The Finish button was pressed. Try to do the required work now and answer a boolean indicating success. If false
      * is returned then the wizard will not close.
-     * 
+     *
      * @returns boolean
      */
     @Override
@@ -479,7 +479,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
 
     /**
      * Get the export operation.
-     * 
+     *
      * @param resourcesToExport
      * @return
      */
@@ -491,7 +491,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
 
     /**
      * Returns the root folder name.
-     * 
+     *
      * @return
      */
     private String getRootFolderName() {
@@ -516,7 +516,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
 
     /**
      * Answer the string to display in self as the destination type.
-     * 
+     *
      * @return java.lang.String
      */
     @Override
@@ -527,7 +527,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
 
     /**
      * Returns resources to be exported. This returns file - for just the files use getSelectedResources.
-     * 
+     *
      * @return a collection of resources currently selected for export (element type: <code>IResource</code>)
      * @throws ProcessorException
      */
@@ -582,7 +582,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
     /**
      * Answer the suffix that files exported from this wizard should have. If this suffix is a file extension (which is
      * typically the case) then it must include the leading period character.
-     * 
+     *
      */
     protected String getOutputSuffix() {
         return ".zip"; //$NON-NLS-1$
@@ -626,7 +626,7 @@ public abstract class SpagicDeployWizardPage extends WizardFileSystemResourceExp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.wizards.datatransfer.WizardFileSystemResourceExportPage1#destinationEmptyMessage()
      */
     @Override

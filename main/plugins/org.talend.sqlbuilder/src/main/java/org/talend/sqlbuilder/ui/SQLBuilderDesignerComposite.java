@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,9 +32,9 @@ import org.talend.sqlbuilder.repository.utility.EMFRepositoryNodeManager;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2007-3-7 上午09:35:17 (星期五, 29 九月 2006) qzhang $
- * 
+ *
  */
 public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
@@ -50,7 +50,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /**
      * qzhang SQLBuilderDesignerComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -69,7 +69,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /**
      * qzhang Comment method "initialContent".
-     * 
+     *
      * @param composite
      */
     private void initialContent(SQLBuilderDesignerComposite composite, List<IRepositoryNode> nodes) {
@@ -89,7 +89,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /**
      * qzhang Comment method "createDesignerArea".
-     * 
+     *
      * @param composite
      */
     private void createDesignerArea(SQLBuilderDesignerComposite composite, List<IRepositoryNode> nodes) {
@@ -115,7 +115,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#clearText()
      */
     public void clearText() {
@@ -124,7 +124,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getDefaultEditor()
      */
     public boolean getDefaultEditor() {
@@ -133,7 +133,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getIfLimit()
      */
     public boolean getIfLimit() {
@@ -142,7 +142,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /**
      * Sets the ifLimit.
-     * 
+     *
      * @param ifLimit the ifLimit to set
      */
     public void setIfLimit(boolean ifLimit) {
@@ -153,7 +153,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getMaxResult()
      */
     public String getMaxResult() {
@@ -166,7 +166,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /**
      * Sets the maxResult.
-     * 
+     *
      * @param maxResult the maxResult to set
      */
     public void setMaxResult(String maxResult) {
@@ -175,7 +175,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getRepositoryNode()
      */
     public RepositoryNode getRepositoryNode() {
@@ -184,7 +184,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getSQLToBeExecuted()
      */
     public String getSQLToBeExecuted() {
@@ -193,7 +193,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#refresh(boolean)
      */
     public void refresh(final boolean b) {
@@ -219,7 +219,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#setEditorContent(java.lang.String)
      */
     public void setEditorContent(String string) {
@@ -242,7 +242,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#setRepositoryNode(org.talend.repository.model.RepositoryNode)
      */
     public void setRepositoryNode(RepositoryNode node) {
@@ -262,7 +262,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /**
      * Sets the multiPageEditor.
-     * 
+     *
      * @param multiPageEditor the multiPageEditor to set
      */
     public void setMultiPageEditor(MultiPageSqlBuilderEditor multiPageEditor) {
@@ -271,7 +271,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getMultiPageEditor()
      */
     public MultiPageSqlBuilderEditor getMultiPageEditor() {
@@ -280,7 +280,7 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.AbstractSQLEditorComposite#getColorText()
      */
     @Override

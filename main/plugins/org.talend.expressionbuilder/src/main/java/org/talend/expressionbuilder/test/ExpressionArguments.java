@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,11 +19,11 @@ import org.talend.commons.runtime.model.expressionbuilder.Variable;
 
 /**
  * The argument that transfered to code generator.
- * 
+ *
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExpressionArguments.java 上午09:55:03 2007-6-29 +0000 (2007-6-29) yzhang $
- * 
+ *
  */
 public class ExpressionArguments {
 
@@ -33,7 +33,7 @@ public class ExpressionArguments {
 
     /**
      * Initialize member variables.
-     * 
+     *
      * yzhang ExpressionArguments constructor comment.
      */
     public ExpressionArguments() {
@@ -42,7 +42,7 @@ public class ExpressionArguments {
 
     /**
      * Getter for expression.
-     * 
+     *
      * @return the expression
      */
     public String getExpression() {
@@ -51,7 +51,7 @@ public class ExpressionArguments {
 
     /**
      * Getter for variables.
-     * 
+     *
      * @return the variables
      */
     public List<Variable> getVariables() {
@@ -60,7 +60,7 @@ public class ExpressionArguments {
 
     /**
      * Sets the variables.
-     * 
+     *
      * @param variables the variables to set
      */
     public void setVariables(List<Variable> variables) {
@@ -69,7 +69,7 @@ public class ExpressionArguments {
 
     /**
      * Sets the expression.
-     * 
+     *
      * @param expression the expression to set
      */
     public void setExpression(String expression) {

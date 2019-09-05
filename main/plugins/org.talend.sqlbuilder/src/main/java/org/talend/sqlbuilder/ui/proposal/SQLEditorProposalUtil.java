@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,9 +36,9 @@ import org.talend.sqlbuilder.util.QueryTokenizer;
 
 /**
  * dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SQLEditorProposalUtil.java,v 1.19 2006/11/08 10:03:04 qiang.zhang Exp $
- * 
+ *
  * @author qiang.zhang
  */
 public class SQLEditorProposalUtil {
@@ -76,7 +76,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * dev Comment method "getSQLEditorContentProposals".
-     * 
+     *
      * @param content editor has input all String
      * @param position edit current position
      * @return ContentProposal array.
@@ -134,7 +134,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * ftang Comment method "handleStrBetweenFromAndWhere".
-     * 
+     *
      * @param splitArray
      */
     private void handleStrBetweenFromAndWhere(String[] splitArray) {
@@ -149,7 +149,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * ftang Comment method "handleAliasBetweenFromAndWhere".
-     * 
+     *
      * @param string
      * @param indexOfWhiteSpace
      */
@@ -163,7 +163,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * ftang Comment method "addChangedEntry".
-     * 
+     *
      * @param originalStr
      * @param aliasStr
      * @param needChangedList
@@ -213,7 +213,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * ftang Comment method "handleKeyStr".
-     * 
+     *
      * @param element
      * @return
      */
@@ -227,7 +227,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * ftang Comment method "getIndex".
-     * 
+     *
      * @param beforeCursorSql
      * @param indexStr
      * @return
@@ -246,7 +246,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * ftang Comment method "isTable".
-     * 
+     *
      * @param str
      * @param originalStr
      * @return
@@ -264,7 +264,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * ftang Comment method "findAlias".
-     * 
+     *
      * @param input
      */
     private void findAlias(String currentSql) {
@@ -316,7 +316,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * ftang Comment method "isExisting".
-     * 
+     *
      * @param str
      * @return
      */
@@ -337,7 +337,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * dev Comment method "getAllQqlQuery". s
-     * 
+     *
      * @param content editor has input all String
      * @return list of all SQL Query.
      */
@@ -368,7 +368,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * Get Current SQL Query.
-     * 
+     *
      * @param content editor content.
      * @return current SQL Query String
      */
@@ -400,7 +400,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * dev Comment method "getAllKeywords".
-     * 
+     *
      * @return all Key words of SQL.
      */
     private String[] getAllKeywords() {
@@ -443,7 +443,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * dev Comment method "hasSQLQueryProposal".
-     * 
+     *
      * @param queryStrings all Sql Query String.
      * @param curSql current Sql Query String.
      */
@@ -469,7 +469,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * qzhang Comment method "getLastIndex".
-     * 
+     *
      * @param curSql
      * @return
      */
@@ -505,7 +505,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * dev Comment method "createProposal".
-     * 
+     *
      * @param hasInput
      * @param list
      */
@@ -545,7 +545,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * dev Comment method "createAllProposal".
-     * 
+     *
      * @param hasInput
      * @param string
      * @return
@@ -557,7 +557,7 @@ public class SQLEditorProposalUtil {
 
     /**
      * dev Comment method "getColumnsByTableName".
-     * 
+     *
      * @param tableName
      * @return
      */

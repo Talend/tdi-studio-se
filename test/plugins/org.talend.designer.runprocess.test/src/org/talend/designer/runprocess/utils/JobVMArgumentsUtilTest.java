@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ public class JobVMArgumentsUtilTest {
         Assert.assertTrue(list.get(0).equals("{[<,>]};:' \"/\\+\\t+\\b+\\f+\\n=\\r|"));
         Assert.assertTrue(list.get(1).equals("String a = \\\\ + [array];"));
     }
-    
+
     /**
      * Test method for
      * {@link org.talend.designer.runprocess.ui.JobVMArgumentsComposite#writeString(List<String> items)}
@@ -55,13 +55,13 @@ public class JobVMArgumentsUtilTest {
         List<String> list = new ArrayList<String>();
         String srg0 = "{[<,>]};:' \"/\\+\t+\b+\f+\n=\r|";
         list.add(srg0);
-  
+
         String srg2 = "String a = \\\\ + [array];";
         list.add(srg2);
-        
+
         String result = jobVM.writeString(list);
         String expectResult = "{\"JOB_RUN_VM_ARGUMENTS\":[\"{[<,>]};:' \\\"/\\\\+\\t+\\b+\\f+\\n=\\r|\",\"String a = \\\\\\\\ + [array];\"]}";
         Assert.assertTrue(result.equals(expectResult));
-        
+
     }
 }

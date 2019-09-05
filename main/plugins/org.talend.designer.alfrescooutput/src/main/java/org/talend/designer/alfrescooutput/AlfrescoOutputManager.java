@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.AbstractNode;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
@@ -29,7 +30,7 @@ import org.talend.designer.alfrescooutput.util.AlfrescoOutputException;
 
 /**
  * This class holds the model and UI managers on behalf of the component.
- * 
+ *
  * @author Marc Dutoo - Open Wide SA
  *
  * $Id: AlfrescoOutputManager.java,v 1.1 2008/10/07 21:27:31 mdutoo Exp $
@@ -45,8 +46,8 @@ public class AlfrescoOutputManager {
 		this.alfrescoOutputComponent = alfrescoOutputComponent;
         modelManager = new AlfrescoOutputModelManager(alfrescoOutputComponent);
 	}
-	
-	
+
+
 	public AlfrescoOutputComponent getAlfrescoOutputComponent() {
 		return alfrescoOutputComponent;
 	}
@@ -58,11 +59,11 @@ public class AlfrescoOutputManager {
     public AlfrescoModelDialog getAlfrescoModelDialog() {
 		return alfrescoModelDialog;
 	}
-	
+
 
     /**
      * Checks the connections and creates the UI (a dialog actually)
-     * 
+     *
      * @param parent
      * @return
      */
@@ -92,11 +93,11 @@ public class AlfrescoOutputManager {
         try {
 			modelManager.load(); // NB. or when modelManager is created
 		} catch (AlfrescoOutputException aoex) {
-			MessageDialog.openError(new Shell(Display.getCurrent(), SWT.APPLICATION_MODAL),
+            MessageDialog.openError(DisplayUtils.getDefaultShell(false),
 					Messages.getString("AlfrescoOutputManager.failedLoadModel"), aoex.getMessage()); //$NON-NLS-1$
 			modelManager.clear();
 		}
-        
+
         // then create and open the model dialog :
 		AlfrescoModelDialog alfrescoModelDialog = new AlfrescoModelDialog(parent.getShell(), this);
         alfrescoModelDialog.open();
@@ -106,7 +107,7 @@ public class AlfrescoOutputManager {
 
     /**
      * Checks the connections and creates the UI (a dialog actually)
-     * 
+     *
      * @param display
      * @return
      */
@@ -114,5 +115,5 @@ public class AlfrescoOutputManager {
         this.alfrescoModelDialog = createUI(display.getActiveShell());
         return this.alfrescoModelDialog.getShell();
     }
-	
+
 }

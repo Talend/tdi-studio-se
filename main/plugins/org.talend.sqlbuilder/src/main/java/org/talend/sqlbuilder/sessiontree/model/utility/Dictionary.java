@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -154,7 +154,7 @@ public class Dictionary {
     }
 
     /**
-     * @return Iterator. 
+     * @return Iterator.
      */
     public Iterator getCatalogSchemaNames() {
 
@@ -162,7 +162,7 @@ public class Dictionary {
     }
 
     /**
-     * @return Iterator. 
+     * @return Iterator.
      */
     public Iterator getExternalObjectNames() {
 
@@ -253,7 +253,7 @@ public class Dictionary {
 
     /**
      * Loads the persisted dictionary from a previous session.
-     * 
+     *
      * @param dbNode DatabaseNode for which to load the dictionary
      * @param monitor IProgressMonitor
      * @return true if dictionary was found and loaded.
@@ -274,7 +274,7 @@ public class Dictionary {
 
     /**
      * Perform full load of dictionary for dbNode.
-     * 
+     *
      * @param dbNode DatabaseNode of which to load dictionary information
      * @param monitor ProgressMonitor displayed whilst loading
      * @throws InterruptedException If user cancelled loading
@@ -325,7 +325,7 @@ public class Dictionary {
 
     /**
      * Load dictionary data for catalog.
-     * 
+     *
      * @param iNode catalognode to load
      * @param monitor ProgressMonitor displayed whilst loading
      * @throws InterruptedException If user cancelled loading

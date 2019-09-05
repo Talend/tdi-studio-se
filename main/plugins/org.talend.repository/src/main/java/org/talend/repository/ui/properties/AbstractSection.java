@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,9 +37,9 @@ import org.talend.repository.model.RepositoryNode;
 
 /**
  * DOC mhelleboid class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public abstract class AbstractSection extends AbstractPropertySection {
 
@@ -71,7 +71,7 @@ public abstract class AbstractSection extends AbstractPropertySection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
      * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
@@ -95,7 +95,7 @@ public abstract class AbstractSection extends AbstractPropertySection {
 
     /**
      * DOC tguiu Comment method "addFocusListener".
-     * 
+     *
      * @param nameText2
      */
     protected void addFocusListener(Control control) {
@@ -176,7 +176,7 @@ public abstract class AbstractSection extends AbstractPropertySection {
 
     /**
      * DOC tguiu Comment method "enableControls".
-     * 
+     *
      * @param locked
      */
     private static void showControls(boolean visible) {
@@ -197,7 +197,7 @@ public abstract class AbstractSection extends AbstractPropertySection {
 
     /**
      * DOC tguiu Comment method "enableControl".
-     * 
+     *
      * @param b
      */
     protected abstract void showControl(boolean visible);
@@ -214,7 +214,7 @@ public abstract class AbstractSection extends AbstractPropertySection {
 
     /**
      * DOC tguiu Comment method "getRepositoryFactory".
-     * 
+     *
      * @return
      */
     protected IProxyRepositoryFactory getRepositoryFactory() {

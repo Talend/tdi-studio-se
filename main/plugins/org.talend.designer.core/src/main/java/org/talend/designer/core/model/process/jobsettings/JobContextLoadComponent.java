@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,9 +42,9 @@ import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants.C
 
 /**
  * DOC ggu class global comment. Detailled comment <br/>
- * 
+ *
  * This class will create a virtual component that will create the logs for the job. <br/>
- * 
+ *
  * It's not used at all in the designer, only during the code generation. <br/>
  */
 public class JobContextLoadComponent implements IComponent {
@@ -183,7 +183,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisible(java.lang.String)
      */
     @Override
@@ -248,13 +248,13 @@ public class JobContextLoadComponent implements IComponent {
             IMultipleComponentManager multipleComponentManager = multipleComponentManagers.get(0);
             if (isFile) {
                 String source = self + EParameterName.IMPLICIT_TCONTEXTLOAD_FILE.getName();
-                multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".FILENAME"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".FILENAME"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.IMPLICIT_TCONTEXTLOAD_REGEX;
-                multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".REGEX"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".REGEX"); //$NON-NLS-1$
 
                 source = self + "IGNORE_ERROR_MESSAGE"; //$NON-NLS-1$
-                multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".IGNORE_ERROR_MESSAGE"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".IGNORE_ERROR_MESSAGE"); //$NON-NLS-1$
 
             } else {
                 String source = self + JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
@@ -267,46 +267,46 @@ public class JobContextLoadComponent implements IComponent {
                 multipleComponentManager.addParam(source, DB_INPUT + ".DRIVER_CLASS");
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.HOST.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".HOST"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".HOST"); //$NON-NLS-1$
                 multipleComponentManager.addParam(source, DB_INPUT + ".SERVER"); //$NON-NLS-1$
-                multipleComponentManager.addParam(source, DB_INPUT + ".DSN"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".DSN"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.PORT.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".PORT"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".PORT"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DBNAME.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".DBNAME"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".DBNAME"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DB_VERSION.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".DB_VERSION"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".DB_VERSION"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.PROPERTIES.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".PROPERTIES"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".PROPERTIES"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.SCHEMA_DB.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".SCHEMA_DB"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".SCHEMA_DB"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.USER.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".USER"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".USER"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.PASS.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".PASS"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".PASS"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DBTABLE.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".DBTABLE"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".DBTABLE"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.DB_TYPE.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".DB_TYPE"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".DB_TYPE"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.getExtraParameterName(EParameterName.CONNECTION_TYPE.getName());
-                multipleComponentManager.addParam(source, DB_INPUT + ".CONNECTION_TYPE"); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + ".CONNECTION_TYPE"); //$NON-NLS-1$
 
                 source = self + JobSettingsConstants.QUERY;
-                multipleComponentManager.addParam(source, DB_INPUT + "." + JobSettingsConstants.QUERY); //$NON-NLS-1$ 
+                multipleComponentManager.addParam(source, DB_INPUT + "." + JobSettingsConstants.QUERY); //$NON-NLS-1$
 
             }
             // context parameter
-            final String context = CONTEXT_LOAD + "."; //$NON-NLS-1$  
+            final String context = CONTEXT_LOAD + "."; //$NON-NLS-1$
 
             String source = self + EParameterName.LOAD_NEW_VARIABLE.getName();
             String target = context + EParameterName.LOAD_NEW_VARIABLE.getName();
@@ -502,7 +502,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getComponentType()
      */
     @Override
@@ -512,7 +512,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useLookup()
      */
     @Override
@@ -522,7 +522,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useImport()
      */
     @Override
@@ -532,7 +532,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getComponentType()
      */
     @Override
@@ -542,7 +542,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isHashComponent()
      */
     @Override
@@ -552,7 +552,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isTechnical()
      */
     @Override
@@ -562,7 +562,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisibleInComponentDefinition()
      */
     @Override
@@ -577,7 +577,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isMainCodeCalled()
      */
     @Override
@@ -587,7 +587,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#canParallelize()
      */
     @Override
@@ -597,7 +597,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getShortName()
      */
     @Override
@@ -618,7 +618,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPaletteType()
      */
     @Override
@@ -628,7 +628,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#setPaletteType(java.lang.String)
      */
     @Override
@@ -650,7 +650,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getType()
      */
     @Override
@@ -660,7 +660,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isReduce()
      */
     @Override
@@ -670,7 +670,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPartitioning()
      */
     @Override
@@ -695,7 +695,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getInputType()
      */
     @Override
@@ -706,7 +706,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getOutputType()
      */
     @Override
@@ -717,7 +717,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getCONNECTORList()
      */
     @Override
@@ -733,7 +733,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isSparkAction()
      */
     @Override
@@ -744,7 +744,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getModulesNeeded()
      */
     @Override
@@ -770,7 +770,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#setOriginalFamilyName(java.lang.String)
      */
     @Override
@@ -781,7 +781,7 @@ public class JobContextLoadComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getTranslatedFamilyName(java.lang.String)
      */
     @Override

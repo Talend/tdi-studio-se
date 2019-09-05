@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,7 +26,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.dialog.mergeorder.ErrorMessageDialog;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
@@ -41,7 +41,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#activate()
      */
     @Override
@@ -54,7 +54,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#getAdapter(java.lang.Class)
      */
     @Override
@@ -64,7 +64,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#deactivate()
      */
     @Override
@@ -77,7 +77,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
      */
     @Override
@@ -96,7 +96,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(final PropertyChangeEvent evt) {
@@ -137,7 +137,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#createEditPolicies()
      */
     @Override
@@ -147,7 +147,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#getDragTracker(org.eclipse.gef.Request)
      */
     @Override
@@ -157,7 +157,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
      */
     @Override
@@ -176,7 +176,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#performRequest(org.eclipse.gef.Request)
      */
     @Override
@@ -184,9 +184,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
         if (request.getType().equals("open")) { //$NON-NLS-1$
             Node node = ((NodeContainer) ((NodeContainerPart) getParent()).getModel()).getNode();
             if (node.isErrorFlag()) {
-                Shell shell = getViewer().getControl().getShell();
-
-                ErrorMessageDialog dialog = new ErrorMessageDialog(new Shell(shell), node);
+                ErrorMessageDialog dialog = new ErrorMessageDialog(DisplayUtils.getDefaultShell(false), node);
                 dialog.open();
             }
         }
@@ -194,7 +192,7 @@ public class NodeErrorEditPart extends AbstractGraphicalEditPart implements Prop
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#setSelected(int)
      */
     @Override

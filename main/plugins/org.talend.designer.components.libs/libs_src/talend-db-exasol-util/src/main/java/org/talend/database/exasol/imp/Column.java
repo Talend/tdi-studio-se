@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,13 +16,13 @@ package org.talend.database.exasol.imp;
  * @author Jan Lolling, jan.lolling@cimt-ag.de
  */
 public class Column implements Comparable<Column>{
-	
+
 	private String name;
 	private Integer index;
 	private String format;
 	private Integer size;
 	private String padding;
-	
+
 	/**
 	 * Builds a CSV column definition
 	 * @param name column name in the target table
@@ -45,7 +45,7 @@ public class Column implements Comparable<Column>{
 		}
 		return c;
 	}
-	
+
 	/**
 	 * Builds a DBMS column definition
 	 * @param name column name in the target table
@@ -124,7 +124,7 @@ public class Column implements Comparable<Column>{
 			return false;
 		}
 	}
-	
+
 	@Override
 	public int compareTo(Column o) {
 		if (index != null && o.index != null) {
@@ -133,5 +133,5 @@ public class Column implements Comparable<Column>{
 			return 0;
 		}
 	}
-	
+
 }

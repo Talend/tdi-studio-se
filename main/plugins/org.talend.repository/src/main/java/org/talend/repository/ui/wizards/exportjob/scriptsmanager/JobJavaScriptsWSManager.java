@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -70,7 +70,7 @@ import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
 
 /**
  * DOC x class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
 
@@ -116,7 +116,7 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsManager#getExportResources
      * (org.talend.repository.ui.wizards.exportjob.ExportFileResource[], java.util.Map, java.lang.String,
      * java.lang.String, int, int, java.lang.String[])
@@ -259,7 +259,7 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
                 getChildrenJobAndContextName(allResources, process.getProperty().getLabel(), list, process, projectName,
                         processedJob, allJobScripts, srcResource, exportChoice, selectedJobVersion);
                 libResource.addResources(allJobScripts);
-                
+
                 List<Item> items = new ArrayList<Item>();
                 addExportDependenciesToClasses(process, contextResource, items);
 
@@ -268,28 +268,28 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
             }
         }
     }
-    
+
     private void addExportDependenciesToClasses(ProcessItem process, ExportFileResource contextResource, List<Item> items) {
         if (items.contains(process)) {
             return;
         }
-        
+
         // set dependencies here as OSGI, as it will be runtime dependencies
         // and TDM right now only allow to export in a folder dependencies in folder for OSGI dependencies
         BuildExportManager.getInstance().exportOSGIDependencies(contextResource, process);
         Collection<IRepositoryViewObject> allDependencies = ProcessUtils.getAllProcessDependencies(
                 Arrays.asList(new Item[] { process }), false);
-        
+
         items.add(process);
         for (IRepositoryViewObject object : allDependencies) {
-            Item item = object.getProperty().getItem();                    
+            Item item = object.getProperty().getItem();
             if (item instanceof ProcessItem) {
                 addExportDependenciesToClasses((ProcessItem) item, contextResource, items);
             }
         }
     }
-    
-    
+
+
 
     private void copyServerConfigFileToTempDir() {
         final Bundle b = Platform.getBundle(RepositoryPlugin.PLUGIN_ID);
@@ -318,7 +318,7 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
 
     /**
      * DOC x Comment method "genWSDLFolder".
-     * 
+     *
      * @param list
      */
     private ExportFileResource getWSDLFile(ProcessItem processItem, Boolean needWSDL, List<URL> externalLibs) {
@@ -427,7 +427,7 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
 
     /**
      * DOC x Comment method "genWebInfoForder".
-     * 
+     *
      * @param list
      */
     private void editWSDDFile(ProcessItem processItem) {
@@ -520,7 +520,7 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
 
     /**
      * DOC x Comment method "genMetaInfoForder".
-     * 
+     *
      * @param list
      * @return
      */
@@ -570,7 +570,7 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
 
     /**
      * DOC x Comment method "main".
-     * 
+     *
      * @param args
      */
     static class TalendJava2WSDL extends Java2WSDL {
@@ -587,7 +587,7 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
 
         /**
          * run checks the command-line arguments and runs the tool.
-         * 
+         *
          * @param args String[] command-line arguments.
          * @return
          */
@@ -657,7 +657,7 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.apache.axis.wsdl.Java2WSDL#generateServerSide(org.apache.axis.wsdl.fromJava.Emitter,
          * java.lang.String)
          */

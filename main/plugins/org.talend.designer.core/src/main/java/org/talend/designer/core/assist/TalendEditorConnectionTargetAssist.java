@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ public class TalendEditorConnectionTargetAssist extends TalendEditorComponentCre
 
     /**
      * open the creation assist according to the trigger character
-     * 
+     *
      * @param triggerChar
      */
     @Override
@@ -60,7 +60,7 @@ public class TalendEditorConnectionTargetAssist extends TalendEditorComponentCre
     /**
      * create component at current position, according to select proposal label DOC talend2 Comment method
      * "createComponent".
-     * 
+     *
      * @param componentName
      * @param location
      */
@@ -80,7 +80,7 @@ public class TalendEditorConnectionTargetAssist extends TalendEditorComponentCre
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.assist.TalendEditorComponentCreationAssist#disposeAssistText()
      */
     @Override

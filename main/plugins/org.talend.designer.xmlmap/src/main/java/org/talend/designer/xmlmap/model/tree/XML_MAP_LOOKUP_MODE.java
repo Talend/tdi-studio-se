@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,11 +15,11 @@ package org.talend.designer.xmlmap.model.tree;
 import org.talend.designer.gefabstractmap.resource.ImageInfo;
 
 /**
- * 
+ *
  * Lookup types.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public enum XML_MAP_LOOKUP_MODE implements IUILookupMode {
     LOAD_ONCE(LOOKUP_MODE.LOAD_ONCE, "Load once", "Load once the lookup at subjob start", ImageInfo.ARROW_RIGHT),
@@ -44,7 +44,7 @@ public enum XML_MAP_LOOKUP_MODE implements IUILookupMode {
 
     /**
      * Getter for menuType.
-     * 
+     *
      * @return the menuType
      */
     public MENU_TYPE getMenuType() {
@@ -58,9 +58,9 @@ public enum XML_MAP_LOOKUP_MODE implements IUILookupMode {
     private ImageInfo imageInfo;
 
     /**
-     * 
+     *
      * DOC amaumont LOOKUP_TYPE constructor comment.
-     * 
+     *
      * @param labelKey
      */
     XML_MAP_LOOKUP_MODE(LOOKUP_MODE multipleMatchingMode, String labelKey, String tooltipKey, ImageInfo imageInfo) {
@@ -73,7 +73,7 @@ public enum XML_MAP_LOOKUP_MODE implements IUILookupMode {
 
     /**
      * Getter for label.
-     * 
+     *
      * @return the label
      */
     public String getLabel() {
@@ -82,7 +82,7 @@ public enum XML_MAP_LOOKUP_MODE implements IUILookupMode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.table.IUITest#getImageInfo()
      */
     public ImageInfo getImageInfo() {
@@ -91,7 +91,7 @@ public enum XML_MAP_LOOKUP_MODE implements IUILookupMode {
 
     /**
      * Getter for multipleMatchingMode.
-     * 
+     *
      * @return the multipleMatchingMode
      */
     public LOOKUP_MODE getLookupMode() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -72,6 +72,7 @@ import org.talend.core.repository.utils.URIHelper;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.repository.item.ItemProductValuesHelper;
 import org.talend.repository.i18n.Messages;
+import org.talend.repository.items.importexport.ui.managers.TalendZipLeveledStructureProvider;
 import org.talend.repository.ui.utils.AfterImportProjectUtil;
 
 /**
@@ -86,7 +87,7 @@ public class ImportProjectHelper {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.dialogs.IOverwriteQuery#queryOverwrite(java.lang.String )
          */
         @Override
@@ -206,7 +207,7 @@ public class ImportProjectHelper {
         Object source;
 
         if (ArchiveFileManipulations.isZipFile(sourcePath)) {
-            ZipLeveledStructureProvider zipProvider = new ZipLeveledStructureProvider(new ZipFile(sourcePath));
+            TalendZipLeveledStructureProvider zipProvider = new TalendZipLeveledStructureProvider(new ZipFile(sourcePath));
             source = zipProvider.getRoot();
             boolean ok = true;
             for (Object o : zipProvider.getChildren(source)) {
@@ -253,7 +254,7 @@ public class ImportProjectHelper {
 
         ArrayList fileSystemObjects = new ArrayList();
         getFilesForProject(fileSystemObjects, provider, source);
-        
+
         boolean exists = Platform.getLocation().append(path).toFile().exists();
         IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(path.toOSString());
         if(project.exists() && !exists) {
@@ -276,9 +277,9 @@ public class ImportProjectHelper {
 
     /**
      * Return a list of all files in the project
-     * 
+     *
      * Method as taken in org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage.
-     * 
+     *
      * @param provider The provider for the parent file
      * @param entry The root directory of the project
      * @return A list of all files in the project
@@ -303,7 +304,7 @@ public class ImportProjectHelper {
 
     /**
      * Collect the list of .project files that are under directory into files.
-     * 
+     *
      * <br/>
      * Method almost as taken in org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage. Modifications
      * are:
@@ -312,7 +313,7 @@ public class ImportProjectHelper {
      * <li>add searchFileName as parameter</li>
      * <li>checks if monitor is null</li>
      * </ol>
-     * 
+     *
      * @param files
      * @param directory
      * @param monitor The monitor to report to
@@ -342,7 +343,7 @@ public class ImportProjectHelper {
 
     /**
      * Collect the list of .project files that are under directory into files.
-     * 
+     *
      * <br/>
      * Method almost as taken in org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage. Modifications
      * are:
@@ -351,7 +352,7 @@ public class ImportProjectHelper {
      * <li>add searchFileName as parameter</li>
      * <li>checks if monitor is null</li>
      * </ol>
-     * 
+     *
      * @param files
      * @param monitor The monitor to report to
      * @return boolean <code>true</code> if the operation was completed.
@@ -373,7 +374,7 @@ public class ImportProjectHelper {
         while (childrenEnum.hasNext()) {
             Object child = childrenEnum.next();
             if (level < 1) {
-                if (provider.isFolder(child)) {
+                if (provider.isFolder(child) && !".svnlog".equals(provider.getLabel(child))) { // $NON-NLS-1$
                     collectProjectFilesFromProvider(files, provider, child, level + 1, monitor, searchFileName);
                 }
             }

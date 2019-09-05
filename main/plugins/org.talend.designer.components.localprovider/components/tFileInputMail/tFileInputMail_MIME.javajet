@@ -66,25 +66,26 @@
 			}
 		}
 		DecodeString_<%=cid%> decode_<%=cid%> = new DecodeString_<%=cid%>();
+
 		try{
 			fileInput<%=cid%> = new java.io.FileInputStream(<%=filename %>);
 			javax.mail.Session session_<%=cid %> = javax.mail.Session.getInstance(System.getProperties(), null);
-		    javax.mail.internet.MimeMessage msg_<%=cid %> = new javax.mail.internet.MimeMessage(session_<%=cid %>, fileInput<%=cid%>);
+			javax.mail.internet.MimeMessage msg_<%=cid %> = new javax.mail.internet.MimeMessage(session_<%=cid %>, fileInput<%=cid%>);
 			java.util.List<String> list_<%=cid %> = new java.util.ArrayList<String>();
-		
-			for (int i_<%=cid %> =0;i_<%=cid %> < mailParts_<%=cid %>.length;i_<%=cid %>++) {				
-			String part_<%=cid %> = mailParts_<%=cid %>[i_<%=cid %>];
-	       	String sep_<%=cid%>= mailSeparator_<%=cid %>[i_<%=cid %>];
-		        if(part_<%=cid %>.equalsIgnoreCase("body")) {        
+
+			for (int i_<%=cid %> = 0; i_<%=cid %> < mailParts_<%=cid %>.length; i_<%=cid %>++) {
+				String part_<%=cid %> = mailParts_<%=cid %>[i_<%=cid %>];
+				String sep_<%=cid%>= mailSeparator_<%=cid %>[i_<%=cid %>];
+				if(part_<%=cid %>.equalsIgnoreCase("body")) {
 					if(msg_<%=cid %>.isMimeType("multipart/*")) {
 						javax.mail.Multipart mp<%=cid%> = (javax.mail.Multipart) msg_<%=cid %>.getContent();
-	             		for (int i = 0; i < mp<%=cid%>.getCount(); i++) {
-	                 		javax.mail.BodyPart mpart<%=cid%> = mp<%=cid%>.getBodyPart(i);
-	                 		String disposition<%=cid%> = mpart<%=cid%>.getDisposition();
-	                 		if (!((disposition<%=cid%> != null) && ((disposition<%=cid%>
-	                            .equals(javax.mail.Part.ATTACHMENT)) || (disposition<%=cid%>.equals(javax.mail.Part.INLINE))))) {   
-	                    		// the following extract the body part(text/plain + text/html)
-	                    		try{
+						for (int i = 0; i < mp<%=cid%>.getCount(); i++) {
+							javax.mail.BodyPart mpart<%=cid%> = mp<%=cid%>.getBodyPart(i);
+							String disposition<%=cid%> = mpart<%=cid%>.getDisposition();
+							if (!((disposition<%=cid%> != null) && ((disposition<%=cid%>
+								.equals(javax.mail.Part.ATTACHMENT)) || (disposition<%=cid%>.equals(javax.mail.Part.INLINE))))) {
+								// the following extract the body part(text/plain + text/html)
+								try{
 									Object content_<%=cid %> = mpart<%=cid %>.getContent();
 									if (content_<%=cid %> instanceof javax.mail.internet.MimeMultipart) {
 										javax.mail.internet.MimeMultipart mimeMultipart_<%=cid %> = (javax.mail.internet.MimeMultipart) content_<%=cid %>;
@@ -124,105 +125,104 @@
 									<%}%>
 								}
 								<%
-				 				//both attachment and message context in the email,bug TDI-19065
+								//both attachment and message context in the email,bug TDI-19065
 								%>
 							}else if(disposition<%=cid%> != null && disposition<%=cid%>.equals(javax.mail.Part.INLINE)){
 								list_<%=cid %>.add(mpart<%=cid%>.getContent().toString());
-					 		}
+							}
 						}
 					} else {
 						java.io.InputStream in_<%=cid %> = msg_<%=cid %>.getInputStream();
-	     		    	byte[] buffer_<%=cid %> = new byte[1024];
-		     		    int length_<%=cid %> = 0;
-		     		    java.io.ByteArrayOutputStream baos_<%=cid %> =  new java.io.ByteArrayOutputStream();
-		     		    while ((length_<%=cid %> = in_<%=cid %>.read(buffer_<%=cid %>, 0, 1024)) != -1) {
-		     		        baos_<%=cid %>.write(buffer_<%=cid %>, 0, length_<%=cid %>);
-		     		    }
-		     		    String contentType_<%=cid%> = msg_<%=cid%>.getContentType();
-		     		    String charsetName_<%=cid%> = "";
-		     		    if(contentType_<%=cid%>!=null && contentType_<%=cid%>.trim().length()>0){
-		     		    	javax.mail.internet.ContentType cy_<%=cid%>  = new javax.mail.internet.ContentType(contentType_<%=cid%>);
-		     		    	charsetName_<%=cid%> = cy_<%=cid%>.getParameter("charset");
-		     		    }
-		     		    if(charsetName_<%=cid%>!=null && charsetName_<%=cid%>.length()>0){
-		     		    	list_<%=cid %>.add(baos_<%=cid %>.toString(charsetName_<%=cid%>));
-		     		    }else{
-		     		    	list_<%=cid %>.add(baos_<%=cid %>.toString());
-		     		    }
-		     		    in_<%=cid %>.close();
-		     		    baos_<%=cid %>.close();
+						byte[] buffer_<%=cid %> = new byte[1024];
+						int length_<%=cid %> = 0;
+						java.io.ByteArrayOutputStream baos_<%=cid %> =  new java.io.ByteArrayOutputStream();
+						while ((length_<%=cid %> = in_<%=cid %>.read(buffer_<%=cid %>, 0, 1024)) != -1) {
+							baos_<%=cid %>.write(buffer_<%=cid %>, 0, length_<%=cid %>);
+						}
+						String contentType_<%=cid%> = msg_<%=cid%>.getContentType();
+						String charsetName_<%=cid%> = "";
+						if(contentType_<%=cid%>!=null && contentType_<%=cid%>.trim().length()>0){
+							javax.mail.internet.ContentType cy_<%=cid%>  = new javax.mail.internet.ContentType(contentType_<%=cid%>);
+							charsetName_<%=cid%> = cy_<%=cid%>.getParameter("charset");
+						}
+						if(charsetName_<%=cid%>!=null && charsetName_<%=cid%>.length()>0){
+							list_<%=cid %>.add(baos_<%=cid %>.toString(charsetName_<%=cid%>));
+						}else{
+							list_<%=cid %>.add(baos_<%=cid %>.toString());
+						}
+						in_<%=cid %>.close();
+						baos_<%=cid %>.close();
 					}
-	        	}else if(part_<%=cid %>.equalsIgnoreCase("header")){
-		            java.util.Enumeration em = msg_<%=cid %>.getAllHeaderLines();
-		            int em_count=0;
-		            
-		            String tempStr_<%=cid %>="";
-		            
+				}else if(part_<%=cid %>.equalsIgnoreCase("header")){
+					java.util.Enumeration em = msg_<%=cid %>.getAllHeaderLines();
+					int em_count=0;
+
+					String tempStr_<%=cid %>="";
+
 					while (em.hasMoreElements()) {
 						tempStr_<%=cid %> = tempStr_<%=cid %> + (String) em.nextElement() + sep_<%=cid%> ;
 					}
 					list_<%=cid%>.add(decode_<%=cid%>.decode(tempStr_<%=cid%>));
-	        	}else{
-		        	if(("true").equals(mailChecked_<%=cid %>[i_<%=cid%>])){   
+				} else {
+					if(("true").equals(mailChecked_<%=cid %>[i_<%=cid%>])){
 						String[] sa_<%=cid%> = msg_<%=cid %>.getHeader(part_<%=cid%>);
 						String tempStr_<%=cid%>="";
 						for(int i=0;i<sa_<%=cid%>.length;i++){
 							tempStr_<%=cid%>=tempStr_<%=cid%>+sa_<%=cid%>[i] + sep_<%=cid%>;
 						}
 						list_<%=cid%>.add(decode_<%=cid%>.decode(tempStr_<%=cid%>));
-		        	}else{ 
-			           String content_<%=cid %> = msg_<%=cid %>.getHeader(part_<%=cid %>, null);
-			           list_<%=cid %>.add(decode_<%=cid%>.decode(content_<%=cid %>));
-		           	}    
-		        }   
-		 	}   
-	
-
-	
-			//attachment Deal
-			if(msg_<%=cid %>.isMimeType("multipart/*")){
-	 	    	javax.mail.Multipart mp<%=cid%> = (javax.mail.Multipart) msg_<%=cid %>.getContent();
-	 	    	String attachfileName<%=cid%> = "";
-	 	    	String path<%=cid%> = "";
-	 	    	java.io.BufferedOutputStream out<%=cid%> = null;
-	 	    	java.io.BufferedInputStream in<%=cid%> = null;
-	            for (int i = 0; i < mp<%=cid%>.getCount(); i++) {
-	                javax.mail.BodyPart mpart<%=cid%> = mp<%=cid%>.getBodyPart(i);
-	                String disposition<%=cid%> = mpart<%=cid%>.getDisposition();
-					<%
-			    	// fixed bug TDI-8586,to deal with attachments download
-					%>                
-	                if (mpart<%=cid%>.getFileName()!=null
-	                    && ((disposition<%=cid%> != null && (disposition<%=cid%>.equals(javax.mail.Part.ATTACHMENT) || disposition<%=cid%>.equals(javax.mail.Part.INLINE)))
-						||  disposition<%=cid%>==null)) {	<%// TDI-29179 %>
-	        	        attachfileName<%=cid%> = mpart<%=cid%>.getFileName();
-	                    attachfileName<%=cid%> = javax.mail.internet.MimeUtility.decodeText(attachfileName<%=cid%>);
-	                   
-	                    
-						if(!(<%=directory%>).endsWith("/")){
-	           				path<%=cid%> = <%=directory%> + "/";
-	        			}else{
-							path<%=cid%> =<%=directory%>;
-						}
-	                    path<%=cid%> = path<%=cid%> + attachfileName<%=cid%>;
-	                    <% if(isLog4jEnabled){ %>
-		                    	log.info("<%= cid %> - Extracted attachment: '"+attachfileName<%=cid%>+"'.");
-	                    <% } %>
-	                    java.io.File attachFile  = new java.io.File(path<%=cid%>);
-	                    out<%=cid%> = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
-	                    in<%=cid%> = new java.io.BufferedInputStream(mpart<%=cid%>.getInputStream());
-	                    int buffer<%=cid%> = 0;
-	                    while ((buffer<%=cid%> = in<%=cid%>.read()) != -1) {
-	                           out<%=cid%>.write(buffer<%=cid%>);
-	                           out<%=cid%>.flush();
-						}   
-	                    out<%=cid%>.close();
-	                    in<%=cid%>.close();    
-	                }
-	            }
+					}else{
+					   String content_<%=cid %> = msg_<%=cid %>.getHeader(part_<%=cid %>, null);
+					   list_<%=cid %>.add(decode_<%=cid%>.decode(content_<%=cid %>));
+					}
+				}
 			}
- 	         
- 	          
+
+            //attachment Deal
+            class MessagePartProcessor {
+                void saveAttachment(javax.mail.Part mpart) throws IOException, javax.mail.MessagingException {
+                    if (mpart.getFileName() != null && (
+                            mpart.getDisposition() == null ||
+                            (mpart.getDisposition().equals(javax.mail.Part.ATTACHMENT) || mpart.getDisposition().equals(javax.mail.Part.INLINE))
+                    )) {
+                        String attachFileName = javax.mail.internet.MimeUtility.decodeText(mpart.getFileName());
+
+                        String path = <%=directory%>;
+                        if(!path.endsWith("/")){
+                            path = path + "/";
+                        }
+                        path = path + attachFileName;
+                        <% if(isLog4jEnabled){ %>
+                                log.info("<%= cid %> - Extracted attachment: '" + attachFileName + "'.");
+                        <% } %>
+
+                        java.io.File attachFile = new java.io.File(path);
+                        java.io.BufferedOutputStream out = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
+                        java.io.BufferedInputStream in = new java.io.BufferedInputStream(mpart.getInputStream());
+                        int buffer = 0;
+                        while ((buffer = in.read()) != -1) {
+                            out.write(buffer);
+                            out.flush();
+                        }
+                        out.close();
+                        in.close();
+                    }
+                }
+
+                // recursively process body parts
+                void processPart(javax.mail.Part part) throws javax.mail.MessagingException, IOException {
+                    if (part.isMimeType("multipart/*")) {
+                        javax.mail.Multipart multipartContent = (javax.mail.Multipart) part.getContent();
+                        for (int i = 0; i < multipartContent.getCount(); i++) {
+                            javax.mail.Part mpart = multipartContent.getBodyPart(i);
+                            saveAttachment(mpart);
+                            processPart(mpart);
+                        }
+                    }
+                }
+            }
+            new MessagePartProcessor().processPart(msg_<%=cid %>);
+
 			// for output
 			<%
 			List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
@@ -282,10 +282,10 @@
 						for (int i=1;i<conns.size();i++) {
 							IConnection conn2 = conns.get(i);
 							if ((conn2.getName().compareTo(firstConnName)!=0)&&(conn2.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA))) {
-				    			for (IMetadataColumn column: metadata.getListColumns()) {%>
-	      							<%=conn2.getName() %>.<%=column.getLabel() %> = <%=firstConnName %>.<%=column.getLabel() %>;
-				 				<%
-					 			}
+								for (IMetadataColumn column: metadata.getListColumns()) {%>
+									<%=conn2.getName() %>.<%=column.getLabel() %> = <%=firstConnName %>.<%=column.getLabel() %>;
+								<%
+								}
 							}
 						}
 					}

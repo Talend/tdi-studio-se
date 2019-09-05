@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -55,9 +55,9 @@ import org.talend.designer.rowgenerator.ui.editor.MetadataTableEditorViewExt;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2007-2-4 下午12:09:57 (星期五, 29 九月 2006) qzhang $
- * 
+ *
  */
 public class FunParaTableView2 extends AbstractDataTableEditorView<Parameter> {
 
@@ -283,7 +283,7 @@ public class FunParaTableView2 extends AbstractDataTableEditorView<Parameter> {
 
                     /**
                      * Sent when a control loses focus.
-                     * 
+                     *
                      * @param e an event containing information about the focus change
                      */
                     public void focusLost(FocusEvent e) {
@@ -304,9 +304,9 @@ public class FunParaTableView2 extends AbstractDataTableEditorView<Parameter> {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "getProcessProposals".
-     * 
+     *
      * @return IContentProposalProvider
      */
     private IContentProposalProvider getProcessProposals() {
@@ -314,7 +314,7 @@ public class FunParaTableView2 extends AbstractDataTableEditorView<Parameter> {
         return processProposalProvider;
 
     }
-    
+
     protected void createLabelComposite(Composite mainComposite){
         if (!labelVisible) {
             return;
@@ -329,7 +329,7 @@ public class FunParaTableView2 extends AbstractDataTableEditorView<Parameter> {
         if (parentComposite.getBackground() != null && !parentComposite.getBackground().equals(titleLabel.getBackground())) {
             titleLabel.setBackground(parentComposite.getBackground());
         }
-        
+
         tableComposite = new Composite(sash, SWT.NONE);
         if (parentComposite.getBackground() != null && !parentComposite.getBackground().equals(tableComposite.getBackground())) {
             tableComposite.setBackground(parentComposite.getBackground());

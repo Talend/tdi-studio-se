@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,7 +46,7 @@ public class ErrorDetailTreeBuilder {
 
     /**
      * DOC chuang Comment method "createTreeInput".
-     * 
+     *
      * @param errors
      * @param jobNames
      * @return
@@ -100,7 +100,7 @@ public class ErrorDetailTreeBuilder {
     }
 
     /**
-     * 
+     *
      * DOC chuang ErrorDetailTreeBuilder class global comment. Detailled comment
      */
     class JobErrorEntry implements IContainerEntry {
@@ -161,7 +161,7 @@ public class ErrorDetailTreeBuilder {
     }
 
     /**
-     * 
+     *
      * DOC chuang ErrorDetailTreeBuilder class global comment. Detailled comment
      */
     class ComponentErrorEntry implements IContainerEntry {
@@ -199,7 +199,7 @@ public class ErrorDetailTreeBuilder {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.designer.runprocess.ErrorDetailTreeBuilder.IContainerEntry#getImage()
          */
         @Override
@@ -214,7 +214,7 @@ public class ErrorDetailTreeBuilder {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.designer.runprocess.ErrorDetailTreeBuilder.IContainerEntry#hasChildren()
          */
         @Override
@@ -223,14 +223,14 @@ public class ErrorDetailTreeBuilder {
         }
 
     }
-    
+
     class RoutineErrorEntry extends JobErrorEntry {
 
         @Override
         public Image getImage() {
             return ImageProvider.getImage(ECoreImage.ROUTINE_ICON);
         }
-        
+
     }
 
 }

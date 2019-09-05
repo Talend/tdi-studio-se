@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -64,7 +64,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.runprocess.IRunProcessService#createCodeProcessor(org.talend.core.model.process.IProcess,
      * org.talend.core.language.ECodeLanguage, boolean)
@@ -77,7 +77,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#createPerformanceData(java.lang.String)
      */
     @Override
@@ -87,7 +87,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getProject(org.talend.core.language.ECodeLanguage)
      */
     @Override
@@ -97,7 +97,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getRoutineFilenameExt()
      */
     @Override
@@ -107,7 +107,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getSyntaxChecker(org.talend.core.language.ECodeLanguage)
      */
     @Override
@@ -117,7 +117,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getSelectedContext()
      */
     @Override
@@ -132,7 +132,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#perlExec(java.lang.StringBuffer, java.lang.StringBuffer,
      * org.eclipse.core.runtime.IPath, java.lang.String, org.apache.log4j.Level, java.lang.String, java.lang.String,
      * int, int, java.lang.String[])
@@ -147,7 +147,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#removeProcess(org.talend.core.model.process.IProcess)
      */
     @Override
@@ -157,7 +157,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#setActiveProcess(org.talend.core.model.process.IProcess)
      */
     @Override
@@ -172,7 +172,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.designer.runprocess.IRunProcessService#setDelegateService(org.talend.designer.runprocess.
      * IRunProcessService)
      */
@@ -193,7 +193,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#updateLibraries(java.util.Set,
      * org.talend.core.model.process.IProcess, java.util.Set)
      */
@@ -205,7 +205,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.runprocess.IRunProcessService#updateLibraries(org.talend.core.model.properties.RoutineItem)
      */
@@ -226,7 +226,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getJavaProject()
      */
     @Override
@@ -236,7 +236,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getPauseTime()
      */
     @Override
@@ -246,7 +246,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#deleteAllJobs(boolean)
      */
     @Override
@@ -256,7 +256,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#needDeleteAllJobs()
      */
     @Override
@@ -280,7 +280,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#saveJobBeforeRun(org.talend.core.model.process.IProcess)
      */
     @Override
@@ -308,7 +308,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#checkLastGenerationHasCompilationError(boolean)
      */
     @Override
@@ -318,7 +318,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getResourceFile(java.lang.String)
      */
     @Override
@@ -328,7 +328,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getTemplateStrFromPreferenceStore(java.lang.String)
      */
     @Override
@@ -338,7 +338,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#updateLogFiles(org.eclipse.core.resources.IProject)
      */
     @Override
@@ -364,7 +364,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#buildJavaProject()
      */
     @Override
@@ -374,7 +374,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#getTalendProcessJavaProject()
      */
     @Override
@@ -464,7 +464,7 @@ public class RunProcessService implements IRunProcessService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IRunProcessService#initializeRootPoms()
      */
     @Override
@@ -485,7 +485,7 @@ public class RunProcessService implements IRunProcessService {
 
     @Override
     public boolean isdebug() {
-        
+
         return delegateService.isdebug();
     }
 

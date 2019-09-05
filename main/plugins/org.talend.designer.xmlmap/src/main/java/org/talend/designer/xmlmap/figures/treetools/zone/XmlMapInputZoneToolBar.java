@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -57,7 +57,7 @@ public class XmlMapInputZoneToolBar extends InputZoneToolBar {
 
     /**
      * DOC Administrator XmlMapInputZoneToolBar constructor comment.
-     * 
+     *
      * @param rootModelManager
      */
     public XmlMapInputZoneToolBar(XmlMapDataManager rootModelManager) {
@@ -72,7 +72,7 @@ public class XmlMapInputZoneToolBar extends InputZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.xmlmap.figures.treetools.zone.ZoneToolBar#moveUp()
      */
     @Override
@@ -99,7 +99,7 @@ public class XmlMapInputZoneToolBar extends InputZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.xmlmap.figures.treetools.zone.ZoneToolBar#moveDown()
      */
     @Override
@@ -126,7 +126,7 @@ public class XmlMapInputZoneToolBar extends InputZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.xmlmap.figures.treetools.zone.ZoneToolBar#minSize()
      */
     @Override
@@ -143,7 +143,7 @@ public class XmlMapInputZoneToolBar extends InputZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.treetools.zone.InputZoneTooBar#changProperty()
      */
     @Override
@@ -276,7 +276,7 @@ public class XmlMapInputZoneToolBar extends InputZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.treetools.zone.ZoneToolBar#isMinSizeEnable()
      */
     @Override

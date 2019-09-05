@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,18 +85,18 @@ public abstract class TaCoKitMetadataContextualAction extends AbstractCreateActi
     }
 
     protected String getCreateLabel() {
-        return Messages.getString("TaCoKitConfiguration.action.createLabel", configTypeNode.getConfigurationType(), //$NON-NLS-1$
-                configTypeNode.getDisplayName());
+        return Messages.getString("TaCoKitConfiguration.action.create.Label", configTypeNode.getDisplayName(), //$NON-NLS-1$
+                configTypeNode.getConfigurationType());
     }
 
     protected String getEditLabel() {
-        return Messages.getString("TaCoKitConfiguration.action.editLabel", configTypeNode.getConfigurationType(), //$NON-NLS-1$
-                configTypeNode.getDisplayName());
+        return Messages.getString("TaCoKitConfiguration.action.edit.Label", configTypeNode.getDisplayName(), //$NON-NLS-1$
+                configTypeNode.getConfigurationType());
     }
 
     protected String getOpenLabel() {
-        return Messages.getString("TaCoKitConfiguration.action.openLabel", configTypeNode.getConfigurationType(), //$NON-NLS-1$
-                configTypeNode.getDisplayName());
+        return Messages.getString("TaCoKitConfiguration.action.open.Label", configTypeNode.getDisplayName(), //$NON-NLS-1$
+                configTypeNode.getConfigurationType());
     }
 
     protected String getNodeLabel() {
@@ -110,11 +110,11 @@ public abstract class TaCoKitMetadataContextualAction extends AbstractCreateActi
 
     /**
      * TODO implement it
-     * 
+     *
      * Returns image shown near contextual menu item name. It should be family icon
      *
-     * 
-     * 
+     *
+     *
      * @return metadata contextual action image
      */
     protected Image getNodeImage() {
@@ -123,11 +123,11 @@ public abstract class TaCoKitMetadataContextualAction extends AbstractCreateActi
 
     /**
      * Checks whether user has only read permission. If it is true, user can't create or edit repository node,
-     * 
+     *
      * so action should be disabled for him
      *
-     * 
-     * 
+     *
+     *
      * @return true, is user has ReadOnly rights
      */
     protected boolean isUserReadOnly() {
@@ -137,10 +137,10 @@ public abstract class TaCoKitMetadataContextualAction extends AbstractCreateActi
     /**
      * Checks whether repository node belongs to current project. If it doesn't, then action should be disabled
      *
-     * 
-     * 
+     *
+     *
      * @param node repository node
-     * 
+     *
      * @return true, it node belongs to current project
      */
     protected boolean belongsToCurrentProject(final RepositoryNode node) {
@@ -150,10 +150,10 @@ public abstract class TaCoKitMetadataContextualAction extends AbstractCreateActi
     /**
      * Checks whether node is deleted. If node is deleted create action should be disabled
      *
-     * 
-     * 
+     *
+     *
      * @param node repository node
-     * 
+     *
      * @return true, if it is deleted
      */
     protected boolean isDeleted(final RepositoryNode node) {

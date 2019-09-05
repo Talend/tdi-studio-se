@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,11 +60,11 @@ public class ElementParameter2ParameterType {
     static {
         statsAndLogsElement = new StatsAndLogsElement();
         StatsAndLogsHelper.createStatsAndLogsParameters(statsAndLogsElement);
-        
+
         implicitContextLoadElement = new ImplicitContextLoadElement();
         ProjectSettingManager.createImplicitContextLoadParameters(implicitContextLoadElement);
     }
-    
+
     /**
      * save the EMF Model's parameters to Element
      *
@@ -170,7 +170,7 @@ public class ElementParameter2ParameterType {
         IElementParameter statsDBVersion = null;
         IElementParameter implicitDBVersion = null;
         Element defaultElement = getDefaultElement(paType);
-        
+
         for (int j = 0; j < listParamType.size(); j++) {
             ElementParameterType pType = (ElementParameterType) listParamType.get(j);
             if (pType != null) {
@@ -348,10 +348,10 @@ public class ElementParameter2ParameterType {
         }
 
     }
-    
+
     /**
      * get default settings of StatAndLogsSetting and ImplictContextLoadSetting
-     * 
+     *
      * @param paType
      */
     private static Element getDefaultElement(ParametersType paType) {

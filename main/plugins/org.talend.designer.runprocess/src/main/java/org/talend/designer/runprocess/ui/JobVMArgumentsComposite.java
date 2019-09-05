@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -62,7 +62,7 @@ import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 
 /**
  * gcui class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class JobVMArgumentsComposite {
 
@@ -88,7 +88,7 @@ public class JobVMArgumentsComposite {
 
     /**
      * DOC gcui RunVMArgumentsViewer constructor comment.
-     * 
+     *
      * @param name
      * @param labelText
      * @param parent
@@ -160,7 +160,7 @@ public class JobVMArgumentsComposite {
 
     /**
      * Returns this field editor's button box containing the Add, Remove, Up, and Down button.
-     * 
+     *
      * @param parent the parent control
      * @return the button box
      */
@@ -332,7 +332,7 @@ public class JobVMArgumentsComposite {
 
     /**
      * Returns this field editor's list control.
-     * 
+     *
      * @param parent the parent control
      * @return the list control
      */
@@ -381,7 +381,7 @@ public class JobVMArgumentsComposite {
 
     /**
      * Returns this field editor's selection listener. The listener is created if nessessary.
-     * 
+     *
      * @return the selection listener
      */
     private SelectionListener getSelectionListener() {
@@ -406,7 +406,7 @@ public class JobVMArgumentsComposite {
 
     /**
      * Getter for list.
-     * 
+     *
      * @return the list
      */
     public List<String> getList() {
@@ -544,7 +544,7 @@ public class JobVMArgumentsComposite {
     protected List<String> readString(String stringList) {
         return new JobVMArgumentsUtil().readString(stringList);
     }
-    
+
     protected String writeString(List<String> items) {
         return new JobVMArgumentsUtil().writeString(items);
     }
@@ -568,7 +568,7 @@ public class JobVMArgumentsComposite {
 
         /**
          * DOC gcui VMArgumentDialog constructor comment.
-         * 
+         *
          * @param parentShell
          * @param item
          */

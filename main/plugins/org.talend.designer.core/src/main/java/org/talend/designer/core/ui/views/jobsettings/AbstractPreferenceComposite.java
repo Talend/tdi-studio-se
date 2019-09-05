@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -117,7 +117,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
 
     /**
      * DOC chuang AbstractPreferenceComposite constructor comment.
-     * 
+     *
      * @param parentComposite
      * @param styles
      * @param section
@@ -219,9 +219,9 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
     };
 
     /**
-     * 
+     *
      * DOC aimingchen Comment method "setMainCompositeEnable".
-     * 
+     *
      * @param enabled
      */
     protected void setMainCompositeEnable(boolean enabled) {
@@ -415,7 +415,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see
                  * org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
                  */
@@ -426,7 +426,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
                  */
                 @Override
@@ -529,7 +529,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
 
                 /**
                  * yzhang Comment method "applySettingsToSubJob".
-                 * 
+                 *
                  * @param id
                  * @param version
                  */
@@ -562,7 +562,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
     }
 
     /**
-     * 
+     *
      * DOC aimingchen Comment method "useProjectSetting".
      */
     protected void useProjectSetting() {
@@ -586,7 +586,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
 
     /**
      * yzhang Comment method "getElementParameterType".
-     * 
+     *
      * @param paraName
      * @return
      */
@@ -601,7 +601,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
 
     /**
      * yzhang Comment method "hasRunJobNode".
-     * 
+     *
      * @return
      */
     private boolean hasRunJobNode(boolean needRefresh) {
@@ -616,7 +616,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
 
     /**
      * yzhang Comment method "foundRunJobNode".
-     * 
+     *
      * @return
      */
     private List<INode> findRunJobNode() {
@@ -629,7 +629,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
 
     /**
      * yzhang Comment method "findRunJobNode".
-     * 
+     *
      * @param nodes
      * @return
      */
@@ -673,7 +673,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
 
     /**
      * Override by subclass
-     * 
+     *
      */
     protected void useProjectSettingButtonClick() {
 
@@ -745,7 +745,7 @@ public abstract class AbstractPreferenceComposite extends MultipleThreadDynamicC
     }
 
     /**
-     * 
+     *
      * DOC Administrator AbstractPreferenceComposite class global comment. Detailled comment
      */
     class UseProjectSettingDialog extends SelectionDialog {

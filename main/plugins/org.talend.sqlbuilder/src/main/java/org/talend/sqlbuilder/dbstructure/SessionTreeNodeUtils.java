@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,9 +42,9 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 /**
  * Detailled comment for this class. <br/>
  * $Id: SessionTreeNodeUtils.java,v 1.24 2006/11/08 09:58:55 peiqin.hou Exp $
- * 
+ *
  * @author phou
- * 
+ *
  */
 public class SessionTreeNodeUtils {
 
@@ -62,7 +62,7 @@ public class SessionTreeNodeUtils {
 
     /**
      * Get all CatelogNodes.
-     * 
+     *
      * @return CatelogNodes List.
      */
     public static List<INode> getCatalogNodes() {
@@ -71,7 +71,7 @@ public class SessionTreeNodeUtils {
 
     /**
      * Get all TableNodes.
-     * 
+     *
      * @return TableNodes List.
      */
     public static List<INode> getTableNodes() {
@@ -119,7 +119,7 @@ public class SessionTreeNodeUtils {
                 .getRawPassword(),
         // fix bug for 7014,added by hyWang
                 dbconnection.getSID() == null || dbconnection.getSID().length() == 0 ? (dbconnection.getDatasourceName() == null
-                        || dbconnection.getDatasourceName().length() == 0 ? "Database" //$NON-NLS-1$  
+                        || dbconnection.getDatasourceName().length() == 0 ? "Database" //$NON-NLS-1$
                         : dbconnection.getDatasourceName()) : dbconnection.getSID());
         SessionTreeModel stm = new SessionTreeModel();
         SessionTreeNode session;
@@ -163,7 +163,7 @@ public class SessionTreeNodeUtils {
 
     /**
      * DOC qianbing Comment method "createSQLConnection".
-     * 
+     *
      * @param dbType database Type
      * @param url url
      * @param userName userName

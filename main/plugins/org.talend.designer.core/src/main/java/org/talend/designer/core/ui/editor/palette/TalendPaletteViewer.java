@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -63,7 +63,7 @@ import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.themes.core.elements.stylesettings.TalendPaletteCSSStyleSetting;
 
 /**
- * 
+ *
  */
 public class TalendPaletteViewer extends PaletteViewer {
 
@@ -150,9 +150,9 @@ public class TalendPaletteViewer extends PaletteViewer {
 
     /**
      * FIXME ggu
-     * 
+     *
      * Because the method createControl is final in super calss ScrollingGraphicalViewer,
-     * 
+     *
      * Then, use the reflection function to move to class TalendPaletteViewerProvider.
      */
     // @Override
@@ -164,7 +164,7 @@ public class TalendPaletteViewer extends PaletteViewer {
     // }
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.ui.parts.ScrollingGraphicalViewer#creatToolControl(org.eclipse.swt.widgets.Composite)
      */
     public Control creatToolControl(Composite parent) {
@@ -240,7 +240,7 @@ public class TalendPaletteViewer extends PaletteViewer {
 
     /**
      * yzhang Comment method "initFilterTextControl".
-     * 
+     *
      * @param control
      */
     private void initFilterTextControl(Text filterText) {
@@ -257,7 +257,7 @@ public class TalendPaletteViewer extends PaletteViewer {
 
     /**
      * yzhang Comment method "configListeners".
-     * 
+     *
      * @param text
      */
     private void configListeners(final Text text) {
@@ -323,7 +323,7 @@ public class TalendPaletteViewer extends PaletteViewer {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Runnable#run()
          */
         @Override
@@ -336,7 +336,7 @@ public class TalendPaletteViewer extends PaletteViewer {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see java.lang.Runnable#run()
                  */
                 @Override
@@ -623,7 +623,7 @@ public class TalendPaletteViewer extends PaletteViewer {
 
     /**
      * Getter for favoritesEditPart.
-     * 
+     *
      * @return the favoritesEditPart
      */
     public TalendDrawerEditPart getFavoritesEditPart() {
@@ -632,7 +632,7 @@ public class TalendPaletteViewer extends PaletteViewer {
 
     /**
      * Sets the favoritesEditPart.
-     * 
+     *
      * @param favoritesEditPart the favoritesEditPart to set
      */
     public void setFavoritesEditPart(TalendDrawerEditPart favoritesEditPart) {
@@ -641,7 +641,7 @@ public class TalendPaletteViewer extends PaletteViewer {
 
     /**
      * Getter for recentlyUsedEditPart.
-     * 
+     *
      * @return the recentlyUsedEditPart
      */
     public TalendDrawerEditPart getRecentlyUsedEditPart() {
@@ -650,7 +650,7 @@ public class TalendPaletteViewer extends PaletteViewer {
 
     /**
      * Sets the recentlyUsedEditPart.
-     * 
+     *
      * @param recentlyUsedEditPart the recentlyUsedEditPart to set
      */
     public void setRecentlyUsedEditPart(TalendDrawerEditPart recentlyUsedEditPart) {

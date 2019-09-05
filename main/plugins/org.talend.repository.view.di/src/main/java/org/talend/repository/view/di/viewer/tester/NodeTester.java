@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,7 +19,7 @@ import org.talend.repository.tester.AbstractNodeTester;
 public class NodeTester extends AbstractNodeTester {
 
     /**
-     * 
+     *
      */
     private static final String ALWAYS_FALSE = "alwaysFalse"; //$NON-NLS-1$
 
@@ -45,7 +45,7 @@ public class NodeTester extends AbstractNodeTester {
 
     /**
      * DOC sgandon Comment method "isJob".
-     * 
+     *
      * @param repositoryNode
      * @return
      */

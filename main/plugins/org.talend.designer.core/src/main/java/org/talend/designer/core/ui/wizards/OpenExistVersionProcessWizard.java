@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -112,7 +112,7 @@ public class OpenExistVersionProcessWizard extends Wizard {
 
     /**
      * Returns the currently active page for this workbench window.
-     * 
+     *
      * @return the active page, or <code>null</code> if none
      */
     public IWorkbenchPage getActivePage() {
@@ -137,7 +137,7 @@ public class OpenExistVersionProcessWizard extends Wizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.wizard.Wizard#performFinish()
      */
     @Override

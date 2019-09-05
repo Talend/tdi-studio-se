@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,7 +18,7 @@ import org.talend.core.model.process.IProcess;
 /**
  * This class will create a virtual component that will create the logs for the job. It's not used at all in the
  * designer, only during the code generation. <br/>
- * 
+ *
  */
 public class JobStatsComponent extends AbstractStatsLogsComponent {
 
@@ -41,7 +41,7 @@ public class JobStatsComponent extends AbstractStatsLogsComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getComponentType()
      */
     public EComponentType getComponentType() {

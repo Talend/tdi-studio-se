@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,8 +34,8 @@ import org.apache.log4j.Logger;
  * @author Jan Lolling, jan.lolling@cimt-ag.de
  */
 public class EXABulkUtil {
-	
-	private static Logger logger = Logger.getLogger(EXABulkUtil.class); 
+
+	private static Logger logger = Logger.getLogger(EXABulkUtil.class);
 	public static final String CSV = "CSV";
 	public static final String FBV = "FBV";
 	public static final String ORA = "ORA";
@@ -82,7 +82,7 @@ public class EXABulkUtil {
 	private String remoteSourceSelect = null;
 	private int sourceIdentifierCase = 0; // 0 = unchanged, 1 = lower case, 2 = upper case
 	private boolean onlyBuildSQLCode = false;
-	
+
 	public void setDebug(boolean debug) {
 		if (debug) {
 			logger.setLevel(Level.DEBUG);
@@ -94,12 +94,11 @@ public class EXABulkUtil {
 	private String createNumberFormat(Integer length, Integer precision, boolean hasGroups) {
         if (length != null && length.intValue() > 0) {
             StringBuilder sb = new StringBuilder();
-            int numGroups = (length.intValue() / 3) + 1;
-            for (int i = 0; i < numGroups; i++) {
-                if (i > 0 && hasGroups) {
-                    sb.append("G");
-                    }
-                sb.append("999");
+            for (int i = length - 1; i >= 0; i--) {
+            	if(hasGroups && i < length - 1 && i > 0 && (i % 3 == 2)) {
+            		sb.append("G");
+            	}
+            	sb.append("9");
             }
             if (precision != null && precision.intValue() > 0) {
                 sb.append("D");
@@ -135,7 +134,7 @@ public class EXABulkUtil {
 		Column c = Column.getCSVColumn(dbColumnName, sourceIndex, translateDateFormat(format));
 		targetColumns.add(c);
 	}
-	
+
 	public void addCSVColumn(String dbColumnName, Integer sourceIndex) {
 		if (sourceIndex == null) {
 			sourceIndex = targetColumns.size();
@@ -143,7 +142,7 @@ public class EXABulkUtil {
 		Column c = Column.getCSVColumn(dbColumnName, sourceIndex, null);
 		targetColumns.add(c);
 	}
-	
+
 	public void addRemoteSourceTableColumn(String targetColumnName, String sourceColumnName, Integer sourceIndex) {
 		if (sourceIndex == null) {
 			sourceIndex = remoteSourceColumns.size();
@@ -152,11 +151,11 @@ public class EXABulkUtil {
 			sourceColumnName = targetColumnName;
 		}
 		switch (sourceIdentifierCase) {
-		case 1: 
-			sourceColumnName = sourceColumnName.toLowerCase(); 
+		case 1:
+			sourceColumnName = sourceColumnName.toLowerCase();
 			break;
-		case 2: 
-			sourceColumnName = sourceColumnName.toUpperCase(); 
+		case 2:
+			sourceColumnName = sourceColumnName.toUpperCase();
 			break;
 		}
 		Column cs = Column.getDbmsColumn(sourceColumnName, sourceIndex);
@@ -173,7 +172,7 @@ public class EXABulkUtil {
 			}
 		}
 	}
-	
+
 	public int executeImport() throws Exception {
 		generateImportStatements();
 		if (onlyBuildSQLCode == false) {
@@ -200,7 +199,7 @@ public class EXABulkUtil {
 			return 0;
 		}
 	}
-	
+
 	/**
 	 * generates the statements necessary to run an IMPORT
 	 */
@@ -214,7 +213,7 @@ public class EXABulkUtil {
 			logger.debug("-- ############## end script ##################\n\n");
 		}
 	}
-	
+
 	private void buildImportStatement() {
 		if (targetColumns.isEmpty() == false) {
 			// sort the column list according to the index in the source file
@@ -245,7 +244,7 @@ public class EXABulkUtil {
 		sql.append(buildErrorLimit());
 		addStatement(sql.toString(), true);
 	}
-	
+
 	private String buildRemoteFile() {
 		// build an remote connection
 		StringBuilder sql = new StringBuilder();
@@ -285,7 +284,7 @@ public class EXABulkUtil {
 		sql.append(buildFileOpts());
 		return sql.toString();
 	}
-	
+
 	private String buildRemoteDbmsSource() {
 		// build an remote connection
 		StringBuilder sql = new StringBuilder();
@@ -361,7 +360,7 @@ public class EXABulkUtil {
 		}
 		return sql.toString();
 	}
-	
+
 	private String buildTargetDBColumnList() {
 		if (targetColumns.isEmpty() == false) {
 			StringBuilder sb = new StringBuilder();
@@ -378,7 +377,7 @@ public class EXABulkUtil {
 			return "";
 		}
 	}
-	
+
 	private String buildSourceDBColumnList() {
 		if (remoteSourceColumns.isEmpty() == false) {
 			StringBuilder sb = new StringBuilder();
@@ -442,7 +441,7 @@ public class EXABulkUtil {
 			addStatement(sql.toString(), false);
 		}
 	}
-	
+
 	private String buildLocalFile() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("LOCAL ");
@@ -460,7 +459,7 @@ public class EXABulkUtil {
 		}
 		sb.append("FILE ");
 		if (fileType == null) {
-			throw new IllegalStateException("File type not set. CSV or FBV expected!"); 
+			throw new IllegalStateException("File type not set. CSV or FBV expected!");
 		}
 		if (localFilePath == null) {
 			throw new IllegalStateException("Local file path must set!");
@@ -472,7 +471,7 @@ public class EXABulkUtil {
 		sb.append(buildFileOpts());
 		return sb.toString();
 	}
-	
+
 	private String buildFileOpts() {
 		StringBuilder sb = new StringBuilder();
 		if (fileOptEncoding != null) {
@@ -511,7 +510,7 @@ public class EXABulkUtil {
 		}
 		return sb.toString();
 	}
-	
+
 	private String buildErrorDestination() {
 		if (localErrorFile != null) {
 			StringBuilder sb = new StringBuilder();
@@ -537,7 +536,7 @@ public class EXABulkUtil {
 			return "";
 		}
 	}
-	
+
 	private String buildErrorLimit() {
 		StringBuilder sb = new StringBuilder();
 		if (errorRejectLimit != null && errorRejectLimit > 0) {
@@ -559,7 +558,7 @@ public class EXABulkUtil {
 	private boolean isEmpty(String value) {
 		return isNotEmpty(value) == false;
 	}
-	
+
 	/*
 	 * check if the string is ""
 	 */
@@ -656,7 +655,7 @@ public class EXABulkUtil {
 	}
 
 	/**
-	 * Set here the row separator. 
+	 * Set here the row separator.
 	 * The typical java escaped chars are translated into the EXASol abbreviations.
 	 * If not set UNIX format is used.
 	 * @param fileOptRowSeparator
@@ -710,7 +709,7 @@ public class EXABulkUtil {
 	public String getDefaultDateFormat() {
 		return defaultDateFormat;
 	}
-	
+
 	private String translateDateFormat(String dateFormat) {
 		if (dateFormat != null) {
 			dateFormat = dateFormat.replace("yyyy", "YYYY");
@@ -729,7 +728,7 @@ public class EXABulkUtil {
 
 	/**
 	 * Set here the default date format.
-	 * We need here the SQL standard formats. 
+	 * We need here the SQL standard formats.
 	 * Any Java formats will be translated into the SQL format (for year, day)
 	 * @param defaultDateFormat
 	 */
@@ -745,7 +744,7 @@ public class EXABulkUtil {
 
 	/**
 	 * Set here the default timestamp format.
-	 * We need here the SQL standard formats. 
+	 * We need here the SQL standard formats.
 	 * Any Java formats will be translated into the SQL format (for year, day, minute, second and millisecond)
 	 * @param defaultDateFormat
 	 */
@@ -822,7 +821,7 @@ public class EXABulkUtil {
 			errorFile = errorFile.trim();
 			if (localErrorFileWithCurrentTimestamp) {
 				int pos = errorFile.lastIndexOf(".");
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss"); 
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 				if (pos > 0) {
 					this.localErrorFile = errorFile.substring(0, pos) + "_" + sdf.format(new Date()) + errorFile.substring(pos);
 				} else {
@@ -882,7 +881,7 @@ public class EXABulkUtil {
 			}
 		}
 	}
-	
+
 	public void rollbackAndClose() {
 		if (connection != null) {
 			try {
@@ -970,11 +969,11 @@ public class EXABulkUtil {
 			schema = remoteSchema.trim();
 		}
 		switch (sourceIdentifierCase) {
-		case 1: 
-			remoteSourceTable = remoteSourceTable.toLowerCase(); 
+		case 1:
+			remoteSourceTable = remoteSourceTable.toLowerCase();
 			schema = schema.toLowerCase();
 			break;
-		case 2: 
+		case 2:
 			remoteSourceTable = remoteSourceTable.toUpperCase();
 			schema = schema.toUpperCase();
 			break;
@@ -1027,11 +1026,11 @@ public class EXABulkUtil {
 			this.remoteFileName = remoteFileName.trim();
 		}
 	}
-	
+
 	public void convertRemoteIdentifiersInUpperCase() {
 		sourceIdentifierCase = 2;
 	}
-	
+
 	public void convertRemoteIdentifiersInLowerCase() {
 		sourceIdentifierCase = 1;
 	}
@@ -1047,7 +1046,7 @@ public class EXABulkUtil {
 	public void setOnlyBuildSQLCode(boolean onlyBuildSQLCode) {
 		this.onlyBuildSQLCode = onlyBuildSQLCode;
 	}
-	
+
 	public void deleteErrorLogFileIfEmpty() {
 		if (localErrorFile != null) {
 			File f = new File(localErrorFile);

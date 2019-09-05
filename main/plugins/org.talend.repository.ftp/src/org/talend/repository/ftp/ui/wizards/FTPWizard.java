@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -84,7 +84,7 @@ public class FTPWizard extends RepositoryWizard implements INewWizard {
 
     /**
      * DOC Administrator FTPWizard constructor comment.
-     * 
+     *
      * @param workbench
      * @param creation
      */
@@ -197,7 +197,7 @@ public class FTPWizard extends RepositoryWizard implements INewWizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
      * org.eclipse.jface.viewers.IStructuredSelection)
      */
@@ -209,7 +209,7 @@ public class FTPWizard extends RepositoryWizard implements INewWizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.wizard.IWizard#addPages()
      */
 
@@ -237,7 +237,7 @@ public class FTPWizard extends RepositoryWizard implements INewWizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.wizard.IWizard#canFinish()
      */
 
@@ -251,7 +251,7 @@ public class FTPWizard extends RepositoryWizard implements INewWizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.wizard.IWizard#getNextPage(org.eclipse.jface.wizard.IWizardPage)
      */
 
@@ -263,7 +263,7 @@ public class FTPWizard extends RepositoryWizard implements INewWizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.wizard.IWizard#performCancel()
      */
 
@@ -281,7 +281,7 @@ public class FTPWizard extends RepositoryWizard implements INewWizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.wizard.IWizard#performFinish()
      */
 

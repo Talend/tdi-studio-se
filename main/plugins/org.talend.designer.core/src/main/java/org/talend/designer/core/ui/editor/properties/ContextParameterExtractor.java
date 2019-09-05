@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,8 +19,8 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.context.JobContextParameter;
@@ -41,9 +41,9 @@ import org.talend.designer.core.ui.wizards.ContextParameterWizard;
 
 /**
  * Extract context parameter from the GUI. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public final class ContextParameterExtractor {
 
@@ -55,7 +55,7 @@ public final class ContextParameterExtractor {
 
     /**
      * Install a context parameter extracter on a text field associated with a given process.
-     * 
+     *
      * @param text Component on wich extractor is installed.
      * @param process Process on wich context parameter is added.
      */
@@ -116,7 +116,7 @@ public final class ContextParameterExtractor {
 
     /**
      * qzhang Comment method "saveContext".
-     * 
+     *
      * @param parameterName
      * @param elem
      * @param replaceCode
@@ -159,7 +159,8 @@ public final class ContextParameterExtractor {
 
         String value = nameProposal;
         if (ContextParameterUtils.containContextVariables(value)) {
-            MessageDialog.openError(new Shell(), Messages.getString("ContextParameterExtractor.ExistedTitle"), //$NON-NLS-1$
+            MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                    Messages.getString("ContextParameterExtractor.ExistedTitle"), //$NON-NLS-1$
                     Messages.getString("ContextParameterExtractor.ExistedMessages")); //$NON-NLS-1$
             return null;
         }

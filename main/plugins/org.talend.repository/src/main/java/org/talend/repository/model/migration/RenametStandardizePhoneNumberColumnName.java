@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,14 +27,14 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * <p>
- * This Task check is to rename tStandardizePhoneNumber schema column "IsPossiblePhoneNumber " into "IsPossiblePhoneNumber", refer to TDQ-5616 
+ * This Task check is to rename tStandardizePhoneNumber schema column "IsPossiblePhoneNumber " into "IsPossiblePhoneNumber", refer to TDQ-5616
  * </p>
  */
 public class RenametStandardizePhoneNumberColumnName extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
     @Override
@@ -75,7 +75,7 @@ public class RenametStandardizePhoneNumberColumnName extends AbstractJobMigratio
             factory.save(item, true);
         }
     }
-    
+
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2012, 11, 27, 12, 0, 0);
         return gc.getTime();

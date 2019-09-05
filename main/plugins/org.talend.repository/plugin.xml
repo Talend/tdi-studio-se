@@ -3131,7 +3131,6 @@
         </projecttask>
         <projecttask
               beforeLogon="false"
-              breaks="6.3.1"
               class="org.talend.repository.model.migration.CheckS3AccessibilityMigrationTask"
               description="Use the old behavior get bucket logging config to check connection"
               id="org.talend.repository.model.migration.CheckS3AccessibilityMigrationTask"
@@ -3160,17 +3159,94 @@
                breaks="7.2.0"
                class="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
                id="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
-               name="UseDefaultJSONWrappingStandard"
+	       name="UseDefaultJSONWrappingStandard"
+	       version="7.2.1">
+       </projecttask>
+       <projecttask
+	       class="org.talend.repository.model.migration.SafelyCreateTemporaryFileMigrationTask"
+               description="Force old behaviour for existing jobs, for create temporary files"
+               id="org.talend.repository.model.migration.SafelyCreateTemporaryFileMigrationTask"
+               name="SafelyCreateTemporaryFileMigrationTask"
                version="7.2.1">
        </projecttask>
         <projecttask
               beforeLogon="false"
-              breaks="6.5.1"
               class="org.talend.repository.model.migration.RedshiftLogFileMigrationTask"
               description="If Redshift in 6.5.1 or 7.0.1 using log file, check the useLogFile option"
               id="org.talend.repository.model.migration.RedshiftLogFileMigrationTask"
               name="RedshiftLogFileMigrationTask"
               version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.SetTrustAllCertsLdapComponentsTDI41648"
+              id="org.talend.repository.model.migration.SetTrustAllCertsLdapComponentsTDI41648"
+              name="SetTrustAllCertsLdapComponentsTDI41648"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.MigrateTDataMaskingGuiTDQ16376"
+              description="migrate tDataMasking UI with function categories"
+              id="org.talend.repository.model.migration.MigrateTDataMaskingGuiTDQ16376"
+              name="MigrateTDataMaskingGuiTDQ16376"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.CleanCustomerMatcherField"
+              description="make sure the field of customer matcher is valid"
+              id="org.talend.repository.model.migration.CleanCustomerMatcherField"
+              name="CleanCustomerMatcherField"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.RenameSalesforceWaveMigrationTask"
+              description="rename salesforce wave to salesforce einstein"
+              id="org.talend.repository.model.migration.RenameSalesforceWaveMigrationTask"
+              name="RenameSalesforceWaveMigrationTask"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.RenameTCOMPCouchbaseMigrationTask"
+              description="rename couchbase to couchbaseDCP"
+              id="org.talend.repository.model.migration.RenameTCOMPCouchbaseMigrationTask"
+              name="RenameTCOMPCouchbaseMigrationTask"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.AddEncodingTypeForDQComponentsTask"
+              description="Add the encoding type for some dq components"
+              id="org.talend.repository.model.migration.AddEncodingTypeForDQComponentsTask"
+              name="AddEncodingTypeForDQComponentsTask"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.AddRAWFlowTPatternMasking"
+              description="Add the check box to seperate the output"
+              id="org.talend.repository.model.migration.AddRAWFlowTPatternMasking"
+              name="AddRAWFlowTPatternMasking"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.0"
+              class="org.talend.repository.model.migration.changeDBVersionForMapROJAIOutputMigrationTask"
+              description="Changed DB version in MapROJAI output component"
+              id="org.talend.repository.model.migration.changeDBVersionForMapROJAIOutputMigrationTask"
+              name="changeDBVersionForMapROJAIOutputMigrationTask"
+              version="7.0.1">
         </projecttask>
    </extension>
 

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,7 +26,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.impl.ElementParameter
 
 /**
  * DOC zli class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class AddConnectionVersionForJobsettingMigrationTask extends AbstractJobMigrationTask {
 

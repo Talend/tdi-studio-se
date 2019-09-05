@@ -43,6 +43,17 @@ public class DataMapExpressionParserTest {
         verifyParseResult("schema. ((String)globalMap.get(\"main_table\")).column ");
         verifyParseResult("((String)globalMap.get(\"schema\")). table.column ");
         verifyParseResult("((String)globalMap.get(\"main_table\")).column ");
+        
+        verifyIdentifiersResult("table.\\\"column\\\"");
+        verifyIdentifiersResult("Case NVL(table.\\\"column\\\",-99) When -99 Then 'N' Else 'Y' End");
+    }
+    
+    private void verifyIdentifiersResult(String expression) {
+    	TableEntryLocation[] locations = parser.parseTableEntryLocations(expression);
+        for (TableEntryLocation location : locations) {
+            assertEquals("table", location.tableName);
+            assertEquals("column", location.columnName);
+        }
     }
 
     private void verifyParseResult(String expression) {

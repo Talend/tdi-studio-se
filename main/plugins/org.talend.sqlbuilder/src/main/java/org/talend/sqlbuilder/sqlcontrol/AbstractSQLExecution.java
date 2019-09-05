@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,17 +32,17 @@ import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 
 /**
  * Abstract Class : Execute SQL Statement. <br/>
- * 
+ *
  * $Id: AbstractSQLExecution.java,v 1.13 2006/10/27 17:40:40 qiang.zhang Exp $
- * 
+ *
  */
 public abstract class AbstractSQLExecution {
 
     /**
      * DOC dev AbstrsactSQLExecution class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: AbstractSQLExecution.java,v 1.13 2006/10/27 17:40:40 qiang.zhang Exp $
-     * 
+     *
      */
     private class LocalThread extends Thread {
 
@@ -187,7 +187,7 @@ public abstract class AbstractSQLExecution {
 
     /**
      * Main execution method. This method is called from a background thread.
-     * 
+     *
      * @throws Exception
      */
     protected abstract void doExecution() throws Exception;

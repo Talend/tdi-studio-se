@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,7 +29,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * for bug TDI-13497
- * 
+ *
  */
 public class MigratetFileOutputDelimitedAndtFileInputDelimitedMigrationTask extends AbstractJobMigrationTask {
 
@@ -38,7 +38,7 @@ public class MigratetFileOutputDelimitedAndtFileInputDelimitedMigrationTask exte
     	if(processType == null){
     		return ExecutionResult.NOTHING_TO_DO;
     	}
-    	
+
     	String[] componentsNames = new String[] { "tFileInputDelimited" , "tFileOutputDelimited" };
 
     	try {
@@ -60,7 +60,7 @@ public class MigratetFileOutputDelimitedAndtFileInputDelimitedMigrationTask exte
 									}
 								}
 							}
-                        	
+
                         }));
         	}
             return ExecutionResult.SUCCESS_WITH_ALERT;
@@ -69,7 +69,7 @@ public class MigratetFileOutputDelimitedAndtFileInputDelimitedMigrationTask exte
             return ExecutionResult.FAILURE;
         }
     }
-    
+
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2011, 9, 1, 12, 0, 0);
         return gc.getTime();

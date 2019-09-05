@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.designer.abstractmap.model.tableentry.ITableEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class TableEntryLocation {
 
@@ -32,7 +32,7 @@ public class TableEntryLocation {
 
     /**
      * DOC amaumont Couple constructor comment.
-     * 
+     *
      * @param tableName
      * @param columnName
      */
@@ -43,7 +43,7 @@ public class TableEntryLocation {
 
     /**
      * DOC amaumont Couple constructor comment.
-     * 
+     *
      * @param tableName
      * @param columnName
      */

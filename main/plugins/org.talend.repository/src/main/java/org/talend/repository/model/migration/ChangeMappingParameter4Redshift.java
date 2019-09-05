@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,25 +39,25 @@ public class ChangeMappingParameter4Redshift extends
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
         String[] compNames = {"tRedshiftInput", "tRedshiftOutput"}; //$NON-NLS-1$ //$NON-NLS-2$
-        
+
     	IComponentConversion changeDBName4Hive = new IComponentConversion() {
 
 	        public void transform(NodeType node) {
 	            if(node == null) {
 	                return;
 	            }
-	            
+
 	        	ElementParameterType dbId = ComponentUtilities.getNodeProperty(node, "MAPPING"); //$NON-NLS-1$
-	        	
+
 	        	if (dbId == null) {
 	        	    return;
 	        	}
-	        	
+
         	    dbId.setValue("redshift_id");//$NON-NLS-1$
 	        }
-        
+
     	};
-    	
+
     	for (String name : compNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 

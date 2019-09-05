@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,9 +39,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.swt.colorstyledtext.ColorStyledText;
 import org.talend.commons.utils.system.EnvironmentUtils;
@@ -73,15 +73,15 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ComboController.java 1 2006-12-12 涓嬪崍01:58:48 +0000 (涓嬪崍01:58:48) yzhang $
- * 
+ *
  */
 public class ComboController extends AbstractElementPropertySectionController {
 
     /**
      * DOC dev ColumnListController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public ComboController(IDynamicProperty dp) {
@@ -90,7 +90,7 @@ public class ComboController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
@@ -154,7 +154,7 @@ public class ComboController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -262,7 +262,7 @@ public class ComboController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -313,7 +313,7 @@ public class ComboController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -344,7 +344,7 @@ public class ComboController extends AbstractElementPropertySectionController {
 
     /**
      * This method is used for getting command base on component type.
-     * 
+     *
      * @param e
      * @return
      */
@@ -360,7 +360,7 @@ public class ComboController extends AbstractElementPropertySectionController {
 
     /**
      * This method is used for "Guess Query" button.
-     * 
+     *
      * @return
      */
     private Command createButtonCommand() {
@@ -486,7 +486,7 @@ public class ComboController extends AbstractElementPropertySectionController {
 
                 // repositoryMetadata = repositoryTableMap.get(schemaSelected);
             } else if (newRepositoryMetadata == null) {
-                MessageDialog.openWarning(new Shell(),
+                MessageDialog.openWarning(DisplayUtils.getDefaultShell(false),
                         Messages.getString("ComboController.alert"), Messages.getString("ComboController.nothingGuess")); //$NON-NLS-1$ //$NON-NLS-2$
                 return cmd;
             }

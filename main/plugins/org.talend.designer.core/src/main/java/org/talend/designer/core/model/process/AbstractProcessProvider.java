@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -79,7 +79,7 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
 
     /**
      * DOC qzhang Comment method "isExtensionProcessForJoblet".
-     * 
+     *
      * @param process
      * @return
      */
@@ -120,7 +120,7 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
 
     /**
      * DOC qzhang Comment method "loadComponentsFromProviders".
-     * 
+     *
      * @return
      */
     public static void loadComponentsFromProviders() {
@@ -131,7 +131,7 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
 
     /**
      * DOC hwang Comment method "loadComponentsFromProviders".
-     * 
+     *
      * @return
      */
     public static void loadComponentsFromProviders(ERepositoryObjectType type) {
@@ -146,9 +146,9 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
 
     /**
      * DOC qzhang Comment method "canDeleteNode".
-     * 
+     *
      * @param no
-     * 
+     *
      * @return
      */
     public boolean canDeleteNode(INode no) {
@@ -167,7 +167,7 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
 
     /**
      * DOC qzhang Comment method "updateJobletContext".
-     * 
+     *
      * @param nodes
      */
     public abstract List<String> updateProcessContexts(IProcess process);
@@ -175,10 +175,10 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
     public abstract List<String> updateProcessContextsWithoutUI(IProcess process);
 
     /**
-     * 
+     *
      * ggu Comment method "checkJobletNodeSchema".
-     * 
-     * 
+     *
+     *
      */
     public abstract List<UpdateResult> checkJobletNodeSchema(IProcess process);
 
@@ -190,7 +190,7 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
 
     /**
      * DOC qzhang Comment method "canCreate".
-     * 
+     *
      * @param node
      */
     public boolean canCreateNode(INode node) {
@@ -205,9 +205,9 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
 
     /**
      * DOC qli Comment method "isExtensionProcess".
-     * 
+     *
      * @param process
-     * 
+     *
      * @return
      */
     public boolean isJobletInputOrOutputComponent(INode node) {
@@ -216,9 +216,9 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
 
     /**
      * DOC qli Comment method "isExtensionProcess".
-     * 
+     *
      * @param process
-     * 
+     *
      * @return
      */
     public boolean isExtensionProcess(IProcess process) {
@@ -228,9 +228,9 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
     public abstract IProcess getProcessFromJobletProcessItem(JobletProcessItem jobletProcessItem);
 
     /**
-     * 
+     *
      * cLi Comment method "getJobletItem".
-     * 
+     *
      * bug 6158
      */
     public abstract Item getJobletItem(INode node);

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ public class AddPortForTCassandraConfigurationSpark extends AbstractAllJobMigrat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override
@@ -51,13 +51,13 @@ public class AddPortForTCassandraConfigurationSpark extends AbstractAllJobMigrat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @Override
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
-        String[] compNames = { "tCassandraConfiguration" }; //$NON-NLS-1$ 
+        String[] compNames = { "tCassandraConfiguration" }; //$NON-NLS-1$
 
         IComponentConversion conversion = new IComponentConversion() {
 
@@ -99,7 +99,7 @@ public class AddPortForTCassandraConfigurationSpark extends AbstractAllJobMigrat
                     }
                     configTable.getElementValue().removeAll(needRemovedList);
                     ComponentUtilities.addNodeProperty(node, "PORT", "TEXT"); //$NON-NLS-1$ //$NON-NLS-2$
-                    ComponentUtilities.setNodeValue(node, "PORT", portValue == null ? "\"9042\"" : portValue); //$NON-NLS-1$ //$NON-NLS-2$ 
+                    ComponentUtilities.setNodeValue(node, "PORT", portValue == null ? "\"9042\"" : portValue); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
         };

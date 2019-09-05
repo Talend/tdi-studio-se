@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,13 +19,13 @@ import org.talend.core.ui.metadata.extended.command.MetadataImportXmlCommand;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class MetadataImportXmlMapperCommand extends MetadataImportXmlCommand {
 
     /**
      * DOC amaumont MetadataImportXmlMapperCommand constructor comment.
-     * 
+     *
      * @param extendedTableModel
      * @param file
      */
@@ -35,7 +35,7 @@ public class MetadataImportXmlMapperCommand extends MetadataImportXmlCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.command.MetadataImportXmlCommand#execute()
      */
     @Override
@@ -45,7 +45,7 @@ public class MetadataImportXmlMapperCommand extends MetadataImportXmlCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#redo()
      */
     @Override
@@ -55,7 +55,7 @@ public class MetadataImportXmlMapperCommand extends MetadataImportXmlCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#undo()
      */
     @Override

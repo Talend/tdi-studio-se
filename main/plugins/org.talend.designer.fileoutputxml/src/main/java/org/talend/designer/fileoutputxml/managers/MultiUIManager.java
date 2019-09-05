@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,7 +28,7 @@ public class MultiUIManager extends UIManager {
 
     /**
      * wzhang MultiUIManager constructor comment.
-     * 
+     *
      * @param foxManager
      */
     public MultiUIManager(FOXManager foxManager) {
@@ -52,7 +52,7 @@ public class MultiUIManager extends UIManager {
     }
 
     /**
-     * 
+     *
      * DOC wzhang Comment method "autoMap". for multiSchema.
      */
     public void autoMap() {

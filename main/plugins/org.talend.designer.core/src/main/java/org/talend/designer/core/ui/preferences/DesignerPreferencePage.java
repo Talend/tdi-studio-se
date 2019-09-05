@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -166,7 +166,7 @@ public class DesignerPreferencePage extends FieldEditorPreferencePage implements
 
         RadioGroupFieldEditor largeIconsSizeField = new RadioGroupFieldEditor(
                 TalendDesignerPrefConstants.LARGE_ICONS_SIZE,
-                Messages.getString("DesignerPreferencePage.largeIconsSize"), 2, new String[][] { { Messages.getString("DesignerPreferencePage.iconSize24"), "" + 24 }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
+                Messages.getString("DesignerPreferencePage.largeIconsSize"), 2, new String[][] { { Messages.getString("DesignerPreferencePage.iconSize24"), "" + 24 }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         { Messages.getString("DesignerPreferencePage.iconSize32"), "" + 32 } }, getFieldEditorParent()); //$NON-NLS-1$ //$NON-NLS-2$
         addField(largeIconsSizeField);
 

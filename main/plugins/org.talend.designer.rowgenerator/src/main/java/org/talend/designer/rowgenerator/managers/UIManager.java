@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,9 +37,9 @@ import org.talend.designer.rowgenerator.ui.editor.MetadataToolbarEditorViewExt;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: UIManager.java,v 1.8 2007/01/31 10:31:05 pub Exp $
- * 
+ *
  */
 public class UIManager {
 
@@ -59,7 +59,7 @@ public class UIManager {
 
     /**
      * amaumont UIManager constructor comment.
-     * 
+     *
      * @param tableManager
      * @param manager
      */
@@ -112,7 +112,7 @@ public class UIManager {
 
     /**
      * yzhang Comment method "closeRowGenerator".
-     * 
+     *
      * @param response
      */
     public void closeRowGenerator(int response, boolean fromDialog) {
@@ -192,7 +192,7 @@ public class UIManager {
 
     /**
      * qzhang Comment method "getShowColumnsList".
-     * 
+     *
      * @return
      */
     private String[] getShowColumnsList() {
@@ -225,7 +225,7 @@ public class UIManager {
 
     /**
      * qzhang Comment method "convert".
-     * 
+     *
      * @param outputMetaTable2
      * @return TODO
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,7 +38,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
@@ -47,6 +46,7 @@ import org.osgi.framework.ServiceReference;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.CorePlugin;
@@ -635,6 +635,7 @@ public class Node extends Element implements IGraphicalNode {
                     if (param.getValue() instanceof IMetadataTable) {
                         IMetadataTable paramTable = (IMetadataTable) param.getValue();
                         table.getListColumns().addAll(paramTable.getListColumns());
+                        table.setOriginalColumns(paramTable.getOriginalColumns());
                         table.setReadOnly(paramTable.isReadOnly());
                     } else if (param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)) {
                         Schema schema = (Schema) componentProperties.getValuedProperty(param.getName()).getValue();
@@ -1382,7 +1383,8 @@ public class Node extends Element implements IGraphicalNode {
                                 // MetadataTool.copyTable(inputTable, targetTable);
                                 // add by wzhang for feature 7611.
                                 String dbmsId = targetTable.getDbms();
-                                MetadataToolHelper.copyTable(dbmsId, inputTable, targetTable);
+                                MetadataToolHelper.copyTable(inputTable, targetTable, null, false);
+                                MetadataToolHelper.setDBType(targetTable, dbmsId);
                                 ChangeMetadataCommand cmc = new ChangeMetadataCommand(this, null,
                                         tmpTableCreated ? targetTable : null, targetTable, inputSchemaParam);
                                 cmc.execute();
@@ -1434,7 +1436,7 @@ public class Node extends Element implements IGraphicalNode {
                         }
                         boolean isJunitInput = false;
                         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                            ITestContainerProviderService testContainerService = GlobalServiceRegister
                                     .getDefault().getService(ITestContainerProviderService.class);
                             if (testContainerService != null
                                     && testContainerService.isTestCaseComponent(connection.getSource().getComponent())) {
@@ -1474,8 +1476,8 @@ public class Node extends Element implements IGraphicalNode {
                         } else { // add for feature TDI-17358
                             IMetadataTable sourceTable = connection.getMetadataTable();
                             if (sourceTable != null) {
-                                MetadataDialog dialog = new MetadataDialog(new Shell(), sourceTable.clone(),
-                                        connection.getSource(), null);
+                                MetadataDialog dialog = new MetadataDialog(DisplayUtils.getDefaultShell(false),
+                                        sourceTable.clone(), connection.getSource(), null);
                                 dialog.setInputReadOnly(false);
                                 dialog.setOutputReadOnly(false);
                                 if (dialog.open() == MetadataDialog.OK) {
@@ -1508,7 +1510,7 @@ public class Node extends Element implements IGraphicalNode {
     }
 
     private boolean getTakeSchema() {
-        return MessageDialog.openQuestion(new Shell(), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
+        return MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
@@ -1840,7 +1842,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getPropertyValue(java.lang.Object)
      */
     @Override
@@ -1854,7 +1856,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#setPropertyValue(java.lang.Object, java.lang.Object)
      */
     @Override
@@ -1886,7 +1888,7 @@ public class Node extends Element implements IGraphicalNode {
             connectionToParse = (String) value;
             boolean isTestCase = false;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                ITestContainerProviderService testContainerService = GlobalServiceRegister
                         .getDefault().getService(ITestContainerProviderService.class);
                 isTestCase = getProcess() != null && testContainerService.isTestContainerProcess(getProcess());
             }
@@ -2021,7 +2023,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getElementName()
      */
     @Override
@@ -2273,7 +2275,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#hasConditionnalOutputs()
      */
     @Override
@@ -2517,7 +2519,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#setProcess(org.talend.core.model.process.IProcess)
      */
     @Override
@@ -3018,6 +3020,7 @@ public class Node extends Element implements IGraphicalNode {
 
             checktAggregateRow(param);
 
+            checkDynamicJobUsage(param);
         }
 
         checkJobletConnections();
@@ -3139,6 +3142,25 @@ public class Node extends Element implements IGraphicalNode {
                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
             }
         }
+    }
+
+    private void checkDynamicJobUsage(IElementParameter param) {
+        if (!EParameterName.USE_DYNAMIC_JOB.getName().equals(param.getName())) {
+            return;
+        }
+        boolean isSelectUseDynamic = false;
+        Object paramValue = param.getValue();
+        if (paramValue != null && paramValue instanceof Boolean) {
+            isSelectUseDynamic = (Boolean) paramValue;
+        }
+        if (isSelectUseDynamic) {
+            ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(process.getProperty().getItem());
+            if (ERepositoryObjectType.getAllTypesOfJoblet().contains(itemType)) {
+                String warningMessage = Messages.getString("Node.checkJobletDynamicJobUsageWarning");
+                Problems.add(ProblemStatus.WARNING, this, warningMessage);
+            }
+        }
+
     }
 
     private void checkJobletConnections() {
@@ -3339,7 +3361,7 @@ public class Node extends Element implements IGraphicalNode {
     private void checkHasMultiPrejobOrPostJobComponents() {
         Map<String, INode> multiNodes = new HashMap<String, INode>();
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault()
+            IJobletProviderService jobletService = GlobalServiceRegister.getDefault()
                     .getService(IJobletProviderService.class);
             if (jobletService != null) {
                 // need to check all node from the process
@@ -3392,7 +3414,7 @@ public class Node extends Element implements IGraphicalNode {
     public void checkLinks() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+            IJobletProviderService service = GlobalServiceRegister.getDefault()
                     .getService(IJobletProviderService.class);
             if (service != null && service.isJobletComponent(this)) {
                 isJoblet = true;
@@ -3691,6 +3713,14 @@ public class Node extends Element implements IGraphicalNode {
                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
             }
         }
+        
+        List<IConnection> subjobLinks = (List<IConnection>) this.getIncomingConnections(EConnectionType.ON_SUBJOB_OK);
+        subjobLinks.addAll(this.getIncomingConnections(EConnectionType.ON_SUBJOB_ERROR));
+        if(!subjobLinks.isEmpty() && !this.getUniqueName().equals(this.getDesignSubjobStartNode().getUniqueName())){
+        	String errorMessage = Messages.getString("Node.notSubjobStartNode", this.getUniqueName()); //$NON-NLS-1$
+            Problems.add(ProblemStatus.WARNING, this, errorMessage);
+        }
+        
     }
 
     private static boolean checkNodeCircle(INode currentNode) {
@@ -3790,7 +3820,7 @@ public class Node extends Element implements IGraphicalNode {
         }
         ICoreTisService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
-            service = (ICoreTisService) GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
+            service = GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
         }
 
         // test in case several Dynamic type has been set or if Dynamic is not the last type in schema
@@ -4419,16 +4449,16 @@ public class Node extends Element implements IGraphicalNode {
                                     .getLastVersion(value.toString());
                             if (lastVersion != null) {
                                 if (isMRServiceRegistered) {
-                                    if (((IMRProcessService) GlobalServiceRegister.getDefault()
-                                            .getService(IMRProcessService.class))
+                                    if (GlobalServiceRegister.getDefault()
+                                            .getService(IMRProcessService.class)
                                                     .isMapReduceItem(lastVersion.getProperty().getItem())) {
                                         targetIsBigdata = true;
                                         bigDataType = "Batch"; //$NON-NLS-1$
                                     }
                                 }
                                 if (isStormServiceRegistered) {
-                                    if (((IStormProcessService) GlobalServiceRegister.getDefault()
-                                            .getService(IStormProcessService.class))
+                                    if (GlobalServiceRegister.getDefault()
+                                            .getService(IStormProcessService.class)
                                                     .isStormItem(lastVersion.getProperty().getItem())) {
                                         targetIsBigdata = true;
                                         bigDataType = "Streaming"; //$NON-NLS-1$
@@ -4457,7 +4487,7 @@ public class Node extends Element implements IGraphicalNode {
     }
 
     /**
-     * 
+     *
      * DOC jding Comment method "checkMultipleTRunjobVersion".For a job,can't exist multiple same subjob with different
      * version
      */
@@ -4624,7 +4654,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#renameMetadataColumnName(java.lang.String, java.lang.String,
      * java.lang.String)
      */
@@ -4667,7 +4697,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isThereLinkWithHash()
      */
     @Override
@@ -4883,7 +4913,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#reloadComponent(org.talend.core.model.components.IComponent,
      * java.util.Map)
      */
@@ -4905,7 +4935,7 @@ public class Node extends Element implements IGraphicalNode {
         }
         boolean isJobletNode = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+            IJobletProviderService service = GlobalServiceRegister.getDefault()
                     .getService(IJobletProviderService.class);
             if (service != null && service.isJobletComponent(this)) {
                 isJobletNode = true;
@@ -5077,7 +5107,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getDesignSubjobStartNode()
      */
     @Override
@@ -5087,7 +5117,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isDesignSubjobStartNode()
      */
     @Override
@@ -5097,7 +5127,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * return false is ok, becase all nodes generated from virtual component are DataNode.
-     * 
+     *
      * @see org.talend.core.model.process.INode#isVirtualGenerateNode()
      */
     @Override
@@ -5130,7 +5160,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isGeneratedAsVirtualComponent()
      */
     @Override
@@ -5181,7 +5211,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isUseLoopOnConditionalOutput(java.lang.String)
      */
     @Override
@@ -5191,7 +5221,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getUniqueShortName()
      */
     @Override
@@ -5229,7 +5259,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isSubProcessContainTraceBreakpoint()
      */
     @Override
@@ -5280,7 +5310,7 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isStandardJoblet() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+            IJobletProviderService service = GlobalServiceRegister.getDefault()
                     .getService(IJobletProviderService.class);
             if (service != null && service.isStandardJobletComponent(this)) {
                 isJoblet = true;
@@ -5292,7 +5322,7 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isJoblet() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+            IJobletProviderService service = GlobalServiceRegister.getDefault()
                     .getService(IJobletProviderService.class);
             if (service != null && service.isJobletComponent(this)) {
                 isJoblet = true;
@@ -5304,7 +5334,7 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isSparkJoblet() {
         boolean isSparkJoblet = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
-            ISparkJobletProviderService sparkJobletService = (ISparkJobletProviderService) GlobalServiceRegister.getDefault()
+            ISparkJobletProviderService sparkJobletService = GlobalServiceRegister.getDefault()
                     .getService(ISparkJobletProviderService.class);
             if (sparkJobletService != null) {
                 isSparkJoblet = sparkJobletService.isSparkJobletComponent(this);
@@ -5316,7 +5346,7 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isSparkStreamingJoblet() {
         boolean isSparkStreamingJoblet = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkStreamingJobletProviderService.class)) {
-            ISparkStreamingJobletProviderService sparkJobletService = (ISparkStreamingJobletProviderService) GlobalServiceRegister
+            ISparkStreamingJobletProviderService sparkJobletService = GlobalServiceRegister
                     .getDefault().getService(ISparkStreamingJobletProviderService.class);
             if (sparkJobletService != null) {
                 isSparkStreamingJoblet = sparkJobletService.isSparkStreamingJobletComponent(this);
@@ -5353,7 +5383,7 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isProgressBarNeeded() {
         boolean needBar = true;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)) {
-            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault()
+            IMRProcessService mrService = GlobalServiceRegister.getDefault()
                     .getService(IMRProcessService.class);
             needBar = mrService.isProgressBarNeeded(process);
         }
@@ -5549,7 +5579,7 @@ public class Node extends Element implements IGraphicalNode {
     public void refreshNodeContainer() {
         boolean isRunning = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            IRunProcessService runProcessService = (IRunProcessService) GlobalServiceRegister.getDefault()
+            IRunProcessService runProcessService = GlobalServiceRegister.getDefault()
                     .getService(IRunProcessService.class);
             if (runProcessService != null) {
                 isRunning = runProcessService.isJobRunning();
@@ -5595,7 +5625,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /**
      * Getter for delegateComponent.
-     * 
+     *
      * @return the delegateComponent
      */
     public IComponent getDelegateComponent() {

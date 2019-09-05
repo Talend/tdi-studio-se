@@ -1,7 +1,7 @@
 /**
  * // ============================================================================
  * //
- * // Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * // Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  * //
  * // This source code is available under agreement available at
  * // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -100,7 +100,7 @@ public class ExchangePackageImpl extends EPackageImpl implements ExchangePackage
 
     /**
      * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
-     * 
+     *
      * <p>This method is used to initialize {@link ExchangePackage#eINSTANCE} when that field is accessed.
      * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
      * <!-- begin-user-doc -->
@@ -127,7 +127,7 @@ public class ExchangePackageImpl extends EPackageImpl implements ExchangePackage
         // Mark meta-data to indicate it can't be changed
         theExchangePackage.freeze();
 
-  
+
         // Update the registry and return the package
         EPackage.Registry.INSTANCE.put(ExchangePackage.eNS_URI, theExchangePackage);
         return theExchangePackage;

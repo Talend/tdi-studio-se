@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,7 +28,7 @@ import org.talend.designer.core.DesignerPlugin;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class TalendJavaViewerConfiguration extends JavaSourceViewerConfiguration {
 
@@ -42,7 +42,7 @@ public class TalendJavaViewerConfiguration extends JavaSourceViewerConfiguration
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration#getContentAssistant(org.eclipse.jface.text.source.ISourceViewer
      * )
@@ -85,7 +85,7 @@ public class TalendJavaViewerConfiguration extends JavaSourceViewerConfiguration
 
     /**
      * yzhang Comment method "getSettings".
-     * 
+     *
      * @param sectionName
      * @return
      */

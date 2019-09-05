@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,9 +25,9 @@ import org.talend.repository.model.RepositoryNode;
 
 /**
  * bqian TypeProcessor for Job. <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class JobTypeProcessor extends SingleTypeProcessor {
 
@@ -84,7 +84,7 @@ public class JobTypeProcessor extends SingleTypeProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.dialog.ITypeProcessor#getDialogTitle()
      */
     @Override

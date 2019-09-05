@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,9 +37,9 @@ import org.talend.designer.core.ui.editor.TalendEditor;
  * <b>2)</b> {@link Text Editor on the generated code} <br/>
  * <br/>
  * This class uses the interface ISelectionListener, it allows to propage the Delete evenement to the designer. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MultiPageTalendEditor extends AbstractMultiPageTalendEditor {
 
@@ -58,7 +58,7 @@ public class MultiPageTalendEditor extends AbstractMultiPageTalendEditor {
 
     /**
      * Getter for designerEditor.
-     * 
+     *
      * @return the designerEditor
      */
     @Override
@@ -88,7 +88,7 @@ public class MultiPageTalendEditor extends AbstractMultiPageTalendEditor {
 
     /**
      * DOC smallet Comment method "setName".
-     * 
+     *
      * @param label
      */
     @Override
@@ -151,7 +151,7 @@ public class MultiPageTalendEditor extends AbstractMultiPageTalendEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.AbstractMultiPageTalendEditor#getEditorId()
      */
     @Override

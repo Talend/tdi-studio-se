@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -24,6 +25,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentUtilities;
@@ -46,6 +48,9 @@ import org.talend.core.repository.ui.editor.RepositoryEditorInput;
 import org.talend.core.services.ISVNProviderService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.daikon.NamedThing;
+import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.NodeConnector;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
@@ -375,7 +380,30 @@ public class JobletUtil {
         if (!found) {
             ((IProcess2) process).removeUniqueNodeName(cloneNode.getUniqueName());
         }
+        updateReferenceComponentInJoblet(node, cloneNode);
         return cloneNode;
+    }
+
+    private void updateReferenceComponentInJoblet(Node node, Node cloneNode) {
+        ComponentProperties nodeComponentProperties = node.getComponentProperties();
+        ComponentProperties cloneNodeComponentProperties = cloneNode.getComponentProperties();
+        if (nodeComponentProperties != null && cloneNodeComponentProperties != null) {
+            Properties referencedComponentProperties = nodeComponentProperties.getProperties("referencedComponent");//$NON-NLS-1$
+            Properties cloneNodeProperties = cloneNodeComponentProperties.getProperties("referencedComponent");//$NON-NLS-1$
+            if (referencedComponentProperties != null && cloneNodeProperties != null) {
+                List<NamedThing> nodeProperties = referencedComponentProperties.getProperties();
+                List<NamedThing> cloneProperties = cloneNodeProperties.getProperties();
+                for (int i = 0; i < nodeProperties.size(); i++) {
+                    Property<?> nodeProperty = (Property<?>) nodeProperties.get(i);
+                    Object storedValue = nodeProperty.getStoredValue();
+                    String name = nodeProperty.getName();
+                    Property<?> cloneProperty = (Property<?>) cloneProperties.get(i);
+                    if (StringUtils.equals(name, cloneProperty.getName())) {
+                        cloneProperty.setStoredValue(storedValue);
+                    }
+                }
+            }
+        }
     }
 
     public void updateNode(Node cloneNode, Node node) {

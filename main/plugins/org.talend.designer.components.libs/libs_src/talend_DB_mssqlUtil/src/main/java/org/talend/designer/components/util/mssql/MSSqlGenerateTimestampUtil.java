@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,7 +46,7 @@ public class MSSqlGenerateTimestampUtil {
      * SMALLDATETIME ----> smalldatetime<br>
      * DATETIMEOFFSET ---> nvarchar<br>
      * TIMESTAMP --------> timestamp<br>
-     * 
+     *
      * @param rsmd
      * @param rs
      * @param index
@@ -121,7 +121,7 @@ public class MSSqlGenerateTimestampUtil {
      * parse datetimeoffset string to date.
      * datetimeoffset string show as YYYY-MM-DD hh:mm:ss[.nnnnnnn] [+|-]hh:mm
      * and no enough infomation for the DST decision,so no DST consider[not sure if 100% support for DST].
-     * 
+     *
      * @param datetimeOffsetString
      * @return
      */

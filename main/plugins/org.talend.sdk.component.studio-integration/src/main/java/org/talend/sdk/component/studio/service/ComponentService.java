@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class ComponentService {
     private final Function<String, File> mvnResolver;
 
     private volatile Dependencies dependencies;
-    
+
     /**
      * Component Indices cache
      */
@@ -204,10 +204,10 @@ public class ComponentService {
         }
 
     }
-    
+
     /**
      * Returns ComponentDetail by name
-     * 
+     *
      * @param componentName full component name
      * @return ComponentDetail
      */
@@ -226,7 +226,7 @@ public class ComponentService {
         }
         return Optional.of(detailList.getDetails().get(0));
     }
-    
+
     public ComponentDetail getDetailById(final String id) {
         final ComponentDetailList detailList = client().getDetail(language(), new String[] { id });
         if (detailList.getDetails().size() != 1) {

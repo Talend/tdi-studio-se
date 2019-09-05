@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,7 +21,7 @@ import org.talend.core.repository.model.preview.SalesforceSchemaBean;
 
 /**
  * DOC YeXiaowei class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class SalesforceSchemaInputNode extends FileInputNode {
 
@@ -35,7 +35,7 @@ public class SalesforceSchemaInputNode extends FileInputNode {
 
     /**
      * DOC YeXiaowei Comment method "addParameters".
-     * 
+     *
      * @param schemaBean
      */
     private void addParameters(SalesforceSchemaBean schemaBean) {
@@ -69,7 +69,7 @@ public class SalesforceSchemaInputNode extends FileInputNode {
 
     /**
      * Getter for metadatas.
-     * 
+     *
      * @return the metadatas
      */
     public List<IMetadataTable> getMetadatas() {
@@ -78,7 +78,7 @@ public class SalesforceSchemaInputNode extends FileInputNode {
 
     /**
      * Sets the metadatas.
-     * 
+     *
      * @param metadatas the metadatas to set
      */
     public void setMetadatas(List<IMetadataTable> metadatas) {

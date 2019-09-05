@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,15 +24,15 @@ import org.talend.repository.model.IRepositoryService;
 
 /**
  * The designer plugin class to be used in the desktop. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class DesignerPlugin extends AbstractUIPlugin {
 
@@ -47,7 +47,7 @@ public class DesignerPlugin extends AbstractUIPlugin {
          * extensionRegistry.getNamespaces(); System.out.println("Liste des plugins talend:"); for (int i = 0; i <
          * namespaces.length; i++) { if (namespaces[i].startsWith("org.talend")) { String message = namespaces[i];
          * Bundle bundle = Platform.getBundle(namespaces[i]);
-         * 
+         *
          * if (bundle == null) { message += " pb"; } else { String version = (String)
          * bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION); String[] subVersions =
          * version.split("\\."); version = subVersions[0] + "." + subVersions[1] + "." + subVersions[2]; message += "
@@ -72,7 +72,7 @@ public class DesignerPlugin extends AbstractUIPlugin {
 
     /**
      * DOC get a implement of RunProcessService.
-     * 
+     *
      * @return a implement of RunProcessService
      */
     public IRunProcessService getRunProcessService() {
@@ -82,7 +82,7 @@ public class DesignerPlugin extends AbstractUIPlugin {
 
     /**
      * DOC get a implement of CodeGeneratorService.
-     * 
+     *
      * @return a implement of CodeGeneratorService
      */
     public ICodeGeneratorService getCodeGeneratorService() {
@@ -92,7 +92,7 @@ public class DesignerPlugin extends AbstractUIPlugin {
 
     /**
      * DOC get a implement of IRepositoryService.
-     * 
+     *
      * @return a implement of IRepositoryService
      */
     public IRepositoryService getRepositoryService() {
@@ -107,7 +107,7 @@ public class DesignerPlugin extends AbstractUIPlugin {
 
     /**
      * Returns an image descriptor for the image file at the given plug-in relative path.
-     * 
+     *
      * @param path the path
      * @return the image descriptor
      */

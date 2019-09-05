@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,9 +27,9 @@ import org.talend.designer.core.utils.DesignerColorUtils;
 
 /**
  * Defines connector type and name for each component. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeConnector implements INodeConnector {
 
@@ -78,7 +78,7 @@ public class NodeConnector implements INodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeConnector#getConnectionType()
      */
     @Override
@@ -88,7 +88,7 @@ public class NodeConnector implements INodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.designer.core.model.components.INodeConnector#setConnectionType(org.talend.core.model.designer.
      * EConnectionType)
      */
@@ -99,7 +99,7 @@ public class NodeConnector implements INodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeConnector#isBuiltIn()
      */
     @Override
@@ -109,7 +109,7 @@ public class NodeConnector implements INodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeConnector#setBuiltIn(boolean)
      */
     @Override
@@ -210,7 +210,7 @@ public class NodeConnector implements INodeConnector {
 
     /**
      * Getter for linkName.
-     * 
+     *
      * @return the linkName
      */
     @Override
@@ -220,7 +220,7 @@ public class NodeConnector implements INodeConnector {
 
     /**
      * Sets the linkName.
-     * 
+     *
      * @param linkName the linkName to set
      */
     @Override
@@ -230,7 +230,7 @@ public class NodeConnector implements INodeConnector {
 
     /**
      * Getter for menuName.
-     * 
+     *
      * @return the menuName
      */
     @Override
@@ -240,7 +240,7 @@ public class NodeConnector implements INodeConnector {
 
     /**
      * Sets the menuName.
-     * 
+     *
      * @param menuName the menuName to set
      */
     @Override
@@ -250,7 +250,7 @@ public class NodeConnector implements INodeConnector {
 
     /**
      * Getter for name.
-     * 
+     *
      * @return the name
      */
     @Override
@@ -260,7 +260,7 @@ public class NodeConnector implements INodeConnector {
 
     /**
      * Sets the name.
-     * 
+     *
      * @param name the name to set
      */
     @Override
@@ -281,7 +281,7 @@ public class NodeConnector implements INodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -296,7 +296,7 @@ public class NodeConnector implements INodeConnector {
 
     /**
      * DOC nrousseau NodeConnector class global comment. Detailled comment <br/>
-     * 
+     *
      */
     private class ConnectionProperty implements IConnectionProperty {
 
@@ -314,7 +314,7 @@ public class NodeConnector implements INodeConnector {
 
         /**
          * Getter for color.
-         * 
+         *
          * @return the color
          */
         @Override
@@ -324,7 +324,7 @@ public class NodeConnector implements INodeConnector {
 
         /**
          * Sets the color.
-         * 
+         *
          * @param color the color to set
          */
         @Override
@@ -334,7 +334,7 @@ public class NodeConnector implements INodeConnector {
 
         /**
          * Getter for lineStyle.
-         * 
+         *
          * @return the lineStyle
          */
         @Override
@@ -344,7 +344,7 @@ public class NodeConnector implements INodeConnector {
 
         /**
          * Sets the lineStyle.
-         * 
+         *
          * @param lineStyle the lineStyle to set
          */
         @Override
@@ -354,7 +354,7 @@ public class NodeConnector implements INodeConnector {
 
         /**
          * Getter for linkedComponent.
-         * 
+         *
          * @return the linkedComponent
          */
         @Override
@@ -364,7 +364,7 @@ public class NodeConnector implements INodeConnector {
 
         /**
          * Sets the linkedComponent.
-         * 
+         *
          * @param linkedComponent the linkedComponent to set
          */
         @Override
@@ -375,7 +375,7 @@ public class NodeConnector implements INodeConnector {
 
     /**
      * Getter for baseSchema.
-     * 
+     *
      * @return the baseSchema
      */
     @Override
@@ -385,7 +385,7 @@ public class NodeConnector implements INodeConnector {
 
     /**
      * Sets the baseSchema.
-     * 
+     *
      * @param baseSchema the baseSchema to set
      */
     @Override
@@ -395,7 +395,7 @@ public class NodeConnector implements INodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INodeConnector#isMultiSchema()
      */
     @Override
@@ -414,7 +414,7 @@ public class NodeConnector implements INodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INodeConnector#setMultiSchema(boolean)
      */
     @Override
@@ -434,7 +434,7 @@ public class NodeConnector implements INodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INodeConnector#isMergeAllowDifferentSchema()
      */
     @Override
@@ -444,7 +444,7 @@ public class NodeConnector implements INodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INodeConnector#setMergeAllowDifferentSchema(boolean)
      */
     @Override
@@ -483,7 +483,7 @@ public class NodeConnector implements INodeConnector {
 
     /**
      * Getter for parentNode.
-     * 
+     *
      * @return the parentNode
      */
     protected INode getParentNode() {

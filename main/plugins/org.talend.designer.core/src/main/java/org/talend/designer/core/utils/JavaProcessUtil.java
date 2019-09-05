@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,6 +14,7 @@ package org.talend.designer.core.utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -121,6 +122,14 @@ public class JavaProcessUtil {
         return libsNeeded;
     }
 
+    public static Map<String, ModuleNeeded> getNeededLibrariesMap(List<ModuleNeeded> modulesNeeded) {
+        Map<String, ModuleNeeded> libsNeeded = new HashMap<String, ModuleNeeded>();
+        for (ModuleNeeded module : modulesNeeded) {
+            libsNeeded.put(module.getModuleName(), module);
+        }
+        return libsNeeded;
+    }
+
     @SuppressWarnings("unchecked")
     private static void getNeededModules(final IProcess process, Set<ProcessItem> searchItems,
             List<ModuleNeeded> modulesNeeded, int options) {
@@ -186,10 +195,20 @@ public class JavaProcessUtil {
 
             Set<ModuleNeeded> nodeNeededModules = getNeededModules(node, searchItems, options);
             if (nodeNeededModules != null) {
+                Map<String, ModuleNeeded> libsNeededMap = getNeededLibrariesMap(modulesNeeded);
                 modulesNeeded.addAll(nodeNeededModules);
                 if (node.getComponent().getName().equals("tLibraryLoad") && !isTestcaseProcess) { //$NON-NLS-1$
-                    LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(),process.getVersion(),
-                            nodeNeededModules);
+                    Set<ModuleNeeded> highPriorityModuleNeeded = new HashSet<ModuleNeeded>();
+                    for (ModuleNeeded moduleNeeded : nodeNeededModules) {
+                        ModuleNeeded existModuleNeeded = libsNeededMap.get(moduleNeeded.getModuleName());
+                        if (existModuleNeeded != null) {
+                            highPriorityModuleNeeded.add(existModuleNeeded);
+                        } else {
+                            highPriorityModuleNeeded.add(moduleNeeded);
+                        }
+                    }
+                    LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(), process.getVersion(),
+                            highPriorityModuleNeeded);
                 }
             }
         }
@@ -317,7 +336,7 @@ public class JavaProcessUtil {
         return false;
     }
 
-    private static void addJunitNeededModules(List<ModuleNeeded> modulesNeeded) {
+    public static void addJunitNeededModules(Collection<ModuleNeeded> modulesNeeded) {
         ModuleNeeded junitModule = new ModuleNeeded("junit", "junit.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
         junitModule.setModuleLocaion("platform:/plugin/org.junit/junit.jar");
         junitModule.setMavenUri("mvn:org.talend.libraries/junit/6.0.0");
@@ -418,7 +437,9 @@ public class JavaProcessUtil {
                                             if (var.equals(contextPara.getName())) {
                                                 String value =
                                                         context.getContextParameter(contextPara.getName()).getValue();
-
+                                                if (StringUtils.isBlank(value)) {
+                                                    continue;
+                                                }
                                                 if (curParam.getName().equals(EParameterName.DRIVER_JAR.getName())
                                                         && value.contains(";")) { //$NON-NLS-1$
                                                     String[] jars = value.split(";"); //$NON-NLS-1$

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.designer.mapper.model.tableentry.VarTableEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class RemoveVarEntryCommand extends Command {
 
@@ -32,7 +32,7 @@ public class RemoveVarEntryCommand extends Command {
 
     /**
      * DOC amaumont AddTableEntryCommand constructor comment.
-     * 
+     *
      * @param tableEntriesManager
      */
     public RemoveVarEntryCommand(TableEntriesManager tableEntriesManager, VarTableEntry varTableEntry) {
@@ -43,7 +43,7 @@ public class RemoveVarEntryCommand extends Command {
 
     /**
      * DOC amaumont AddTableEntryCommand constructor comment.
-     * 
+     *
      * @param label
      */
     public RemoveVarEntryCommand(String label) {
@@ -52,7 +52,7 @@ public class RemoveVarEntryCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#execute()
      */
     @Override
@@ -65,7 +65,7 @@ public class RemoveVarEntryCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#canExecute()
      */
     @Override
@@ -75,7 +75,7 @@ public class RemoveVarEntryCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#canUndo()
      */
     @Override
@@ -85,7 +85,7 @@ public class RemoveVarEntryCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#redo()
      */
     @Override
@@ -95,7 +95,7 @@ public class RemoveVarEntryCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#undo()
      */
     @Override

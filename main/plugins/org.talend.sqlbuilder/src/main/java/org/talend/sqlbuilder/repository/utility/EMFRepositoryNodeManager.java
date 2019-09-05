@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.builder.ConvertionHelper;
@@ -52,9 +52,9 @@ import org.talend.sqlbuilder.util.QueryTokenizer;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  */
 public final class EMFRepositoryNodeManager {
 
@@ -88,7 +88,7 @@ public final class EMFRepositoryNodeManager {
 
     /**
      * dev Comment method "getQueryByLabel".
-     * 
+     *
      * @param node all repository node Type
      * @param label search query label
      * @return
@@ -191,12 +191,13 @@ public final class EMFRepositoryNodeManager {
 
                     /*
                      * (non-Javadoc)
-                     * 
+                     *
                      * @see java.lang.Runnable#run()
                      */
                     @Override
                     public void run() {
-                        new ErrorDialogWidthDetailArea(new Shell(), SqlBuilderPlugin.PLUGIN_ID, mainMsg, e.getMessage());
+                        new ErrorDialogWidthDetailArea(DisplayUtils.getDefaultShell(false), SqlBuilderPlugin.PLUGIN_ID, mainMsg,
+                                e.getMessage());
                     }
                 });
 
@@ -280,14 +281,16 @@ public final class EMFRepositoryNodeManager {
             }
         }
         if (queryStrings.size() < 1) {
-            // MessageDialog.openError(new Shell(), Messages.getString("EMFRepositoryNodeManager.Notice.Title"),
+            // MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+            // Messages.getString("EMFRepositoryNodeManager.Notice.Title"),
             // Messages
             // .getString("EMFRepositoryNodeManager.Notice.info"));
             return null;
         }
         Boolean isForce = null;
         if (queryStrings.size() > 1 && isPrompt) {
-            isForce = MessageDialog.openQuestion(new Shell(), Messages.getString("EMFRepositoryNodeManager.Notice.Title2"), //$NON-NLS-1$
+            isForce = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false),
+                    Messages.getString("EMFRepositoryNodeManager.Notice.Title2"), //$NON-NLS-1$
                     Messages.getString("EMFRepositoryNodeManager.Notice.info2")); //$NON-NLS-1$
         }
         String string = queryStrings.get(0).toLowerCase().replaceAll("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
@@ -297,7 +300,8 @@ public final class EMFRepositoryNodeManager {
         string = string.replaceAll("\'", ""); //$NON-NLS-1$ //$NON-NLS-2$
         if (!string.startsWith("select ")) { //$NON-NLS-1$
             if (isPrompt) {
-                MessageDialog.openWarning(new Shell(), Messages.getString("EMFRepositoryNodeManager.Notice.title3"), Messages //$NON-NLS-1$
+                MessageDialog.openWarning(DisplayUtils.getDefaultShell(false),
+                        Messages.getString("EMFRepositoryNodeManager.Notice.title3"), Messages //$NON-NLS-1$
                         .getString("EMFRepositoryNodeManager.Notice.info3")); //$NON-NLS-1$
             }
         }
@@ -305,7 +309,7 @@ public final class EMFRepositoryNodeManager {
             return null;
         }
         // MessageDialog
-        // .openInformation(new Shell(), "Notice",
+        // .openInformation(DisplayUtils.getDefaultShell(false), "Notice",
         // "GUI Sql Editor maybe not show all features of your Sql Statement!\n And your full sql Statement will show in
         // buttom of the GUI.");
         return string;
@@ -313,7 +317,7 @@ public final class EMFRepositoryNodeManager {
 
     /**
      * qzhang Comment method "updateErDiagram".
-     * 
+     *
      * @param toSql
      * @throws Exception
      */
@@ -321,7 +325,7 @@ public final class EMFRepositoryNodeManager {
             throws Exception {
         if (toSql != null && !"".equals(toSql) && isModified) { //$NON-NLS-1$
             // String info = Messages.getString("MultiPageSqlBuilderEditor.Notice.InformationNotFull");
-            // MessageDialog.openInformation(new Shell(),
+            // MessageDialog.openInformation(DisplayUtils.getDefaultShell(false),
             // Messages.getString("MultiPageSqlBuilderEditor.NoticeTitle.Text"), info);
 
             List<IRepositoryNode> nodeSel = parseSqlStatement(toSql, rootNode);
@@ -464,7 +468,7 @@ public final class EMFRepositoryNodeManager {
 
     /**
      * qzhang Comment method "parseSqlToNameList".
-     * 
+     *
      * @param sql
      * @param tableNames
      * @param columnsNames
@@ -559,7 +563,7 @@ public final class EMFRepositoryNodeManager {
 
     /**
      * qzhang Comment method "fixedNamesContainAlias".
-     * 
+     *
      * @param tableNames
      */
     private void fixedNamesContainAlias(List<String> tableNames, String prefix) throws Exception {
@@ -607,7 +611,7 @@ public final class EMFRepositoryNodeManager {
 
     /**
      * Getter for root.
-     * 
+     *
      * @return the root
      */
     public RepositoryNode getRoot() {

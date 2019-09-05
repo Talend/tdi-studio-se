@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.designer.core.ui.editor.properties.controllers.EncodingTypeCon
 
 /**
  * This class is used for encoding type.
- * 
+ *
  * $Id: EncodingTypeControllerGenerator.java 2007-2-11,10:20:13 ftang $
- * 
+ *
  */
 public class EncodingTypeControllerGenerator implements IControllerGenerator {
 
@@ -32,7 +32,7 @@ public class EncodingTypeControllerGenerator implements IControllerGenerator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IControllerGenerator#setDynamicProperty(org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty)
      */
     public void setDynamicProperty(IDynamicProperty dp) {

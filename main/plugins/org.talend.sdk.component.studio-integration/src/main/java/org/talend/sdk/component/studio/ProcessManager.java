@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -348,7 +348,11 @@ public class ProcessManager implements AutoCloseable {
 
     private void reloadProperties() {
         try {
-            System.setProperty(TaCoKitConst.PROP_COMPONENT, TaCoKitUtil.getInstalledComponentsString(new NullProgressMonitor()));
+            final String value = TaCoKitUtil.getInstalledComponentsString(new NullProgressMonitor());
+            if (value == null) {
+                return;
+            }
+            System.setProperty(TaCoKitConst.PROP_COMPONENT, value);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -492,10 +496,26 @@ public class ProcessManager implements AutoCloseable {
         paths.add(mvnResolver.apply("org.slf4j:slf4j-jdk14:jar:" + GAV.INSTANCE.getSlf4jVersion()).toURI().toURL());
         // server
         paths.add(serverJar.toURI().toURL());
-        Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
-            aggregateDeps(paths, deps);
+        final int originalPaths = paths.size();
+        // only available in 1.1.8
+        Mvn.withDependencies(serverJar, "TALEND-INF/server/dependencies.txt", false, deps -> {
+            Stream<String> filteredDeps = deps.filter(dep -> {
+                if (dep.contains("com.sun.istack/istack-commons-runtime/")) {
+                    return false;
+                } else if (dep.contains("org.codehaus.woodstox/stax2-api/")) {
+                    return false;
+                }
+                return true;
+            });
+            aggregateDeps(paths, filteredDeps);
             return null;
         });
+        if (paths.size() == originalPaths) { // < 1.1.8
+            Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
+                aggregateDeps(paths, deps);
+                return null;
+            });
+        }
         // beam if needed
         if (Boolean.getBoolean("components.server.beam.active")) {
             final File beamModule = mvnResolver.apply(groupId + ":component-runtime-beam:" + GAV.INSTANCE.getComponentRuntimeVersion());

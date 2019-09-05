@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -98,7 +98,7 @@ public class UpdateDetectionDialog extends SelectionDialog {
 
     /**
      * ggu UpdateCheckDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     public UpdateDetectionDialog(Shell parentShell, List<UpdateResult> input) {
@@ -135,9 +135,9 @@ public class UpdateDetectionDialog extends SelectionDialog {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "removeDuplication".
-     * 
+     *
      * for context mode
      */
     private void removeDuplication() {
@@ -384,7 +384,6 @@ public class UpdateDetectionDialog extends SelectionDialog {
         tree.setLayoutData(new GridData(GridData.FILL_BOTH));
         addViewerListener();
         createColumns(tree);
-        helper.selectAll(true);
         return composite;
     }
 
@@ -427,7 +426,7 @@ public class UpdateDetectionDialog extends SelectionDialog {
 
             /**
              * Checks if current job is read-only mode or not.
-             * 
+             *
              * @param event
              */
             private boolean readOnlyCheck(CheckStateChangedEvent event) {
@@ -545,7 +544,7 @@ public class UpdateDetectionDialog extends SelectionDialog {
     public List<UpdateResult> getSelectedElements() {
         return selectedElement;
     }
-    
+
     public List<UpdateResult> getBuiltInElements() {
         List<UpdateResult> builtIn = new ArrayList<>();
         for(UpdateResult result : getInputElements()){

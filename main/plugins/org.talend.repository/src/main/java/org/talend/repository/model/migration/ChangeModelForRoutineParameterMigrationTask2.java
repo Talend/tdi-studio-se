@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,18 +42,18 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * This migration will:
- * 
+ *
  * For jobs:<br>
  * - If the job already have some dependencies from 4.1.1 or 4.1.2, it will keep original dependencies, and check if
  * some might be missing.<br>
  * - If the job have no dependencies (might be migration bug from 4.1.1 or 4.1.2), or old migration. Then add all
  * routines directly as dependency<br>
  * .
- * 
+ *
  * For joblets:<br>
  * - We only add system routines by default as dependency, other routines will be only added if found somewhere in the
  * dependency<br>
- * 
+ *
  */
 public class ChangeModelForRoutineParameterMigrationTask2 extends AbstractJobMigrationTask {
 

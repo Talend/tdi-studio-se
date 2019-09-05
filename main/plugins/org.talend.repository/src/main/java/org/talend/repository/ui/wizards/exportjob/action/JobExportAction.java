@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,7 +60,7 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
 import org.talend.repository.ui.wizards.exportjob.util.ExportJobUtil;
 
 /**
- * 
+ *
  * class global comment. Detailled comment
  */
 public class JobExportAction implements IRunnableWithProgress {
@@ -228,7 +228,7 @@ public class JobExportAction implements IRunnableWithProgress {
 
     /**
      * DOC ggu Comment method "doArchiveExport".
-     * 
+     *
      * @param monitor
      * @param resourcesToExport
      */
@@ -244,7 +244,7 @@ public class JobExportAction implements IRunnableWithProgress {
 
     /**
      * DOC ggu Comment method "generatedCodes".
-     * 
+     *
      * @param version
      * @param monitor
      * @param processes
@@ -283,7 +283,7 @@ public class JobExportAction implements IRunnableWithProgress {
 
     /**
      * DOC zli Comment method "getTempDestinationValue".
-     * 
+     *
      * @return
      */
     protected String getTempDestinationValue() {
@@ -315,9 +315,9 @@ public class JobExportAction implements IRunnableWithProgress {
     }
 
     /**
-     * 
+     *
      * DOC aiming Comment method "reBuildJobZipFile".
-     * 
+     *
      * @param processes
      */
     protected void reBuildJobZipFile(List<ExportFileResource> processes) {
@@ -365,7 +365,7 @@ public class JobExportAction implements IRunnableWithProgress {
     /**
      * Added by Marvin Wang on Feb.1, 2012 for estimating if the file can be created. In win7 or other systems, have not
      * the permission to create a file directly under system disk(like C:\).
-     * 
+     *
      * @param disZipFileStr
      * @return
      */

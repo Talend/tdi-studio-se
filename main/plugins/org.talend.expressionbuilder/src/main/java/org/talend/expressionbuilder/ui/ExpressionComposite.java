@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -55,7 +55,7 @@ import org.talend.expressionbuilder.i18n.Messages;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class ExpressionComposite extends Composite {
 
@@ -81,13 +81,13 @@ public class ExpressionComposite extends Composite {
 
     /**
      * DOC yzhang ExpressionComposite class global comment. Detailled comment <br/>
-     * 
+     *
      */
     class ButtonListener extends MouseAdapter {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
          */
         @Override
@@ -123,9 +123,9 @@ public class ExpressionComposite extends Composite {
 
     /**
      * Create the composite
-     * 
+     *
      * @param expressionBuilderDialog
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -171,7 +171,7 @@ public class ExpressionComposite extends Composite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.MouseAdapter#mouseDown(org.eclipse.swt.events.MouseEvent)
              */
             @Override
@@ -191,7 +191,7 @@ public class ExpressionComposite extends Composite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
              */
             @Override
@@ -395,7 +395,7 @@ public class ExpressionComposite extends Composite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.expressionbuilder.ui.ExpressionController#setExpression(org.talend.designer.rowgenerator.data.Function
      * )
@@ -435,7 +435,7 @@ public class ExpressionComposite extends Composite {
 
     /**
      * yzhang Comment method "getExpression".
-     * 
+     *
      * @return
      */
     public String getReplaceExpression() {
@@ -470,7 +470,7 @@ public class ExpressionComposite extends Composite {
 
     /**
      * yzhang Comment method "setExpression".
-     * 
+     *
      * @param expression
      */
     public void setExpression(String expression, boolean append) {
@@ -495,7 +495,7 @@ public class ExpressionComposite extends Composite {
 
     /**
      * Sets the replacedText.
-     * 
+     *
      * @param replacedText the replacedText to set
      */
     public void setReplacedText(String replacedText) {
@@ -504,7 +504,7 @@ public class ExpressionComposite extends Composite {
 
     /**
      * yzhang Comment method "replacedContent".
-     * 
+     *
      * @param content
      * @param position
      */

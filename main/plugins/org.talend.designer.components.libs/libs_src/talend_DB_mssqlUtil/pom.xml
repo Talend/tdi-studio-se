@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.talend.libraries</groupId>
-	<artifactId>talend_DB_mssqlUtil-1.2-20171017</artifactId>
+	<artifactId>talend_DB_mssqlUtil-1.3-20190523</artifactId>
 	<version>6.0.0</version>
 	<packaging>jar</packaging>
 
@@ -50,9 +50,9 @@
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.jtds/jtds -->
 		<dependency>
-			<groupId>org.talend.libraries</groupId>
-			<artifactId>jtds-1.3.1-patch</artifactId>
-			<version>6.1.1</version>
+			<groupId>net.sourceforge.jtds</groupId>
+			<artifactId>jtds</artifactId>
+			<version>1.3.1-patch-20190523</version>
 		</dependency>
 
 	</dependencies>

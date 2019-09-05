@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,8 +51,10 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.ui.runtime.image.ImageUtils.ICON_SIZE;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
+import org.talend.commons.ui.swt.colorstyledtext.UnnotifiableColorStyledText;
 import org.talend.commons.ui.swt.drawing.background.BackgroundRefresher;
 import org.talend.commons.ui.swt.linking.BgDrawableComposite;
+import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.commons.utils.threading.ExecutionLimiterImproved;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.metadata.IMetadataColumn;
@@ -71,6 +73,7 @@ import org.talend.designer.mapper.managers.MapperManager;
 import org.talend.designer.mapper.managers.UIManager;
 import org.talend.designer.mapper.model.MapperModel;
 import org.talend.designer.mapper.model.table.AbstractDataMapTable;
+import org.talend.designer.mapper.model.table.AbstractInOutTable;
 import org.talend.designer.mapper.model.table.InputTable;
 import org.talend.designer.mapper.model.table.OutputTable;
 import org.talend.designer.mapper.model.table.VarsTable;
@@ -97,9 +100,9 @@ import org.talend.designer.mapper.ui.visualmap.zone.scrollable.VarsTableZoneView
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MapperUI {
 
@@ -220,7 +223,7 @@ public class MapperUI {
 
     /**
      * DOC amaumont Comment method "createUI".
-     * 
+     *
      * @param display
      */
     public Shell createWindow(final Display display, MapperModel model) {
@@ -243,6 +246,7 @@ public class MapperUI {
             }
 
             public void shellClosed(ShellEvent e) {
+                checkExpressionFilter();
                 UIManager uiManager = mapperManager.getUiManager();
                 if (uiManager.getMapperResponse() == SWT.NONE) {
                     for (DataMapTableView dataMapTableView : uiManager.getInputsTablesView()) {
@@ -323,6 +327,33 @@ public class MapperUI {
         mapperShell.open();
         return mapperShell;
 
+    }
+
+    private void checkExpressionFilter() {
+        // TUP-22701 for MAC won't trigger focusLost
+        if (!EnvironmentUtils.isMacOsSytem()) {
+            return;
+        }
+        UIManager uiManager = mapperManager.getUiManager();
+        for (DataMapTableView inputTableView : uiManager.getInputsTablesView()) {
+            setExpressionFilterOnfocusForShellClose(inputTableView);
+        }
+        for (DataMapTableView outputTableView : uiManager.getOutputsTablesView()) {
+            setExpressionFilterOnfocusForShellClose(outputTableView);
+        }
+    }
+
+    private void setExpressionFilterOnfocusForShellClose(DataMapTableView dataMapTableView) {
+        UnnotifiableColorStyledText expressionFilterText = dataMapTableView.getExpressionFilterText();
+        if (!expressionFilterText.isFocusControl()) {
+            return;
+        }
+        if ("".equals(expressionFilterText.getText().trim())) {
+            expressionFilterText.setText("");
+        }
+        final AbstractInOutTable table = (AbstractInOutTable) dataMapTableView.getDataMapTable();
+        dataMapTableView.setExpressionFilterFromStyledText(table, expressionFilterText);
+        dataMapTableView.checkProblemsForExpressionFilter(false, true);
     }
 
     public void createCompositeContent(MapperModel mapperModel) {
@@ -734,7 +765,7 @@ public class MapperUI {
 
     /**
      * DOC amaumont Comment method "getCommonMinimizedStateOfTables".
-     * 
+     *
      * @param tables
      * @return new Boolean(true) if button state should be to minimize, else new Boolean(false)
      */
@@ -912,11 +943,11 @@ public class MapperUI {
     }
 
     /**
-     * 
+     *
      * DOC amaumont MapperUI class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public class MapperBgDrawableComposite extends BgDrawableComposite {
 
@@ -926,7 +957,7 @@ public class MapperUI {
 
         /**
          * DOC amaumont MapperBackgroundRefresher constructor comment.
-         * 
+         *
          * @param commonParent
          */
         public MapperBgDrawableComposite(Composite commonParent) {
@@ -935,7 +966,7 @@ public class MapperUI {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.commons.ui.swt.drawing.link.BackgroundRefresher#drawBackground(org.eclipse.swt.graphics.GC)
          */
         @Override
@@ -974,7 +1005,7 @@ public class MapperUI {
 
         /**
          * Getter for antialias.
-         * 
+         *
          * @return the antialias
          */
         public boolean isAntialias() {
@@ -983,7 +1014,7 @@ public class MapperUI {
 
         /**
          * Sets the antialias.
-         * 
+         *
          * @param antialias the antialias to set
          */
         public void setAntialias(boolean antialias) {
@@ -992,7 +1023,7 @@ public class MapperUI {
 
         /**
          * Getter for forceRecalculate.
-         * 
+         *
          * @return the forceRecalculate
          */
         public boolean isForceRecalculate() {
@@ -1001,7 +1032,7 @@ public class MapperUI {
 
         /**
          * Sets the forceRecalculate.
-         * 
+         *
          * @param forceRecalculate the forceRecalculate to set
          */
         public void setForceRecalculate(boolean forceRecalculate) {
@@ -1107,7 +1138,7 @@ public class MapperUI {
 
     /**
      * Getter for shell.
-     * 
+     *
      * @return the shell
      */
     public Shell getShell() {
@@ -1115,9 +1146,9 @@ public class MapperUI {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "getStatusBarLabel".
-     * 
+     *
      * @return null if label is not created
      */
     public StatusBar getStatusBar() {

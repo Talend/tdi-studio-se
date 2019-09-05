@@ -17,6 +17,7 @@
 package net.sf.json.util;
 
 import java.io.StringWriter;
+import java.math.BigDecimal;
 
 import junit.framework.TestCase;
 import net.sf.json.JSONFunction;
@@ -93,7 +94,7 @@ public class TestJSONBuilder extends TestCase {
             .endObject();
       JSONObject jsonObj = JSONObject.fromObject( w.toString() );
       assertEquals( Boolean.TRUE, jsonObj.get( "bool" ) );
-      assertEquals( new Double( 1.1d ), jsonObj.get( "numDouble" ) );
+      assertEquals( Double.valueOf( "1.1" ), jsonObj.get( "numDouble" ) );
       assertEquals( new Long( 2 ).longValue(), ((Number) jsonObj.get( "numInt" )).longValue() );
       assertEquals( "text", jsonObj.get( "text" ) );
       assertTrue( JSONUtils.isFunction( jsonObj.get( "func" ) ) );

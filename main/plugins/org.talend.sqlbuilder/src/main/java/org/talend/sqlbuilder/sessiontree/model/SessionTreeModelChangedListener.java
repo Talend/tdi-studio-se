@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,9 +14,9 @@ package org.talend.sqlbuilder.sessiontree.model;
 
 /**
  * DOC qianbing class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SessionTreeModelChangedListener.java,v 1.3 2006/11/01 06:45:49 peiqin.hou Exp $
- * 
+ *
  */
 public abstract class SessionTreeModelChangedListener {
 

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,7 +44,7 @@ public class ChangeOracleJarName4OracleDriver extends AbstractJobMigrationTask {
         IComponentConversion changeOracleDriverJarType = new IComponentConversion() {
 
             public void transform(NodeType node) {
-                
+
                 if("tLibraryLoad".equals(node.getComponentName())) { //$NON-NLS-1$
                     ElementParameterType moduleLib = ComponentUtilities.getNodeProperty(node, "LIBRARY"); //$NON-NLS-1$
                     if (moduleLib != null) {
@@ -76,9 +76,9 @@ public class ChangeOracleJarName4OracleDriver extends AbstractJobMigrationTask {
 	                    }
                     }
                 }
-                
+
             }
-            
+
             /**
              * convert the string value that contain double quote text closure.
              * @param source
@@ -96,7 +96,7 @@ public class ChangeOracleJarName4OracleDriver extends AbstractJobMigrationTask {
                 }
                 return source;
             }
-            
+
             /**
              * convert the string value that not contain double quote text closure.
              * @param source

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -93,7 +93,7 @@ import org.talend.repository.ui.views.IRepositoryView;
 public class WSDL2JAVAController extends AbstractElementPropertySectionController {
 
     /**
-     * 
+     *
      */
     private static final String TEMPFOLDER = "wsdl2java"; //$NON-NLS-1$
 
@@ -101,7 +101,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
 
     /**
      * DOC xtan WSDL2JAVAController constructor comment.
-     * 
+     *
      * @param dp
      */
     public WSDL2JAVAController(IDynamicProperty dp) {
@@ -110,7 +110,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#createControl
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -180,7 +180,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -196,7 +196,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#refresh
      * (org.talend.core.model.process.IElementParameter, boolean)
      */
@@ -207,7 +207,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -234,7 +234,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
@@ -399,7 +399,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
 
     /**
      * DOC xtan Comment method "createRoutine".
-     * 
+     *
      * @param path
      */
     private RoutineItem createRoutine(final IPath path, String label, File initFile, String name) {
@@ -498,7 +498,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
 
     /**
      * DOC xtan there will be refactor for this method with JavaRoutineSynchronizer.syncRoutine().
-     * 
+     *
      * @param routineItem
      * @param copyToTemp
      * @return
@@ -608,7 +608,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
 
         /**
          * Getter for exception.
-         * 
+         *
          * @return the exception
          */
         public Throwable getException() {

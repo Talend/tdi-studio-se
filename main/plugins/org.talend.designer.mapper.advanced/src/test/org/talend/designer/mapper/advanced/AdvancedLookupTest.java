@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,8 +23,8 @@ import org.talend.designer.components.commons.AdvancedLookup.MATCHING_MODE;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
- 
+ *
+
  */
 public class AdvancedLookupTest {
 
@@ -61,7 +61,7 @@ public class AdvancedLookupTest {
      */
     @Before
     public void init() {
-        
+
     }
 
     /**
@@ -80,13 +80,13 @@ public class AdvancedLookupTest {
             lookup.put(new RowStruct3(i + 10, i + 10, String.valueOf(i + 10), String.valueOf(i + 10), "name C"
                     + String.valueOf(i + 10)));
         }
-        
+
         lookup.get(new RowStruct3(1, 1 + 4, null, null, null));
         if (lookup.resultIsList()) {
             System.out.println("List: " + lookup.getResultList());
         } else if (lookup.resultIsObject()) {
             System.out.println("Object: " + lookup.getResultObject());
-            
+
         }
 
         lookup.get(new RowStruct3(11, 11, null, null, null));
@@ -150,11 +150,11 @@ public class AdvancedLookupTest {
     }
 
     /**
-     * 
+     *
      * DOC amaumont PerformanceJavaTHash class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class LoadReadExecutorWithLookup {
 
@@ -187,7 +187,7 @@ public class AdvancedLookupTest {
             for (int i = 0; i < lstSize; i++) {
                 RowStruct3 row = (RowStruct3) localRowsLookup.get(i);
                 row.hashCodeDirty = true;
-                
+
                 lookup.put(row);
                 // TimeMeasure.step("loading", "end of loop block");
             }

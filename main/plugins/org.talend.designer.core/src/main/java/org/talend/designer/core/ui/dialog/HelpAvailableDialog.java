@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,7 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
  * This Dialog is similar to TraDialog both support helpAvailable feature, but this one override the UI of Help button
  * to a normal labeled button instead of a "<img src="http://www.eclipse.org/mylyn/images/icon-help.gif">" image button.
  * Help button is visible by default(can be set by {@link #setHelpAvailable(boolean)}).
- * 
+ *
  * @author GaoZone
  * @version 1.1
  */
@@ -55,7 +55,7 @@ public abstract class HelpAvailableDialog extends TrayDialog {
     /**
      * Gets the help context id. Override when necessary.</br> Triggered in {@link #helpPressed()} by default, use to
      * open specify help context.
-     * 
+     *
      * @return the help context id
      */
     protected String getHelpContextId() {
@@ -86,7 +86,7 @@ public abstract class HelpAvailableDialog extends TrayDialog {
 
     /**
      * Add create Help Button if {@link #isHelpAvailable()} = true.
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
      */
     @Override

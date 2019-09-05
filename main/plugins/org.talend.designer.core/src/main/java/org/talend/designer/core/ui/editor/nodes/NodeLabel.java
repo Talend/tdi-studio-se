@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.talend.designer.core.model.components.EParameterName;
 
 /**
  * Label object of a node. This is the model part of the Gef item. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeLabel extends Element {
 
@@ -57,7 +57,7 @@ public class NodeLabel extends Element {
 
     /**
      * Create a new label for a node with a given label and node.
-     * 
+     *
      * @param labelText
      * @param nodeParent
      */
@@ -68,7 +68,7 @@ public class NodeLabel extends Element {
 
     /**
      * Set the text of the label.
-     * 
+     *
      * @param labelText
      */
     public void setLabelText(String labelText) {
@@ -78,7 +78,7 @@ public class NodeLabel extends Element {
 
     /**
      * Gives the text of the label.
-     * 
+     *
      * @param labelText
      */
     public String getLabelText() {
@@ -87,7 +87,7 @@ public class NodeLabel extends Element {
 
     /**
      * Set the location of the label.
-     * 
+     *
      * @param location
      */
     public void setLocation(Point location) {
@@ -100,7 +100,7 @@ public class NodeLabel extends Element {
 
     /**
      * Gives the location of the label (must add the offset to have the correct position).
-     * 
+     *
      * @return Point
      */
     public Point getLocation() {
@@ -109,7 +109,7 @@ public class NodeLabel extends Element {
 
     /**
      * Set the offset for the label. The offset is linked to the location of the label.
-     * 
+     *
      * @param offset
      */
     public void setOffset(Point offset) {
@@ -137,7 +137,7 @@ public class NodeLabel extends Element {
 
     /**
      * Gives the offset of the label.
-     * 
+     *
      * @return
      */
     public Point getOffset() {
@@ -146,7 +146,7 @@ public class NodeLabel extends Element {
 
     /**
      * This offset will change when the text is too long, then the label will be always centered with the node.
-     * 
+     *
      * @param textOffset
      */
     public void setTextOffset(Point textOffset) {
@@ -155,7 +155,7 @@ public class NodeLabel extends Element {
 
     /**
      * Gives the offset dependings on the text lenght.
-     * 
+     *
      * @return
      */
     public Point getTextOffset() {
@@ -164,7 +164,7 @@ public class NodeLabel extends Element {
 
     /**
      * Gives the node parent of this label.
-     * 
+     *
      * @return
      */
     public Node getNode() {
@@ -173,7 +173,7 @@ public class NodeLabel extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#setPropertyValue(java.lang.Object, java.lang.Object)
      */
     public void setPropertyValue(String id, Object value) {
@@ -182,7 +182,7 @@ public class NodeLabel extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getPropertyValue(java.lang.Object)
      */
     public Object getPropertyValue(String id) {
@@ -191,7 +191,7 @@ public class NodeLabel extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getElementName()
      */
     @Override
@@ -201,7 +201,7 @@ public class NodeLabel extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getElementParameters()
      */
     @Override

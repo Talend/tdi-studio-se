@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -127,7 +127,7 @@ public class AggregateFunction implements
 			IllegalAccessException, InvocationTargetException {
 		Iterator<List<Object>> valuesIterator = values.iterator();
 		Object max = null;
-		
+
 		while (valuesIterator.hasNext()) {
 			Object data = valuesIterator.next().get(index);
 			if (max == null || Utils.compareTo(max, data, outputColumnClass) < 0)

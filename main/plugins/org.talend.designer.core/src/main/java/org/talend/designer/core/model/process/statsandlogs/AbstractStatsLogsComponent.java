@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,7 +36,7 @@ import org.talend.designer.core.model.components.MultipleComponentManager;
 
 /**
  * These components won't be used in the designer part, only for the generation. <br/>
- * 
+ *
  */
 public abstract class AbstractStatsLogsComponent implements IComponent {
 
@@ -115,7 +115,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getModulesNeeded()
      */
     @Override
@@ -126,7 +126,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getName()
      */
     @Override
@@ -200,7 +200,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisible(java.lang.String)
      */
     @Override
@@ -210,7 +210,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisibleInComponentDefinition()
      */
     @Override
@@ -472,7 +472,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getMultipleComponentManager()
      */
     @Override
@@ -482,7 +482,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getComponentType()
      */
     @Override
@@ -493,7 +493,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useLookup()
      */
     @Override
@@ -504,7 +504,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useImport()
      */
     @Override
@@ -515,7 +515,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isHashComponent()
      */
     @Override
@@ -525,7 +525,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isTechnical()
      */
     @Override
@@ -540,7 +540,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isMainCodeCalled()
      */
     @Override
@@ -550,7 +550,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#canParallelize()
      */
     @Override
@@ -560,7 +560,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getShortName()
      */
     @Override
@@ -588,7 +588,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
      * This is just added in <code>HEADER</code>, it is used to present the component belongs to common process, M/R
      * process and etc. The {@link ComponentCategory#CATEGORY_4_DI} is as the default value. Added by Marvin Wang on Jan
      * 11, 2013.
-     * 
+     *
      */
     @Override
     public String getType() {
@@ -607,7 +607,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getInputType()
      */
     @Override
@@ -618,7 +618,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getOutputType()
      */
     @Override
@@ -629,7 +629,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPartitioning()
      */
     @Override
@@ -654,7 +654,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getCONNECTORList()
      */
     @Override
@@ -680,7 +680,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#setOriginalFamilyName(java.lang.String)
      */
     @Override
@@ -691,7 +691,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#setTranslatedFamilyName(java.lang.String)
      */
     @Override

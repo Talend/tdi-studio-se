@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -94,7 +94,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     protected Button removeBtn;
 
     protected Table itemTable;
-    
+
     protected Button globalSnapshotCheckbox;
 
     protected Button fixedVersionButton;
@@ -104,7 +104,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     protected Button subjobs;
 
     protected Button eachVersionButton;
-    
+
     protected Button useJobVersionButton;
 
     private Map<IImage, Image> cacheItemImages = new HashMap<IImage, Image>();
@@ -112,9 +112,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     protected List<ItemVersionObject> versionObjects = new ArrayList<ItemVersionObject>();
 
     protected List<ItemVersionObject> checkedObjects = new ArrayList<ItemVersionObject>();
-    
+
     private boolean countSubjobs;
-    
+
     private List<ItemVersionObject> newAddedSubjobs = new ArrayList<ItemVersionObject>();
 
     protected ICheckStateListener checkStateListener = new ICheckStateListener() {
@@ -264,7 +264,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
         gdlComposite.marginHeight = 0;
         gdlComposite.marginWidth = 0;
         composite.setLayout(gdlComposite);
-        
+
         GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
 
         addItemsOption(composite);
@@ -472,7 +472,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
         }
         return image;
     }
-    
+
     private void processParentItems(List<ItemVersionObject> objects, RepositoryNode node){
         ItemVersionObject parentObj = null;
         if(node.getParent() == null){
@@ -498,7 +498,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                         return;
                     }
                 }
-               
+
                 if (item != null && filterRepositoryNode(parentNode)) { // must be item
                     parentObj = createItemVersionObject(parentNode, property);
                 }
@@ -535,7 +535,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                         }
                     }
                 }
-                
+
                 if (item != null && filterRepositoryNode(node)) { // must be item
                     ItemVersionObject object = createItemVersionObject(node, property);
                     objects.add(object);

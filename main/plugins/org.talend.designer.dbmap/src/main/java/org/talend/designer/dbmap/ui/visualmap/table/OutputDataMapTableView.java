@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -67,9 +67,9 @@ import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: OutputDataMapTableView.java 1782 2007-02-03 07:57:38Z bqian $
- * 
+ *
  */
 public class OutputDataMapTableView extends DataMapTableView {
 
@@ -127,7 +127,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView#initTableConstraints()
      */
     @Override
@@ -142,7 +142,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.talend.designer.dbmap.ui.visualmap.table.OutputDataMapTableView.ExtendedTableViewerForFilters#
              * getTableConstraintSize()
              */
@@ -184,7 +184,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.talend.designer.dbmap.ui.visualmap.table.OutputDataMapTableView.ExtendedTableViewerForFilters#
              * getTableConstraintSize()
              */
@@ -220,7 +220,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView#addEntriesActionsComponents()
      */
     @Override
@@ -286,7 +286,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView#getZone()
      */
     @Override
@@ -302,7 +302,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView#toolbarNeededToBeRightStyle()
      */
     @Override
@@ -312,7 +312,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView#hasDropDownToolBarItem()
      */
     @Override
@@ -322,7 +322,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView#getTitle()
      */
     @Override
@@ -345,7 +345,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
         /**
          * DOC cmeng ExtendedTableViewerForFilters constructor comment.
-         * 
+         *
          * @param extendedTableModel
          * @param parent
          */
@@ -364,7 +364,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.commons.ui.swt.extended.macrotable.AbstractExtendedTableViewer#setTableViewerCreatorOptions
          * (org.talend.commons.ui.swt.tableviewer.TableViewerCreator)
          */
@@ -419,7 +419,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see
                  * org.talend.commons.ui.swt.tableviewer.tableeditor.ButtonImageTableEditorContent#selectionEvent(org
                  * .talend .commons.ui.swt.tableviewer.TableViewerCreatorColumn, java.lang.Object)

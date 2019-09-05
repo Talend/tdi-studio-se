@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,9 +21,9 @@ import org.talend.designer.dbmap.language.operator.IDbOperatorManager;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: AbstractLanguage.java 1877 2007-02-06 17:16:43Z amaumont $
- * 
+ *
  */
 public abstract class AbstractDbLanguage implements IDbLanguage {
 
@@ -32,11 +32,11 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
     protected ICodeProblemsChecker codeChecker;
 
     /**
-     * 
+     *
      * Database joints.
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public static enum JOIN implements IJoinType {
         NO_JOIN("(IMPLICIT JOIN)"), //$NON-NLS-1$
@@ -54,7 +54,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
         /**
          * Getter for label.
-         * 
+         *
          * @return the label
          */
         public String getLabel() {
@@ -71,7 +71,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
     };
 
     /**
-     * 
+     *
      */
     public AbstractDbLanguage(IDbOperatorManager operatorsManager) {
         this.operatorsManager = operatorsManager;
@@ -80,7 +80,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.designer.dbmap.language.IDbLanguage#getLocation(org.talend.designer.dbmap.model.tableentry.
      * TableEntryLocation)
      */
@@ -90,7 +90,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.IDbLanguage#getLocation(java.lang.String)
      */
     public String getLocation(String tableName) {
@@ -99,7 +99,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.IDbLanguage#getCodeChecker()
      */
     public ICodeProblemsChecker getCodeChecker() {
@@ -108,7 +108,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.IDbLanguage#getAvailableJoins()
      */
     public IJoinType[] getAvailableJoins() {
@@ -117,7 +117,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.IDbLanguage#getJoin(java.lang.String)
      */
     public IJoinType getJoin(String joinType) {
@@ -132,7 +132,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.language.ILanguage#getCouplePattern()
      */
     public String getLocationPattern() {
@@ -141,7 +141,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.language.ILanguage#getPREFIX_FIELD_NAME_REGEXP()
      */
     public String getPrefixFieldRegexp() {
@@ -150,7 +150,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.language.ILanguage#getPREFIX_TABLE_NAME_REGEXP()
      */
     public String getPrefixTableRegexp() {
@@ -159,7 +159,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.language.ILanguage#getSUFFIX_FIELD_NAME_REGEXP()
      */
     public String getSuffixFieldRegexp() {
@@ -168,7 +168,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.language.ILanguage#getSUFFIX_TABLE_NAME_REGEXP()
      */
     public String getSuffixTableRegexp() {
@@ -177,7 +177,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.language.ILanguage#getSubstPatternForPrefixColumnName()
      */
     public String getSubstPatternForPrefixColumnName() {
@@ -186,7 +186,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.language.ILanguage#getSubstPatternForReplaceLocation()
      */
     public String getSubstPatternForReplaceLocation() {
@@ -195,7 +195,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.language.ILanguage#getTEMPLATE_TABLE_COLUMN_VARIABLE()
      */
     public String getTemplateTableColumnVariable() {
@@ -204,7 +204,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.ILanguage#getTEMPLATE_PROCESS_COLUMN_VARIABLE()
      */
     public String getTemplateVarsColumnVariable() {
@@ -213,7 +213,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.ILanguage#getTEMPLATE_GENERATED_CODE_TABLE_COLUMN_VARIABLE()
      */
     public String getTemplateGeneratedCodeTableColumnVariable() {
@@ -222,7 +222,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.ILanguage#getAndCondition()
      */
     public String getAndCondition() {
@@ -231,7 +231,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.ILanguage#getPrefixField()
      */
     public String getPrefixField() {
@@ -240,7 +240,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.ILanguage#getPrefixTable()
      */
     public String getPrefixTable() {
@@ -249,7 +249,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.ILanguage#getSuffixField()
      */
     public String getSuffixField() {
@@ -258,7 +258,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.ILanguage#getSuffixTable()
      */
     public String getSuffixTable() {
@@ -267,7 +267,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.ILanguage#getTemplateTableVariable()
      */
     public String getTemplateTableVariable() {
@@ -276,7 +276,7 @@ public abstract class AbstractDbLanguage implements IDbLanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.IDbLanguage#getOperatorsManager()
      */
     public IDbOperatorManager getOperatorsManager() {

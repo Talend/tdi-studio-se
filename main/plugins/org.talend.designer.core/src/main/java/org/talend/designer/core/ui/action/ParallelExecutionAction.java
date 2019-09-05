@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,7 +42,7 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
 
 /**
- * 
+ *
  * DOC YeXiaowei class global comment. Detailled comment
  */
 public class ParallelExecutionAction extends SelectionAction {
@@ -97,7 +97,7 @@ public class ParallelExecutionAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
@@ -133,7 +133,7 @@ public class ParallelExecutionAction extends SelectionAction {
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei ParallelExecutionAction class global comment. Detailled comment
      */
     class ParallelDialog extends Dialog {
@@ -148,7 +148,7 @@ public class ParallelExecutionAction extends SelectionAction {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
          */
         @Override
@@ -181,7 +181,7 @@ public class ParallelExecutionAction extends SelectionAction {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
                  */
                 @Override
@@ -202,7 +202,7 @@ public class ParallelExecutionAction extends SelectionAction {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.dialogs.Dialog#okPressed()
          */
         @Override
@@ -235,7 +235,7 @@ public class ParallelExecutionAction extends SelectionAction {
 
         /**
          * DOC YeXiaowei Comment method "numberTextValid".
-         * 
+         *
          * @return
          */
 

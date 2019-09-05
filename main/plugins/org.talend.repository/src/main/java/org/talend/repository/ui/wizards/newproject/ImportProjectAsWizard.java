@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -42,9 +41,9 @@ import org.talend.repository.ui.wizards.newproject.copyfromeclipse.TalendWizardP
 
 /**
  * Wizard for the creation of a new project. <br/>
- * 
+ *
  * $Id: NewProjectWizard.java 1877 2007-02-06 17:16:43Z amaumont $
- * 
+ *
  */
 public class ImportProjectAsWizard extends Wizard {
 
@@ -53,13 +52,13 @@ public class ImportProjectAsWizard extends Wizard {
 
     private String name;
 
-    private WizardProjectsImportPage manyProjectsPage;
+    private TalendWizardProjectsImportPage manyProjectsPage;
 
     protected boolean isImportedSeveralProject;
 
     /**
      * Constructs a new NewProjectWizard.
-     * 
+     *
      * @param author Project author.
      * @param server
      * @param password

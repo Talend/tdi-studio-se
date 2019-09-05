@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,13 +22,13 @@ import org.talend.designer.dbmap.language.IJoinType;
 
 /**
  * created by wchen on 2012-8-14 Detailled comment
- * 
+ *
  */
 public class HiveLanguage extends AbstractDbLanguage {
 
     /**
      * DOC wchen HiveLanguage constructor comment.
-     * 
+     *
      * @param operatorsManager
      */
     public HiveLanguage() {
@@ -62,11 +62,11 @@ public class HiveLanguage extends AbstractDbLanguage {
     }
 
     /**
-     * 
+     *
      * Hive joins.
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public static enum HIVEJOIN implements IJoinType {
         LEFT_SEMI_JOIN("LEFT SEMI JOIN"), //$NON-NLS-1$
@@ -80,7 +80,7 @@ public class HiveLanguage extends AbstractDbLanguage {
 
         /**
          * Getter for label.
-         * 
+         *
          * @return the label
          */
         @Override

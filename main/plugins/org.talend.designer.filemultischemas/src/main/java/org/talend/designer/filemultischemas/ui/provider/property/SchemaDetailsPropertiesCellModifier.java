@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,7 +38,7 @@ public class SchemaDetailsPropertiesCellModifier extends SchemaDetailsCellModifi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.ICellModifier#canModify(java.lang.Object, java.lang.String)
      */
     public boolean canModify(Object element, String property) {
@@ -51,7 +51,7 @@ public class SchemaDetailsPropertiesCellModifier extends SchemaDetailsCellModifi
             List<MultiMetadataColumn> metadataColumnsInModel = container.getMetadataColumnsInModel();
             /*
              * ingore record type(first column);
-             * 
+             *
              * if existed key column, should not edit other key.
              */
             if (EPropertyName.KEY.name().equals(property)
@@ -68,7 +68,7 @@ public class SchemaDetailsPropertiesCellModifier extends SchemaDetailsCellModifi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.ICellModifier#getValue(java.lang.Object, java.lang.String)
      */
     public Object getValue(Object element, String property) {
@@ -99,7 +99,7 @@ public class SchemaDetailsPropertiesCellModifier extends SchemaDetailsCellModifi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.ICellModifier#modify(java.lang.Object, java.lang.String, java.lang.Object)
      */
     public void modify(Object element, String property, Object value) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -87,9 +87,9 @@ import orgomg.cwm.resource.relational.Schema;
 
 /**
  * dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  */
 public class SQLBuilderRepositoryNodeManager {
 
@@ -102,7 +102,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "isChangeElementColor".
-     * 
+     *
      * @param node
      * @return
      */
@@ -124,7 +124,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "isDiff".
-     * 
+     *
      * @param node
      * @return
      */
@@ -190,7 +190,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "addRepositoryNode".
-     * 
+     *
      * @param node
      */
     public void addRepositoryNode(RepositoryNode node) {
@@ -208,7 +208,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "getRepositoryNodebyName".
-     * 
+     *
      * @param name
      * @return
      */
@@ -223,7 +223,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "removeRepositoryNodeExceptNodeByName".
-     * 
+     *
      * @param repositoryNodeName
      */
     public void removeRepositoryNodeExceptNodeByName(String repositoryNodeName) {
@@ -237,7 +237,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "sortTableColumn".
-     * 
+     *
      * @param set
      * @return
      */
@@ -298,7 +298,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "sortColumn".
-     * 
+     *
      * @param columns
      * @return
      */
@@ -339,7 +339,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * method "getTableNamesByRepositoryNode" get All Table Names in current RepositoryNode's DatabaseConnectionItem.
-     * 
+     *
      * @param node current RepositoryNode
      * @return List :all Table Names.
      */
@@ -373,7 +373,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * method "getALLReposotoryNodeNames" get all DatabaseConnection's RepositoryNode Names.
-     * 
+     *
      * @return List : all DatabaseConnection's RepositoryNode Names
      */
     public List<String> getALLReposotoryNodeNames() {
@@ -386,7 +386,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * Gets all the connection repositories.
-     * 
+     *
      * @return
      */
     public List<RepositoryNode> getAllDisplayedConnection() {
@@ -395,7 +395,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * method "getRepositoryNodeFromDB".
-     * 
+     *
      * @param oldNode
      * @return
      */
@@ -415,7 +415,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "modifyOldRepositoryNode".
-     * 
+     *
      * @param connection
      * @param iMetadataConnection
      */
@@ -482,7 +482,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "modifyOneColumnFromDB".
-     * 
+     *
      * @param iMetadataConnection
      * @param tablesFromDB
      * @param metadataColumn
@@ -505,7 +505,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "ModifyOldConnection".
-     * 
+     *
      * @param tablesFromEMF
      * @param iMetadataConnection
      * @param tablesFromDB
@@ -537,7 +537,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "restoreConnection".
-     * 
+     *
      * @param connection
      * @param tablesFromEMF
      */
@@ -582,7 +582,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "getRepositoryNodeByBuildIn".
-     * 
+     *
      * @param node
      * @param parameters
      * @return
@@ -603,7 +603,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "createNewRepositoryNode".
-     * 
+     *
      * @param node
      * @param parameters
      * @param connection
@@ -727,7 +727,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "createConnection".
-     * 
+     *
      * @param parameters inputed when use Built-In .
      * @return DatabaseConnection : connetion .
      */
@@ -813,7 +813,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "getDbTypeFromRepositoryNode".
-     * 
+     *
      * @param node
      * @return
      */
@@ -824,7 +824,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * method "getItem" get DatabaseConnectionItem by current RepositoryNode .
-     * 
+     *
      * @param newNode current RepositoryNode
      * @return DatabaseConnectionItem : item current node.
      */
@@ -842,7 +842,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * method "getDatabaseNameByRepositoryNode" get databaseName .
-     * 
+     *
      * @param node current RepositoryNode
      * @return String :databaseName
      */
@@ -854,7 +854,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * method "getDatabaseMetaData" get databaseMetaData.
-     * 
+     *
      * @param iMetadataConnection contains connection
      * @return dbMetaData DatabaseMetaData .
      * @throws SQLException
@@ -894,7 +894,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "getALLQueryLabels".
-     * 
+     *
      * @param repositoryNode current RepositoryNode.
      * @return all QueryLabels in Emf.
      */
@@ -915,7 +915,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * method "saveQuery" use save inputed Query to EMF's xml File.
-     * 
+     *
      * @param repositoryNode current RepositoryNode
      * @param query need to save Query
      */
@@ -990,7 +990,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * method "deleteQueries" use delete Queries.
-     * 
+     *
      * @param repositoryNode databaseConnection's RepositoryNode
      * @param queries need to deleted Queries
      */
@@ -1004,7 +1004,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * save MetaData into EMF's xml files.
-     * 
+     *
      * @param item need to be saved Item
      */
     public static void saveMetaData(DatabaseConnectionItem item) {
@@ -1019,7 +1019,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * fixed Table .
-     * 
+     *
      * @param metaFromDB MetadataTable from Database
      * @param metaFromEMF MetadataTable from Emf
      * @param iMetadataConnection contain Connection.
@@ -1052,7 +1052,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "modifyOldOneTableFromEMF".
-     * 
+     *
      * @param metaFromEMF
      * @param iMetadataConnection
      * @param db
@@ -1085,7 +1085,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "modifyOldOneTableFromDB".
-     * 
+     *
      * @param metaFromDB
      * @param connectionLabel
      * @param emf
@@ -1117,7 +1117,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * fixed Column from EMF use Column From DataBase .
-     * 
+     *
      * @param columnsFromDB MetadataColumn from Database
      * @param cloumnsFromEMF MetadataColumn from Emf
      */
@@ -1134,7 +1134,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "modifyOldOneColumnFromEMF".
-     * 
+     *
      * @param cloumnsFromEMF
      * @param db
      */
@@ -1156,7 +1156,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * dev Comment method "modifyOldOneColumnFromDB".
-     * 
+     *
      * @param columnsFromDB
      * @param connAndTableLabel
      * @param emf
@@ -1259,7 +1259,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * Check if Two MetadataColumns are the same..
-     * 
+     *
      * @param info MetadataColumn
      * @param column MetadataColumn
      * @return isEquivalent.
@@ -1307,7 +1307,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * RepositoryNode.
-     * 
+     *
      * @param repositoryNode RepositoryNode
      * @return RepositoryNodeType
      * @see RepositoryNodeType
@@ -1318,7 +1318,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * be a RepositoryNode with database infomation.
-     * 
+     *
      * @param repositoryNode RepositoryNode
      * @return RepositoryNode
      */
@@ -1384,7 +1384,7 @@ public class SQLBuilderRepositoryNodeManager {
 
     /**
      * qzhang Comment method "updateEditor".
-     * 
+     *
      * @param activeQuery
      * @param editor
      */
@@ -1397,9 +1397,9 @@ public class SQLBuilderRepositoryNodeManager {
 
 /**
  * dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  */
 class MetadataTableComparator implements Comparator<MetadataTable> {
 
@@ -1416,9 +1416,9 @@ class MetadataTableComparator implements Comparator<MetadataTable> {
 
 /**
  * dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  */
 class MetadataColumnComparator implements Comparator<MetadataColumn> {
 

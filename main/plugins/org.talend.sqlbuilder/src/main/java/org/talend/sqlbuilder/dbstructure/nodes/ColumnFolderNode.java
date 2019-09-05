@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,15 +22,15 @@ import org.talend.sqlbuilder.SqlBuilderPlugin;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ColumnFolderNode.java,v 1.4 2006/11/01 05:40:59 peiqin.hou Exp $
- * 
+ *
  */
 public class ColumnFolderNode extends AbstractFolderNode {
 
     /**
      * Create new database table node.
-     * 
+     *
      * @param parent node
      * @param name of this node
      * @param sessionNode session for this node
@@ -44,7 +44,7 @@ public class ColumnFolderNode extends AbstractFolderNode {
 
     /**
      * Sort columns: PK - FK - Name..
-     * 
+     *
      * @return Comparator.
      */
     public Comparator getComparator() {
@@ -96,7 +96,7 @@ public class ColumnFolderNode extends AbstractFolderNode {
 
     /**
      * Returns the table info type as the type for this node.
-     * 
+     *
      * @return Type.
      * @see org.talend.sqlbuilder.dbstructure.nodes.INode#getType()
      */
@@ -106,8 +106,8 @@ public class ColumnFolderNode extends AbstractFolderNode {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @see org.talend.sqlbuilder.dbstructure.nodes.AbstractNode#loadChildren()
      */
     public void loadChildren() {

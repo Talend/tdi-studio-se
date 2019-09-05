@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,7 +36,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 public class SetFilterTiemFromTotoFromPOPComponentsMigrationTask extends AbstractJobMigrationTask {
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @seeorg.talend.core.model.migration.AbstractJobMigrationTask#executeOnProcess(org.talend.core.model.properties.
 	 * ProcessItem)
 	 */
@@ -46,13 +46,13 @@ public class SetFilterTiemFromTotoFromPOPComponentsMigrationTask extends Abstrac
 		if (processType == null) {
 			return ExecutionResult.NOTHING_TO_DO;
 		}
-		
+
 		try {
-			
+
 			IComponentFilter filter = new NameComponentFilter("tPOP");
 			ModifyComponentsAction.searchAndModify(item, processType, filter, Arrays
 					.<IComponentConversion> asList(new IComponentConversion() {
-						
+
 						public void transform(NodeType node) {
 							ElementParameterType p = ComponentUtilities.getNodeProperty(node, "ADVANCED_FILTER");
 							EList<ElementValueType> es = p.getElementValue();
@@ -62,16 +62,16 @@ public class SetFilterTiemFromTotoFromPOPComponentsMigrationTask extends Abstrac
 								}
 							}
 						}
-						
+
 					}));
-			
+
 			return ExecutionResult.SUCCESS_NO_ALERT;
 		} catch (Exception e) {
 			ExceptionHandler.process(e);
 			return ExecutionResult.FAILURE;
 		}
 	}
-	
+
 	public Date getOrder() {
 		GregorianCalendar gc = new GregorianCalendar(2012, 6, 25, 12, 0, 0);
 		return gc.getTime();

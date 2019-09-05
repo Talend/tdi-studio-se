@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,7 +32,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -213,7 +212,7 @@ public class LoginHelper {
     }
 
     /**
-     * 
+     *
      * @param repositoryId
      * @return true if remote or cloud
      */
@@ -223,7 +222,7 @@ public class LoginHelper {
     }
 
     /**
-     * 
+     *
      * @param connectionBean
      * @return true if remote or cloud
      */
@@ -243,7 +242,7 @@ public class LoginHelper {
 
     /**
      * if the connection is Cloud US/EU/APAC/Custom
-     * 
+     *
      * @param connectionBean
      * @return true if connection is Cloud US or Cloud EU or Cloud APAC or Cloud Custom
      */
@@ -374,6 +373,7 @@ public class LoginHelper {
         if (connBean != null) {
             repositoryContext.setFields(connBean.getDynamicFields());
             password = connBean.getPassword();
+            repositoryContext.setToken(connBean.isToken());
         }
         repositoryContext.setClearPassword(password);
         if (project != null) {
@@ -688,7 +688,7 @@ public class LoginHelper {
                     if (errorManager != null) {
                         errorManager.setWarnMessage(warnings);
                     } else {
-                        final Shell shell = new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
+                        final Shell shell = DisplayUtils.getDefaultShell(false);
                         MessageDialog.openWarning(shell, Messages.getString("LoginComposite.warningTitle"), warnings); //$NON-NLS-1$
                     }
                 }
@@ -711,7 +711,7 @@ public class LoginHelper {
             if (errorManager != null) {
                 errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
             } else {
-                final Shell shell = new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
+                final Shell shell = DisplayUtils.getDefaultShell(false);
                 MessageDialog.openError(shell, Messages.getString("LoginComposite.warningTitle"), //$NON-NLS-1$
                         Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
             }
@@ -851,7 +851,7 @@ public class LoginHelper {
             return usableShell;
         } else {
             // return new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
-            return DisplayUtils.getDefaultShell();
+            return DisplayUtils.getDefaultShell(false);
         }
     }
 

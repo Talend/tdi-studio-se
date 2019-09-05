@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -18,22 +18,46 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.service.ITaCoKitService;
 import org.talend.core.repository.utils.ComponentsJsonModel;
 import org.talend.core.repository.utils.ProjectDataJsonProvider;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.ServerManager;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
 import org.talend.sdk.component.studio.toolbar.ReloadAction;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService;
 
 
 public class TaCoKitService implements ITaCoKitService {
 
     @Override
+    public void start() throws Exception {
+        ServerManager.getInstance().start();
+        try {
+            TaCoKitUtil.registAllTaCoKitRepositoryTypes();
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    @Override
+    public boolean isStarted() throws Exception {
+        return ServerManager.getInstance().isStarted();
+    }
+
+    @Override
     public String reload(IProgressMonitor monitor) throws Exception {
-        return new ReloadAction().reload(monitor);
+        String result = new ReloadAction().reload(monitor);
+        try {
+            TaCoKitUtil.registAllTaCoKitRepositoryTypes();
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return result;
     }
 
     @Override

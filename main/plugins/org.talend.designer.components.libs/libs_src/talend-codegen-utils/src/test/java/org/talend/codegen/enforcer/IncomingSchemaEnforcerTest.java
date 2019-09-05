@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -131,7 +131,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * 
+     *
      * in case dynamic column is on the 0 position
      * This test uses old deprecated API
      */
@@ -177,7 +177,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * 
+     *
      * in case dynamic column is on the 0 position
      */
     @Test
@@ -222,7 +222,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * 
+     *
      * in case dynamic column is in the middle position
      */
     @Test
@@ -266,7 +266,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * 
+     *
      * in case dynamic column is in the middle position
      */
     @Test
@@ -311,7 +311,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * 
+     *
      * in case dynamic column is in the last position
      */
     @Test
@@ -356,7 +356,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * 
+     *
      * in case dynamic column is in the last position
      */
     @Test

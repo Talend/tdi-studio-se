@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,13 +23,13 @@ import org.eclipse.core.runtime.Platform;
 import org.talend.repository.ui.actions.importproject.ImportProjectBean;
 
 /**
- * 
+ *
  * class global comment. Detailled comment
  */
 public class AfterImportProjectUtil {
 
     /**
-     * 
+     *
      */
     private static final String CLASS = "class"; //$NON-NLS-1$
 

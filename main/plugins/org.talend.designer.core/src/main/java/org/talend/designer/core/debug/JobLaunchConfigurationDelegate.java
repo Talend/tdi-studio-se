@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,15 +34,15 @@ import org.talend.designer.runprocess.ItemCacheManager;
 
 /**
  * bqian A launch delegate for launching local job. <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class JobLaunchConfigurationDelegate extends org.eclipse.debug.core.model.LaunchConfigurationDelegate {
 
     /**
      * Convenience method to get the launch manager.
-     * 
+     *
      * @return the launch manager
      */
     protected ILaunchManager getLaunchManager() {
@@ -90,7 +90,7 @@ public class JobLaunchConfigurationDelegate extends org.eclipse.debug.core.model
 
     /**
      * DOC bqian Comment method "findProcessFromRepository".
-     * 
+     *
      * @param jobName
      * @return
      */

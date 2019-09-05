@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -30,11 +30,29 @@ public class TaCoKitRepositoryNodeSorter extends RepositoryNodeCompareSorter {
         if (n1 instanceof ITaCoKitRepositoryNode && n2 instanceof ITaCoKitRepositoryNode) {
             ITaCoKitRepositoryNode tacokitNode1 = (ITaCoKitRepositoryNode) n1;
             ITaCoKitRepositoryNode tacokitNode2 = (ITaCoKitRepositoryNode) n2;
+            if (tacokitNode1.isFamilyNode() || tacokitNode2.isFamilyNode()) {
+                if (tacokitNode1.isFamilyNode() && tacokitNode2.isFamilyNode()) {
+                    return tacokitNode1.getLabel().compareTo(tacokitNode2.getLabel());
+                }
+                if (tacokitNode1.isFamilyNode()) {
+                    return -1;
+                }
+                return 1;
+            }
             if (tacokitNode1.isConfigNode() || tacokitNode2.isConfigNode()) {
                 if (tacokitNode1.isConfigNode() && tacokitNode2.isConfigNode()) {
                     return tacokitNode1.getLabel().compareTo(tacokitNode2.getLabel());
                 }
                 if (tacokitNode1.isConfigNode()) {
+                    return -1;
+                }
+                return 1;
+            }
+            if (tacokitNode1.isFolderNode() || tacokitNode2.isFolderNode()) {
+                if (tacokitNode1.isFolderNode() && tacokitNode2.isFolderNode()) {
+                    return tacokitNode1.getLabel().compareTo(tacokitNode2.getLabel());
+                }
+                if (tacokitNode1.isFolderNode()) {
                     return -1;
                 }
                 return 1;

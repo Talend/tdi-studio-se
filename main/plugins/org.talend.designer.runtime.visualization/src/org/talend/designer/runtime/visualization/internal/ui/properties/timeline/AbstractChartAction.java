@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,7 +44,7 @@ public class AbstractChartAction extends Action implements IConstants {
 
     /**
      * The constructor.
-     * 
+     *
      * @param section The property section
      */
     public AbstractChartAction(Composite composite) {
@@ -54,7 +54,7 @@ public class AbstractChartAction extends Action implements IConstants {
 
     /**
      * Gets the chart sets memento.
-     * 
+     *
      * @return The chart sets memento, or <tt>null</tt> if no chart sets are saved yet
      * @throws WorkbenchException
      * @throws IOException
@@ -69,7 +69,7 @@ public class AbstractChartAction extends Action implements IConstants {
 
     /**
      * Gets the chart sets stored as chart sets memento.
-     * 
+     *
      * @return The chart sets
      * @throws WorkbenchException
      * @throws IOException
@@ -93,7 +93,7 @@ public class AbstractChartAction extends Action implements IConstants {
 
     /**
      * Gets the predefined chart sets.
-     * 
+     *
      * @return The predefined chart sets
      */
     List<String> getPredefinedChartSets() {

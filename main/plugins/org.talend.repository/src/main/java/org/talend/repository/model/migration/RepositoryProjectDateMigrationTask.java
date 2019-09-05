@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,8 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
+import org.talend.daikon.security.CryptoHelper;
 import org.talend.repository.RepositoryPlugin;
-import org.talend.utils.security.CryptoHelper;
 
 /**
  * DOC ggu class global comment. Detailled comment

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,7 @@ public class TGKComponentListController extends ComponentListController {
 
     /**
      * DOC zshen TGKComponentListController constructor comment.
-     * 
+     *
      * @param dp
      */
     public TGKComponentListController(IDynamicProperty dp) {
@@ -40,7 +40,7 @@ public class TGKComponentListController extends ComponentListController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#executeCommand
      * (org.eclipse.gef.commands.Command)
@@ -67,7 +67,7 @@ public class TGKComponentListController extends ComponentListController {
 
     /**
      * DOC zshen Comment method "changeKeyColumnLabel".
-     * 
+     *
      * @param changeNode
      * @param isLink
      */

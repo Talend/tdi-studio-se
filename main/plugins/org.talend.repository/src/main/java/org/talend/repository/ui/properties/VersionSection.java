@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,7 +60,7 @@ import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.ui.actions.ActionsHelper;
 
 /**
- * 
+ *
  * @deprecated
  */
 public class VersionSection extends AbstractSection implements ISelectionProvider {
@@ -95,7 +95,7 @@ public class VersionSection extends AbstractSection implements ISelectionProvide
 
         final String[] columnProperties = new String[] { Messages.getString("VersionSection.Version"), //$NON-NLS-1$
                 Messages.getString("VersionSection.CreationDate"), //$NON-NLS-1$
-                Messages.getString("VersionSection.ModificationDate"), Messages.getString("VersionSection.Status") }; //$NON-NLS-1$ //$NON-NLS-2$ 
+                Messages.getString("VersionSection.ModificationDate"), Messages.getString("VersionSection.Status") }; //$NON-NLS-1$ //$NON-NLS-2$
 
         final TableColumn column1 = new TableColumn(table, SWT.NONE);
         tableLayout.addColumnData(new ColumnPixelData(125, true));

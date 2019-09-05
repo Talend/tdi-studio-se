@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,9 @@
  */
 package org.talend.sdk.component.studio;
 
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static org.talend.sdk.component.studio.model.ReturnVariables.AFTER;
-import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_ERROR_MESSAGE;
-import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_TOTAL_RECORD_COUNT;
+import static java.util.Collections.*;
+import static java.util.stream.Collectors.*;
+import static org.talend.sdk.component.studio.model.ReturnVariables.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,7 +149,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      * Component may have several entries in palette (each entry is in different category)
      * Entries in palette value are separated with "|"
      * "/" separates categories, subcategories and family
-     * 
+     *
      * @return palette value
      */
     private String computePaletteValue() {
@@ -284,8 +282,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      */
     @Override // TODO This is dummy implementation. Correct impl should be added soon
     public List<? extends IElementParameter> createElementParameters(final INode node) {
-        ElementParameterCreator creator =
-                new ElementParameterCreator(this, detail, node, reportPath, isCatcherAvailable);
+        ElementParameterCreator creator = new ElementParameterCreator(this, detail, node, reportPath, isCatcherAvailable);
         List<IElementParameter> parameters = (List<IElementParameter>) creator.createParameters();
         return parameters;
     }
@@ -309,7 +306,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         returnVariables.add(errorMessage);
 
         NodeReturn numberLinesMessage = new NodeReturn();
-        numberLinesMessage.setType(JavaTypesManager.INTEGER.getLabel());
+        numberLinesMessage.setType(JavaTypesManager.INTEGER.getId());
         numberLinesMessage.setDisplayName(ComponentReturnVariableUtils
                 .getTranslationForVariable(RETURN_TOTAL_RECORD_COUNT, RETURN_TOTAL_RECORD_COUNT));
         numberLinesMessage.setName(ComponentReturnVariableUtils.getStudioNameFromVariable(RETURN_TOTAL_RECORD_COUNT));

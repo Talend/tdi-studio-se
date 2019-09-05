@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,7 +51,7 @@ public class RenameFieldNameFortLineChart extends AbstractJobMigrationTask {
 			return ExecutionResult.FAILURE;
 		}
 	}
- 
+
 	// search all components that tLineChart linked directly or indirectly
 	private void searchSourceComponents(Item item) {
 		ProcessType processType = getProcessType(item);
@@ -84,7 +84,7 @@ public class RenameFieldNameFortLineChart extends AbstractJobMigrationTask {
 			}
 		} // end search
 	}
- 
+
 	private void renameField(Item item){
 		ProcessType processType = getProcessType(item);
 		String uniqueComponentName = null;
@@ -113,7 +113,7 @@ public class RenameFieldNameFortLineChart extends AbstractJobMigrationTask {
 			}
 		} // end search
 		searchSourceComponents(item);
-  
+
 		// correct the word
 		for (Object o : processType.getNode()) {
 			if (o instanceof NodeType) {
@@ -142,7 +142,7 @@ public class RenameFieldNameFortLineChart extends AbstractJobMigrationTask {
 			}
 		}
 	}
- 
+
 	public Date getOrder() {
 		GregorianCalendar gc = new GregorianCalendar(2010, 01, 28, 17, 47, 0);
 		return gc.getTime();

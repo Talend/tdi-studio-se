@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -77,15 +77,15 @@ import com.ibm.icu.text.MessageFormat;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class Problems {
 
     /**
      * This enum is used for marking the group type for problems. <br/>
-     * 
+     *
      */
     public enum Group {
         SEVERITY,
@@ -249,7 +249,7 @@ public class Problems {
 
     /**
      * DOC set the current process value,according the current process id to initial the current problems.
-     * 
+     *
      * @param process
      */
     public static void addProcess(IProcess process) {
@@ -309,7 +309,7 @@ public class Problems {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see java.lang.Runnable#run()
                  */
                 @Override
@@ -351,7 +351,7 @@ public class Problems {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.lang.Runnable#run()
              */
             @Override
@@ -367,7 +367,7 @@ public class Problems {
 
     /**
      * DOC bqian Comment method "refreshNodeStatus".
-     * 
+     *
      * @param node
      * @param problemList2
      */
@@ -422,7 +422,7 @@ public class Problems {
 
     /**
      * DOC bqian Comment method "removeProblemsByProcessId".
-     * 
+     *
      * @param id
      */
     public static void removeProblemsByProcess(IProcess process) {
@@ -444,9 +444,9 @@ public class Problems {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "removeProblemsByProcess".
-     * 
+     *
      * @param process
      * @param isDeleted
      */
@@ -509,7 +509,7 @@ public class Problems {
 
     /**
      * Sets the problemView.
-     * 
+     *
      * @param problemView the problemView to set
      */
     public static void setProblemView(ProblemsView problemView) {
@@ -543,10 +543,10 @@ public class Problems {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "addRoutineFile".
-     * 
-     * 
+     *
+     *
      */
     public static List<Information> addRoutineFile(IFile file, ProblemType type, String label, String version, boolean... fromJob) {
         if (file == null || !file.exists()) {
@@ -736,7 +736,7 @@ public class Problems {
 
     /**
      * See also AbstractEMFRepositoryFactory.computePropertyMaxInformationLevel
-     * 
+     *
      * @param property
      */
     public static void computePropertyMaxInformationLevel(Property property, boolean allowUpdateProperty) {

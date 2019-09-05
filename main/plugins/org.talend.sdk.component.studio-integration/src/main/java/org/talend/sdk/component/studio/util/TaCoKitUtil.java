@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -17,12 +17,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.talend.commons.utils.data.container.Container;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -31,6 +33,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.ProjectManager;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.metadata.WizardRegistry;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.updates.runtime.utils.PathUtils;
@@ -42,7 +45,7 @@ public class TaCoKitUtil {
 
     /**
      * Get ConnectionItem from specified project
-     * 
+     *
      * @param project {@link Project} only search from the given project
      * @param itemId item id
      * @return stored item of the given parameters, or null
@@ -60,7 +63,7 @@ public class TaCoKitUtil {
 
     /**
      * Get ConnectionItem from main project or it's reference project
-     * 
+     *
      * @param itemId item id
      * @return stored item of the given parameters, or null
      * @throws Exception unexpected exception occured during searching
@@ -105,6 +108,28 @@ public class TaCoKitUtil {
         return configNode.getName().toLowerCase();
     }
 
+    public static Container<String, IRepositoryViewObject> getContainer(
+            Container<String, IRepositoryViewObject> tacokitRootContainer, final ConfigTypeNode configNode) {
+        if (tacokitRootContainer == null) {
+            return null;
+        }
+        if (configNode == null) {
+            return null;
+        }
+        String parentId = configNode.getParentId();
+        if (parentId != null) {
+            ConfigTypeNode parentConfigTypeNode = Lookups.taCoKitCache().getConfigTypeNodeMap().get(parentId);
+            Container<String, IRepositoryViewObject> container = getContainer(tacokitRootContainer, parentConfigTypeNode);
+            if (container == null) {
+                return null;
+            } else {
+                return container.getSubContainer(getTaCoKitFolderName(configNode));
+            }
+        } else {
+            return tacokitRootContainer.getSubContainer(getTaCoKitFolderName(configNode));
+        }
+    }
+
     public static TaCoKitConfigurationModel getTaCoKitConfigurationModel(final String itemId) throws Exception {
         ConnectionItem item = getLatestTaCoKitConnectionItem(itemId);
         if (item != null) {
@@ -119,31 +144,39 @@ public class TaCoKitUtil {
         return path.toPortableString();
     }
 
+    public static String getTaCoKitRepositoryKey(final ConfigTypeNode configTypeNode) {
+        String configTypePath = getConfigTypePath(configTypeNode);
+        /**
+         * Keep the prefix: "repository.", since there are some codes like: <br/>
+         * objectType.getKey().toString().startsWith("repository.metadata") <br/>
+         * For example: DeleteAction
+         */
+        return TaCoKitConst.METADATA_PREFIX + configTypePath.replaceAll("/", "."); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     public static ERepositoryObjectType getOrCreateERepositoryObjectType(final ConfigTypeNode configTypeNode)
             throws Exception {
         if (configTypeNode == null) {
             return null;
         }
-        IPath tacokitPath = new Path(TaCoKitConst.METADATA_TACOKIT.getFolder());
-        IPath baseFolder = getTaCoKitBaseFolder(configTypeNode);
-        IPath path = tacokitPath.append(baseFolder);
-        String portableStr = path.toPortableString();
+        String label = configTypeNode.getDisplayName();
+        String folderPathStr = getConfigTypePath(configTypeNode);
 
-        String type = portableStr.replaceAll("/", "."); //$NON-NLS-1$ //$NON-NLS-2$
-        String alias = portableStr.replaceAll("/", "_"); //$NON-NLS-1$//$NON-NLS-2$
+        String type = getTaCoKitRepositoryKey(configTypeNode);
+        String alias = folderPathStr.replaceAll("/", "_"); //$NON-NLS-1$//$NON-NLS-2$
 
         ERepositoryObjectType eType = ERepositoryObjectType.valueOf(type);
         if (eType == null) {
-            eType = new WizardRegistry().createRepositoryObjectType(type, baseFolder.toPortableString(), alias,
-                    portableStr, 1, // $NON-NLS-1$
+            eType = new WizardRegistry().createRepositoryObjectType(type, label, alias, folderPathStr, 1,
                     new String[] { ERepositoryObjectType.PROD_DI });
-            ConfigTypeNode parentTypeNode =
-                    Lookups.taCoKitCache().getConfigTypeNodeMap().get(configTypeNode.getParentId());
+            TaCoKitCache taCoKitCache = Lookups.taCoKitCache();
+            ConfigTypeNode parentTypeNode = taCoKitCache.getConfigTypeNodeMap().get(configTypeNode.getParentId());
             if (parentTypeNode == null) {
                 eType.setAParent(TaCoKitConst.METADATA_TACOKIT);
             } else {
                 eType.setAParent(getOrCreateERepositoryObjectType(parentTypeNode));
             }
+            taCoKitCache.getRepositoryObjectType2ConfigTypeNodeMap().put(eType, configTypeNode);
         }
         return eType;
     }
@@ -181,7 +214,7 @@ public class TaCoKitUtil {
 
     /**
      * Method to create component name from component's family name and component's name itself.
-     * 
+     *
      * @param familyName component's family name
      * @param componentName component's name
      * @return full component name
@@ -247,6 +280,19 @@ public class TaCoKitUtil {
         }
     }
 
+    public static boolean hideConfigFolderOnSingleEdge() {
+        return true;
+    }
+
+    public static void registAllTaCoKitRepositoryTypes() throws Exception {
+        Map<String, ConfigTypeNode> nodes = Lookups.taCoKitCache().getConfigTypeNodeMap();
+        if (nodes != null) {
+            for (ConfigTypeNode node : nodes.values()) {
+                TaCoKitUtil.getOrCreateERepositoryObjectType(node);
+            }
+        }
+    }
+
     public static class GAV {
 
         private String groupId;
@@ -273,38 +319,51 @@ public class TaCoKitUtil {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             GAV other = (GAV) obj;
             if (this.artifactId == null) {
-                if (other.artifactId != null)
+                if (other.artifactId != null) {
                     return false;
-            } else if (!this.artifactId.equals(other.artifactId))
+                }
+            } else if (!this.artifactId.equals(other.artifactId)) {
                 return false;
+            }
             if (this.classifier == null) {
-                if (other.classifier != null)
+                if (other.classifier != null) {
                     return false;
-            } else if (!this.classifier.equals(other.classifier))
+                }
+            } else if (!this.classifier.equals(other.classifier)) {
                 return false;
+            }
             if (this.groupId == null) {
-                if (other.groupId != null)
+                if (other.groupId != null) {
                     return false;
-            } else if (!this.groupId.equals(other.groupId))
+                }
+            } else if (!this.groupId.equals(other.groupId)) {
                 return false;
+            }
             if (this.type == null) {
-                if (other.type != null)
+                if (other.type != null) {
                     return false;
-            } else if (!this.type.equals(other.type))
+                }
+            } else if (!this.type.equals(other.type)) {
                 return false;
+            }
             if (this.version == null) {
-                if (other.version != null)
+                if (other.version != null) {
                     return false;
-            } else if (!this.version.equals(other.version))
+                }
+            } else if (!this.version.equals(other.version)) {
                 return false;
+            }
             return true;
         }
 

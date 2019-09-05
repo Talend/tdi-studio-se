@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -123,7 +124,9 @@ public class SOAPUtil {
         }
         SOAPMessage message = messageFactory.createMessage();
         MimeHeaders mimeHeaders = message.getMimeHeaders();
-        mimeHeaders.setHeader("SOAPAction", soapAction);
+
+        setSoapAction(version, soapAction, mimeHeaders);
+
         if (basicAuth) {
             addBasicAuthHeader(mimeHeaders, username, password);
         }
@@ -207,7 +210,15 @@ public class SOAPUtil {
 
     private Document extractContentAsDocument(SOAPHeader header) throws ParserConfigurationException, TransformerException {
         Document document;
-        DocumentBuilderFactory factory = new com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        
+        try {
+        	factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        	factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        } catch (Exception e) {
+        	//do nothing
+        }
+        
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         document = builder.newDocument();
@@ -254,8 +265,8 @@ public class SOAPUtil {
     	}
     	SOAPMessage message = messageFactory.createMessage();
     	MimeHeaders mimeHeaders = message.getMimeHeaders();
-    	mimeHeaders.setHeader("SOAPAction", soapAction);
-    	SOAPPart soapPart = message.getSOAPPart();
+        setSoapAction(version, soapAction, mimeHeaders);
+        SOAPPart soapPart = message.getSOAPPart();
     	
     	String encoding = getEncoding(soapMessage);
     	
@@ -282,8 +293,20 @@ public class SOAPUtil {
 			return null;
 		}
     }
-	
-	private String getEncoding(String text) {
+
+    /* https://jira.talendforge.org/browse/TDI-42581 skip add SOAPAction directly to header v1.2 */
+    private void setSoapAction(String version, String soapAction, MimeHeaders mimeHeaders) {
+        if (SOAP12.equals(version)) {
+            // in soap version 1.2 param 'action' optional and should not be empty
+            if( soapAction != null && !soapAction.trim().isEmpty()) {
+                mimeHeaders.setHeader("Content-Type", "application/soap+xml; charset=utf-8; action=\"" + soapAction + "\"");
+            }
+        } else {
+            mimeHeaders.setHeader("SOAPAction", soapAction);
+        }
+    }
+
+    private String getEncoding(String text) {
         String result = Charset.defaultCharset().name();
 
         if(text == null) {

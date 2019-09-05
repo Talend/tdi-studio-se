@@ -2,7 +2,7 @@ package org.talend.repository.preference;
 
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -362,7 +362,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
 
     /**
      * Get project repository type
-     * 
+     *
      * @param project
      */
     private int getProjectRepositoryType(Project project) {
@@ -509,7 +509,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     }
 
     /**
-     * 
+     *
      * @param projectRefMap
      * @return @return false- cycle reference exist otherwise true
      * @throws PersistenceException

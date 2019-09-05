@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,9 +34,9 @@ import org.talend.designer.core.ui.editor.process.ProcessPart;
 
 /**
  * Command used to paste all the components.
- * 
+ *
  * $Id: NodesPasteCommand.java 4549 2007-07-13 05:18:48Z nrousseau $
- * 
+ *
  */
 public class NotesPasteCommand extends Command {
 
@@ -67,7 +67,7 @@ public class NotesPasteCommand extends Command {
 
     /**
      * Getter for cursorLocation.
-     * 
+     *
      * @return the cursorLocation
      */
     public Point getCursorLocation() {
@@ -76,7 +76,7 @@ public class NotesPasteCommand extends Command {
 
     /**
      * Sets the cursorLocation.
-     * 
+     *
      * @param cursorLocation the cursorLocation to set
      */
     public void setCursorLocation(Point cursorLocation) {
@@ -85,7 +85,7 @@ public class NotesPasteCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#canExecute()
      */
     @Override
@@ -127,9 +127,9 @@ public class NotesPasteCommand extends Command {
     }
 
     /**
-     * 
+     *
      * Will return a empty location for a component from a given point.
-     * 
+     *
      * @param location
      * @return
      */
@@ -309,7 +309,7 @@ public class NotesPasteCommand extends Command {
 
     /**
      * Getter for multipleCommand.
-     * 
+     *
      * @return the multipleCommand
      */
     public boolean isMultipleCommand() {
@@ -318,7 +318,7 @@ public class NotesPasteCommand extends Command {
 
     /**
      * Sets the multipleCommand.
-     * 
+     *
      * @param multipleCommand the multipleCommand to set
      */
     public void setMultipleCommand(boolean multipleCommand) {
@@ -327,7 +327,7 @@ public class NotesPasteCommand extends Command {
 
     /**
      * Getter for noteList.
-     * 
+     *
      * @return the noteList
      */
     public List<Note> getNoteList() {

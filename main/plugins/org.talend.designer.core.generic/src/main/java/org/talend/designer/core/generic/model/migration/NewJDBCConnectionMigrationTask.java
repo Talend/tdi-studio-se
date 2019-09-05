@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,14 +46,14 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
     public Date getOrder() {
         return new GregorianCalendar(2017, 12, 19, 15, 0, 0).getTime();
     }
-    
+
     @Override
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
         toReturn.add(ERepositoryObjectType.METADATA_CONNECTIONS);
         return toReturn;
     }
-    
+
     @Override
     public ExecutionResult execute(Item item) {
         if (item instanceof DatabaseConnectionItem) {
@@ -75,7 +75,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
                             IGenericDBService.class);
                 }
                 if(dbService == null){
-                    return  ExecutionResult.NOTHING_TO_DO; 
+                    return  ExecutionResult.NOTHING_TO_DO;
                 }
                 boolean isContextMode = connection.isContextMode();
                 Properties properties = dbService.getComponentProperties(jdbcType, dbConnection.getId());
@@ -133,7 +133,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
         }
         return ExecutionResult.NOTHING_TO_DO;
     }
-    
+
     private void setDrivers(Property dirJar, String jars, boolean isContextMode){
         if(dirJar == null){
             return;

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,7 @@ import org.talend.sqlbuilder.SqlBuilderPlugin;
 
 /**
  * Copy the value of the selected cell in a datasettable to the clipboard.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public class CopyCellAction extends AbstractDataSetTableContextAction {
@@ -34,7 +34,7 @@ public class CopyCellAction extends AbstractDataSetTableContextAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.IAction#getText()
      */
     public String getText() {
@@ -43,7 +43,7 @@ public class CopyCellAction extends AbstractDataSetTableContextAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.IAction#getImageDescriptor()
      */
     public ImageDescriptor getImageDescriptor() {
@@ -52,7 +52,7 @@ public class CopyCellAction extends AbstractDataSetTableContextAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.IAction#run()
      */
     public void run() {
@@ -79,7 +79,7 @@ public class CopyCellAction extends AbstractDataSetTableContextAction {
 
     /**
      * Only show action if something is selected.
-     * 
+     *
      * @see net.sourceforge.sqlexplorer.dataset.actions.AbstractDataSetTableContextAction#isAvailable()
      */
     public boolean isAvailable() {

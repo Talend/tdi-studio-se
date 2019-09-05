@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,9 +43,9 @@ import org.talend.designer.core.model.components.EParameterName;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnectionTraceFigure extends Figure {
 
@@ -138,7 +138,7 @@ public class ConnectionTraceFigure extends Figure {
 
             titleFigure.setText(""); //$NON-NLS-1$
             titleFigure.setText("<font color='#0000FF'> <b> " + connection.getConnectionLabel().getLabelText() //$NON-NLS-1$
-                    + "</b></font>"); //$NON-NLS-1$ 
+                    + "</b></font>"); //$NON-NLS-1$
             if (tooltip != null) {
                 titleFigure.setBackgroundColor(ColorConstants.white);
                 titleFigure.setOpaque(false);
@@ -434,7 +434,7 @@ public class ConnectionTraceFigure extends Figure {
 
     /**
      * judge the column checked or not DOC cmeng Comment method "isColumnChecked".
-     * 
+     *
      * @param columnsCheckInfo
      * @param columnLabel
      * @return 1. columnLabel exists in columnsCheckInfo <br>
@@ -457,9 +457,9 @@ public class ConnectionTraceFigure extends Figure {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "getTraceConnectionImage".
-     * 
+     *
      * feature 6355.
      */
     private Image getTraceConnectionImage(boolean enable) {
@@ -528,7 +528,7 @@ public class ConnectionTraceFigure extends Figure {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.Figure#getPreferredSize(int, int)
      */
     @Override

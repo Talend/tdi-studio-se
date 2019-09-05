@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -59,7 +59,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.handles.AbstractHandle#createDragTracker()
      */
     @Override
@@ -105,7 +105,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.handles.SquareHandle#init()
      */
     @Override
@@ -116,7 +116,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.handles.SquareHandle#paintFigure(org.eclipse.draw2d.Graphics)
      */
     @Override
@@ -127,7 +127,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.handles.AbstractHandle#ancestorAdded(org.eclipse.draw2d.IFigure)
      */
     @Override
@@ -138,7 +138,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.handles.AbstractHandle#validate()
      */
     @Override
@@ -183,7 +183,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.handles.AbstractHandle#setLocator(org.eclipse.draw2d.Locator)
      */
     @Override
@@ -193,7 +193,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.handles.ConnectionHandle#addNotify()
      */
     @Override
@@ -203,7 +203,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -214,7 +214,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.Figure#findFigureAt(int, int, org.eclipse.draw2d.TreeSearch)
      */
     @Override
@@ -228,7 +228,7 @@ public class TalendConnectionHandle extends SquareHandle implements PropertyChan
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.handles.SquareHandle#getFillColor()
      */
     @Override

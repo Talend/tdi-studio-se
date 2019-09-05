@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,7 +53,7 @@ public class NoteDirectEditManager extends DirectEditManager {
 
     /**
      * yzhang Comment method "getTextControl".
-     * 
+     *
      * @return
      */
     public Text getTextControl() {
@@ -65,7 +65,7 @@ public class NoteDirectEditManager extends DirectEditManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.DirectEditManager#getCellEditor()
      */
     @Override

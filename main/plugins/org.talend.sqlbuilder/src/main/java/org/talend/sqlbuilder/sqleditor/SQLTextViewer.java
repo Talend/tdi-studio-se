@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -92,7 +92,7 @@ public class SQLTextViewer extends SourceViewer {
 
 
     public SQLTextViewer(Composite parent, int style, IPreferenceStore store, final Dictionary dictionary, IVerticalRuler ruler) {
-       
+
         super(parent, ruler, style);
         this.store = store;
         this.dictionary = dictionary;
@@ -186,7 +186,7 @@ public class SQLTextViewer extends SourceViewer {
 
 
     public void setNewDictionary(Dictionary newDictionary) {
-        
+
         dictionary = newDictionary;
 
         if (contentAssistant != null) {
@@ -202,7 +202,7 @@ public class SQLTextViewer extends SourceViewer {
         if (fPresentationReconciler != null) {
             fPresentationReconciler.install(this);
         }
-        
+
         if (dictionary != null) {
                  contentAssistant = configuration.getContentAssistant(null);
                  if (contentAssistant != null) {
@@ -217,7 +217,7 @@ public class SQLTextViewer extends SourceViewer {
         this(parent, style, store, dictionary, new VerticalRuler(0));
 
     }
-    
+
     /**
      * PreferenceListener.
      *
@@ -256,7 +256,7 @@ public class SQLTextViewer extends SourceViewer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.text.source.ISourceViewer#setDocument(org.eclipse.jface.text.IDocument,
      *      org.eclipse.jface.text.source.IAnnotationModel)
      */
@@ -269,7 +269,7 @@ public class SQLTextViewer extends SourceViewer {
 
 
     /**
-     * 
+     *
      */
     public void clearText() {
         getTextWidget().setText(""); //$NON-NLS-1$

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,9 +60,9 @@ public final class DowngradeParameterHelper {
     public static final String PROCESS = "PROCESS"; //$NON-NLS-1$
 
     /**
-     * 
+     *
      * ggu Comment method "upgradeItem".
-     * 
+     *
      * upgrade the item parameters.
      */
     @SuppressWarnings("unchecked")//$NON-NLS-1$
@@ -88,9 +88,9 @@ public final class DowngradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "upgradeNodes".
-     * 
+     *
      * upgrade the nodes parameters.
      */
     @SuppressWarnings("unchecked")//$NON-NLS-1$
@@ -108,9 +108,9 @@ public final class DowngradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "upgradeParameters".
-     * 
+     *
      * process the node parameters.
      */
     private static boolean downgradeNodeParameters(List<ElementParameterType> elemParamList) {
@@ -171,9 +171,9 @@ public final class DowngradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "upgradeRelatedParameters".
-     * 
+     *
      * "type =null" is only for property type parameter.
      */
     private static boolean downgradeRelatedParameters(ElementParameterType repositoryParam, String repositoryParamName,
@@ -208,9 +208,9 @@ public final class DowngradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "updateParameterValue".
-     * 
+     *
      * only update the value for existed parent
      */
     private static boolean downgradeParameterValue(ElementParameterType repositoryParam, final String typeParamName,
@@ -222,9 +222,9 @@ public final class DowngradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "updateParameterValue".
-     * 
+     *
      * update the related paramters value.
      */
     private static boolean downgradeParameterValue(ElementParameterType repositoryParam, ElementParameterType typeParam,
@@ -255,7 +255,7 @@ public final class DowngradeParameterHelper {
 
     /**
      * DOC nrousseau Comment method "getOldLabelFromId".
-     * 
+     *
      * @param id
      * @param type
      * @return
@@ -339,9 +339,9 @@ public final class DowngradeParameterHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "findParameter".
-     * 
+     *
      * find the name of parameter for parent name.
      */
     private static ElementParameterType findParameter(String paramName, String parentName,

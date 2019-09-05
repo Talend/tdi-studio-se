@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,6 +34,6 @@ public class TeradataDbOperatorValues extends DbOperatorValues {
     }
 
     public IDbOperator getDefaultOperator() {
-        return new DbOperator("EQUAL", "EQ"); //$NON-NLS-1$  //$NON-NLS-2$ 
+        return new DbOperator("EQUAL", "EQ"); //$NON-NLS-1$  //$NON-NLS-2$
     }
 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,9 +36,9 @@ import org.talend.designer.codegen.ICodeGeneratorService;
 
 /**
  * DOC bqian class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FileOutputXMLComponent.java,v 1.1 2007/06/12 07:20:37 gke Exp $
- * 
+ *
  */
 public class FileOutputXMLComponent extends AbstractExternalNode {
 
@@ -68,7 +68,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#initialize()
      */
     public void initialize() {
@@ -76,7 +76,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getComponentDocumentation(java.lang.String, java.lang.String)
      */
     public IComponentDocumentation getComponentDocumentation(String componentName, String tempFolderPath) {
@@ -85,7 +85,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getExternalData()
      */
     public IExternalData getExternalData() {
@@ -94,7 +94,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#open(org.eclipse.swt.widgets.Composite)
      */
     public int open(Composite parent) {
@@ -103,7 +103,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#open(org.eclipse.swt.widgets.Display)
      */
     public int open(Display display) {
@@ -130,7 +130,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#setExternalData(org.talend.core.model.process.IExternalData)
      */
     public void setExternalData(IExternalData persistentData) {
@@ -139,7 +139,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#renameMetadataColumnName(java.lang.String,
      * java.lang.String, java.lang.String)
      */
@@ -158,7 +158,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
         if(this.getElementParameter(GROUP)!=null&&this.getElementParameter(GROUP).getValue()!=null){
             listGroup.addAll((List<Map<String, String>>) this.getElementParameter(GROUP).getValue());
         }
-         
+
         boolean flagGroup = false;
         List<Map<String, String>> listLoop = new ArrayList<Map<String,String>>();
         if(this.getElementParameter(LOOP)!=null&&this.getElementParameter(LOOP).getValue()!=null){
@@ -215,7 +215,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
         if(this.getElementParameter(GROUP)!=null&&this.getElementParameter(GROUP).getValue()!=null){
             listGroup.addAll((List<Map<String, String>>) this.getElementParameter(GROUP).getValue());
         }
-         
+
         boolean flagGroup = false;
         List<Map<String, String>> listLoop = new ArrayList<Map<String,String>>();
         if(this.getElementParameter(LOOP)!=null&&this.getElementParameter(LOOP).getValue()!=null){
@@ -326,7 +326,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getGeneratedCode()
      */
     public String getGeneratedCode() {
@@ -350,9 +350,9 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
     }
 
     /**
-     * 
+     *
      * wzhang Comment method "istWriteXMLField".
-     * 
+     *
      * @return
      */
     public boolean istWriteXMLField() {
@@ -360,9 +360,9 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
     }
 
     /**
-     * 
+     *
      * wzhangComment method "isMDMOutput".
-     * 
+     *
      * @return
      */
     public boolean istMDMOutput() {
@@ -370,9 +370,9 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
     }
 
     /**
-     * 
+     *
      * wzhang Comment method "istFileOutputMSXML".
-     * 
+     *
      * @return
      */
     public boolean istFileOutputMSXML() {
@@ -381,7 +381,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /**
      * DOC ycbai Comment method "istWriteJSONField".
-     * 
+     *
      * @return
      */
     public boolean istWriteJSONField() {
@@ -390,7 +390,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /**
      * DOC gke Comment method "getMetadataTable".
-     * 
+     *
      * @return
      */
     public IMetadataTable getMetadataTable() {
@@ -403,7 +403,7 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getTMapExternalData()
      */
     public IExternalData getTMapExternalData() {

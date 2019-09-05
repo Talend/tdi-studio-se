@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,9 +14,9 @@ package org.talend.sqlbuilder;
 
 /**
  * Put Constants here. <br/>
- * 
+ *
  * $Id: IConstants.java,v 1.5 2006/11/07 09:48:06 peiqin.hou Exp $
- * 
+ *
  */
 public interface IConstants {
 

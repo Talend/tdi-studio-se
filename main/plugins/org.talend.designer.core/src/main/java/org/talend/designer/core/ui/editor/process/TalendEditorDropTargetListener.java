@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -58,7 +58,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
@@ -67,6 +66,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.gmf.draw2d.AnimatableZoomManager;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageUtils.ICON_SIZE;
 import org.talend.core.CorePlugin;
@@ -229,6 +229,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     private ConnectionPart selectedConnectionPart = null;
 
+    private boolean sqlChange = false;
     /**
      * TalendEditorDropTargetListener constructor comment.
      *
@@ -294,7 +295,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.dnd.TemplateTransferDropTargetListener#handleDragOver()
      */
     @Override
@@ -490,7 +491,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.dnd.TemplateTransferDropTargetListener#handleDrop()
      */
     @Override
@@ -542,8 +543,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             } else if (getTargetEditPart() instanceof JobletContainerPart) {
                 JobletContainerPart jobletPart = (JobletContainerPart) getTargetEditPart();
                 if (isLock(jobletPart)) {
-                    Shell shell = Display.getCurrent().getActiveShell();
-                    ChooseJobletDialog dialog = new ChooseJobletDialog(new Shell(shell), getDropLocation());
+                    ChooseJobletDialog dialog = new ChooseJobletDialog(DisplayUtils.getDefaultShell(false), getDropLocation());
                     if (dialog.open() == dialog.OK) {
                         EditPart part = getTargetEditPart();
                         if (dialog.addToJoblet()) {
@@ -1504,6 +1504,11 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
                 QueryRepositoryObject object = (QueryRepositoryObject) selectedNode.getObject();
                 Query query = object.getQuery();
+                if (!sqlChange) {
+                    String sql = query.getValue();
+                    query.setValue(TalendTextUtils.addStrInQuery(sql));
+                    sqlChange = true;
+                }
                 String value = originalConnectionItem.getProperty().getId() + " - " + query.getLabel(); //$NON-NLS-1$
                 if (queryParam != null) {
                     RepositoryChangeQueryCommand command3 = new RepositoryChangeQueryCommand(node, query, queryParam.getName()
@@ -1535,10 +1540,10 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             String value = null;
             if (ProcessorUtilities.isNeedProjectProcessId(node.getComponent().getName())) {
                 org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
-                value = ProcessUtils.getProjectProcessId(project.getTechnicalLabel(), processItem.getProperty().getId());     
+                value = ProcessUtils.getProjectProcessId(project.getTechnicalLabel(), processItem.getProperty().getId());
             } else {
                 value = processItem.getProperty().getId();
-            }         
+            }
             PropertyChangeCommand command4 = new PropertyChangeCommand(node, EParameterName.PROCESS_TYPE_PROCESS.getName(), value);
             cc.add(command4);
             PropertyChangeCommand command5 = new PropertyChangeCommand(node, EParameterName.PROCESS_TYPE_CONTEXT.getName(),
@@ -1911,8 +1916,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         String value = processItem.getProperty().getId();
         if (ProcessorUtilities.isNeedProjectProcessId(node.getComponent().getName())) {
             org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
-            value = ProcessUtils.getProjectProcessId(project.getTechnicalLabel(), processItem.getProperty().getId());     
-        } 
+            value = ProcessUtils.getProjectProcessId(project.getTechnicalLabel(), processItem.getProperty().getId());
+        }
         IElementParameter processParam = node.getElementParameterFromField(EParameterFieldType.PROCESS_TYPE);
         if (processParam != null) {
             PropertyChangeCommand command2 = new PropertyChangeCommand(node, EParameterName.PROCESS_TYPE_PROCESS.getName(), value);
@@ -2332,7 +2337,7 @@ class ComponentChooseDialog extends ListDialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.jface.viewers.BaseLabelProvider#dispose()
              */
             @Override

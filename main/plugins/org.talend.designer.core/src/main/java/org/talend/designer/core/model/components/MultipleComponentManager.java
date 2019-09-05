@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.talend.core.model.components.IMultipleComponentParameter;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MultipleComponentManager implements IMultipleComponentManager {
 
@@ -79,7 +79,7 @@ public class MultipleComponentManager implements IMultipleComponentManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IMultipleComponentManager#addParam(java.lang.String, java.lang.String)
      */
     public void addParam(String source, String target) {
@@ -112,7 +112,7 @@ public class MultipleComponentManager implements IMultipleComponentManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentManager#getInput()
      */
     public IMultipleComponentItem getInput() {
@@ -121,7 +121,7 @@ public class MultipleComponentManager implements IMultipleComponentManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentManager#getOutput()
      */
     public IMultipleComponentItem getOutput() {
@@ -130,7 +130,7 @@ public class MultipleComponentManager implements IMultipleComponentManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IMultipleComponentManager#getOutputName()
      */
     public String getOutputName() {
@@ -163,7 +163,7 @@ public class MultipleComponentManager implements IMultipleComponentManager {
 
     /**
      * Getter for lookupMode.
-     * 
+     *
      * @return the lookupMode
      */
     public boolean isLookupMode() {

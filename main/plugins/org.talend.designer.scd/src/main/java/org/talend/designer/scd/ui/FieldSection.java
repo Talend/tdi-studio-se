@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -62,7 +62,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 
     /**
      * DOC hcw FieldSection constructor comment.
-     * 
+     *
      * @param parent
      */
     public FieldSection(Composite parent, ScdManager scdManager, boolean toolbarNeeded, boolean editable) {
@@ -76,7 +76,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 
     /**
      * DOC hcyi FieldSection constructor comment.
-     * 
+     *
      * @param parent
      */
     public FieldSection(Composite parent, ScdManager scdManager, boolean toolbarNeeded, boolean editable, int type) {
@@ -108,7 +108,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 				TableColumn[] columns = table.getColumns();
                 int clientWidth = table.getBounds().width;
                 columns[0].setWidth(clientWidth);
-				
+
 			}
         });
 
@@ -237,7 +237,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.scd.ui.IDragDrop#getDragItemsAsText()
      */
     public String getDragItemsAsText() {
@@ -258,7 +258,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.scd.ui.IDragDrop#onDropItems(java.lang.String, org.eclipse.swt.graphics.Point)
      */
     public void onDropItems(String data, Point position) {
@@ -291,7 +291,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.scd.ui.IDragDrop#removeDragItems()
      */
     public void removeDragItems(String data) {
@@ -328,7 +328,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.scd.ui.IDragDropDelegate#isDropAllowed(java.lang.String)
      */
     public boolean isDropAllowed(String data) {
@@ -405,7 +405,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.EditingSupport#canEdit(java.lang.Object)
          */
         @Override
@@ -415,7 +415,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.EditingSupport#getCellEditor(java.lang.Object)
          */
         @Override
@@ -425,7 +425,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.EditingSupport#getValue(java.lang.Object)
          */
         @Override
@@ -435,7 +435,7 @@ public class FieldSection extends ScdSection implements IDragDropDelegate {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.EditingSupport#setValue(java.lang.Object, java.lang.Object)
          */
         @Override

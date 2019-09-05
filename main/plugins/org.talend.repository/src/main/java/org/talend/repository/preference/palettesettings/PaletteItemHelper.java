@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,7 @@ import org.talend.core.ui.component.preference.provider.IPaletteItem;
 
 /**
  * created by nrousseau on Aug 11, 2014 Detailled comment
- * 
+ *
  */
 public class PaletteItemHelper {
 
@@ -47,7 +47,7 @@ public class PaletteItemHelper {
 
     /**
      * DOC nrousseau Comment method "createPaletteItems".
-     * 
+     *
      * @param component
      * @param paletteItems
      */
@@ -74,7 +74,7 @@ public class PaletteItemHelper {
 
     /**
      * DOC nrousseau Comment method "getRootPaletteItem".
-     * 
+     *
      * @param valueOf
      * @param paletteItems
      * @return
@@ -97,7 +97,7 @@ public class PaletteItemHelper {
 
     /**
      * DOC nrousseau Comment method "getFamilyItem".
-     * 
+     *
      * @param family
      * @param rootPaletteItem
      * @return

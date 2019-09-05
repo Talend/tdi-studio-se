@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -99,6 +99,7 @@ import org.talend.designer.core.ui.views.jobsettings.JobSettings;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.ui.views.properties.ComponentSettings;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
+import org.talend.designer.core.utils.BigDataJobUtil;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.runprocess.ProcessorException;
@@ -134,7 +135,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#getProcessFromProcessItem(org.talend.core.model.properties.
      * ProcessItem )
      */
@@ -167,7 +168,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.IDesignerCoreService#getProcessContextFromItem(org.talend.core.model.properties.Item)
      */
@@ -185,7 +186,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.IDesignerCoreService#getProcessFromJobletProcessItem(org.talend.core.model.properties
      * .JobletProcessItem)
@@ -208,7 +209,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#getQueriesMap()
      */
     @Override
@@ -224,7 +225,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#getRepositoryAliasName(org.talend.core.model.properties.
      * ConnectionItem )
      */
@@ -262,7 +263,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#getCurrentProcess()
      */
     @Override
@@ -277,7 +278,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#refreshDesignerPalette()
      */
     @Override
@@ -295,7 +296,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#getPreferenceStore(java.lang.String)
      */
     @Override
@@ -305,7 +306,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#getPreferenceStoreBooleanValue(java.lang.String)
      */
     @Override
@@ -315,7 +316,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#setPreferenceStoreValue(java.lang.String, java.lang.Object)
      */
     @Override
@@ -329,7 +330,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#setToDefault(java.lang.String)
      */
     @Override
@@ -387,7 +388,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#executeUpdatesManager(java.util.List)
      */
     @Override
@@ -402,7 +403,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#getProcessForJobTemplate()
      */
     @Override
@@ -418,7 +419,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#getLastGeneratedJobsDateMap()
      */
     @Override
@@ -619,7 +620,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#convertNode(org.talend.core.model.properties.ConnectionItem,
      * java.lang.String)
      */
@@ -637,7 +638,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.IDesignerCoreService#updateTraceColumnValues(org.talend.core.model.process.IConnection,
      * java.util.Map, java.util.Set)
@@ -681,7 +682,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#getConnection(java.util.List,
      * org.talend.core.model.metadata.IMetadataTable)
      */
@@ -692,7 +693,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#setTraceFilterParameters(org.talend.core.model.process.INode,
      * org.talend.core.model.metadata.IMetadataTable, java.util.Set, java.util.Map)
      */
@@ -704,8 +705,10 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     @Override
     public void createStatsLogAndImplicitParamter(Project project) {
-        ProjectSettingManager.createStatsAndLogsElement(project);
-        ProjectSettingManager.createImplicitContextLoadElement(project);
+        Element createStatsAndLogsElement = ProjectSettingManager.createStatsAndLogsElement(project);
+        ProjectSettingManager.saveStatsAndLogToProjectSettings(createStatsAndLogsElement, project);
+        Element createImplicitContextLoadElement = ProjectSettingManager.createImplicitContextLoadElement(project);
+        ProjectSettingManager.saveImplicitValuesToProjectSettings(createImplicitContextLoadElement, project);
     }
 
     @Override
@@ -750,7 +753,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.IDesignerCoreService#getNeededLibrariesForProcess(org.talend.core.model.process.IProcess
      * , boolean)
@@ -803,7 +806,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.IDesignerCoreService#getJavadocContentAccessContentReader(org.eclipse.jdt.core.IMember)
      */
@@ -815,7 +818,7 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IDesignerCoreService#resetJobProblemView(org.talend.core.model.repository.
      * IRepositoryViewObject, java.lang.String)
      */
@@ -873,5 +876,10 @@ public class DesignerCoreService implements IDesignerCoreService {
             return UnifiedComponentUtil.isDelegateComponent(n.getDelegateComponent());
         }
         return false;
+    }
+
+    @Override
+    public boolean isNeedContextInJar(IProcess process) {
+        return new BigDataJobUtil(process).needsToHaveContextInsideJar();
     }
 }

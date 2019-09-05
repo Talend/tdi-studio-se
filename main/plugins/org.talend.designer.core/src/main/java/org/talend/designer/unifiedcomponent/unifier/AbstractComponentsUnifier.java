@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -70,7 +70,7 @@ public abstract class AbstractComponentsUnifier implements IComponentsUnifier {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.unifiedcomponent.service.IComponentUnifier#getUnifiedComponent()
      */
     @Override
@@ -80,7 +80,7 @@ public abstract class AbstractComponentsUnifier implements IComponentsUnifier {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.unifiedcomponent.service.IComponentUnifier#setUnifiedComponent(org.talend.designer.
      * unifiedcomponent.comp.service.IUnifiedComponent)
      */
@@ -91,7 +91,7 @@ public abstract class AbstractComponentsUnifier implements IComponentsUnifier {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.unifiedcomponent.service.IComponentUnifier#getComponentName()
      */
     @Override
@@ -105,7 +105,7 @@ public abstract class AbstractComponentsUnifier implements IComponentsUnifier {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.unifiedcomponent.service.IComponentUnifier#getParamMap()
      */
     @Override
@@ -150,7 +150,7 @@ public abstract class AbstractComponentsUnifier implements IComponentsUnifier {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier#getConnectorMapping()
      */
     @Override
@@ -176,7 +176,7 @@ public abstract class AbstractComponentsUnifier implements IComponentsUnifier {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier#getCategories()
      */
     @Override
@@ -198,7 +198,7 @@ public abstract class AbstractComponentsUnifier implements IComponentsUnifier {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier#getFamilies()
      */
     @Override

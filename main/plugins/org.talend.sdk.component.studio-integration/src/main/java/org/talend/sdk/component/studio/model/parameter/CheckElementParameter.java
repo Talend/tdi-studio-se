@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,12 @@ public class CheckElementParameter extends TaCoKitElementParameter {
     public void setValue(final Object newValue) {
     	super.setValue(convertValue(newValue));
     }
-    
+
     @Override
     public void updateValueOnly(final Object newValue) {
     	super.updateValueOnly(convertValue(newValue));
     }
-    
+
     /**
      * Convert Object to Boolean value depending on the value instance class.
      * @param value to convert

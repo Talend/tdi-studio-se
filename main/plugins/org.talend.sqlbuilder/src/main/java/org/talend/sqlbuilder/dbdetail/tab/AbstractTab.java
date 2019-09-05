@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,7 +20,7 @@ import org.talend.sqlbuilder.dbstructure.nodes.INode;
 
 /**
  * @author Davy Vanherbergen
- * 
+ *
  */
 public abstract class AbstractTab implements IDetailTab {
 
@@ -51,7 +51,7 @@ public abstract class AbstractTab implements IDetailTab {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see net.sourceforge.sqlexplorer.dbdetail.IDetailTab#getLabelToolTipText()
      */
     public String getLabelToolTipText() {

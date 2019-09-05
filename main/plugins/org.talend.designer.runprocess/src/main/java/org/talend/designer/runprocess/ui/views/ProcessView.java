@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -89,9 +89,9 @@ import org.talend.repository.RepositoryPlugin;
 
 /**
  * View showing the execution of a process. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ProcessView extends ViewPart implements PropertyChangeListener {
 
@@ -205,7 +205,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -214,7 +214,6 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
         parent.setLayout(new FillLayout());
 
         sash = new SashForm(parent, SWT.HORIZONTAL | SWT.SMOOTH);
-        sash.setLayoutData(new GridData(GridData.FILL_BOTH));
         sash.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
         GridLayout layout = new GridLayout();
         sash.setLayout(layout);
@@ -381,10 +380,10 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
     }
 
     public void createDynamicComposite(Composite parent, Element element, EComponentCategory category) {
-    	
+
         contextComposite.setVisible(true);
         moveButton.setVisible(true);
-        
+
     	if (moveButton.getText().equals(">>")) { //$NON-NLS-1$
             sash.setWeights(new int[] { 18, 5 });
         } else if (moveButton.getText().equals("<<")) { //$NON-NLS-1$
@@ -538,7 +537,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#dispose()
      */
     @Override
@@ -555,7 +554,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
      */
     @Override
@@ -668,9 +667,9 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     /**
      * DOC smallet ProcessView class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public class RunAction extends Action {
 
@@ -714,9 +713,9 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     /**
      * DOC smallet ProcessView class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class DebugAction extends Action {
 
@@ -750,9 +749,9 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     /**
      * DOC smallet ProcessView class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class KillAction extends Action {
 
@@ -776,7 +775,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     /**
      * Getter for processViewHelper.
-     * 
+     *
      * @return the processViewHelper
      */
     public IProcessViewHelper getProcessViewHelper() {
@@ -785,7 +784,7 @@ public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     /**
      * Sets the processViewHelper.
-     * 
+     *
      * @param processViewHelper the processViewHelper to set
      */
     public void setProcessViewHelper(IProcessViewHelper processViewHelper) {

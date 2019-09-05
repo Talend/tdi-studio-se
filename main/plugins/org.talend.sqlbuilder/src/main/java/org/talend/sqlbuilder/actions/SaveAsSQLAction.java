@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
  * This class is used for saving current editor's sql text into dbstructure composite. <br/>
- * 
+ *
  * $Id: SaveSQLAction,v 1.0 2006/11/15 05:38:28 ftang Exp $
- * 
+ *
  */
 public class SaveAsSQLAction extends AbstractEditorAction {
 
@@ -44,7 +44,7 @@ public class SaveAsSQLAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#getImageDescriptor()
      */
     public ImageDescriptor getImageDescriptor() {
@@ -53,7 +53,7 @@ public class SaveAsSQLAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getText()
      */
     public String getText() {
@@ -62,7 +62,7 @@ public class SaveAsSQLAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getToolTipText()
      */
     public String getToolTipText() {
@@ -71,7 +71,7 @@ public class SaveAsSQLAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#run()
      */
     public void run() {

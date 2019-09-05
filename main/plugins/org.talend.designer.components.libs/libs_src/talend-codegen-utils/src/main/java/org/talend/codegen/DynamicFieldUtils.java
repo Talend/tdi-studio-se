@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,7 +32,7 @@ public final class DynamicFieldUtils {
     /**
      * Computes dynamic field position in design schema.
      * Returns dynamic field position or {@link this#NO_DYNAMIC_COLUMN} if there is no dynamic field in schema
-     * 
+     *
      * @return dynamic field position
      */
     public static int getDynamicFieldPosition(Schema schema) {

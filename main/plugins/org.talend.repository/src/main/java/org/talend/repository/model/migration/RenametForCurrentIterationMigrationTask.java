@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,7 +29,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * migration task rename tFor_ variable to tLoop variable.
- * 
+ *
  */
 
 public class RenametForCurrentIterationMigrationTask extends AbstractJobMigrationTask {
@@ -46,7 +46,7 @@ public class RenametForCurrentIterationMigrationTask extends AbstractJobMigratio
     	ProcessType processType = getProcessType(item);
 		if (processType == null) {
 			return ExecutionResult.NOTHING_TO_DO;
-		}	
+		}
         try {
             convertItem(item, processType);
             return ExecutionResult.SUCCESS_NO_ALERT;

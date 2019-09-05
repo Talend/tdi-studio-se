@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,9 +23,9 @@ import org.talend.repository.documentation.ExportFileResource;
 
 /**
  * Manages the job scripts to be exported. <br/>
- * 
+ *
  * $Id: JobScriptsManager.java 1 2006-12-14 下午05:06:49 ftang
- * 
+ *
  */
 public class JobPerlScriptsManager extends JobScriptsManager {
 
@@ -58,7 +58,7 @@ public class JobPerlScriptsManager extends JobScriptsManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager#getExportPigudfResources(org.talend
      * .repository.documentation.ExportFileResource[])
@@ -71,7 +71,7 @@ public class JobPerlScriptsManager extends JobScriptsManager {
 
     /**
      * Gets the export resources.
-     * 
+     *
      * @param process
      * @param needLauncher
      * @param needSystemRoutine

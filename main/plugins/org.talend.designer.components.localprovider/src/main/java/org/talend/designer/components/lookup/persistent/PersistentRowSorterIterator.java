@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,14 +35,14 @@ import org.talend.designer.components.persistent.utils.FileUtils;
 import routines.system.IPersistableRow;
 
 /**
- * 
+ *
  * <code>PersistentRowSorterIterator</code>. Allow to serialize objects sequentially and be able to iterate on them.
- * 
+ *
  * JBoss library is used to avoid memory leaks noticed with Sun ObjectInputStream class.
- * 
+ *
  * Warning: JBossObjectInputStream may not deserialize any objects such as for example java.io.File, you could encounter
  * the following error:
- * 
+ *
  * <pre>
  * Caused by: java.lang.reflect.InvocationTargetException
  *     at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -63,9 +63,9 @@ import routines.system.IPersistableRow;
  *     at java.io.File.readObject(File.java:1927)
  *     ... 37 more
  *</pre>
- * 
+ *
  * @see http://www.talendforge.org/bugs/view.php?id=6780#bugnotes
- * 
+ *
  * @param <V> object value to sort
  */
 public abstract class PersistentRowSorterIterator<V extends IPersistableRow> implements IPersistentRowManager<V>, Iterator<V> {
@@ -128,7 +128,7 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
     private boolean sortEnabled = true;
 
     /**
-     * 
+     *
      * StreamContainer.
      */
     static class StreamContainer {
@@ -161,7 +161,7 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
 
     /**
      * DOC amaumont SortedMultipleHashFile constructor comment.
-     * 
+     *
      * @throws IOException
      */
     public PersistentRowSorterIterator(String container) throws IOException {
@@ -172,7 +172,7 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
 
     /**
      * DOC amaumont SortedMultipleHashFile constructor comment.
-     * 
+     *
      * @throws IOException
      */
     public PersistentRowSorterIterator(String container, int bufferSize) throws IOException {
@@ -248,7 +248,7 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
 
     /**
      * sort list and then use light serialization to store Data.
-     * 
+     *
      * @param list
      * @throws FileNotFoundException
      * @throws IOException
@@ -273,9 +273,9 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
         // System.out.println("Writing ordered buffer in file...");
 
         File file = new File(buildFilePath());
-        
+
         file.deleteOnExit();
-        
+
         count++;
         // ObjectOutputStream rw = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
         ObjectOutputStream rw = new JBossObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
@@ -333,9 +333,9 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
 
     /**
      * DOC amaumont Comment method "beforeLoopFind".
-     * 
+     *
      * @throws IOException
-     * 
+     *
      * @throws IOException
      */
     private void beforeLoopFind() throws IOException {
@@ -367,9 +367,9 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
 
     /**
      * DOC amaumont Comment method "findNextData".
-     * 
+     *
      * @throws IOException
-     * 
+     *
      * @throws IOException
      */
     private void findNextData() throws IOException {
@@ -437,7 +437,7 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
 
     /**
      * DOC amaumont Comment method "afterLoopFind".
-     * 
+     *
      * @throws IOException
      */
     private void afterLoopFind() {
@@ -478,7 +478,7 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.thash.io.IMapHashFile#endGet(java.lang.String)
      */
     public void endGet() {
@@ -497,7 +497,7 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
 
     /**
      * Getter for sortEnabled.
-     * 
+     *
      * @return the sortEnabled
      */
     public boolean isSortEnabled() {
@@ -506,7 +506,7 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
 
     /**
      * Sets the sortEnabled.
-     * 
+     *
      * @param sortEnabled the sortEnabled to set
      */
     public void setSortEnabled(boolean sortEnabled) {

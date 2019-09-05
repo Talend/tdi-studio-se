@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -13,6 +13,8 @@
 package org.talend.sbi.engines.client.ui.wizards;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,6 +26,8 @@ import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.utils.files.FileUtils;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,12 +35,9 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class GenerateSpagoBIXML {
 
@@ -73,10 +74,11 @@ public class GenerateSpagoBIXML {
 
     private void createSpagoBIXML() {
         if (file != null) {
+            Writer writer = null;
             try {
                 Project project = ((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY))
                         .getProject();
-                final DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
+                final DocumentBuilderFactory fabrique = XmlUtils.getSecureDocumentBuilderFactory();
                 fabrique.setValidating(true);
                 final DocumentBuilder analyseur = fabrique.newDocumentBuilder();
                 analyseur.setErrorHandler(new ErrorHandler() {
@@ -118,16 +120,17 @@ public class GenerateSpagoBIXML {
                 attr.setNodeValue(project.getLanguage().getName());
                 projectElement.setAttributeNode(attr);
 
-                XMLSerializer serializer = new XMLSerializer();
-                OutputFormat outputFormat = new OutputFormat();
-                outputFormat.setIndenting(true);
-                serializer.setOutputFormat(outputFormat);
-                serializer.setOutputCharStream(new java.io.FileWriter(file));
-                serializer.serialize(document);
-
+                writer = new java.io.FileWriter(file);
+                FileUtils.writeXMLFile(document, writer);
             } catch (Exception e) {
-                // e.printStackTrace();
                 ExceptionHandler.process(e);
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch (IOException ex) {
+                        ExceptionHandler.process(ex);
+                    }
+                }
             }
         }
 

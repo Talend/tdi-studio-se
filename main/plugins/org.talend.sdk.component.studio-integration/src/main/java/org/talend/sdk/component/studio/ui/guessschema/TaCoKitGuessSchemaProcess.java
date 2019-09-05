@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -41,6 +41,7 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.metadata.model.ComponentModelSpy;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 
@@ -59,7 +60,7 @@ public class TaCoKitGuessSchemaProcess {
         this.guessSchemaTask = new Task(property, context, node, discoverSchemaAction, connectionName, executorService);
     }
 
-    public Future<String> run() {
+    public Future<GuessSchemaResult> run() {
         return executorService.submit(guessSchemaTask);
     }
 
@@ -67,7 +68,7 @@ public class TaCoKitGuessSchemaProcess {
         guessSchemaTask.kill();
     }
 
-    public static class Task implements Callable<String> {
+    public static class Task implements Callable<GuessSchemaResult> {
 
         private final Property property;
 
@@ -96,7 +97,7 @@ public class TaCoKitGuessSchemaProcess {
         }
 
         @Override
-        public String call() throws Exception {
+        public GuessSchemaResult call() throws Exception {
             buildProcess();
             IProcessor processor = ProcessorUtilities.getProcessor(process, null);
             processor.setContext(context);
@@ -125,12 +126,16 @@ public class TaCoKitGuessSchemaProcess {
                 }
             });
             executeProcess.waitFor();
+            final String resultStr = result.get();
+            if (resultStr != null && !resultStr.trim().isEmpty()) {
+                return new GuessSchemaResult(resultStr, error.get());
+            }
             final String errMessage = error.get();
             if (errMessage != null && !errMessage.isEmpty()) {
                 throw new IllegalStateException(errMessage);
+            } else {
+                throw new IllegalStateException(Messages.getString("guessSchema.error.empty")); //$NON-NLS-1$
             }
-
-            return result.get();
         }
 
         public synchronized void kill() {
@@ -241,4 +246,33 @@ public class TaCoKitGuessSchemaProcess {
         }
     }
 
+    public static class GuessSchemaResult {
+
+        private String result;
+
+        private String error;
+
+        public GuessSchemaResult(String result, String error) {
+            super();
+            this.result = result;
+            this.error = error;
+        }
+
+        public String getResult() {
+            return result;
+        }
+
+        public void setResult(String result) {
+            this.result = result;
+        }
+
+        public String getError() {
+            return error;
+        }
+
+        public void setError(String error) {
+            this.error = error;
+        }
+
+    }
 }

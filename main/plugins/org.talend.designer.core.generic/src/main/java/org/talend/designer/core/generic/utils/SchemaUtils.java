@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,19 +60,19 @@ import orgomg.cwm.resource.relational.Catalog;
 import orgomg.cwm.resource.relational.impl.SchemaImpl;
 
 public class SchemaUtils {
-    
+
     private static String CATALOG = "TABLE_CAT";
-    
+
     private static String SCHEMA = "TABLE_SCHEMA";
-    
+
     private static String TABLE_TYPE = "TABLE_TYPE";
-    
+
     public static MetadataTable createCatalog(String tableName, String tableType, ComponentProperties properties, Connection connection,
             String schemaPropertyName, String catalogName, String schemaName) {
         if (tableName == null || properties == null || schemaPropertyName == null) {
             return null;
         }
-        
+
         boolean hasSchemaInCatalog = false;
         boolean exist = false;
         List<Catalog> catalogList = new ArrayList<Catalog>();
@@ -80,7 +80,7 @@ public class SchemaUtils {
         orgomg.cwm.resource.relational.Schema schema = (orgomg.cwm.resource.relational.Schema)
                 ConnectionHelper.getPackage(schemaName, connection, orgomg.cwm.resource.relational.Schema.class);
         List<orgomg.cwm.resource.relational.Schema> subschemas = new ArrayList<orgomg.cwm.resource.relational.Schema>();
-        
+
         if(catalog != null){
             subschemas = CatalogHelper.getSchemas(catalog);
             hasSchemaInCatalog = subschemas.size() > 0;
@@ -89,9 +89,9 @@ public class SchemaUtils {
             catalog = CatalogHelper.createCatalog(catalogName);
             catalogList.add(catalog);
         }
-        
+
         MetadataTable metadataTable = null;
-        
+
         if (catalog != null && !hasSchemaInCatalog) { // only catalog
             metadataTable = getExistMetadataTable(catalog, tableName, tableType);
             if(metadataTable == null){
@@ -128,13 +128,13 @@ public class SchemaUtils {
                     }
                 }
             }
-        } 
+        }
         if(!exist){
             ConnectionHelper.addCatalogs(catalogList, connection);
         }
         return metadataTable;
     }
-    
+
     private static MetadataTable getExistMetadataTable(Package pack, String tableName, String tableType){
         ArrayList<MetadataTable> result = new ArrayList<MetadataTable>();
         PackageHelper.getAllTablesWithOrders(pack, result);
@@ -145,7 +145,7 @@ public class SchemaUtils {
         }
         return null;
     }
-    
+
     public static MetadataTable createTable(String tableName, String tableType, ComponentProperties properties, Connection connection, String schemaPropertyName){
         IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         MetadataTable metadataTable = null;
@@ -159,7 +159,7 @@ public class SchemaUtils {
         metadataTable.setSourceName(tableName);
         metadataTable.setLabel(tableName);
         metadataTable.setTableType(tableType);
-        
+
         Object schemaObj = ComponentsUtils.getGenericPropertyValue(properties, schemaPropertyName);
         if (schemaObj instanceof String) {
             Schema avroSchema = new Schema.Parser().parse((String) schemaObj);
@@ -167,7 +167,7 @@ public class SchemaUtils {
         } else if (schemaObj instanceof Schema) {
             convertComponentSchemaIntoTalendSchema((Schema) schemaObj, metadataTable);
         }
-        
+
         IMetadataTable iMetadataTable = MetadataToolHelper.convert(metadataTable);
         updateComponentSchema(properties, schemaPropertyName, iMetadataTable);
         metadataTable = ConvertionHelper.convert(iMetadataTable, tableType);
@@ -180,7 +180,7 @@ public class SchemaUtils {
         schemaPropertyTV.setTag(IComponentConstants.COMPONENT_SCHEMA_TAG);
         schemaPropertyTV.setValue(schemaPropertyName);
         metadataTable.getTaggedValue().add(schemaPropertyTV);
-        
+
         return metadataTable;
     }
 
@@ -199,7 +199,7 @@ public class SchemaUtils {
         }else{
             exist = true;
         }
-        
+
         MetadataTable metadataTable = getExistMetadataTable(schema, tableName, tableType);
         if(metadataTable == null){
             metadataTable = createTable(tableName, tableType, properties, connection, schemaPropertyName);
@@ -210,7 +210,7 @@ public class SchemaUtils {
         }
         return metadataTable;
     }
-    
+
     public static MetadataTable createSchema(String name, ComponentProperties properties, String schemaPropertyName) {
         if (name == null || properties == null || schemaPropertyName == null) {
             return null;
@@ -264,9 +264,9 @@ public class SchemaUtils {
      * DOC ycbai Comment method "updateComponentSchema".
      * <p>
      * Recreate a component schema by <code>metadataTable<code> and save it back into the <code>metadataTable<code>.
-     * 
+     *
      * @param metadataTable
-     * @param connection 
+     * @param connection
      */
     public static void updateComponentSchema(MetadataTable metadataTable, Connection connection) {
         if (metadataTable == null) {
@@ -397,14 +397,14 @@ public class SchemaUtils {
         }
         return null;
     }
-    
+
     public static MetadataTable getMetadataTable(Connection connection, MetadataTable mtable, IRepositoryViewObject object) {
         List<MetadataTable> tables = new ArrayList<MetadataTable>();
         ERepositoryObjectType type = object.getRepositoryObjectType();
         if(object instanceof MetadataTableRepositoryObject){
             IRepositoryViewObject viewObject = ((MetadataTableRepositoryObject)object).getViewObject();
             if(viewObject != null){
-                type = viewObject.getRepositoryObjectType();   
+                type = viewObject.getRepositoryObjectType();
             }
         }
         if(isExtraDBType(type)){
@@ -419,7 +419,7 @@ public class SchemaUtils {
         }
         return null;
     }
-    
+
     public static boolean isExtraDBType(ERepositoryObjectType type){
         if(type == null){
             return false;
@@ -434,7 +434,7 @@ public class SchemaUtils {
         }
         return false;
     }
-    
+
     public static void createCatalog(String name, ComponentProperties properties, Connection connection, String schemaPropertyName){
         Schema avroSchema = null;
         Object schemaObj = ComponentsUtils.getGenericPropertyValue(properties, schemaPropertyName);
@@ -446,7 +446,7 @@ public class SchemaUtils {
         String catalogName = avroSchema.getProp(CATALOG);
         String schemaName = avroSchema.getProp(SCHEMA);
         String tableType = avroSchema.getProp(TABLE_TYPE);
-        
+
         if(catalogName != null){
             createCatalog(name, tableType, properties, connection,
                     schemaPropertyName, catalogName, schemaName);
@@ -455,5 +455,5 @@ public class SchemaUtils {
                     schemaPropertyName, schemaName);
         }
     }
-    
+
 }

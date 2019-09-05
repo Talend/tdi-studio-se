@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@ package org.talend.sdk.component.studio.ui.wizard;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IWorkbench;
-import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.GAV;
 import org.talend.sdk.component.studio.i18n.Messages;
+import org.talend.sdk.component.studio.model.update.TaCoKitUpdateManager;
 
 /**
  * Wizard which is called on Edit action
@@ -47,14 +46,14 @@ public class TaCoKitEditWizard extends TaCoKitConfigurationWizard {
     protected void setWindowTitle() {
         ConfigTypeNode configTypeNode = getRuntimeData().getConfigTypeNode();
         setWindowTitle(
-                Messages.getString("TaCoKitConfiguration.wizard.title.edit", configTypeNode.getConfigurationType(), //$NON-NLS-1$
-                        configTypeNode.getDisplayName()));
+                Messages.getString("TaCoKitConfiguration.wizard.title.edit.str", configTypeNode.getDisplayName(), //$NON-NLS-1$
+                        configTypeNode.getConfigurationType()));
     }
 
     /**
      * Creates operation, which is performed, when Finish button is pushed.
      * Creates different operations depending on whether it is Create or Edit wizard
-     * 
+     *
      * @return operation to perform on finish
      */
     @Override
@@ -71,7 +70,8 @@ public class TaCoKitEditWizard extends TaCoKitConfigurationWizard {
     private void updateConfigurationItem() throws Exception {
         updateConnectionItem();
         refreshInFinish(getWizardPropertiesPage().isNameModifiedByUser());
-        RepositoryUpdateManager.updateDBConnection(connectionItem);
+        TaCoKitUpdateManager.updateTaCoKitSubConnection(getRuntimeData());
+        TaCoKitUpdateManager.updateTaCoKitConnection(connectionItem);
     }
 
 }

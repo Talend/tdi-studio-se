@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -132,10 +132,10 @@ import org.talend.designer.runprocess.ui.views.ProcessView;
 
 /**
  * DOC chuger class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
- * 
+ *
+ *
  */
 public class ProcessComposite extends ScrolledComposite implements IDynamicProperty {
 
@@ -229,7 +229,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * DOC chuger ProcessComposite2 constructor comment.
-     * 
+     *
      * @param parent Parent composite.
      * @param style Style bits.
      */
@@ -245,9 +245,9 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * DOC qli Comment method "initGraphicComponents".
-     * 
+     *
      * @param text
-     * 
+     *
      */
     private Point computeSize(String text) {
         GC gc = new GC(run.getDisplay());
@@ -258,7 +258,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * DOC amaumont Comment method "initGraphicComponents".
-     * 
+     *
      * @param parent
      */
     private void initGraphicComponents(Composite parent) {
@@ -843,7 +843,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // qli comment "addSelectionListener" .
         /*
          * moveButton.addSelectionListener(new SelectionAdapter() {
-         * 
+         *
          * @Override public void widgetSelected(final SelectionEvent e) { if (moveButton.getText().equals("<<")) {
          * //$NON-NLS-1$ sash.setWeights(new int[] { 0, 1, 23 }); moveButton.setText(">>"); //$NON-NLS-1$
          * moveButton.setToolTipText(Messages.getString("ProcessComposite.showContext")); //$NON-NLS-1$ } else if
@@ -981,9 +981,9 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "setCurRunMode".
-     * 
+     *
      * for the F6 shortcut to run
      */
     public void setCurRunMode(int id) {
@@ -992,7 +992,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.widgets.Widget#dispose()
      */
     @Override
@@ -1006,7 +1006,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Set the layout data of the button to a GridData with appropriate heights and widths.
-     * 
+     *
      * @param button
      */
     protected static void setButtonLayoutData(final Button button) {
@@ -1131,7 +1131,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * qzhang Comment method "setExecBtn".
-     * 
+     *
      * @param runnable
      */
     private void setExecBtn(final boolean runnable) {
@@ -1170,7 +1170,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * DOC ldong Comment method "getLog4jMsgType".
-     * 
+     *
      * @param outType
      * @param lineContent
      * @return
@@ -1266,7 +1266,10 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         }
 
         if (newStyle) {
-            consoleText.setStyleRanges(styles.toArray(new StyleRange[0]));
+            StyleRange[] StyleRanges = styles.toArray(new StyleRange[0]);
+            for (StyleRange styleRange : StyleRanges) {
+                consoleText.setStyleRange(styleRange);
+            }
         }
     }
 
@@ -1652,7 +1655,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             action.run();
         }
     }
-    
+
     private AtomicBoolean isUpdating = new AtomicBoolean(false);
 
     private void runProcessContextChanged(final PropertyChangeEvent evt) {
@@ -1663,7 +1666,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         if (ProcessMessageManager.UPDATE_CONSOLE.equals(propName)) {
             if (!isUpdating.get()) {
                 getDisplay().asyncExec(new Runnable() {
-    
+
                     @Override
                     public void run() {
                         if (isDisposed()) {
@@ -1743,7 +1746,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for targetExecutionTabItem.
-     * 
+     *
      * @return the targetExecutionTabItem
      */
     // public CTabItem getTargetExecutionTabItem() {
@@ -1765,7 +1768,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for infoview.
-     * 
+     *
      * @return the infoview
      */
     public boolean isHideConsoleLine() {
@@ -1774,7 +1777,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Sets the infoview.
-     * 
+     *
      * @param infoview the infoview to set
      */
     public void setHideconsoleLine(boolean infoview) {
@@ -1921,7 +1924,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         }
     }
     private Pattern pattern1 = Pattern.compile("\\$\\s*\\d+(\\.\\d*)?%"); //$NON-NLS-1$
-    
+
     private Pattern pattern2 = Pattern.compile("\\[\\s*\\d+(\\.\\d*)?%\\]"); //$NON-NLS-1$
 
     private boolean isPattern(String content) {
@@ -1933,10 +1936,10 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         Matcher m = pattern2.matcher(content);
         return m.find();
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getComposite()
      */
     @Override
@@ -1947,7 +1950,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getCurRowSize()
      */
     @Override
@@ -1958,7 +1961,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getElement()
      */
     @Override
@@ -1969,7 +1972,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getHashCurControls()
      */
     @Override
@@ -1980,7 +1983,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getPart()
      */
     @Override
@@ -1991,7 +1994,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.core.properties.tab.IDynamicProperty#getRepositoryAliasName(org.talend.core.model.properties.
      * ConnectionItem)
      */
@@ -2034,7 +2037,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getSection()
      */
     @Override
@@ -2045,7 +2048,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getTableIdAndDbSchemaMap()
      */
     @Override
@@ -2056,7 +2059,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getTableIdAndDbTypeMap()
      */
     @Override
@@ -2067,7 +2070,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#refresh()
      */
     @Override
@@ -2081,7 +2084,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#setCurRowSize(int)
      */
     @Override
@@ -2092,7 +2095,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * DOC Administrator Comment method "setProcessViewHelper".
-     * 
+     *
      * @param processViewHelper
      */
     public void setProcessViewHelper(IProcessViewHelper processViewHelper) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Class added and implemented to resolve thread safety issues surrounding the AdvancedMemoryLookup class where across
  * multiple partitions we would get various exceptions when multiple threads would try to use the same lookup to save
  * memory.
- * 
+ *
  * @param <V> V
  * @author rbaldwin
  */
@@ -92,7 +92,7 @@ public class ConcurrentAdvancedMemoryLookup<V> extends AdvancedMemoryLookup<V> i
 
         /**
          * DOC amaumont Comment method "instanciateNewList".
-         * 
+         *
          * @return
          */
         public Collection instanciateNewCollection() {
@@ -408,7 +408,7 @@ public class ConcurrentAdvancedMemoryLookup<V> extends AdvancedMemoryLookup<V> i
 
     /**
      * DOC amaumont Comment method "incrementCountValues".
-     * 
+     *
      * @param value
      * @param previousValue
      */
@@ -444,7 +444,7 @@ public class ConcurrentAdvancedMemoryLookup<V> extends AdvancedMemoryLookup<V> i
 
     /**
      * DOC amaumont Comment method "hasResult".
-     * 
+     *
      * @return
      */
     public boolean hasResult() {
@@ -453,7 +453,7 @@ public class ConcurrentAdvancedMemoryLookup<V> extends AdvancedMemoryLookup<V> i
 
     /**
      * Getter for hasHashKeys.
-     * 
+     *
      * @return the hasHashKeys
      */
     public boolean isUseHashKeys() {
@@ -462,7 +462,7 @@ public class ConcurrentAdvancedMemoryLookup<V> extends AdvancedMemoryLookup<V> i
 
     /**
      * Getter for countValuesForEachKey.
-     * 
+     *
      * @return the countValuesForEachKey
      */
     public boolean isCountValuesForEachKey() {
@@ -471,7 +471,7 @@ public class ConcurrentAdvancedMemoryLookup<V> extends AdvancedMemoryLookup<V> i
 
     /**
      * Getter for keepAllValues.
-     * 
+     *
      * @return the keepAllValues
      */
     public boolean isKeepAllValues() {
@@ -480,7 +480,7 @@ public class ConcurrentAdvancedMemoryLookup<V> extends AdvancedMemoryLookup<V> i
 
     /**
      * Getter for uniqueMatch.
-     * 
+     *
      * @return the uniqueMatch
      */
     public boolean isUniqueMatch() {
@@ -489,7 +489,7 @@ public class ConcurrentAdvancedMemoryLookup<V> extends AdvancedMemoryLookup<V> i
 
     /**
      * Getter for uniqueMatch.
-     * 
+     *
      * @return the uniqueMatch
      */
     public boolean isOnlyOneMatchResult() {
@@ -535,7 +535,7 @@ public class ConcurrentAdvancedMemoryLookup<V> extends AdvancedMemoryLookup<V> i
 
     /**
      * Getter for matchingMode.
-     * 
+     *
      * @return the matchingMode
      */
     public MATCHING_MODE getMatchingMode() {

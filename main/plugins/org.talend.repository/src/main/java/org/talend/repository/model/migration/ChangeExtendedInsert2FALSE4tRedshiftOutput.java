@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -45,15 +45,15 @@ public class ChangeExtendedInsert2FALSE4tRedshiftOutput extends AbstractJobMigra
                 if(node == null) {
                     return;
                 }
-                
+
                 ElementParameterType parameter = ComponentUtilities.getNodeProperty(node, "EXTENDINSERT"); //$NON-NLS-1$
                 if(parameter == null) {
                     ComponentUtilities.addNodeProperty(node, "EXTENDINSERT", "CHECK"); //$NON-NLS-1$ //$NON-NLS-2$
                     ComponentUtilities.setNodeValue(node, "EXTENDINSERT", "false");//$NON-NLS-1$ //$NON-NLS-2$
                 }
-                
+
             }
-        
+
         };
 
         for (String name : componentsName) {

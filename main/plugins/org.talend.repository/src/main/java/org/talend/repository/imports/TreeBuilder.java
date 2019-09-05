@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,7 +37,7 @@ import org.talend.core.ui.images.CoreImageProvider;
 
 /**
  * DOC hcw class global comment. Detailled comment
- * 
+ *
  * @deprecated have moved to /org.talend.repository.items.importexport, but still need for MDM, so keep it temp.
  */
 @Deprecated
@@ -155,7 +155,7 @@ public class TreeBuilder {
     }
 
     /**
-     * 
+     *
      * DOC hcw TreeBuilder class global comment. Detailled comment
      */
     public interface IContainerNode {
@@ -170,7 +170,7 @@ public class TreeBuilder {
     }
 
     /**
-     * 
+     *
      * DOC hcw ImportItemUtil class global comment. Detailled comment
      */
     public class ProjectNode implements IContainerNode {
@@ -248,7 +248,7 @@ public class TreeBuilder {
     }
 
     /**
-     * 
+     *
      * DOC chuang TreeBuilder class global comment. Detailled comment
      */
     public class FolderNode implements IContainerNode {
@@ -263,7 +263,7 @@ public class TreeBuilder {
 
         /**
          * DOC chuang FolderNode constructor comment.
-         * 
+         *
          * @param lastSegment
          */
         public FolderNode(String label) {
@@ -272,7 +272,7 @@ public class TreeBuilder {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.repository.localprovider.imports.TreeBuilder.IContainerNode#getChildren()
          */
         @Override
@@ -285,7 +285,7 @@ public class TreeBuilder {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.repository.localprovider.imports.TreeBuilder.IContainerNode#getImage()
          */
         @Override
@@ -295,7 +295,7 @@ public class TreeBuilder {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.repository.localprovider.imports.TreeBuilder.IContainerNode#getLabel()
          */
         @Override
@@ -305,7 +305,7 @@ public class TreeBuilder {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.repository.localprovider.imports.TreeBuilder.IContainerNode#hasChildren()
          */
         @Override
@@ -320,7 +320,7 @@ public class TreeBuilder {
 
         /**
          * DOC chuang Comment method "add".
-         * 
+         *
          * @param folder
          */
         public void add(FolderNode folder) {
@@ -329,7 +329,7 @@ public class TreeBuilder {
         }
 
         /**
-         * 
+         *
          * Sort item by label and version.
          */
         void sort() {
@@ -369,7 +369,7 @@ public class TreeBuilder {
     }
 
     /**
-     * 
+     *
      * DOC hcw ImportItemUtil class global comment. Detailled comment
      */
     public class TypeNode extends FolderNode {
@@ -411,7 +411,7 @@ public class TreeBuilder {
 
         /**
          * DOC chuang Comment method "createFolder".
-         * 
+         *
          * @param path
          * @return
          */

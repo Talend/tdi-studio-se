@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@ import java.util.Scanner;
 
 /**
  * DOC ibmuser class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class RowParser extends DelimitedDataReader {
 
@@ -49,12 +49,12 @@ public class RowParser extends DelimitedDataReader {
     private int rowLength = -1;
 
     private char[] buffer;
-    
+
     private Scanner scanner = null;
 
     /**
      * DOC ibmuser RowParser constructor comment.
-     * 
+     *
      * @param inputStream
      * @param rowSeparator
      * @param skipEmptyRecords
@@ -98,7 +98,7 @@ public class RowParser extends DelimitedDataReader {
 
     /**
      * DOC ibmuser RowParser constructor comment.
-     * 
+     *
      * @param inputStream
      * @param rowLength
      * @throws IOException
@@ -144,7 +144,7 @@ public class RowParser extends DelimitedDataReader {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.fileprocess.delimited.DelimitedDataReader#readRecord()
      */
     public boolean readRecord() throws IOException {
@@ -159,7 +159,7 @@ public class RowParser extends DelimitedDataReader {
 	                    }
 	                    rowRecord = scanner.next();
                 	}else{
-                		rowRecord = inputStream.readLine(); 
+                		rowRecord = inputStream.readLine();
                 		if (rowRecord == null) {
                 			 return false;
 	                    }
@@ -180,7 +180,7 @@ public class RowParser extends DelimitedDataReader {
 						return true;
 					}
 				}else{
-					rowRecord = inputStream.readLine(); 
+					rowRecord = inputStream.readLine();
 					if (rowRecord == null) {
 						return false;
 					} else {
@@ -362,7 +362,7 @@ public class RowParser extends DelimitedDataReader {
 
     /**
      * A buffer structure that used to load data from stream for processing.
-     * 
+     *
      * @author gke
      */
     private class StreamBuffer {

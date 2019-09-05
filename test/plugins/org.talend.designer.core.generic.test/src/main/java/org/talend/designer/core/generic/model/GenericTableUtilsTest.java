@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -59,14 +59,14 @@ public class GenericTableUtilsTest {
         codeNames.add("column2");
         codeNames.add("column3");
         tableParam.setListItemsDisplayCodeName(codeNames.toArray(new String[0]));
-        
+
         List<IElementParameter> childParams = new ArrayList<>();
         childParams.add(column1);
         childParams.add(column2);
         childParams.add(column3);
         tableParam.setListItemsValue(childParams.toArray());
-        
-        
+
+
         List<Map<String, Object>> table = new ArrayList<Map<String, Object>>();
         Map<String, Object> line = new HashMap<String, Object>();
         line.put("column1", "Text1");
@@ -78,7 +78,7 @@ public class GenericTableUtilsTest {
         line.put("column2", Boolean.FALSE);
         line.put("column3", 2);
         table.add(line);
-        
+
         MyTestTable tableProperties = new MyTestTable("tableProp");
         GenericTableUtils.setTableValues(tableProperties, table, tableParam);
         // call 2 times, to ensure the number of line is not added at each calls
@@ -136,7 +136,7 @@ public class GenericTableUtilsTest {
         codeNames.add("column2");
         codeNames.add("column3");
         tableParam.setListItemsDisplayCodeName(codeNames.toArray(new String[0]));
-        
+
         List<IElementParameter> childParams = new ArrayList<>();
         childParams.add(column1);
         childParams.add(column2);
@@ -146,10 +146,10 @@ public class GenericTableUtilsTest {
         List<Map<String, Object>> table = GenericTableUtils.getTableValues(tableProperties, tableParam);
 
         assertEquals(2, table.size());
-        
+
         Map<String, Object> line1 = table.get(0);
         Map<String, Object> line2 = table.get(1);
-        
+
         assertEquals("Text1", line1.get("column1"));
         assertEquals(Boolean.TRUE, line1.get("column2"));
         assertEquals("Value1", line1.get("column3"));
@@ -169,7 +169,7 @@ public class GenericTableUtilsTest {
 
         /**
          * DOC nrousseau MyTestTable constructor comment.
-         * 
+         *
          * @param name
          */
         public MyTestTable(String name) {
@@ -185,13 +185,13 @@ public class GenericTableUtilsTest {
         listString.add("mvn:org.talend.libraries/mysql-connector-java-5.1.40-bin/6.0.0");
         String jars = GenericTableUtils.getDriverJarPaths(listString);
         assertEquals(jars, "mysql-connector-java-5.1.30-bin.jar;mysql-connector-java-5.1.40-bin.jar");
-        
+
         listString = new ArrayList<String>();
         listString.add("mysql-connector-java-5.1.30-bin.jar");
         listString.add("mysql-connector-java-5.1.40-bin.jar");
         jars = GenericTableUtils.getDriverJarPaths(listString);
         assertEquals(jars, "mysql-connector-java-5.1.30-bin.jar;mysql-connector-java-5.1.40-bin.jar");
-        
+
         listString = new ArrayList<String>();
         listString.add("context.jdbc1_drivers");
         jars = GenericTableUtils.getDriverJarPaths(listString);

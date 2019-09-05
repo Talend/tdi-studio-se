@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -68,7 +68,7 @@ public class ChangeDefaultEncodingMigrationTask extends
 	}
 
 	/**
-	 * 
+	 *
 	 * jjzhou changeDefaulte value for encoding
 	 */
 	private class AddExecuteMode implements IComponentConversion {
@@ -83,7 +83,7 @@ public class ChangeDefaultEncodingMigrationTask extends
 			if (encoding != null) {
 				String value = encoding.getValue();  //$NON-NLS-1$
 				String componeName = node.getComponentName();  //$NON-NLS-1$
-				
+
 				if ("tSybaseOutputBulkExec".equals(componeName)) {
 					ElementParameterType sybaseEncoding = ComponentUtilities.getNodeProperty(node, "SYBASE_ENCODING"); //$NON-NLS-1$
 					if (sybaseEncoding == null) {

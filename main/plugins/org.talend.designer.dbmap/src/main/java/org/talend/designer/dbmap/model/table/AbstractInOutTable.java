@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,18 +20,18 @@ import org.talend.designer.dbmap.model.tableentry.AbstractInOutTableEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: AbstractInOutTable.java 1744 2007-01-31 13:05:30Z amaumont $
- * 
+ *
  */
 public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     protected IMetadataTable metadataTable;
 
     /**
-     * 
+     *
      * DOC amaumont AbstractInOutTable constructor comment.
-     * 
+     *
      * @param metadataTable
      * @param externalMapperTable can be null
      * @param name

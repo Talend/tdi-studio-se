@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -61,6 +61,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.utils.ControlUtils;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog;
@@ -80,6 +81,7 @@ import org.talend.core.language.CodeProblemsChecker;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.ICodeProblemsChecker;
 import org.talend.core.model.components.EComponentType;
+import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.QueryUtil;
@@ -126,6 +128,7 @@ import org.talend.designer.core.IMultiPageTalendEditor;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
@@ -150,6 +153,7 @@ import org.talend.designer.core.utils.UpgradeParameterHelper;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.hadoop.distribution.constants.HiveConstant;
 import org.talend.hadoop.distribution.constants.ImpalaConstant;
+import org.talend.metadata.managment.repository.ManagerConnection;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IMetadataService;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -1326,9 +1330,17 @@ public abstract class AbstractElementPropertySectionController implements Proper
     protected void fixedCursorPosition(IElementParameter param, Control labelText, Object value, boolean valueChanged) {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         IWorkbenchPart workbenchPart = page.getActivePart();
+        // tacokit
+        boolean update = false;
+        if (param != null && param instanceof ElementParameter && param.getFieldType().equals(EParameterFieldType.TEXT)) {
+            Object sourceName = ((ElementParameter) param).getTaggedValue("org.talend.sdk.component.source"); //$NON-NLS-1$
+            if ("tacokit".equalsIgnoreCase(String.valueOf(sourceName))) { //$NON-NLS-1$
+                update = true;
+            }
+        }
 
         if ((workbenchPart instanceof PropertySheet) || (workbenchPart instanceof JobSettingsView)
-                || (workbenchPart instanceof ComponentSettingsView)) {
+                || (workbenchPart instanceof ComponentSettingsView) || update) {
             Object control = editionControlHelper.undoRedoHelper.typedTextCommandExecutor.getActiveControl();
             if (param.getName().equals(control) && valueChanged && !param.isRepositoryValueUsed()) {
                 String previousText = editionControlHelper.undoRedoHelper.typedTextCommandExecutor.getPreviousText2();
@@ -1377,7 +1389,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
     }
 
     public void openSqlBuilderBuildIn(final ConnectionParameters connParameters, final String propertyName) {
-        ISQLBuilderService service = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(ISQLBuilderService.class);
+        ISQLBuilderService service = GlobalServiceRegister.getDefault().getService(ISQLBuilderService.class);
         service.openSQLBuilderDialog(connParameters, composite, elem, propertyName, getCommandStack(), this, part);
     }
 
@@ -1440,7 +1452,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
         String schema = getValueFromRepositoryName(element, EConnectionParameterName.SCHEMA.getName(), basePropertyParameter);
         connParameters.setSchema(schema);
 
-        if ((elem instanceof Node) && (((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC) 
+        if ((elem instanceof Node) && (((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)
                 || (element instanceof INode
                         && ((INode) element).getComponent().getComponentType().equals(EComponentType.GENERIC)))) {
             String userName = getValueFromRepositoryName(element, EConnectionParameterName.GENERIC_USERNAME.getDisplayName(), basePropertyParameter);
@@ -1462,10 +1474,10 @@ public abstract class AbstractElementPropertySectionController implements Proper
         }else{
             String userName = getValueFromRepositoryName(element, EConnectionParameterName.USERNAME.getName(), basePropertyParameter);
             connParameters.setUserName(userName);
-            
+
             String password = getValueFromRepositoryName(element, EConnectionParameterName.PASSWORD.getName(), basePropertyParameter);
             connParameters.setPassword(password);
-            
+
          // General jdbc
             String url = getValueFromRepositoryName(element, EConnectionParameterName.URL.getName(), basePropertyParameter);
             if (StringUtils.isEmpty(url)) {
@@ -1482,7 +1494,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             String driverJar = getValueFromRepositoryName(element, EConnectionParameterName.DRIVER_JAR.getName(),
                     basePropertyParameter);
             connParameters.setDriverJar(TalendTextUtils.removeQuotes(driverJar));
-            
+
             String driverClass = getValueFromRepositoryName(element, EConnectionParameterName.DRIVER_CLASS.getName(),
                     basePropertyParameter);
             String driverName = getValueFromRepositoryName(element, "DB_VERSION", basePropertyParameter); //$NON-NLS-1$
@@ -1553,6 +1565,10 @@ public abstract class AbstractElementPropertySectionController implements Proper
             dbName = ""; //$NON-NLS-1$
         }
         connParameters.setDbName(dbName);
+        EDatabaseTypeName dbtype = EDatabaseTypeName.getTypeFromDbType(type);
+        if (ManagerConnection.isSchemaFromSidOrDatabase(dbtype)) {
+        	connParameters.setSchema(dbName);
+        }
         if (connParameters.getDbType().equals(EDatabaseTypeName.SQLITE.getXmlName())
                 || connParameters.getDbType().equals(EDatabaseTypeName.ACCESS.getXmlName())
                 || connParameters.getDbType().equals(EDatabaseTypeName.FIREBIRD.getXmlName())) {
@@ -1668,7 +1684,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             dbName = ""; //$NON-NLS-1$
         }
         connParameters.setDbName(dbName);
-        
+
         if ((elem instanceof Node) && (((Node)elem).getComponent().getComponentType().equals(EComponentType.GENERIC)
                 || (element instanceof INode
                         && ((INode) element).getComponent().getComponentType().equals(EComponentType.GENERIC)))) {
@@ -1723,14 +1739,14 @@ public abstract class AbstractElementPropertySectionController implements Proper
             connParameters.setDriverJar(TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.DRIVER_JAR.getName(), context, basePropertyParameter)));
         }
-        
+
         connParameters.setPort(getParameterValueWithContext(element, EConnectionParameterName.PORT.getName(), context,
                 basePropertyParameter));
         connParameters.setSchema(getParameterValueWithContext(element, EConnectionParameterName.SCHEMA.getName(), context,
                 basePropertyParameter));
         connParameters.setHost(getParameterValueWithContext(element, EConnectionParameterName.SERVER_NAME.getName(), context,
                 basePropertyParameter));
-        
+
         String dir = getParameterValueWithContext(element, EConnectionParameterName.DIRECTORY.getName(), context,
                 basePropertyParameter);
         if (dbType.equals(EDatabaseTypeName.HSQLDB_IN_PROGRESS.getDisplayName())) {
@@ -1765,6 +1781,11 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 EConnectionParameterName.PROPERTIES_STRING.getName(), context, basePropertyParameter));
         connParameters.setDatasource(getParameterValueWithContext(element, EConnectionParameterName.DATASOURCE.getName(),
                 context, basePropertyParameter));
+        EDatabaseTypeName dbtypeName = EDatabaseTypeName.getTypeFromDbType(dbType);
+        if (ManagerConnection.isSchemaFromSidOrDatabase(dbtypeName) 
+        		&& (connParameters.getSchema() == null || connParameters.getSchema().length() <= 0)) {
+        	connParameters.setSchema(dbName);
+        }
     }
 
     private String getParameterValueWithContext(IElement elem, String key, IContext context,
@@ -1927,10 +1948,10 @@ public abstract class AbstractElementPropertySectionController implements Proper
         connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_THRIFTPORT, hiveThriftPort);
 
     }
-    
+
     /**
      * DOC nrousseau Comment method "getGuessQueryCommand".
-     * 
+     *
      * @return
      */
     protected QueryGuessCommand getGuessQueryCommand() {
@@ -2081,7 +2102,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             if (schemaSelected != null) {
                 // repositoryMetadata = repositoryTableMap.get(schemaSelected);
             } else if (newRepositoryMetadata == null) {
-                MessageDialog.openWarning(new Shell(), Messages.getString("QueryTypeController.alert"), //$NON-NLS-1$
+                MessageDialog.openWarning(DisplayUtils.getDefaultShell(false), Messages.getString("QueryTypeController.alert"), //$NON-NLS-1$
                         Messages.getString("QueryTypeController.nothingToGuess")); //$NON-NLS-1$
                 return cmd;
             }
@@ -2211,6 +2232,28 @@ public abstract class AbstractElementPropertySectionController implements Proper
                         }
                     }
                 }
+                if (connectionNode == null) {
+                    INode node = null;
+                    if (elem instanceof INode) {
+                        node = (INode) elem;
+                    } else { // else instanceof Connection
+                        node = ((IConnection) elem).getSource();
+                    }
+                    if (node != null) {
+                        List<IMultipleComponentManager> multipleComponentManagers = node.getComponent()
+                                .getMultipleComponentManagers();
+                        for (IMultipleComponentManager manager : multipleComponentManagers) {
+                            String inName = manager.getInput().getName();
+                            String componentValue = compValue + "_" + inName;
+                            for (INode gnode : nodes) {
+                                if (gnode.getUniqueName().equals(componentValue) && (gnode instanceof INode)) {
+                                    connectionNode = gnode;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
                 if (connectionNode != null) {
                     if (isUserExistionConnectionType) {
                         IElementParameter ele = connectionNode.getElementParameter("CONNECTION_TYPE");
@@ -2267,7 +2310,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         ISQLBuilderService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ISQLBuilderService.class)) {
-            service = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(ISQLBuilderService.class);
+            service = GlobalServiceRegister.getDefault().getService(ISQLBuilderService.class);
         }
         if (service == null) {
             return false;
@@ -2359,7 +2402,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
      */
     protected String openSQLBuilder(String repositoryType, String propertyName, String query) {
         if (repositoryType.equals(EmfComponent.BUILTIN)) {
-            connParameters.setQuery(query);
+            connParameters.setQuery(query, true);
             if (connParameters.isShowConfigParamDialog()) {
                 if (!isUseExistingConnection()) {
                     initConnectionParametersWithContext(elem, part.getProcess().getContextManager().getDefaultContext());
@@ -2369,8 +2412,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
             }
             // add for bug TDI-20335
             if (part == null) {
-                Shell parentShell = new Shell(composite.getShell().getDisplay());
-                ISQLBuilderService service = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(
+                Shell parentShell = DisplayUtils.getDefaultShell(false);
+                ISQLBuilderService service = GlobalServiceRegister.getDefault().getService(
                         ISQLBuilderService.class);
                 Dialog sqlBuilder = service.openSQLBuilderDialog(parentShell, "", connParameters);
                 sqlBuilder.open();
@@ -2457,14 +2500,14 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 if (repositoryId != null) {
                     connParameters.setRepositoryId(repositoryId);
                 }
-                Shell parentShell = new Shell(composite.getShell().getDisplay());
+                Shell parentShell = DisplayUtils.getDefaultShell(false);
                 String nodeLabel = null;
                 if (elem instanceof Node) {
                     nodeLabel = (String) ((Node) elem).getElementParameter(EParameterName.LABEL.getName()).getValue();
                 }
                 TextUtil.setDialogTitle(processName, nodeLabel, elem.getElementName());
 
-                ISQLBuilderService service = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(
+                ISQLBuilderService service = GlobalServiceRegister.getDefault().getService(
                         ISQLBuilderService.class);
 
                 connParameters.setQuery(query);
@@ -2683,7 +2726,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
     protected void callBeforeActive(IElementParameter param) {
         IGenericService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericService.class)) {
-            service = (IGenericService) GlobalServiceRegister.getDefault().getService(IGenericService.class);
+            service = GlobalServiceRegister.getDefault().getService(IGenericService.class);
         }
         if (service != null) {
             service.callBeforeActivate(param);

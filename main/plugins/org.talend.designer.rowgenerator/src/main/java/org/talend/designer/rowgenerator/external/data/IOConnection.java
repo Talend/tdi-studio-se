@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.core.model.process.IConnection;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2007-2-10 下午02:52:12 (星期五, 29 九月 2006) qzhang $
- * 
+ *
  */
 public class IOConnection {
 
@@ -33,7 +33,7 @@ public class IOConnection {
 
     /**
      * amaumont MapperConnection constructor comment.
-     * 
+     *
      * @param connection
      * @param ioDataComponent
      */
@@ -47,7 +47,7 @@ public class IOConnection {
 
     /**
      * amaumont MapperConnection constructor comment.
-     * 
+     *
      * @param connection
      * @param ioDataComponent
      */

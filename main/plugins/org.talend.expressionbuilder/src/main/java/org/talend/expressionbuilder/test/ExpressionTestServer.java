@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,11 +26,11 @@ import org.talend.commons.ui.runtime.exception.RuntimeExceptionHandler;
 
 /**
  * Sockte server that listening the notification from the expression jobs..
- * 
+ *
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExpressionTestServer.java 下午04:02:29 2007-6-26 +0000 (2007-6-26) yzhang $
- * 
+ *
  */
 public class ExpressionTestServer implements Runnable {
 
@@ -48,7 +48,7 @@ public class ExpressionTestServer implements Runnable {
 
     /**
      * Set default constructor to be private accessed.
-     * 
+     *
      * yzhang ExpressionTestServer constructor comment.
      */
     private ExpressionTestServer(Display display, Text resultDisplay) {
@@ -64,9 +64,9 @@ public class ExpressionTestServer implements Runnable {
 
     /**
      * Return the single server.
-     * 
+     *
      * yzhang Comment method "getInstance".
-     * 
+     *
      * @param display
      * @param resultDisplay
      * @return
@@ -80,7 +80,7 @@ public class ExpressionTestServer implements Runnable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Runnable#run()
      */
     public void run() {
@@ -99,7 +99,7 @@ public class ExpressionTestServer implements Runnable {
 
     /**
      * Stop current server thread.
-     * 
+     *
      * yzhang Comment method "stop".
      */
     public void stop() {
@@ -123,9 +123,9 @@ public class ExpressionTestServer implements Runnable {
 
     /**
      * To see whether thread stopped or not.
-     * 
+     *
      * yzhang Comment method "stopped".
-     * 
+     *
      * @return
      */
     public boolean stopped() {
@@ -134,9 +134,9 @@ public class ExpressionTestServer implements Runnable {
 
     /**
      * yzhang ExpressionTestServer class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: ExpressionTestServer.java 上午10:07:44 2007-7-24 +0000 (2007-7-24) yzhang $
-     * 
+     *
      */
     class ExpressionTestProcess extends Thread {
 
@@ -144,7 +144,7 @@ public class ExpressionTestServer implements Runnable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Thread#run()
          */
         @Override

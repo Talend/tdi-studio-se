@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.ecore.EObject;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.io.FilesUtils;
@@ -111,7 +112,7 @@ public class ResourceDependenciesUtil {
             if (rvo != null) {
                 final JobResourceDependencyModel model = new JobResourceDependencyModel(
                         (ResourceItem) rvo.getProperty().getItem());
-                
+
                 if (contextPar != null) {
                     model.setContextVar(contextPar.getName());
                     model.setContextSource(contextPar.getSource());
@@ -275,18 +276,12 @@ public class ResourceDependenciesUtil {
         joblabel.append(property.getLabel() + "_" + property.getVersion());
 
         ResourceItem item = model.getItem();
-        Project currentProject = ProjectManager.getInstance().getCurrentProject();
         String version = item.getProperty().getVersion();
         if (StringUtils.isNotBlank(newVersion) && !model.LATEST_VERSION.equals(newVersion)) {
             version = newVersion;
         }
         String fileSuffix = "_" + version + "." + item.getBindingExtension();
-        IProject project = null;
-        try {
-            project = ResourceUtils.getProject(currentProject.getTechnicalLabel());
-        } catch (PersistenceException e1) {
-            ExceptionHandler.process(e1);
-        }
+        IProject project = getWorkspaceProject(item);
         if (project == null) {
             return;
         }
@@ -300,13 +295,32 @@ public class ResourceDependenciesUtil {
             }
             String extResPath = getProcessFolder(jobObject) + processJobLabel.toLowerCase() + SRC_EXTRESOURCE_FOLDER;
             String newFilePath = getResourcePath(model, joblabel.toString(), newVersion);
-            File targetFile = project.getFile(new Path(extResPath + SEG_TAG + newFilePath)).getLocation().toFile();
+
+            // resourceItem and processItem can belong to different project
+            IProject proProject = getWorkspaceProject(jobObject.getProperty());
+            if (proProject == null) {
+                return;
+            }
+            File targetFile = proProject.getFile(new Path(extResPath + SEG_TAG + newFilePath)).getLocation().toFile();
             try {
                 FilesUtils.copyFile(resourceFile, targetFile);
             } catch (IOException e) {
                 ExceptionHandler.process(e);
             }
         }
+    }
+
+    private static IProject getWorkspaceProject(EObject object) {
+        IProject project = null;
+        try {
+            org.talend.core.model.properties.Project emfProject = ProjectManager.getInstance().getProject(object);
+            if (emfProject != null) {
+                project = ResourceUtils.getProject(emfProject.getTechnicalLabel());
+            }
+        } catch (PersistenceException e1) {
+            ExceptionHandler.process(e1);
+        }
+        return project;
     }
 
     public static void deleteFromResourceFolder(JobResourceDependencyModel model, String jobId, String jobVersion) {

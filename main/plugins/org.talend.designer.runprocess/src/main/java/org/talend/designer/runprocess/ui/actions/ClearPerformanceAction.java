@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,9 +23,9 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 
 /**
  * Clean performance data on a process. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ClearPerformanceAction extends Action {
 
@@ -43,7 +43,7 @@ public class ClearPerformanceAction extends Action {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
@@ -56,7 +56,7 @@ public class ClearPerformanceAction extends Action {
         }
         clearJobletPerformance();
     }
-    
+
     private void clearJobletPerformance(){
     	for(INode inode : process.getGraphicalNodes()){
     		if(!(inode instanceof Node)){
@@ -83,7 +83,7 @@ public class ClearPerformanceAction extends Action {
 
     /**
      * Getter for process.
-     * 
+     *
      * @return the process
      */
     public IProcess getProcess() {
@@ -92,7 +92,7 @@ public class ClearPerformanceAction extends Action {
 
     /**
      * Sets the process.
-     * 
+     *
      * @param process the process to set
      */
     public void setProcess(IProcess process) {

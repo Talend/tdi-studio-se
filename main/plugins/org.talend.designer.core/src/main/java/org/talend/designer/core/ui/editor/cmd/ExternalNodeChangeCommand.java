@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,10 +19,10 @@ import java.util.Map;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IODataComponent;
 import org.talend.core.model.components.IODataComponentContainer;
@@ -56,9 +56,9 @@ import org.talend.designer.core.ui.views.properties.ComponentSettings;
 
 /**
  * Command that will change the datas stored for an external node.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ExternalNodeChangeCommand extends Command {
 
@@ -142,6 +142,9 @@ public class ExternalNodeChangeCommand extends Command {
         }
 
         for (Connection connection : (List<Connection>) node.getIncomingConnections()) {
+            if (!connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+                continue;
+            }
             String schemaType = (String) connection.getSource().getPropertyValue(EParameterName.SCHEMA_TYPE.getName());
             if (schemaType != null) {
                 if (schemaType.equals(EmfComponent.REPOSITORY)) {
@@ -179,7 +182,7 @@ public class ExternalNodeChangeCommand extends Command {
         if (propagate == null) {
             propagate = MessageDialog
                     .openQuestion(
-                            new Shell(),
+                            DisplayUtils.getDefaultShell(false),
                             Messages.getString("ExternalNodeChangeCommand.propagate"), Messages.getString("ExternalNodeChangeCommand.propagateMessage")); //$NON-NLS-1$ //$NON-NLS-2$
             if (propagate) {
                 changeCollapsedState(false, jobletMap, connection.getTarget());

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,13 +40,12 @@ import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.gef.rulers.RulerProvider;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.general.ILibrariesService;
@@ -82,7 +81,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#setSelected(int)
      */
     @Override
@@ -101,7 +100,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#activate()
      */
     @Override
@@ -112,7 +111,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#deactivate()
      */
     @Override
@@ -123,7 +122,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
      */
     @Override
@@ -145,7 +144,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
      */
     @Override
@@ -172,7 +171,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#createEditPolicies()
      */
     @Override
@@ -182,7 +181,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -227,7 +226,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#getModelChildren()
      */
     @Override
@@ -281,7 +280,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#getAdapter(java.lang.Class)
      */
     @Override
@@ -318,7 +317,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#addChildVisual(org.eclipse.gef.EditPart, int)
      */
     @Override
@@ -333,7 +332,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef.ConnectionEditPart)
      */
     @Override
@@ -343,7 +342,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef.Request)
      */
     @Override
@@ -353,7 +352,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef.ConnectionEditPart)
      */
     @Override
@@ -363,7 +362,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef.Request)
      */
     @Override
@@ -373,7 +372,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#getModelSourceConnections()
      */
     @Override
@@ -390,8 +389,7 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
                 if (nodeCon.getErrorMarkRectangle() != null && nodeCon.getErrorMarkRectangle().contains(location)) {
                     Node node = nodeCon.getNode();
                     if (node.isErrorFlag()) {
-                        Shell shell = Display.getCurrent().getActiveShell();// getViewer().getControl().getShell();
-                        ErrorMessageDialog dialog = new ErrorMessageDialog(new Shell(shell), node);
+                        ErrorMessageDialog dialog = new ErrorMessageDialog(DisplayUtils.getDefaultShell(false), node);
                         dialog.open();
                         break;
                     }

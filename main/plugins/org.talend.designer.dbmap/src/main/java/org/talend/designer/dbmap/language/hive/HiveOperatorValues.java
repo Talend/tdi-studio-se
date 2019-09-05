@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,13 +17,13 @@ import org.talend.designer.dbmap.language.operator.DbOperatorValues;
 
 /**
  * created by talend2 on 2012-8-16 Detailled comment
- * 
+ *
  */
 public class HiveOperatorValues extends DbOperatorValues {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.operator.DbOperatorValues#init1()
      */
     @Override
@@ -41,7 +41,7 @@ public class HiveOperatorValues extends DbOperatorValues {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.language.operator.DbOperatorValues#init2()
      */
     @Override

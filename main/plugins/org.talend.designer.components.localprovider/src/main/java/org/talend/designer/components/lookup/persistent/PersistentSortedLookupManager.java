@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,11 +44,11 @@ import routines.system.IPersistableLookupRow;
 
 /**
  * Persistent Sorted Lookup Manager.
- * 
+ *
  * JBoss library is used to avoid memory leaks noticed with Sun ObjectInputStream class.
- * 
+ *
  * @see http://www.talendforge.org/bugs/view.php?id=6780#bugnotes
- * 
+ *
  * @param <B> bean
  */
 public class PersistentSortedLookupManager<B extends IPersistableComparableLookupRow<B>> extends AbstractPersistentLookup<B>
@@ -299,9 +299,9 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "checkProperty".
-     * 
+     *
      * @param bean
      * @param property
      * @param checkType
@@ -356,7 +356,7 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
         }
         File keysDataFile = new File(buildKeysFilePath(fileIndex));
         keysDataFile.deleteOnExit();
-        
+
         File valuesDataFile = new File(buildValuesFilePath(fileIndex));
         valuesDataFile.deleteOnExit();
 
@@ -616,7 +616,7 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
 
     /**
      * Getter for sortEnabled.
-     * 
+     *
      * @return the sortEnabled
      */
     public boolean isSortEnabled() {
@@ -625,7 +625,7 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
 
     /**
      * Sets the sortEnabled.
-     * 
+     *
      * @param sortEnabled the sortEnabled to set
      */
     public void setSortEnabled(boolean sortEnabled) {

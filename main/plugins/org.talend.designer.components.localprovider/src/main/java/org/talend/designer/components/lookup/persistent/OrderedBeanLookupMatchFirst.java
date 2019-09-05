@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ public class OrderedBeanLookupMatchFirst<B extends Comparable<B> & IPersistableL
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.persistent.TestA#lookup(B)
      */
     public void lookup(B key) throws IOException {
@@ -66,7 +66,7 @@ public class OrderedBeanLookupMatchFirst<B extends Comparable<B> & IPersistableL
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.persistent.TestA#hasNext()
      */
     public boolean hasNext() throws IOException {
@@ -74,7 +74,7 @@ public class OrderedBeanLookupMatchFirst<B extends Comparable<B> & IPersistableL
         if (currentSearchedKey == null) {
             return false;
         }
-        
+
         if(nextWithPreviousLookup) {
             return previousCompareResultMatch;
         }
@@ -158,7 +158,7 @@ public class OrderedBeanLookupMatchFirst<B extends Comparable<B> & IPersistableL
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.persistent.TestA#next()
      */
     public B next() throws IOException {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,7 +51,7 @@ import org.talend.designer.components.exchange.model.VersionRevision;
 import org.talend.designer.components.exchange.util.ExchangeUtils;
 
 /**
- * 
+ *
  * DOC hcyi ImportCompatibleEcoComponentsComposite class global comment. Detailled comment
  */
 class ImportCompatibleEcoComponentsComposite extends Composite {
@@ -70,7 +70,7 @@ class ImportCompatibleEcoComponentsComposite extends Composite {
 	public Combo versionCombo;
 	private List<VersionRevision> fVersionRevisions;
 	public static final String TOS_VERSION_FILTER = "TOS_VERSION_FILTER";
-	
+
     public ImportCompatibleEcoComponentsComposite(Composite parent, Shell shell, boolean init, List<Category> fCategorys, List<VersionRevision> fVersionRevisions, ImportExchangeProperty downloadproperty) {
         super(parent, SWT.NONE);
         this.fCategorys=fCategorys;
@@ -145,7 +145,7 @@ class ImportCompatibleEcoComponentsComposite extends Composite {
     }
 
     /**
-     * 
+     *
      * There will create three radio button.
      */
     private void creatOptions(Composite exchangeDialogCom) {
@@ -175,7 +175,7 @@ class ImportCompatibleEcoComponentsComposite extends Composite {
             }
         });
     }
-    
+
     public void creatCategory(Composite parent) {
         Composite categoryComposite = new Composite(parent, SWT.NONE);
         categoryComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -201,7 +201,7 @@ class ImportCompatibleEcoComponentsComposite extends Composite {
             }
         });
     }
-    
+
     public void initCategoryCombo() {
         if (categoryCombo.getItemCount() > 0) {
             return;
@@ -221,7 +221,7 @@ class ImportCompatibleEcoComponentsComposite extends Composite {
     }
 
     /**
-     * 
+     *
      * This is a progressBar.when this progressBar run it will download some jobs/templates/routines from net.
      */
     public void findChoiceExchange() {
@@ -261,7 +261,7 @@ class ImportCompatibleEcoComponentsComposite extends Composite {
         }
 
     }
-    
+
     public void updateTable(List<ComponentExtension> extensions) {
         removeItemElements(extensions);
         addItemElements(extensions);
@@ -291,7 +291,7 @@ class ImportCompatibleEcoComponentsComposite extends Composite {
         }
         table.setRedraw(true);
     }
-    
+
     private void removeTableItem(TableItem item) {
         if (item == null) {
             return;
@@ -333,7 +333,7 @@ class ImportCompatibleEcoComponentsComposite extends Composite {
             }
         });
     }
-    
+
     public void initTosVersionFilter() {
         if (versionCombo.getItemCount() > 0) {
             return;

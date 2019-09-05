@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,9 +17,9 @@ import org.talend.core.model.utils.TalendTextUtils;
 
 /**
  * DOC chuger class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FileOutputXmlNode.java 4749 2007-07-24 05:37:22Z ftang $
- * 
+ *
  */
 public class FileOutputDelimitedNode extends ShadowNode {
 
@@ -65,7 +65,7 @@ public class FileOutputDelimitedNode extends ShadowNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isStart()
      */
     @Override
@@ -75,7 +75,7 @@ public class FileOutputDelimitedNode extends ShadowNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isThereLinkWithHash()
      */
     @Override

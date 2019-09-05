@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.designer.dbmap.language.operator.IDbOperatorManager;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ILanguage.java 1877 2007-02-06 17:16:43Z amaumont $
- * 
+ *
  */
 public interface IDbLanguage {
 
@@ -57,7 +57,7 @@ public interface IDbLanguage {
 
     /**
      * DOC amaumont Comment method "getAndCondition".
-     * 
+     *
      * @return
      */
     public String getAndCondition();

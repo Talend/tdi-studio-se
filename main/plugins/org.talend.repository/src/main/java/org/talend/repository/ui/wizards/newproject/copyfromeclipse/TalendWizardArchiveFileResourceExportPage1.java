@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,7 +53,7 @@ import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.i18n.Messages;
 
 /**
- * 
+ *
  */
 public class TalendWizardArchiveFileResourceExportPage1 extends WizardArchiveFileResourceExportPage1 {
 
@@ -153,7 +153,7 @@ public class TalendWizardArchiveFileResourceExportPage1 extends WizardArchiveFil
 
     /**
      * Return the number of rows available in the current display using the current font.
-     * 
+     *
      * @param parent The Composite whose Font will be queried.
      * @return int The result of the display size divided by the font size.
      */
@@ -168,7 +168,7 @@ public class TalendWizardArchiveFileResourceExportPage1 extends WizardArchiveFil
     /**
      * Return whether or not the font in the parent is the size of a regular font. Typically used to know if a font is
      * smaller than the High Contrast Font. This method is used to make layout decisions based on screen space.
-     * 
+     *
      * @param parent The Composite whose Font will be queried.
      * @return boolean. True if there are more than 50 lines of possible text in the display.
      */

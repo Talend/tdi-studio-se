@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -179,7 +179,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /**
      * DOC Administrator DebugProcessComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -830,7 +830,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
             /**
              * DOC yexiaowei Comment method "callViewToDisplayMsg".
-             * 
+             *
              * @param message
              */
             private void callViewToDisplayMsg(final IProcessMessage message) {
@@ -1080,7 +1080,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
                             } else {
                                 MessageDialog.openInformation(getShell(), Messages.getString("ProcessDebugDialog.debugBtn"), //$NON-NLS-1$
-                                        Messages.getString("ProcessDebugDialog.errortext")); //$NON-NLS-1$ 
+                                        Messages.getString("ProcessDebugDialog.errortext")); //$NON-NLS-1$
                             }
                         }
                     } catch (ProcessorException e) {
@@ -1236,7 +1236,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getComposite()
      */
     @Override
@@ -1247,7 +1247,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getCurRowSize()
      */
     @Override
@@ -1258,7 +1258,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getElement()
      */
     @Override
@@ -1269,7 +1269,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getHashCurControls()
      */
     @Override
@@ -1280,7 +1280,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getPart()
      */
     @Override
@@ -1291,7 +1291,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.core.properties.tab.IDynamicProperty#getRepositoryAliasName(org.talend.core.model.properties.
      * ConnectionItem)
      */
@@ -1324,7 +1324,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getRepositoryTableMap()
      */
     // public Map<String, IMetadataTable> getRepositoryTableMap() {
@@ -1334,7 +1334,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getSection()
      */
     @Override
@@ -1345,7 +1345,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getTableIdAndDbSchemaMap()
      */
     @Override
@@ -1356,7 +1356,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getTableIdAndDbTypeMap()
      */
     @Override
@@ -1367,7 +1367,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#refresh()
      */
     @Override
@@ -1377,7 +1377,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.lang.Runnable#run()
              */
             @Override
@@ -1389,7 +1389,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#setCurRowSize(int)
      */
     @Override
@@ -1547,7 +1547,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
             }
 
             Double extentPro = new Double(0);
-            if ((!"".equals(mess)) && mess != null) { //$NON-NLS-1$  
+            if ((!"".equals(mess)) && mess != null) { //$NON-NLS-1$
                 extentPro = Double.parseDouble(mess);
             }
 
@@ -1593,7 +1593,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
 
                 matchContent = m.group();
 
-                if ((!("".equals(path)) && path != null) && lineNo > 0) {//$NON-NLS-1$ 
+                if ((!("".equals(path)) && path != null) && lineNo > 0) {//$NON-NLS-1$
                     uniName = Problems.setErrorMark(path, lineNo);
                 }
 

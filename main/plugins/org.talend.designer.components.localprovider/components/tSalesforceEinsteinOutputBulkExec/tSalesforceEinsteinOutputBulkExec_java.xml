@@ -1,0 +1,540 @@
+<COMPONENT>
+  <HEADER
+    PLATEFORM="ALL"
+    SERIAL=""
+    VERSION="0.102"
+    STATUS="ALPHA"
+    COMPATIBILITY="ALL"
+    AUTHOR="Talend"
+    RELEASE_DATE="20150313"
+    STARTABLE="false"
+    VISIBLE="true"
+    HAS_CONDITIONAL_OUTPUTS="true"
+    PARTITIONING="NONE"
+  >
+  <SIGNATURE/>
+  </HEADER>
+  <FAMILIES>
+    <FAMILY>Business/Salesforce</FAMILY>
+    <FAMILY>Cloud/Salesforce</FAMILY>
+  </FAMILIES>
+  <DOCUMENTATION>
+    <URL/>
+  </DOCUMENTATION>
+
+  <CONNECTORS>
+    <CONNECTOR CTYPE="FLOW" MAX_INPUT="1" MAX_OUTPUT="0"/>
+    <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="0" MAX_INPUT="1"/>
+    <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="COMPONENT_OK"/>
+    <CONNECTOR CTYPE="COMPONENT_ERROR"/>
+    <CONNECTOR CTYPE="RUN_IF"/>
+  </CONNECTORS>
+
+    <PARAMETERS>
+          <!-- tFileOutputDelimited parameters begin -->
+          <PARAMETER NAME="PROPERTY" FIELD="PROPERTY_TYPE" SHOW="true"
+            NUM_ROW="10" REPOSITORY_VALUE="SALESFORCE" />
+          <PARAMETER NAME="USESTREAM" FIELD="CHECK" NUM_ROW="15" SHOW="false">
+            <DEFAULT>false</DEFAULT>
+          </PARAMETER>
+          <PARAMETER NAME="STREAMNAME" FIELD="TEXT" NUM_ROW="20" SHOW_IF="USESTREAM=='true'">
+            <DEFAULT>outputStream</DEFAULT>
+          </PARAMETER>
+          <PARAMETER NAME="FILENAME" FIELD="FILE" NUM_ROW="20"
+            REQUIRED="true" SHOW="false">
+            <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/out.csv"</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="ROWSEPARATOR" FIELD="TEXT" NUM_ROW="30" SHOW="false">
+            <DEFAULT>"\n"</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="OS_LINE_SEPARATOR_AS_ROW_SEPARATOR" FIELD="CHECK" REQUIRED="true"
+             NUM_ROW="29" SHOW="false">
+            <DEFAULT>false</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="CSVROWSEPARATOR" FIELD="OPENED_LIST" NUM_ROW="30" REPOSITORY_VALUE="ROW_SEPARATOR" MAX_LENGTH="2"
+            SHOW="false">
+            <ITEMS DEFAULT="LF">
+              <ITEM NAME="LF" VALUE="&quot;\n&quot;"></ITEM>
+              <ITEM NAME="CR" VALUE="&quot;\r&quot;"></ITEM>
+              <ITEM NAME="CRLF" VALUE="&quot;\r\n&quot;"></ITEM>
+            </ITEMS>
+          </PARAMETER>
+
+          <PARAMETER NAME="FIELDSEPARATOR" FIELD="TEXT" NUM_ROW="30" SHOW="false">
+            <DEFAULT>";"</DEFAULT>
+          </PARAMETER>
+          
+          <PARAMETER NAME="FILE_EXIST_EXCEPTION" FIELD="CHECK" NUM_ROW="30" SHOW="false">
+	          <DEFAULT>false</DEFAULT>
+	      </PARAMETER>
+          <!-- tFileOutputDelimited parameters end -->
+
+          <!-- tSalesforceEinsteinBulkExec parameters begin -->
+        <PARAMETER
+          NAME="USE_EXISTING_CONNECTION"
+          FIELD="CHECK"
+          NUM_ROW="800">
+          <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="CONNECTION"
+          FIELD="COMPONENT_LIST"
+          REQUIRED="true" FILTER="tSalesforceConnection"
+          NUM_ROW="800"
+          SHOW_IF="USE_EXISTING_CONNECTION == 'true'"/>
+
+        <PARAMETER
+          NAME="USER"
+          FIELD="TEXT"
+          NUM_ROW="920"
+          REQUIRED="true"
+          REPOSITORY_VALUE="USER_NAME"
+          GROUP="CONNECTION_INFO"
+          SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="PASSWORD"
+          FIELD="PASSWORD"
+          NUM_ROW="920"
+          REQUIRED="true"
+          REPOSITORY_VALUE="PASSWORD"
+          GROUP="CONNECTION_INFO"
+          SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="ENDPOINT"
+          FIELD="TEXT"
+          NUM_ROW="930"
+          REQUIRED="true"
+          REPOSITORY_VALUE="ENDPOINT"
+          GROUP="CONNECTION_INFO"
+          SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        >
+          <DEFAULT>"https://login.salesforce.com/services/Soap/u/45.0"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="SCHEMA_FLOW"
+          FIELD="SCHEMA_TYPE"
+          NUM_ROW="935"
+          GROUP="DATASET_INFO"
+          NOT_SHOW_IF="SPECIFY_JSON_METADATA == 'true'"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="DATASET_OPERATION"
+          FIELD="CLOSED_LIST"
+          NUM_ROW="940"
+          REQUIRED="true"
+          GROUP="DATASET_INFO">
+            <ITEMS DEFAULT="APPEND">
+                <ITEM NAME="APPEND" VALUE="APPEND" />
+                <ITEM NAME="UPSERT" VALUE="UPSERT" />
+                <ITEM NAME="OVERWRITE" VALUE="OVERWRITE" />
+                <ITEM NAME="DELETE" VALUE="DELETE" />
+            </ITEMS>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="DATASET"
+          FIELD="TEXT"
+          NUM_ROW="940"
+          REQUIRED="true"
+          GROUP="DATASET_INFO"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="GENERATED_CSV_PATH"
+          FIELD="FILE"
+          NUM_ROW="950"
+          REQUIRED="true"
+          GROUP="DATASET_INFO"
+        >
+        <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/out.csv"</DEFAULT>
+        </PARAMETER>
+        <!-- tSalesforceEinsteinBulkExec parameters end -->
+
+        <!-- tFileOutputDelimited parameters begin -->
+        <PARAMETER NAME="APPEND" FIELD="CHECK" REQUIRED="true"
+          NUM_ROW="955" NOT_SHOW_IF="USESTREAM=='true'" GROUP="DATASET_INFO">
+          <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER NAME="INCLUDEHEADER" FIELD="CHECK" NUM_ROW="955" GROUP="DATASET_INFO">
+          <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+          <PARAMETER NAME="COMPRESS" FIELD="CHECK" NUM_ROW="955" SHOW_IF="(APPEND=='false') and (SPLIT=='false')" SHOW="false" GROUP="LOAD_INFO">
+            <DEFAULT>false</DEFAULT>
+          </PARAMETER>
+
+        <!-- tFileOutputDelimited parameters end -->
+    </PARAMETERS>
+
+    <ADVANCED_PARAMETERS>
+<!--
+          <PARAMETER
+            NAME="ENCODING"
+            FIELD="ENCODING_TYPE"
+            NUM_ROW="10"
+            REQUIRED="true"
+            >
+            <DEFAULT>"UTF-8"</DEFAULT>
+          </PARAMETER>
+ -->
+          <PARAMETER
+            NAME="CHARSET"
+            FIELD="TEXT"
+            NUM_ROW="20"
+            REQUIRED="true"
+            SHOW="true"
+            GROUP="HIDDEN_GROUP"
+          >
+            <DEFAULT>"UTF-8"</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER
+            NAME="FIELDS_DELIMITED_BY"
+            FIELD="TEXT"
+            NUM_ROW="20"
+            REQUIRED="true"
+            SHOW="true"
+            GROUP="HIDDEN_GROUP"
+          >
+            <DEFAULT>";"</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER
+            NAME="FIELDS_ENCLOSED_BY"
+            FIELD="TEXT"
+            NUM_ROW="25"
+            REQUIRED="true"
+            SHOW="true"
+            GROUP="HIDDEN_GROUP"
+          >
+            <DEFAULT>"\""</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER
+            NAME="LINES_TERMINATED_BY"
+            FIELD="TEXT"
+            NUM_ROW="25"
+            REQUIRED="true"
+            SHOW="true"
+            GROUP="HIDDEN_GROUP"
+          >
+            <DEFAULT>"\n"</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER
+            NAME="NUMERIC_FORMAT"
+            FIELD="TEXT"
+            NUM_ROW="25"
+            REQUIRED="true"
+            SHOW="false"
+            GROUP="HIDDEN_GROUP"
+          >
+            <DEFAULT>"#.##"</DEFAULT>
+          </PARAMETER>
+
+      <!-- tFileOutputDelimited parameters begin -->
+          <PARAMETER NAME="ADVANCED_SEPARATOR" FIELD="CHECK" REQUIRED="true" NUM_ROW="31"
+           SHOW="false">
+            <DEFAULT>true</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="THOUSANDS_SEPARATOR" FIELD="TEXT" REQUIRED="true" NUM_ROW="31"
+            SHOW="false">
+            <DEFAULT>""</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="DECIMAL_SEPARATOR" FIELD="TEXT" REQUIRED="true" NUM_ROW="31"
+            SHOW="false">
+            <DEFAULT>"."</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="CSV_OPTION" FIELD="CHECK" REQUIRED="true" NUM_ROW="35"
+           SHOW="false">
+            <DEFAULT>true</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="ESCAPE_CHAR" FIELD="TEXT" NUM_ROW="35"
+            REPOSITORY_VALUE="ESCAPE_CHAR" SHOW="false">
+            <DEFAULT>"""</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="TEXT_ENCLOSURE" FIELD="TEXT" NUM_ROW="35"
+            REPOSITORY_VALUE="TEXT_ENCLOSURE" SHOW="false">
+            <DEFAULT>"""</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="CREATE" FIELD="CHECK" REQUIRED="true"
+            NUM_ROW="40" NOT_SHOW_IF="USESTREAM=='true'">
+            <DEFAULT>true</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="SPLIT" FIELD="CHECK" REQUIRED="true"
+            NUM_ROW="50" SHOW="false">
+            <DEFAULT>false</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="SPLIT_EVERY" FIELD="TEXT" REQUIRED="true"
+            NUM_ROW="50" SHOW_IF="(SPLIT == 'true') AND (USESTREAM=='false')">
+            <DEFAULT>1000</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="FLUSHONROW" FIELD="CHECK" REQUIRED="true"
+            NUM_ROW="55">
+            <DEFAULT>false</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="FLUSHONROW_NUM" FIELD="TEXT" REQUIRED="true"
+            NUM_ROW="55" SHOW_IF="FLUSHONROW == 'true'">
+            <DEFAULT>1</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="ROW_MODE" FIELD="CHECK" REQUIRED="true"
+            NUM_ROW="60" SHOW="false">
+            <DEFAULT>false</DEFAULT>
+          </PARAMETER>
+
+          <PARAMETER NAME="ENCODING" FIELD="ENCODING_TYPE" NUM_ROW="70"
+            REQUIRED="true" SHOW="false">
+            <DEFAULT>"UTF-8"</DEFAULT>
+          </PARAMETER>
+
+            <PARAMETER NAME="DELETE_EMPTYFILE" FIELD="CHECK" REQUIRED="true" NUM_ROW="80" SHOW_IF="USESTREAM=='false'">
+              <DEFAULT>false</DEFAULT>
+            </PARAMETER>
+           <PARAMETER NAME="SCHEMA_OPT_NUM" FIELD="TEXT" NUM_ROW="100" REQUIRED="true" SHOW="false">
+                  <DEFAULT>90</DEFAULT>
+           </PARAMETER>
+
+        <!-- tFileOutputDelimited parameters end -->
+        <PARAMETER
+          NAME="UPLODE_JSON_METADATA"
+          FIELD="CHECK"
+          NUM_ROW="90"
+          SHOW="false"
+        >
+        <DEFAULT>true</DEFAULT>
+        </PARAMETER>
+
+
+        <PARAMETER
+          NAME="AUTO_GENERATE_JSON_METADATA_DESCRIPTION"
+          FIELD="CHECK"
+          NUM_ROW="135"
+          GROUP="JSON_SCHMEA"
+        >
+        <DEFAULT>true</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="NUMBER_OF_LINES_TO_IGNORE"
+          FIELD="TEXT"
+          NUM_ROW="137"
+          REQUIRED="true"
+          GROUP="JSON_SCHMEA"
+          NOT_SHOW_IF="(AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'true')
+                    OR (SPECIFY_JSON_METADATA == 'true')"
+        >
+          <DEFAULT>0</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="UNIQUE_API_NAME"
+          FIELD="TEXT"
+          NUM_ROW="137"
+          REQUIRED="true"
+          GROUP="JSON_SCHMEA"
+          NOT_SHOW_IF="(AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'true')
+                    OR (SPECIFY_JSON_METADATA == 'true')"
+        >
+        <DEFAULT>"SalesData"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="DATA_LABEL"
+          FIELD="TEXT"
+          NUM_ROW="139"
+          REQUIRED="true"
+          GROUP="JSON_SCHMEA"
+          NOT_SHOW_IF="(AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'true')
+                    OR (SPECIFY_JSON_METADATA == 'true')"
+        >
+        <DEFAULT>"Sales Data"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="FULLY_QUALIFIED_NAME"
+          FIELD="TEXT"
+          NUM_ROW="139"
+          REQUIRED="true"
+          GROUP="JSON_SCHMEA"
+          NOT_SHOW_IF="(AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'true')
+                    OR (SPECIFY_JSON_METADATA == 'true')"
+        >
+        <DEFAULT>"CRM"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="SPECIFY_JSON_METADATA"
+          FIELD="CHECK"
+          NUM_ROW="150"
+          GROUP="JSON_SCHMEA"
+          SHOW_IF="(AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'false')
+                AND (UPLODE_JSON_METADATA == 'true')"
+        >
+        <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="JSON_METADATA_PATH"
+          FIELD="FILE"
+          NUM_ROW="160"
+          REQUIRED="true"
+          GROUP="JSON_SCHMEA"
+          SHOW_IF="(SPECIFY_JSON_METADATA=='true')
+               AND (AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'false')
+               AND (UPLODE_JSON_METADATA == 'true')"
+        >
+        <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/in.json"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="GENERATE_JSON_IN_FILE"
+          FIELD="CHECK"
+          NUM_ROW="170"
+          SHOW_IF="(SPECIFY_JSON_METADATA == 'false') AND (UPLODE_JSON_METADATA == 'true')"
+        >
+        <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="CUSTOM_FOLDER"
+          FIELD="DIRECTORY"
+          NUM_ROW="180"
+          REQUIRED="true"
+          SHOW_IF="(SPECIFY_JSON_METADATA == 'false')
+               AND (UPLODE_JSON_METADATA == 'true')
+               AND (GENERATE_JSON_IN_FILE == 'true')"
+        >
+        <DEFAULT>"__COMP_DEFAULT_FILE_DIR__"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="RETRIEVE_UPLOAD_STATUS"
+          FIELD="CHECK"
+          NUM_ROW="185"
+        >
+        <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="SECONDS_TO_WAIT_FOR_SERVER_ANSWER"
+          FIELD="TEXT"
+          NUM_ROW="190"
+          REQUIRED="true"
+          SHOW_IF="RETRIEVE_UPLOAD_STATUS == 'true'">
+            <DEFAULT>60</DEFAULT>
+        </PARAMETER>
+    </ADVANCED_PARAMETERS>
+
+    <CODEGENERATION>
+      <TEMPLATES INPUT="in" OUTPUT="out">
+
+        <TEMPLATE NAME="in" COMPONENT="tFileOutputDelimited">
+          <LINK_TO NAME="out" CTYPE="ROWS_END"/>
+        </TEMPLATE>
+
+        <TEMPLATE NAME="out" COMPONENT="tSalesforceEinsteinBulkExec"/>
+
+        <TEMPLATE_PARAM SOURCE="self.PROPERTY"   TARGET="in.PROPERTY" />
+        <TEMPLATE_PARAM SOURCE="self.USESTREAM"   TARGET="in.USESTREAM" />
+        <TEMPLATE_PARAM SOURCE="self.STREAMNAME"   TARGET="in.STREAMNAME" />
+        <TEMPLATE_PARAM SOURCE="self.FILENAME"   TARGET="in.FILENAME" />
+        <TEMPLATE_PARAM SOURCE="self.ROWSEPARATOR"   TARGET="in.ROWSEPARATOR" />
+        <TEMPLATE_PARAM SOURCE="self.OS_LINE_SEPARATOR_AS_ROW_SEPARATOR"   TARGET="in.OS_LINE_SEPARATOR_AS_ROW_SEPARATOR" />
+        <TEMPLATE_PARAM SOURCE="self.LINES_TERMINATED_BY"   TARGET="in.CSVROWSEPARATOR" />
+        <TEMPLATE_PARAM SOURCE="self.LF"   TARGET="in.LF" />
+        <TEMPLATE_PARAM SOURCE="self.CR"   TARGET="in.CR" />
+        <TEMPLATE_PARAM SOURCE="self.CRLF"   TARGET="in.CRLF" />
+        <TEMPLATE_PARAM SOURCE="self.FIELDS_DELIMITED_BY"   TARGET="in.FIELDSEPARATOR" />
+        <TEMPLATE_PARAM SOURCE="self.APPEND"   TARGET="in.APPEND" />
+        <TEMPLATE_PARAM SOURCE="self.INCLUDEHEADER"   TARGET="in.INCLUDEHEADER" />
+        <TEMPLATE_PARAM SOURCE="self.COMPRESS"   TARGET="in.COMPRESS" />
+        <TEMPLATE_PARAM SOURCE="self.SCHEMA"   TARGET="in.SCHEMA" />
+        <TEMPLATE_PARAM SOURCE="self.ADVANCED_SEPARATOR"   TARGET="in.ADVANCED_SEPARATOR" />
+        <TEMPLATE_PARAM SOURCE="self.THOUSANDS_SEPARATOR"   TARGET="in.THOUSANDS_SEPARATOR" />
+        <TEMPLATE_PARAM SOURCE="self.DECIMAL_SEPARATOR"   TARGET="in.DECIMAL_SEPARATOR" />
+        <TEMPLATE_PARAM SOURCE="self.CSV_OPTION"   TARGET="in.CSV_OPTION" />
+        <TEMPLATE_PARAM SOURCE="self.ESCAPE_CHAR"   TARGET="in.ESCAPE_CHAR" />
+        <TEMPLATE_PARAM SOURCE="self.FIELDS_ENCLOSED_BY"   TARGET="in.TEXT_ENCLOSURE" />
+        <TEMPLATE_PARAM SOURCE="self.CREATE"   TARGET="in.CREATE" />
+        <TEMPLATE_PARAM SOURCE="self.SPLIT"   TARGET="in.SPLIT" />
+        <TEMPLATE_PARAM SOURCE="self.SPLIT_EVERY"   TARGET="in.SPLIT_EVERY" />
+        <TEMPLATE_PARAM SOURCE="self.FLUSHONROW"   TARGET="in.FLUSHONROW" />
+        <TEMPLATE_PARAM SOURCE="self.FLUSHONROW_NUM"   TARGET="in.FLUSHONROW_NUM" />
+        <TEMPLATE_PARAM SOURCE="self.ROW_MODE"   TARGET="in.ROW_MODE" />
+        <TEMPLATE_PARAM SOURCE="self.CHARSET"   TARGET="in.ENCODING" />
+        <TEMPLATE_PARAM SOURCE="self.DELETE_EMPTYFILE"   TARGET="in.DELETE_EMPTYFILE" />
+        <TEMPLATE_PARAM SOURCE="self.SCHEMA_OPT_NUM"   TARGET="in.SCHEMA_OPT_NUM" />
+        <TEMPLATE_PARAM SOURCE="self.Talend_CSV"   TARGET="in.Talend_CSV" />
+        <TEMPLATE_PARAM SOURCE="self.NB_LINE"   TARGET="in.NB_LINE" />
+        <TEMPLATE_PARAM SOURCE="self.FILE_NAME"   TARGET="in.FILE_NAME" />
+        <TEMPLATE_PARAM SOURCE="self.FILE_EXIST_EXCEPTION"   TARGET="in.FILE_EXIST_EXCEPTION" />
+
+        <TEMPLATE_PARAM SOURCE="self.USE_EXISTING_CONNECTION"   TARGET="out.USE_EXISTING_CONNECTION" />
+        <TEMPLATE_PARAM SOURCE="self.CONNECTION"   TARGET="out.CONNECTION" />
+        <TEMPLATE_PARAM SOURCE="self.USER"   TARGET="out.USER" />
+        <TEMPLATE_PARAM SOURCE="self.PASSWORD"   TARGET="out.PASSWORD" />
+        <TEMPLATE_PARAM SOURCE="self.ENDPOINT"   TARGET="out.ENDPOINT" />
+        <TEMPLATE_PARAM SOURCE="self.SCHEMA_FLOW"   TARGET="out.SCHEMA_FLOW" />
+        <TEMPLATE_PARAM SOURCE="self.DATASET"   TARGET="out.DATASET" />
+        <TEMPLATE_PARAM SOURCE="self.NUMBER_OF_LINES_TO_IGNORE"   TARGET="out.NUMBER_OF_LINES_TO_IGNORE" />
+        <TEMPLATE_PARAM SOURCE="self.DATASET_OPERATION"   TARGET="out.DATASET_OPERATION" />
+        <TEMPLATE_PARAM SOURCE="self.APPEND"   TARGET="out.APPEND" />
+        <TEMPLATE_PARAM SOURCE="self.UPSERT"   TARGET="out.UPSERT" />
+        <TEMPLATE_PARAM SOURCE="self.OVERWRITE"   TARGET="out.OVERWRITE" />
+        <TEMPLATE_PARAM SOURCE="self.DELETE"   TARGET="out.DELETE" />
+        <TEMPLATE_PARAM SOURCE="self.LOAD_DATA_PATH"   TARGET="out.LOAD_DATA_PATH" />
+        <TEMPLATE_PARAM SOURCE="self.GENERATED_JSON_PATH"   TARGET="out.GENERATED_JSON_PATH" />
+        <TEMPLATE_PARAM SOURCE="self.SPECIFY_JSON_METADATA"   TARGET="out.SPECIFY_JSON_METADATA" />
+        <TEMPLATE_PARAM SOURCE="self.JSON_METADATA_PATH"   TARGET="out.JSON_METADATA_PATH" />
+        <TEMPLATE_PARAM SOURCE="self.UNIQUE_API_NAME"   TARGET="out.UNIQUE_API_NAME" />
+        <TEMPLATE_PARAM SOURCE="self.FULLY_QUALIFIED_NAME"   TARGET="out.FULLY_QUALIFIED_NAME" />
+        <TEMPLATE_PARAM SOURCE="self.DATA_LABEL"   TARGET="out.DATA_LABEL" />
+        <TEMPLATE_PARAM SOURCE="self.UPLODE_JSON_METADATA"   TARGET="out.UPLODE_JSON_METADATA" />
+        <TEMPLATE_PARAM SOURCE="self.CHARSET"   TARGET="out.CHARSET" />
+        <TEMPLATE_PARAM SOURCE="self.FIELDS_DELIMITED_BY"   TARGET="out.FIELDS_DELIMITED_BY" />
+        <TEMPLATE_PARAM SOURCE="self.FIELDS_ENCLOSED_BY"   TARGET="out.FIELDS_ENCLOSED_BY" />
+        <TEMPLATE_PARAM SOURCE="self.LINES_TERMINATED_BY"   TARGET="out.LINES_TERMINATED_BY" />
+        <TEMPLATE_PARAM SOURCE="self.NUMERIC_FORMAT"   TARGET="out.NUMERIC_FORMAT" />
+        <TEMPLATE_PARAM SOURCE="self.AUTO_GENERATE_JSON_METADATA_DESCRIPTION"   TARGET="out.AUTO_GENERATE_JSON_METADATA_DESCRIPTION" />
+        <TEMPLATE_PARAM SOURCE="self.GENERATE_JSON_IN_FILE"   TARGET="out.GENERATE_JSON_IN_FILE" />
+        <TEMPLATE_PARAM SOURCE="self.CUSTOM_FOLDER"   TARGET="out.CUSTOM_FOLDER" />
+        <TEMPLATE_PARAM SOURCE="self.RETRIEVE_UPLOAD_STATUS"   TARGET="out.RETRIEVE_UPLOAD_STATUS" />
+        <TEMPLATE_PARAM SOURCE="self.SECONDS_TO_WAIT_FOR_SERVER_ANSWER"   TARGET="out.SECONDS_TO_WAIT_FOR_SERVER_ANSWER" />
+        <TEMPLATE_PARAM SOURCE="self.GENERATED_CSV_PATH"   TARGET="out.LOAD_DATA_PATH" />
+        <TEMPLATE_PARAM SOURCE="self.GENERATED_CSV_PATH"   TARGET="in.FILENAME" />
+      </TEMPLATES>
+    </CODEGENERATION>
+    <RETURNS/>
+</COMPONENT>

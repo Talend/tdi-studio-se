@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,9 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 
 /**
  * Action used to set the start status on a node with the context menu. <br/>
- * 
+ *
  * $Id: NodeSetActivateAction.java 3351 2007-05-04 12:14:00 +0000 (ven., 04 mai 2007) plegall $
- * 
+ *
  */
 public class DisplaySubjobAction extends SelectionAction {
 
@@ -52,7 +52,7 @@ public class DisplaySubjobAction extends SelectionAction {
 
     /**
      * Test if the selected item is a node.
-     * 
+     *
      * @return true / false
      */
     private boolean canPerformAction() {
@@ -65,14 +65,14 @@ public class DisplaySubjobAction extends SelectionAction {
             if (o instanceof NodePart) {
                 NodePart part = (NodePart) o;
                 Node node = (Node) part.getModel();
-                
+
                 //fix TESB-8326
                 if(node != null && node.getComponent() != null){
                     if(ComponentCategory.CATEGORY_4_CAMEL.getName().equals(node.getComponent().getPaletteType())){
                         return false;
                     }
-                }//end Fix of TESB-8326 
-                
+                }//end Fix of TESB-8326
+
                 if (node.getJobletNode() != null) {
                     node = (Node) node.getJobletNode();
                 }
@@ -109,7 +109,7 @@ public class DisplaySubjobAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     public void run() {

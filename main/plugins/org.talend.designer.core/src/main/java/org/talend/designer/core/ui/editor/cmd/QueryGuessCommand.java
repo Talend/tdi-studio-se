@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,6 +25,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQRuleService;
 import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.QueryUtil;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -53,13 +54,14 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.utils.sql.metadata.constants.GetTable;
+
 import orgomg.cwm.objectmodel.core.ModelElement;
 import orgomg.cwm.resource.relational.Catalog;
 import orgomg.cwm.resource.relational.Schema;
 
 /**
  * This class is used for generating new query when "Guess Query" button is selected. <br/>
- * 
+ *
  */
 public class QueryGuessCommand extends Command {
 
@@ -94,7 +96,7 @@ public class QueryGuessCommand extends Command {
 
     /**
      * The property is defined in an element, which can be either a node or a connection.
-     * 
+     *
      * @param node
      * @param propName
      * @param newOutputMetadataTable
@@ -111,7 +113,7 @@ public class QueryGuessCommand extends Command {
 
     /**
      * DOC qzhang QueryGuessCommand constructor comment.
-     * 
+     *
      * @param node2
      * @param metadataTable
      * @param schema
@@ -274,16 +276,41 @@ public class QueryGuessCommand extends Command {
             IElementParameter connector = node.getElementParameter("CONNECTION");
             if (connector != null) {
                 String connectorValue = connector.getValue().toString();
-                List<? extends INode> graphicalNodes = process.getGeneratingNodes();
-                for (INode node : graphicalNodes) {
-                    if (node.getUniqueName().equals(connectorValue)) {
-                        connectionNode = node;
+                for (INode generatingNode : process.getGraphicalNodes()) {
+                    if (generatingNode.getUniqueName().equals(connectorValue)) {
+                        connectionNode = generatingNode;
                         break;
+                    }
+                }
+                if (connectionNode == null) {
+                    List<? extends INode> graphicalNodes = process.getGeneratingNodes();
+                    for (INode node : graphicalNodes) {
+                        if (node.getUniqueName().equals(connectorValue)) {
+                            connectionNode = node;
+                            break;
+                        }
+                    }
+                    // for visual connection component in joblet
+                    if (connectionNode == null && node instanceof INode) {
+                        List<IMultipleComponentManager> multipleComponentManagers = ((INode) node).getComponent()
+                                .getMultipleComponentManagers();
+                        for (IMultipleComponentManager manager : multipleComponentManagers) {
+                            String inName = manager.getInput().getName();
+                            String componentValue = connectorValue + "_" + inName;
+                            for (INode gnode : process.getGeneratingNodes()) {
+                                if (gnode.getUniqueName().equals(componentValue) && (gnode instanceof INode)) {
+                                    connectionNode = gnode;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
         // hywang add for bug 7575
+        String jdbcDriverClassName = null;
+        String jdbcDriverJarName = null;
         if (dbType != null && dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
             isJdbc = true;
             boolean isGeneralJDBC = dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName());
@@ -372,11 +399,21 @@ public class QueryGuessCommand extends Command {
                     dbType = extractMeta.getDbTypeByClassName(driverClassName);
                 }
             }
+
+            jdbcDriverJarName = driverJarName;
+            jdbcDriverClassName = driverClassName;
+
             if (dbType == null) {
-                // if we can not get the DB Type from the existing driver list, just set back the type to ORACLE
-                // since it's one DB unknown from Talend.
-                // it might not work directly for all DB, but it will generate a standard query.
-                dbType = EDatabaseTypeName.ORACLE_OCI.getDisplayName();
+                // TDQ-15039: for the unknown JDBC type connection, make sure we can generate the correct query.
+                // at least for BigQuery, the QUOTATION_MARK is the same with mysql.
+                if (driverJarName.contains("BigQuery") || driverClassName.contains("BigQuery")) {
+                    dbType = EDatabaseTypeName.MYSQL.getDisplayName();
+                } else {
+                    // if we can not get the DB Type from the existing driver list, just set back the type to ORACLE
+                    // since it's one DB unknown from Talend.
+                    // it might not work directly for all DB, but it will generate a standard query.
+                    dbType = EDatabaseTypeName.ORACLE_OCI.getDisplayName();
+                }
             }
             // data view， conn=null
             // need add code here for dbtype(oracle)
@@ -472,6 +509,17 @@ public class QueryGuessCommand extends Command {
             newQuery = newQuery.substring(0, newQuery.length() - 1) + whereClause + "\"";//$NON-NLS-1$
         }// ~
 
+        // TDQ-15039: support bigQuery can generate correct query
+        if ((jdbcDriverJarName != null && jdbcDriverJarName.contains("BigQuery"))
+                || (jdbcDriverClassName != null && jdbcDriverClassName.contains("BigQuery"))) {
+            // remove the first schema. from the select
+            newQuery = "\"SELECT " + newQuery
+                    .substring(newQuery
+                            .indexOf(TalendTextUtils.ANTI_QUOTE + realTableName + TalendTextUtils.ANTI_QUOTE
+                                    + TalendTextUtils.JAVA_END_STRING));
+        }
+        // TDQ-15039~
+
         return TalendTextUtils.addSQLQuotes(newQuery);
     }
 
@@ -500,7 +548,7 @@ public class QueryGuessCommand extends Command {
 
     /**
      * Sets a set of maps what used for generating new Query.
-     * 
+     *
      * @param dbNameAndDbTypeMap
      * @param dbNameAndSchemaMap
      * @param getRepositoryTableMap
@@ -513,7 +561,7 @@ public class QueryGuessCommand extends Command {
 
     /**
      * Sets the real table id and table name.
-     * 
+     *
      * @param realTableId
      * @param realTableName
      * @param type
@@ -525,7 +573,7 @@ public class QueryGuessCommand extends Command {
     }
 
     /*
-     * 
+     *
      * hyWang Method formatQuery
      */
     private String fomatQuery(String query) {

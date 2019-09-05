@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,9 +44,9 @@ import org.talend.repository.model.json.SchemaTarget;
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
  * TGU same purpose as TargetSchemaTableEditorView but uses EMF model directly
- * 
+ *
  * $Id: ExtractionFieldsWithXPathEditorView.java 44891 2010-07-05 05:35:49Z gldu $
- * 
+ *
  */
 public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEditorView<SchemaTarget> {
 
@@ -68,7 +68,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /**
      * TargetSchemaTableEditorView2 constructor comment.
-     * 
+     *
      * @param parent
      * @param styleChild
      * @param showDbTypeColumn
@@ -80,7 +80,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /**
      * Getter for xPathCellEditor.
-     * 
+     *
      * @return the xPathCellEditor
      */
     public TextCellEditorWithProposal getXPathCellEditor() {
@@ -89,7 +89,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView#handleBeforeListenableListOperationEvent
      * (org.talend.commons.utils.data.list.ListenableListEvent)
@@ -101,7 +101,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.extended.macrotable.AbstractExtendedTableViewer#handleListenableListEvent(org.talend
      * .commons.utils.data.list.ListenableListEvent)
@@ -118,7 +118,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.extended.macrotable.AbstractExtendedTableViewer#setTableViewerCreatorOptions(org.talend
      * .commons.ui.swt.tableviewer.TableViewerCreator)
@@ -131,7 +131,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.advanced.macrotable.AbstractExtendedTableViewer#createColumns(org.talend.commons.ui
      * .swt.tableviewer.TableViewerCreator, org.eclipse.swt.widgets.Table)
@@ -246,7 +246,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /**
      * DOC chuang Comment method "createTagName".
-     * 
+     *
      * @param tableViewerCreator
      * @param column
      * @return
@@ -327,7 +327,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /**
      * DOC hcw Comment method "setRowBackground".
-     * 
+     *
      * @param list
      * @param conflictNames
      */
@@ -352,7 +352,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /**
      * Getter for xPathColumn.
-     * 
+     *
      * @return the xPathColumn
      */
     public TableViewerCreatorColumn getXPathColumn() {
@@ -361,7 +361,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /**
      * DOC amaumont Comment method "setLinker".
-     * 
+     *
      * @param linker
      */
     public void setLinker(JSONToXPathLinker linker) {
@@ -370,7 +370,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView#initToolBar()
      */
     @Override
@@ -404,7 +404,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.talend.core.ui.extended.ExtendedToolbarView#createPastePushButton()
              */
             @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,9 +20,9 @@ import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
  * dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SQLEditorAllProposal.java,v 1.9 2006/11/06 08:15:37 qiang.zhang Exp $
- * 
+ *
  */
 public class SQLEditorAllProposal implements IContentProposal {
 
@@ -42,7 +42,7 @@ public class SQLEditorAllProposal implements IContentProposal {
 
     /**
      * dev SQLEditorAllProposal constructor comment.
-     * 
+     *
      * @param hasString has input String
      * @param allString full String
      * @param position Cursor current positioon
@@ -79,7 +79,7 @@ public class SQLEditorAllProposal implements IContentProposal {
 
     /**
      * qzhang Comment method "initContent".
-     * 
+     *
      * @param hasString
      * @param contents
      * @param dbType
@@ -170,7 +170,7 @@ public class SQLEditorAllProposal implements IContentProposal {
 
     /**
      * dev Comment method "initLabel".
-     * 
+     *
      * @param dbType
      * @return
      */
@@ -187,7 +187,7 @@ public class SQLEditorAllProposal implements IContentProposal {
 
     /**
      * dev Comment method "initHasString".
-     * 
+     *
      * @param hasString
      * @param allString
      * @return
@@ -231,7 +231,7 @@ public class SQLEditorAllProposal implements IContentProposal {
 
     /**
      * Getter for image.
-     * 
+     *
      * @return the image
      */
     public Image getImage() {
@@ -240,12 +240,12 @@ public class SQLEditorAllProposal implements IContentProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposal#getContent()
      */
     /**
      * Get edit text Content.
-     * 
+     *
      * @return the content String.
      */
     public String getContent() {
@@ -254,7 +254,7 @@ public class SQLEditorAllProposal implements IContentProposal {
 
     /**
      * Get cursor position after insert accepted string.
-     * 
+     *
      * @return the position int.
      */
     public int getCursorPosition() {
@@ -263,7 +263,7 @@ public class SQLEditorAllProposal implements IContentProposal {
 
     /**
      * Get label's description information and show in InfoPopupDialog.
-     * 
+     *
      * @return the description Information String.
      */
     public String getDescription() {
@@ -272,7 +272,7 @@ public class SQLEditorAllProposal implements IContentProposal {
 
     /**
      * Get label and show in ContentProposalPopup.
-     * 
+     *
      * @return the label String.
      */
     public String getLabel() {

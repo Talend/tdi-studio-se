@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,17 +33,17 @@ import org.talend.repository.i18n.Messages;
 
 /**
  * Task replace run before and after with then run connection.
- * 
+ *
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ChangeRunBeforeAfterToThenRunMigrationTask.java 下午04:41:56 2007-5-17 +0000 (2007-5-17) yzhang $
- * 
+ *
  */
 public class ReplaceRunBeforeAfterWithThenRunMigrationTask extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
     @Override
@@ -51,7 +51,7 @@ public class ReplaceRunBeforeAfterWithThenRunMigrationTask extends AbstractJobMi
 		ProcessType processType = getProcessType(item);
 		if (processType == null) {
 			return ExecutionResult.NOTHING_TO_DO;
-		}	
+		}
         try {
             replaceConnections(item, processType);
             return ExecutionResult.SUCCESS_WITH_ALERT;
@@ -63,11 +63,11 @@ public class ReplaceRunBeforeAfterWithThenRunMigrationTask extends AbstractJobMi
 
 	/**
 	 * Replace run before and after connection with then run.
-	 * 
+	 *
 	 * yzhang Comment method "replaceConnections".
-	 * 
+	 *
 	 * @param processType
-	 * 
+	 *
 	 * @throws PersistenceException
 	 */
     public void replaceConnections(Item item, ProcessType processType)
@@ -131,9 +131,9 @@ public class ReplaceRunBeforeAfterWithThenRunMigrationTask extends AbstractJobMi
 
     /**
      * Reset driection of the connections.
-     * 
+     *
      * yzhang Comment method "resetRunAfterConnections".
-     * 
+     *
      * @param connectionMap
      */
     private void resetDirectionOfConnections(Map<String, List> connectionMap) {
@@ -159,9 +159,9 @@ public class ReplaceRunBeforeAfterWithThenRunMigrationTask extends AbstractJobMi
 
     /**
      * To see whether the job with sub jobs.
-     * 
+     *
      * yzhang Comment method "isMulitiJob".
-     * 
+     *
      * @return
      */
     private boolean isMultiJob(List<ConnectionType> connections) {

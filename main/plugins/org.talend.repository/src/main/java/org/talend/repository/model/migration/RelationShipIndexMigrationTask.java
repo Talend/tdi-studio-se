@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,7 +27,7 @@ import org.talend.migration.IProjectMigrationTask;
 
 /**
  * DOC Administrator class global comment. Detailled comment
- * 
+ *
  * @deprecated
  */
 public class RelationShipIndexMigrationTask extends AbstractMigrationTask implements IProjectMigrationTask {
@@ -112,7 +112,7 @@ public class RelationShipIndexMigrationTask extends AbstractMigrationTask implem
 
     /**
      * Getter for project.
-     * 
+     *
      * @return the project
      */
     public Project getProject() {
@@ -121,7 +121,7 @@ public class RelationShipIndexMigrationTask extends AbstractMigrationTask implem
 
     /**
      * Sets the project.
-     * 
+     *
      * @param project the project to set
      */
     public void setProject(Project project) {
@@ -130,7 +130,7 @@ public class RelationShipIndexMigrationTask extends AbstractMigrationTask implem
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
      */
     public Date getOrder() {

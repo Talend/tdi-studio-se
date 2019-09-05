@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,15 +28,15 @@ import org.talend.designer.core.ui.editor.nodes.NodePart;
 
 /**
  * Edit policy of the Diagram that will allow to move the objects on it and create nodes. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeContainerLayoutEditPolicy extends XYLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createChildEditPolicy(org.eclipse.gef.EditPart)
      */
     @Override
@@ -51,7 +51,7 @@ public class NodeContainerLayoutEditPolicy extends XYLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createAddCommand(org.eclipse.gef.EditPart,
      * java.lang.Object)
      */
@@ -68,7 +68,7 @@ public class NodeContainerLayoutEditPolicy extends XYLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createChangeConstraintCommand(org.eclipse.gef.EditPart,
      * java.lang.Object)
@@ -103,7 +103,7 @@ public class NodeContainerLayoutEditPolicy extends XYLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getCreateCommand(org.eclipse.gef.requests.CreateRequest)
      */
     @Override
@@ -113,7 +113,7 @@ public class NodeContainerLayoutEditPolicy extends XYLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getDeleteDependantCommand(org.eclipse.gef.Request)
      */
     @Override

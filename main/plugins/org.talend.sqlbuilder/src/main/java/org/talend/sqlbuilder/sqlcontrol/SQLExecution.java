@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SQLExecution.java,v 1.14 2006/10/27 00:35:20 qiang.zhang Exp $
- * 
+ *
  */
 public class SQLExecution extends AbstractSQLExecution {
 

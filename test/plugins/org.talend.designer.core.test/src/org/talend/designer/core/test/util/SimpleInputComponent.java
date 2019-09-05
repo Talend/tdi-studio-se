@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,13 +23,13 @@ import org.talend.designer.core.model.components.NodeConnector;
 
 /**
  * created by nrousseau on Jun 27, 2012 Detailled comment
- * 
+ *
  */
 public class SimpleInputComponent extends AbstractFakeComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getName()
      */
     @Override
@@ -50,7 +50,7 @@ public class SimpleInputComponent extends AbstractFakeComponent implements IComp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getTranslatedFamilyName(java.lang.String)
      */
     @Override

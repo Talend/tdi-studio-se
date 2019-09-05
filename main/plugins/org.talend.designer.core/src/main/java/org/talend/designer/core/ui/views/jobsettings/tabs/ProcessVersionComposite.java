@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -93,7 +93,7 @@ public class ProcessVersionComposite extends AbstractTabComposite {
 
     /**
      * yzhang VersionComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -123,7 +123,7 @@ public class ProcessVersionComposite extends AbstractTabComposite {
 
         final String[] columnProperties = new String[] { Messages.getString("VersionSection.Version"), //$NON-NLS-1$
                 Messages.getString("VersionSection.CreationDate"), //$NON-NLS-1$
-                Messages.getString("VersionSection.ModificationDate"), Messages.getString("VersionSection.Status") }; //$NON-NLS-1$ //$NON-NLS-2$ 
+                Messages.getString("VersionSection.ModificationDate"), Messages.getString("VersionSection.Status") }; //$NON-NLS-1$ //$NON-NLS-2$
 
         final TableColumn column1 = new TableColumn(table, SWT.NONE);
         tableLayout.addColumnData(new ColumnPixelData(125, true));
@@ -314,7 +314,7 @@ public class ProcessVersionComposite extends AbstractTabComposite {
 
     /**
      * DOC Administrator Comment method "addSortListener".
-     * 
+     *
      * @param table
      * @param column1
      * @param column2
@@ -369,7 +369,7 @@ public class ProcessVersionComposite extends AbstractTabComposite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @seeorg.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.
              * SelectionChangedEvent)
              */
@@ -406,7 +406,7 @@ public class ProcessVersionComposite extends AbstractTabComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.views.jobsettings.tabs.AbstractTabComposite#refresh()
      */
     @Override
@@ -422,9 +422,9 @@ public class ProcessVersionComposite extends AbstractTabComposite {
     }
 
     /**
-     * 
+     *
      * DOC xye Comment method "getEditPropertiesAction".
-     * 
+     *
      * @return
      */
     public ITreeContextualAction getEditPropertiesAction(final Class<?> klazz) {
@@ -452,7 +452,7 @@ public class ProcessVersionComposite extends AbstractTabComposite {
 
     /**
      * yzhang Comment method "getTableViewer".
-     * 
+     *
      * @return
      */
     public ISelection getSelection() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement availe at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -103,9 +103,9 @@ import org.talend.repository.RepositoryWorkUnit;
 
 /**
  * Graphical part of the node of Gef. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodePart extends AbstractGraphicalEditPart implements PropertyChangeListener, NodeEditPart {
 
@@ -115,7 +115,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#setSelected(int)
      */
     @Override
@@ -198,7 +198,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#activate()
      */
     @Override
@@ -211,7 +211,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#deactivate()
      */
     @Override
@@ -235,7 +235,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#getModelSourceConnections()
      */
     @Override
@@ -245,7 +245,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#getModelTargetConnections()
      */
     @Override
@@ -255,7 +255,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
      */
     @Override
@@ -269,7 +269,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
      */
     @Override
@@ -304,7 +304,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#createEditPolicies()
      */
     @Override
@@ -320,7 +320,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -386,7 +386,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
             if (((Node) getModel()).isSetShowHint()) {
                 ((NodeFigure) figure).setHint(((Node) getModel()).getShowHintText());
             } else {
-                ((NodeFigure) figure).setHint(""); //$NON-NLS-1$ 
+                ((NodeFigure) figure).setHint(""); //$NON-NLS-1$
             }
             needUpdateSubjob = true;
         } else if (changeEvent.getPropertyName().equals(EParameterName.CONNECTION_FORMAT.getName())) {
@@ -438,7 +438,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef.ConnectionEditPart)
      */
     @Override
@@ -458,7 +458,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef.ConnectionEditPart)
      */
     @Override
@@ -482,7 +482,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef.Request)
      */
     @Override
@@ -512,7 +512,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef.Request)
      */
     @Override
@@ -799,7 +799,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /**
      * Getter for isDrop.
-     * 
+     *
      * @return the isDrop
      */
     public boolean isDrop() {
@@ -808,7 +808,7 @@ public class NodePart extends AbstractGraphicalEditPart implements PropertyChang
 
     /**
      * Sets the isDrop.
-     * 
+     *
      * @param isDrop the isDrop to set
      */
     public void setDrop(boolean isDrop) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,9 +31,9 @@ import org.talend.designer.components.tsort.io.beans.ILightSerializable;
 import org.talend.designer.components.tsort.io.util.DeleteFileOnExitUtil;
 
 /**
- * 
+ *
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * @param <V> object value to sort
  */
 public class FlowSorterIterator<V extends ILightSerializable> implements IMapHashFile<V>, Iterator<V> {
@@ -133,7 +133,7 @@ public class FlowSorterIterator<V extends ILightSerializable> implements IMapHas
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.thash.io.IMapHashFile#endPut()
      */
     public void endPut() throws IOException {
@@ -162,7 +162,7 @@ public class FlowSorterIterator<V extends ILightSerializable> implements IMapHas
 
     /**
      * DOC amaumont Comment method "writeRemainingData".
-     * 
+     *
      * @throws FileNotFoundException
      * @throws IOException
      */
@@ -179,7 +179,7 @@ public class FlowSorterIterator<V extends ILightSerializable> implements IMapHas
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.thash.io.MapHashFile#getTotalSize()
      */
     public long getTotalSize() {
@@ -201,7 +201,7 @@ public class FlowSorterIterator<V extends ILightSerializable> implements IMapHas
 
     /**
      * get number of objects already put.
-     * 
+     *
      * @return
      */
     public int getObjectsCount() {
@@ -234,7 +234,7 @@ public class FlowSorterIterator<V extends ILightSerializable> implements IMapHas
 
     /**
      * sort list and then use light serialization to store Data
-     * 
+     *
      * @param list
      * @throws FileNotFoundException
      * @throws IOException
@@ -399,7 +399,7 @@ public class FlowSorterIterator<V extends ILightSerializable> implements IMapHas
 
     /**
      * DOC amaumont Comment method "beforeLoopFind".
-     * 
+     *
      * @throws IOException
      */
     private void beforeLoopFind() throws IOException {
@@ -433,7 +433,7 @@ public class FlowSorterIterator<V extends ILightSerializable> implements IMapHas
 
     /**
      * DOC amaumont Comment method "findNextData".
-     * 
+     *
      * @throws IOException
      */
     private void findNextData() throws IOException {
@@ -502,7 +502,7 @@ public class FlowSorterIterator<V extends ILightSerializable> implements IMapHas
 
     /**
      * DOC amaumont Comment method "afterLoopFind".
-     * 
+     *
      * @throws IOException
      */
     private void afterLoopFind() throws IOException {
@@ -519,7 +519,7 @@ public class FlowSorterIterator<V extends ILightSerializable> implements IMapHas
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.thash.io.IMapHashFile#endGet(java.lang .String)
      */
     public void endGet(String container) throws IOException {
@@ -528,7 +528,7 @@ public class FlowSorterIterator<V extends ILightSerializable> implements IMapHas
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.thash.io.IMapHashFile#get(java.lang.String , long, int)
      */
     public V get(String container, long cursorPosition, int hashcode) throws Exception {

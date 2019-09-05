@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,7 +20,7 @@ import org.talend.ms.crm.odata.httpclientfactory.IHttpclientFactoryObservable;
 
 /**
  * This interface has been designed based on how OAuth were integrated into DynamicsCRMClient.
- * 
+ *
  * OAuth were the first (and the only) authentication way. To not have regression, I have designed this Interface to match
  * the way OAuth were implemented.
  */
@@ -29,17 +29,17 @@ public interface IAuthStrategy {
     /**
      * Init Authentication strategy.
      * Called when DynamicsCRMClient is instanciated.
-     * 
+     *
      */
     public void init() throws AuthenticationException;
 
     /**
      * Retrieve the HttpClientFactory.
-     * 
+     *
      * Should be AbstractHttpClientFactoryObservable since DynamicsCRMClient need
      * to know if a new client is necessary.
      * Called when DynamicsCRMClient is instanciated.
-     * 
+     *
      */
     public IHttpclientFactoryObservable getHttpClientFactory() throws AuthenticationException;
 

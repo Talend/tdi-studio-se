@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,9 +27,9 @@ import org.talend.designer.mapper.model.tableentry.TableEntryLocation;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class GenerationManager {
 
@@ -43,7 +43,7 @@ public class GenerationManager {
 
     /**
      * DOC amaumont GenerationManager constructor comment.
-     * 
+     *
      * @param language2
      */
     public GenerationManager(ILanguage language) {
@@ -53,7 +53,7 @@ public class GenerationManager {
 
     /**
      * DOC amaumont Comment method "setInputTables".
-     * 
+     *
      * @param inputTables
      */
     public void setInputTables(List<ExternalMapperTable> inputTables) {
@@ -66,7 +66,7 @@ public class GenerationManager {
 
     /**
      * DOC amaumont Comment method "setInputTables".
-     * 
+     *
      * @param varsTables
      */
     public void setVarsTables(List<ExternalMapperTable> varsTables) {
@@ -128,7 +128,7 @@ public class GenerationManager {
 
     /**
      * DOC amaumont Comment method "ckeckConstraintsAreEmpty".
-     * 
+     *
      * @param ExternalMapperTable
      * @return
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,9 +17,9 @@ import org.talend.designer.abstractmap.model.table.IDataMapTable;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class InputColumnTableEntry extends AbstractInOutTableEntry {
 
@@ -35,7 +35,7 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
 
     /**
      * Getter for operator.
-     * 
+     *
      * @return the operator
      */
     public String getOperator() {
@@ -44,7 +44,7 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
 
     /**
      * Sets the operator.
-     * 
+     *
      * @param operator the operator to set
      */
     public void setOperator(String operator) {

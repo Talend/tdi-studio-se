@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,15 +19,15 @@ import org.talend.designer.core.ui.editor.cmd.ChangeNodeTextCommand;
 
 /**
  * Edit policy that will allow to edit the text of the label. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeTextEditPolicy extends DirectEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.DirectEditPolicy#getDirectEditCommand(org.eclipse.gef.requests.DirectEditRequest)
      */
     protected Command getDirectEditCommand(DirectEditRequest edit) {
@@ -39,7 +39,7 @@ public class NodeTextEditPolicy extends DirectEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.DirectEditPolicy#showCurrentEditValue(org.eclipse.gef.requests.DirectEditRequest)
      */
     protected void showCurrentEditValue(DirectEditRequest request) {

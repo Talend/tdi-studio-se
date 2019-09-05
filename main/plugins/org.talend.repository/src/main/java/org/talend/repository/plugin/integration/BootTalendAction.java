@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -103,7 +103,7 @@ public class BootTalendAction extends AContextualAction implements IWorkbenchWin
 
     /**
      * DOC bqian Comment method "getPerspective".
-     * 
+     *
      * @param id
      * @return
      */
@@ -119,7 +119,7 @@ public class BootTalendAction extends AContextualAction implements IWorkbenchWin
 
     /*
      * (non-Jsdoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.actions.ITreeContextualAction#init(org.eclipse.jface.viewers.TreeViewer,
      * org.eclipse.jface.viewers.IStructuredSelection)
      */
@@ -130,7 +130,7 @@ public class BootTalendAction extends AContextualAction implements IWorkbenchWin
 
     /*
      * (non-Jsdoc)
-     * 
+     *
      * @see org.talend.repository.ui.actions.AContextualAction#doRun()
      */
     @Override

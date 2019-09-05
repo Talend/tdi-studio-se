@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /**
      * yzhang AbstractTabComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -68,7 +68,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getComposite()
      */
     public Composite getComposite() {
@@ -77,7 +77,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getCurRowSize()
      */
     public int getCurRowSize() {
@@ -86,7 +86,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getElement()
      */
     public Element getElement() {
@@ -95,7 +95,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getHashCurControls()
      */
     public BidiMap getHashCurControls() {
@@ -104,7 +104,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getPart()
      */
     public AbstractMultiPageTalendEditor getPart() {
@@ -113,7 +113,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getRepositoryAliasName(org
      * .talend.core.model.properties.ConnectionItem)
@@ -158,7 +158,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getSection()
      */
     public EComponentCategory getSection() {
@@ -167,7 +167,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getTableIdAndDbSchemaMap()
      */
@@ -177,7 +177,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getTableIdAndDbTypeMap()
      */
@@ -187,7 +187,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#refresh()
      */
     public void refresh() {
@@ -196,7 +196,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.lang.Runnable#run()
              */
             public void run() {
@@ -208,7 +208,7 @@ public class AbstractTabComposite extends Composite implements IDynamicProperty 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#setCurRowSize(int)
      */
     public void setCurRowSize(int i) {

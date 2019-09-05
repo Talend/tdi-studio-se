@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.talend.sqlbuilder.dbstructure.nodes.INode;
 
 /**
  * Show the details informaiton of DB selected in the DB structure composite <br/>.
- * 
+ *
  * $Id: DBDetailsComposite.java,v 1.13 2006/11/01 06:56:31 peiqin.hou Exp $
- * 
+ *
  */
 
 public class DBDetailsComposite extends Composite {
@@ -45,7 +45,7 @@ public class DBDetailsComposite extends Composite {
     /**
      * DOC qianbing Comment method "setSelectedNode". Displays the message input,if inputs null,it will show default
      * message.
-     * 
+     *
      * @param node INode
      * @param message String
      */

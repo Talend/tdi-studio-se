@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,9 +35,9 @@ import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * Command that will delete a given connection. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnectionDeleteCommand extends Command {
 
@@ -51,7 +51,7 @@ public class ConnectionDeleteCommand extends Command {
 
     /**
      * Initialisation of the command that will delete the given connection.
-     * 
+     *
      * @param connection connection to delete
      */
     public ConnectionDeleteCommand(List<Connection> connectionList) {

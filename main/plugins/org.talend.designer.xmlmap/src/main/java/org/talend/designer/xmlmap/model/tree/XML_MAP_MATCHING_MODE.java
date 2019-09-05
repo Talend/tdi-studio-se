@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.designer.components.lookup.common.ICommonLookup.MATCHING_MODE;
 import org.talend.designer.gefabstractmap.resource.ImageInfo;
 
 /**
- * 
+ *
  * Matching modes.
- * 
+ *
  */
 public enum XML_MAP_MATCHING_MODE implements IUIMatchingMode {
     ALL_ROWS(MATCHING_MODE.ALL_ROWS, "All rows", "Matches with all lookup's rows", ImageInfo.ALL_MATCHES),
@@ -46,7 +46,7 @@ public enum XML_MAP_MATCHING_MODE implements IUIMatchingMode {
 
     /**
      * Getter for menuType.
-     * 
+     *
      * @return the menuType
      */
     public MENU_TYPE getMenuType() {
@@ -54,9 +54,9 @@ public enum XML_MAP_MATCHING_MODE implements IUIMatchingMode {
     }
 
     /**
-     * 
+     *
      * DOC amaumont LOOKUP_TYPE constructor comment.
-     * 
+     *
      * @param labelKey
      */
     XML_MAP_MATCHING_MODE(MATCHING_MODE multipleMatchingMode, String labelKey, String tooltipKey, ImageInfo imageInfo) {
@@ -69,7 +69,7 @@ public enum XML_MAP_MATCHING_MODE implements IUIMatchingMode {
 
     /**
      * Getter for label.
-     * 
+     *
      * @return the label
      */
     public String getLabel() {
@@ -78,7 +78,7 @@ public enum XML_MAP_MATCHING_MODE implements IUIMatchingMode {
 
     /**
      * Getter for multipleMatchingMode.
-     * 
+     *
      * @return the multipleMatchingMode
      */
     public MATCHING_MODE getMatchingMode() {
@@ -103,7 +103,7 @@ public enum XML_MAP_MATCHING_MODE implements IUIMatchingMode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.table.IUITest#getImageInfo()
      */
     public ImageInfo getImageInfo() {

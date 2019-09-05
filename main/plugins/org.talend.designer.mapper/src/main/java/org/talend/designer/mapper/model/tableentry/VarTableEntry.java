@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,9 +17,9 @@ import org.talend.designer.abstractmap.model.tableentry.IColumnEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class VarTableEntry extends DataMapTableEntry implements IColumnEntry {
 
@@ -38,7 +38,7 @@ public class VarTableEntry extends DataMapTableEntry implements IColumnEntry {
 
     /**
      * Getter for type.
-     * 
+     *
      * @return the type
      */
     public String getType() {
@@ -47,7 +47,7 @@ public class VarTableEntry extends DataMapTableEntry implements IColumnEntry {
 
     /**
      * Sets the type.
-     * 
+     *
      * @param type the type to set
      */
     public void setType(String type) {
@@ -56,7 +56,7 @@ public class VarTableEntry extends DataMapTableEntry implements IColumnEntry {
 
     /**
      * Getter for nullable.
-     * 
+     *
      * @return the nullable
      */
     public boolean isNullable() {
@@ -65,7 +65,7 @@ public class VarTableEntry extends DataMapTableEntry implements IColumnEntry {
 
     /**
      * Sets the nullable.
-     * 
+     *
      * @param nullable the nullable to set
      */
     public void setNullable(boolean nullable) {
@@ -74,7 +74,7 @@ public class VarTableEntry extends DataMapTableEntry implements IColumnEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.tableentry.IDataMapTableEntry#isTableEntry()
      */
     public boolean isTableEntry() {
@@ -83,7 +83,7 @@ public class VarTableEntry extends DataMapTableEntry implements IColumnEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.tableentry.IDataMapTableEntry#isColumnEntry()
      */
     public boolean isColumnEntry() {

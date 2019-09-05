@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,7 +41,7 @@ import org.talend.repository.model.ItemVersionObject;
 public class ItemsVersionConfirmDialog extends Dialog {
 
     private static final String TITLE = Messages.getString("ItemsVersionChangedDialog.Title"); //$NON-NLS-1$
-    
+
     private boolean showSnapshot;
 
     private List<ItemVersionObject> modifiedVersionItems;

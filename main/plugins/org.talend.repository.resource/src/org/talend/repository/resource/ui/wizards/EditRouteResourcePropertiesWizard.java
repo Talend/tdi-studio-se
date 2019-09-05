@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,12 +33,12 @@ public class EditRouteResourcePropertiesWizard extends PropertiesWizard{
 			boolean useLastVersion) {
 		super(repositoryViewObject, path, useLastVersion);
 	}
-	
+
     @Override
     public void addPages() {
         originalLabel = object.getProperty().getLabel();
         originalVersion = object.getProperty().getVersion();
-        mainPage = new NewRouteResourceWizardPage("WizardPage", object.getProperty(), path, isReadOnly(), false, lastVersionFound) { 
+        mainPage = new NewRouteResourceWizardPage("WizardPage", object.getProperty(), path, isReadOnly(), false, lastVersionFound) {
 
             @Override
             protected void evaluateTextField() {
@@ -72,7 +72,7 @@ public class EditRouteResourcePropertiesWizard extends PropertiesWizard{
                 }
             }
         }
-        
+
         return performFinish;
     }
 

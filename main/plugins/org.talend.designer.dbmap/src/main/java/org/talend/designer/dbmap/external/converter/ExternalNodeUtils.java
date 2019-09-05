@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,15 +21,15 @@ import org.talend.core.model.process.IExternalNode;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExternalUtilities.java 1366 2007-01-10 08:40:28Z nrousseau $
- * 
+ *
  */
 public class ExternalNodeUtils {
 
     /**
      * DOC amaumont Comment method "prepareExternalNodeReadyToOpen".
-     * 
+     *
      * @param node
      * @param externalNode
      * @return

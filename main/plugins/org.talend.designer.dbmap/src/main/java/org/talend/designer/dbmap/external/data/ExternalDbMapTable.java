@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,14 +21,14 @@ import org.talend.core.model.process.node.IExternalMapEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExternalMapperTable.java 898 2006-12-07 11:06:17Z amaumont $
- * 
+ *
  */
 public class ExternalDbMapTable extends AbstractExternalMapTable implements Serializable, Cloneable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 8768004929161302382L;
 
@@ -108,7 +108,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
 
     /**
      * Getter for joinType.
-     * 
+     *
      * @return the joinType
      */
     public String getJoinType() {
@@ -117,7 +117,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
 
     /**
      * Sets the joinType.
-     * 
+     *
      * @param joinType the joinType to set
      */
     public void setJoinType(String joinType) {
@@ -126,7 +126,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
 
     /**
      * Getter for alias.
-     * 
+     *
      * @return the alias
      */
     public String getAlias() {
@@ -135,7 +135,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
 
     /**
      * Sets the alias.
-     * 
+     *
      * @param alias the alias to set
      */
     public void setAlias(String alias) {
@@ -144,7 +144,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
 
     /**
      * Getter for tableName.
-     * 
+     *
      * @return the tableName
      */
     public String getTableName() {
@@ -153,7 +153,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
 
     /**
      * Sets the tableName.
-     * 
+     *
      * @param tableName the tableName to set
      */
     public void setTableName(String tableName) {
@@ -162,7 +162,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
     @SuppressWarnings("unchecked")
@@ -194,11 +194,11 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
         }
         return cloned;
     }
-    
-    
+
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -213,7 +213,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
             return false;
         }
         final ExternalDbMapTable other = (ExternalDbMapTable) obj;
-        
+
         if (this.minimized != other.minimized) {
             return false;
         }
@@ -245,7 +245,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
         } else if (!this.tableName.equals(other.tableName)) {
             return false;
         }
-        
+
         List<ExternalDbMapEntry> this_customOtherConditionsEntries = null;
         if(this.customOtherConditionsEntries == null){
             this_customOtherConditionsEntries = new ArrayList<ExternalDbMapEntry>();
@@ -264,7 +264,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
         }else{
             this_customWhereConditionsEntries = new ArrayList<ExternalDbMapEntry>(this.customWhereConditionsEntries);
         }
-        
+
         List<ExternalDbMapEntry> other_customOtherConditionsEntries = null;
         if(other.customOtherConditionsEntries == null){
             other_customOtherConditionsEntries = new ArrayList<ExternalDbMapEntry>();
@@ -283,7 +283,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
         }else{
             other_customWhereConditionsEntries = new ArrayList<ExternalDbMapEntry>(other.customWhereConditionsEntries);
         }
-        
+
         if(this_customOtherConditionsEntries.size() != other_customOtherConditionsEntries.size()){
             return false;
         }
@@ -302,7 +302,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
                 return false;
             }
         }
-        
+
         if(this_customWhereConditionsEntries.size() != other_customWhereConditionsEntries.size()){
             return false;
         }
@@ -321,7 +321,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
                 return false;
             }
         }
-        
+
         if(this_metadataTableEntries.size() != other_metadataTableEntries.size()){
             return false;
         }
@@ -340,7 +340,7 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
                 return false;
             }
         }
-        
+
         return true;
     }
 

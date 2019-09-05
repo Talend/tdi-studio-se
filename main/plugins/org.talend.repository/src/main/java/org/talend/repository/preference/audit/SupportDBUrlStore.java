@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,7 +24,7 @@ import java.util.TreeMap;
 
 /**
  * created by hcyi on May 29, 2018 Detailled comment
- * 
+ *
  * This class store the all the audit support database connection url.
  *
  */
@@ -108,7 +108,7 @@ public final class SupportDBUrlStore {
 
     /**
      * Get the dburl via the dbType, and the dburl content come from the default value of SupportDBUrlType.
-     * 
+     *
      * @param dbType
      * @return
      */

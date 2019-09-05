@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,10 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.Collections.*;
+import static java.util.Optional.*;
+import static java.util.function.Function.*;
+import static java.util.stream.Collectors.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -203,7 +201,7 @@ public class SettingVisitor implements PropertyVisitor {
      */
     @Override
     public void visit(final PropertyNode node) {
-        if (node.isLeaf()) {
+        if (node.isLeaf() && !PropertyTypes.OBJECT.equalsIgnoreCase(node.getProperty().getType())) {
             switch (node.getFieldType()) {
             case CHECK:
                 final CheckElementParameter check = visitCheck(node);
@@ -230,12 +228,16 @@ public class SettingVisitor implements PropertyVisitor {
                 settings.put(inSchema.getName(), inSchema);
                 break;
             case TACOKIT_VALUE_SELECTION:
-                final TaCoKitElementParameter valueSelection = visitValueSelection(node);
-                settings.put(valueSelection.getName(), valueSelection);
+                final TaCoKitElementParameter textAreaSelection = visitValueSelection(node);
+                settings.put(textAreaSelection.getName(), textAreaSelection);
                 break;
             case PREV_COLUMN_LIST:
                 final TaCoKitElementParameter prevColumnList = visitPrevColumnList(node);
                 settings.put(prevColumnList.getName(), prevColumnList);
+                break;
+            case TACOKIT_TEXT_AREA_SELECTION:
+                final TaCoKitElementParameter valueSelection = visitTextAreaSelection(node);
+                settings.put(valueSelection.getName(), valueSelection);
                 break;
             default:
                 final IElementParameter text;
@@ -252,7 +254,9 @@ public class SettingVisitor implements PropertyVisitor {
                 break;
             }
         } else {
-            buildHealthCheck(node);
+            if (Metadatas.MAIN_FORM.equalsIgnoreCase(form)) {
+                buildHealthCheck(node);
+            }
             buildUpdate(node);
         }
     }
@@ -304,13 +308,31 @@ public class SettingVisitor implements PropertyVisitor {
             if (buttonLayout.isPresent()) {
                 final int buttonPosition = buttonLayout.get().getPosition();
                 final UpdateAction action = new UpdateAction(updatable.getActionName(), family);
-                UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node,
-                        actions, redrawParameter, settings);
+                final UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node,
+                        actions, redrawParameter, settings, () -> hasVisibleChild(formLayout.getPath()));
                 parameterResolvers.add(resolver);
             } else {
                 LOGGER.debug("Button layout {} not found for form {}", formLayout.getPath() + PropertyNode.UPDATE_BUTTON, form);
             }
         });
+    }
+
+    private boolean hasVisibleChild(final String root) { // TODO: to enhance to support object visibility and not fake it!
+        return ofNullable(settings.get(root))
+                .map(this::isVisible)
+                .orElseGet(() -> settings.entrySet().stream()
+                    .filter(it -> it.getKey().startsWith(root) && !it.getKey().equals(root) && !ButtonParameter.class.isInstance(it.getValue()))
+                    .map(Map.Entry::getValue)
+                    .anyMatch(this::isVisible));
+    }
+
+    private boolean isVisible(final IElementParameter parameter) {
+        try {
+            return parameter.isShow(Collections.emptyList());
+        } catch (final Exception e) {
+            // unlikely but call context is unsafe and we have internal params with showIf set, see buildUpdate
+            return false;
+        }
     }
 
     IElement getNode() {
@@ -461,6 +483,13 @@ public class SettingVisitor implements PropertyVisitor {
         return action;
     }
 
+    private TextAreaSelectionParameter visitTextAreaSelection(final PropertyNode node) {
+        final SuggestionsAction action = createSuggestionsAction(node);
+        final TextAreaSelectionParameter parameter = new TextAreaSelectionParameter(element, action);
+        commonSetup(parameter, node);
+        return parameter;
+    }
+
     protected TaCoKitElementParameter createSchemaParameter(final String connectionName, final String schemaName,
             final String discoverSchemaAction,
             final boolean show) {
@@ -527,13 +556,7 @@ public class SettingVisitor implements PropertyVisitor {
      * It is shown on the next row, but may be shown in the next
      */
     private void createValidationLabel(final PropertyNode node, final TaCoKitElementParameter target) {
-        final ValidationLabel label = new ValidationLabel(element);
-        label.setCategory(category);
-        label.setName(node.getProperty().getPath() + PropertyNode.VALIDATION);
-        label.setRedrawParameter(redrawParameter);
-        // it is shown on the next row by default, but may be changed
-        label.setNumRow(node.getLayout(form).getPosition() + 1);
-        settings.put(label.getName(), label);
+        final ValidationLabel label = new ValidationLabel(target);
 
         processConstraints(node, target, label);
         processValidations(node, target, label);

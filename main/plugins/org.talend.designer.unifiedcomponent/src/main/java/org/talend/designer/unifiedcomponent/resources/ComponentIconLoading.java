@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,7 +19,7 @@ import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 
 /**
- * 
+ *
  * created by wchen on Dec 5, 2017 Detailled comment
  *
  */
@@ -30,9 +30,9 @@ public class ComponentIconLoading {
     private Map<String, ImageDescriptor> registry;
 
     /**
-     * 
+     *
      * DOC wchen ComponentIconLoading constructor comment.
-     * 
+     *
      * @param componentsImageRegistry
      * @param iImage_32
      */

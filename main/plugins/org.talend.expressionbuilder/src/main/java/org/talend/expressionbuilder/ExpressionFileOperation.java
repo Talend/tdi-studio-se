@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,6 +33,8 @@ import org.osgi.framework.Bundle;
 import org.talend.commons.runtime.model.expressionbuilder.Variable;
 import org.talend.commons.runtime.xml.XSDValidator;
 import org.talend.expressionbuilder.i18n.Messages;
+import org.talend.utils.files.FileUtils;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,14 +45,11 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExpressionFileOperation.java 下午02:44:14 2007-8-3 +0000 (2007-8-3) yzhang $
- * 
+ *
  */
 public class ExpressionFileOperation {
 
@@ -64,7 +63,7 @@ public class ExpressionFileOperation {
 
     /**
      * yzhang Comment method "savingExpression".
-     * 
+     *
      * @return
      * @throws IOException
      * @throws ParserConfigurationException
@@ -72,7 +71,7 @@ public class ExpressionFileOperation {
     public boolean saveExpressionToFile(File file, List<Variable> variables, String expressionContent)
             throws IOException, ParserConfigurationException {
 
-        final DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory fabrique = XmlUtils.getSecureDocumentBuilderFactory();
 
         final Bundle b = Platform.getBundle(PLUGIN_ID);
         final URL url = FileLocator.toFileURL(FileLocator.find(b, new Path(SCHEMA_XSD), null));
@@ -132,14 +131,8 @@ public class ExpressionFileOperation {
 
         }
 
-        // use specific Xerces class to write DOM-data to a file:
-        XMLSerializer serializer = new XMLSerializer();
-        OutputFormat outputFormat = new OutputFormat();
-        outputFormat.setIndenting(true);
-        serializer.setOutputFormat(outputFormat);
         FileWriter writer = new FileWriter(file);
-        serializer.setOutputCharStream(writer);
-        serializer.serialize(document);
+        FileUtils.writeXMLFile(document, writer);
         writer.close();
         return true;
 
@@ -147,7 +140,7 @@ public class ExpressionFileOperation {
 
     /**
      * yzhang Comment method "getExpressionFromFile".
-     * 
+     *
      * @param file
      * @return
      * @throws IOException
@@ -163,8 +156,6 @@ public class ExpressionFileOperation {
                 openDialog(shell);
                 return list;
             } else {
-                final DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
-
                 final Bundle b = Platform.getBundle(PLUGIN_ID);
                 final URL url = FileLocator.toFileURL(FileLocator.find(b, new Path(SCHEMA_XSD), null));
                 final File schema = new File(url.getPath());

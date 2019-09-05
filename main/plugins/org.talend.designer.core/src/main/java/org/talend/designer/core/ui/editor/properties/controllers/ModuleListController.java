@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -66,9 +66,9 @@ import org.talend.librariesmanager.ui.dialogs.ConfigModuleDialog;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ColumnListController.java 1 2006-12-12 下午02:04:32 +0000 (下午02:04:32) yzhang $
- * 
+ *
  */
 public class ModuleListController extends AbstractElementPropertySectionController {
 
@@ -78,7 +78,7 @@ public class ModuleListController extends AbstractElementPropertySectionControll
 
     /**
      * DOC dev ColumnListController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public ModuleListController(IDynamicProperty dp) {
@@ -158,7 +158,7 @@ public class ModuleListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -253,7 +253,7 @@ public class ModuleListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -322,7 +322,7 @@ public class ModuleListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,9 +56,9 @@ import org.talend.designer.codegen.i18n.Messages;
  * <p>
  * if there is one Skeleton file have changed, there will generate all jet--->java again.
  * </p>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public final class JetSkeletonManager {
 
@@ -188,7 +188,7 @@ public final class JetSkeletonManager {
      * <p>
      * check the skeleton file whether changed or not, and save the SkeletonUpdateCache file again.
      * </p>
-     * 
+     *
      * @return true if there is one skeleton file changed.
      */
     public static boolean updateSkeletonPersistenceData() {
@@ -236,7 +236,7 @@ public final class JetSkeletonManager {
 
     /**
      * DOC xtan get the skeleton file: subprocess_header_java.skeleton.
-     * 
+     *
      * @return
      */
     private static List<String> getSystemSkeletons() {

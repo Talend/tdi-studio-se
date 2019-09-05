@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -149,7 +149,7 @@ public class MultiSchemasUI {
     private SchameDetailsColumnAction columnAction;
 
     /**
-     * 
+     *
      */
     private Composite uiParent;
 
@@ -206,7 +206,7 @@ public class MultiSchemasUI {
     private LabelledText keyIndexText;
 
     /**
-     * 
+     *
      */
     private MultiSchemasShadowProcessPreview multiSchemasFilePreview;
 
@@ -235,7 +235,7 @@ public class MultiSchemasUI {
 
     /**
      * Sets the listener.
-     * 
+     *
      * @param listener the listener to set
      */
     public void addListener(MultiSchemaEventListener listener) {
@@ -1564,7 +1564,7 @@ public class MultiSchemasUI {
 
     protected boolean checkFieldsValue() {
         if (!checkString(getFile())) {
-            previewInformationLabel.setText(Messages.getString("FileStep2.filePathIncomplete")); //$NON-NLS-1$ 
+            previewInformationLabel.setText(Messages.getString("FileStep2.filePathIncomplete")); //$NON-NLS-1$
             return false;
         } else {
             String file = TalendTextUtils.removeQuotes(getFile());
@@ -1576,7 +1576,7 @@ public class MultiSchemasUI {
         boolean checkFieldSeparator = false;
 
         if (!checkString(getRowSeperator()) || !checkString(getFieldSeperator(useMultiSaparators.getSelection()))) {
-            previewInformationLabel.setText(Messages.getString("FileStep2.settingsIncomplete")); //$NON-NLS-1$ 
+            previewInformationLabel.setText(Messages.getString("FileStep2.settingsIncomplete")); //$NON-NLS-1$
             return false;
         }
         // escape Char Combo
@@ -1636,9 +1636,9 @@ public class MultiSchemasUI {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "preCheckProcessStart".
-     * 
+     *
      * for processor
      */
     public boolean preCheckProcessStart() {
@@ -1649,14 +1649,14 @@ public class MultiSchemasUI {
             return false;
         }
 
-        previewInformationLabel.setText(Messages.getString("FileStep2.previewProgress")); //$NON-NLS-1$ 
+        previewInformationLabel.setText(Messages.getString("FileStep2.previewProgress")); //$NON-NLS-1$
         return true;
     }
 
     /**
-     * 
+     *
      * cLi Comment method "updateUIInThreadIfThreadFinally".
-     * 
+     *
      * for processor
      */
     public void updateUIInThreadIfThreadFinally() {
@@ -1668,9 +1668,9 @@ public class MultiSchemasUI {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "postProcessCancle".
-     * 
+     *
      * for processor
      */
     public void postProcessCancle() {
@@ -1700,10 +1700,10 @@ public class MultiSchemasUI {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "saveProperties".
-     * 
-     * 
+     *
+     *
      */
     public void saveProperties() {
         TableColumn[] tcs = this.multiSchemasFilePreview.getTable().getColumns();

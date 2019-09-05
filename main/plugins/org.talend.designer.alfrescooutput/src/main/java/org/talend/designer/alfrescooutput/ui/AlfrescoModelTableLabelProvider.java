@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Image;
 
 /**
  * Table label provider for alfrsco models.
- * 
+ *
  * @author Marc Dutoo - Open Wide SA
  *
  * $Id: AlfrescoModelTableLabelProvider.java,v 1.1 2008/10/07 21:27:31 mdutoo Exp $
@@ -47,7 +47,7 @@ public class AlfrescoModelTableLabelProvider implements ITableLabelProvider {
 	}
 
 	public void dispose() {
-		
+
 	}
 
 	public boolean isLabelProperty(Object element, String property) {
@@ -55,11 +55,11 @@ public class AlfrescoModelTableLabelProvider implements ITableLabelProvider {
 	}
 
 	public void addListener(ILabelProviderListener listener) {
-		
+
 	}
 
 	public void removeListener(ILabelProviderListener listener) {
-		
+
 	}
 
 }

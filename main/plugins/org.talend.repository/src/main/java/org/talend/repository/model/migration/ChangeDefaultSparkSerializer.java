@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -101,7 +101,7 @@ public class ChangeDefaultSparkSerializer extends AbstractJobMigrationTask {
             elementParameters.add(property);
             for (int i = 0; i < elementParameters.size(); i++) {
                 ElementParameterType param = (ElementParameterType) elementParameters.get(i);
-                if ("ADVANCED_SETTINGS_CHECK".equals(param.getName())) { //$NON-NLS-1$ 
+                if ("ADVANCED_SETTINGS_CHECK".equals(param.getName())) { //$NON-NLS-1$
                     param.setValue("true"); //$NON-NLS-1$
                     modified = true;
                     break;

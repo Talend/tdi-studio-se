@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.sqlbuilder.ui.SQLPropertyDialog;
 
 /**
  * DOC qianbing class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml,v 1.3 2006/11/01 05:38:28 nicolas Exp $
- * 
+ *
  */
 public class ShowQueryPropertyAction extends SelectionProviderAction {
 
@@ -40,7 +40,7 @@ public class ShowQueryPropertyAction extends SelectionProviderAction {
 
     /**
      * DOC qianbing ShowQueryPropertyAction constructor comment.
-     * 
+     *
      * @param provider
      * @param text
      */

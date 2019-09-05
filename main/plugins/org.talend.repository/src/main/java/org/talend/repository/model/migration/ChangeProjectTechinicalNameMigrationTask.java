@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,11 +39,11 @@ import org.talend.utils.io.FilesUtils;
 
 /**
  * DOC ggu class global comment. Detailled comment <br/>
- * 
+ *
  * Only work for local project, TDI-22686.
- * 
+ *
  * $Id: talend.epf 55206 2011-02-15 17:32:14Z mhirt $
- * 
+ *
  */
 public class ChangeProjectTechinicalNameMigrationTask extends AbstractMigrationTask implements IWorkspaceMigrationTask {
 
@@ -59,7 +59,7 @@ public class ChangeProjectTechinicalNameMigrationTask extends AbstractMigrationT
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override
@@ -70,7 +70,7 @@ public class ChangeProjectTechinicalNameMigrationTask extends AbstractMigrationT
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IWorkspaceMigrationTask#execute()
      */
     @Override
@@ -117,9 +117,9 @@ public class ChangeProjectTechinicalNameMigrationTask extends AbstractMigrationT
     }
 
     /**
-     * 
+     *
      * default, only process the local talend project in this migration task.
-     * 
+     *
      */
     public boolean migrateTalendProject(IProject localProject, Project talendProject, XmiResourceManager xmiResourceManager) {
         try {
@@ -154,9 +154,9 @@ public class ChangeProjectTechinicalNameMigrationTask extends AbstractMigrationT
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "setAndSaveTalendProject".
-     * 
+     *
      * @param talendProject
      * @param newTechnicalProjectName
      * @return
@@ -174,9 +174,9 @@ public class ChangeProjectTechinicalNameMigrationTask extends AbstractMigrationT
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "renameProject".
-     * 
+     *
      * @param localProject
      * @param newProjectName
      * @return

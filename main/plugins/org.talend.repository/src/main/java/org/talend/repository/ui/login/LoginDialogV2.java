@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -55,9 +55,9 @@ import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
 
 /**
  * Login dialog. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class LoginDialogV2 extends TrayDialog {
 
@@ -122,7 +122,7 @@ public class LoginDialogV2 extends TrayDialog {
 
     /**
      * Construct a new LoginDialog.
-     * 
+     *
      * @param parentShell Parent shell.
      */
     public LoginDialogV2(Shell parentShell) {
@@ -225,7 +225,7 @@ public class LoginDialogV2 extends TrayDialog {
 
     /**
      * To fix the big font problem
-     * 
+     *
      * @param container
      */
     protected void calcFontRate(Composite container) {
@@ -499,9 +499,9 @@ public class LoginDialogV2 extends TrayDialog {
 
     /**
      * Canvas displaying an image.<br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class ImageCanvas extends Canvas {
 
@@ -538,7 +538,7 @@ public class LoginDialogV2 extends TrayDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.swt.widgets.Widget#dispose()
          */
         @Override

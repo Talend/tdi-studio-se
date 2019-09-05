@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,7 +23,7 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.service.datalocation.Location;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.general.ConnectionBean;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
@@ -59,7 +59,7 @@ public class CreateAutomaticConnectionApplication implements IApplication {
             ConnectionUserPerReader.getInstance().saveConnections(connectionList);
             return IApplication.EXIT_OK;
         } catch (ParameterIncorrectSetException e) {
-            MessageDialog.openError(new Shell(), "parameter errors!", e.getMessage()); //$NON-NLS-N$
+            MessageDialog.openError(DisplayUtils.getDefaultShell(false), "parameter errors!", e.getMessage()); // $NON-NLS-N$
             throw e;
         } finally {
             // releaseWorkspaceLock();

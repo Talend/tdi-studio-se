@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -81,7 +81,7 @@ public class DiConverters {
 
     /**
      * ArrayList is used because converters will be retrieved very often (simple array can be used instead)
-     * 
+     *
      * @param recordSchema
      * @return
      */
@@ -99,7 +99,7 @@ public class DiConverters {
 
     /**
      * Initialize converter for specified <code>fieldScheam</code>
-     * 
+     *
      * @param fieldSchema unwrapped schema of record field
      * @return converter for specified <code>fieldScheam</code>
      */

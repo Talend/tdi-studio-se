@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -21,6 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.json.bind.Jsonb;
@@ -34,6 +35,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.ExceptionMessageDialog;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQRuleService;
@@ -54,7 +56,7 @@ import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.uidialog.OpenContextChooseComboDialog;
 import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.util.TaCoKitConst;
+import org.talend.sdk.component.studio.ui.guessschema.TaCoKitGuessSchemaProcess.GuessSchemaResult;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public class GuessSchemaSelectionAdapter extends SelectionAdapter {
@@ -127,8 +129,12 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
             return; // task was canceled
         }
 
-        final String schema = guessSchema.getSchema();
-        if (TaCoKitUtil.isBlank(schema)) {
+        final GuessSchemaResult schema = guessSchema.getSchema();
+        if (schema == null || TaCoKitUtil.isBlank(schema.getResult())) {
+            String errorMessage = schema.getError();
+            if (!TaCoKitUtil.isBlank(errorMessage)) {
+                ExceptionHandler.process(new Exception(errorMessage));
+            }
             ExceptionMessageDialog.openInformation(composite.getShell(),
                     Messages.getString("guessSchema.dialog.info.NoSchema.title"), //$NON-NLS-1$
                     Messages.getString("guessSchema.dialog.info.NoSchema.msg")); //$NON-NLS-1$
@@ -136,11 +142,23 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         }
 
         final Node node = Node.class.cast(elementParameter.getElement());
-        IMetadataTable newMeta = buildMetadata(schema);
+        IMetadataTable newMeta = buildMetadata(schema.getResult());
         if (newMeta == null) {
-            ExceptionMessageDialog.openError(composite.getShell(), Messages.getString("guessSchema.dialog.error.title"),
-                    //$NON-NLS-1$
-                    Messages.getString("guessSchema.dialog.error.msg.default"), new Exception(schema)); //$NON-NLS-1$
+            Exception causedBy = null;
+            String errMessage = schema.getError();
+            if (errMessage != null && !errMessage.trim().isEmpty()) {
+                causedBy = new Exception(causedBy);
+            }
+            Exception ex = null;
+            if (causedBy != null) {
+                ex = new Exception(schema.getResult(), causedBy);
+            } else {
+                ex = new Exception(schema.getResult());
+            }
+            ExceptionHandler.process(ex);
+            ExceptionMessageDialog.openError(composite.getShell(), Messages.getString("guessSchema.dialog.error.title"), //$NON-NLS-1$
+                    Messages.getString("guessSchema.dialog.error.msg.default"), //$NON-NLS-1$
+                    ex);
             return;
         }
         MetadataDialog metaDialog = new MetadataDialog(composite.getShell(), newMeta, node, commandStack);
@@ -179,31 +197,36 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
     }
 
     private IMetadataTable buildMetadata(final String schema) {
-        if (schema.trim().isEmpty()) {
+        if (schema == null || schema.trim().isEmpty()) {
             return null;
         }
+        Collection<MetadataColumn> jsonColumns = new HashSet<>();
+        final String[] lines = schema.split("\n"); //$NON-NLS-1$
+        for (String line : lines) {
+            try (final Jsonb jsonb = JsonbBuilder.create()) {
+                Collection<MetadataColumn> columns = jsonb.fromJson(line, new ParameterizedType() {
 
-        final Collection<MetadataColumn> jsonColumns;
-        try (final Jsonb jsonb = JsonbBuilder.create()) {
-            jsonColumns = jsonb.fromJson(schema, new ParameterizedType() {
+                    @Override
+                    public Type[] getActualTypeArguments() {
+                        return new Type[] { MetadataColumn.class };
+                    }
 
-                @Override
-                public Type[] getActualTypeArguments() {
-                    return new Type[] { MetadataColumn.class };
+                    @Override
+                    public Type getRawType() {
+                        return Collection.class;
+                    }
+
+                    @Override
+                    public Type getOwnerType() {
+                        return null;
+                    }
+                });
+                if (columns != null && !columns.isEmpty()) {
+                    jsonColumns.addAll(columns);
                 }
-
-                @Override
-                public Type getRawType() {
-                    return Collection.class;
-                }
-
-                @Override
-                public Type getOwnerType() {
-                    return null;
-                }
-            });
-        } catch (final Exception e) {
-            throw new IllegalStateException(e);
+            } catch (final Exception e) {
+                ExceptionHandler.process(e);
+            }
         }
         if (jsonColumns.isEmpty()) {
             return null;

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,12 +33,12 @@ import org.talend.sqlbuilder.repository.utility.SQLBuilderRepositoryNodeManager;
 public class OpenSQLBuilderDialogProgress implements IRunnableWithProgress {
 
 	private SQLBuilderRepositoryNodeManager manager;
-    
+
 	private ConnectionParameters connectionParameters;
 
 	private RepositoryNode repositoryNode;
 
-	public OpenSQLBuilderDialogProgress(ConnectionParameters connectionParameters, 
+	public OpenSQLBuilderDialogProgress(ConnectionParameters connectionParameters,
 			SQLBuilderRepositoryNodeManager manager, Composite composite) {
     	this.connectionParameters = connectionParameters;
     	this.manager = manager;
@@ -54,9 +54,9 @@ public class OpenSQLBuilderDialogProgress implements IRunnableWithProgress {
         	repositoryNode = manager.getRepositoryNodeByBuildIn(null, connectionParameters);
             connectionParameters.setRepositoryNodeBuiltIn(repositoryNode);
             while (true) {
-                
-                if (monitor.isCanceled()) {                    
-                    
+
+                if (monitor.isCanceled()) {
+
                     if (repositoryNode != null) {
                     	repositoryNode = null;
                     }
@@ -70,18 +70,18 @@ public class OpenSQLBuilderDialogProgress implements IRunnableWithProgress {
                 if (connectionParameters.getRepositoryNodeBuiltIn() != null) {
                 	break;
                 }
-                
+
                 Thread.sleep(100);
             }
-            
+
             // check for cancellation by user
             if (monitor.isCanceled()) {
                 monitor.done();
                 throw new InterruptedException(Messages.getString("OpenSQLBuilderDialogProgress.exceptionMessage")); //$NON-NLS-1$
             }
             monitor.done();
-            
-            
+
+
         } catch (Throwable e) {
         	SqlBuilderPlugin.log(Messages.getString("OpenSQLBuilderDialogProgress.logMessage"), e); //$NON-NLS-1$
         } finally {

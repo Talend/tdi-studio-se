@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -76,7 +76,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /**
      * DOC Administrator AdvanceSettingComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -295,7 +295,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getComposite()
      */
     @Override
@@ -367,7 +367,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /**
      * DOC Administrator Comment method "setRunnable".
-     * 
+     *
      * @param b
      */
     private void setRunnable(boolean runnable) {
@@ -385,7 +385,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getCurRowSize()
      */
     @Override
@@ -396,7 +396,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getElement()
      */
     @Override
@@ -407,7 +407,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getHashCurControls()
      */
     @Override
@@ -418,7 +418,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getPart()
      */
     @Override
@@ -429,7 +429,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.core.properties.tab.IDynamicProperty#getRepositoryAliasName(org.talend.core.model.properties.
      * ConnectionItem)
      */
@@ -462,7 +462,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getRepositoryTableMap()
      */
     // public Map<String, IMetadataTable> getRepositoryTableMap() {
@@ -472,7 +472,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getSection()
      */
     @Override
@@ -483,7 +483,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getTableIdAndDbSchemaMap()
      */
     @Override
@@ -494,7 +494,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getTableIdAndDbTypeMap()
      */
     @Override
@@ -505,7 +505,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#refresh()
      */
     @Override
@@ -518,7 +518,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#setCurRowSize(int)
      */
     @Override

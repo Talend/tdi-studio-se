@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -103,7 +103,7 @@ public class DesignerCoreUIService implements IDesignerCoreUIService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.core.service.IDesignerCoreUIService#removePreferenceStorePropertyChangeListener(org.eclipse.jface.
      * util.IPropertyChangeListener)
@@ -117,7 +117,7 @@ public class DesignerCoreUIService implements IDesignerCoreUIService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.service.IDesignerCoreUIService#executeCommand(org.talend.core.model.process.IProcess2,
      * org.eclipse.gef.commands.Command)
      */

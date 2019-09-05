@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,9 +14,9 @@ package org.talend.designer.codegen.config;
 
 /**
  * Internal Templates for Code Generator, must be always available to encapsulate rela parts of code.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public enum EInternalTemplate {
     HEADER("header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -88,7 +88,7 @@ public enum EInternalTemplate {
     private String version;
 
     /**
-     * 
+     *
      * @param templateName
      */
     private EInternalTemplate(String templateName, String version) {
@@ -98,7 +98,7 @@ public enum EInternalTemplate {
 
     /**
      * Getter for templateName.
-     * 
+     *
      * @return the templateName
      */
     public String getTemplateName() {
@@ -107,7 +107,7 @@ public enum EInternalTemplate {
 
     /**
      * Getter for version.
-     * 
+     *
      * @return the version
      */
     public String getVersion() {
@@ -116,7 +116,7 @@ public enum EInternalTemplate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Enum#toString()
      */
     @Override

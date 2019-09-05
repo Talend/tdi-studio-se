@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,27 +20,27 @@ import org.talend.designer.abstractmap.ui.visualmap.link.IMapperLink;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  */
 public interface ILinkManager {
 
     /**
      * DOC amaumont Comment method "addLink".
-     * 
+     *
      * @param link
      */
     public void addLink(IMapperLink link);
 
     /**
      * DOC amaumont Comment method "addLink".
-     * 
+     *
      * @param link
      */
     public void removeLink(IMapperLink link);
 
     /**
      * DOC amaumont Comment method "getGraphicalLinks".
-     * 
+     *
      * @param targetTableEntry
      * @return
      */
@@ -55,14 +55,14 @@ public interface ILinkManager {
 
     /**
      * DOC amaumont Comment method "getLinks".
-     * 
+     *
      * @return
      */
     public List<IMapperLink> getLinks();
 
     /**
      * DOC amaumont Comment method "getSourcesForTarget".
-     * 
+     *
      * @param dataMapTableEntry
      */
     public Set<ITableEntry> getSourcesForTarget(ITableEntry dataMapTableEntry);
@@ -74,14 +74,14 @@ public interface ILinkManager {
 
     /**
      * Getter for currentNumberLinks.
-     * 
+     *
      * @return the currentNumberLinks
      */
     public int getCurrentNumberLinks();
 
     /**
      * Get the count of inputs levels.
-     * 
+     *
      * @return the count of inputs levels
      */
     public int getCountOfInputLevels();

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.editor.properties.controllers;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,14 +77,15 @@ import org.talend.designer.rowgenerator.data.Function;
 import org.talend.utils.json.JSONArray;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
+import org.talend.utils.sql.TalendTypeConvert;
 
 import orgomg.cwm.objectmodel.core.TaggedValue;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ColumnListController.java 1 2006-12-12 下午02:04:32 +0000 (下午02:04:32) yzhang $
- * 
+ *
  */
 public class ColumnListController extends AbstractElementPropertySectionController {
 
@@ -112,6 +114,12 @@ public class ColumnListController extends AbstractElementPropertySectionControll
      */
     private static final String FILTER_PREFIX_CUSTOM = "CUSTOM_COLUMNS:"; //$NON-NLS-1$
 
+    /**
+     * Indicate you want to filter columns by data type
+     * DATA_TYPE:Date,String will only keep Date and String columns
+     */
+    private static final String FILTER_DATA_TYPE = "DATA_TYPE:"; //$NON-NLS-1$
+
     private static Logger log = Logger.getLogger(ColumnListController.class);
 
     private boolean updateColumnListFlag;
@@ -123,7 +131,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
 
     /**
      * DOC dev ColumnListController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public ColumnListController(IDynamicProperty dp) {
@@ -132,7 +140,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
@@ -192,7 +200,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -282,7 +290,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -304,7 +312,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -734,7 +742,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
     }
 
     /**
-     * 
+     *
      * <p>
      * You can fill the filter as the format below:
      * </p>
@@ -743,11 +751,11 @@ public class ColumnListController extends AbstractElementPropertySectionControll
      * NONE_CUSTOM_COLUMNS:col1, col2, ...</li> <li>NONE_CUSTOM_COLUMNS:*</li> <li>NONE_CUSTOM_COLUMNS:REGEXP:any
      * regular expressions</li> <li>REGEXP:any regular expressions</li> <li>col1</li> <li>col1,col2, ...</li> <li>*</li>
      * </l>
-     * 
+     *
      * <br>
      * You can refer to {@link ColumnListControllerTest } to know how does this method work. </br> <br>
      * DOC ycbai Comment method "filterColumns".
-     * 
+     *
      * @param param
      * @param curColumnNameList
      * @param curColumnValueList
@@ -778,9 +786,15 @@ public class ColumnListController extends AbstractElementPropertySectionControll
                 }
                 boolean unlimited = !onlyFilterCustom && !onlyFilterNoneCustom;
                 boolean hasReg = false;
+                boolean hasDataTypeFilter = false;
+                List<String> datatypeNameList = null;
                 if (filter.startsWith(FILTER_PREFIX_REGEXP)) {
                     filter = filter.substring(FILTER_PREFIX_REGEXP.length());
                     hasReg = true;
+                } else if (filter.startsWith(FILTER_DATA_TYPE)) {
+                    filter = filter.substring(FILTER_DATA_TYPE.length());
+                    hasDataTypeFilter = true;
+                    datatypeNameList = Arrays.asList(filter.split(FILTER_SEPARATOR));
                 }
                 boolean filterAll = false;
                 if (filter.equals(FILTER_ALL)) {
@@ -794,6 +808,17 @@ public class ColumnListController extends AbstractElementPropertySectionControll
                         if (!matcher.matches(colName, pattern)
                                 && (onlyFilterCustom && customColMap.get(colName) || onlyFilterNoneCustom
                                         && !customColMap.get(colName) || unlimited)) {
+                            columnNameList = (String[]) ArrayUtils.removeElement(columnNameList, colName);
+                            columnValueList = (String[]) ArrayUtils.removeElement(columnValueList, colName);
+                        }
+                    }
+                } else if (hasDataTypeFilter && datatypeNameList != null) {
+                    IMetadataTable metadataTable = getMetadataTable(param.getElement(), param.getContext());
+                    for (String colName : tmpColumnNameList) {
+                        IMetadataColumn metadataColumn = metadataTable.getColumn(colName);
+                        String dataType = metadataColumn.getTalendType();
+                        if (!(datatypeNameList.contains(dataType)
+                                || datatypeNameList.contains(TalendTypeConvert.convertToJavaType(dataType)))) {
                             columnNameList = (String[]) ArrayUtils.removeElement(columnNameList, colName);
                             columnValueList = (String[]) ArrayUtils.removeElement(columnValueList, colName);
                         }
@@ -843,7 +868,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
 
     /**
      * bqian Comment method "setSize".
-     * 
+     *
      * @param newLine
      * @param node
      * @param codes
@@ -886,9 +911,9 @@ public class ColumnListController extends AbstractElementPropertySectionControll
 
     /**
      * DOC bqian Comment method "needSynchronizeSize".
-     * 
+     *
      * @param param
-     * 
+     *
      * @return
      */
     public static boolean needSynchronizeSize(IElementParameter param) {
@@ -923,28 +948,7 @@ public class ColumnListController extends AbstractElementPropertySectionControll
     private static List<String> getColumnList(IElement element, String context, Map<String, Boolean> customColMap) {
         List<String> columnList = new ArrayList<String>();
 
-        IMetadataTable table = null;
-        if (element instanceof INode) {
-            table = ((INode) element).getMetadataFromConnector(context);
-            if (table == null) {
-                List<IMetadataTable> tableList = ((INode) element).getMetadataList();
-                if (tableList.size() == 1) {
-                    table = tableList.get(0);
-                } else {
-                    for (IMetadataTable itable : tableList) {
-                        if (itable.getAttachedConnector() != null && !itable.getAttachedConnector().equals("REJECT")) {
-                            table = itable;
-                            break;
-                        }
-                    }
-                }
-                // if (tableList.size() > 0) {
-                // table = tableList.get(0);
-                // }
-            }
-        } else if (element instanceof IConnection) {
-            table = ((IConnection) element).getMetadataTable();
-        }
+        IMetadataTable table = getMetadataTable(element, context);
 
         if (table != null) {
             for (IMetadataColumn column : table.getListColumns()) {
@@ -968,7 +972,32 @@ public class ColumnListController extends AbstractElementPropertySectionControll
         return columnList;
     }
 
-    private static List<String> getPrevColumnList(INode node, Map<String, Boolean> customColMap) {
+    private static IMetadataTable getMetadataTable(IElement element, String context) {
+
+        IMetadataTable table = null;
+        if (element instanceof INode) {
+            table = ((INode) element).getMetadataFromConnector(context);
+            if (table == null) {
+                List<IMetadataTable> tableList = ((INode) element).getMetadataList();
+                if (tableList.size() == 1) {
+                    table = tableList.get(0);
+                } else {
+                    for (IMetadataTable itable : tableList) {
+                        if (itable.getAttachedConnector() != null && !itable.getAttachedConnector().equals("REJECT")) {
+                            table = itable;
+                            break;
+                        }
+                    }
+                }
+            }
+        } else if (element instanceof IConnection) {
+            table = ((IConnection) element).getMetadataTable();
+        }
+
+        return table;
+    }
+
+    public static List<String> getPrevColumnList(INode node, Map<String, Boolean> customColMap) {
         List<String> columnList = new ArrayList<String>();
 
         IConnection connection = null;
@@ -1023,12 +1052,12 @@ public class ColumnListController extends AbstractElementPropertySectionControll
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "syncNodePropertiesTableColumns".<BR/>
-     * 
+     *
      * synchronize COLUMN_LIST, PREV_COLUMN_LIST, LOOKUP_COLUMN_LIST in table. <br/>
      * when modified column name of schema .
-     * 
+     *
      * @param param
      * @param columnsChanged
      * @param columnNameList
@@ -1076,11 +1105,11 @@ public class ColumnListController extends AbstractElementPropertySectionControll
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "syncNodePropertiesColumns".<BR/>
-     * 
+     *
      * synchronize COLUMN_LIST, PREV_COLUMN_LIST, LOOKUP_COLUMN_LIST
-     * 
+     *
      * @param param
      * @param columnsChanged
      * @param columnNameList

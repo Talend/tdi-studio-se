@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,9 +48,9 @@ import org.talend.repository.ui.wizards.metadata.connection.files.json.EJsonRead
 
 /**
  * DOC amaumont class global comment. Detailed comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class JSONToSchemaDragAndDropHandler {
 
@@ -74,7 +74,7 @@ public class JSONToSchemaDragAndDropHandler {
 
     /**
      * DOC amaumont TreeToTableDragAndDropHandler constructor comment.
-     * 
+     *
      * @param linker
      */
     public JSONToSchemaDragAndDropHandler(JSONToXPathLinker linker) {
@@ -111,9 +111,9 @@ public class JSONToSchemaDragAndDropHandler {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "createDragSource".
-     * 
+     *
      * @param sourceListener
      */
     private void createDragSource() {
@@ -127,7 +127,7 @@ public class JSONToSchemaDragAndDropHandler {
     }
 
     /**
-     * 
+     *
      * create DropTarget.
      */
     private void createDropTarget() {
@@ -150,11 +150,11 @@ public class JSONToSchemaDragAndDropHandler {
     }
 
     /**
-     * 
+     *
      * DOC amaumont JSONToSchemaDragAndDropHandler class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     class TreeDragSourceListener implements TransferDragSourceListener {
 
@@ -195,11 +195,11 @@ public class JSONToSchemaDragAndDropHandler {
     };
 
     /**
-     * 
+     *
      * DOC amaumont JSONToSchemaDragAndDropHandler class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public class TableDropTargetListener implements TransferDropTargetListener {
 
@@ -210,7 +210,7 @@ public class JSONToSchemaDragAndDropHandler {
 
         /**
          * DOC amaumont Comment method "dragEnterExecute".
-         * 
+         *
          * @param event
          */
         private void dragEnterExecute(DropTargetEvent event) {
@@ -247,7 +247,7 @@ public class JSONToSchemaDragAndDropHandler {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.util.TransferDropTargetListener#getTransfer()
          */
         @Override
@@ -257,7 +257,7 @@ public class JSONToSchemaDragAndDropHandler {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.util.TransferDropTargetListener#isEnabled(org.eclipse.swt.dnd.DropTargetEvent)
          */
         @Override
@@ -268,7 +268,7 @@ public class JSONToSchemaDragAndDropHandler {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.swt.dnd.DropTargetListener#drop(org.eclipse.swt.dnd.DropTargetEvent)
          */
         @Override
@@ -371,13 +371,14 @@ public class JSONToSchemaDragAndDropHandler {
 
             }
             linker.updateLinksStyleAndControlsSelection(control, true);
+            linker.getFieldsTableEditorView().getTableViewerCreator().getTableViewer().refresh();
         }
 
     }
 
     /**
      * Extract last word of an expression, the last character must be a letter or a number.
-     * 
+     *
      * @param currentExpr
      * @return
      */
@@ -410,7 +411,7 @@ public class JSONToSchemaDragAndDropHandler {
 
     /**
      * Extract last word of an expression, the last character must be a letter or a number.
-     * 
+     *
      * @param currentExpr
      * @return
      */
@@ -428,7 +429,7 @@ public class JSONToSchemaDragAndDropHandler {
 
     /**
      * Extract last word of an expression, the last character must be a letter or a number.
-     * 
+     *
      * @param currentExpr
      * @param fullSchemaTargetList
      * @return
@@ -446,7 +447,7 @@ public class JSONToSchemaDragAndDropHandler {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.talend.commons.utils.data.list.UniqueStringGenerator#getBeanString(java.lang.Object)
              */
             @Override

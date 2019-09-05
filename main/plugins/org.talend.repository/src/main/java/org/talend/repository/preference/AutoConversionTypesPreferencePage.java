@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,9 +14,9 @@ package org.talend.repository.preference;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.RepositoryPlugin;
@@ -24,7 +24,7 @@ import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.RepositoryPreferenceStore;
 
 /**
- * 
+ *
  * created by hcyi on Aug 18, 2016 Detailled comment
  *
  */
@@ -68,7 +68,7 @@ public class AutoConversionTypesPreferencePage extends FieldEditorPreferencePage
             preferenceStore.load();
         } catch (PersistenceException e) {
             String detailError = e.getMessage();
-            new ErrorDialogWidthDetailArea(new Shell(), RepositoryPlugin.PLUGIN_ID,
+            new ErrorDialogWidthDetailArea(DisplayUtils.getDefaultShell(false), RepositoryPlugin.PLUGIN_ID,
                     Messages.getString("CommonWizard.persistenceException"), detailError); //$NON-NLS-1$
         }
         return preferenceStore;

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,9 +44,9 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 
 /**
  * This element will contain all elements that will be linked to a node.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeContainer extends Element {
 
@@ -468,7 +468,7 @@ public class NodeContainer extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getElementName()
      */
     @Override
@@ -526,7 +526,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for breakpointLocation.
-     * 
+     *
      * @return the breakpointLocation
      */
     public Point getBreakpointLocation() {
@@ -535,7 +535,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for warningLocation.
-     * 
+     *
      * @return the warningLocation
      */
     public Point getWarningLocation() {
@@ -544,7 +544,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for collapseLocation.
-     * 
+     *
      * @return the collapseLocation
      */
     public Point getCollapseLocation() {
@@ -553,7 +553,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for warningLocation.
-     * 
+     *
      * @return the warningLocation
      */
     public Point getInfoLocation() {
@@ -562,7 +562,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for errorMarkLocation.
-     * 
+     *
      * @return the errorMarkLocation
      */
     public Point getErrorMarkLocation() {
@@ -571,7 +571,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for parallelLocation.
-     * 
+     *
      * @return the parallelLocation
      */
     public Point getParallelLocation() {
@@ -580,7 +580,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for windowLocation.
-     * 
+     *
      * @return the windowLocation
      */
     public Point getWindowLocation() {
@@ -589,7 +589,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for errorLocation.
-     * 
+     *
      * @return the errorLocation
      */
     public Point getErrorLocation() {
@@ -598,7 +598,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for markLocation.
-     * 
+     *
      * @return the markLocation
      */
     public Point getMarkLocation() {
@@ -607,7 +607,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for markLocation validationRuleLocation.
-     * 
+     *
      * @return
      */
     public Point getValidationRuleLocation() {
@@ -616,7 +616,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for subjobContainer.
-     * 
+     *
      * @return the subjobContainer
      */
     public SubjobContainer getSubjobContainer() {
@@ -625,7 +625,7 @@ public class NodeContainer extends Element {
 
     /**
      * Sets the subjobContainer.
-     * 
+     *
      * @param subjobContainer the subjobContainer to set
      */
     public void setSubjobContainer(SubjobContainer subjobContainer) {
@@ -634,7 +634,7 @@ public class NodeContainer extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -644,7 +644,7 @@ public class NodeContainer extends Element {
 
     /**
      * Getter for collapsed.
-     * 
+     *
      * @return the collapsed
      */
     public boolean isCollapsed() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -106,7 +106,7 @@ public class DbInfo {
         getConnFromNode();
         genarateDriverJarPath();
         this.trueDBTypeForJDBC = getTrueDBType(driverClassName, driverJarPath);
-        
+
     }
 
     public String getTrueDBTypeForJDBC() {
@@ -306,7 +306,7 @@ public class DbInfo {
 
     /**
      * Getter for isHive.
-     * 
+     *
      * @return the isHive
      */
     public boolean isHive() {
@@ -315,7 +315,7 @@ public class DbInfo {
 
     /**
      * Getter for jobTracker.
-     * 
+     *
      * @return the jobTracker
      */
     public String getJobTracker() {
@@ -324,7 +324,7 @@ public class DbInfo {
 
     /**
      * Getter for nameNode.
-     * 
+     *
      * @return the nameNode
      */
     public String getNameNode() {
@@ -333,7 +333,7 @@ public class DbInfo {
 
     /**
      * Getter for thrifturi.
-     * 
+     *
      * @return the thrifturi
      */
     public String getThrifturi() {

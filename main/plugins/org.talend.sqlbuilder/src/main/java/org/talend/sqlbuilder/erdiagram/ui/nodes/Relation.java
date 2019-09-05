@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.eclipse.draw2d.geometry.Point;
 
 /**
  * DOC qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: Relation.java 1 2006-12-25 下午02:57:25 +0000 (ææäº, 29 ä¹æ 2006) yzhang $
- * 
+ *
  */
 public class Relation extends Element {
 
@@ -49,7 +49,7 @@ public class Relation extends Element {
 
     /**
      * DOC qzhang Comment method "getSource".
-     * 
+     *
      * @return
      */
     public Column getSource() {
@@ -58,7 +58,7 @@ public class Relation extends Element {
 
     /**
      * DOC qzhang Comment method "setSource".
-     * 
+     *
      * @param source
      */
     public void setSource(Column source) {
@@ -70,7 +70,7 @@ public class Relation extends Element {
 
     /**
      * DOC qzhang Comment method "getTarget".
-     * 
+     *
      * @return
      */
     public Column getTarget() {
@@ -79,7 +79,7 @@ public class Relation extends Element {
 
     /**
      * DOC qzhang Comment method "setTarget".
-     * 
+     *
      * @param target
      */
     public void setTarget(Column target) {
@@ -90,7 +90,7 @@ public class Relation extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuider.erdiagram.model.Element#getElementName()
      */
     @Override
@@ -133,7 +133,7 @@ public class Relation extends Element {
 
     /**
      * DOC qzhang Comment method "setEnd".
-     * 
+     *
      * @param end
      */
     private void setEnd(Point end) {

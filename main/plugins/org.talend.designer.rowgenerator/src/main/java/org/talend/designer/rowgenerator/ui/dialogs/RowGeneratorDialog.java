@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,9 +41,9 @@ import org.talend.designer.rowgenerator.ui.tabs.FunParaTableView2;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (忙聵聼忙聹聼盲潞聰, 29 盲鹿聺忙聹聢 2006) nrousseau $
- * 
+ *
  */
 public class RowGeneratorDialog extends Dialog {
 
@@ -65,7 +65,7 @@ public class RowGeneratorDialog extends Dialog {
 
     /**
      * zhangyi RowGeneratorDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     public RowGeneratorDialog(Shell parentShell, RowGenMain rowGenMain) {
@@ -82,7 +82,7 @@ public class RowGeneratorDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -106,7 +106,7 @@ public class RowGeneratorDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
      */
     @Override
@@ -120,7 +120,7 @@ public class RowGeneratorDialog extends Dialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
              */
             public void handleEvent(Event event) {
@@ -137,7 +137,7 @@ public class RowGeneratorDialog extends Dialog {
 
     /**
      * Sets the title.
-     * 
+     *
      * @param title the title to set
      */
     public void setTitle(String title) {
@@ -146,7 +146,7 @@ public class RowGeneratorDialog extends Dialog {
 
     /**
      * Sets the size.
-     * 
+     *
      * @param size the size to set
      */
     public void setSize(Rectangle size) {
@@ -155,7 +155,7 @@ public class RowGeneratorDialog extends Dialog {
 
     /**
      * Sets the icon.
-     * 
+     *
      * @param icon the icon to set
      */
     public void setIcon(Image icon) {
@@ -164,7 +164,7 @@ public class RowGeneratorDialog extends Dialog {
 
     /**
      * Sets the maximizedSize.
-     * 
+     *
      * @param maximizedSize the maxmimizedSize to set
      */
     public void setMaximized(boolean maximized) {
@@ -173,7 +173,7 @@ public class RowGeneratorDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     @Override
@@ -227,7 +227,7 @@ public class RowGeneratorDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#cancelPressed()
      */
     @Override

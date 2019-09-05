@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,23 +16,23 @@ import org.talend.designer.mapper.i18n.Messages;
 import org.talend.designer.mapper.ui.image.ImageInfo;
 
 /**
- * 
+ *
  * Lookup types.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public enum TMAP_LOOKUP_MODE implements IUILookupMode {
     LOAD_ONCE(LOOKUP_MODE.LOAD_ONCE, "TMAP_LOOKUP_MODE.LOAD_ONCE.label", //$NON-NLS-1$
               "TMAP_LOOKUP_MODE.LOAD_ONCE.tooltip"//$NON-NLS-1$
               , ImageInfo.ARROW_RIGHT),
-              
+
     LOAD_ONCE_AND_UPDATE(LOOKUP_MODE.LOAD_ONCE_AND_UPDATE, "TMAP_LOOKUP_MODE.LOAD_ONCE_AND_UPDATE.label", //$NON-NLS-1$
                        "TMAP_LOOKUP_MODE.LOAD_ONCE_AND_UPDATE.tooltip", ImageInfo.ARROW_RIGHT_EDIT), //$NON-NLS-1$
-                       
-    RELOAD(LOOKUP_MODE.RELOAD, "TMAP_LOOKUP_MODE.RELOAD.label", //$NON-NLS-1$ 
+
+    RELOAD(LOOKUP_MODE.RELOAD, "TMAP_LOOKUP_MODE.RELOAD.label", //$NON-NLS-1$
            "TMAP_LOOKUP_MODE.RELOAD.tooltip", ImageInfo.REFRESH), //$NON-NLS-1$
-           
+
     CACHE_OR_RELOAD(LOOKUP_MODE.CACHE_OR_RELOAD, "TMAP_LOOKUP_MODE.CACHE_OR_RELOAD.label",//$NON-NLS-1$
                     "TMAP_LOOKUP_MODE.CACHE_OR_RELOAD.tooltip", ImageInfo.REFRESH_CACHE), //$NON-NLS-1$
     ;
@@ -43,7 +43,7 @@ public enum TMAP_LOOKUP_MODE implements IUILookupMode {
 
     /**
      * Getter for menuType.
-     * 
+     *
      * @return the menuType
      */
     public MENU_TYPE getMenuType() {
@@ -57,9 +57,9 @@ public enum TMAP_LOOKUP_MODE implements IUILookupMode {
     private ImageInfo imageInfo;
 
     /**
-     * 
+     *
      * DOC amaumont LOOKUP_TYPE constructor comment.
-     * 
+     *
      * @param labelKey
      */
     TMAP_LOOKUP_MODE(LOOKUP_MODE multipleMatchingMode, String labelKey, String tooltipKey, ImageInfo imageInfo) {
@@ -72,7 +72,7 @@ public enum TMAP_LOOKUP_MODE implements IUILookupMode {
 
     /**
      * Getter for label.
-     * 
+     *
      * @return the label
      */
     public String getLabel() {
@@ -81,7 +81,7 @@ public enum TMAP_LOOKUP_MODE implements IUILookupMode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.table.IUITest#getImageInfo()
      */
     public ImageInfo getImageInfo() {
@@ -90,7 +90,7 @@ public enum TMAP_LOOKUP_MODE implements IUILookupMode {
 
     /**
      * Getter for multipleMatchingMode.
-     * 
+     *
      * @return the multipleMatchingMode
      */
     public LOOKUP_MODE getLookupMode() {

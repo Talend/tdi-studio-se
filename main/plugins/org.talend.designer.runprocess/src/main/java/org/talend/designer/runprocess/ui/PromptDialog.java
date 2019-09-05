@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,44 +48,44 @@ import org.talend.designer.runprocess.i18n.Messages;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class PromptDialog extends Dialog {
 
     /**
-     * 
+     *
      */
     private static final int Y_POSITION = 100;
 
     /**
-     * 
+     *
      */
     private static final int X_POSITION = 300;
 
     /**
-     * 
+     *
      */
     private static final int CELLPADDING = 10;
 
     /**
-     * 
+     *
      */
     private static final int MINIMUM_WIDTH = 50;
 
     /**
-     * 
+     *
      */
     private static final int MARGIN_HEIGHT = 4;
 
     /**
-     * 
+     *
      */
     private static final int MARGIN_WIDTH = 7;
 
     /**
-     * 
+     *
      */
     private static final int MAX_LABEL_LENGTH_ONE_LINE = 16;
 
@@ -93,7 +93,7 @@ public class PromptDialog extends Dialog {
 
     /**
      * DOC nrousseau PromptDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     protected PromptDialog(Shell parentShell, IContext context) {
@@ -139,7 +139,7 @@ public class PromptDialog extends Dialog {
 
                         /*
                          * (non-Javadoc)
-                         * 
+                         *
                          * @see
                          * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
                          */
@@ -181,7 +181,7 @@ public class PromptDialog extends Dialog {
 
     /**
      * DOC qiang.zhang Comment method "createParameterComposite".
-     * 
+     *
      * @param parent
      * @param parameter
      * @param label
@@ -236,7 +236,7 @@ public class PromptDialog extends Dialog {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
                  */
                 @Override
@@ -257,7 +257,7 @@ public class PromptDialog extends Dialog {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
                  */
                 @Override
@@ -281,7 +281,7 @@ public class PromptDialog extends Dialog {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
                  */
                 @Override
@@ -306,7 +306,7 @@ public class PromptDialog extends Dialog {
 
     /**
      * DOC bqian Comment method "createListParameterArea".
-     * 
+     *
      * @param parameter
      * @param label
      * @param parent

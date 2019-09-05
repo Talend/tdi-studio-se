@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.talend.designer.business.diagram; singleton:=true
-Bundle-Version: 7.2.1.qualifier
+Bundle-Version: 7.3.1.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: org.talend.designer.business.model.business.diagram.part.BusinessDiagramEditorPlugin
 Bundle-Vendor: %providerName
@@ -36,5 +36,7 @@ Require-Bundle: org.eclipse.ui.ide,
  com.ibm.icu,
  org.talend.libraries.apache,
  org.talend.repository.items.importexport,
- org.talend.repository.view.di
+ org.talend.repository.view.di,
+ org.talend.commons.runtime,
+ org.talend.core.runtime
 Eclipse-LazyStart: true

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,9 +20,9 @@ import org.talend.designer.alfrescooutput.data.AlfrescoModelElements;
 
 /**
  * Content provider for Alfresco models.
- * 
+ *
  * @author Marc Dutoo - Open Wide SA
- * 
+ *
  * $Id: AlfrescoModelContentProvider.java,v 1.1 2008/10/07 21:27:31 mdutoo Exp $
  *
  */
@@ -32,9 +32,9 @@ public class AlfrescoModelContentProvider
 	private AlfrescoModelElements alfrescoModelElements = null;
 
 	public AlfrescoModelContentProvider() {
-		
+
 	}
-	
+
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		if (alfrescoModelElements != null) {
@@ -64,14 +64,14 @@ public class AlfrescoModelContentProvider
 	 * To override
 	 */
 	public void alfrescoModelElementAdded(Element alfrescoModelElement) {
-		
+
 	}
 
 	/**
 	 * To override
 	 */
 	public void alfrescoModelElementRemoved(Element alfrescoModelElement) {
-		
+
 	}
 
 }

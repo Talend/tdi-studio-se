@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,6 +30,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -90,13 +95,13 @@ import org.talend.designer.core.ui.editor.jobletcontainer.JobletUtil;
 
 /**
  * Component factory that look for each component and load their information. <br/>
- * 
+ *
  * $Id: ComponentsFactory.java 52892 2010-12-20 05:52:17Z nrousseau $
  */
 public class ComponentsFactory implements IComponentsFactory {
 
     /**
-     * 
+     *
      */
     private static final String TALEND_COMPONENT_CACHE = "ComponentsCache.";
 
@@ -140,65 +145,118 @@ public class ComponentsFactory implements IComponentsFactory {
 
     protected static Map<String, Map<String, Set<IComponent>>> componentNameMap;
 
+    private AtomicBoolean isInitialising;
+
+    private volatile Lock initialiseLock;
+
     public ComponentsFactory() {
+        isInitialising = new AtomicBoolean(false);
+        initialiseLock = new ReentrantLock();
     }
 
     private void init(boolean duringLogon) {
-        removeOldComponentsUserFolder(); // not used anymore
-        long startTime = System.currentTimeMillis();
-
-        // TimeMeasure.display = true;
-        // TimeMeasure.displaySteps = true;
-        // TimeMeasure.measureActive = true;
-        // TimeMeasure.begin("initComponents");
-        componentList = Collections.synchronizedSet(new HashSet<IComponent>());
-        customComponentList = new HashSet<IComponent>();
-        skeletonList = new ArrayList<String>();
-        userComponentList = new HashSet<IComponent>();
-        String installLocation = new Path(Platform.getConfigurationLocation().getURL().getPath()).toFile().getAbsolutePath();
-        componentToProviderMap = new HashMap<IComponent, AbstractComponentsProvider>();
-        boolean isNeedClean = !cleanDone && TalendCacheUtils.isSetCleanComponentCache();
-        cleanDone = true; // only check this parameter one time, or it will reinitialize things all the time...
-        isCreated = hasComponentFile(installLocation) && !isNeedClean;
-        ComponentsCache cache = ComponentManager.getComponentCache();
-        try {
-            if (isCreated) {
-                // if cache is created and empty, means we never loaded it before.
-                // if it was already loaded, then no need to go again, since it's a static variable, it's still in
-                // memory.
-                // it avoids to reload from disk again even more for commandline at each logon, since it's no use.
-                if (cache.getComponentEntryMap().isEmpty()) {
-                    ComponentsCache loadCache = loadComponentResource(installLocation);
-                    cache.getComponentEntryMap().putAll(loadCache.getComponentEntryMap());
-                }
-            } else {
-                cache.getComponentEntryMap().clear();
-            }
-        } catch (IOException e) {
-            ExceptionHandler.process(e);
-            cache.getComponentEntryMap().clear();
-            isCreated = false;
+        if (wait4InitialiseFinish()) {
+            return;
         }
+        try {
+            try {
+                initialiseLock.lock();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            isInitialising.set(true);
+            removeOldComponentsUserFolder(); // not used anymore
+            long startTime = System.currentTimeMillis();
 
-        loadComponentsFromComponentsProviderExtension();
+            // TimeMeasure.display = true;
+            // TimeMeasure.displaySteps = true;
+            // TimeMeasure.measureActive = true;
+            // TimeMeasure.begin("initComponents");
+            componentList = Collections.synchronizedSet(new HashSet<IComponent>());
+            customComponentList = new HashSet<IComponent>();
+            skeletonList = new ArrayList<String>();
+            userComponentList = new HashSet<IComponent>();
+            String installLocation = new Path(Platform.getConfigurationLocation().getURL().getPath()).toFile().getAbsolutePath();
+            componentToProviderMap = new HashMap<IComponent, AbstractComponentsProvider>();
+            boolean isNeedClean = !cleanDone && TalendCacheUtils.isSetCleanComponentCache();
+            cleanDone = true; // only check this parameter one time, or it will reinitialize things all the time...
+            isCreated = hasComponentFile(installLocation) && !isNeedClean;
+            ComponentsCache cache = ComponentManager.getComponentCache();
+            try {
+                if (isCreated) {
+                    // if cache is created and empty, means we never loaded it before.
+                    // if it was already loaded, then no need to go again, since it's a static variable, it's still in
+                    // memory.
+                    // it avoids to reload from disk again even more for commandline at each logon, since it's no use.
+                    if (cache.getComponentEntryMap().isEmpty()) {
+                        ComponentsCache loadCache = loadComponentResource(installLocation);
+                        cache.getComponentEntryMap().putAll(loadCache.getComponentEntryMap());
+                    }
+                } else {
+                    cache.getComponentEntryMap().clear();
+                }
+            } catch (IOException e) {
+                ExceptionHandler.process(e);
+                cache.getComponentEntryMap().clear();
+                isCreated = false;
+            }
 
-        // TimeMeasure.step("initComponents", "loadComponentsFromProvider");
-        // 2.Load Component from extension point: component_definition
-        loadComponentsFromExtensions();
-        // TimeMeasure.step("initComponents", "loadComponentsFromExtension[joblets?]");
+            loadComponentsFromComponentsProviderExtension();
 
-        ComponentManager.saveResource(); // will save only if needed.
+            // TimeMeasure.step("initComponents", "loadComponentsFromProvider");
+            // 2.Load Component from extension point: component_definition
+            loadComponentsFromExtensions();
+            // TimeMeasure.step("initComponents", "loadComponentsFromExtension[joblets?]");
 
-        // init component name map, used to pick specified component immediately
-        initComponentNameMap();
+            ComponentManager.saveResource(); // will save only if needed.
 
-        // TimeMeasure.step("initComponents", "createCache");
-        log.debug(componentList.size() + " components loaded in " + (System.currentTimeMillis() - startTime) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
+            // init component name map, used to pick specified component immediately
+            initComponentNameMap();
 
-        // TimeMeasure.end("initComponents");
-        // TimeMeasure.display = false;
-        // TimeMeasure.displaySteps = false;
-        // TimeMeasure.measureActive = false;
+            // TimeMeasure.step("initComponents", "createCache");
+            log.debug(componentList.size() + " components loaded in " + (System.currentTimeMillis() - startTime) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
+
+            // TimeMeasure.end("initComponents");
+            // TimeMeasure.display = false;
+            // TimeMeasure.displaySteps = false;
+            // TimeMeasure.measureActive = false;
+        } finally {
+            isInitialising.set(false);
+            initialiseLock.unlock();
+        }
+    }
+
+    private boolean wait4InitialiseFinish() {
+        if (isInitialising.get()) {
+            try {
+                // wait for 10 min (10 * 60 seconds) by default
+                long timeout = 600L;
+                String timeoutStr = System.getProperty("studio.componentsFactory.init.timeout"); //$NON-NLS-1$
+                if (!StringUtils.isBlank(timeoutStr)) {
+                    try {
+                        timeout = Long.valueOf(timeoutStr);
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+                if (initialiseLock.tryLock(timeout, TimeUnit.SECONDS)) {
+                    initialiseLock.unlock();
+                } else {
+                    // may be track in dead lock, throw exception to try to break dead lock
+                    throw new RuntimeException(Messages.getString("ComponentsFactory.init.waitForFinish.timeout")); //$NON-NLS-1$
+                }
+                // initialise successfully or not
+                return !isInitialising.get();
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        // initialise failed, still need to initialise
+        return false;
     }
 
     protected void initComponentNameMap() {
@@ -242,7 +300,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     /**
      * DOC guanglong.du Comment method "loadComponentResource".
-     * 
+     *
      * @param eclipseProject
      * @return
      * @throws IOException
@@ -267,7 +325,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     /**
      * DOC guanglong.du Comment method "hasComponentFile".
-     * 
+     *
      * @param eclipseProject
      * @return
      */
@@ -611,7 +669,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     /**
      * DOC smallet Comment method "checkComponentFolder".
-     * 
+     *
      * @param currentFolder
      * @return
      * @throws BusinessException
@@ -729,7 +787,8 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     @Override
-    public synchronized int size() {
+    public int size() {
+        wait4InitialiseFinish();
         if (componentList == null) {
             init(false);
         }
@@ -737,7 +796,8 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     @Override
-    public synchronized IComponent get(String name) {
+    public IComponent get(String name) {
+        wait4InitialiseFinish();
         if (componentList == null) {
             init(false);
         }
@@ -753,11 +813,12 @@ public class ComponentsFactory implements IComponentsFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponentsFactory#get(java.lang.String, java.lang.String)
      */
     @Override
-    public synchronized IComponent get(String name, String paletteType) {
+    public IComponent get(String name, String paletteType) {
+        wait4InitialiseFinish();
         if (componentList == null) {
             init(false);
         }
@@ -772,6 +833,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public IComponent getJobletComponent(String name, String paletteType) {
+        wait4InitialiseFinish();
         if (componentList == null) {
             init(false);
         }
@@ -799,6 +861,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor) {
         this.monitor = monitor;
+        wait4InitialiseFinish();
         if (componentList == null) {
             init(false);
         }
@@ -809,6 +872,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor, boolean duringLogon) {
         this.monitor = monitor;
+        wait4InitialiseFinish();
         if (componentList == null) {
             init(duringLogon);
         }
@@ -818,15 +882,21 @@ public class ComponentsFactory implements IComponentsFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponentsFactory#getComponents()
      */
     @Override
-    public synchronized Set<IComponent> getComponents() {
+    public Set<IComponent> getComponents() {
+        wait4InitialiseFinish();
         if (componentList == null) {
             init(false);
         }
         return componentList;
+    }
+
+    @Override
+    public boolean isInitialising() {
+        return isInitialising.get();
     }
 
     @Override
@@ -840,7 +910,8 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     @Override
-    public synchronized Map<String, Map<String, Set<IComponent>>> getComponentNameMap() {
+    public Map<String, Map<String, Set<IComponent>>> getComponentNameMap() {
+        wait4InitialiseFinish();
         if (componentNameMap == null) {
             init(false);
         }
@@ -848,7 +919,8 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     @Override
-    public synchronized List<IComponent> getCustomComponents() {
+    public List<IComponent> getCustomComponents() {
+        wait4InitialiseFinish();
         if (customComponentList == null) {
             init(false);
         }
@@ -857,11 +929,12 @@ public class ComponentsFactory implements IComponentsFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponentsFactory#getSkeletons()
      */
     @Override
     public List<String> getSkeletons() {
+        wait4InitialiseFinish();
         if (skeletonList == null) {
             init(false);
         }
@@ -900,6 +973,7 @@ public class ComponentsFactory implements IComponentsFactory {
                 jobletService.clearSparkStreamingJobletComponent();
             }
         }
+        isInitialising.set(false);
     }
 
     @Override
@@ -912,7 +986,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponentsFactory#getFamilyTranslation(IComponent component,
      * java.lang.String)
      */
@@ -944,7 +1018,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponentsFactory#resetSpecificComponents()
      */
     @Override
@@ -993,7 +1067,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponentsFactory#getComponentsHandler()
      */
     @Override
@@ -1003,7 +1077,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponentsFactory#setComponentsHandler(org.talend.core.model.components.
      * TComponentsHandler)
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,17 +23,17 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 
 /**
  * Task replace run before and after with then run connection.
- * 
+ *
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ChangeRunBeforeAfterToThenRunMigrationTask.java 下午04:41:56 2007-5-17 +0000 (2007-5-17) yzhang $
- * 
+ *
  */
 public class RemoveSpaceInJobNameMigrationTask extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
     public ExecutionResult execute(Item item) {
@@ -51,7 +51,7 @@ public class RemoveSpaceInJobNameMigrationTask extends AbstractJobMigrationTask 
     /**
      * Rename jobs if needed, remove spaces and replace them by "_". Note that this migration is only for 1.0 or 1.1 to
      * more recent version, after the 1.1 it was not possible to add some spaces.
-     * 
+     *
      * @throws PersistenceException
      */
     private void renameJobs(Item item) throws PersistenceException {

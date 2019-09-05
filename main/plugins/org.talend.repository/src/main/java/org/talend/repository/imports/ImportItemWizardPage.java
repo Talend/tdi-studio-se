@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -74,7 +74,6 @@ import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
-import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
@@ -98,6 +97,7 @@ import org.talend.repository.i18n.Messages;
 import org.talend.repository.imports.TreeBuilder.IContainerNode;
 import org.talend.repository.imports.TreeBuilder.ProjectNode;
 import org.talend.repository.imports.TreeBuilder.TypeNode;
+import org.talend.repository.items.importexport.ui.managers.TalendZipLeveledStructureProvider;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.RepositoryNode;
@@ -105,7 +105,7 @@ import org.talend.repository.model.RepositoryNodeUtilities;
 
 /**
  * Initialy copied from org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage.
- * 
+ *
  * @deprecated have moved to /org.talend.repository.items.importexport, but still need for MDM, so keep it temp.
  */
 @Deprecated
@@ -559,7 +559,7 @@ class ImportItemWizardPage extends WizardPage {
 
                     archivePathField.setEditable(false);
 
-                    IExchangeService service = (IExchangeService) GlobalServiceRegister.getDefault().getService(
+                    IExchangeService service = GlobalServiceRegister.getDefault().getService(
                             IExchangeService.class);
 
                     selectedArchive = service.openExchangeDialog();
@@ -768,7 +768,7 @@ class ImportItemWizardPage extends WizardPage {
                         if (sourceFile == null) {
                             return;
                         }
-                        ZipLeveledStructureProvider provider = new ZipLeveledStructureProvider(sourceFile);
+                        TalendZipLeveledStructureProvider provider = new TalendZipLeveledStructureProvider(sourceFile);
                         manager = ResourcesManagerFactory.getInstance().createResourcesManager(provider);
 
                         if (!manager.collectPath2Object(provider.getRoot())) {
@@ -975,9 +975,9 @@ class ImportItemWizardPage extends WizardPage {
 
     /**
      * DOC ycbai Comment method "getHadoopSubnodes".
-     * 
+     *
      * Get hadoop sub item records.
-     * 
+     *
      * @param itemRecords
      * @return
      */
@@ -1093,7 +1093,7 @@ class ImportItemWizardPage extends WizardPage {
 
     /**
      * Getter for needToRefreshPalette.
-     * 
+     *
      * @return the needToRefreshPalette
      */
     public boolean isNeedToRefreshPalette() {
@@ -1113,7 +1113,7 @@ class ImportItemWizardPage extends WizardPage {
     /**
      * Checks for consistency in selected elements and report an error message. in case of error or null the message
      * error.
-     * 
+     *
      * @param checkedElements element to be checked
      */
     private void updateErrorMessage(List<ItemRecord> checkedElements) {
@@ -1124,7 +1124,7 @@ class ImportItemWizardPage extends WizardPage {
     /**
      * This check that 2 items in the list do not have the same Id and the same version. if that is so the return an
      * error message else return null.
-     * 
+     *
      * @param checkedElementsn the element to be checked
      * @return an error message or null if no error.
      */
@@ -1143,7 +1143,7 @@ class ImportItemWizardPage extends WizardPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.wizard.WizardPage#isPageComplete()
      */
     @Override

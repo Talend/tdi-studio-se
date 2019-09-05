@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,9 +17,9 @@ import org.talend.sqlbuilder.dbstructure.nodes.INode;
 
 /**
  * Interface for all the Tabs used in the DB details composite. <br/>
- * 
+ *
  * $Id: IDetailTab.java,v 1.3 2006/10/31 10:09:05 qianbing Exp $
- * 
+ *
  */
 public interface IDetailTab {
 
@@ -37,7 +37,7 @@ public interface IDetailTab {
 
     /**
      * Fill composite with information..
-     * 
+     *
      * @param composite Composite
      */
     public void fillComposite(Composite composite);

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.3-20171205</version>
+	<version>3.4-20190513</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>
@@ -54,6 +54,11 @@
     		<groupId>org.apache.httpcomponents</groupId>
     		<artifactId>httpclient</artifactId>
     		<version>4.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.4.9</version>
 		</dependency>
 		<dependency>
     		<groupId>org.apache.axis2</groupId>

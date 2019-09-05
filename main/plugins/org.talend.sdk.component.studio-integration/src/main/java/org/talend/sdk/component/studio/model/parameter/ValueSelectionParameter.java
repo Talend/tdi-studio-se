@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,14 @@ import org.talend.sdk.component.studio.model.action.SuggestionsAction;
  * TacokitElementParameter which provides possible values list
  */
 public class ValueSelectionParameter extends TaCoKitElementParameter {
-    
+
     private final SuggestionsAction action;
-    
+
     public ValueSelectionParameter(IElement element, final SuggestionsAction action) {
         super(element);
         this.action = action;
     }
-    
+
     public Map<String, String> getSuggestionValues() {
         return action.callback();
     }

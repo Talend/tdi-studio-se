@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,9 +37,9 @@ import org.talend.designer.mapper.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class StyleLinkFactory {
 
@@ -94,7 +94,7 @@ public class StyleLinkFactory {
 
         selectedSameZoneGlobalMapStyle = getSelectedSameZoneGlobalMapStyle();
         unselectedSameZoneGlobalMapStyle = getUnselectedSameZoneGlobalMapStyle();
-        
+
         selectedSameZoneFilterStyle = getSelectedSameZoneFilterStyle();
         unselectedSameZoneFilterStyle = getUnselectedSameZoneFilterStyle();
 
@@ -140,7 +140,7 @@ public class StyleLinkFactory {
         if (targetTableEntry instanceof GlobalMapEntry) {
             targetIsGlobalMap = true;
         }
-        
+
         IStyleLink style = null;
         if (pointLinkDescriptorSource.getZone() != pointLinkDescriptorTarget.getZone()) {
             if (linkState == LinkState.SELECTED) {
@@ -188,7 +188,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSelectedFilterStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getSelectedZoneToZoneFilterStyle() {
@@ -206,7 +206,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSelectedFilterStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getUnselectedZoneToZoneFilterStyle() {
@@ -237,7 +237,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getNotSelectedSameZoneStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getUnselectedZoneToZoneStyle() {
@@ -253,7 +253,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getNotSelectedSameZoneStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getUnselectedSameInputZoneStyle() {
@@ -269,7 +269,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSelectedSameZoneStyle".
-     * 
+     *
      * @param foregroundColor
      * @return
      */
@@ -289,7 +289,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSelectedSameZoneStyle".
-     * 
+     *
      * @param foregroundColor
      * @return
      */
@@ -301,7 +301,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSelectedSameZoneStyle".
-     * 
+     *
      * @param foregroundColor
      * @return
      */
@@ -311,10 +311,10 @@ public class StyleLinkFactory {
         return style;
     }
 
-    
+
     /**
      * DOC amaumont Comment method "getSelectedFilterStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getSelectedSameZoneGlobalMapStyle() {
@@ -322,10 +322,10 @@ public class StyleLinkFactory {
         style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_SELECTED_GLOBALMAP_LINK));
         return style;
     }
-    
+
     /**
      * DOC amaumont Comment method "getSelectedFilterStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getUnselectedSameZoneGlobalMapStyle() {
@@ -334,10 +334,10 @@ public class StyleLinkFactory {
         return style;
     }
 
-    
+
     /**
      * DOC amaumont Comment method "getNotSelectedSameZoneStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getUnselectedSameVarsZoneStyle() {
@@ -355,7 +355,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSelectedSameZoneStyle".
-     * 
+     *
      * @param foregroundColor
      * @return
      */
@@ -375,7 +375,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "setCommonsStyleProperties".
-     * 
+     *
      * @param style
      */
     private void setCommonsStyleProperties(StyleLink style) {
@@ -388,7 +388,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSameZoneLink".
-     * 
+     *
      * @param style
      * @return
      */
@@ -398,7 +398,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getZoneToZoneLink".
-     * 
+     *
      * @return
      */
     private IDrawableLink getZoneToZoneLink(StyleLink style) {

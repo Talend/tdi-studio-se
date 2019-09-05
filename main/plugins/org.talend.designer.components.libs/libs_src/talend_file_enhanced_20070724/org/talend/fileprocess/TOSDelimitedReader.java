@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -28,9 +28,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 /**
- * 
+ *
  * @author xtan
- * 
+ *
  */
 public class TOSDelimitedReader {
 
@@ -412,8 +412,8 @@ public class TOSDelimitedReader {
 
     /**
      * skip the some records of the beginning in the file, and set the "currentRecord = 0"
-     * 
-     * 
+     *
+     *
      */
     public void skipHeaders(int header) throws IOException {
         this.header = header;
@@ -433,7 +433,7 @@ public class TOSDelimitedReader {
      * </p>
      * <li>public static final int MAX_CHARS_IN_ONE_COLUMN = 100000;</li> <li>public static final int
      * MAX_COLUMNS_IN_ONE_RECORD = 100000;</li>
-     * 
+     *
      */
     public void setAutoReallocateForHuge(boolean autoReallocateForHuge) {
         this.autoReallocateForHuge = autoReallocateForHuge;
@@ -470,9 +470,9 @@ public class TOSDelimitedReader {
 
     /**
      * a buffer: save the end chars of the last buffer and begin chars of the current buffer in the memory
-     * 
+     *
      * @author xtan
-     * 
+     *
      */
     private class ColumnBuffer4Joiner {
 
@@ -518,7 +518,7 @@ public class TOSDelimitedReader {
     /**
      * <b> a buffer with funtion: join the last data and read the next buffer, for supporting the multi-separator</b>
      * Notice: "count, currentPosition, currentPosition, columnStart", they are import here
-     * 
+     *
      * @author xtan
      */
     private class StreamBuffer {

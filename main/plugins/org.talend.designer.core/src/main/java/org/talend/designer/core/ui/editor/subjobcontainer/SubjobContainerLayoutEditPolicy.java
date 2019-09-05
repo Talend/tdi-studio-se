@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,15 +36,15 @@ import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * Edit policy of the Diagram that will allow to move the objects on it and create nodes. <br/>
- * 
+ *
  * $Id: NodeContainerLayoutEditPolicy.java 7038 2007-11-15 14:05:48Z plegall $
- * 
+ *
  */
 public class SubjobContainerLayoutEditPolicy extends XYLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createChildEditPolicy(org.eclipse.gef.EditPart)
      */
     protected EditPolicy createChildEditPolicy(final EditPart child) {
@@ -58,7 +58,7 @@ public class SubjobContainerLayoutEditPolicy extends XYLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createAddCommand(org.eclipse.gef.EditPart,
      * java.lang.Object)
      */
@@ -93,7 +93,7 @@ public class SubjobContainerLayoutEditPolicy extends XYLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createChangeConstraintCommand(org.eclipse.gef.EditPart,
      * java.lang.Object)
@@ -135,7 +135,7 @@ public class SubjobContainerLayoutEditPolicy extends XYLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getCreateCommand(org.eclipse.gef.requests.CreateRequest)
      */
     protected Command getCreateCommand(final CreateRequest request) {
@@ -159,7 +159,7 @@ public class SubjobContainerLayoutEditPolicy extends XYLayoutEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getDeleteDependantCommand(org.eclipse.gef.Request)
      */
     protected Command getDeleteDependantCommand(final Request request) {

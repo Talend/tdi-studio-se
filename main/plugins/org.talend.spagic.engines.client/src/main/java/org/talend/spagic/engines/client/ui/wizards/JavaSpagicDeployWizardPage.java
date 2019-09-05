@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,9 +27,9 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
 
 /**
  * Page of the Job Scripts Export Wizard. <br/>
- * 
+ *
  * @referto WizardArchiveFileResourceExportPage1 $Id: JobScriptsExportWizardPage.java 1 2006-12-13 涓嬪�?3:09:07 bqian
- * 
+ *
  */
 public class JavaSpagicDeployWizardPage extends SpagicDeployWizardPage {
 
@@ -57,7 +57,7 @@ public class JavaSpagicDeployWizardPage extends SpagicDeployWizardPage {
 
     /**
      * Create an instance of this class.
-     * 
+     *
      * @param selection the selection
      */
     public JavaSpagicDeployWizardPage(IStructuredSelection selection) {

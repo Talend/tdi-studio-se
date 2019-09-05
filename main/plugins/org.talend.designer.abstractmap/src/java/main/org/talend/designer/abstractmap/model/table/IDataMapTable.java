@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,14 +20,14 @@ import org.talend.designer.abstractmap.model.tableentry.IColumnEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  */
 public interface IDataMapTable {
 
     /**
-     * 
+     *
      * DOC amaumont AbstractDataMapTable class global comment. Detailled comment <br/>
-     * 
+     *
      */
     public enum SIZE_STATE {
         MINIMIZED,
@@ -36,7 +36,7 @@ public interface IDataMapTable {
     }
 
     /**
-     * 
+     *
      * @return a <code>List</code> of entries.
      */
     public List<IColumnEntry> getColumnEntries();
@@ -55,14 +55,14 @@ public interface IDataMapTable {
 
     /**
      * Getter for columnsEntriesModel.
-     * 
+     *
      * @return the columnsEntriesModel
      */
     public ExtendedTableModel<IColumnEntry> getTableColumnsEntriesModel();
 
     /**
      * DOC amaumont Comment method "swapElements".
-     * 
+     *
      * @param indicesOrigin
      * @param listIndexTarget
      */
@@ -70,35 +70,35 @@ public interface IDataMapTable {
 
     /**
      * Getter for mapperManager.
-     * 
+     *
      * @return the mapperManager
      */
     public AbstractMapperManager getMapperManager();
 
     /**
      * DOC amaumont Comment method "isReadOnly".
-     * 
+     *
      * @return
      */
     public boolean isReadOnly();
 
     /**
      * Sets the readOnly.
-     * 
+     *
      * @param readOnly the readOnly to set
      */
     public void setReadOnly(boolean readOnly);
 
     /**
      * Getter for sizeState.
-     * 
+     *
      * @return the sizeState
      */
     public SIZE_STATE getSizeState();
 
     /**
      * Sets the sizeState.
-     * 
+     *
      * @param sizeState the sizeState to set
      */
     public void setSizeState(SIZE_STATE sizeState);

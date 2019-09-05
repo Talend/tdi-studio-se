@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,7 +42,7 @@ import org.talend.sqlbuilder.sessiontree.model.utility.Dictionary;
 
 /**
  * The SessionTreeNode represents one active database session.
- * 
+ *
  * @modified Davy Vanherbergen
  */
 public class SessionTreeNode implements ISessionTreeNode {
@@ -96,7 +96,7 @@ public class SessionTreeNode implements ISessionTreeNode {
     DriverShim wapperDriver = null;
 
     /**
-     * 
+     *
      * @param conn
      * @param alias
      * @param md
@@ -120,7 +120,7 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     /**
      * bug 17980 DOC SessionTreeNode constructor comment.
-     * 
+     *
      * @param conn
      * @param alias
      * @param md
@@ -145,7 +145,7 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     /**
      * Get DatabaseConnection from repositoryNode.
-     * 
+     *
      * @return database connection.
      */
     public DatabaseConnection getDatabaseConnection() {
@@ -190,7 +190,7 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     /**
      * Returns an SQLConnection. This connection should only be used to execute statements in the UI thread.
-     * 
+     *
      * @return SQLConnection.
      */
     public SQLConnection getInteractiveConnection() {
@@ -380,7 +380,7 @@ public class SessionTreeNode implements ISessionTreeNode {
     /**
      * Get the connection with queue number 'number'. This method will return null until the queue number has been
      * reached and the connection is available.
-     * 
+     *
      * @return SQLConnection.
      * @param number number.
      */
@@ -436,7 +436,7 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     /**
      * Release the currently active connection so we can move on to the next one.
-     * 
+     *
      * @param number number.
      */
     public synchronized void releaseQueuedConnection(Integer number) {
@@ -538,7 +538,7 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     /**
      * Returns connection alias name.
-     * 
+     *
      * @see java.lang.Object#toString()
      * @return String.
      */

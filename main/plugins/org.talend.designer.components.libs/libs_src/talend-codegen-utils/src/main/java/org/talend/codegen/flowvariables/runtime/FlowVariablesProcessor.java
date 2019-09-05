@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,7 +39,7 @@ public class FlowVariablesProcessor extends DataProcessor {
 
     /**
      * Constructor sets job {@link RuntimeContainer}, which is used to store flow variables data
-     * 
+     *
      * @param runtimeContainer job {@link RuntimeContainer}
      */
     FlowVariablesProcessor(RuntimeContainer runtimeContainer) {
@@ -48,7 +48,7 @@ public class FlowVariablesProcessor extends DataProcessor {
 
     /**
      * Initializes Flow variables data schema
-     * 
+     *
      * @param rootRecord Root record
      */
     void initSchema(IndexedRecord rootRecord) {
@@ -61,7 +61,7 @@ public class FlowVariablesProcessor extends DataProcessor {
     /**
      * Retrieves Main and Flow variables data from Root record.
      * Stores flow variables in Runtime container
-     * 
+     *
      * @param Root record
      * @return Main data retrieved from root record
      */
@@ -86,7 +86,7 @@ public class FlowVariablesProcessor extends DataProcessor {
      * Stores flow variables in Runtime container
      * It may throw {@link ClassCastException} in case of component development rules violation.
      * E.g. first data was Root record, but some of subsequent data wasn't
-     * 
+     *
      * @param data data retrieved from wrapped component runtime
      * @return Main data retrieved from root record
      */

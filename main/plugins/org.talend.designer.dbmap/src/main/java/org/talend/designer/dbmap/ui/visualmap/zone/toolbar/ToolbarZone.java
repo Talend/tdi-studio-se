@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,9 +29,9 @@ import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ToolbarZone.java 1361 2007-01-09 17:09:46Z amaumont $
- * 
+ *
  */
 public abstract class ToolbarZone {
 
@@ -51,7 +51,7 @@ public abstract class ToolbarZone {
 
     /**
      * DOC amaumont MatadataToolbarEditor constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param manager
@@ -156,9 +156,9 @@ public abstract class ToolbarZone {
     }
 
     /**
-     * 
+     *
      * Set the state of the minimize button.
-     * 
+     *
      * @param isMinimized true to set minized state else false
      */
     public void setMinimizeButtonState(boolean isMinimized) {

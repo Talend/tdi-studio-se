@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,7 +32,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * set Share identity insert in multi table" default value to "true" in tMSSqlConnection advanced setting, see issue 9519.
- * 
+ *
  */
 public class ChangeShareIdentityDefaultValueMigrationTaskIssue9519 extends AbstractJobMigrationTask {
 
@@ -46,7 +46,7 @@ public class ChangeShareIdentityDefaultValueMigrationTaskIssue9519 extends Abstr
             return ExecutionResult.NOTHING_TO_DO;
         }
 
-        String[] componentsName = new String[] { "tMSSqlConnection" }; //$NON-NLS-1$ 
+        String[] componentsName = new String[] { "tMSSqlConnection" }; //$NON-NLS-1$
 
         for (String name : componentsName) {
             IComponentFilter filter = new NameComponentFilter(name); //$NON-NLS-1$
@@ -63,7 +63,7 @@ public class ChangeShareIdentityDefaultValueMigrationTaskIssue9519 extends Abstr
 									  	 ComponentUtilities.setNodeValue(node, "SHARE_IDENTITY_SETTING", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 							        }
 							}
-                        	
+
                         }));
             } catch (PersistenceException e) {
                 // TODO Auto-generated catch block

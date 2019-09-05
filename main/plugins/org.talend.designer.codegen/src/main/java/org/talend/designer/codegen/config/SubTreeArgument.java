@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.core.model.process.IConnection;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class SubTreeArgument {
 
@@ -30,7 +30,7 @@ public class SubTreeArgument {
 
     /**
      * Getter for inputSubtreeConnection.
-     * 
+     *
      * @return the inputSubtreeConnection
      */
     public IConnection getInputSubtreeConnection() {
@@ -39,7 +39,7 @@ public class SubTreeArgument {
 
     /**
      * Sets the inputSubtreeConnection.
-     * 
+     *
      * @param inputSubtreeConnection the inputSubtreeConnection to set
      */
     public void setInputSubtreeConnection(IConnection inputSubtreeConnection) {
@@ -48,7 +48,7 @@ public class SubTreeArgument {
 
     /**
      * Getter for sourceComponentHasConditionnalOutputs.
-     * 
+     *
      * @return the sourceComponentHasConditionnalOutputs
      */
     public boolean isSourceComponentHasConditionnalOutputs() {
@@ -57,7 +57,7 @@ public class SubTreeArgument {
 
     /**
      * Sets the sourceComponentHasConditionnalOutputs.
-     * 
+     *
      * @param sourceComponentHasConditionnalOutputs the sourceComponentHasConditionnalOutputs to set
      */
     public void setSourceComponentHasConditionnalOutputs(boolean sourceComponentHasConditionnalOutputs) {
@@ -66,7 +66,7 @@ public class SubTreeArgument {
 
     /**
      * Getter for isMultiplyingOutputComponents.
-     * 
+     *
      * @return the isMultiplyingOutputComponents
      */
     public boolean isMultiplyingOutputComponents() {
@@ -75,7 +75,7 @@ public class SubTreeArgument {
 
     /**
      * Sets the isMultiplyingOutputComponents.
-     * 
+     *
      * @param isMultiplyingOutputComponents the isMultiplyingOutputComponents to set
      */
     public void setMultiplyingOutputComponents(boolean isMultiplyingOutputComponents) {

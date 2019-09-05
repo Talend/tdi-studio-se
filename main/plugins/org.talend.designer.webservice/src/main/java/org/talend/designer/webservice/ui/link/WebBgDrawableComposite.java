@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,7 +23,7 @@ public class WebBgDrawableComposite extends BgDrawableComposite {
 
     /**
      * DOC Administrator WebBgDrawableComposite constructor comment.
-     * 
+     *
      * @param commonParent
      */
     public WebBgDrawableComposite(Composite commonParent) {
@@ -33,7 +33,7 @@ public class WebBgDrawableComposite extends BgDrawableComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.linking.BgDrawableComposite#drawBackground(org.eclipse.swt.graphics.GC)
      */
     @Override

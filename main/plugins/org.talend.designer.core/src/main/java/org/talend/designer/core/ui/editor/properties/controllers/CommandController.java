@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,23 +46,23 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.creator.SelectAllTextControlCreator;
 
 /**
- * 
+ *
  * defined Commands in component. for example:<br/>
- * 
+ *
  * in java:<br/>
- * 
+ *
  * <PARAMETER NAME="COMMAND" FIELD="COMMAND" NUM_ROW="33">
- * 
+ *
  * <DEFAULT IF="CURRENT_OS=='WINDOWS'">"cmd /c \"java -version\""</DEFAULT>
- * 
+ *
  * <DEFAULT IF="(CURRENT_OS=='LINUX') or (CURRENT_OS=='UNIX')">"xterm java -version"</DEFAULT>
- * 
+ *
  * <DEFAULT >"java -version"</DEFAULT>
- * 
+ *
  * </PARAMETER>
- * 
+ *
  * <br/>so, if the OS is MacOS, it will use the last "DEFAULT".<br/>
- * 
+ *
  * in perl the commands as: 'cmd /c "java -version"' or 'cmd /c echo \'welcome\''.
  */
 public class CommandController extends AbstractElementPropertySectionController {
@@ -73,7 +73,7 @@ public class CommandController extends AbstractElementPropertySectionController 
 
     /**
      * DOC ggu CommandController constructor comment.
-     * 
+     *
      * @param dp
      */
     public CommandController(IDynamicProperty dp) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,7 +39,7 @@ public class ChangeMysqlVersionForProjectSetting extends AbstractMigrationTask i
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override
@@ -50,7 +50,7 @@ public class ChangeMysqlVersionForProjectSetting extends AbstractMigrationTask i
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#isApplicableOnItems()
      */
     @Override
@@ -60,7 +60,7 @@ public class ChangeMysqlVersionForProjectSetting extends AbstractMigrationTask i
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
     @Override
@@ -119,7 +119,7 @@ public class ChangeMysqlVersionForProjectSetting extends AbstractMigrationTask i
     }
 
     private boolean updateJarValue(ElementParameterType param) {
-        if ("mysql-connector-java-5.1.0-bin.jar".equalsIgnoreCase(param.getValue())//$NON-NLS-1$ 
+        if ("mysql-connector-java-5.1.0-bin.jar".equalsIgnoreCase(param.getValue())//$NON-NLS-1$
                 || EDatabaseVersion4Drivers.getDriversStr(EDatabaseTypeName.MYSQL.getDisplayName(),
                         EDatabaseVersion4Drivers.MYSQL_5.getVersionValue()).equalsIgnoreCase(param.getValue())) { //$NON-NLS-1$
             param.setValue("MYSQL_5"); //$NON-NLS-1$
@@ -134,7 +134,7 @@ public class ChangeMysqlVersionForProjectSetting extends AbstractMigrationTask i
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project, boolean)
      */
     @Override
@@ -144,7 +144,7 @@ public class ChangeMysqlVersionForProjectSetting extends AbstractMigrationTask i
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project,
      * org.talend.core.model.properties.Item)
      */

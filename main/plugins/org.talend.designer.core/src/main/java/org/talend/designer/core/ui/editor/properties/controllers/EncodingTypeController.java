@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,9 +48,9 @@ import org.talend.designer.core.ui.editor.properties.controllers.creator.SelectA
 
 /**
  * This class is used for adding a selected combo box for encoding type.
- * 
+ *
  * $Id: EncodingTypeController.java 2007-2-11,上午10:23:00 ftang $
- * 
+ *
  */
 public class EncodingTypeController extends AbstractElementPropertySectionController {
 
@@ -62,13 +62,13 @@ public class EncodingTypeController extends AbstractElementPropertySectionContro
     }
 
     /**
-     * 
+     *
      */
     private SelectionEvent selectionEvent;
 
     /**
      * DOC ftang EncodingTypeController constructor comment.
-     * 
+     *
      * @param dtp
      */
     public EncodingTypeController(IDynamicProperty dp) {
@@ -77,7 +77,7 @@ public class EncodingTypeController extends AbstractElementPropertySectionContro
 
     /**
      * DOC ftang Comment method "createComboCommand".
-     * 
+     *
      * @param combo
      * @return
      */
@@ -116,7 +116,7 @@ public class EncodingTypeController extends AbstractElementPropertySectionContro
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#createControl
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -255,7 +255,7 @@ public class EncodingTypeController extends AbstractElementPropertySectionContro
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -272,7 +272,7 @@ public class EncodingTypeController extends AbstractElementPropertySectionContro
 
     /**
      * DOC ftang Comment method "addCustomEncodingTypeText".
-     * 
+     *
      * @param subComposite
      * @param param
      * @param lastControl
@@ -328,7 +328,7 @@ public class EncodingTypeController extends AbstractElementPropertySectionContro
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#refresh(org
      * .talend.core.model.process.IElementParameter, boolean)
@@ -386,7 +386,7 @@ public class EncodingTypeController extends AbstractElementPropertySectionContro
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {
@@ -394,7 +394,7 @@ public class EncodingTypeController extends AbstractElementPropertySectionContro
     }
 
     /**
-     * 
+     *
      */
     SelectionListener selectionChangeListener = new SelectionListener() {
 

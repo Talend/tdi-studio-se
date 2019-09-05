@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,23 +40,23 @@ import org.talend.repository.ui.exception.ImportInvalidObjectException;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
- * 
+ *
  * TODO SML Order methods
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ImportProjectsUtilities {
 
     /**
-     * 
+     *
      * @deprecated use ImportProjectHelper instead
      */
     public static void importProjectAs(Shell shell, String newName, String technicalName, String sourcePath,
             IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         try {
             try {
-                new ImportProjectHelper().importProjectAs(shell, newName, technicalName, sourcePath, false, monitor); 
+                new ImportProjectHelper().importProjectAs(shell, newName, technicalName, sourcePath, false, monitor);
             } catch (ImportInvalidObjectException ex) {
                 // Ignore here
             }
@@ -79,7 +79,7 @@ public class ImportProjectsUtilities {
     }
 
     /**
-     * 
+     *
      * @deprecated use ImportProjectHelper instead
      */
     public static void replaceInFile(String regex, String fileName, String replacement) throws IOException {
@@ -87,7 +87,7 @@ public class ImportProjectsUtilities {
     }
 
     /**
-     * 
+     *
      * @deprecated use ImportProjectHelper instead
      */
     public static void importArchiveProjectAs(Shell shell, String newName, String technicalName, String sourcePath,
@@ -108,7 +108,7 @@ public class ImportProjectsUtilities {
     }
 
     /**
-     * 
+     *
      * @deprecated use ImportProjectHelper instead
      */
     public static void importArchiveProject(Shell shell, String technicalName, String sourcePath, IProgressMonitor monitor)
@@ -117,7 +117,7 @@ public class ImportProjectsUtilities {
     }
 
     /**
-     * 
+     *
      * @deprecated use ImportProjectHelper instead
      */
     public static void getFilesForProject(Collection files, IImportStructureProvider provider, Object entry) {
@@ -125,7 +125,7 @@ public class ImportProjectsUtilities {
     }
 
     /**
-     * 
+     *
      * @deprecated use ImportProjectHelper instead
      */
     public static boolean collectProjectFilesFromDirectory(Collection files, File directory, IProgressMonitor monitor,
@@ -134,7 +134,7 @@ public class ImportProjectsUtilities {
     }
 
     /**
-     * 
+     *
      * @deprecated use ImportProjectHelper instead
      */
     public static boolean collectProjectFilesFromProvider(Collection files, IImportStructureProvider provider, Object entry,
@@ -144,7 +144,7 @@ public class ImportProjectsUtilities {
 
     /**
      * Gets all demo projects information.
-     * 
+     *
      * @return a list of <code>DemoProjectBean</code>
      */
     public static List<DemoProjectBean> getAllDemoProjects() {

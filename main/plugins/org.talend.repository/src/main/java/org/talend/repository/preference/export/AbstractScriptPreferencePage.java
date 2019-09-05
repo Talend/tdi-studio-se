@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,9 +26,9 @@ import org.talend.repository.i18n.Messages;
 
 /**
  * DOC ggu class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 55206 2011-02-15 17:32:14Z mhirt $
- * 
+ *
  */
 public abstract class AbstractScriptPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -43,7 +43,7 @@ public abstract class AbstractScriptPreferencePage extends FieldEditorPreference
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -73,7 +73,7 @@ public abstract class AbstractScriptPreferencePage extends FieldEditorPreference
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
      */
     @Override
@@ -82,7 +82,7 @@ public abstract class AbstractScriptPreferencePage extends FieldEditorPreference
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
      */
     public void init(IWorkbench workbench) {
@@ -90,7 +90,7 @@ public abstract class AbstractScriptPreferencePage extends FieldEditorPreference
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performDefaults()
      */
     @Override
@@ -104,7 +104,7 @@ public abstract class AbstractScriptPreferencePage extends FieldEditorPreference
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performOk()
      */
     @Override

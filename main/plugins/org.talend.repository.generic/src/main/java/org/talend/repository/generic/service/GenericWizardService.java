@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -237,7 +237,7 @@ public class GenericWizardService implements IGenericWizardService {
     public void updateComponentSchema(INode node, IMetadataTable metadataTable) {
         SchemaUtils.updateComponentSchema(node, metadataTable, Boolean.FALSE);
     }
-    
+
     @Override
     public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel, boolean withEvaluator) {
         return getAllComponentProperties(connection, tableLabel, withEvaluator, false, new HashMap<Object, Object>());
@@ -267,8 +267,8 @@ public class GenericWizardService implements IGenericWizardService {
                 componentProperties.add(cp);
             }
             List<MetadataTable> metadataTables;
-            //"forComponentValue" is avoid to load all the metadataTables, 
-            //if just get the component value, totally no need to get hundreds of tables,  
+            //"forComponentValue" is avoid to load all the metadataTables,
+            //if just get the component value, totally no need to get hundreds of tables,
             if (tableLabel == null && !forComponentValue) {
                 metadataTables = SchemaUtils.getMetadataTables(connection, SubContainer.class);
             } else {
@@ -306,7 +306,7 @@ public class GenericWizardService implements IGenericWizardService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.core.runtime.services.IGenericWizardService#getAllComponentProperties(org.talend.core.model.metadata.
      * builder.connection.Connection, java.lang.String, boolean)

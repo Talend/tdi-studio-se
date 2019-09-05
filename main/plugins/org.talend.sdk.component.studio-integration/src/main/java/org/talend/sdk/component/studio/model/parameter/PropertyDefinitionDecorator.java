@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_T
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.MAIN_FORM;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ORDER_SEPARATOR;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.PARAMETER_INDEX;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_CREDENTIAL;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_PREFIX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_SUFFIX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_OPTIONS_ORDER;
@@ -55,6 +56,7 @@ import java.util.Set;
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
 
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.form.internal.converter.impl.widget.path.AbsolutePathResolver;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
@@ -116,10 +118,10 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                 .map(PropertyDefinitionDecorator::new)
                 .collect(toList());
     }
-    
+
     /**
      * Wraps {@link SimplePropertyDefinition} in {@link PropertyDefinitionDecorator}
-     * 
+     *
      * @param property original property
      * @return wrapped property
      */
@@ -574,12 +576,12 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     public LinkedHashMap<String, String> getProposalDisplayNames() {
         return delegate.getProposalDisplayNames();
     }
-    
+
     boolean hasSuggestions() {
         return delegate.getMetadata().containsKey(ACTION_SUGGESTIONS_NAME)
                 && delegate.getMetadata().containsKey(ACTION_SUGGESTIONS_PARAMETERS);
     }
-    
+
     public Suggestions getSuggestions() {
         if (!hasSuggestions()) {
             throw new IllegalStateException("Property has no suggestions");
@@ -603,11 +605,20 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             return Optional.empty();
         }
     }
-    
+
     public Parameter getParameter() {
         return ofNullable(delegate.getMetadata().get(PARAMETER_INDEX))
                 .map(s -> new Parameter(Integer.parseInt(s)))
                 .orElse(new Parameter());
+    }
+
+    /**
+     * Checks whether widget type is {@link EParameterFieldType#PASSWORD}
+     *
+     * @return check result
+     */
+    public boolean isCredential() {
+        return getMetadata().containsKey(UI_CREDENTIAL);
     }
 
     @Override
@@ -668,10 +679,12 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
         @Override
         public boolean equals(final Object o) {
-            if (this == o)
+            if (this == o) {
                 return true;
-            if (o == null || getClass() != o.getClass())
+            }
+            if (o == null || getClass() != o.getClass()) {
                 return false;
+            }
             final Condition condition = (Condition) o;
             return Objects.equals(targetPath, condition.targetPath) &&
                     Arrays.equals(values, condition.values);
@@ -766,25 +779,25 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             return "Suggestions(name=" + this.getName() + ", parameters=" + this.getParameters() + ")";
         }
     }
-    
+
     public static class Parameter {
-        
+
         private static int UNDEFINED = -1;
-        
+
         private int index = UNDEFINED;
-        
+
         Parameter() {
             // no-op
         }
-        
+
         Parameter(final int index) {
             this.index = index;
         }
-        
+
         public int getIndex() {
             return index;
         }
-        
+
         public boolean isRoot() {
             return index != UNDEFINED;
         }

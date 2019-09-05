@@ -17,7 +17,7 @@ All Talend Studio repositories follow the same file structure:
   |_ main           Main Eclipse plugins and features
     |_ features
     |_ plugins
-  |_ test           Eclipse plugins and features for unit tests. 
+  |_ test           Eclipse plugins and features for unit tests.
       |_ features
       |_ plugins
   |_ i18n           Internationalization plugins and features.
@@ -36,7 +36,7 @@ Documentation is available on [Talend Help Center](http://help.talend.com/).
 
 
 
-## Support 
+## Support
 
 You can ask for help on our [Forum](http://www.talend.com/services/global-technical-support).
 
@@ -55,6 +55,6 @@ See the [CONTRIBUTORS.md](./CONTRIBUTORS.md) file for details.
 
 ## License
 
-Copyright (c) 2006-2016 Talend
+Copyright (c) 2006-2019 Talend
 
 Licensed under the Apache V2 License

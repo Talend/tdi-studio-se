@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,7 +21,7 @@ import org.talend.designer.dbmap.language.IJoinType;
 import org.talend.designer.dbmap.language.operator.GenericDbOperatorsManager;
 
 /**
- * 
+ *
  * wzhang class global comment. Detailled comment
  */
 public class OracleLanguage extends AbstractDbLanguage {
@@ -34,11 +34,11 @@ public class OracleLanguage extends AbstractDbLanguage {
     }
 
     /**
-     * 
+     *
      * Oracle joins.
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public static enum ORACLEJOIN implements IJoinType {
         // the LEFT_OUTER_JOIN_ORACLE and RIGHT_OUTER_JOIN_ORACLE don't support explicit join
@@ -53,7 +53,7 @@ public class OracleLanguage extends AbstractDbLanguage {
 
         /**
          * Getter for label.
-         * 
+         *
          * @return the label
          */
         public String getLabel() {

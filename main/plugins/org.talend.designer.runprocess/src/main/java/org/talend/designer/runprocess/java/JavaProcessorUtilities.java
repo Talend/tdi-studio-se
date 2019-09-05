@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -86,7 +86,7 @@ import org.talend.repository.model.RepositoryConstants;
  */
 public class JavaProcessorUtilities {
 
-    
+
     /**
      * @deprecated use {@link org.talend.designer.runprocess.java.TalendJavaProjectManager#getTalendJobJavaProject(Property)} instead
      */
@@ -97,7 +97,7 @@ public class JavaProcessorUtilities {
 
     /**
      * Extracts the set of modules for mapper and reducer dependency. Added by Marvin Wang on Mar 4, 2013.
-     * 
+     *
      * @param process
      * @return
      */
@@ -110,7 +110,7 @@ public class JavaProcessorUtilities {
 
     /**
      * Extracts the name of libs only for mapper and reducer methods dependency, excluding the routines/beans/udfs.
-     * 
+     *
      * @param process
      * @return
      */
@@ -135,7 +135,7 @@ public class JavaProcessorUtilities {
 
     /**
      * Extracts the name of libs only for mapper and reducer methods dependency.
-     * 
+     *
      * @param process
      * @return
      */
@@ -144,7 +144,7 @@ public class JavaProcessorUtilities {
         libNames.addAll(PomUtil.getCodesExportJars(process));
         return libNames;
     }
-    
+
     public static Set<ModuleNeeded> getNeededModulesForProcess(IProcess process) {
         return getNeededModulesForProcess(process, TalendProcessOptionConstants.MODULES_WITH_CHILDREN);
     }
@@ -268,7 +268,7 @@ public class JavaProcessorUtilities {
 
     /**
      * DOC ycbai Comment method "checkJavaProjectLib".
-     * 
+     *
      * @param jarsNeeded
      */
     public static void checkJavaProjectLib(Collection<ModuleNeeded> jarsNeeded) {
@@ -296,7 +296,7 @@ public class JavaProcessorUtilities {
 
     /*
      * @see bug 0005633. Classpath error when current job inlcude some tRunJob-es.
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#computeLibrariesPath(Set<String>)
      */
     public static void computeLibrariesPath(Set<ModuleNeeded> jobModuleList, IProcess process) {
@@ -309,7 +309,7 @@ public class JavaProcessorUtilities {
 
     /**
      * DOC nrousseau Comment method "computeLibrariesPath".
-     * 
+     *
      * @param hashSet
      * @param process
      * @param alreadyRetrievedModules
@@ -444,9 +444,9 @@ public class JavaProcessorUtilities {
     }
 
     /**
-     * 
+     *
      * Added by Marvin Wang on Nov 7, 2012.
-     * 
+     *
      * @param missingJarsForRoutines
      * @param missingJarsForProcess
      * @param missingJars
@@ -490,7 +490,7 @@ public class JavaProcessorUtilities {
 
                                 /*
                                  * (non-Javadoc)
-                                 * 
+                                 *
                                  * @see org.eclipse.jface.window.Window#setShellStyle(int)
                                  */
                                 @Override
@@ -550,7 +550,7 @@ public class JavaProcessorUtilities {
 
     /**
      * DOC ycbai Comment method "getJavaProjectLibPath".
-     * 
+     *
      * @return
      */
     public static File getJavaProjectLibFolder() {
@@ -560,7 +560,7 @@ public class JavaProcessorUtilities {
         }
         return null;
     }
-    
+
     public static IFolder getJavaProjectLibFolder2() {
         try {
             IProject fsProject = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,15 +24,15 @@ import org.talend.designer.dbmap.model.tableentry.VarTableEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: LinkManager.java 1309 2007-01-05 17:04:10Z amaumont $
- * 
+ *
  */
 public class LinkManager extends org.talend.designer.abstractmap.managers.LinkManager {
 
     /**
      * DOC amaumont Comment method "registerLevelForNewLink".
-     * 
+     *
      * @param link
      * @param graphicalLinksFromTarget
      */
@@ -95,7 +95,7 @@ public class LinkManager extends org.talend.designer.abstractmap.managers.LinkMa
 
     /**
      * DOC amaumont Comment method "unregisterLevelForRemovedLink".
-     * 
+     *
      * @param link
      * @param sourceGraphicalLinks
      */

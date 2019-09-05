@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -96,9 +96,9 @@ import org.talend.designer.mapper.utils.problems.ProblemsAnalyser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class InputDataMapTableView extends DataMapTableView {
 
@@ -131,7 +131,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#createContent()
      */
     @Override
@@ -507,7 +507,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#notifyFocusLost()
      */
     @Override
@@ -635,7 +635,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#initTableConstraints()
      */
     @Override
@@ -660,7 +660,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#addEntriesActionsComponents()
      */
     @Override
@@ -716,7 +716,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#getZone()
      */
     @Override
@@ -730,7 +730,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#toolbarNeededToBeRightStyle()
      */
     @Override
@@ -765,7 +765,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView#hasDropDownToolBarItem()
      */
     @Override
@@ -785,7 +785,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView#checkChangementsAfterNewExpressionApplied()
      */
     @Override
@@ -878,7 +878,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#getValidZonesForExpressionFilterField()
      */
     @Override
@@ -915,7 +915,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.talend.commons.ui.swt.extended.macrotable.AbstractExtendedTableViewer#setTableViewerCreatorOptions
              * (org.talend.commons.ui.swt.tableviewer.TableViewerCreator)
@@ -1066,7 +1066,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
             @Override
@@ -1084,7 +1084,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.talend.commons.ui.swt.tableviewer.tableeditor.ButtonImageTableEditorContent#selectionEvent(org.talend
              * .commons.ui.swt.tableviewer.TableViewerCreatorColumn, java.lang.Object)
@@ -1118,7 +1118,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#unselectAllGlobalMapEntries()
      */
     @Override
@@ -1132,7 +1132,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.ArmListener#widgetArmed(org.eclipse.swt.events.ArmEvent)
              */
             public void widgetArmed(ArmEvent e) {
@@ -1213,16 +1213,16 @@ public class InputDataMapTableView extends DataMapTableView {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * $Id: TableCellModifier.java
-     * 
+     *
      */
     class TableCellModifier extends DefaultCellModifier {
 
         /**
          * DOC talend TableCellModifier constructor comment.
-         * 
+         *
          * @param tableViewerCreator
          */
         public TableCellModifier(TableViewerCreator tableViewerCreator) {
@@ -1250,7 +1250,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /**
      * Manage to find a unique name with the given name.
-     * 
+     *
      * @param titleName
      */
     @Override
@@ -1274,7 +1274,7 @@ public class InputDataMapTableView extends DataMapTableView {
 
     /**
      * Check if the given name will be unique in the process. If already exists with that name, false will be returned.
-     * 
+     *
      * @param uniqueName
      * @return true if the name is unique
      */

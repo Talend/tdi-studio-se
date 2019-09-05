@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,7 @@ import org.talend.designer.abstractmap.ui.prefs.MapPrefsConstants;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  */
 public abstract class AbstractMapComponent extends MapperExternalNode {
 
@@ -46,7 +46,7 @@ public abstract class AbstractMapComponent extends MapperExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#initialize()
      */
     @Override
@@ -88,7 +88,7 @@ public abstract class AbstractMapComponent extends MapperExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#useData(java.lang.String)
      */
     @Override
@@ -105,7 +105,7 @@ public abstract class AbstractMapComponent extends MapperExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#renameData(java.lang.String, java.lang.String)
      */
     @Override
@@ -146,9 +146,9 @@ public abstract class AbstractMapComponent extends MapperExternalNode {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "hasOrRenameEntry".
-     * 
+     *
      */
     protected boolean hasOrRenameEntry(IExternalMapEntry entry, String oldName, String newName, boolean renameAction) {
         if (entry == null || oldName == null || newName == null && renameAction) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,18 @@
  */
 package org.talend.sdk.component.studio.model.parameter.command;
 
-import org.eclipse.gef.commands.Command;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.IActionParameter;
-
-import java.util.Map;
-
 import static org.talend.sdk.component.studio.model.action.Action.MESSAGE;
 import static org.talend.sdk.component.studio.model.action.Action.OK;
 import static org.talend.sdk.component.studio.model.action.Action.STATUS;
+
+import java.util.Map;
+
+import org.eclipse.gef.commands.Command;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.talend.sdk.component.studio.i18n.Messages;
+import org.talend.sdk.component.studio.model.action.Action;
+import org.talend.sdk.component.studio.model.action.IActionParameter;
 
 /**
  * Synchronous action
@@ -44,9 +44,9 @@ public class SyncAction extends Command implements TacokitCommand {
         final Map<String, String> result = action.callback();
         final String dialogTitle = Messages.getString("action.result.title");
         if (OK.equals(result.get(STATUS))) {
-            MessageDialog.openInformation(new Shell(), dialogTitle, result.get(MESSAGE));
+            MessageDialog.openInformation(DisplayUtils.getDefaultShell(false), dialogTitle, result.get(MESSAGE));
         } else {
-            MessageDialog.openError(new Shell(), dialogTitle, result.get(MESSAGE));
+            MessageDialog.openError(DisplayUtils.getDefaultShell(false), dialogTitle, result.get(MESSAGE));
         }
     }
 

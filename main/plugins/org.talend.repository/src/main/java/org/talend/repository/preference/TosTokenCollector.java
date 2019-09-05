@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -203,7 +203,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
 
     /**
      * DOC nrousseau Comment method "collectJobDetails".
-     * 
+     *
      * @param all
      * @param jobDetails
      * @throws JSONException
@@ -244,7 +244,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
                         }
                     }
                      if(component_names == null){
-                         component_names = new JSONObject(); 
+                         component_names = new JSONObject();
                          components.put(component_names);
                     }
                     component_names.put("component_name", componentName);
@@ -275,7 +275,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.token.AbstractTokenCollector#collect()
      */
     @Override

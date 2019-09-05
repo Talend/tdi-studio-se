@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,7 @@ import org.talend.designer.core.ui.editor.cmd.ChangeNoteTextCommand;
 public class TextNotePropertySection extends AbstractNotePropertySection {
 
     private Text text;
-    
+
     @Override
     public void createControls(Composite parent, TabbedPropertySheetPage aTabbedPropertySheetPage) {
         super.createControls(parent, aTabbedPropertySheetPage);
@@ -52,7 +52,7 @@ public class TextNotePropertySection extends AbstractNotePropertySection {
         data.right = new FormAttachment(text, -ITabbedPropertyConstants.HSPACE);
         data.top = new FormAttachment(text, 0, SWT.TOP);
         labelLabel.setLayoutData(data);
-        
+
         text.addFocusListener(new FocusAdapter() {
 
             @Override

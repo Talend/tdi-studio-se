@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -137,7 +137,7 @@ public class StatLogsAndImplicitcontextTreeViewPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -441,7 +441,7 @@ public class StatLogsAndImplicitcontextTreeViewPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#performApply()
      */
     @Override
@@ -452,7 +452,7 @@ public class StatLogsAndImplicitcontextTreeViewPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
@@ -560,7 +560,7 @@ public class StatLogsAndImplicitcontextTreeViewPage extends ProjectSettingPage {
             @Override
             public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 monitor.beginTask(
-                        Messages.getString("StatLogsAndImplicitcontextTreeViewPage.SaveProjectSettings"), (addedObjects.size() + statAddedObjects.size()) * 100); //$NON-NLS-1$                
+                        Messages.getString("StatLogsAndImplicitcontextTreeViewPage.SaveProjectSettings"), (addedObjects.size() + statAddedObjects.size()) * 100); //$NON-NLS-1$
                 addContext = false;
                 statsLogAddContextModel = false;
                 implicitAddContextModel = false;
@@ -669,7 +669,7 @@ public class StatLogsAndImplicitcontextTreeViewPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.preference.ProjectSettingPage#refresh()
      */
     @Override

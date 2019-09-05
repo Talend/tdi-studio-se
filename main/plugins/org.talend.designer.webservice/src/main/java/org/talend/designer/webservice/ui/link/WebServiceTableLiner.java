@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -63,7 +63,7 @@ public class WebServiceTableLiner extends TableToTablesLinker<Object, Object> {
 
     /**
      * DOC Administrator WebServiceTableLiner constructor comment.
-     * 
+     *
      * @param commonParent
      */
     public WebServiceTableLiner(Composite commonParent) {
@@ -571,7 +571,7 @@ public class WebServiceTableLiner extends TableToTablesLinker<Object, Object> {
     }
 
     /**
-     * 
+     *
      * @param one
      * @return
      */

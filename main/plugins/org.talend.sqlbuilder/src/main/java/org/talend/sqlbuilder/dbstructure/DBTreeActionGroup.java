@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,7 +38,7 @@ import org.talend.sqlbuilder.util.ImageUtil;
 /**
  * ActionGroup for Database Structure View. This group controls what context
  * menu actions are being shown for which node.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public class DBTreeActionGroup extends ActionGroup {
@@ -52,7 +52,7 @@ public class DBTreeActionGroup extends ActionGroup {
 
     /**
      * Construct a new action group for a given database structure outline.
-     * 
+     *
      * @param treeViewer TreeViewer used for this outline.
      */
     public DBTreeActionGroup(TreeViewer treeViewer, DatabaseStructureView view) {
@@ -64,7 +64,7 @@ public class DBTreeActionGroup extends ActionGroup {
 
     /**
      * Fill the node context menu with all the correct actions.
-     * 
+     *
      * @param menu MenuManager.
      * @see org.eclipse.ui.actions.ActionGroup#fillContextMenu(org.eclipse.jface.action.IMenuManager)
      */
@@ -105,10 +105,10 @@ public class DBTreeActionGroup extends ActionGroup {
 
     /**
      * Loop through all extensions and add the appropriate actions.
-     * 
+     *
      * Actions are selected by database product name, node type and
      * availability.
-     * 
+     *
      * @param nodes currently selected nodes
      * @return array of actions
      */

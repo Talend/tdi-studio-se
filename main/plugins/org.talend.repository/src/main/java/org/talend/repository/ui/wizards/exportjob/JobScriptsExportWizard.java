@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,15 +14,14 @@ package org.talend.repository.ui.wizards.exportjob;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.talend.core.CorePlugin;
@@ -34,9 +33,9 @@ import org.talend.repository.i18n.Messages;
 
 /**
  * Job scripts export wizard. <br/>
- * 
+ *
  * $Id: JobScriptsExportWizard.java 1 2006-12-13 下午03:13:18 bqian
- * 
+ *
  */
 public class JobScriptsExportWizard extends Wizard implements IExportWizard {
 
@@ -50,7 +49,7 @@ public class JobScriptsExportWizard extends Wizard implements IExportWizard {
      * Creates a wizard for exporting workspace resources to a zip file.
      */
     public JobScriptsExportWizard() {
-        AbstractUIPlugin plugin = (AbstractUIPlugin) Platform.getPlugin(PlatformUI.PLUGIN_ID);
+        AbstractUIPlugin plugin = WorkbenchPlugin.getDefault();
         IDialogSettings workbenchSettings = plugin.getDialogSettings();
         IDialogSettings section = workbenchSettings.getSection("JobScriptsExportWizard"); //$NON-NLS-1$
         if (section == null) {
@@ -133,7 +132,7 @@ public class JobScriptsExportWizard extends Wizard implements IExportWizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.wizard.Wizard#performCancel()
      */
     @Override

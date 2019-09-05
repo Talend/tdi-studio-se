@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,7 +36,7 @@ public class DirImportStructureProvider implements ILeveledImportStructureProvid
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.internal.wizards.datatransfer.ILeveledImportStructureProvider#getRoot()
      */
     @Override
@@ -46,7 +46,7 @@ public class DirImportStructureProvider implements ILeveledImportStructureProvid
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.wizards.datatransfer.IImportStructureProvider#getChildren(java.lang.Object)
      */
     @Override
@@ -65,7 +65,7 @@ public class DirImportStructureProvider implements ILeveledImportStructureProvid
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.wizards.datatransfer.IImportStructureProvider#getContents(java.lang.Object)
      */
     @Override
@@ -85,7 +85,7 @@ public class DirImportStructureProvider implements ILeveledImportStructureProvid
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.wizards.datatransfer.IImportStructureProvider#getFullPath(java.lang.Object)
      */
     @Override
@@ -99,7 +99,7 @@ public class DirImportStructureProvider implements ILeveledImportStructureProvid
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.wizards.datatransfer.IImportStructureProvider#getLabel(java.lang.Object)
      */
     @Override
@@ -113,7 +113,7 @@ public class DirImportStructureProvider implements ILeveledImportStructureProvid
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.wizards.datatransfer.IImportStructureProvider#isFolder(java.lang.Object)
      */
     @Override
@@ -127,7 +127,7 @@ public class DirImportStructureProvider implements ILeveledImportStructureProvid
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.internal.wizards.datatransfer.ILeveledImportStructureProvider#setStrip(int)
      */
     @Override
@@ -138,7 +138,7 @@ public class DirImportStructureProvider implements ILeveledImportStructureProvid
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.internal.wizards.datatransfer.ILeveledImportStructureProvider#getStrip()
      */
     @Override
@@ -149,7 +149,7 @@ public class DirImportStructureProvider implements ILeveledImportStructureProvid
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.internal.wizards.datatransfer.ILeveledImportStructureProvider#closeArchive()
      */
     @Override

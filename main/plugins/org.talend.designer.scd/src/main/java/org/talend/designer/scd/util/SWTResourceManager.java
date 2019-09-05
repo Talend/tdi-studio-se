@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,7 +47,7 @@ public class SWTResourceManager {
 
     /**
      * Returns the system color matching the specific ID
-     * 
+     *
      * @param systemColorID int The ID value for the color
      * @return Color The system color matching the specific ID
      */
@@ -58,7 +58,7 @@ public class SWTResourceManager {
 
     /**
      * Returns a color given its red, green and blue component values
-     * 
+     *
      * @param r int The red component of the color
      * @param g int The green component of the color
      * @param b int The blue component of the color
@@ -70,7 +70,7 @@ public class SWTResourceManager {
 
     /**
      * Returns a color given its RGB value
-     * 
+     *
      * @param rgb RGB The RGB value of the color
      * @return Color The color matching the RGB value
      */
@@ -109,7 +109,7 @@ public class SWTResourceManager {
 
     /**
      * Returns a font based on its name, height and style
-     * 
+     *
      * @param name String The name of the font
      * @param height int The height of the font
      * @param style int The style of the font
@@ -159,7 +159,7 @@ public class SWTResourceManager {
 
     /**
      * Returns an image descriptor stored in the file at the specified path relative to the specified class
-     * 
+     *
      * @param clazz Class The class relative to which to find the image descriptor
      * @param path String The path to the image file
      * @return ImageDescriptor The image descriptor stored in the file at the specified path
@@ -170,7 +170,7 @@ public class SWTResourceManager {
 
     /**
      * Returns an image descriptor stored in the file at the specified path
-     * 
+     *
      * @param path String The path to the image file
      * @return ImageDescriptor The image descriptor stored in the file at the specified path
      */
@@ -184,7 +184,7 @@ public class SWTResourceManager {
 
     /**
      * Returns an image based on the specified image descriptor
-     * 
+     *
      * @param descriptor ImageDescriptor The image descriptor for the image
      * @return Image The image based on the specified image descriptor
      */
@@ -232,7 +232,7 @@ public class SWTResourceManager {
 
     /**
      * Retuns an image based on a plugin and file path
-     * 
+     *
      * @param plugin Object The plugin containing the image
      * @param name String The path to th eimage within the plugin
      * @return Image The image stored in the file at the specified path
@@ -264,7 +264,7 @@ public class SWTResourceManager {
 
     /**
      * Returns an image encoded by the specified input stream
-     * 
+     *
      * @param is InputStream The input stream encoding the image data
      * @return Image The image encoded by the specified input stream
      */
@@ -279,7 +279,7 @@ public class SWTResourceManager {
 
     /**
      * Retuns an image descriptor based on a plugin and file path
-     * 
+     *
      * @param plugin Object The plugin containing the image
      * @param name String The path to th eimage within the plugin
      * @return ImageDescriptor The image descriptor stored in the file at the specified path
@@ -300,7 +300,7 @@ public class SWTResourceManager {
 
     /**
      * Retuns an URL based on a plugin and file path
-     * 
+     *
      * @param plugin Object The plugin containing the file path
      * @param name String The file path
      * @return URL The URL representing the file at the specified path

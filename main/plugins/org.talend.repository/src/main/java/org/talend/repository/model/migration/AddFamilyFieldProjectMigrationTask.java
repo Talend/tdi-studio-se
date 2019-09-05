@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,7 +37,7 @@ public class AddFamilyFieldProjectMigrationTask extends AbstractProjectMigration
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
     @Override
@@ -59,7 +59,7 @@ public class AddFamilyFieldProjectMigrationTask extends AbstractProjectMigration
 
     /**
      * yzhang Comment method "resetFamily".
-     * 
+     *
      * @param list
      */
     private void resetFamily(EList list) {
@@ -92,7 +92,7 @@ public class AddFamilyFieldProjectMigrationTask extends AbstractProjectMigration
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
      */
     @Override

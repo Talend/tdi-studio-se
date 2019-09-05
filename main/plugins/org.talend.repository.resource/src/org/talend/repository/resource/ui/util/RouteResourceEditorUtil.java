@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,7 +15,6 @@ package org.talend.repository.resource.ui.util;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -39,7 +38,6 @@ import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.resource.editors.ResourceEditorListener;
 import org.talend.repository.resource.editors.RouteResourceEditor;
-import org.talend.repository.resource.editors.RouteResoureChangeListener;
 import org.talend.repository.resource.editors.input.RouteResourceInput;
 
 public class RouteResourceEditorUtil {
@@ -52,7 +50,7 @@ public class RouteResourceEditorUtil {
 	/**
 	 * find a prefer editor from all existing editors according to the
 	 * fileExtensions
-	 * 
+	 *
 	 * @param fileExtension
 	 * @return
 	 */
@@ -82,7 +80,7 @@ public class RouteResourceEditorUtil {
 
 	/**
 	 * Open default editor
-	 * 
+	 *
 	 * @param page
 	 * @param node
 	 * @param item
@@ -97,7 +95,7 @@ public class RouteResourceEditorUtil {
 
 	/**
 	 * Open or bind Route resource editor.
-	 * 
+	 *
 	 * @param page
 	 * @param node
 	 * @param item
@@ -116,7 +114,7 @@ public class RouteResourceEditorUtil {
 
 	/**
 	 * Open or bind Route resource editor by specifing editorID
-	 * 
+	 *
 	 * @param page
 	 * @param node
 	 * @param item
@@ -132,15 +130,10 @@ public class RouteResourceEditorUtil {
 					.addPartListener(
 							new ResourceEditorListener(fileEditorInput, page));
 
-			if (!RouteResourceEditor.ID.endsWith(editorId)) {
-				ResourcesPlugin.getWorkspace().addResourceChangeListener(
-						new RouteResoureChangeListener(fileEditorInput));
-			}
-
 			if (editorPart == null) {
-				editorPart = page.openEditor(fileEditorInput, editorId, true);
+                editorPart = page.openEditor(fileEditorInput, RouteResourceEditor.ID, true);
 			} else {
-				editorPart = page.openEditor(fileEditorInput, editorId);
+                editorPart = page.openEditor(fileEditorInput, RouteResourceEditor.ID);
 			}
 		} catch (PartInitException e) {
 			try {
@@ -151,23 +144,23 @@ public class RouteResourceEditorUtil {
 			MessageBoxExceptionHandler.process(e);
 		}
 	}
-	
+
 	public static boolean isReadOnly(IRepositoryNode node){
 		IRepositoryService service = DesignerPlugin.getDefault().getRepositoryService();
 		IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
-		
+
 		/*
 		 * if user is readonly , then set enable as false
 		 */
 		if(repFactory.isUserReadOnlyOnCurrentProject()){
 			return true;
 		}
-		
+
 		// if it's not in current project, then it's disable
 		if(!ProjectManager.getInstance().isInCurrentMainProject(node)){
 			return true;
 		}
-		
+
 		// if it's locked by others, then it's disable
 		IRepositoryViewObject object = node.getObject();
 		if(object == null){
@@ -177,7 +170,7 @@ public class RouteResourceEditorUtil {
 		if(property == null){
 			return false;
 		}
-		
+
 		Item item = property.getItem();
 		if(item == null){
 			return false;
@@ -186,11 +179,11 @@ public class RouteResourceEditorUtil {
 		if(ERepositoryStatus.LOCK_BY_OTHER.equals(status) || ERepositoryStatus.DELETED.equals(status)){
 			return true;
 		}
-		
+
 		if(!isLatestVersion(property)){
 			return true;
 		}
-		
+
 		return false;
 	}
 

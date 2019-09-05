@@ -10,7 +10,9 @@
     "component_delegate":"tDBOutput",
     "component" : "tAccessOutput",
     "category":"DI",
-    "family":""
+    "family":"",
+	"parameter":{
+        "exclude":"TYPE"}
 },
 {
     "component_delegate":"tDBClose",

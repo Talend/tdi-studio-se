@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,9 +23,9 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * DOC plegall class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public class RenametCatcherMigrationTask extends AbstractJobMigrationTask {
 
@@ -33,7 +33,7 @@ public class RenametCatcherMigrationTask extends AbstractJobMigrationTask {
     	ProcessType processType = getProcessType(item);
 		if (processType == null) {
 			return ExecutionResult.NOTHING_TO_DO;
-		}	
+		}
         try {
             ModifyComponentsAction.searchAndRename(item,processType, "tCatcher", "tLogCatcher"); //$NON-NLS-1$ //$NON-NLS-2$
             return ExecutionResult.SUCCESS_WITH_ALERT;

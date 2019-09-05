@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -87,7 +87,7 @@ public class ExecuteSystemCommandCommand extends Command {
     }
 
     /**
-     * 
+     *
      * ggu CommandProgressDialog class global comment. Detailled comment
      */
     class CommandProgressDialog extends ProgressDialog {
@@ -148,7 +148,7 @@ public class ExecuteSystemCommandCommand extends Command {
     }
 
     /**
-     * 
+     *
      * ggu ShowCommandMessage class global comment. Detailled comment
      */
     class ShowCommandMessage extends Dialog {
@@ -279,7 +279,7 @@ public class ExecuteSystemCommandCommand extends Command {
     }
 
     /**
-     * 
+     *
      * Type of the message.
      */
     enum CommandMsgType implements IMsgType {
@@ -289,7 +289,7 @@ public class ExecuteSystemCommandCommand extends Command {
     }
 
     /**
-     * 
+     *
      * Message about a result.
      */
     class CommandMessage implements IProcessMessage {

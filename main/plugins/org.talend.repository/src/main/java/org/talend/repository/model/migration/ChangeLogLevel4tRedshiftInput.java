@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,13 +30,13 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * created by JYHU on Mar 27, 2013 Detailled comment
- * 
+ *
  */
 public class ChangeLogLevel4tRedshiftInput extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @Override
@@ -60,14 +60,14 @@ public class ChangeLogLevel4tRedshiftInput extends AbstractJobMigrationTask {
                                 if (ept == null) {
                                     return;
                                 }
-                                
+
                                 String value = ept.getValue();
-                                
+
                                 if(value==null) {
                                     return;
                                 }
-                                
-                                
+
+
                                 if (Integer.parseInt(value) > 2) {
                                     ComponentUtilities.setNodeValue(node, "LOG_LEVEL", "2"); //$NON-NLS-1$//$NON-NLS-2$
                                 }
@@ -85,7 +85,7 @@ public class ChangeLogLevel4tRedshiftInput extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override

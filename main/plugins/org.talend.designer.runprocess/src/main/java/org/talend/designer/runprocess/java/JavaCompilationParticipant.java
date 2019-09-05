@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,7 +47,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * DOC xhuang class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class JavaCompilationParticipant extends CompilationParticipant {
 
@@ -59,7 +59,7 @@ public class JavaCompilationParticipant extends CompilationParticipant {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jdt.core.compiler.CompilationParticipant#processAnnotations(org.eclipse.jdt.core.compiler.BuildContext
      * [])
@@ -165,7 +165,7 @@ public class JavaCompilationParticipant extends CompilationParticipant {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jdt.core.compiler.CompilationParticipant#isActive(org.eclipse.jdt.core.IJavaProject)
      */
     @Override
@@ -185,7 +185,7 @@ public class JavaCompilationParticipant extends CompilationParticipant {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jdt.core.compiler.CompilationParticipant#isAnnotationProcessor()
      */
     @Override

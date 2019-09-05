@@ -16,7 +16,7 @@ import org.json.simple.parser.ParseException;
 
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,7 +29,7 @@ import org.json.simple.parser.ParseException;
 
 /**
  * created by bchen on Aug 26, 2013 Detailled comment
- * 
+ *
  */
 public class OAuthClient {
 
@@ -304,7 +304,7 @@ public class OAuthClient {
 
     /**
      * Getter for clientID.
-     * 
+     *
      * @return the clientID
      */
     public String getClientID() {
@@ -313,7 +313,7 @@ public class OAuthClient {
 
     /**
      * Sets the clientID.
-     * 
+     *
      * @param clientID the clientID to set
      */
     public void setClientID(String clientID) {
@@ -322,7 +322,7 @@ public class OAuthClient {
 
     /**
      * Getter for clientSecret.
-     * 
+     *
      * @return the clientSecret
      */
     public String getClientSecret() {
@@ -331,7 +331,7 @@ public class OAuthClient {
 
     /**
      * Sets the clientSecret.
-     * 
+     *
      * @param clientSecret the clientSecret to set
      */
     public void setClientSecret(String clientSecret) {
@@ -340,7 +340,7 @@ public class OAuthClient {
 
     /**
      * Getter for callbackHost.
-     * 
+     *
      * @return the callbackHost
      */
     public String getCallbackHost() {
@@ -349,7 +349,7 @@ public class OAuthClient {
 
     /**
      * Sets the callbackHost.
-     * 
+     *
      * @param callbackHost the callbackHost to set
      */
     public void setCallbackHost(String callbackHost) {
@@ -358,7 +358,7 @@ public class OAuthClient {
 
     /**
      * Getter for callbackPort.
-     * 
+     *
      * @return the callbackPort
      */
     public int getCallbackPort() {
@@ -367,7 +367,7 @@ public class OAuthClient {
 
     /**
      * Sets the callbackPort.
-     * 
+     *
      * @param callbackPort the callbackPort to set
      */
     public void setCallbackPort(int callbackPort) {
@@ -376,7 +376,7 @@ public class OAuthClient {
 
     /**
      * Getter for baseOAuthURL.
-     * 
+     *
      * @return the baseOAuthURL
      */
     public String getBaseOAuthURL() {
@@ -385,7 +385,7 @@ public class OAuthClient {
 
     /**
      * Sets the baseOAuthURL.
-     * 
+     *
      * @param baseOAuthURL the baseOAuthURL to set
      */
     public void setBaseOAuthURL(String baseOAuthURL) {

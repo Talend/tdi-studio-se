@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,7 +44,7 @@ public class EditAction extends Action {
 
     /**
      * DOC mhelleboid EditAction constructor comment.
-     * 
+     *
      * @param object2
      * @param adapterFactory
      * @param structuralFeature
@@ -57,7 +57,7 @@ public class EditAction extends Action {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
@@ -98,7 +98,7 @@ public class EditAction extends Action {
 
         /**
          * DOC mhelleboid EditDialog constructor comment.
-         * 
+         *
          * @param parentShell
          * @param adapterFactory
          * @param eObject
@@ -123,7 +123,7 @@ public class EditAction extends Action {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
          */
         @Override
@@ -173,7 +173,7 @@ public class EditAction extends Action {
 
         /**
          * DOC mhelleboid Comment method "getPropertyValue".
-         * 
+         *
          * @return
          */
         private String getPropertyValue() {
@@ -182,7 +182,7 @@ public class EditAction extends Action {
 
         /**
          * DOC mhelleboid Comment method "getPropertyLabel".
-         * 
+         *
          * @return
          */
         private String getPropertyLabel() {
@@ -191,7 +191,7 @@ public class EditAction extends Action {
 
         /**
          * Getter for value.
-         * 
+         *
          * @return the value
          */
         public String getValue() {

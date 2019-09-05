@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -173,10 +173,10 @@ public class CreateComponentOnLinkHelper {
     }
 
     /**
-     * 
+     *
      * comment method "containsPoint". this function is different with Rectangle api to avoid problem that can't get
      * link even it's clearly the target in talend studio.
-     * 
+     *
      * @return
      */
     public static boolean containsPoint(Rectangle rec, Point p) {

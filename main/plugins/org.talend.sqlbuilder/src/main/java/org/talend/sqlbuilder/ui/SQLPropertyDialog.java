@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,9 +34,9 @@ import org.talend.sqlbuilder.Messages;
 
 /**
  * This class is used for creating a dialog for saving current editor's sql texts. <br/>
- * 
+ *
  * $Id: SaveSQLDialog.java,v 1.0 2006/11/15 05:38:28 ftang Exp $
- * 
+ *
  * @author ftang
  */
 public class SQLPropertyDialog extends TitleAreaDialog {
@@ -63,7 +63,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /**
      * Sets the sql.
-     * 
+     *
      * @param sql the sql to set
      */
     public void setSql(String sql) {
@@ -72,7 +72,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /**
      * Getter for query.
-     * 
+     *
      * @return the query
      */
     public Query getQuery() {
@@ -81,7 +81,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /**
      * Sets the query.
-     * 
+     *
      * @param query the query to set
      */
     public void setQuery(Query query) {
@@ -93,7 +93,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -134,7 +134,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     @Override
@@ -154,7 +154,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /**
      * Create contents of the button bar.
-     * 
+     *
      * @param parent
      */
     @Override
@@ -166,7 +166,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /**
      * Return the initial size of the dialog.
-     * 
+     *
      * For fixing bug TUP-19612, hide this method to use the default size rather than to give the dialog an initial size.
      */
 //    @Override
@@ -176,7 +176,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /**
      * SaveSQLDialog constructor.
-     * 
+     *
      * @param shell
      * @param string
      */
@@ -188,7 +188,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /**
      * ShowQueryProperty constructor.
-     * 
+     *
      * @param shell
      * @param string
      */
@@ -200,7 +200,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
      */
     @Override
@@ -228,7 +228,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
              */
             @Override
@@ -246,7 +246,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
             /**
              * Validates input text.
-             * 
+             *
              * @param text
              * @return a string
              */
@@ -265,7 +265,7 @@ public class SQLPropertyDialog extends TitleAreaDialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
              */
             @Override

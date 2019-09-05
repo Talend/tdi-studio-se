@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,9 +43,9 @@ import org.talend.repository.model.RepositoryNode;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: RowGenProcess.java,v 1.5 2007/02/02 08:24:44 pub Exp $
- * 
+ *
  */
 public class RowGenProcess extends Element implements IProcess {
 
@@ -105,7 +105,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /**
      * qzhang Comment method "setFlags".
-     * 
+     *
      * @param component
      */
     private void setFlags(RowGeneratorComponent component) {
@@ -125,7 +125,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /**
      * qzhang Comment method "initOutCompnoent".
-     * 
+     *
      * @param component
      * @param cnx
      */
@@ -173,7 +173,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -186,7 +186,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -215,7 +215,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /**
      * Get the list of all elements, Node and Connection.
-     * 
+     *
      * @return
      */
     public List getElements() {
@@ -238,7 +238,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /**
      * Returns true if the grid is enabled.
-     * 
+     *
      * @return
      */
     public boolean isGridEnabled() {
@@ -254,7 +254,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /**
      * Returns true if the SnapToGeometry is enabled.
-     * 
+     *
      * @return
      */
     public boolean isSnapToGeometryEnabled() {
@@ -270,7 +270,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /**
      * Checks if there are unloaded nodes.If there are some nodes unloaded, throws PersistenceException.
-     * 
+     *
      * @throws PersistenceException PersistenceException
      */
     public void checkLoadNodes() throws PersistenceException {
@@ -299,7 +299,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IRepositoryProcess#getAuthor()
      */
     public User getAuthor() {
@@ -308,7 +308,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IRepositoryProcess#getId()
      */
     @Override
@@ -318,7 +318,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IRepositoryProcess#getLabel()
      */
     public String getLabel() {
@@ -327,7 +327,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IRepositoryProcess#getStatus()
      */
     public String getStatusCode() {
@@ -336,7 +336,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IRepositoryProcess#getVersion()
      */
     @Override
@@ -346,7 +346,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IRepositoryProcess#setAuthor(org.talend.core.model.temp.User)
      */
     public void setAuthor(User author) {
@@ -355,7 +355,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IRepositoryProcess#setId(int)
      */
     public void setId(String id) {
@@ -364,7 +364,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IRepositoryProcess#setLabel(java.lang.String)
      */
     public void setLabel(String label) {
@@ -373,7 +373,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IRepositoryProcess#setStatus(org.talend.core.model.process.EProcessStatus)
      */
     public void setStatusCode(String statusCode) {
@@ -382,7 +382,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IRepositoryProcess#setVersion(int)
      */
     public void setVersion(String version) {
@@ -401,7 +401,7 @@ public class RowGenProcess extends Element implements IProcess {
     /**
      * Check if the given name will be unique in the process. If another link already exists with that name, false will
      * be returned.
-     * 
+     *
      * @param uniqueName
      * @param checkEsists
      * @return true if the name is unique
@@ -414,7 +414,7 @@ public class RowGenProcess extends Element implements IProcess {
     /**
      * Check if the given name will be unique in the process. If another link already exists with that name, false will
      * be returned.
-     * 
+     *
      * @param uniqueName
      * @return true if the name is unique
      */
@@ -425,7 +425,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /**
      * Manage to find a unique name with the given name.
-     * 
+     *
      * @param titleName
      */
     @Override
@@ -488,7 +488,7 @@ public class RowGenProcess extends Element implements IProcess {
     /**
      * This function will take a unique name and update the list with the given name. This function should be private
      * only and should be called only when the xml file is loaded.
-     * 
+     *
      * @param uniqueName
      */
     public void addUniqueNodeName(final String uniqueName) {
@@ -505,7 +505,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /**
      * nrousseau Comment method "checkProcess".
-     * 
+     *
      * @param propagate
      */
 
@@ -562,7 +562,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getChildren()
      */
     public List<IRepositoryViewObject> getChildren() {
@@ -571,7 +571,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /**
      * Return all Nodes of Component type componentName.
-     * 
+     *
      * @param componentName the component name
      * @return all the activated matching nodes in the process
      */
@@ -582,7 +582,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getAllConnections(java.lang.String)
      */
     @Override
@@ -592,7 +592,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.Element#getElementName()
      */
     @Override
@@ -623,7 +623,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getMergelinkOrder(org.talend.core.model.process.INode)
      */
     @Override
@@ -634,7 +634,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#isThereLinkWithHash(org.talend.core.model.process.INode)
      */
     @Override
@@ -645,7 +645,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#disableRunJobView()
      */
     public boolean disableRunJobView() {
@@ -655,7 +655,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getNodesWithImport()
      */
     @Override
@@ -666,7 +666,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getLastRunContext()
      */
     public IContext getLastRunContext() {
@@ -676,7 +676,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#setLastRunContext(org.talend.core.model.process.IContext)
      */
     public void setLastRunContext(IContext context) {
@@ -686,7 +686,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getRepositoryNode()
      */
     public RepositoryNode getRepositoryNode() {
@@ -696,7 +696,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.core.model.repository.IRepositoryObject#setRepositoryNode(org.talend.repository.model.RepositoryNode)
      */
@@ -707,7 +707,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#isNeedRegenerateCode()
      */
     @Override
@@ -718,7 +718,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#setNeedRegenerateCode(boolean)
      */
     @Override
@@ -729,7 +729,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getOutputMetadataTable()
      */
     @Override
@@ -740,7 +740,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryViewObject#getInformationStatus()
      */
     public ERepositoryStatus getInformationStatus() {
@@ -750,7 +750,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryViewObject#getPath()
      */
     public String getPath() {
@@ -760,7 +760,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryViewObject#getProjectLabel()
      */
     public String getProjectLabel() {
@@ -770,7 +770,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryViewObject#getRepositoryStatus()
      */
     public ERepositoryStatus getRepositoryStatus() {
@@ -780,7 +780,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryViewObject#isDeleted()
      */
     public boolean isDeleted() {
@@ -830,7 +830,7 @@ public class RowGenProcess extends Element implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getComponentsType()
      */
     @Override

@@ -139,7 +139,7 @@ for (INode node : process.getNodesOfType("tRESTClient")) {
 }
 
 boolean talendEsbJobFactory = actAsProvider || !process.getNodesOfType("tRouteInput").isEmpty();
-boolean talendEsbJob = talendEsbJobFactory || actAsConsumer || ProcessorUtilities.isEsbJob(process.getId(), process.getVersion());
+boolean talendEsbJob = talendEsbJobFactory || actAsConsumer || ProcessorUtilities.isEsbJob(process);
 
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));
 
@@ -363,7 +363,16 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 	%>
 
 <%
-	if (stats) {
+	INode jobCatcherNode = null;
+	for (INode nodeInProcess : processNodes) {
+		String componentName = nodeInProcess.getComponent().getName();
+		if("tJobStructureCatcher".equals(componentName)) {
+			jobCatcherNode = nodeInProcess;
+			break;
+		}
+	}
+	boolean enableLogStash = jobCatcherNode != null;
+	if (stats || enableLogStash) {
 %>
 private RunStat runStat = new RunStat();
 <%
@@ -401,6 +410,13 @@ private RunTrace runTrace = new RunTrace();
 	for (INode statCatcher : process.getNodesOfType("tStatCatcher")) {
 %>
 	StatCatcherUtils <%=statCatcher.getUniqueName() %> = new StatCatcherUtils("<%=process.getId() %>", "<%=process.getVersion() %>");
+<%
+	}
+	
+	if(enableLogStash) {
+%>
+	JobStructureCatcherUtils <%=jobCatcherNode.getUniqueName() %> = new JobStructureCatcherUtils(jobName, "<%=process.getId() %>", "<%=process.getVersion() %>");
+	org.talend.job.audit.JobAuditLogger auditLogger_<%=jobCatcherNode.getUniqueName()%> = null;
 <%
 	}
 
@@ -512,6 +528,8 @@ private class TalendException extends Exception {
 
 			if(!(e instanceof TDieException)){
 <%
+		boolean needCatchTalendException = false;
+		
 		if (process.getNodesOfType("tLogCatcher").size() > 0) {
 			List<INode> logCatchers = (List<INode>)process.getNodesOfType("tLogCatcher");
 			for (INode logCatcher : logCatchers) {
@@ -543,6 +561,7 @@ private class TalendException extends Exception {
 				if (ElementParameterParser.getValue(logCatcher, "__CATCH_JAVA_EXCEPTION__").equals("true")) {
 					if(logCatcher!=virtualNCatchNode){
 					// 2) launch logCatcher subProcess
+					needCatchTalendException =  true;
 %>
 				<%=logCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
 <%
@@ -555,6 +574,7 @@ private class TalendException extends Exception {
 <%
 			}
 			if(virtualNCatchNode!=null){
+				needCatchTalendException =  true;
 %>
 				<%=virtualNCatchNode.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
 <%
@@ -568,31 +588,12 @@ private class TalendException extends Exception {
 %>
 			}
 <%
-		boolean needCatchTalendException = false;
-		if (process.getNodesOfType("tLogCatcher").size() > 0) {
-			for(INode node:process.getNodesOfType("tLogCatcher")){
-				if(ElementParameterParser.getValue(node, "__CATCH_JAVA_EXCEPTION__").equals("true")){
-					needCatchTalendException = true;
-					break;
-				}
-			}
-		}
-
-		if ((!needCatchTalendException) && (process.getNodesOfType("tAssertCatcher").size() > 0)) {
-			for(INode node:process.getNodesOfType("tAssertCatcher")){
-				if(ElementParameterParser.getValue(node, "__CATCH_JAVA_EXCEPTION__").equals("true")){
-					needCatchTalendException = true;
-					break;
-				}
-			}
-		}
 		if(needCatchTalendException) {
-			if (process.getNodesOfType("tLogCatcher").size() > 0) {
-				%>
-				} catch (TalendException e) {
-					// do nothing
-				<%
-			}
+			//TODO should catch the TalendException in assertcatcher process? but before should not work too as use java reflect, this exception can't catch
+			%>
+			} catch (TalendException e) {
+				// do nothing
+			<%
 		}
 %>
 		} catch (Exception e) {

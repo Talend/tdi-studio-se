@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -122,7 +122,7 @@ public class JSONDragAndDropHandler extends AbstractDragAndDropServiceHandler {
                 return xmlDesc.getLimitBoucle().toString();
             }
         }
-        if (value.equals("XPATH_QUERY")) { //$NON-NLS-1$ 
+        if (value.equals("XPATH_QUERY")) { //$NON-NLS-1$
             if (xmlDesc == null) {
                 return ""; //$NON-NLS-1$
             } else {
@@ -163,7 +163,7 @@ public class JSONDragAndDropHandler extends AbstractDragAndDropServiceHandler {
         if (value.equals("JSON_MAPPING")) {
             return getTableJSONMappingValue(connection);
         }
-        
+
         // Need to be changed when this parameter is configurable in wizard.
         if (value.equals("USE_LOOP_AS_ROOT")) {
             return false;

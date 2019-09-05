@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,9 @@ import org.talend.commons.utils.time.TimeMeasure;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 @Ignore
 public class PerformanceJavaTHash {
@@ -410,7 +410,7 @@ public class PerformanceJavaTHash {
         // @Override
         // protected Object[] getKeysFromIndex(int i) {
         // String str = strings.get(i);
-        //                
+        //
         // return new Object[] { str, str, };
         // }
         //
@@ -431,33 +431,33 @@ public class PerformanceJavaTHash {
 
     // @Test
     // public void testPerformanceBetweenNewInstanceAndGetFromList() {
-    //        
+    //
     // // int iterations = 297850;
     // int iterations = 50000000;
-    //        
+    //
     // ArrayList<Integer> localIntegers = new ArrayList<Integer>();
     //
     // for (int i = 0; i < iterations; i++) {
     // localIntegers.add(new Integer(i));
     // }
-    //        
+    //
     // TimeMeasure.begin("testPerformanceBetweenNewInstanceAndGetFromList new instance");
     // for (int i = 0; i < iterations; i++) {
     // new Integer(i);
     // }
     // TimeMeasure.end("testPerformanceBetweenNewInstanceAndGetFromList new instance");
-    //        
+    //
     // TimeMeasure.begin("testPerformanceBetweenNewInstanceAndGetFromList get from list");
     // for (int i = 0; i < iterations; i++) {
     // localIntegers.get(i);
     // }
     // TimeMeasure.end("testPerformanceBetweenNewInstanceAndGetFromList get from list");
-    //        
+    //
     // }
 
     /**
      * DOC amaumont Comment method "execute".
-     * 
+     *
      * @param executor
      */
     private void executeWithMultiKey(LoadReadExecutorWithMultiKey executor) {
@@ -496,11 +496,11 @@ public class PerformanceJavaTHash {
     }
 
     /**
-     * 
+     *
      * DOC amaumont PerfsJavaHash class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private abstract class LoadReadExecutorWithMultiKey {
 
@@ -694,7 +694,7 @@ public class PerformanceJavaTHash {
 
         /**
          * DOC amaumont Comment method "getKeysFromIndex".
-         * 
+         *
          * @param index
          * @return
          */
@@ -702,7 +702,7 @@ public class PerformanceJavaTHash {
 
         /**
          * DOC amaumont Comment method "getKeysFromRow".
-         * 
+         *
          * @param row
          * @return
          */
@@ -711,11 +711,11 @@ public class PerformanceJavaTHash {
     }
 
     /**
-     * 
+     *
      * DOC amaumont PerformanceJavaTHash class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class LoadReadExecutorWithEqualsHashCode {
 
@@ -847,11 +847,11 @@ public class PerformanceJavaTHash {
         public void executeWithIntegerAndMapAndMultiThreading(Map tHash) {
 
             /**
-             * 
+             *
              * DOC amaumont PerformanceJavaTHash.LoadReadExecutorWithoutMultiKey class global comment. Detailled comment <br/>
-             * 
+             *
              * $Id$
-             * 
+             *
              */
             class PutThread extends Thread {
 
@@ -867,7 +867,7 @@ public class PerformanceJavaTHash {
 
                 /**
                  * DOC amaumont PutThread constructor comment.
-                 * 
+                 *
                  * @param localRowsLookup
                  * @param i
                  * @param j
@@ -881,7 +881,7 @@ public class PerformanceJavaTHash {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see java.lang.Thread#run()
                  */
                 @Override
@@ -937,11 +937,11 @@ public class PerformanceJavaTHash {
     }
 
     /**
-     * 
+     *
      * DOC amaumont PerformanceJavaTHash class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class LoadReadExecutorWithEqualsHashCodeTreeMap {
 
@@ -1077,11 +1077,11 @@ public class PerformanceJavaTHash {
         public void executeWithIntegerAndMapAndMultiThreading(Map tHash) {
 
             /**
-             * 
+             *
              * DOC amaumont PerformanceJavaTHash.LoadReadExecutorWithoutMultiKey class global comment. Detailled comment <br/>
-             * 
+             *
              * $Id$
-             * 
+             *
              */
             class PutThread extends Thread {
 
@@ -1097,7 +1097,7 @@ public class PerformanceJavaTHash {
 
                 /**
                  * DOC amaumont PutThread constructor comment.
-                 * 
+                 *
                  * @param localRowsLookup
                  * @param i
                  * @param j
@@ -1111,7 +1111,7 @@ public class PerformanceJavaTHash {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see java.lang.Thread#run()
                  */
                 @Override
@@ -1167,11 +1167,11 @@ public class PerformanceJavaTHash {
     }
 
     /**
-     * 
+     *
      * DOC amaumont PerformanceJavaTHash class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class LoadReadExecutorWithoutMultiKey {
 
@@ -1324,11 +1324,11 @@ public class PerformanceJavaTHash {
         public void executeWithIntegerAndMapAndMultiThreading(Map tHash) {
 
             /**
-             * 
+             *
              * DOC amaumont PerformanceJavaTHash.LoadReadExecutorWithoutMultiKey class global comment. Detailled comment <br/>
-             * 
+             *
              * $Id$
-             * 
+             *
              */
             class PutThread extends Thread {
 
@@ -1344,7 +1344,7 @@ public class PerformanceJavaTHash {
 
                 /**
                  * DOC amaumont PutThread constructor comment.
-                 * 
+                 *
                  * @param localRowsLookup
                  * @param i
                  * @param j
@@ -1358,7 +1358,7 @@ public class PerformanceJavaTHash {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see java.lang.Thread#run()
                  */
                 @Override
@@ -1485,11 +1485,11 @@ public class PerformanceJavaTHash {
     }
 
     /**
-     * 
+     *
      * DOC amaumont PerformanceJavaTHash class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public static class RowStruct implements Comparable {
 
@@ -1527,7 +1527,7 @@ public class PerformanceJavaTHash {
 
         /**
          * DOC amaumont BeanStruct constructor comment.
-         * 
+         *
          * @param id1
          * @param name
          * @param id2
@@ -1547,7 +1547,7 @@ public class PerformanceJavaTHash {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#hashCode()
          */
         @Override
@@ -1576,7 +1576,7 @@ public class PerformanceJavaTHash {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override
@@ -1646,7 +1646,7 @@ public class PerformanceJavaTHash {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Comparable#compareTo(java.lang.Object)
          */
         public int compareTo(Object o) {

@@ -259,7 +259,7 @@
    <CODEGENERATION>
      <IMPORTS>
      	<IMPORT NAME="Driver-mssql-jdbc" MODULE="mssql-jdbc.jar" MVN="mvn:org.talend.libraries/mssql-jdbc/6.0.0"  REQUIRED_IF="(DRIVER == 'MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
-     	<IMPORT NAME="Talend_MssqlUtil" MODULE="talend_DB_mssqlUtil-1.2-20171017.jar" MVN="mvn:org.talend.libraries/talend_DB_mssqlUtil-1.2-20171017/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.custom/lib/talend_DB_mssqlUtil-1.2-20171017.jar" REQUIRED="true" />
+     	<IMPORT NAME="Talend_MssqlUtil" MODULE="talend_DB_mssqlUtil-1.3-20190523.jar" MVN="mvn:org.talend.libraries/talend_DB_mssqlUtil-1.3-20190523/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.custom/lib/talend_DB_mssqlUtil-1.3-20190523.jar" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
 

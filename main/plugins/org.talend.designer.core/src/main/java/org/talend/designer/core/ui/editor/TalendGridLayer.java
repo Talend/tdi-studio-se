@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,9 +25,9 @@ import org.talend.commons.ui.runtime.image.ImageProvider;
 
 /**
  * Grid that will be used for the designer. (modification of the default grid to have black points)
- * 
+ *
  * $Id: TalendGridLayer.java 7038 2007-11-15 14:05:48Z plegall $
- * 
+ *
  */
 public class TalendGridLayer extends GridLayer {
 

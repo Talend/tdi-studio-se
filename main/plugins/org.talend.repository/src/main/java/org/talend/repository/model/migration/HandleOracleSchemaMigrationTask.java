@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,13 +32,13 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
  *
  */
 public class HandleOracleSchemaMigrationTask extends AbstractJobMigrationTask {
-	
+
     @Override
 	public ExecutionResult execute(Item item) {
     	ProcessType processType = getProcessType(item);
-		
+
         if (getProject().getLanguage() == ECodeLanguage.JAVA && processType != null) {
-         
+
             NodeType tOracleConnection = null;
             for (Object nodeType : processType.getNode()) {
                 NodeType tmpNodeType = (NodeType) nodeType;

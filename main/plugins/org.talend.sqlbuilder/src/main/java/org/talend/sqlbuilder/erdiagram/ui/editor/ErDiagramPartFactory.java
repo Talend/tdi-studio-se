@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,15 +26,15 @@ import org.talend.sqlbuilder.erdiagram.ui.parts.TablePart;
 /**
  * The qzhang ErDiagramPartFactory will create an EditPart factory for each model object that is created in the diagram.
  * <br/>
- * 
+ *
  * $Id: PartFactory.java 1 2006-09-29 17:06:40 +0000 (星期五, 29 九月 2006) nrousseau $
- * 
+ *
  */
 public class ErDiagramPartFactory implements EditPartFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.EditPartFactory#createEditPart(org.eclipse.gef.EditPart, java.lang.Object)
      */
     public EditPart createEditPart(EditPart context, Object model) {

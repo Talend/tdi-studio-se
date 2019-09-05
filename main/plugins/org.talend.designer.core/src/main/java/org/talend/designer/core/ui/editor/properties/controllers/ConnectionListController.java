@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -61,15 +61,15 @@ import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * bqian Connection List controller <br/>
- * 
+ *
  * $Id: ColumnListController.java 1 2007-6-2 下午02:04:32 +0000 (下午02:04:32) $
- * 
+ *
  */
 public class ConnectionListController extends AbstractElementPropertySectionController {
 
     /**
      * dev ColumnListController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public ConnectionListController(IDynamicProperty dp) {
@@ -78,7 +78,7 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
@@ -114,7 +114,7 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -201,7 +201,7 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -217,7 +217,7 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.designer.rowgenerator.ui.editor.MetadataColumnExt;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: VirtualMetadataColumn.java 下午03:42:46 2007-7-24 +0000 (2007-7-24) yzhang $
- * 
+ *
  */
 public class VirtualMetadataColumn extends MetadataColumnExt {
 

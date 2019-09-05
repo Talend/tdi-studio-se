@@ -28,7 +28,8 @@
 	String authorizationCode = ElementParameterParser.getValue(node,"__AUTHORIZATION_CODE__");
 	String query = ElementParameterParser.getValue(node,"__QUERY__");
 	boolean useLegacySql = ElementParameterParser.getBooleanValue(node,"__USE_LEGACY_SQL__");
-	
+	String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
+
 	query = query.replaceAll("\n"," ");
 	query = query.replaceAll("\r"," ");
 	
@@ -177,9 +178,7 @@
 		}
 	
 	
-		<%
-		String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
-		%>
+		
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/tBigQueryInput/BigQueryInputQueryHelper.javajet"%>	
 	
 		// Start a Query Job
@@ -198,7 +197,7 @@
 		<%
 		if(isLog4jEnabled){
 		%>
-			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> allow large results flag");
+			log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> the allowLargeResults flag");
 		<%
 		}
 		%>
@@ -221,15 +220,30 @@
 		    credentials_<%=cid%> = com.google.auth.oauth2.ServiceAccountCredentials.fromStream(credentialsStream_<%=cid%>);
 		}
 
+		String query_<%=cid%> = <%=query%>;
+		String dataset = query_<%=cid%>.substring(query_<%=cid%>.indexOf("from") + 4, query_<%=cid%>.indexOf(".")).trim();
+		String temp_table = "temp_" + dataset + java.util.UUID.randomUUID().toString().replaceAll("-", "") 
+													 + "<%=cid%>".toLowerCase().replaceAll("[^a-z0-9]", "0").replaceAll("^[^a-z]", "a") 
+													 + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
+
 		com.google.cloud.bigquery.BigQuery bigquery_<%=cid%> = com.google.cloud.bigquery.BigQueryOptions.newBuilder()
 				.setCredentials(credentials_<%=cid%>)
 				.setProjectId(<%=projectId%>)
 				.build()
 				.getService();
-				
-		com.google.cloud.bigquery.QueryJobConfiguration queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>).build();
+		
+		com.google.cloud.bigquery.QueryJobConfiguration.Builder queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>);
+																
+		<%
+		if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {
+		%>
+			queryConfiguration_<%=cid%>.setDestinationTable(com.google.cloud.bigquery.TableId.of(dataset, temp_table)).setAllowLargeResults(true);
+		<%
+		}
+		%>		
+	
 		com.google.cloud.bigquery.JobId jobId_<%=cid%> = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
-		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>).setJobId(jobId_<%=cid%>).build());
+		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>.build()).setJobId(jobId_<%=cid%>).build());
 
 		<%
 		if(isLog4jEnabled){
@@ -239,7 +253,7 @@
 		}
 		%>
 		job_<%=cid%> = job_<%=cid%>.waitFor();
-
+		
 		if (job_<%=cid%> == null) {
 			throw new RuntimeException("Job no longer exists");
 		} else if (job_<%=cid%>.getStatus().getError() != null) {
@@ -253,9 +267,7 @@
 		<%
 		}
 		%>
-		
 		com.google.cloud.bigquery.TableResult result_<%=cid%> = job_<%=cid%>.getQueryResults();
-
 		long nb_line_<%=cid%> = 0;
 	<%
 	} else {
@@ -276,7 +288,6 @@
 					.setPageToken(pageToken_<%=cid%>).execute();
 		
 		List<com.google.api.services.bigquery.model.TableRow> rows_<%=cid %> = dataList_<%=cid %>.getRows();
-
 		if(rows_<%=cid %> == null) {
 			// Means there is no record.
 			rows_<%=cid %> = new java.util.ArrayList<com.google.api.services.bigquery.model.TableRow>();
@@ -334,6 +345,7 @@
 								}
 								%>
 								if(com.google.api.client.util.Data.isNull(value_<%=cid%>)) value_<%=cid%> = null;
+								
 								if(value_<%=cid%> != null){
 									
 									<%
@@ -342,15 +354,21 @@
 										<%=connName%>.<%=columnName%> = value_<%=cid%>.toString();
 									<%
 									} else if (javaType == JavaTypesManager.OBJECT) {
-									%>		
+									%>	
 										<%=connName%>.<%=columnName%> = value_<%=cid%>;
 									<%		
 									} else if(javaType == JavaTypesManager.DATE) {						
 									%>					
-										<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString());				
+										
+										if (value_<%=cid%>.toString().contains("-")) {
+											<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString(),<%=patternValue%>);						
+										} else {						
+											<%=connName%>.<%=columnName%> = ParserUtils.parseTo_Date(value_<%=cid%>.toString());
+										}
+										
 									<%		
 									} else if(advancedSeparator && JavaTypesManager.isNumberType(javaType)) { 
-									%>
+									%>	
 										<%=connName%>.<%=columnName%> = ParserUtils.parseTo_<%= typeToGenerate %>(ParserUtils.parseTo_Number(value_<%=cid%>.toString(), <%= thousandsSeparator %>, <%= decimalSeparator %>));
 									<%
 									} else if(javaType == JavaTypesManager.BYTE_ARRAY) { 

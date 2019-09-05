@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,15 +28,15 @@ import org.talend.designer.mapper.managers.UIManager;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class FooterComposite extends Composite {
 
     /**
      * Image registry key for help image (value <code>"dialog_help_image"</code>).
-     * 
+     *
      * @since 3.2
      */
     public static final String DLG_IMG_HELP = "dialog_help_image"; //$NON-NLS-1$
@@ -47,7 +47,7 @@ public class FooterComposite extends Composite {
 
     /**
      * DOC amaumont FooterComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param mapperManager

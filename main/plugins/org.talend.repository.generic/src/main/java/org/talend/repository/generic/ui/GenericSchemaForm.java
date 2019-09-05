@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,7 +36,7 @@ import org.talend.core.ui.metadata.editor.MetadataEmfTableEditorView;
 import org.talend.metadata.managment.ui.wizard.AbstractForm;
 import org.talend.repository.generic.i18n.Messages;
 /**
- * 
+ *
  * created by ycbai on 2015年10月28日 Detailled comment
  *
  */

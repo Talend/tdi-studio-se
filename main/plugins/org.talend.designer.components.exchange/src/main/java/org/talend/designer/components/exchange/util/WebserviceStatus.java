@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,7 @@ public class WebserviceStatus {
 
     /**
      * Getter for result.
-     * 
+     *
      * @return the result
      */
     public boolean isResult() {
@@ -34,7 +34,7 @@ public class WebserviceStatus {
 
     /**
      * Sets the result.
-     * 
+     *
      * @param result the result to set
      */
     public void setResult(boolean result) {
@@ -43,7 +43,7 @@ public class WebserviceStatus {
 
     /**
      * Getter for value.
-     * 
+     *
      * @return the value
      */
     public String getValue() {
@@ -52,7 +52,7 @@ public class WebserviceStatus {
 
     /**
      * Sets the value.
-     * 
+     *
      * @param value the value to set
      */
     public void setValue(String value) {
@@ -61,7 +61,7 @@ public class WebserviceStatus {
 
     /**
      * Getter for messageException.
-     * 
+     *
      * @return the messageException
      */
     public String getMessageException() {
@@ -70,7 +70,7 @@ public class WebserviceStatus {
 
     /**
      * Sets the messageException.
-     * 
+     *
      * @param messageException the messageException to set
      */
     public void setMessageException(String messageException) {

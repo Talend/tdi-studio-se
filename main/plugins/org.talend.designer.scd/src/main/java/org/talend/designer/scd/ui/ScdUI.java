@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,7 @@ public class ScdUI {
 
     /**
      * DOC hcw Comment method "createUI".
-     * 
+     *
      * @param display
      * @param scdManager
      */
@@ -47,7 +47,7 @@ public class ScdUI {
 
     /**
      * DOC hcw Comment method "createControls".
-     * 
+     *
      * @param shell
      */
     private void createControls(Shell shell) {

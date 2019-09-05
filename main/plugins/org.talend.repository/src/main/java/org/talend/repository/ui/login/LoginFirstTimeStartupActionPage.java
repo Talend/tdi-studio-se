@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -141,21 +141,21 @@ public class LoginFirstTimeStartupActionPage extends AbstractLoginActionPage {
         title.setText(Messages.getString("LoginFirstTimeStartupActionPage.title")); //$NON-NLS-1$
         createNewProject = new Button(container, SWT.RADIO);
         createNewProject.setFont(LoginDialogV2.fixedFont);
-        createNewProject.setBackground(backgroundColor);
+        createNewProject.setBackground(backgroundRadioColor);
         createNewProject.setText(Messages.getString("LoginFirstTimeStartupActionPage.createNewProject")); //$NON-NLS-1$
         newProjectName = new Text(container, SWT.BORDER);
         newProjectName.setFont(LoginDialogV2.fixedFont);
         importDemoProject = new Button(container, SWT.RADIO);
         importDemoProject.setFont(LoginDialogV2.fixedFont);
-        importDemoProject.setBackground(backgroundColor);
+        importDemoProject.setBackground(backgroundRadioColor);
         importDemoProject.setText(Messages.getString("LoginFirstTimeStartupActionPage.importDemoProject")); //$NON-NLS-1$
         importExistingProject = new Button(container, SWT.RADIO);
         importExistingProject.setFont(LoginDialogV2.fixedFont);
-        importExistingProject.setBackground(backgroundColor);
+        importExistingProject.setBackground(backgroundRadioColor);
         importExistingProject.setText(Messages.getString("LoginFirstTimeStartupActionPage.importExsitingProject")); //$NON-NLS-1$
         manageConnections = new Button(container, SWT.NONE);
         manageConnections.setFont(LoginDialogV2.fixedFont);
-        manageConnections.setBackground(backgroundColor);
+        manageConnections.setBackground(backgroundBtnColor);
         manageConnections.setText(Messages.getString("LoginFirstTimeStartupActionPage.manageConnections")); //$NON-NLS-1$
 
         super.instantiateControl(container);
@@ -199,7 +199,7 @@ public class LoginFirstTimeStartupActionPage extends AbstractLoginActionPage {
         formData.width = LoginDialogV2.getNewButtonSize(manageConnections).x;
         formData.bottom = new FormAttachment(navigateArea, -1 * TAB_VERTICAL_PADDING_LEVEL_1, SWT.TOP);
         manageConnections.setLayoutData(formData);
-        manageConnections.setBackground(backgroundColor);
+        manageConnections.setBackground(backgroundBtnColor);
     }
 
     @Override
@@ -243,7 +243,7 @@ public class LoginFirstTimeStartupActionPage extends AbstractLoginActionPage {
                     validateNewProjectName();
                     finishButtonAction = FINISH_BUTTON_ACTION_CREATE_NEW_PROJECT;
                 } else {
-                    createNewProject.setText(Messages.getString("LoginFirstTimeStartupActionPage.createNewProject")); //$NON-NLS-1$                    
+                    createNewProject.setText(Messages.getString("LoginFirstTimeStartupActionPage.createNewProject")); //$NON-NLS-1$
                     getErrorManager().clearCreateNewProjectError();
                     newProjectName.setVisible(false);
                     newProjectName.setBackground(null);
@@ -458,7 +458,7 @@ public class LoginFirstTimeStartupActionPage extends AbstractLoginActionPage {
             project = repositoryFactory.createProject(projectInfor);
         } catch (PersistenceException e) {
             MessageDialog.openError(getShell(), Messages.getString("NewProjectWizard.failureTitle"), Messages //$NON-NLS-1$
-                    .getString("NewProjectWizard.failureText")); //$NON-NLS-1$ 
+                    .getString("NewProjectWizard.failureText")); //$NON-NLS-1$
             MessageBoxExceptionHandler.process(e);
         }
         if (project == null) {

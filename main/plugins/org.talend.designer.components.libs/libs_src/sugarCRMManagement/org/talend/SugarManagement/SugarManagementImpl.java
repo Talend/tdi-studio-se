@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -42,7 +42,7 @@ import org.talend.sugarws.User_auth;
 
 /**
  * SugarManagementImpl Class Util class implementing all web services methods of SugarsoapPortType class <br/>
- * 
+ *
  */
 public class SugarManagementImpl implements SugarManagement {
 
@@ -142,7 +142,7 @@ public class SugarManagementImpl implements SugarManagement {
             throws RemoteException {
 
         // String selectFields[] = new String[]{"id"};
-        
+
         if(arrNameValuesToEnter == null || arrNameValuesToEnter.length == 0 ) return;
 
         Get_entry_list_result getEntryListResult = connection.get_entry_list(loginInfo.getId(), moduleName, query,
@@ -154,27 +154,27 @@ public class SugarManagementImpl implements SugarManagement {
             // get every record
             for (int i = 0; i < entry_value.length; i++) {
                 Name_value[] nameValue = entry_value[i].getName_value_list();
-                
+
                 //avoid the "id" in "arrNameValuesToEnter" is different the "id" in "nameValue". So need a temp.
                 Name_value[] temp = null;
                 String id = getValuefromInput("id", arrNameValuesToEnter);
                 if (id == null) {
-                    temp = new Name_value[arrNameValuesToEnter.length + 1];                   
+                    temp = new Name_value[arrNameValuesToEnter.length + 1];
                 }
                 else
                 {
-                    temp = new Name_value[arrNameValuesToEnter.length]; 
+                    temp = new Name_value[arrNameValuesToEnter.length];
                 }
-                
+
                 temp[0] = new Name_value("id", getValuefromInput("id", nameValue));
-                
+
                 for (int j = 0, k = 1; j < arrNameValuesToEnter.length; j++)
                 {
                     String name = arrNameValuesToEnter[j].getName();
-                    if("id".endsWith(name)) continue;                    
+                    if("id".endsWith(name)) continue;
                     temp[k] =  new Name_value(name, getValuefromInput(name, arrNameValuesToEnter));
                     k++;
-                }                
+                }
 
                 // only update, not insert
                 connection.set_entry(loginInfo.getId(), moduleName, temp);

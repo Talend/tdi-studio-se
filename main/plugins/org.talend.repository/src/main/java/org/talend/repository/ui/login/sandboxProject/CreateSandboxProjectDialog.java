@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -78,7 +78,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
     private static final String LASTNAME_PATTERN = "^[a-zA-Z0-9 _-]+$"; //$NON-NLS-1$
 
     /**
-     * 
+     *
      */
     private Group projectGroup;
 
@@ -244,26 +244,27 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
                                 .getRepositoriyById(RepositoryConstants.REPOSITORY_REMOTE_ID));
                         // }
                         if (factory.isLocalConnectionProvider()) {
-                            MessageDialog.openError(getShell(), Messages.getString("CreateSandboxProjectDialog.ErrorTitle"), //$NON-NLS-1$ 
-                                    Messages.getString("CreateSandboxProjectDialog.ErrorLocalSuppportMessages")); //$NON-NLS-1$ 
+                            MessageDialog.openError(getShell(), Messages.getString("CreateSandboxProjectDialog.ErrorTitle"), //$NON-NLS-1$
+                                    Messages.getString("CreateSandboxProjectDialog.ErrorLocalSuppportMessages")); //$NON-NLS-1$
                         } else {
                             // set url for
                             RepositoryContext repositoryContext = new RepositoryContext();
                             repositoryContext.setFields(new HashMap<String, String>());
                             repositoryContext.setClearPassword(originRepCtx.getClearPassword());
+                            repositoryContext.setToken(bean != null ? bean.isToken() : false);
                             repositoryContext.setUser(originRepCtx.getUser());
                             repositoryContext.getFields().put(RepositoryConstants.REPOSITORY_URL, urlText.getText());
                             ctx.putProperty(Context.REPOSITORY_CONTEXT_KEY, repositoryContext);
                             //
                             enableSandboxProject = factory.enableSandboxProject();
                             if (!enableSandboxProject) {
-                                MessageDialog.openError(getShell(), Messages.getString("CreateSandboxProjectDialog.ErrorTitle"), //$NON-NLS-1$ 
-                                        Messages.getString("CreateSandboxProjectDialog.ErrorSuppportMessages")); //$NON-NLS-1$ 
+                                MessageDialog.openError(getShell(), Messages.getString("CreateSandboxProjectDialog.ErrorTitle"), //$NON-NLS-1$
+                                        Messages.getString("CreateSandboxProjectDialog.ErrorSuppportMessages")); //$NON-NLS-1$
                             }
                         }
                     } catch (PersistenceException e1) {
                         ExceptionHandler.process(e1);
-                        MessageDialog.openError(getShell(), Messages.getString("CreateSandboxProjectDialog.ErrorTitle"), //$NON-NLS-1$ 
+                        MessageDialog.openError(getShell(), Messages.getString("CreateSandboxProjectDialog.ErrorTitle"), //$NON-NLS-1$
                                 e1.getMessage());
                     } finally {
                         // revert
@@ -410,7 +411,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
     protected void okPressed() {
 
         //        boolean confirm = MessageDialog.openConfirm(getShell(), Messages.getString("CreateSandboxProjectDialog.ConfirmTitle"), //$NON-NLS-1$
-        //                Messages.getString("CreateSandboxProjectDialog.ConfirmMessages")); //$NON-NLS-1$ 
+        //                Messages.getString("CreateSandboxProjectDialog.ConfirmMessages")); //$NON-NLS-1$
         // if (!confirm) {
         // super.okPressed();
         // return;
@@ -492,7 +493,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
                         if (ok) { // if not created, will don't close the dialog
                             String messages = Messages.getString("CreateSandboxProjectDialog.successMessage"); //$NON-NLS-1$
                             // if (needCreateNewConn) {
-                            messages += "\n\n" //$NON-NLS-1$ 
+                            messages += "\n\n" //$NON-NLS-1$
                                     + Messages.getString("CreateSandboxProjectDialog.creatingConnectionMessages", bean.getName()); //$NON-NLS-1$
                             // }
                             MessageDialog.openInformation(getShell(),

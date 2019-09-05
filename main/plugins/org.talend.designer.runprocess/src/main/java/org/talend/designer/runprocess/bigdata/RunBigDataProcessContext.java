@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,13 +23,13 @@ import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.RunProcessContext;
 
 /**
- * 
+ *
  */
 public abstract class RunBigDataProcessContext extends RunProcessContext {
 
     /**
      * DOC marvin RunStormProcessContext constructor comment.
-     * 
+     *
      * @param process
      */
     public RunBigDataProcessContext(IProcess2 process) {

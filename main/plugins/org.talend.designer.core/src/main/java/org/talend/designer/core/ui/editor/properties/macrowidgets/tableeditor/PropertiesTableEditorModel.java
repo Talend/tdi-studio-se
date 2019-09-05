@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,9 +41,9 @@ import org.talend.designer.core.ui.editor.properties.controllers.TableController
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: MetadataTableEditor.java 801 2006-11-30 16:28:36Z amaumont $
- * 
+ *
  * @param <B>
  */
 public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
@@ -101,7 +101,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for dynamicData.
-     * 
+     *
      * @return the dynamicData
      */
     public boolean isDynamicData() {
@@ -110,7 +110,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for element.
-     * 
+     *
      * @return the element
      */
     public IElement getElement() {
@@ -119,7 +119,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for elemParameter.
-     * 
+     *
      * @return the elemParameter
      */
     public IElementParameter getElemParameter() {
@@ -128,7 +128,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for items.
-     * 
+     *
      * @return the items
      */
     public String[] getItems() {
@@ -137,7 +137,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for itemsNotShowIf.
-     * 
+     *
      * @return the itemsNotShowIf
      */
     public String[] getItemsNotShowIf() {
@@ -146,7 +146,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for itemsShowIf.
-     * 
+     *
      * @return the itemsShowIf
      */
     public String[] getItemsShowIf() {
@@ -155,7 +155,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for itemsValue.
-     * 
+     *
      * @return the itemsValue
      */
     public Object[] getItemsValue() {
@@ -164,7 +164,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for process.
-     * 
+     *
      * @return the process
      */
     public IProcess getProcess() {
@@ -173,7 +173,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for titles.
-     * 
+     *
      * @return the titles
      */
     public String[] getTitles() {
@@ -182,7 +182,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.extended.table.ExtendedTableModel#remove(java.lang.Object)
      */
     @Override
@@ -194,7 +194,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.extended.table.ExtendedTableModel#removeAll(java.util.Collection)
      */
     @Override
@@ -247,9 +247,9 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
     }
 
     /**
-     * 
+     *
      * DOC Added for featerue TDI-7284
-     * 
+     *
      * @return
      */
     public boolean isButtonEnabled() {

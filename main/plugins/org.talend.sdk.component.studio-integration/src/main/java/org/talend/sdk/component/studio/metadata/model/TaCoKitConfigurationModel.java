@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -12,11 +12,12 @@
  */
 package org.talend.sdk.component.studio.metadata.model;
 
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_ID;
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_PARENT_ID;
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_PARENT_ITEM_ID;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.*;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,13 +27,20 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.process.EParameterFieldType;
+import org.talend.daikon.security.CryptoHelper;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
+import org.talend.sdk.component.studio.model.parameter.ValueConverter;
+import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
@@ -49,6 +57,8 @@ public class TaCoKitConfigurationModel {
     private TaCoKitConfigurationModel parentConfigurationModel;
 
     private String parentConfigurationModelItemId;
+
+    private boolean printEncryptionException = true;
 
     public TaCoKitConfigurationModel(final Connection connection) {
         this(connection, Lookups.taCoKitCache().getConfigTypeNode(getConfigId(connection)));
@@ -112,7 +122,14 @@ public class TaCoKitConfigurationModel {
     public ValueModel getValue(final String key) throws Exception {
         TaCoKitConfigurationModel parentModel = getParentConfigurationModel();
         if (parentModel != null) {
-            ValueModel modelValue = parentModel.getValue(key);
+            final Map<String, PropertyDefinitionDecorator> tree = buildPropertyTree();
+            final Optional<String> configPath = findConfigPath(tree, key);
+            final String modelRoot = findModelRoot();
+            String keyStr = key;
+            if (configPath.isPresent()) {
+                keyStr = modelRoot + "." + key.substring(configPath.get().length() + 1, key.length()); //$NON-NLS-1$
+            }
+            ValueModel modelValue = parentModel.getValue(keyStr);
             if (modelValue == null) {
                 if (parentModel.contains(key)) {
                     return new ValueModel(parentModel, null, getValueType(parentModel.getConfigTypeNode(), key));
@@ -126,6 +143,12 @@ public class TaCoKitConfigurationModel {
             return new ValueModel(this, value, getValueType(getConfigTypeNode(), key));
         }
         return null;
+    }
+
+    private SimplePropertyDefinition getDefinition(String key) throws Exception {
+        return getConfigTypeNode().getProperties().stream()
+                .filter(propertyDefinition -> TaCoKitUtil.equals(key, propertyDefinition.getPath())).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("wrong key: " + key));
     }
 
     private String getValueType(final ConfigTypeNode typeNode, final String key) throws Exception {
@@ -148,14 +171,136 @@ public class TaCoKitConfigurationModel {
         return false;
     }
 
-    private String getValueOfSelf(final String key) {
-        return (String) getAllProperties().get(key);
+    public String getValueOfSelf(final String key) {
+        String value = (String) getAllProperties().get(key);
+        String decryptedValue = value;
+        try {
+            if (!TaCoKitUtil.isBlank(value) && contains(key)
+                    && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
+                decryptedValue = CryptoHelper.getDefault().decrypt(value);
+                if (decryptedValue == null) {
+                    // if null, means error occurs, just reuse the original value
+                    decryptedValue = value;
+                }
+            }
+        } catch (Exception e) {
+            if (printEncryptionException) {
+                ExceptionHandler.process(e);
+            }
+        }
+        return decryptedValue;
+    }
+
+    public String computeKey(String key) throws Exception {
+        final Map<String, PropertyDefinitionDecorator> tree = buildPropertyTree();
+        final Optional<String> configPath = findConfigPath(tree, key);
+        final String modelRoot = findModelRoot();
+
+        if (configPath.isPresent()) {
+            return key.replace(configPath.get(), modelRoot);
+        } else {
+            return key;
+        }
+    }
+
+    public Map<String, PropertyDefinitionDecorator> buildPropertyTree() {
+        final Map<String, PropertyDefinitionDecorator> tree = new HashMap<>();
+        final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator
+                .wrap(getConfigTypeNode().getProperties());
+        properties.forEach(p -> tree.put(p.getPath(), p));
+        return tree;
+    }
+
+    public String findModelRoot() {
+        final Map<String, String> values = getProperties();
+        List<String> possibleRoots = values.keySet().stream().filter(key -> key.contains(PATH_SEPARATOR))
+                .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR))).distinct().collect(Collectors.toList());
+
+        if (possibleRoots.size() != 1) {
+            throw new IllegalStateException("Multiple roots found. Can't guess correct one: " + possibleRoots); //$NON-NLS-1$
+        }
+        return possibleRoots.get(0);
+    }
+
+    public Optional<String> findConfigPath(final Map<String, PropertyDefinitionDecorator> tree, final String key)
+            throws Exception {
+        TaCoKitConfigurationModel parentModel = getParentConfigurationModel();
+        if (parentModel != null && parentModel.getConfigTypeNode() != null) {
+            final String configType = parentModel.getConfigTypeNode().getConfigurationType();
+            final String configName = parentModel.getConfigTypeNode().getName();
+            if (configType != null && configName != null) {
+                for (PropertyDefinitionDecorator current = tree.get(key); current != null; current = tree
+                        .get(current.getParentPath())) {
+                    if (configType.equals(current.getConfigurationType())
+                            && configName.equals(current.getConfigurationTypeName())) {
+                        return Optional.of(current.getPath());
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Object convertParameterValue(String currentKey, String parentKey, String objectValue) {
+        if (objectValue == null || StringUtils.isEmpty(currentKey) || StringUtils.isEmpty(parentKey)) {
+            return objectValue;
+        }
+        boolean update = false;
+        final List<Map<String, Object>> tableValues = ValueConverter.toTable(objectValue);
+        final List<Map<String, Object>> converted = new ArrayList<>(tableValues.size());
+        for (Object current : tableValues) {
+            if (current != null && current instanceof Map) {
+                Map<String, Object> line = (Map<String, Object>) current;
+                Map<String, Object> convertedLine = new HashMap<>();
+                for (String key : line.keySet()) {
+                    if (key.startsWith(parentKey)) {
+                        final String newKey = key.replace(parentKey, currentKey);
+                        convertedLine.put(newKey, line.get(key));
+                        update = true;
+                    }
+                }
+                converted.add(convertedLine);
+            }
+        }
+        if (update) {
+            return converted.toString();
+        }
+        return objectValue;
+    }
+
+    public EParameterFieldType getEParameterFieldType(String key) {
+        Map<String, PropertyDefinitionDecorator> tree = buildPropertyTree();
+        PropertyDefinitionDecorator property = tree.get(key);
+        if (property != null) {
+            return new WidgetTypeMapper().getFieldType(property);
+        }
+        return EParameterFieldType.TEXT;
     }
 
     @SuppressWarnings("unchecked")
     public void setValue(final TaCoKitElementParameter parameter) {
         Objects.requireNonNull(parameter, "Parameter should not be null");
-        getAllProperties().put(parameter.getName(), parameter.getStringValue());
+        setValue(parameter.getName(), parameter.getStringValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setValue(String key, String value) {
+        String originalValue = value;
+        if (originalValue == null) {
+            getAllProperties().remove(key);
+        } else {
+            String storeValue = originalValue;
+
+            try {
+                if (contains(key) && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
+                    storeValue = CryptoHelper.getDefault().encrypt(originalValue);
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+
+            getAllProperties().put(key, storeValue);
+        }
     }
 
     public ConfigTypeNode getConfigTypeNode() {
@@ -249,6 +394,10 @@ public class TaCoKitConfigurationModel {
                     "current version: " + currentVersion + " persisted version: " + persistedVersion);
         }
         return currentVersion != persistedVersion;
+    }
+
+    public void setPrintEncryptionException(boolean print) {
+        this.printEncryptionException = print;
     }
 
     public static class ValueModel {

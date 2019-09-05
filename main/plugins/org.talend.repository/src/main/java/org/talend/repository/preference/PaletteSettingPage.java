@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -113,7 +113,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -156,7 +156,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /**
      * qwei Comment method "addViewer".
-     * 
+     *
      * @param parent
      */
     private void addTreeViewer(ThreeCompositesSashForm parent) {
@@ -164,7 +164,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.Viewer,
              * java.lang.Object, java.lang.Object)
              */
@@ -259,7 +259,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /**
      * DOC qwei Comment method "getFilterForHiddenComponent". isVisible false for left viewer; true for right viewer
-     * 
+     *
      * @return
      */
     private ViewerFilter getFilterForComponent(final boolean isVisible) {
@@ -285,7 +285,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /**
      * Check if this folder needs to be showed. *
-     * 
+     *
      * @param entry
      * @param isVisible
      * @return
@@ -382,7 +382,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /**
      * set the selected component as visible or not
-     * 
+     *
      * @param selection
      * @param b
      */
@@ -476,7 +476,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /**
      * qwei Comment method "getViewer".
-     * 
+     *
      * @return
      */
     public TreeViewer getViewer() {
@@ -485,7 +485,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#performApply()
      */
     @Override
@@ -497,7 +497,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
@@ -547,7 +547,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
      */
     @Override
@@ -567,7 +567,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#performCancel()
      */
     @Override
@@ -585,7 +585,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.preference.ProjectSettingPage#refresh()
      */
     @Override

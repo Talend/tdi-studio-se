@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,9 @@ import org.talend.designer.abstractmap.ui.visualmap.link.LinkState;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: LinkManager.java 1309 2007-01-05 17:04:10Z amaumont $
- * 
+ *
  */
 public abstract class LinkManager implements ILinkManager {
 
@@ -75,7 +75,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "addLink".
-     * 
+     *
      * @param link
      */
     public void addLink(IMapperLink link) {
@@ -100,7 +100,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "registerLevelForNewLink".
-     * 
+     *
      * @param link
      * @param graphicalLinksFromTarget
      */
@@ -108,7 +108,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "searchFirstFreeIndexLeveledList".
-     * 
+     *
      * @param leveledLinks
      */
     protected int searchFirstEmptyIndexLeveledList(List<List<IMapperLink>> leveledLinks) {
@@ -129,7 +129,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "addLink".
-     * 
+     *
      * @param link
      */
     public void removeLink(IMapperLink link) {
@@ -150,7 +150,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "unregisterLevelForRemovedLink".
-     * 
+     *
      * @param link
      * @param sourceGraphicalLinks
      */
@@ -158,7 +158,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "getGraphicalLinks".
-     * 
+     *
      * @param targetTableEntry
      * @return
      */
@@ -173,7 +173,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "getGraphicalLinks".
-     * 
+     *
      * @param targetTableEntry
      * @return
      */
@@ -183,7 +183,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "getGraphicalLinks".
-     * 
+     *
      * @param targetTableEntry
      * @return
      */
@@ -202,7 +202,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "getSourcesCollection".
-     * 
+     *
      * @param targetITableEntry
      * @return
      */
@@ -226,7 +226,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "getLinks".
-     * 
+     *
      * @return
      */
     public List<IMapperLink> getLinks() {
@@ -235,7 +235,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * DOC amaumont Comment method "getSourcesForTarget".
-     * 
+     *
      * @param dataMapTableEntry
      */
     public Set<ITableEntry> getSourcesForTarget(ITableEntry dataMapTableEntry) {
@@ -252,7 +252,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * Getter for currentNumberLinks.
-     * 
+     *
      * @return the currentNumberLinks
      */
     public int getCurrentNumberLinks() {
@@ -261,7 +261,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * Get the count of inputs levels.
-     * 
+     *
      * @return the count of inputs levels
      */
     public int getCountOfInputLevels() {
@@ -270,7 +270,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * Getter for inputLinksForLevels.
-     * 
+     *
      * @return the inputLinksForLevels
      */
     protected List<List<IMapperLink>> getInputLinksForLevels() {
@@ -279,7 +279,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * Getter for varLinksForLevels.
-     * 
+     *
      * @return the varLinksForLevels
      */
     protected List<List<IMapperLink>> getVarLinksForLevels() {
@@ -288,7 +288,7 @@ public abstract class LinkManager implements ILinkManager {
 
     /**
      * Getter for outputLinksForLevels.
-     * 
+     *
      * @return the outputLinksForLevels
      */
     protected List<List<IMapperLink>> getOutputLinksForLevels() {

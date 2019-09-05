@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerPart;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class TalendSelectionManager extends SelectionManager {
 
@@ -45,7 +45,7 @@ public class TalendSelectionManager extends SelectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.SelectionManager#appendSelection(org.eclipse.gef.EditPart)
      */
     @Override
@@ -101,7 +101,7 @@ public class TalendSelectionManager extends SelectionManager {
 
     /*
      * (non-Javadoc) for bug 10072
-     * 
+     *
      * @when the selected element is ConnectionPerformanceEditPart,transfer Focus to nodepart
      */
     private EditPart transferFocus(ConnectionPerformanceEditPart arg0) {
@@ -154,7 +154,7 @@ public class TalendSelectionManager extends SelectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.SelectionManager#setSelection(org.eclipse.jface.viewers.ISelection)
      */
     @Override
@@ -209,7 +209,7 @@ public class TalendSelectionManager extends SelectionManager {
 
     /**
      * yzhang Comment method "getSelectionType".
-     * 
+     *
      * @return
      */
     public ETalendSelectionType getSelectionType() {

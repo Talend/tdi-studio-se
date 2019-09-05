@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,15 +31,15 @@ import routines.system.IPersistableRow;
 
 /**
  * Manager for lookup type 'ALL_ROWS'.
- * 
+ *
  * <code>PersistentLookupManager</code>. This is the API to serialize/deserialize Talend objects sequentially and be
  * able to iterate on them.
- * 
+ *
  * JBoss library is used to avoid memory leaks noticed with Sun ObjectInputStream class.
- * 
+ *
  * Warning: JBossObjectInputStream may not deserialize any objects such as for example java.io.File, you could encounter
  * the following error:
- * 
+ *
  * <pre>
  * Caused by: java.lang.reflect.InvocationTargetException
  *     at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -60,9 +60,9 @@ import routines.system.IPersistableRow;
  *     at java.io.File.readObject(File.java:1927)
  *     ... 37 more
  *</pre>
- * 
+ *
  * @see http://www.talendforge.org/bugs/view.php?id=6780#bugnotes
- * 
+ *
  * @param <B> bean
  */
 public class PersistentLookupManager<B extends IPersistableRow<B>> implements IPersistentLookupManager<B>, Cloneable {
@@ -84,7 +84,7 @@ public class PersistentLookupManager<B extends IPersistableRow<B>> implements IP
 
     /**
      * PersistentLookupManager constructor.
-     * 
+     *
      * @param container
      * @throws IOException
      */

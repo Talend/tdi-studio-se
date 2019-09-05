@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,7 +21,7 @@ import org.talend.sqlbuilder.dbstructure.nodes.INode;
 /**
  * Abstract implementation for a context menu action in the database structure view. Extend this class to add actions to
  * the structure view.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public abstract class AbstractDBTreeContextAction extends Action {
@@ -34,7 +34,7 @@ public abstract class AbstractDBTreeContextAction extends Action {
 
     /**
      * Store nodes for use in the actions.
-     * 
+     *
      * @param nodes
      */
     public final void setSelectedNodes(INode[] nodes) {
@@ -43,7 +43,7 @@ public abstract class AbstractDBTreeContextAction extends Action {
 
     /**
      * Store treeViewer for use in the actions.
-     * 
+     *
      * @param treeViewer
      */
     public void setTreeViewer(TreeViewer treeViewer) {
@@ -60,8 +60,8 @@ public abstract class AbstractDBTreeContextAction extends Action {
     /**
      * Implement this method to return true when your action is available for the selected node(s). When true, the
      * action will be included in the context menu, when false it will be ignored.
-     * 
-     * 
+     *
+     *
      * @return true if the action should be included in the context menu
      */
     public boolean isAvailable() {

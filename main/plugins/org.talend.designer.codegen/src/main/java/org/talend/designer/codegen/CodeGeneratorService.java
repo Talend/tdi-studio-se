@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,15 +32,15 @@ import org.talend.designer.core.IDesignerCoreService;
 
 /**
  * DOC bqian class global comment. Provides services for CodeGenerator plugin. <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (星期五, 29 九月 2006) nrousseau $
- * 
+ *
  */
 public class CodeGeneratorService implements ICodeGeneratorService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.codegen.ICodeGeneratorFactory#getCodeGenerator()
      */
     @Override
@@ -50,7 +50,7 @@ public class CodeGeneratorService implements ICodeGeneratorService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.codegen.ICodeGeneratorFactory#getCodeGenerator(org.talend.core.model.process.IProcess,
      * boolean, boolean, boolean, java.lang.String)
      */
@@ -88,7 +88,7 @@ public class CodeGeneratorService implements ICodeGeneratorService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.codegen.ICodeGeneratorService#getRoutineSynchronizer()
      */
     @Override
@@ -98,7 +98,7 @@ public class CodeGeneratorService implements ICodeGeneratorService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.codegen.ICodeGeneratorService#createJavaRoutineSynchronizer()
      */
     @Override
@@ -118,7 +118,7 @@ public class CodeGeneratorService implements ICodeGeneratorService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.codegen.ICodeGeneratorService#initializeTemplates(org.eclipse.core.runtime.IProgressMonitor)
      */
@@ -129,7 +129,7 @@ public class CodeGeneratorService implements ICodeGeneratorService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.codegen.ICodeGeneratorService#refreshTemplates()
      */
     @Override

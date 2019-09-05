@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -81,6 +81,7 @@ import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.exception.WarningException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
@@ -129,10 +130,10 @@ import org.talend.utils.json.JSONException;
 
 /**
  * labe Composite login.<br/>
- * 
+ *
  * $Id: /talend/tos/trunk/org.talend.repository/src/main/java/org/talend/repository/ui/login/LoginComposite.java 24167
  * 2009-04-28T09:55:53.574018Z wchen $
- * 
+ *
  * @deprecated use LoginProjectPage instead
  */
 @Deprecated
@@ -282,7 +283,7 @@ public class LoginComposite extends Composite {
 
     /**
      * Constructs a new LoginComposite.
-     * 
+     *
      * @param parent Parent component.
      * @param style Style bits.
      */
@@ -348,7 +349,7 @@ public class LoginComposite extends Composite {
         }
         try {
             setStatusArea();
-            log.info("validate updatesite..."); //$NON-NLS-1$ 
+            log.info("validate updatesite..."); //$NON-NLS-1$
             validateUpdate();
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
@@ -1515,7 +1516,7 @@ public class LoginComposite extends Composite {
 
     /**
      * If setted, Select last ? used in PreferenceStore.
-     * 
+     *
      * @param prefManipulator
      */
     private void selectLast(String lastObjectSelected, Combo comboToSelect) {
@@ -1536,7 +1537,7 @@ public class LoginComposite extends Composite {
     }
 
     /**
-     * 
+     *
      * @return
      */
     protected boolean isAuthenticationNeeded() {
@@ -2121,7 +2122,7 @@ public class LoginComposite extends Composite {
                 String warnings = e.getMessage();
                 if (warnings != null && !warnings.equals(lastWarnings)) {
                     lastWarnings = warnings;
-                    final Shell shell = new Shell(getDisplay(), SWT.ON_TOP | SWT.TOP);
+                    final Shell shell = DisplayUtils.getDefaultShell(false);
                     MessageDialog.openWarning(shell, Messages.getString("LoginComposite.warningTitle"), warnings); //$NON-NLS-1$
                 }
             }
@@ -2148,7 +2149,7 @@ public class LoginComposite extends Composite {
             initialized = true;
         } catch (Exception e) {
             projects = new Project[0];
-            final Shell shell = new Shell(getDisplay(), SWT.ON_TOP | SWT.TOP);
+            final Shell shell = DisplayUtils.getDefaultShell(false);
             MessageDialog.openError(shell, Messages.getString("LoginComposite.warningTitle"), //$NON-NLS-1$
                     Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage()); //$NON-NLS-1$
         }
@@ -2298,7 +2299,7 @@ public class LoginComposite extends Composite {
 
     /**
      * smallet Comment method "selectLastUsedProject".
-     * 
+     *
      * @param projects
      */
     private void selectLastUsedProject() {
@@ -2327,7 +2328,7 @@ public class LoginComposite extends Composite {
 
     /**
      * smallet Comment method "selectProject".
-     * 
+     *
      * @param goodProject
      */
     private void selectProject(Project goodProject) {
@@ -2399,9 +2400,9 @@ public class LoginComposite extends Composite {
 
     /**
      * Label provider for Projects. <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class ProjectLabelProvider extends LabelProvider {
 
@@ -2426,9 +2427,9 @@ public class LoginComposite extends Composite {
 
     /**
      * DOC smallet LoginComposite class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class ConnectionLabelProvider extends LabelProvider {
 

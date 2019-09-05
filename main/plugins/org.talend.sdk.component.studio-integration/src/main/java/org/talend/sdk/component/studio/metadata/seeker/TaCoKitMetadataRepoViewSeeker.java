@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -27,6 +27,7 @@ import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.nodes.IProjectRepositoryNode;
+import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
 import org.talend.sdk.component.studio.metadata.provider.TaCoKitMetadataContentProvider;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
@@ -99,6 +100,7 @@ public class TaCoKitMetadataRepoViewSeeker extends AbstractMetadataRepoViewSeeke
                     final ERepositoryObjectType itemType = lastVersion.getRepositoryObjectType();
                     if (validType(itemType)) {
                         TaCoKitMetadataContentProvider cp = new TaCoKitMetadataContentProvider();
+                        cp.getTopLevelNodes();
                         ProjectRepositoryNode projectRepositoryNode = ProjectRepositoryNode.getInstance();
                         List<IRepositoryNode> rootTypeRepoNodes =
                                 getRootTypeRepositoryNodes(projectRepositoryNode, itemType);
@@ -113,6 +115,7 @@ public class TaCoKitMetadataRepoViewSeeker extends AbstractMetadataRepoViewSeeke
                             IRepositoryNode searchedRepoNode = searchRepositoryNode(rootNode, itemId, itemType);
                             // in fact, will search the main project first.
                             if (searchedRepoNode != null) {
+                                cp.clearCache();
                                 return searchedRepoNode;
                             }
 
@@ -121,6 +124,35 @@ public class TaCoKitMetadataRepoViewSeeker extends AbstractMetadataRepoViewSeeke
                 }
             } catch (PersistenceException e) {
                 ExceptionHandler.process(e);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected IRepositoryNode searchRepositoryNode(IRepositoryNode rootNode, String itemId,
+            final ERepositoryObjectType itemType) {
+        if (rootNode != null && itemId != null && itemType != null) {
+            // in the first, search the current folder/child is leaf
+            List<IRepositoryNode> searchChildren = new ArrayList<IRepositoryNode>();
+
+            List<IRepositoryNode> children = rootNode.getChildren();
+            for (IRepositoryNode childNode : children) {
+                if (isRepositoryFolder(childNode)) {
+                    searchChildren.add(childNode);
+                } else if (validNode(childNode, itemId, itemType)) {
+                    return childNode;
+                } else if (childNode instanceof ITaCoKitRepositoryNode && ((ITaCoKitRepositoryNode) childNode).isLeafNode()
+                        && ((ITaCoKitRepositoryNode) childNode).hasChildren()) {
+                    searchChildren.add(childNode);
+                }
+            }
+            // search in the folders/child is leaf
+            for (IRepositoryNode childNode : searchChildren) {
+                IRepositoryNode searchedRepoNode = searchRepositoryNode(childNode, itemId, itemType);
+                if (searchedRepoNode != null) {
+                    return searchedRepoNode;
+                }
             }
         }
         return null;

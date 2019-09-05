@@ -15,7 +15,7 @@
 			<directory>${project.build.outputDirectory}</directory>
 			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
-				<include>${talend.job.path}/**</include>
+				<include>${talend.job.path}/**/*.class</include>
 				<include>__tdm/**</include>
 			</includes>
 		</fileSet>

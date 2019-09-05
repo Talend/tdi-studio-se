@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,9 +42,9 @@ import org.talend.sqlbuilder.erdiagram.ui.parts.TablePart.CustomTableFigure;
 
 /**
  * DOC qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class ColumnPart extends AbstractGraphicalEditPart implements PropertyChangeListener, NodeEditPart {
 
@@ -52,7 +52,7 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
      */
     @Override
@@ -63,7 +63,7 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#createEditPolicies()
      */
     @Override
@@ -84,7 +84,7 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {
@@ -98,7 +98,7 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef.ConnectionEditPart)
      */
     public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connection) {
@@ -107,7 +107,7 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef.Request)
      */
     public ConnectionAnchor getSourceConnectionAnchor(Request request) {
@@ -116,7 +116,7 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#activate()
      */
     @Override
@@ -130,7 +130,7 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#deactivate()
      */
     @Override
@@ -144,7 +144,7 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef.ConnectionEditPart)
      */
     public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connection) {
@@ -153,7 +153,7 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef.Request)
      */
     public ConnectionAnchor getTargetConnectionAnchor(Request request) {
@@ -162,9 +162,9 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /**
      * DOC admin ColumnPart class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
-     * 
+     *
      */
     public class ColumnRelationAnchor extends ChopboxAnchor {
 
@@ -181,7 +181,7 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.draw2d.ChopboxAnchor#getLocation(org.eclipse.draw2d.geometry.Point)
          */
         @Override
@@ -220,9 +220,9 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
     /**
      * DOC admin ColumnPart class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
-     * 
+     *
      */
     public class CustomColumnFigure extends org.talend.sqlbuilder.erdiagram.ui.figures.CustomColumnFigure {
 
@@ -339,9 +339,9 @@ public class ColumnPart extends AbstractGraphicalEditPart implements PropertyCha
 
         /**
          * DOC admin ColumnPaneFigure class global comment. Detailled comment <br/>
-         * 
+         *
          * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
-         * 
+         *
          */
         class ColumnFigureBorder extends AbstractBorder {
 

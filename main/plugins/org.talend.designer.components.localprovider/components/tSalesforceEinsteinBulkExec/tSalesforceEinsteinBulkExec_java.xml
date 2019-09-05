@@ -1,0 +1,394 @@
+<COMPONENT>
+  <HEADER
+    PLATEFORM="ALL"
+    SERIAL=""
+    VERSION="0.102"
+    STATUS="ALPHA"
+    COMPATIBILITY="ALL"
+    AUTHOR="Talend"
+    RELEASE_DATE="20150228"
+    STARTABLE="true"
+    VISIBLE="true"
+    PARTITIONING="NONE"
+  >
+  <SIGNATURE/>
+  </HEADER>
+  <FAMILIES>
+    <FAMILY>Business/Salesforce</FAMILY>
+    <FAMILY>Cloud/Salesforce</FAMILY>
+  </FAMILIES>
+  <DOCUMENTATION>
+    <URL/>
+  </DOCUMENTATION>
+
+  <CONNECTORS>
+    <CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="0"/>
+    <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="0" MAX_INPUT="1"/>
+    <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="COMPONENT_OK"/>
+    <CONNECTOR CTYPE="COMPONENT_ERROR"/>
+    <CONNECTOR CTYPE="RUN_IF"/>
+  </CONNECTORS>
+
+    <PARAMETERS>
+        <PARAMETER
+          NAME="PROPERTY"
+          FIELD="PROPERTY_TYPE"
+          SHOW="true"
+          NUM_ROW="10"
+          REPOSITORY_VALUE="SALESFORCE" />
+
+        <PARAMETER
+          NAME="USE_EXISTING_CONNECTION"
+          FIELD="CHECK"
+          NUM_ROW="15">
+          <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="CONNECTION"
+          FIELD="COMPONENT_LIST"
+          REQUIRED="true" FILTER="tSalesforceConnection"
+          NUM_ROW="15"
+          SHOW_IF="USE_EXISTING_CONNECTION == 'true'"/>
+
+        <PARAMETER
+          NAME="USER"
+          FIELD="TEXT"
+          NUM_ROW="20"
+          REQUIRED="true"
+          GROUP="CONNECTION_INFO"
+          REPOSITORY_VALUE="USER_NAME"
+          SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="PASSWORD"
+          FIELD="PASSWORD"
+          NUM_ROW="20"
+          REQUIRED="true"
+          GROUP="CONNECTION_INFO"
+          REPOSITORY_VALUE="PASSWORD"
+          SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="ENDPOINT"
+          FIELD="TEXT"
+          NUM_ROW="30"
+          REQUIRED="true"
+          GROUP="CONNECTION_INFO"
+          REPOSITORY_VALUE="ENDPOINT"
+          SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        >
+          <DEFAULT>"https://login.salesforce.com/services/Soap/u/45.0"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="SCHEMA_FLOW"
+          FIELD="SCHEMA_TYPE"
+          NUM_ROW="35"
+          GROUP="DATASET_INFO"
+          NOT_SHOW_IF="SPECIFY_JSON_METADATA == 'true'"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="DATASET_OPERATION"
+          FIELD="CLOSED_LIST"
+          NUM_ROW="70"
+          REQUIRED="true"
+          GROUP="DATASET_INFO">
+            <ITEMS DEFAULT="APPEND">
+                <ITEM NAME="APPEND" VALUE="APPEND" />
+                <ITEM NAME="UPSERT" VALUE="UPSERT" />
+                <ITEM NAME="OVERWRITE" VALUE="OVERWRITE" />
+                <ITEM NAME="DELETE" VALUE="DELETE" />
+            </ITEMS>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="DATASET"
+          FIELD="TEXT"
+          NUM_ROW="70"
+          REQUIRED="true"
+          GROUP="DATASET_INFO"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="LOAD_DATA_PATH"
+          FIELD="FILE"
+          NUM_ROW="80"
+          REQUIRED="true"
+          GROUP="DATASET_INFO"
+        >
+        <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/in.csv"</DEFAULT>
+        </PARAMETER>
+    </PARAMETERS>
+
+    <ADVANCED_PARAMETERS>
+<!--
+        <PARAMETER
+          NAME="ENCODING"
+          FIELD="ENCODING_TYPE"
+          NUM_ROW="10"
+          REQUIRED="true"
+          NOT_SHOW_IF="UPLODE_JSON_METADATA == 'false'">
+          <DEFAULT>"UTF-8"</DEFAULT>
+        </PARAMETER>
+ -->
+        <PARAMETER
+          NAME="CHARSET"
+          FIELD="TEXT"
+          NUM_ROW="18"
+          REQUIRED="true"
+          NOT_SHOW_IF="SPECIFY_JSON_METADATA == 'true'"
+          GROUP="HIDDEN_GROUP"
+        >
+          <DEFAULT>"UTF-8"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="FIELDS_DELIMITED_BY"
+          FIELD="TEXT"
+          NUM_ROW="18"
+          REQUIRED="true"
+          NOT_SHOW_IF="SPECIFY_JSON_METADATA == 'true'"
+          GROUP="HIDDEN_GROUP"
+        >
+          <DEFAULT>";"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="FIELDS_ENCLOSED_BY"
+          FIELD="TEXT"
+          NUM_ROW="23"
+          REQUIRED="true"
+          NOT_SHOW_IF="SPECIFY_JSON_METADATA == 'true'"
+          GROUP="HIDDEN_GROUP"
+        >
+          <DEFAULT>"\""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="LINES_TERMINATED_BY"
+          FIELD="TEXT"
+          NUM_ROW="23"
+          REQUIRED="true"
+          NOT_SHOW_IF="SPECIFY_JSON_METADATA == 'true'"
+          GROUP="HIDDEN_GROUP"
+        >
+          <DEFAULT>"\n"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="NUMERIC_FORMAT"
+          FIELD="TEXT"
+          NUM_ROW="23"
+          REQUIRED="true"
+          SHOW="false"
+          GROUP="HIDDEN_GROUP"
+        >
+          <DEFAULT>"#.##"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="UPLODE_JSON_METADATA"
+          FIELD="CHECK"
+          NUM_ROW="30"
+          SHOW="false"
+        >
+        <DEFAULT>true</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="AUTO_GENERATE_JSON_METADATA_DESCRIPTION"
+          FIELD="CHECK"
+          NUM_ROW="35"
+          GROUP="JSON_SCHMEA"
+          NOT_SHOW_IF="UPLODE_JSON_METADATA == 'false'"
+        >
+        <DEFAULT>true</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="NUMBER_OF_LINES_TO_IGNORE"
+          FIELD="TEXT"
+          NUM_ROW="37"
+          REQUIRED="true"
+          GROUP="JSON_SCHMEA"
+          NOT_SHOW_IF="(AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'true')
+                    OR (SPECIFY_JSON_METADATA == 'true')
+                    OR (UPLODE_JSON_METADATA == 'false')"
+        >
+          <DEFAULT>0</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="UNIQUE_API_NAME"
+          FIELD="TEXT"
+          NUM_ROW="37"
+          REQUIRED="true"
+          GROUP="JSON_SCHMEA"
+          NOT_SHOW_IF="(AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'true')
+                    OR (SPECIFY_JSON_METADATA == 'true')
+                    OR (UPLODE_JSON_METADATA == 'false')"
+        >
+        <DEFAULT>"SalesData"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="DATA_LABEL"
+          FIELD="TEXT"
+          NUM_ROW="39"
+          REQUIRED="true"
+          GROUP="JSON_SCHMEA"
+          NOT_SHOW_IF="(AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'true')
+                    OR (SPECIFY_JSON_METADATA == 'true')
+                    OR (UPLODE_JSON_METADATA == 'false')"
+        >
+        <DEFAULT>"Sales Data"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="FULLY_QUALIFIED_NAME"
+          FIELD="TEXT"
+          NUM_ROW="39"
+          REQUIRED="true"
+          GROUP="JSON_SCHMEA"
+          NOT_SHOW_IF="(AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'true')
+                    OR (SPECIFY_JSON_METADATA == 'true')
+                    OR (UPLODE_JSON_METADATA == 'false')"
+        >
+        <DEFAULT>"CRM"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="SPECIFY_JSON_METADATA"
+          FIELD="CHECK"
+          NUM_ROW="50"
+          GROUP="JSON_SCHMEA"
+          SHOW_IF="(AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'false')
+                AND (UPLODE_JSON_METADATA == 'true')"
+        >
+        <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="JSON_METADATA_PATH"
+          FIELD="FILE"
+          NUM_ROW="60"
+          REQUIRED="true"
+          GROUP="JSON_SCHMEA"
+          SHOW_IF="(SPECIFY_JSON_METADATA=='true')
+               AND (AUTO_GENERATE_JSON_METADATA_DESCRIPTION == 'false')
+               AND (UPLODE_JSON_METADATA == 'true')"
+        >
+        <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/in.json"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="GENERATE_JSON_IN_FILE"
+          FIELD="CHECK"
+          NUM_ROW="70"
+          SHOW_IF="(SPECIFY_JSON_METADATA == 'false')
+               AND (UPLODE_JSON_METADATA == 'true')"
+        >
+        <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="CUSTOM_FOLDER"
+          FIELD="DIRECTORY"
+          NUM_ROW="80"
+          REQUIRED="true"
+          SHOW_IF="(SPECIFY_JSON_METADATA == 'false')
+               AND (UPLODE_JSON_METADATA == 'true')
+               AND (GENERATE_JSON_IN_FILE == 'true')"
+        >
+        <DEFAULT>"__COMP_DEFAULT_FILE_DIR__"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="RETRIEVE_UPLOAD_STATUS"
+          FIELD="CHECK"
+          NUM_ROW="90"
+        >
+        <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+          NAME="SECONDS_TO_WAIT_FOR_SERVER_ANSWER"
+          FIELD="TEXT"
+          NUM_ROW="100"
+          REQUIRED="true"
+          SHOW_IF="RETRIEVE_UPLOAD_STATUS == 'true'"
+        >
+          <DEFAULT>60</DEFAULT>
+        </PARAMETER>
+    </ADVANCED_PARAMETERS>
+
+    <CODEGENERATION>
+      <IMPORTS>
+        <IMPORT
+            NAME="force-wsc-46.0.0"
+            MODULE="force-wsc-46.0.0.jar"
+            MVN="mvn:com.force.api/force-wsc/46.0.0"
+            REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
+        />
+        <IMPORT
+            NAME="force-partner-api-46.0.0"
+            MODULE="force-partner-api-46.0.0.jar"
+            MVN="mvn:com.force.api/force-partner-api/46.0.0"
+            REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
+        />
+        <IMPORT
+            NAME="commons-beanutils-1.9.3"
+            MODULE="commons-beanutils-1.9.3.jar"
+            MVN="mvn:commons-beanutils/commons-beanutils/1.9.3"
+            REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
+        />
+        <IMPORT
+            NAME="ST4-4.0.7"
+            MODULE="ST4-4.0.7.jar"
+            MVN="mvn:org.antlr/ST4/4.0.7"
+            REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
+        />
+        <IMPORT
+            NAME="jackson-core-asl-1.9.14-TALEND"
+            MODULE="jackson-core-asl-1.9.14-TALEND.jar"
+            MVN="mvn:org.codehaus.jackson/jackson-core-asl/1.9.14-TALEND"
+            REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
+        />
+        <IMPORT
+            NAME="jackson-mapper-asl-1.9.14-TALEND"
+            MODULE="jackson-mapper-asl-1.9.14-TALEND.jar"
+            MVN="mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.14-TALEND"
+            REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
+        />
+        <IMPORT
+            NAME="commons-io-2.4.jar"
+            MODULE="commons-io-2.4.jar"
+            MVN="mvn:commons-io/commons-io/2.4"
+            UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar"
+            REQUIRED="true"
+        />
+        <IMPORT
+            NAME="talend-salesforce-0.1.jar"
+            MODULE="talend-salesforce-0.1.jar"
+            MVN="mvn:org.talend.libraries/talend-salesforce-0.1/6.0.0"
+            UrlPath="platform:/plugin/org.talend.libraries.salesforce/lib/talend-salesforce-0.1.jar"
+            REQUIRED="true"
+        />
+      </IMPORTS>
+    </CODEGENERATION>
+    <RETURNS/>
+</COMPONENT>

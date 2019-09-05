@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -87,7 +87,7 @@ import org.talend.repository.RepositoryPlugin;
 
 /**
  * nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class ComponentSettingsView extends ViewPart implements IComponentSettingsView, PropertyChangeListener {
 
@@ -125,7 +125,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /**
      * Getter for parentMap.
-     * 
+     *
      * @return the parentMap
      */
     public Map<String, Composite> getParentMap() {
@@ -134,7 +134,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /**
      * Getter for categoryMap.
-     * 
+     *
      * @return the categoryMap
      */
     public Map<String, EComponentCategory> getCategoryMap() {
@@ -153,7 +153,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /**
      * DOC zwang Comment method "getPreference".
-     * 
+     *
      * @return
      */
     private IPreferenceStore getPreference() {
@@ -167,7 +167,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -214,7 +214,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /**
      * yzhang Comment method "createDynamicComposite".
-     * 
+     *
      * @param parent
      * @param element
      * @param category
@@ -408,7 +408,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
      */
     @Override
@@ -542,7 +542,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /**
      * yzhang Comment method "setPropertiesViewerTitle".
-     * 
+     *
      * @param elem
      */
     private void setPropertiesViewerTitle(Element elem) {
@@ -597,7 +597,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /**
      * yzhang Comment method "getCategories".
-     * 
+     *
      * @param elem
      * @return
      */
@@ -728,7 +728,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /**
      * Need to add recovery category or not by some conditions for current connection
-     * 
+     *
      * @param elem
      */
     private boolean isAvoidRecoveryByConditions(IElement elem) {
@@ -760,7 +760,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /**
      * DOC ycbai Comment method "isSupportValidationRuleNode".
-     * 
+     *
      * @param node
      * @return
      */
@@ -789,7 +789,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /**
      * yzhang Comment method "isAdvancedType".
-     * 
+     *
      * @param elem
      * @return
      */
@@ -804,7 +804,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
 
     /**
      * Getter for dc.
-     * 
+     *
      * @return the dc
      */
     public Composite getDc() {

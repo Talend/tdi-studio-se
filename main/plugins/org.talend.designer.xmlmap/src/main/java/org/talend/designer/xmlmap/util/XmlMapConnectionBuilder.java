@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.designer.xmlmap.model.emf.xmlmap.AbstractInOutTree;
 import org.talend.designer.xmlmap.model.emf.xmlmap.AbstractNode;
 import org.talend.designer.xmlmap.model.emf.xmlmap.Connection;
@@ -35,7 +35,7 @@ import org.talend.designer.xmlmap.ui.expressionutil.TableEntryLocation;
 import org.talend.designer.xmlmap.ui.expressionutil.XmlMapExpressionManager;
 
 /**
- * 
+ *
  * DOC wchen Utils class to deal with connections inside xmlmap ui
  */
 public class XmlMapConnectionBuilder {
@@ -173,7 +173,7 @@ public class XmlMapConnectionBuilder {
                             }
                             return true;
                         } else {
-                            PrefixChangeDialog dialog = new PrefixChangeDialog(new Shell());
+                            PrefixChangeDialog dialog = new PrefixChangeDialog(DisplayUtils.getDefaultShell(false));
                             dialog.setPrefix(prefix);
                             dialog.setRootNodeName(nodeName);
                             dialog.setSourceExpression(sourceLocation.toString());
@@ -232,7 +232,7 @@ public class XmlMapConnectionBuilder {
 
     /**
      * Sets the checkRootNodePrefix.
-     * 
+     *
      * @param checkRootNodePrefix the checkRootNodePrefix to set
      */
     public void setCheckRootNodePrefix(boolean checkRootNodePrefix) {

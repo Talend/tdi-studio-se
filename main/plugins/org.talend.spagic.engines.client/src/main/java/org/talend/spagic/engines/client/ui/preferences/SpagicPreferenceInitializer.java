@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.spagic.engines.client.Activator;
 
 /**
  * Preference Initializer for the designer.
- * 
+ *
  * $Id: PreferenceInitializer.java 5392 2007-08-29 06:24:20Z yzhang $
- * 
+ *
  */
 public class SpagicPreferenceInitializer extends AbstractPreferenceInitializer {
 
@@ -28,7 +28,7 @@ public class SpagicPreferenceInitializer extends AbstractPreferenceInitializer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
      */
     @Override

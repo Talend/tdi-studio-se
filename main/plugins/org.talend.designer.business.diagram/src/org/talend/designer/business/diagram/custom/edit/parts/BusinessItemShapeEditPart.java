@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,9 +35,9 @@ import org.talend.designer.business.model.business.BusinessItem;
 
 /**
  * DOC mhelleboid class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public abstract class BusinessItemShapeEditPart extends ShapeNodeEditPart {
 
@@ -49,7 +49,7 @@ public abstract class BusinessItemShapeEditPart extends ShapeNodeEditPart {
 
     /**
      * DOC mhelleboid BusinessItemShapeEditPart constructor comment.
-     * 
+     *
      * @param view
      */
     public BusinessItemShapeEditPart(View view) {
@@ -84,7 +84,7 @@ public abstract class BusinessItemShapeEditPart extends ShapeNodeEditPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeNodeEditPart#createDefaultEditPolicies()
      */
     @Override

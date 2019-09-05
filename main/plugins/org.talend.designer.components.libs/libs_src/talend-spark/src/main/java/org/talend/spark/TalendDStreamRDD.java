@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -94,7 +94,7 @@ public class TalendDStreamRDD<T> extends TalendRDD<T> {
 	public <U> TalendRDD<U> flatMap(FlatMapFunction<T, U> func) {
 		return new TalendDStreamRDD<U>(this.rdd.flatMap(func));
 	}
-	
+
 	@Override
 	public TalendRDD<T> cache() {
 		return new TalendDStreamRDD<T>(this.rdd.cache());

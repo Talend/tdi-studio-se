@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,9 +40,9 @@ import org.talend.repository.i18n.Messages;
 
 /**
  * Page of the Job Scripts Export Wizard. <br/>
- * 
+ *
  * @referto WizardArchiveFileResourceExportPage1 $Id: JobScriptsExportWizardPage.java 1 2006-12-13 ä¸‹å�ˆ03:09:07 bqian
- * 
+ *
  */
 public class ConfigExternalJarPage extends ConfigExternalLibPage {
 
@@ -54,7 +54,7 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
 
     /**
      * ConfigExternalJarPage.
-     * 
+     *
      * @param pageName
      * @param title
      * @param titleImage
@@ -78,7 +78,7 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
      */
     EList routines = null;
@@ -107,7 +107,7 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.wizards.importExternalLib.ImportExternalLibPage#finish()
      */
     @Override
@@ -130,7 +130,7 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.wizards.ConfigExternalLib.ConfigExternalLibPage#cancel()
      */
     @Override
@@ -140,14 +140,14 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
 
     /**
      * Subclass of the LibraryField. <br/>
-     * 
+     *
      * $Id: ImportExternalJarPage.java Mar 20, 20074:15:28 PM bqian $
-     * 
+     *
      */
     class EditJavaRoutineExternalJarField extends LibraryField {
 
         /**
-         * 
+         *
          * @param name
          * @param parent
          */
@@ -157,7 +157,7 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.repository.ui.wizards.importExternalLib.TableField#afterDeleteSelection(java.util.List)
          */
         @Override
@@ -169,7 +169,7 @@ public class ConfigExternalJarPage extends ConfigExternalLibPage {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.repository.ui.wizards.importExternalLib.LibraryField#getNewInputObject()
          */
         @Override

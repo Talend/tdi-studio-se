@@ -9,11 +9,11 @@
 %>
 
 	<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%>
-	
+
     <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
-	String cid = node.getUniqueName();	
+	String cid = node.getUniqueName();
 
 	String directory = ElementParameterParser.getValue(node, "__SOURCE__");
 	String zipFile = ElementParameterParser.getValue(node, "__TARGET__");
@@ -24,16 +24,16 @@
 	boolean overwrite = ("true").equals(ElementParameterParser.getValue(node, "__OVERWRITE__"));
 	String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
 	boolean isEncrypted = ("true").equals(ElementParameterParser.getValue(node, "__ENCRYPT_FILES__"));
-	
-	List<Map<String, String>> masks = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__MASK__");	
-	
+
+	List<Map<String, String>> masks = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__MASK__");
+
 	String zip64Mode = ElementParameterParser.getValue(node, "__ZIP64_MODE__");
 	String encryptMethod = ElementParameterParser.getValue(node, "__ENCRYPT_METHOD__");
 	String aesKeyStrength = ElementParameterParser.getValue(node, "__AES_KEY_STRENGTH__");
-	
+
 	String archiveFormat = ElementParameterParser.getValue(node, "__ARCHIVE_FORMAT__");
 	String sourceFile = ElementParameterParser.getValue(node, "__SOURCE_FILE__");
-	
+
 	boolean isSyncFlush = "true".equals(ElementParameterParser.getValue(node, "__USE_SYNC_FLUSH__"));
 
 	log4jFileUtil.componentStartInfo(node);
@@ -47,6 +47,11 @@
 	<%
 	}
 	%>
+
+    if (java.nio.file.Files.notExists(java.nio.file.Paths.get(sourceFile_<%=cid %>), java.nio.file.LinkOption.NOFOLLOW_LINKS)){
+        throw new java.io.FileNotFoundException(sourceFile_<%=cid %> + " (The system cannot find the path specified)");
+    }
+
     String zipFile_<%=cid %> = <%=zipFile %>;
     
     com.talend.compress.zip.Zip zip_<%=cid%> = new com.talend.compress.zip.Zip(sourceFile_<%=cid %>, zipFile_<%=cid %>);

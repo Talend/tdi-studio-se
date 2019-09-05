@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,9 +37,9 @@ import org.talend.designer.core.ui.editor.properties.controllers.creator.SelectA
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: VersionController.java 1 2006-12-12 下午01:17:56 +0000 (下午01:17:56) yzhang $
- * 
+ *
  */
 public class VersionController extends AbstractElementPropertySectionController {
 
@@ -49,7 +49,7 @@ public class VersionController extends AbstractElementPropertySectionController 
 
     /**
      * DOC yzhang VersionController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public VersionController(IDynamicProperty dp) {
@@ -59,7 +59,7 @@ public class VersionController extends AbstractElementPropertySectionController 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
     @Override
@@ -154,7 +154,7 @@ public class VersionController extends AbstractElementPropertySectionController 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize(org.eclipse.swt.widgets.Composite,
      * org.talend.core.model.process.IElementParameter)
      */
@@ -181,7 +181,7 @@ public class VersionController extends AbstractElementPropertySectionController 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {

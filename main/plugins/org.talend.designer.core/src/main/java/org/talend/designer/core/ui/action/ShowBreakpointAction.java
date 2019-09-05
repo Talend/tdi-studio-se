@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,7 +42,7 @@ public class ShowBreakpointAction extends SelectionAction {
 
     /**
      * DOC Administrator ShowBreakpointAction constructor comment.
-     * 
+     *
      * @param part
      */
     public ShowBreakpointAction(IWorkbenchPart part) {
@@ -56,7 +56,7 @@ public class ShowBreakpointAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
     @Override

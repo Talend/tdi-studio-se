@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -25,19 +25,13 @@ public class TaCoKitFolderRepositoryNode extends AbsTaCoKitRepositoryNode implem
     public TaCoKitFolderRepositoryNode(final IRepositoryViewObject repViewObject, final RepositoryNode parent,
             final ITaCoKitRepositoryNode parentTaCoKitNode, final String label, final ConfigTypeNode configTypeNode)
             throws Exception {
-        super(repViewObject, parent, parentTaCoKitNode, label, configTypeNode);
+        super(repViewObject, parent, parentTaCoKitNode, label, null, configTypeNode);
         this.setType(ENodeType.SIMPLE_FOLDER);
     }
 
     @Override
     public Image getImage() {
         return null;
-    }
-
-    // TODO remove it as it has the same impl as the parent
-    @Override
-    public boolean isLeafNode() {
-        return false;
     }
 
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,9 +29,9 @@ import org.talend.designer.alfrescooutput.util.AlfrescoOutputException;
 
 /**
  * Manages the model, including load and save.
- * 
+ *
  * @author Marc Dutoo - Open Wide SA
- * 
+ *
  * $Id: AlfrescoOutputModelManager.java,v 1.2 2008/10/10 10:05:54 mdutoo Exp $
  */
 public class AlfrescoOutputModelManager {
@@ -132,7 +132,7 @@ public class AlfrescoOutputModelManager {
 
     /**
      * Adds an aspect definition to the model
-     * 
+     *
      * @param alfrescoModelElement
      */
     public void addAspect(Element alfrescoModelElement) {
@@ -142,7 +142,7 @@ public class AlfrescoOutputModelManager {
 
     /**
      * Removes an aspect definition from the model
-     * 
+     *
      * @param alfrescoModelElement
      */
     public void removeAspect(Element alfrescoModelElement) {
@@ -152,7 +152,7 @@ public class AlfrescoOutputModelManager {
 
     /**
      * Adds an Alfresco model definition file.
-     * 
+     *
      * @param newModelFilePath
      * @throws AlfrescoOutputException if already added or error reading it
      */
@@ -205,7 +205,7 @@ public class AlfrescoOutputModelManager {
 
     /**
      * Removes an Alfresco model definition file.
-     * 
+     *
      * @param oldModelFilePath
      * @throws AlfrescoOutputException
      */
@@ -260,7 +260,7 @@ public class AlfrescoOutputModelManager {
 
     /**
      * Loads the model from the component
-     * 
+     *
      * @throws AlfrescoOutputException if error loading specified models
      */
     public void load() throws AlfrescoOutputException {
@@ -368,7 +368,7 @@ public class AlfrescoOutputModelManager {
 
     /**
      * Saves the given metadata to the given map
-     * 
+     *
      * @param metadataMappingParamName allows to switch between saving properties or elements
      */
     protected void saveMetadatas(String metadataMappingParamName, Map<String, Element> metadataMap) {

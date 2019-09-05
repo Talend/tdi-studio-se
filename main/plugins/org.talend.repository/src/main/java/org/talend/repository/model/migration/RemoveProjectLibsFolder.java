@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ public class RemoveProjectLibsFolder extends AbstractProjectMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
     @Override
@@ -75,7 +75,7 @@ public class RemoveProjectLibsFolder extends AbstractProjectMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override
@@ -105,7 +105,7 @@ public class RemoveProjectLibsFolder extends AbstractProjectMigrationTask {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.librariesmanager.maven.ShareLibrareisHelper#deployToLocalMavenOnExist(java.io.File,
          * org.talend.core.model.general.ModuleNeeded)
          */

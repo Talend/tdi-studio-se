@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -73,9 +73,9 @@ import org.talend.sbi.engines.client.ui.preferences.SpagoBiPreferencePage;
 
 /**
  * Page of the Job Scripts Export Wizard. <br/>
- * 
+ *
  * $Id: PublishOnSpagoExportWizardPage.java 1 2007-04-26 11:29:00 cantoine
- * 
+ *
  */
 public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemResourceExportPage1 {
 
@@ -104,7 +104,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
 
     /**
      * Create an instance of this class.
-     * 
+     *
      * @param name java.lang.String
      */
     protected PublishOnSpagoExportWizardPage(String name, IStructuredSelection selection) {
@@ -155,7 +155,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
 
     /**
      * Create an instance of this class.
-     * 
+     *
      * @param selection the selection
      */
     public PublishOnSpagoExportWizardPage(IStructuredSelection selection) {
@@ -198,7 +198,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
     /*
      * It's not a good method to resovle the problem of null pointer, which is led by commenting the //
      * createResourcesGroup(composite); and createButtonsGroup(composite); (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1#validateSourceGroup()
      */
     protected boolean validateSourceGroup() {
@@ -207,7 +207,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
 
     /**
      * Create the export options specification widgets.
-     * 
+     *
      */
     protected void createOptionsGroupButtons(Group optionsGroup) {
         Font font = optionsGroup.getFont();
@@ -226,7 +226,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
 
     /**
      * Create the buttons for the group that determine if the entire or selected directory structure should be created.
-     * 
+     *
      * @param optionsGroup
      * @param font
      */
@@ -366,7 +366,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
     /**
      * The Finish button was pressed. Try to do the required work now and answer a boolean indicating success. If false
      * is returned then the wizard will not close.
-     * 
+     *
      * @returns boolean
      */
     public boolean finish() {
@@ -501,7 +501,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
 
     /**
      * Get the export operation.
-     * 
+     *
      * @param resourcesToExport
      * @return
      */
@@ -513,7 +513,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
 
     /**
      * Returns the root folder name.
-     * 
+     *
      * @return
      */
     private String getRootFolderName() {
@@ -538,7 +538,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
 
     /**
      * Answer the string to display in self as the destination type.
-     * 
+     *
      * @return java.lang.String
      */
     protected String getDestinationLabel() {
@@ -548,7 +548,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
 
     /**
      * Returns resources to be exported. This returns file - for just the files use getSelectedResources.
-     * 
+     *
      * @return a collection of resources currently selected for export (element type: <code>IResource</code>)
      * @throws ProcessorException
      */
@@ -597,7 +597,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
     /**
      * Answer the suffix that files exported from this wizard should have. If this suffix is a file extension (which is
      * typically the case) then it must include the leading period character.
-     * 
+     *
      */
     protected String getOutputSuffix() {
         return ".zip"; //$NON-NLS-1$
@@ -638,7 +638,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.wizards.datatransfer.WizardFileSystemResourceExportPage1#destinationEmptyMessage()
      */
     protected String destinationEmptyMessage() {
@@ -659,7 +659,7 @@ public abstract class PublishOnSpagoExportWizardPage extends WizardFileSystemRes
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1#validateDestinationGroup()
      */
     @Override

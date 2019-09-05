@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,7 +32,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IEditorSite#getActionBarContributor()
      */
     public IEditorActionBarContributor getActionBarContributor() {
@@ -42,7 +42,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IEditorSite#getActionBars()
      */
     public IActionBars getActionBars() {
@@ -52,7 +52,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IEditorSite#registerContextMenu(org.eclipse.jface.action.MenuManager,
      * org.eclipse.jface.viewers.ISelectionProvider, boolean)
      */
@@ -63,7 +63,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IEditorSite#registerContextMenu(java.lang.String, org.eclipse.jface.action.MenuManager,
      * org.eclipse.jface.viewers.ISelectionProvider, boolean)
      */
@@ -75,7 +75,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPartSite#getId()
      */
     public String getId() {
@@ -85,7 +85,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPartSite#getKeyBindingService()
      */
     public IKeyBindingService getKeyBindingService() {
@@ -95,7 +95,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPartSite#getPart()
      */
     public IWorkbenchPart getPart() {
@@ -105,7 +105,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPartSite#getPluginId()
      */
     public String getPluginId() {
@@ -115,7 +115,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPartSite#getRegisteredName()
      */
     public String getRegisteredName() {
@@ -125,7 +125,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPartSite#registerContextMenu(org.eclipse.jface.action.MenuManager,
      * org.eclipse.jface.viewers.ISelectionProvider)
      */
@@ -136,7 +136,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPartSite#registerContextMenu(java.lang.String,
      * org.eclipse.jface.action.MenuManager, org.eclipse.jface.viewers.ISelectionProvider)
      */
@@ -147,7 +147,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchSite#getPage()
      */
     public IWorkbenchPage getPage() {
@@ -157,7 +157,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchSite#getSelectionProvider()
      */
     public ISelectionProvider getSelectionProvider() {
@@ -167,7 +167,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchSite#getShell()
      */
     public Shell getShell() {
@@ -177,7 +177,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchSite#getWorkbenchWindow()
      */
     public IWorkbenchWindow getWorkbenchWindow() {
@@ -187,7 +187,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchSite#setSelectionProvider(org.eclipse.jface.viewers.ISelectionProvider)
      */
     public void setSelectionProvider(ISelectionProvider provider) {
@@ -197,7 +197,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
     public Object getAdapter(Class adapter) {
@@ -207,7 +207,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.services.IServiceLocator#getService(java.lang.Class)
      */
     public Object getService(Class api) {
@@ -216,7 +216,7 @@ public class SQLBuilderEditorSite implements IEditorSite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.services.IServiceLocator#hasService(java.lang.Class)
      */
     public boolean hasService(Class api) {

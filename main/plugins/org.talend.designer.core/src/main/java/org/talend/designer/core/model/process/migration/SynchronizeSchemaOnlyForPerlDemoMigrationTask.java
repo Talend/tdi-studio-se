@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ import org.talend.repository.RepositoryPlugin;
 
 /**
  * ggu class global comment. Detailled comment.
- * 
+ *
  * @deprecated work for such as tFileCompare, tLogCatcher, tStatCatcher.
  */
 // Bug : 5640 have deleted this class's extensions
@@ -68,7 +68,7 @@ public class SynchronizeSchemaOnlyForPerlDemoMigrationTask extends AbstractJobMi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.core.model.migration.AbstractJobMigrationTask#executeOnProcess(org.talend.core.model.properties.
      * ProcessItem)
      */

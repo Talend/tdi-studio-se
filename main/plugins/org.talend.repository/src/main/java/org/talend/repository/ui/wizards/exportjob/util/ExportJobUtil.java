@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,11 +37,11 @@ import org.talend.repository.ui.utils.ZipToFile;
 public class ExportJobUtil {
 
     /**
-     * 
+     *
      * Gets the set of current job's context.
-     * 
+     *
      * @return a List of context names.
-     * 
+     *
      */
     public static List<String> getJobContexts(ProcessItem processItem) {
         List<String> contextNameList = new ArrayList<String>();
@@ -59,7 +59,7 @@ public class ExportJobUtil {
 
     /**
      * DOC zli Comment method "getJobContextValues".
-     * 
+     *
      * @param processItem
      * @param contextName
      * @return
@@ -92,7 +92,7 @@ public class ExportJobUtil {
     }
 
     public static String getTmpFolder() {
-        String tmp = getTmpFolderPath() + "/newjarFolder"; //$NON-NLS-1$ 
+        String tmp = getTmpFolderPath() + "/newjarFolder"; //$NON-NLS-1$
         tmp = tmp.replace('\\', '/');
         File f = new File(tmp);
         if (!f.exists()) {
@@ -114,7 +114,7 @@ public class ExportJobUtil {
     }
 
     public static void deleteTempFiles() {
-        String tmpFold = getTmpFolderPath() + "/newjarFolder"; //$NON-NLS-1$ 
+        String tmpFold = getTmpFolderPath() + "/newjarFolder"; //$NON-NLS-1$
         File file = new File(tmpFold);
         if (!file.exists() && !file.isDirectory()) {
             return;

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -59,9 +59,9 @@ import org.talend.designer.core.utils.JavaSampleCodeFactory;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SQLEditorController.java 1 2006-12-12 上午11:24:40 +0000 (上午11:24:40) yzhang $
- * 
+ *
  */
 public abstract class AbstractLanguageMemoController extends AbstractElementPropertySectionController {
 
@@ -73,7 +73,7 @@ public abstract class AbstractLanguageMemoController extends AbstractElementProp
 
     /**
      * DOC dev LanguageMemoController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public AbstractLanguageMemoController(IDynamicProperty dp) {
@@ -89,7 +89,7 @@ public abstract class AbstractLanguageMemoController extends AbstractElementProp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -352,9 +352,9 @@ public abstract class AbstractLanguageMemoController extends AbstractElementProp
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "addCodeGenerateButton".
-     * 
+     *
      * @param parent
      */
     private void addCodeGenerateButton(final Composite parent) {
@@ -393,7 +393,7 @@ public abstract class AbstractLanguageMemoController extends AbstractElementProp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -453,7 +453,7 @@ public abstract class AbstractLanguageMemoController extends AbstractElementProp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#hasDynamicRowSize
      * ()
@@ -465,7 +465,7 @@ public abstract class AbstractLanguageMemoController extends AbstractElementProp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

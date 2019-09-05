@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -109,7 +109,7 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
     private IGenericWizardService wizardService;
 
     private ComponentService compService;
-    
+
     private static String location = "repositoryLocation";//$NON-NLS-1$
 
     public GenericConnWizard(IWorkbench workbench, boolean creation, RepositoryNode node, String[] existingNames) {
@@ -235,7 +235,7 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
         IGenericWizardInternalService internalService = new GenericWizardInternalService();
         return internalService.getComponentWizard(typeName, connectionProperty.getId());
     }
-    
+
     private void setRepositoryLocation(Object objectClass,String key, Object value){
         Field declaredField = null;
         try {
@@ -245,7 +245,7 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
                 declaredField = objectClass.getClass().getSuperclass().getDeclaredField(key);
             } catch (NoSuchFieldException | SecurityException e1) {
             }
-        } 
+        }
         declaredField.setAccessible(true);
         try {
             declaredField.set(objectClass, value);
@@ -350,7 +350,7 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
     public ConnectionItem getConnectionItem() {
         return this.connectionItem;
     }
-    
+
     private boolean isRetrieve(){
         ComponentWizardDefinition wizardDefinition = wizard.getDefinition();
         if (wizardDefinition == null) {

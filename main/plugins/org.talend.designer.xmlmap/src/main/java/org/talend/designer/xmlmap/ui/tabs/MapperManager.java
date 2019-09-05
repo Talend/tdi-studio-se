@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -910,9 +910,9 @@ public class MapperManager extends AbstractMapperManager {
     }
 
     /**
-     * 
+     *
      * DOC refresh column when property of treenode is changed
-     * 
+     *
      * @param treeNode
      */
     public void refreshTreeSchemaColumn(TreeNode treeNode) {
@@ -947,9 +947,9 @@ public class MapperManager extends AbstractMapperManager {
     }
 
     /**
-     * 
+     *
      * DOC Administrator Comment method "refreshTreeSchemaEditor".
-     * 
+     *
      * @param outputTree
      */
     public void refreshTreeSchemaEditor(AbstractInOutTree outputTree) {

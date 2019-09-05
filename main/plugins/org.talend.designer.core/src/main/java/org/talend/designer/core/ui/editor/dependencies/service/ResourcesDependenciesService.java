@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -166,7 +166,7 @@ public class ResourcesDependenciesService implements IResourcesDependenciesServi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.service.IResourcesDependenciesService#setDesignerEditorDirtyManually()
      */
     @Override
@@ -176,7 +176,7 @@ public class ResourcesDependenciesService implements IResourcesDependenciesServi
         IEditorPart activeEditor = activePage.getActiveEditor();
         if (activeEditor instanceof AbstractMultiPageTalendEditor) {
             boolean dirty = ((AbstractMultiPageTalendEditor) activeEditor).getDesignerEditor().isDirty();
-            //if already dirty, no need 
+            //if already dirty, no need
             if (dirty) {
                 return;
             }
@@ -196,7 +196,7 @@ public class ResourcesDependenciesService implements IResourcesDependenciesServi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.service.IResourcesDependenciesService#removeBuildJobCacheForResource(java.lang.String)
      */
     @Override

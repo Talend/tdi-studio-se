@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.designer.mapper.model.tableentry.GlobalMapEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class AddGlobalMapEntryCommand extends Command {
 
@@ -32,7 +32,7 @@ public class AddGlobalMapEntryCommand extends Command {
 
     /**
      * DOC amaumont AddTableEntryCommand constructor comment.
-     * 
+     *
      * @param tableEntriesManager
      */
     public AddGlobalMapEntryCommand(TableEntriesManager tableEntriesManager, GlobalMapEntry tableEntry, Integer index) {
@@ -44,7 +44,7 @@ public class AddGlobalMapEntryCommand extends Command {
 
     /**
      * DOC amaumont AddTableEntryCommand constructor comment.
-     * 
+     *
      * @param label
      */
     public AddGlobalMapEntryCommand(String label) {
@@ -53,7 +53,7 @@ public class AddGlobalMapEntryCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#execute()
      */
     @Override
@@ -65,7 +65,7 @@ public class AddGlobalMapEntryCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#canExecute()
      */
     @Override
@@ -75,7 +75,7 @@ public class AddGlobalMapEntryCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#canUndo()
      */
     @Override
@@ -85,7 +85,7 @@ public class AddGlobalMapEntryCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#redo()
      */
     @Override
@@ -95,7 +95,7 @@ public class AddGlobalMapEntryCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#undo()
      */
     @Override

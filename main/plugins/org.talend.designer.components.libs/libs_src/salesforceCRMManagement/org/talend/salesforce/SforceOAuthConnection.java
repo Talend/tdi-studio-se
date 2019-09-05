@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,7 @@ import com.salesforce.soap.partner.SforceServiceStub;
 
 /**
  * created by bchen on Jul 10, 2014 Detailled comment
- * 
+ *
  */
 public class SforceOAuthConnection extends SforceConnection {
 
@@ -46,15 +46,15 @@ public class SforceOAuthConnection extends SforceConnection {
     private final int callbackPort;
 
     private boolean needCompression;
-    
+
     private boolean useHttpChunked;
 
     private int timeout;
 
     private String clientID;
-    
+
     private String serviceEndPoint;
-    
+
     public String getServiceEndPoint(){
     	return this.serviceEndPoint;
     }
@@ -161,7 +161,7 @@ public class SforceOAuthConnection extends SforceConnection {
         private final int callbackPort;
 
         private boolean needCompression = false;
-        
+
         private boolean useHttpChunked;
 
         private int timeout = 60000;
@@ -187,7 +187,7 @@ public class SforceOAuthConnection extends SforceConnection {
             this.needCompression = needCompression;
             return this;
         }
-        
+
         public Builder useHttpChunked(boolean useHttpChunked) {
             this.useHttpChunked = useHttpChunked;
             return this;

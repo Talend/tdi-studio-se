@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -205,7 +205,7 @@ public class JobSettingsManager {
     }
 
     /**
-     * 
+     *
      * create parameter for extra tab.
      */
     private static List<IElementParameter> getExtraParameters(IProcess process) {
@@ -829,9 +829,9 @@ public class JobSettingsManager {
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "isStatsAndLogsActivated".
-     * 
+     *
      * for stats & logs settings
      */
     public static boolean isStatsAndLogsActivated(IProcess process) {
@@ -843,9 +843,9 @@ public class JobSettingsManager {
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "isImplicittContextLoadActived".
-     * 
+     *
      * for implictit tContextLoad in extra settings
      */
     public static boolean isImplicittContextLoadActived(IProcess process) {
@@ -1209,7 +1209,7 @@ public class JobSettingsManager {
             realDbTypeForJDBC = ExtractMetaDataUtils.getInstance().getDbTypeByClassName(driverClassValue);
         }
         return realDbTypeForJDBC;
-    }    
+    }
 
     public static class FileSeparator {
 

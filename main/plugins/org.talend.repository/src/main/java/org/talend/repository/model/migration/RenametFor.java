@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ public class RenametFor extends AbstractJobMigrationTask {
 
     public ExecutionResult execute(Item item) {
     	ProcessType processType = getProcessType(item);
-		
+
         try {
             if (getProject().getLanguage().equals(ECodeLanguage.JAVA) && processType != null) {
                 IComponentFilter filter1 = new NameComponentFilter("tFor"); //$NON-NLS-1$

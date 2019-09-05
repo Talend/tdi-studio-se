@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,9 +36,9 @@ import org.talend.designer.mapper.ui.visualmap.table.DataMapTableView;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class TableEntriesManager {
 
@@ -53,11 +53,11 @@ public class TableEntriesManager {
     static final int HEIGHT_REACTION = 2;
 
     /**
-     * 
+     *
      * Event type. <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public enum EVENT_TYPE implements IExtendedControlEventType {
         REMOVE_ALL,
@@ -87,7 +87,7 @@ public class TableEntriesManager {
 
     /**
      * DOC amaumont Comment method "load".
-     * 
+     *
      * @param tableEntries2
      */
     void addAll(List<? extends ITableEntry> dataMapTableEntriesGroup) {
@@ -106,7 +106,7 @@ public class TableEntriesManager {
 
     /**
      * DOC amaumont Comment method "addTableEntry".
-     * 
+     *
      * @param dataMapTableEntry
      * @param index
      */
@@ -148,7 +148,7 @@ public class TableEntriesManager {
 
     /**
      * DOC amaumont Comment method "add".
-     * 
+     *
      * @param dataMapTableEntry
      */
     private void add(ITableEntry dataMapTableEntry) {
@@ -184,7 +184,7 @@ public class TableEntriesManager {
 
     /**
      * DOC amaumont Comment method "searchTableEntry".
-     * 
+     *
      * @param tableName
      * @param columnName
      */
@@ -194,7 +194,7 @@ public class TableEntriesManager {
 
     /**
      * DOC amaumont Comment method "getTableEntryProperties".
-     * 
+     *
      * @param dataMapTableEntry
      * @return
      */
@@ -247,7 +247,7 @@ public class TableEntriesManager {
 
     /**
      * DOC amaumont Comment method "retrieveTableFromTableEntry".
-     * 
+     *
      * @param dataMapTableEntry
      * @return
      */
@@ -257,7 +257,7 @@ public class TableEntriesManager {
 
     /**
      * DOC amaumont Comment method "renameEntryName".
-     * 
+     *
      * @param dataMapTableEntry
      * @param newColumnName
      * @param newColumnName
@@ -287,11 +287,11 @@ public class TableEntriesManager {
     }
 
     /**
-     * 
+     *
      * Event for TableEntriesManager. <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     // public class TableEntriesManagerEvent extends ExtendedModelEvent {
     //
@@ -305,6 +305,6 @@ public class TableEntriesManager {
     //
     // public ITableEntry entry;
     // public List<ITableEntry> entries;
-    //        
+    //
     // }
 }

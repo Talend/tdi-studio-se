@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -198,7 +198,7 @@ public abstract class TableTreeEntityFigure extends TableEntityFigure {
     /**
      * recursively set all nodes and sub-treebranch nodes to the same location. This gives the appearance of all nodes
      * coming from the same place.
-     * 
+     *
      * @param bounds where to set
      */
     public void animationReset(Rectangle bounds) {

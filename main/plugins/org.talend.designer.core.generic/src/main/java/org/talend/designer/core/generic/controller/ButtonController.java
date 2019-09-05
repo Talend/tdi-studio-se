@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,6 +16,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
@@ -50,14 +51,14 @@ import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMu
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 
 /**
- * 
+ *
  * created by ycbai on 2015年9月28日 Detailled comment
  *
  */
 public class ButtonController extends AbstractElementPropertySectionController {
-    
+
     private static final String TEST_CONNECTION = "Test connection"; //$NON-NLS-1$
-    
+
     public ButtonController(IDynamicProperty dp) {
         super(dp);
     }
@@ -68,7 +69,7 @@ public class ButtonController extends AbstractElementPropertySectionController {
             chooseContext();
             loadJars(parameter);
         }
-        
+
         if (parameter != null) {
             callBeforeActive(parameter);
             // so as to invoke listeners to perform some actions.
@@ -76,7 +77,7 @@ public class ButtonController extends AbstractElementPropertySectionController {
         }
         return null;
     }
-    
+
     private void chooseContext(){
         ConnectionItem connItem = null;
         if(dynamicProperty instanceof MissingSettingsMultiThreadDynamicComposite){
@@ -92,7 +93,7 @@ public class ButtonController extends AbstractElementPropertySectionController {
         ConnectionContextHelper.context = ConnectionContextHelper.getContextTypeForContextMode(conn,
                 null, false);
     }
-    
+
     private void loadJars(IElementParameter parameter){
         ILibraryManagerService librairesManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
                 ILibraryManagerService.class);
@@ -126,14 +127,16 @@ public class ButtonController extends AbstractElementPropertySectionController {
                 	continue;
                 }
                 for(String path : listString){
-                    jars.add(GenericTableUtils.getDriverJarPath(path));
+                    if (!StringUtils.isBlank(path)) {
+                        jars.add(GenericTableUtils.getDriverJarPath(path));
+                    }
                 }
-                
+
             }
         }
         librairesManagerService.retrieve(jars, ExtractMetaDataUtils.getInstance().getJavaLibPath(), new NullProgressMonitor());
     }
-    
+
     @Override
     public Control createControl(Composite subComposite, IElementParameter param, int numInRow, int nbInRow, int top,
             Control lastControl) {

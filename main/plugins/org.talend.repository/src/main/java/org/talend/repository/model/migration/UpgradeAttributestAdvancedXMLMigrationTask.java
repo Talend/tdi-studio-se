@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,7 +29,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * DOC s class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2007-10-25 17:06:40 +0000 xzhang $
  */
 public class UpgradeAttributestAdvancedXMLMigrationTask extends AbstractJobMigrationTask {
@@ -37,7 +37,7 @@ public class UpgradeAttributestAdvancedXMLMigrationTask extends AbstractJobMigra
     @Override
 	public ExecutionResult execute(Item item) {
     	ProcessType processType = getProcessType(item);
-	
+
         if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
             return ExecutionResult.NOTHING_TO_DO;
         }
@@ -45,7 +45,7 @@ public class UpgradeAttributestAdvancedXMLMigrationTask extends AbstractJobMigra
 
             IComponentFilter filter1 = new NameComponentFilter("tAdvancedFileOutputXML"); //$NON-NLS-1$
 
-            IComponentConversion removeQuotes1 = new UpdateAttributesFortAdvancedXMLConversion(); 
+            IComponentConversion removeQuotes1 = new UpdateAttributesFortAdvancedXMLConversion();
             ModifyComponentsAction.searchAndModify(item, processType, filter1,
 					Arrays.<IComponentConversion> asList(removeQuotes1));
 

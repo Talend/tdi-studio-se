@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,9 +33,9 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
  * there will be a new option on FS components since 3.2, see revision r30399, and the default status(unchecked) of the
  * option will due to the behavior of jobs changed which create by 3.1 or the version before. so add this task to help
  * the user upgrade their jobs. <br/>
- * 
+ *
  * add option on FS components and set the option checked.<br/>
- * 
+ *
  * DOC ytao class global comment. Detailled comment
  */
 

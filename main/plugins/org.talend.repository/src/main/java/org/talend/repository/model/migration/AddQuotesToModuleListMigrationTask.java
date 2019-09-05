@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,14 +28,14 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * ftang class global comment. Detailled comment <br/>
- * 
- * 
+ *
+ *
  */
 public class AddQuotesToModuleListMigrationTask extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractJobMigrationTask#executeOnProcess(org.talend.core.model.properties.ProcessItem)
      */
     @Override
@@ -51,9 +51,9 @@ public class AddQuotesToModuleListMigrationTask extends AbstractJobMigrationTask
 
     /**
      * Add quote marks to the separators.
-     * 
+     *
      * yzhang Comment method "addQuote".
-     * 
+     *
      * @throws PersistenceException
      */
     private void addQuote(Item item) throws PersistenceException {
@@ -105,8 +105,8 @@ public class AddQuotesToModuleListMigrationTask extends AbstractJobMigrationTask
 
     /**
      * To see whehter the string is surrounded with double quote mark.
-     * 
-     * 
+     *
+     *
      * @param string
      * @return
      */
@@ -125,7 +125,7 @@ public class AddQuotesToModuleListMigrationTask extends AbstractJobMigrationTask
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
      */
     public Date getOrder() {

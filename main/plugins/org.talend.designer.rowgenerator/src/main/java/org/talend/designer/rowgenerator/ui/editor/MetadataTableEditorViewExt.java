@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -57,9 +57,9 @@ import org.talend.designer.rowgenerator.ui.tabs.TabFolderEditors;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2007-3-8 下午05:52:30 (星期五, 29 九月 2006) qzhang $
- * 
+ *
  */
 public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
@@ -162,7 +162,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
     /**
      * qzhang Comment method "configurePreviewColumns".
-     * 
+     *
      * @param tableViewerCreator
      */
     private void configurePreviewColumns(TableViewerCreator<IMetadataColumn> tableViewerCreator) {
@@ -178,7 +178,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
     /**
      * qzhang Comment method "getPreviewAccessor".
-     * 
+     *
      * @return
      */
     private IBeanPropertyAccessors<MetadataColumnExt, String> getPreviewAccessor() {
@@ -203,7 +203,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
     /**
      * qzhang Comment method "configureParameterColumns".
-     * 
+     *
      * @param tableViewerCreator
      */
     private void configureParameterColumns(TableViewerCreator<IMetadataColumn> tableViewerCreator) {
@@ -218,7 +218,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
     /**
      * qzhang Comment method "getParameterAccessor".
-     * 
+     *
      * @return
      */
     private IBeanPropertyAccessors<MetadataColumnExt, String> getParameterAccessor() {
@@ -245,7 +245,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
     /**
      * qzhang Comment method "configureFunctionColumns".
-     * 
+     *
      * @param tableViewerCreator
      */
     private void configureFunctionColumns(TableViewerCreator<IMetadataColumn> tableViewerCreator) {
@@ -316,7 +316,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.ui.metadata.editor.MetadataTableEditorView#getTalendTypeAccessor()
      */
     @Override
@@ -437,7 +437,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
             /*
              * (non-Java)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
             @Override
@@ -452,7 +452,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
     /**
      * qzhang Comment method "attachLabelPosition".
-     * 
+     *
      * @param shift
      */
     protected void attachLabelPosition(int shift) {
@@ -571,7 +571,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
             /*
              * (non-Java)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
             @Override
@@ -761,7 +761,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
         preview2(tabFolderEditors);
     }
 
-    
+
     /**
      * Getter for functionManager.
      * @return the functionManager

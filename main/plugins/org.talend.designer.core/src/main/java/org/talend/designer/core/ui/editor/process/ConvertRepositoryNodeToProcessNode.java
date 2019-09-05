@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -129,7 +129,7 @@ public class ConvertRepositoryNodeToProcessNode {
                 componentName = rcSetting.getDefaultComponentName();
             }
         }
-        
+
         IComponent dbInputComponent = ComponentsFactoryProvider.getInstance().get(componentName,
                 ComponentCategory.CATEGORY_4_DI.getName());
         Process process = new Process(GuessSchemaProcess.getNewmockProperty());
@@ -175,7 +175,7 @@ public class ConvertRepositoryNodeToProcessNode {
         cc.execute();
 
         IElementParameter query = node.getElementParameterFromField(EParameterFieldType.MEMO_SQL);
-        
+
         memoSQL = query.getValue().toString();
         String memoSQLTemp = TalendTextUtils.removeQuotesIfExist(memoSQL);
         if ((memoSQLTemp == null || memoSQLTemp.equals("")) && tableName != null && !tableName.equals("")) {

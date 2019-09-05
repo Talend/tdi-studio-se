@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,7 @@ public class RunMapReduceProcessContext extends RunBigDataProcessContext {
 
     /**
      * DOC marvin RunRemoteMapReduceProcessContext constructor comment.
-     * 
+     *
      * @param process
      */
     public RunMapReduceProcessContext(IProcess2 process) {
@@ -34,7 +34,7 @@ public class RunMapReduceProcessContext extends RunBigDataProcessContext {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.runprocess.bigdata.RunBigDataProcessContext#createProcessor(org.talend.core.model.process
      * .IProcess, org.talend.core.model.properties.Property, boolean)

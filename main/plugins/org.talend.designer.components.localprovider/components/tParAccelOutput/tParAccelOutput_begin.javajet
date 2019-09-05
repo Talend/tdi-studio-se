@@ -33,6 +33,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 
     String dbname= ElementParameterParser.getValue(node, "__DBNAME__");
 
+	String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
+
     String dbhost = ElementParameterParser.getValue(node, "__HOST__");
 
 	String dbport = ElementParameterParser.getValue(node, "__PORT__");
@@ -173,7 +175,17 @@ if(("true").equals(useExistingConn)) {
     java.lang.Class.forName("com.paraccel.Driver");
     <%dbLog.conn().logJDBCDriver(dbLog.str("com.paraccel.Driver"));%>
 
-    String url_<%=cid %> = "jdbc:paraccel://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+	<%
+    if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+        %>
+        String url_<%=cid%> = "jdbc:paraccel://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+        <%
+    } else {
+        %>
+        String url_<%=cid%> = "jdbc:paraccel://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%> + "?" + <%=dbproperties%>;
+        <%
+    }       
+    %>
     String dbUser_<%=cid %> = <%=dbuser%>;
 
     <%

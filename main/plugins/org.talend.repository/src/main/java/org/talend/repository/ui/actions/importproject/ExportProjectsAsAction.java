@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -64,9 +64,9 @@ import org.talend.repository.ui.wizards.newproject.copyfromeclipse.TalendZipFile
 
 /**
  * Action used to refresh a repository view.<br/>
- * 
+ *
  * $Id: RefreshAction.java 824 2006-12-01 15:49:55 +0000 (ven., 01 déc. 2006) smallet $
- * 
+ *
  */
 public class ExportProjectsAsAction extends Action implements IWorkbenchWindowActionDelegate {
 
@@ -200,7 +200,7 @@ public class ExportProjectsAsAction extends Action implements IWorkbenchWindowAc
 
     /**
      * DOC bqian Comment method "getProjectAndRelatedLinks".
-     * 
+     *
      * @return
      */
     private Map<Project, List<LinkTargetStore>> getProjectAndRelatedLinks() {
@@ -227,7 +227,7 @@ public class ExportProjectsAsAction extends Action implements IWorkbenchWindowAc
 
     /**
      * DOC zwang Comment method "getLinksFromProject".
-     * 
+     *
      * @param project
      * @return
      */
@@ -271,7 +271,7 @@ public class ExportProjectsAsAction extends Action implements IWorkbenchWindowAc
 
     /**
      * DOC bqian Comment method "getRouineFromProject".
-     * 
+     *
      * @param project
      */
     private RootContainer<String, IRepositoryViewObject> getRoutineFromProject(Project project) {
@@ -322,7 +322,7 @@ public class ExportProjectsAsAction extends Action implements IWorkbenchWindowAc
     /**
      * Returns the currently entered container name. Null if the field is empty. Note that the container may not exist
      * yet if the user entered a new container name in the field.
-     * 
+     *
      * @return IPath
      */
     public IPath getContainerFullPath(String pathName) {
@@ -354,9 +354,9 @@ public class ExportProjectsAsAction extends Action implements IWorkbenchWindowAc
 
     /**
      * use to store the file and the file's corresponding link target temporarily. <br/>
-     * 
+     *
      * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
-     * 
+     *
      */
     class LinkTargetStore {
 

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,7 +26,7 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.TraceData;
@@ -36,9 +36,9 @@ import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 
 /**
  * EditPart of the NodeTrace.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnectionTraceEditPart extends AbstractGraphicalEditPart implements PropertyChangeListener {
 
@@ -49,7 +49,7 @@ public class ConnectionTraceEditPart extends AbstractGraphicalEditPart implement
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#activate()
      */
     public void activate() {
@@ -66,7 +66,7 @@ public class ConnectionTraceEditPart extends AbstractGraphicalEditPart implement
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#deactivate()
      */
     public void deactivate() {
@@ -83,7 +83,7 @@ public class ConnectionTraceEditPart extends AbstractGraphicalEditPart implement
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
      */
     @Override
@@ -94,7 +94,7 @@ public class ConnectionTraceEditPart extends AbstractGraphicalEditPart implement
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#createEditPolicies()
      */
     @Override
@@ -104,7 +104,7 @@ public class ConnectionTraceEditPart extends AbstractGraphicalEditPart implement
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#getDragTracker(org.eclipse.gef.Request)
      */
     @Override
@@ -114,7 +114,7 @@ public class ConnectionTraceEditPart extends AbstractGraphicalEditPart implement
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
      */
     @Override
@@ -156,7 +156,7 @@ public class ConnectionTraceEditPart extends AbstractGraphicalEditPart implement
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {
@@ -181,8 +181,8 @@ public class ConnectionTraceEditPart extends AbstractGraphicalEditPart implement
     public void performRequest(Request req) {
         if (req.getType().equals(RequestConstants.REQ_OPEN)) {
             ConnectionTrace a = ((ConnectionTrace) this.getModel());
-            FilterColumnDialog dialog = new FilterColumnDialog(new Shell(), a.getConnection(), this.getViewer().getEditDomain()
-                    .getCommandStack());
+            FilterColumnDialog dialog = new FilterColumnDialog(DisplayUtils.getDefaultShell(false), a.getConnection(),
+                    this.getViewer().getEditDomain().getCommandStack());
             dialog.open();
         }
     }

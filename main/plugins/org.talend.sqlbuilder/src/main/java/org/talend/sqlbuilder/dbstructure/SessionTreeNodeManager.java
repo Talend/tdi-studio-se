@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,13 +32,13 @@ import org.talend.sqlbuilder.repository.utility.SQLBuilderRepositoryNodeManager;
 import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 
 /**
- * 
+ *
  * This is a SessionTreeNode manager,It is used to process the creation, convertion,store of the SessionTreeNode. It can
  * convert DatabaseConnect to SessionTreeNode. SessionTreeNode is used in sql editor,sql result and database detail
  * viewer.
- * 
+ *
  * $Id: talend-code-templates.xml,v 1.3 2006/11/01 05:38:28 bqian Exp $
- * 
+ *
  */
 public class SessionTreeNodeManager {
 
@@ -55,7 +55,7 @@ public class SessionTreeNodeManager {
 
     /**
      * Converts the DatabaseConnection to SessionTreeNode, and stores the SessionTreeNode.
-     * 
+     *
      * @param repositoryNode RepositoryNode
      * @param selectedContext
      * @return SessionTreeNode
@@ -91,7 +91,7 @@ public class SessionTreeNodeManager {
     /**
      * DOC qianbing Comment method "convert2INode". Converts the RepositoryNode input to INode. INode is used for the
      * sql editor,result viewer and the detail viewer.
-     * 
+     *
      * @param repositoryNode RepositoryNode
      * @param selectedContext
      * @return INode
@@ -137,7 +137,7 @@ public class SessionTreeNodeManager {
 
     /**
      * DOC qianbing Comment method "getRepositoryType". Gets the type of the RepositoryNode.
-     * 
+     *
      * @param repositoryNode RepositoryNode
      * @return RepositoryNodeType
      * @see RepositoryNodeType
@@ -149,7 +149,7 @@ public class SessionTreeNodeManager {
     /**
      * DOC qianbing Comment method "getRoot". Gets the root RepositoryNode of the input RepositoryNode. The root should
      * be a RepositoryNode with database infomation.
-     * 
+     *
      * @param repositoryNode RepositoryNode
      * @return RepositoryNode
      */

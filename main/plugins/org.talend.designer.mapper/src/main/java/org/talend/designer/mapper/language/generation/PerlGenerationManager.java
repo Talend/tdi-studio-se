@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.talend.designer.mapper.utils.DataMapExpressionParser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class PerlGenerationManager extends GenerationManager {
 
@@ -36,7 +36,7 @@ public class PerlGenerationManager extends GenerationManager {
 
     /**
      * DOC amaumont Comment method "prefixEntryLocations".
-     * 
+     *
      * @param outputExpression
      * @param expressionParser
      * @return
@@ -51,7 +51,7 @@ public class PerlGenerationManager extends GenerationManager {
 
     /**
      * DOC amaumont Comment method "tranformArraysExpressions".
-     * 
+     *
      * @param uniqueNameComponent
      * @param outputExpression
      * @param expressionParser
@@ -119,9 +119,9 @@ public class PerlGenerationManager extends GenerationManager {
 
     /**
      * Build conditions for tMap before 2.1 .
-     * 
+     *
      * @param gm
-     * 
+     *
      * @param constraintTableEntries
      * @param expressionParser
      * @return
@@ -158,7 +158,7 @@ public class PerlGenerationManager extends GenerationManager {
 
     /**
      * DOC amaumont Comment method "buildNewArrayDeclaration".
-     * 
+     *
      * @param name
      * @return
      */
@@ -168,7 +168,7 @@ public class PerlGenerationManager extends GenerationManager {
 
     /**
      * DOC amaumont Comment method "buildNewArrayDeclaration".
-     * 
+     *
      * @param name
      * @return
      */
@@ -178,7 +178,7 @@ public class PerlGenerationManager extends GenerationManager {
 
     /**
      * DOC amaumont Comment method "buildNewArrayDeclaration".
-     * 
+     *
      * @param name
      * @return
      */

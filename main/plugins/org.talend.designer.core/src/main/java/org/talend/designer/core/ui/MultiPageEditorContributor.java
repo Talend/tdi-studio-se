@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,9 +49,9 @@ import org.talend.designer.core.ui.editor.TalendScalableFreeformRootEditPart;
  * Manages the installation/deinstallation of global actions for multi-page editors. Responsible for the redirection of
  * global actions to the active editor. Multi-page contributor replaces the contributors for the individual editors in
  * the multi-page editor. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MultiPageEditorContributor extends MultiPageEditorActionBarContributor {
 
@@ -135,7 +135,7 @@ public class MultiPageEditorContributor extends MultiPageEditorActionBarContribu
 
     /**
      * Returns the action registed with the given text editor.
-     * 
+     *
      * @return IAction or null if editor is null.
      */
     protected IAction getAction(IEditorPart editor, String actionID) {
@@ -151,7 +151,7 @@ public class MultiPageEditorContributor extends MultiPageEditorActionBarContribu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.MultiPageEditorActionBarContributor#setActivePage(org.eclipse.ui.IEditorPart)
      */
     @Override
@@ -199,7 +199,7 @@ public class MultiPageEditorContributor extends MultiPageEditorActionBarContribu
     /**
      * See bug 0003656: Actions in the main menu "View" are always disabled. Reset the handlers for view menu to
      * activate action items.
-     * 
+     *
      * @param activeEditor
      * @param actionBars
      * @param viewActionIds
@@ -212,7 +212,7 @@ public class MultiPageEditorContributor extends MultiPageEditorActionBarContribu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToMenu(org.eclipse.jface.action.IMenuManager)
      */
     @Override
@@ -229,7 +229,7 @@ public class MultiPageEditorContributor extends MultiPageEditorActionBarContribu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToToolBar(org.eclipse.jface.action.IToolBarManager)
      */
     @Override
@@ -245,7 +245,7 @@ public class MultiPageEditorContributor extends MultiPageEditorActionBarContribu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.EditorActionBarContributor#dispose()
      */
     @Override

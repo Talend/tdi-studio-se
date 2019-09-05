@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.core.model.components.IMultipleComponentParameter;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public class MultipleComponentParameterValue implements IMultipleComponentParameter {
 
@@ -43,7 +43,7 @@ public class MultipleComponentParameterValue implements IMultipleComponentParame
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentParameter#getSourceComponent()
      */
     public String getSourceComponent() {
@@ -52,7 +52,7 @@ public class MultipleComponentParameterValue implements IMultipleComponentParame
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentParameter#getSourceValue()
      */
     public String getSourceValue() {
@@ -61,7 +61,7 @@ public class MultipleComponentParameterValue implements IMultipleComponentParame
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentParameter#getTargetComponent()
      */
     public String getTargetComponent() {
@@ -70,7 +70,7 @@ public class MultipleComponentParameterValue implements IMultipleComponentParame
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentParameter#getTargetValue()
      */
     public String getTargetValue() {

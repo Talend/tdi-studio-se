@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,9 +21,9 @@ import org.talend.designer.rowgenerator.managers.RowGeneratorManager;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ProblemsAnalyser.java,v 1.5 2007/01/31 05:20:51 pub Exp $
- * 
+ *
  */
 public class ProblemsAnalyser {
 
@@ -47,7 +47,7 @@ public class ProblemsAnalyser {
 
     /**
      * qzhang Comment method "getProblems".
-     * 
+     *
      * @return
      */
     private List<Problem> getProblems() {

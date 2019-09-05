@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,7 +22,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.database.DriverShim;
-import org.talend.core.sqlbuilder.util.TextUtil;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.model.RepositoryNode;
@@ -39,9 +38,9 @@ import org.talend.sqlbuilder.util.UIUtils;
 
 /**
  * This class is used for executing sql query. <br/>
- * 
+ *
  * $Id: ExecSQLAction.java,v 1.21 2006/11/03 03:19:05 qiang.zhang Exp $
- * 
+ *
  */
 public class ExecSQLAction extends AbstractEditorAction {
 
@@ -61,7 +60,7 @@ public class ExecSQLAction extends AbstractEditorAction {
 
     /**
      * ExecSQLAction constructor.
-     * 
+     *
      * @param resultViewer
      */
     public ExecSQLAction(IResultDisplayer resultViewer, ISQLEditor editor) {
@@ -72,7 +71,7 @@ public class ExecSQLAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#getImageDescriptor()
      */
     @Override
@@ -82,7 +81,7 @@ public class ExecSQLAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getText()
      */
     @Override
@@ -92,7 +91,7 @@ public class ExecSQLAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getToolTipText()
      */
     @Override
@@ -102,7 +101,7 @@ public class ExecSQLAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#run()
      */
     @Override
@@ -148,7 +147,7 @@ public class ExecSQLAction extends AbstractEditorAction {
 
     /**
      * DOC qianbing Comment method "run". Processes the database operation.
-     * 
+     *
      * @param maxRows
      */
     protected void run(int maxRows) {
@@ -167,7 +166,7 @@ public class ExecSQLAction extends AbstractEditorAction {
             return;
         }
 
-        QueryTokenizer qt = new QueryTokenizer(getSQLToBeExecuted(), queryDelimiter, alternateDelimiter, commentDelimiter);
+        QueryTokenizer qt = new QueryTokenizer(editor.getSQLToBeExecuted(), queryDelimiter, alternateDelimiter, commentDelimiter);
 
         List<String> queryStrings = new ArrayList<String>();
         while (qt.hasQuery()) {
@@ -208,16 +207,4 @@ public class ExecSQLAction extends AbstractEditorAction {
             }
         }
     }
-
-    /**
-     * Gets sql for executing.
-     * 
-     * @return string
-     */
-    public String getSQLToBeExecuted() {
-        String sql = editor.getSQLToBeExecuted();
-        sql = TextUtil.calEscapeValue(sql);
-        return sql;
-    }
-
 }

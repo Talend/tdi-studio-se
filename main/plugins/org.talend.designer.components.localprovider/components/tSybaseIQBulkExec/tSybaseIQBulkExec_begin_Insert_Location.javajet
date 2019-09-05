@@ -360,7 +360,10 @@ if(useExistingConn) {
     }//end sybase IQ 15
 %>
 
-    java.lang.Class.forName(driverClass_<%=cid%>);
+    java.lang.Class jdbcclazz_<%=cid%> = java.lang.Class.forName(driverClass_<%=cid%>);
+   	<%if("SYBSEIQ_16".equals(dbVersion)){%>
+	jdbcclazz_<%=cid%>.newInstance();
+	<%}%>
 
     <%
     String passwordFieldName = "__PASS__";

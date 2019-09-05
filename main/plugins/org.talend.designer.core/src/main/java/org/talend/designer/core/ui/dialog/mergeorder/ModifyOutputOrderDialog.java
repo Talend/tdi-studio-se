@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -76,7 +76,7 @@ public class ModifyOutputOrderDialog extends MergeOrderDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.dialog.mergeorder.MergeOrderDialog#configureShell(org.eclipse.swt.widgets.Shell)
      */
     @Override
@@ -86,7 +86,7 @@ public class ModifyOutputOrderDialog extends MergeOrderDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.dialog.mergeorder.MergeOrderDialog#configureSizeAndTitle(org.eclipse.swt.widgets.
      * Shell)
@@ -102,7 +102,7 @@ public class ModifyOutputOrderDialog extends MergeOrderDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.dialog.mergeorder.MergeOrderDialog#getConnectionQty()
      */
     @Override
@@ -137,7 +137,7 @@ public class ModifyOutputOrderDialog extends MergeOrderDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.dialog.mergeorder.MergeOrderDialog#getConnectionList()
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,14 +42,14 @@ import org.talend.repository.ui.views.IRepositoryView;
 
 /**
  * Generate survivorship rule files and store them to metadata/rules for tRuleSurvivorship. see feature TDQ-3356
- * 
+ *
  * DOC sizhaoliu class global comment. Detailled comment
  */
 public class GenerateSurvivorshipRulesController extends AbstractElementPropertySectionController {
 
     /**
      * DOC sizhaoliu GenerateSurvivorshipRulesController constructor comment.
-     * 
+     *
      * @param dp
      */
     public GenerateSurvivorshipRulesController(IDynamicProperty dp) {
@@ -59,7 +59,7 @@ public class GenerateSurvivorshipRulesController extends AbstractElementProperty
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {
@@ -115,7 +115,7 @@ public class GenerateSurvivorshipRulesController extends AbstractElementProperty
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#createControl
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -181,7 +181,7 @@ public class GenerateSurvivorshipRulesController extends AbstractElementProperty
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -194,7 +194,7 @@ public class GenerateSurvivorshipRulesController extends AbstractElementProperty
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#refresh(org
      * .talend.core.model.process.IElementParameter, boolean)

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.designer.dbmap.model.tableentry.InputColumnTableEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: InputTable.java 1601 2007-01-25 16:46:15Z amaumont $
- * 
+ *
  */
 public class InputTable extends AbstractInOutTable {
 
@@ -48,9 +48,9 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * DOC amaumont InputTable constructor comment.
-     * 
+     *
      * @param mapperManager
-     * 
+     *
      * @param metadataTable
      * @param externalMapperTable can be null
      * @param mainConnection
@@ -62,7 +62,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * DOC amaumont InputTable constructor comment.
-     * 
+     *
      * @param manager
      * @param metadataTable
      * @param alias2
@@ -74,7 +74,7 @@ public class InputTable extends AbstractInOutTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.dbmap.model.table.AbstractInOutTable#initFromExternalData(org.talend.designer.dbmap.external
      * .data.ExternalMapperTable)
@@ -141,7 +141,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * DOC amaumont Comment method "fillIputEntry".
-     * 
+     *
      * @param columnEntry
      * @param externalMapperTableEntry
      */
@@ -153,7 +153,7 @@ public class InputTable extends AbstractInOutTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.dbmap.model.table.DataMapTable#getNewTableEntry(org.talend.core.model.metadata.IMetadataColumn
      * )
@@ -169,7 +169,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Getter for joinType.
-     * 
+     *
      * @return the joinType
      */
     public IJoinType getJoinType() {
@@ -181,7 +181,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Sets the joinType.
-     * 
+     *
      * @param joinType the joinType to set
      */
     public void setJoinType(IJoinType joinType) {
@@ -190,7 +190,7 @@ public class InputTable extends AbstractInOutTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.table.IDataMapTable#getName()
      */
     @Override
@@ -206,7 +206,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Getter for alias.
-     * 
+     *
      * @return the alias
      */
     public String getAlias() {
@@ -215,7 +215,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Sets the alias.
-     * 
+     *
      * @param alias the alias to set
      */
     public void setAlias(String alias) {
@@ -224,7 +224,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Getter for tableName.
-     * 
+     *
      * @return the tableName
      */
     public String getTableName() {
@@ -233,7 +233,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Sets the tableName.
-     * 
+     *
      * @param tableName the tableName to set
      */
     public void setTableName(String tableName) {

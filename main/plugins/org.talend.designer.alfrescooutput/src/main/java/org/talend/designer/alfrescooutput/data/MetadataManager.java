@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,7 +22,7 @@ import org.dom4j.Element;
 
 /**
  * Handles computed metadata in the model.
- * 
+ *
  * @author Marc Dutoo - Open Wide SA
  *
  * $Id: MetadataManager.java,v 1.1 2008/10/07 21:27:31 mdutoo Exp $
@@ -30,13 +30,13 @@ import org.dom4j.Element;
 public class MetadataManager {
 
 	private AlfrescoOutputModelManager modelManager;
-	
+
 	// computed alfresco metadatas :
 	private Map<String,Element> propertyMap = new HashMap<String,Element>();
 	private Map<String,Element> associationMap = new HashMap<String,Element>();
 	private List<String> missingTypeNames = new ArrayList<String>();
 	private List<String> missingAspectNames = new ArrayList<String>();
-	
+
 	public MetadataManager(AlfrescoOutputModelManager modelManager) {
 		this.modelManager = modelManager;
 	}
@@ -54,7 +54,7 @@ public class MetadataManager {
 	public List<String> getMissingAspectNames() {
 		return missingAspectNames;
 	}
-    
+
 	/**
 	 * Updates computed metadata according to the current model.
 	 */
@@ -64,7 +64,7 @@ public class MetadataManager {
     	this.associationMap.clear();
     	this.missingTypeNames.clear();
     	this.missingAspectNames.clear();
-    	
+
     	// handling supertype metadatas :
     	if (modelManager.getType() != null) {
     		this.fillMetadatas(modelManager.getType(), missingTypeNames, missingAspectNames);
@@ -73,7 +73,7 @@ public class MetadataManager {
         	this.fillMetadatas(aspect, missingTypeNames, missingAspectNames);
     	}
     }
-    
+
     /**
      * Fills the given maps with the typing metadatas found in the given alfresco metamodel element.
      * NB. avoids system metadata : base and referenceable,
@@ -97,7 +97,7 @@ public class MetadataManager {
     			((isType) ? missingTypeNames : missingAspectNames).add(parentName);
     		}
     	}
-    	
+
     	Element mandatoryAspectsElt = alfrescoModelElement.element("mandatory-aspects"); //$NON-NLS-1$
     	if (mandatoryAspectsElt != null) {
 	    	for (Element aspectElt : (List<Element>) mandatoryAspectsElt.elements("aspect")) { //$NON-NLS-1$
@@ -110,7 +110,7 @@ public class MetadataManager {
 	    		}
 	    	}
     	}
-		
+
 		// properties :
     	Element propertiesElt = alfrescoModelElement.element("properties"); //$NON-NLS-1$
     	if (propertiesElt != null) {
@@ -120,7 +120,7 @@ public class MetadataManager {
     			} // else filtering out protected
     		}
     	}
-    	
+
     	// associations and child-associations :
     	Element associationsElt = alfrescoModelElement.element("associations"); //$NON-NLS-1$
     	if (associationsElt != null) {
@@ -128,9 +128,9 @@ public class MetadataManager {
     			associationMap.put(association.attributeValue("name"), association); //$NON-NLS-1$
     		}
     	}
-    	
+
     	// NB. child-associations can only be set to target an existing element.
     	// to create a new element with a target association, targetLocation must be used.
     }
-    
+
 }

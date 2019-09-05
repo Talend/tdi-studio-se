@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,24 +33,24 @@ import org.talend.sugarws.Name_value;
 public interface SugarManagement {
 
     public void login() throws ServiceException, MalformedURLException, RemoteException;
-    
+
     public void logout() throws RemoteException;
 
     public String[] getTables() throws RemoteException;
-    
+
     public Field[] getFields(String moduleName) throws RemoteException;
 
     public Get_entry_list_result getRecords(String moduleName, int offset, int maxResults) throws RemoteException;
-    
+
     public Get_entry_list_result getRecordswithQuery(String moduleName, String query, String[] fileds, int offset, int maxResults) throws RemoteException;
 
-    public String setRecord(String moduleName, Name_value[] arrNameValuesToEnter) throws RemoteException; 
-    
-    //public void insertRecord(String moduleName, Name_value[] arrNameValuesToEnter) throws RemoteException; 
-    
-    //public void updateRecord(String moduleName, Name_value[] arrNameValuesToEnter) throws RemoteException; 
+    public String setRecord(String moduleName, Name_value[] arrNameValuesToEnter) throws RemoteException;
+
+    //public void insertRecord(String moduleName, Name_value[] arrNameValuesToEnter) throws RemoteException;
+
+    //public void updateRecord(String moduleName, Name_value[] arrNameValuesToEnter) throws RemoteException;
 
     //public void updateRecordsWithQuery(String moduleName, String query, Name_value[] arrNameValuesToEnter) throws RemoteException;
-    
+
     //public void insertOrUpdateById(String moduleName, Name_value[] arrNameValuesToEnter) throws RemoteException;
 }

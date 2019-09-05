@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -147,7 +147,7 @@ public class TraceConnectionsManager {
     }
 
     /**
-     * 
+     *
      * About the shandow connection, it's only for design, but not existed in the final generated codes. like some
      * joblet connections.
      */
@@ -168,7 +168,7 @@ public class TraceConnectionsManager {
     }
 
     /**
-     * 
+     *
      * find the connection by the connection unique name.
      */
     public IConnection finConnectionByUniqueName(String connUniqueName) {
@@ -189,7 +189,7 @@ public class TraceConnectionsManager {
     }
 
     /**
-     * 
+     *
      * Get all non-shadow connections for current joblet node. only work for expended joblet.
      */
     public IConnection[] getNonShadowDataConnections(INode node) {

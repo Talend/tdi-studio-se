@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,6 +35,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -62,7 +63,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
 
     /**
      * DOC bqian TalendLaunchToolbarAction constructor comment.
-     * 
+     *
      * @param launchGroupIdentifier
      */
     public TalendLaunchToolbarAction() {
@@ -71,7 +72,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
 
     /**
      * Fills the drop-down menu with favorites and launch history
-     * 
+     *
      * @param menu the menu to fill
      */
     @Override
@@ -138,7 +139,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.debug.ui.actions.AbstractLaunchHistoryAction#init(org.eclipse.ui.IWorkbenchWindow)
      */
     @Override
@@ -150,7 +151,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.debug.ui.actions.AbstractLaunchHistoryAction#selectionChanged(org.eclipse.jface.action.IAction,
      * org.eclipse.jface.viewers.ISelection)
      */
@@ -162,7 +163,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.debug.ui.actions.AbstractLaunchHistoryAction#getLastLaunch()
      */
     @Override
@@ -187,7 +188,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
 
     /**
      * Launch the last launch, or open the launch config dialog if none.
-     * 
+     *
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     @Override
@@ -242,7 +243,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
 
     private Shell getShell() {
         if (window == null) {
-            return new Shell();
+            return DisplayUtils.getDefaultShell(false);
         } else {
             return window.getShell();
         }
@@ -264,7 +265,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
     // }
     /**
      * Returns the launch configuration manager.
-     * 
+     *
      * @return launch configuration manager
      */
     private LaunchConfigurationManager getLaunchConfigurationManager() {
@@ -273,7 +274,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.debug.ui.actions.AbstractLaunchHistoryAction#launchHistoryChanged()
      */
     @Override
@@ -284,7 +285,7 @@ public class TalendLaunchToolbarAction extends AbstractLaunchToolbarAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.debug.ui.actions.AbstractLaunchHistoryAction#updateTooltip()
      */
     @Override

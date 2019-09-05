@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -76,6 +76,7 @@ import org.talend.core.ui.services.ISQLBuilderService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.cmd.RepositoryChangeQueryCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -84,9 +85,9 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SQLEditorController.java 1 2006-12-12 上午11:24:40 +0000 (上午11:24:40) yzhang $
- * 
+ *
  */
 public class SqlMemoController extends AbstractElementPropertySectionController {
 
@@ -94,7 +95,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
 
     /**
      * DOC yzhang SqlMemoController constructor comment.
-     * 
+     *
      * @param dtp
      */
     public SqlMemoController(IDynamicProperty dp) {
@@ -105,7 +106,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -171,10 +172,9 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
             // return new PropertyChangeCommand(elem, propertyName, contextSql);
             // }
             // return null;
-        } else {
-            // if the input query isn't contextmode or it's a standard query in perl
-            query = this.removeStrInQuery(query);
         }
+
+        query = TalendTextUtils.removeStrInQuery(query);
         initConnectionParametersWithContext(elem, part == null ? new EmptyContextManager().getDefaultContext() : part
                 .getProcess().getContextManager().getDefaultContext());
         String sql = openSQLBuilder(repositoryType, propertyName, query);
@@ -185,31 +185,9 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
         return null;
     }
 
-    /**
-     * DOC ftang Comment method "removeStrInQuery".
-     * 
-     * @param input
-     * @return
-     */
-    private String removeStrInQuery(String input) {
-//        String out = removeSlash(input);
-        return TalendTextUtils.removeQuotes(input);
-    }
-
-    /**
-     * DOC ftang Comment method "removeSlash".
-     * 
-     * @param input
-     * @return
-     */
-    private String removeSlash(String input) {
-        String out = input.replaceAll("\\\\", ""); //$NON-NLS-1$ //$NON-NLS-2$
-        return out;
-    }
-
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -245,14 +223,8 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
             openSQLEditorButton.setEnabled(ExtractMetaDataUtils.getInstance().haveLoadMetadataNode());
         }
 
-        // Added by Marvin Wang on Dec.13, 2012 for bug TDI-7559.
-        IElementParameter typePara = elem.getElementParameter("TYPE"); //$NON-NLS-1$
-        if (typePara != null && "Hive".equalsIgnoreCase((String) typePara.getValue())) { //$NON-NLS-1$
-            openSQLEditorButton.setVisible(false);
-        }
-        if (typePara != null && "Impala".equalsIgnoreCase((String) typePara.getValue())) { //$NON-NLS-1$
-            openSQLEditorButton.setVisible(false);
-        }
+        openSQLEditorButton.setVisible(visibleOpenSQLEditorButton());// visible
+
         FormData data1 = new FormData();
         data1.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
         data1.left = new FormAttachment(100, -(ITabbedPropertyConstants.HSPACE + STANDARD_BUTTON_WIDTH));
@@ -370,7 +342,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -404,7 +376,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#hasDynamicRowSize
      * ()
@@ -462,7 +434,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
             connParameters.setRepositoryId(item.getProperty().getId());
         }
         connParameters.setQueryObject(query);
-        connParameters.setQuery(query.getValue());
+        connParameters.setQuery(query.getValue(), true);
 
         TextUtil.setDialogTitle(TextUtil.SQL_BUILDER_TITLE_REP);
 
@@ -477,7 +449,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
 
         connParameters.setNodeReadOnly(false);
         connParameters.setFromRepository(true);
-        ISQLBuilderService sqlBuilderService = (ISQLBuilderService) GlobalServiceRegister.getDefault().getService(
+        ISQLBuilderService sqlBuilderService = GlobalServiceRegister.getDefault().getService(
                 ISQLBuilderService.class);
         Dialog sqlBuilder = sqlBuilderService.openSQLBuilderDialog(composite.getShell(), processName, connParameters);
 
@@ -485,7 +457,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
 
         if (Window.OK == sqlBuilder.open()) {
             sql = connParameters.getQuery();
-
+            sql = TalendTextUtils.addQuotes(sql);
         }
         if (sql != null && !queryText.isDisposed()) {
             queryText.setText(sql);
@@ -497,7 +469,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
 
     /**
      * Find the label of DatabaseConnectionItem that contains current query.
-     * 
+     *
      * @param queryId
      * @return
      */
@@ -517,7 +489,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
     /**
      * Display a dialog to ask the user to update the query in the repository directly or change the query to built-in
      * mode.
-     * 
+     *
      * @param shell
      */
     private void promptForChangingMode(Shell shell) {
@@ -552,7 +524,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
     }
 
     /**
-     * 
+     *
      * ggu ShowQueryDialog class global comment. Detailled comment
      */
     class ShowQueryDialog extends Dialog {
@@ -595,4 +567,25 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
         }
     }
 
+    public boolean visibleOpenSQLEditorButton() {
+        IElementParameter typeParam = elem.getElementParameter("TYPE"); //$NON-NLS-1$
+        if (typeParam != null) {
+            String typeParamValue = String.valueOf(typeParam.getValue());
+            if ("Hive".equalsIgnoreCase(typeParamValue) || "Impala".equalsIgnoreCase(typeParamValue)) { //$NON-NLS-1$//$NON-NLS-2$
+                return false;
+            }
+        }
+        if (curParameter != null) {
+            if (curParameter instanceof ElementParameter) {
+                Object sourceName = ((ElementParameter) curParameter).getTaggedValue("org.talend.sdk.component.source");//$NON-NLS-1$
+                if ("tacokit".equalsIgnoreCase(String.valueOf(sourceName))) {//$NON-NLS-1$
+                    Object familyValue = elem.getPropertyValue(EParameterName.FAMILY.getName());
+                    if (isInWizard() || "jdbc".equalsIgnoreCase(String.valueOf(familyValue))) { //$NON-NLS-1$
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 }

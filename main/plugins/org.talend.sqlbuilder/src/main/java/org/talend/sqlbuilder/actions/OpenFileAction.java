@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,9 +27,9 @@ import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
  * This class is responsible for opening an existing file which in current OS. <br/>
- * 
+ *
  * @author ftang
- * 
+ *
  */
 public class OpenFileAction extends AbstractEditorAction {
 
@@ -37,7 +37,7 @@ public class OpenFileAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getText()
      */
     public String getText() {
@@ -46,7 +46,7 @@ public class OpenFileAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#isEnabled()
      */
     public boolean isEnabled() {
@@ -55,7 +55,7 @@ public class OpenFileAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#run()
      */
     public void run() {
@@ -74,7 +74,7 @@ public class OpenFileAction extends AbstractEditorAction {
 
     /**
      * Load one or more files into the editor.
-     * 
+     *
      * @param files string[] of relative file paths
      * @param filePath path where all files are found
      */
@@ -127,7 +127,7 @@ public class OpenFileAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getToolTipText()
      */
     public String getToolTipText() {
@@ -136,7 +136,7 @@ public class OpenFileAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#getHoverImageDescriptor()
      */
     public ImageDescriptor getHoverImageDescriptor() {
@@ -145,7 +145,7 @@ public class OpenFileAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#getImageDescriptor()
      */
     public ImageDescriptor getImageDescriptor() {

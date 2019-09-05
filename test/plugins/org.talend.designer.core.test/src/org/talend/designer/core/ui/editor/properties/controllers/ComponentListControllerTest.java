@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * created by hwang on 2017-3-8 Detailled comment
- * 
+ *
  */
 
 public class ComponentListControllerTest {
@@ -51,7 +51,7 @@ public class ComponentListControllerTest {
         String oldConnectionName = "joblet3_1";
         String newConnectionName = "joblet1_1_joblet2_1_joblet3_1";
         List<Node> nodesToUpdate = new ArrayList<Node>();
-        
+
         IComponent component = ComponentsFactoryProvider.getInstance().get("tMysqlInput",
                 ComponentCategory.CATEGORY_4_DI.getName());
         Property property = PropertiesFactory.eINSTANCE.createProperty();
@@ -62,7 +62,7 @@ public class ComponentListControllerTest {
         nodesToUpdate.add(node);
         IElementParameter param = node.getElementParameter("CONNECTION");
         param.setValue("joblet3_1_joblet4_1_joblet5_1_tMysqlConnection_1");
-        
+
         ComponentListController.renameComponentUniqueName(oldConnectionName, newConnectionName, nodesToUpdate);
         assertTrue(param.getValue().equals("joblet1_1_joblet2_1_joblet3_1_joblet4_1_joblet5_1_tMysqlConnection_1"));
         //---second
@@ -71,7 +71,7 @@ public class ComponentListControllerTest {
         param.setValue("tMysqlConnection_1_joblet4_1_joblet5_1_tMysqlConnection_1");
         ComponentListController.renameComponentUniqueName(oldConnectionName, newConnectionName, nodesToUpdate);
         assertTrue(param.getValue().equals("joblet1_1_joblet2_1_tMysqlConnection_1_joblet4_1_joblet5_1_tMysqlConnection_1"));
-        
+
     }
 
 

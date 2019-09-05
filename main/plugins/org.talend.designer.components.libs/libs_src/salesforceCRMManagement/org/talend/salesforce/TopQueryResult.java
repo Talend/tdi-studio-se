@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,11 +26,11 @@ public class TopQueryResult {
     private List<TopRecord> allTopRecords = new ArrayList<TopRecord>();
 
     // return the final result, it normalize the "Multi-Rows" as one column.
-    
+
     private List returnColumns = new ArrayList();
 
 	private List returnLocalColumns = new ArrayList();
-    
+
     public List<TopRecord> getAllTopRecords() {
         return allTopRecords;
     }
@@ -55,17 +55,17 @@ public class TopQueryResult {
         }
 
     }
-    
+
     private void addNewColumns(List returnColumns,List recordColumns){
-    	
+
     	for(Object columnName:recordColumns){
     		if(!returnColumns.contains(columnName)){
     			returnColumns.add(columnName);
     		}
     	}
-    	
+
     }
-    
+
     public List getReturnColumns() {
 		return returnColumns;
 	}

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,7 +32,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
@@ -71,7 +70,7 @@ import org.talend.designer.core.ui.editor.AbstractTalendEditor;
 import org.talend.utils.io.FilesUtils;
 
 /**
- * 
+ *
  * DOC hcyi class global comment. Detailled comment
  */
 public class DownloadComponenentsAction extends Action implements IIntroAction {
@@ -111,7 +110,7 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
     /**
      * Update ui after job finished.
-     * 
+     *
      * @param action
      * @param event
      */
@@ -228,7 +227,7 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
     /**
      * Notify after download complete.
-     * 
+     *
      * @param extension
      */
     void extensionDownloadCompleted(ComponentExtension extension) {
@@ -347,7 +346,8 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
                         @Override
                         public void run() {
-                            MessageDialog.openError(new Shell(), Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
+                            MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                                    Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
                                     Messages.getString("DownloadComponenentsAction_failureMessage", extension.getLabel())); //$NON-NLS-1$
                         }
                     });

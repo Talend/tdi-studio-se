@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import java.util.NoSuchElementException;
 
 /**
  * DOC qianbing class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DoublyLinkedList.java,v 1.3 2006/11/01 07:49:10 peiqin.hou Exp $
- * 
+ *
  */
 class DoublyLinkedList {
 
@@ -117,9 +117,9 @@ class DoublyLinkedList {
 
     /**
      * DOC qianbing DoublyLinkedList class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: DoublyLinkedList.java,v 1.3 2006/11/01 07:49:10 peiqin.hou Exp $
-     * 
+     *
      */
     protected class DLLNode {
 
@@ -137,9 +137,9 @@ class DoublyLinkedList {
 
     /**
      * DOC qianbing DoublyLinkedList class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: DoublyLinkedList.java,v 1.3 2006/11/01 07:49:10 peiqin.hou Exp $
-     * 
+     *
      */
     public class DLLIterator {
 
@@ -231,11 +231,11 @@ class DoublyLinkedList {
      * DoublyLinkedList(); String testObjectOne = "test object one"; testListOne.addFirst(testObjectOne);
      * System.out.println("Size after adding one object by calling addFirst: " + testListOne.size);
      * testListOne.removeFirst(); System.out.println("Then called removeFirst and size is: " + testListOne.size);
-     * 
+     *
      * testListOne.addLast(testObjectOne); System.out.println("Size after adding one object by calling addLast: " +
      * testListOne.size); testListOne.removeLast(); System.out.println("Then called removeLast and size is: " +
      * testListOne.size); testListOne.clear(); testListOne.clear();
-     * 
+     *
      * testListOne.addFirst(testObjectOne); DLLIterator iterator = testListOne.iterator(); System.out.println("hasNext
      * method of iterator after adding one object by calling addFirst: " + iterator.hasNext());
      * System.out.println("hasPrevious method of iterator after adding one object by calling addFirst: " +
@@ -244,42 +244,42 @@ class DoublyLinkedList {
      * iterator.hasNext()); System.out.println("hasPrevious method of iterator after calling next: " +
      * iterator.hasPrevious()); resultString = (String)iterator.previous(); System.out.println("result string pulled out
      * by calling previous: " + resultString); testListOne.clear();
-     * 
+     *
      * System.out.println("");
-     * 
+     *
      * String testObjectTwo = "test object two"; String testObjectThree = "test object three";
-     * 
+     *
      * testListOne.addFirst(testObjectTwo); testListOne.addFirst(testObjectOne); iterator.resetToBeginning();
      * while(iterator.hasNext()) System.out.println((String)iterator.next()); testListOne.clear();
-     * 
+     *
      * System.out.println("");
-     * 
+     *
      * testListOne.addLast(testObjectOne); testListOne.addLast(testObjectTwo); iterator.resetToBeginning();
      * while(iterator.hasNext()) System.out.println((String)iterator.next()); testListOne.clear();
-     * 
+     *
      * System.out.println("");
-     * 
+     *
      * testListOne.addFirst(testObjectThree); testListOne.addFirst(testObjectTwo); testListOne.addFirst(testObjectOne);
      * iterator.resetToBeginning(); while(iterator.hasNext()) System.out.println((String)iterator.next());
      * testListOne.clear();
-     * 
+     *
      * System.out.println("");
-     * 
+     *
      * testListOne.addLast(testObjectOne); testListOne.addLast(testObjectTwo); testListOne.addLast(testObjectThree);
      * iterator.resetToBeginning(); while(iterator.hasNext()) System.out.println((String)iterator.next());
      * testListOne.clear();
-     * 
+     *
      * System.out.println("");
-     * 
+     *
      * testListOne.addFirst(testObjectTwo); testListOne.addFirst(testObjectOne); iterator.resetToEnd();
      * while(iterator.hasPrevious()) System.out.println((String)iterator.previous()); testListOne.clear();
-     * 
+     *
      * System.out.println("");
-     * 
+     *
      * testListOne.addFirst(testObjectThree); testListOne.addFirst(testObjectTwo); testListOne.addFirst(testObjectOne);
      * System.out.println("size after adding three objects: " + testListOne.size()); iterator.resetToEnd();
      * while(iterator.hasPrevious()) System.out.println((String)iterator.previous()); testListOne.clear();
-     * 
+     *
      * System.out.println(""); } }
      */
 }

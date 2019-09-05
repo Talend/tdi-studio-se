@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,7 +19,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
@@ -37,9 +37,9 @@ import org.talend.sqlbuilder.util.QueryTokenizer;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2007-2-9 下午01:06:55 (星期五, 29 九月 2006) qzhang $
- * 
+ *
  */
 public class GUIModificationQueryAction extends AbstractEditorAction {
 
@@ -71,7 +71,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getToolTipText()
      */
     @Override
@@ -84,7 +84,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#getImageDescriptor()
      */
     @Override
@@ -94,7 +94,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getText()
      */
     @Override
@@ -107,7 +107,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#run()
      */
     @Override
@@ -123,17 +123,18 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
         // }
         // }
         // if (queryStrings.size() < 1) {
-        // MessageDialog.openError(new Shell(), "Notice", "You must input one Sql Statement!");
+        // MessageDialog.openError(DisplayUtils.getDefaultShell(false), "Notice", "You must input one Sql Statement!");
         // return;
         // }
         // if (queryStrings.size() > 1) {
-        // isForce = MessageDialog.openQuestion(new Shell(), "Notice",
+        // isForce = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), "Notice",
         // "You only modify first Sql Statement by GUI, Would you like to continue?");
         // }
         // String string = queryStrings.get(0).toLowerCase().replaceAll("\n", " ");
         // string.replaceAll("\t", " ");
         // if (!string.startsWith("select ")) {
-        // MessageDialog.openError(new Shell(), "Notice", "GUI Sql Editor only use for 'select' Statement !");
+        // MessageDialog.openError(DisplayUtils.getDefaultShell(false), "Notice", "GUI Sql Editor only use for 'select'
+        // Statement !");
         // return;
         // }
         // if (isForce != null && !isForce.booleanValue()) {
@@ -169,7 +170,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
             } catch (Exception e) {
                 MessageDialog
                         .openError(
-                                new Shell(),
+                                DisplayUtils.getDefaultShell(false),
                                 Messages.getString("GUIModificationQueryAction.Error.Notice"), Messages.getString("GUIModificationQueryAction.SqlStatement.ErrorMsg")); //$NON-NLS-1$ //$NON-NLS-2$
             }
             if (selectedNodes == null) {
@@ -177,7 +178,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
             }
 
             // String info = Messages.getString("MultiPageSqlBuilderEditor.Notice.InformationNotFull");
-            // MessageDialog.openInformation(new Shell(),
+            // MessageDialog.openInformation(DisplayUtils.getDefaultShell(false),
             // Messages.getString("GUIModificationQueryAction.Information.Msg"), info); //$NON-NLS-1$
 
             ErDiagramDialog erDiagramDialog = new ErDiagramDialog(dialog.getShell(), Messages

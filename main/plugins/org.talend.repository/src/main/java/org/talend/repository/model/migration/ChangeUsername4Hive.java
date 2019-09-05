@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,35 +38,35 @@ public class ChangeUsername4Hive extends
     @Override
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
-        String[] compNames = {"tHiveConnection","tHiveRow","tHiveCreateTable",  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
-                "tHiveLoad","tHiveInput","tELTHiveMap"};  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
-        
+        String[] compNames = {"tHiveConnection","tHiveRow","tHiveCreateTable",  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                "tHiveLoad","tHiveInput","tELTHiveMap"};  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
     	IComponentConversion changeBagName4tPigCode = new IComponentConversion() {
 
 	        public void transform(NodeType node) {
 	            if(node == null) {
 	                return;
 	            }
-	            
+
 	        	ElementParameterType usename = ComponentUtilities.getNodeProperty(node, "USER"); //$NON-NLS-1$
 	        	ElementParameterType connectionMode = ComponentUtilities.getNodeProperty(node, "CONNECTION_MODE"); //$NON-NLS-1$
-	        	
+
 	        	if (usename == null || connectionMode == null) {
 	        	    return;
 	        	}
-	        	
+
 	        	String name = usename.getValue();
                 String mode = connectionMode.getValue();
-                
+
                 if(name == null || mode == null || "STANDALONE".equals(mode)) {//$NON-NLS-1$
                     return;
                 }
-                
+
                 usename.setValue("\"\"");//$NON-NLS-1$
 	        }
-        
+
     	};
-    	
+
     	for (String name : compNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 

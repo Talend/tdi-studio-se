@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,14 +31,14 @@ import org.talend.sqlbuilder.sessiontree.model.utility.Dictionary;
 
 /**
  * A SQL code scanner. <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  */
 public class SQLCodeScanner extends AbstractSQLScanner {
 
     /**
-     * 
+     *
      */
     private static class VersionedWordRule extends WordRule {
 

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ import org.talend.repository.model.RepositoryNode;
 
 /**
  * ggu class global comment. Detailled comment
- * 
+ *
  * @deprecated replaced by RepositoryComponentManager
  */
 
@@ -215,7 +215,7 @@ final class TalendDndHelper {
 
     private static boolean isSpecialTop(Item item, RepositoryNode seletetedNode, ERepositoryObjectType type, IComponent component) {
         // for MPx component
-        if (component.getName().startsWith("tFS")) { //$NON-NLS-1$ 
+        if (component.getName().startsWith("tFS")) { //$NON-NLS-1$
             return true;
         }
         return false;

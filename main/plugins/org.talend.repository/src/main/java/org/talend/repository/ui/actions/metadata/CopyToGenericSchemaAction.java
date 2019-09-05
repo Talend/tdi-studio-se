@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,7 @@ import org.talend.repository.ui.actions.AContextualAction;
 
 /**
  * Administrator class global comment. Detailed comment <br/>
- * 
+ *
  */
 public class CopyToGenericSchemaAction extends AContextualAction {
 
@@ -70,7 +70,7 @@ public class CopyToGenericSchemaAction extends AContextualAction {
 
     /**
      * Administrator Comment method "init".
-     * 
+     *
      * @param node
      */
     protected void init(RepositoryNode node) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -93,7 +93,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
 
     /*
      * add by wzhang
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#createControl(org.eclipse
      * .swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -118,7 +118,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#refresh(org.talend.core.model.process
      * .IElementParameter, boolean)
@@ -151,7 +151,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
 
     /**
      * DOC wzhang Comment method "canSaveProperty".
-     * 
+     *
      * @param param
      * @return
      */
@@ -182,9 +182,9 @@ public class PropertyTypeController extends AbstractRepositoryController {
     }
 
     /**
-     * 
+     *
      * DOC wzhang Comment method "addButton".
-     * 
+     *
      * @param subComposite
      * @param param
      * @param lastControl
@@ -305,7 +305,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#createControl(org.eclipse
      * .swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -669,7 +669,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#createComboCommand(org
      * .eclipse.swt.custom.CCombo)
@@ -932,7 +932,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#
      * getRepositoryChoiceParamName ()
      */
@@ -943,7 +943,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#getRepositoryTypeParamName
      * ()

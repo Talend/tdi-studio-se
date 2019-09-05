@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,9 +53,9 @@ import org.talend.expressionbuilder.test.shadow.ExpressionTestMain;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TestComposite.java 上午10:14:03 2007-7-24 +0000 (2007-7-24) yzhang $
- * 
+ *
  */
 public class TestComposite extends Composite {
 
@@ -80,9 +80,9 @@ public class TestComposite extends Composite {
     protected TextTransfer textTransfer = TextTransfer.getInstance();
 
     /**
-     * 
+     *
      * DOC TestComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param temp
@@ -93,7 +93,7 @@ public class TestComposite extends Composite {
 
     /**
      * Create the composite
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -135,7 +135,7 @@ public class TestComposite extends Composite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.jface.viewers.ICellModifier#canModify(java.lang.Object, java.lang.String)
              */
             public boolean canModify(Object element, String property) {
@@ -144,7 +144,7 @@ public class TestComposite extends Composite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.jface.viewers.ICellModifier#getValue(java.lang.Object, java.lang.String)
              */
             public Object getValue(Object element, String property) {
@@ -158,7 +158,7 @@ public class TestComposite extends Composite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.jface.viewers.ICellModifier#modify(java.lang.Object, java.lang.String, java.lang.Object)
              */
             public void modify(Object element, String property, Object value) {
@@ -261,9 +261,9 @@ public class TestComposite extends Composite {
 
     /**
      * DOC zhangyi TestComposite class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: talend.epf 1 2006-09-29 17:06:40Z nrousseau $
-     * 
+     *
      */
     protected class DoubleClickTextCellEditor extends TextCellEditor {
 
@@ -273,7 +273,7 @@ public class TestComposite extends Composite {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see org.eclipse.swt.events.MouseAdapter#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
                  */
                 @Override
@@ -299,7 +299,7 @@ public class TestComposite extends Composite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
              */
             @Override
@@ -314,7 +314,7 @@ public class TestComposite extends Composite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
              */
             @Override
@@ -339,7 +339,7 @@ public class TestComposite extends Composite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
              */
             @Override
@@ -353,7 +353,7 @@ public class TestComposite extends Composite {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
              */
             @Override
@@ -371,7 +371,7 @@ public class TestComposite extends Composite {
 
     /**
      * Stop the server socket.
-     * 
+     *
      * yzhang Comment method "stopServerThread".
      */
     public void stopServerThread() {
@@ -392,7 +392,7 @@ public class TestComposite extends Composite {
 
     /**
      * yzhang Comment method "setVariableList".
-     * 
+     *
      * @param list
      */
     public void addVariables(List<Variable> list) {
@@ -404,7 +404,7 @@ public class TestComposite extends Composite {
 
     /**
      * yzhang Comment method "setVariableList".
-     * 
+     *
      * @param list
      */
     public void setVariables(List<Variable> list) {

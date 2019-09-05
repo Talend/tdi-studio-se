@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,9 +48,9 @@ import org.talend.designer.mapper.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ProblemsManager {
 
@@ -83,7 +83,7 @@ public class ProblemsManager {
 
     /**
      * DOC amaumont ProblemsManager constructor comment.
-     * 
+     *
      * @param manager
      */
     public ProblemsManager(final MapperManager mapperManager) {
@@ -146,7 +146,7 @@ public class ProblemsManager {
     }
 
     /**
-     * 
+     *
      * Check all problems and save in cache for Java only.
      */
     public void checkProblems() {
@@ -158,7 +158,7 @@ public class ProblemsManager {
 
     /**
      * DOC amaumont Comment method "checkJavaProblemsForEntry".
-     * 
+     *
      * @param codeChecker
      * @param problemKeyField
      * @param tableName
@@ -178,7 +178,7 @@ public class ProblemsManager {
 
     /**
      * DOC amaumont Comment method "buildProblemKey".
-     * 
+     *
      * @param uniqueName
      * @param problemKeyField
      * @param tableName
@@ -190,7 +190,7 @@ public class ProblemsManager {
 
     /**
      * DOC amaumont Comment method "checkExpressionSyntax".
-     * 
+     *
      * @param expression
      */
     public List<Problem> checkExpressionSyntax(String expression) {
@@ -199,9 +199,9 @@ public class ProblemsManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "checkProblemsForAllEntriesOfAllTables".
-     * 
+     *
      * @param forceRefreshData
      * @return true if has errors
      */
@@ -223,9 +223,9 @@ public class ProblemsManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "checkProblemsForAllEntries".
-     * 
+     *
      * @param dataMapTableView
      * @param forceRefreshData
      * @return true if has errors
@@ -269,9 +269,9 @@ public class ProblemsManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "checkProblemsForAllEntries".
-     * 
+     *
      * @param entriesList
      * @return true if has errors
      */
@@ -387,9 +387,9 @@ public class ProblemsManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "checkProblemsForTableEntry".
-     * 
+     *
      * @param tableEntry
      * @param forceRefreshData
      * @return true if at least one problem has been detected
@@ -524,11 +524,11 @@ public class ProblemsManager {
     }
 
     /**
-     * 
+     *
      * DOC amaumont ProblemsManager class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40Z nrousseau $
-     * 
+     *
      */
     class CheckProblemForEntryLimiter extends ExecutionLimiter {
 
@@ -545,7 +545,7 @@ public class ProblemsManager {
 
         /**
          * DOC amaumont CheckProblemForEntryLimiter constructor comment.
-         * 
+         *
          * @param timeBeforeNewExecute
          * @param finalExecute
          */
@@ -555,7 +555,7 @@ public class ProblemsManager {
 
         /**
          * DOC amaumont CheckProblemForEntryLimiter constructor comment.
-         * 
+         *
          * @param timeBeforeNewExecute
          */
         public CheckProblemForEntryLimiter(int timeBeforeNewExecute) {
@@ -579,7 +579,7 @@ public class ProblemsManager {
 
         /**
          * DOC amaumont Comment method "canExecuteCheckProblems".
-         * 
+         *
          * @return
          */
         private boolean canExecuteCheckProblems() {

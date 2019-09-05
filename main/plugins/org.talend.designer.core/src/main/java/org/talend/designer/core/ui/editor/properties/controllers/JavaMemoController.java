@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.core.ui.properties.tab.IDynamicProperty;
 
 /**
  * DOC ftang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: JavaMemoController.java 2007-1-9,下午06:04:09 ftang $
- * 
+ *
  */
 public class JavaMemoController extends AbstractLanguageMemoController {
 
@@ -28,7 +28,7 @@ public class JavaMemoController extends AbstractLanguageMemoController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.AbstractLanguageMemoController#setLanguage()
      */
     protected void setLanguage() {

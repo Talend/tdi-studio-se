@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -318,7 +318,7 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
         for (int i = 0; i < itemsValue.size(); i++) {
             String iValue = itemsValue.get(i);
             if ((selectedValue == null && (((INode) elem).getUniqueName()).equals(iValue))
-                    || (selectedValue != null && selectedValue.equals(iValue))) {
+                    || (selectedValue != null && StringUtils.isNotEmpty(iValue) && iValue.endsWith(selectedValue))) {
                 iLabel = itemsLabel.get(i);
                 break;
             }

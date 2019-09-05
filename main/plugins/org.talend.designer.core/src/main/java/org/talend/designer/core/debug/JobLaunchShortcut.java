@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,7 +49,7 @@ import org.talend.repository.model.RepositoryNode;
  * <p>
  * A launch shortcut extension is defined in <code>plugin.xml</code>. Following is an example definition of a launch
  * shortcut extension:
- * 
+ *
  * <pre>
  *   &lt;extension
  *          point=&quot;org.eclipse.debug.ui.launchShortcuts&quot;&gt;
@@ -60,7 +60,7 @@ import org.talend.repository.model.RepositoryNode;
  *             id=&quot;org.epic.debug.LaunchShortcut&quot;
  *             label=&quot;Perl Local&quot;
  *             modes=&quot;run, debug&quot;&gt;
- *           
+ *
  *             &lt;contextualLaunch&gt;
  *              &lt;enablement&gt;
  *                &lt;with variable=&quot;selection&quot;&gt;
@@ -74,14 +74,14 @@ import org.talend.repository.model.RepositoryNode;
  *                &lt;/with&gt;
  *              &lt;/enablement&gt;
  *   		   &lt;/contextualLaunch&gt;
- *    
+ *
  *  	    &lt;/shortcut&gt;
  *  	&lt;/extension&gt;
- * 
+ *
  * </pre>
- * 
+ *
  * @author bqian
- * 
+ *
  */
 public class JobLaunchShortcut implements ILaunchShortcut {
 
@@ -91,7 +91,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
          * String preference controlling whether editors are saved before launching. Valid values are either "always",
          * "never", or "prompt". If "always" or "never", launching will save editors (or not) automatically. If
          * "prompt", the user will be prompted each time.
-         * 
+         *
          * @since 3.0
          */
         public static final String PREF_SAVE_DIRTY_EDITORS_BEFORE_LAUNCH = IDebugUIConstants.PLUGIN_ID
@@ -108,9 +108,9 @@ public class JobLaunchShortcut implements ILaunchShortcut {
 
     /**
      * Locates a launchable entity in the given selection and launches an application in the specified mode.
-     * 
+     *
      * @see org.eclipse.debug.ui.ILaunchShortcut#launch(org.eclipse.jface.viewers.ISelection, java.lang.String)
-     * 
+     *
      * @param selection workbench selection
      * @param mode one of the launch modes defined by the launch manager
      * @see org.eclipse.debug.core.ILaunchManager
@@ -129,9 +129,9 @@ public class JobLaunchShortcut implements ILaunchShortcut {
 
     /**
      * Locates a launchable entity in the given active editor, and launches an application in the specified mode.
-     * 
+     *
      * @see org.eclipse.debug.ui.ILaunchShortcut#launch(org.eclipse.ui.IEditorPart, java.lang.String)
-     * 
+     *
      * @param editor the active editor in the workbench
      * @param mode one of the launch modes defined by the launch manager
      * @see org.eclipse.debug.core.ILaunchManager
@@ -147,7 +147,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
 
     /**
      * bqian Comment method "launch".
-     * 
+     *
      * @param object
      * @param mode
      */
@@ -165,7 +165,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
     /**
      * If re-usable configuration associated with the File and the project exist, this configuration is returned.
      * Otherwise a new configuration is created.
-     * 
+     *
      * @param bin
      * @param mode
      * @return a re-useable or new config or <code>null</code> if none
@@ -209,7 +209,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
 
     /**
      * Creates a new configuration associated with the given file.
-     * 
+     *
      * @param file
      * @return ILaunchConfiguration
      */
@@ -242,7 +242,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
 
     /**
      * Method to get the LaunchManager
-     * 
+     *
      * @return ILaunchManager
      */
     protected ILaunchManager getLaunchManager() {

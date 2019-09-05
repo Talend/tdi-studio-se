@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.talend.core.model.metadata.builder.connection.MetadataTable;
 
 /**
  * DOC qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: Table.java 1 2006-12-25 下午02:55:50 +0000 (ææäº, 29 ä¹æ 2006) yzhang $
- * 
+ *
  */
 public class Table extends Element {
 
@@ -66,9 +66,9 @@ public class Table extends Element {
 
     /**
      * Form the columns within table depends on the metadata columns in metadata table.
-     * 
+     *
      * yzhang Comment method "formColumns". If null, means select all column.
-     * 
+     *
      * @param selectedColumns
      */
     private void formColumns(List<MetadataColumn> selectedColumns) {
@@ -99,7 +99,7 @@ public class Table extends Element {
 
     /**
      * DOC yzhang Comment method "addColumn".
-     * 
+     *
      * @param column
      */
     @SuppressWarnings("unchecked")//$NON-NLS-1$
@@ -109,7 +109,7 @@ public class Table extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuider.erdiagram.model.Element#getElementName()
      */
     @Override
@@ -120,7 +120,7 @@ public class Table extends Element {
     /**
      * Sets the metadataTable for this table. The selectedColumns contains the selected columns. if selectedColumns is
      * null, means select all.
-     * 
+     *
      * @param metadataTable
      * @param selectedColumns
      */

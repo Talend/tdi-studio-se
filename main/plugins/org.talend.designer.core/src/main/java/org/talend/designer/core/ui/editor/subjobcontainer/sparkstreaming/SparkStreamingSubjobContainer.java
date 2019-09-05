@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -54,7 +54,7 @@ public class SparkStreamingSubjobContainer extends SubjobContainer {
 
     /**
      * Getter for batchStarted.
-     * 
+     *
      * @return the batchStarted
      */
     public int getBatchStarted() {
@@ -63,7 +63,7 @@ public class SparkStreamingSubjobContainer extends SubjobContainer {
 
     /**
      * Getter for batchCompleted.
-     * 
+     *
      * @return the batchCompleted
      */
     public int getBatchCompleted() {
@@ -72,7 +72,7 @@ public class SparkStreamingSubjobContainer extends SubjobContainer {
 
     /**
      * Getter for lastProcessingDelay.
-     * 
+     *
      * @return the lastProcessingDelay
      */
     public String getLastProcessingDelay() {
@@ -81,7 +81,7 @@ public class SparkStreamingSubjobContainer extends SubjobContainer {
 
     /**
      * Getter for lastSchedulingDelay.
-     * 
+     *
      * @return the lastSchedulingDelay
      */
     public String getLastSchedulingDelay() {
@@ -90,7 +90,7 @@ public class SparkStreamingSubjobContainer extends SubjobContainer {
 
     /**
      * Getter for lastTotalDelay.
-     * 
+     *
      * @return the lastTotalDelay
      */
     public String getLastTotalDelay() {

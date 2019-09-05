@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -70,9 +70,9 @@ import org.talend.sqlbuilder.util.ImageUtil;
 /**
  * Detailled comment for this class. <br/>
  * $Id: DBTreeProvider.java Version 1.0 Nov 6, 2006 2:29:19 AM $
- * 
+ *
  * @author phou
- * 
+ *
  */
 public class DBTreeProvider extends LabelProvider implements ITableLabelProvider, ITreeContentProvider, ITableColorProvider {
 
@@ -249,7 +249,7 @@ public class DBTreeProvider extends LabelProvider implements ITableLabelProvider
 
     /**
      * Sets the isInitialized.
-     * 
+     *
      * @param isInitialized the isInitialized to set
      */
     public void setInitialized(boolean isInitialized) {
@@ -431,7 +431,7 @@ public class DBTreeProvider extends LabelProvider implements ITableLabelProvider
 
     /**
      * tguiu Comment method "createTables".
-     * 
+     *
      * @param node
      * @param iMetadataConnection
      * @param metadataConnection
@@ -498,7 +498,7 @@ public class DBTreeProvider extends LabelProvider implements ITableLabelProvider
 
     /**
      * tguiu Comment method "createMetatable".
-     * 
+     *
      * @param node
      * @param iMetadataFileDelimited
      * @param table

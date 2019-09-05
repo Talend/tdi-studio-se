@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,45 +43,45 @@ public class ChangeBagName4tPigCode extends
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
         String[] compNames = {"tPigCode"}; //$NON-NLS-1$
-        
+
     	IComponentConversion changeBagName4tPigCode = new IComponentConversion() {
 
 	        public void transform(NodeType node) {
 	            if(node == null) {
 	                return;
 	            }
-	            
+
 	        	ElementParameterType pigScript = ComponentUtilities.getNodeProperty(node, "SCRIPT_CODE"); //$NON-NLS-1$
-	        	
+
 	        	if (pigScript != null) {
 	        		String content = pigScript.getValue();
 	        		if(content == null) {
 	        		    return;
 	        		}
-	        		
+
 	        		Pattern pattern = Pattern.compile("tPig[a-zA-Z]+_\\d+_RESULT");//$NON-NLS-1$
 	        		String end = "_RESULT";//$NON-NLS-1$
 	        		Matcher matcher = pattern.matcher(content);
 	        		boolean matches = matcher.find();
-	        		
+
 	        		if (matches) {
 	                    //replace the pigscript
 	        		    StringBuffer sb = new StringBuffer();
 	                    do {
 	                        String group = matcher.group();
-	                        
+
 	                        String uniqueNameOfComponent = group.substring(0,group.lastIndexOf(end));
-	                        
+
 	                        String outputConnectionName = null;
-	                        
+
 	                        if(processType!=null) {
-	                            
+
 	                            List connections = processType.getConnection();
 	                            if(connections!=null) {
 	                                for(Object connection : connections) {
 	                                    ConnectionType currentConnection = (ConnectionType) connection;
 	                                    String source = currentConnection.getSource();
-	                                    
+
 	                                    if(uniqueNameOfComponent!=null && uniqueNameOfComponent.equals(source)) {//find the unique output connection
 	                                        for (Object paramObject : currentConnection.getElementParameter()) {
 	                                            ElementParameterType paramType = (ElementParameterType) paramObject;
@@ -94,24 +94,24 @@ public class ChangeBagName4tPigCode extends
 	                                }
 	                            }
 	                        }
-	                        
+
 	                        if(outputConnectionName == null) {//not find
 	                            matcher.appendReplacement(sb,group);
 	                        } else {
 	                            matcher.appendReplacement(sb,uniqueNameOfComponent+"_"+outputConnectionName+end);//$NON-NLS-1$
 	                        }
-	                        
+
 	                        matches = matcher.find();
 	                    } while (matches);
 	                    matcher.appendTail(sb);
-	                    
+
 	        		    pigScript.setValue(sb.toString());
 	        		}
 	        	}
 	        }
-        
+
     	};
-    	
+
     	for (String name : compNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 

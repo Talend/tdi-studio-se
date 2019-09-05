@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,11 +26,11 @@ import us.monoid.json.JSONObject;
  * DOC hwang  class global comment. Detailled comment
  */
 public class JobVMArgumentsUtil {
-    
+
     private static final List<String> EMPTY_STRING_LIST = Collections.unmodifiableList(new ArrayList<String>());
-    
+
     public List<String> readString(String stringList) {
-        if (stringList == null || "".equals(stringList)) { //$NON-NLS-1$        
+        if (stringList == null || "".equals(stringList)) { //$NON-NLS-1$
             return EMPTY_STRING_LIST;
         }
         ArrayList<String> result = new ArrayList<String>(50);
@@ -48,8 +48,8 @@ public class JobVMArgumentsUtil {
         }
         return result;
     }
-    
-    
+
+
     public String writeString(List<String> items) {
         JSONObject root = new JSONObject();
         JSONArray args = new JSONArray();

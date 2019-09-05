@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,9 +32,9 @@ import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 
 /**
  * Database catalog node.
- * 
+ *
  * @author Davy Vanherbergen
- * 
+ *
  */
 public class CatalogNode extends AbstractNode {
 
@@ -44,7 +44,7 @@ public class CatalogNode extends AbstractNode {
 
     /**
      * Create new database Catalog node.
-     * 
+     *
      * @param parent node
      * @param name of this node
      * @param sessionNode session for this node
@@ -72,7 +72,7 @@ public class CatalogNode extends AbstractNode {
 
     /**
      * Returns "catalog" as the type for this node.
-     * 
+     *
      * @return Type.
      * @see org.talend.sqlbuilder.dbstructure.nodes.INode#getType()
      */
@@ -91,7 +91,7 @@ public class CatalogNode extends AbstractNode {
 
     /**
      * Checks if a node name should be filtered.
-     * 
+     *
      * @param name to check for filtering
      * @return true if the name should be filtered
      */

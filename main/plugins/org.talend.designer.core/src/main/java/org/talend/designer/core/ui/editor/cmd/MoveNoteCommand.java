@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.designer.core.ui.editor.notes.Note;
 
 /**
  * Move a given node to another location. <br/>
- * 
+ *
  * $Id: MoveNodeCommand.java 2102 2007-02-22 08:33:22 +0000 (jeu., 22 févr. 2007) cantoine $
- * 
+ *
  */
 public class MoveNoteCommand extends Command {
 
@@ -33,7 +33,7 @@ public class MoveNoteCommand extends Command {
 
     /**
      * Move the given node to another location.
-     * 
+     *
      * @param node
      * @param newPos
      */

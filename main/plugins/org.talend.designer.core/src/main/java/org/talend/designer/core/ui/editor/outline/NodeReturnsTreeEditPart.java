@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.talend.designer.core.ui.editor.nodes.NodeEditPolicy;
 
 /**
  * This class uses the Node as model and will show a part of its atributes in the Outline tree. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeReturnsTreeEditPart extends AbstractTreeEditPart {
 
@@ -84,7 +84,7 @@ public class NodeReturnsTreeEditPart extends AbstractTreeEditPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#getModelChildren()
      */
     @Override
@@ -94,7 +94,7 @@ public class NodeReturnsTreeEditPart extends AbstractTreeEditPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      *//*
         * public void propertyChange(PropertyChangeEvent change) { refreshVisuals(); }
@@ -102,7 +102,7 @@ public class NodeReturnsTreeEditPart extends AbstractTreeEditPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractTreeEditPart#createEditPolicies()
      */
     @Override
@@ -112,7 +112,7 @@ public class NodeReturnsTreeEditPart extends AbstractTreeEditPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractTreeEditPart#refreshVisuals()
      */
     @Override

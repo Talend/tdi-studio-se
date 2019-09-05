@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -71,9 +71,9 @@ import org.talend.designer.mapper.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 
 public class OutputDataMapTableView extends DataMapTableView {
@@ -88,7 +88,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#createContent()
      */
     @Override
@@ -324,7 +324,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#notifyFocusLost()
      */
     @Override
@@ -408,7 +408,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#initTableConstraints()
      */
     @Override
@@ -428,7 +428,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#addEntriesActionsComponents()
      */
     @Override
@@ -451,7 +451,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.talend.commons.ui.swt.extended.macrotable.AbstractExtendedTableViewer#setTableViewerCreatorOptions
              * (org.talend.commons.ui.swt.tableviewer.TableViewerCreator)
@@ -570,7 +570,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.talend.commons.ui.swt.tableviewer.tableeditor.ButtonImageTableEditorContent#selectionEvent(org.talend
              * .commons.ui.swt.tableviewer.TableViewerCreatorColumn, java.lang.Object)
@@ -600,7 +600,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#getZone()
      */
     @Override
@@ -615,7 +615,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#toolbarNeededToBeRightStyle()
      */
     @Override
@@ -629,7 +629,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#hasDropDownToolBarItem()
      */
     @Override
@@ -639,7 +639,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#getValidZonesForExpressionFilterField()
      */
     @Override
@@ -649,7 +649,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.ui.visualmap.table.DataMapTableView#loaded()
      */
     @Override
@@ -665,16 +665,16 @@ public class OutputDataMapTableView extends DataMapTableView {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * $Id: OutputTableCellModifier.java
-     * 
+     *
      */
     class OutputTableCellModifier extends DefaultCellModifier {
 
         /**
          * DOC wchen OutputTableCellModifier constructor comment.
-         * 
+         *
          * @param tableViewerCreator
          */
         public OutputTableCellModifier(TableViewerCreator tableViewerCreator) {
@@ -683,7 +683,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.commons.ui.swt.tableviewer.behavior.DefaultCellModifier#canModify(java.lang.Object,
          * java.lang.String)
          */

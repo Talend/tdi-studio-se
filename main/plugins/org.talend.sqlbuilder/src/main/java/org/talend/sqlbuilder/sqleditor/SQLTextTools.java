@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,9 +29,9 @@ import org.talend.sqlbuilder.sessiontree.model.utility.Dictionary;
  * <p>
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  * @author qiang.zhang
  */
 public class SQLTextTools {
@@ -147,7 +147,7 @@ public class SQLTextTools {
     /**
      * Determines whether the preference change encoded by the given event changes the behavior of one its contained
      * components.
-     * 
+     *
      * @param event the event to be investigated
      * @return <code>true</code> if event causes a behavioral change
      */
@@ -158,7 +158,7 @@ public class SQLTextTools {
 
     /**
      * Adapts the behavior of the contained components to the change encoded in the given event.
-     * 
+     *
      * @param event the event to whch to adapt
      */
     protected void adaptToPreferenceChange(PropertyChangeEvent event) {

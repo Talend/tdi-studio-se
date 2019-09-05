@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,14 +20,14 @@ import java.util.Map;
  *
  */
 public class JsonTableVO {
-    
+
     private List<String> titles;
 
     private List<Map<String, Object>> data;
 
     /**
      * Getter for titles.
-     * 
+     *
      * @return the titles
      */
     public List<String> getTitles() {
@@ -36,7 +36,7 @@ public class JsonTableVO {
 
     /**
      * Sets the titles.
-     * 
+     *
      * @param titles the titles to set
      */
     public void setTitles(List<String> titles) {
@@ -45,7 +45,7 @@ public class JsonTableVO {
 
     /**
      * Getter for data.
-     * 
+     *
      * @return the data
      */
     public List<Map<String, Object>> getData() {
@@ -54,11 +54,11 @@ public class JsonTableVO {
 
     /**
      * Sets the data.
-     * 
+     *
      * @param data the data to set
      */
     public void setData(List<Map<String, Object>> data) {
         this.data = data;
     }
-    
+
 }

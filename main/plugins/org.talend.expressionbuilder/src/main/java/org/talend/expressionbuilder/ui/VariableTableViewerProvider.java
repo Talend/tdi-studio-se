@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,17 +23,17 @@ import org.talend.commons.runtime.model.expressionbuilder.Variable;
 
 /**
  * Content and label provider for table viewer on expression builder dialog.
- * 
+ *
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: VariableTableViewerProvider.java 下午03:49:15 2007-6-25 +0000 (2007-6-25) yzhang $
- * 
+ *
  */
 public class VariableTableViewerProvider implements IStructuredContentProvider, ITableLabelProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
      */
     public Object[] getElements(Object inputElement) {
@@ -43,7 +43,7 @@ public class VariableTableViewerProvider implements IStructuredContentProvider, 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.IContentProvider#dispose()
      */
     public void dispose() {
@@ -53,7 +53,7 @@ public class VariableTableViewerProvider implements IStructuredContentProvider, 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object,
      * java.lang.Object)
      */
@@ -66,7 +66,7 @@ public class VariableTableViewerProvider implements IStructuredContentProvider, 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
      */
     public Image getColumnImage(Object element, int columnIndex) {
@@ -76,7 +76,7 @@ public class VariableTableViewerProvider implements IStructuredContentProvider, 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
      */
     public String getColumnText(Object element, int columnIndex) {
@@ -92,7 +92,7 @@ public class VariableTableViewerProvider implements IStructuredContentProvider, 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
      */
     public void addListener(ILabelProviderListener listener) {
@@ -102,7 +102,7 @@ public class VariableTableViewerProvider implements IStructuredContentProvider, 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
      */
     public boolean isLabelProperty(Object element, String property) {
@@ -112,7 +112,7 @@ public class VariableTableViewerProvider implements IStructuredContentProvider, 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
      */
     public void removeListener(ILabelProviderListener listener) {

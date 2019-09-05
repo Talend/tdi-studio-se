@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -63,14 +63,14 @@ public class SearchControl extends Composite implements PaintListener {
 				text.selectAll();
 			}
 		});
-		
+
 		text.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				text.selectAll();
 			}
 		});
-		
+
 		clear = new ToolBar(this, SWT.FLAT);
 		ToolItem item = new ToolItem(clear, SWT.PUSH);
 		item.addSelectionListener(new SelectionAdapter() {
@@ -94,7 +94,7 @@ public class SearchControl extends Composite implements PaintListener {
 		layout.marginTop = 1;
 		layout.marginWidth = 0;
 		setLayout(layout);
-		
+
 		setBackground(backgroundColor);
 	}
 

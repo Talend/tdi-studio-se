@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.designer.abstractmap.model.table.IDataMapTable;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: IDataMapTableEntry.java 3869 2007-06-15 14:52:12Z amaumont $
- * 
+ *
  */
 public interface ITableEntry {
 
@@ -43,15 +43,15 @@ public interface ITableEntry {
 
     /**
      * Return true if this entry is displayed in a SWT Table.
-     * 
+     *
      * @return true if this entry is displayed in a SWT Table.
      */
     public boolean isTableEntry();
 
     /**
-     * 
+     *
      * Return true if this entry represents a column.
-     * 
+     *
      * @return true if this entry represents a column.
      */
     public boolean isColumnEntry();

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,9 +25,9 @@ import org.talend.sqlbuilder.dataset.dataset.DataSet;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: AbstractSQLTab.java,v 1.5 2006/11/01 01:27:07 yi.zhang Exp $
- * 
+ *
  */
 public abstract class AbstractSQLTab extends AbstractDataSetTab {
 

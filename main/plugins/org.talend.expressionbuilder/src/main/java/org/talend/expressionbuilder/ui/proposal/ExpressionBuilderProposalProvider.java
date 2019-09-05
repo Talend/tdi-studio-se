@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.expressionbuilder.ui.ExpressionBuilderDialog;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExpressionBuilderProposalProvider.java 下午06:16:45 2007-7-27 +0000 (2007-7-27) yzhang $
- * 
+ *
  */
 public class ExpressionBuilderProposalProvider implements IContentProposalProvider {
 
@@ -36,7 +36,7 @@ public class ExpressionBuilderProposalProvider implements IContentProposalProvid
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposalProvider#getProposals(java.lang.String, int)
      */
     public IContentProposal[] getProposals(String contents, int position) {

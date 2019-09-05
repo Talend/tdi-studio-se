@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,9 +39,9 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerPart;
 /**
  * Action that manage to create a connection from the context menu. A connection type is used to know which kind of
  * connection will be created. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class GEFCopyAction extends SelectionAction {
 
@@ -49,7 +49,7 @@ public class GEFCopyAction extends SelectionAction {
 
     /**
      * Define the type of the connection and the workbench part who will manage the connection.
-     * 
+     *
      * @param part
      * @param connecType
      */
@@ -95,7 +95,7 @@ public class GEFCopyAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override

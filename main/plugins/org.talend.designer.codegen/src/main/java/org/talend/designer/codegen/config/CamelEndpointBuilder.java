@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ import org.talend.core.model.process.INode;
  * In javadoc of methods, <b>Direct String</b> means String value, eg: hello (without quotes)</br> <b>Expression
  * String</b> means the source code expression to generate a String value, eg: "a"+context.b+"c" (with quotes)
  * </p>
- * 
+ *
  * @author GaoZone
  * @since 5.6
  */
@@ -74,7 +74,7 @@ public class CamelEndpointBuilder {
 
         /**
          * Append expression to {@link StringBuilder}.
-         * 
+         *
          * @param sb the sb
          * @param expression expression represents source to generate a String
          */
@@ -308,7 +308,7 @@ public class CamelEndpointBuilder {
 
     /**
      * Builds the path.
-     * 
+     *
      * @return the char sequence, eg: P1+"/"+P2+"/"+P3
      */
     private CharSequence buildPath() {
@@ -320,7 +320,7 @@ public class CamelEndpointBuilder {
 
     /**
      * Builds the param query.
-     * 
+     *
      * @return the char sequence, eg: +"?p="+v+"&p2="+v2
      */
     private CharSequence buildParamQuery() {
@@ -402,7 +402,7 @@ public class CamelEndpointBuilder {
 
     /**
      * Escape flat text value to java string literal
-     * 
+     *
      * @param key
      * @param value
      * @return
@@ -435,7 +435,7 @@ public class CamelEndpointBuilder {
     }
 
     /**
-     * 
+     *
      * @param useDoubleSlash if set to {@code false} (default = true) result endpoint will start with
      * {@code componentName:Category[?options]} <br/>
      * @return
@@ -446,7 +446,7 @@ public class CamelEndpointBuilder {
     }
 
     /**
-     * 
+     *
      * @param useComponentColon if set to {@code false} (default = true) result endpoint will start with
      * {@code componentNameCategory[?options]} <br/>
      * @return

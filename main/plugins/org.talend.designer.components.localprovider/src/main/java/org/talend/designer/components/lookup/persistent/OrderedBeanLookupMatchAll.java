@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,7 +22,7 @@ import routines.system.IPersistableLookupRow;
 
 /**
  * Ordered bean lookup for "All matches" matching mode.
- * 
+ *
  * @param <B> bean
  */
 public class OrderedBeanLookupMatchAll<B extends Comparable<B> & IPersistableLookupRow<B>> extends AbstractOrderedBeanLookup<B> {
@@ -34,9 +34,9 @@ public class OrderedBeanLookupMatchAll<B extends Comparable<B> & IPersistableLoo
     private boolean previousKeyLoaded;
 
     /**
-     * 
+     *
      * DOC amaumont OrderedBeanLookupMatchAll constructor comment.
-     * 
+     *
      * @param keysFilePath
      * @param valuesFilePath
      * @param fileIndex
@@ -80,7 +80,7 @@ public class OrderedBeanLookupMatchAll<B extends Comparable<B> & IPersistableLoo
 
     /**
      * DOC slanglois Comment method "hasNext".
-     * 
+     *
      * @return
      * @throws IOException
      */
@@ -189,7 +189,7 @@ public class OrderedBeanLookupMatchAll<B extends Comparable<B> & IPersistableLoo
 
     /**
      * DOC slanglois Comment method "next".
-     * 
+     *
      * @return
      * @throws IOException
      */
@@ -222,7 +222,7 @@ public class OrderedBeanLookupMatchAll<B extends Comparable<B> & IPersistableLoo
 
     /**
      * DOC slanglois Comment method "close".
-     * 
+     *
      * @throws IOException
      */
 //    public void close() throws IOException {

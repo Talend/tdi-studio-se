@@ -1,4 +1,4 @@
- // Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ // Copyright (C) 2006-2019 Talend Inc. - www.talend.com
   //
   // This source code is available under agreement available at
   // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -9,7 +9,7 @@
   //
   // ============================================================================
   package org.talend.repository.model.migration;
-  
+
   import java.util.Arrays;
   import java.util.Date;
   import java.util.GregorianCalendar;
@@ -26,25 +26,25 @@
   import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
   import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
   import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-  
+
   /**
    * DOC Administrator class global comment. Detailled comment
    */
   @SuppressWarnings("deprecation")
   public class UncheckExceptionOnFileExistMigrationTask extends AbstractJobMigrationTask {
-  
+
   	@Override
   	public ExecutionResult execute(Item item) {
   		ProcessType processType = getProcessType(item);
   		if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
   			return ExecutionResult.NOTHING_TO_DO;
   		}
-  
+
   		IComponentFilter filter = new NameComponentFilter("tFileOutputDelimited"); //$NON-NLS-1$
   		try {
   			ModifyComponentsAction.searchAndModify(item, processType, filter,
   					Arrays.<IComponentConversion>asList(new IComponentConversion() {
-  
+
   						public void transform(NodeType node) {
   							ElementParameterType exceptionOnEileExist = ComponentUtilities.getNodeProperty(node,
   									"FILE_EXIST_EXCEPTION"); //$NON-NLS-1$
@@ -59,14 +59,14 @@
   			ExceptionHandler.process(e);
   			return ExecutionResult.FAILURE;
   		}
-  
+
   		return ExecutionResult.SUCCESS_WITH_ALERT;
-  
+
   	}
-  
+
   	public Date getOrder() {
   		GregorianCalendar gc = new GregorianCalendar(2017, 0, 24, 17, 0, 0);
   		return gc.getTime();
   	}
-  
+
   }

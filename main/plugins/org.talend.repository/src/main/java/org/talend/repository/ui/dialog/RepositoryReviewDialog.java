@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -84,9 +84,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * bqian check the content of the repository view. <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class RepositoryReviewDialog extends Dialog {
 
@@ -160,7 +160,7 @@ public class RepositoryReviewDialog extends Dialog {
         this.repObjectTypes = repObjectTypes;
         /*
          * avoid select self repository node for Process Type.
-         * 
+         *
          * borrow the repositoryType to set the current process id here.
          */
         this.repositoryType = processId;
@@ -170,24 +170,24 @@ public class RepositoryReviewDialog extends Dialog {
 
     /**
      * DOC bqian RepositoryReviewDialog constructor comment.
-     * 
+     *
      * @param parentShell
      * @param type support ERepositoryObjectType.PROCESS -> process <br>
      * ERepositoryObjectType.METADATA --> Repository <br>
      * ERepositoryObjectType.METADATA_CON_TABLE --> Schema <br>
      * ERepositoryObjectType.METADATA_CON_QUERY --> Query <br>
-     * 
+     *
      * @param repositoryType String repositoryType = elem.getElementParameter(paramName).getRepositoryValue();<br>
      * see DynamicComposite.updateRepositoryListExtra().<br>
-     * 
-     * 
+     *
+     *
      */
     public RepositoryReviewDialog(Shell parentShell, ERepositoryObjectType type, String repositoryType) {
         this(parentShell);
         this.type = type;
         /*
          * avoid select self repository node for Process Type.
-         * 
+         *
          * borrow the repositoryType to set the current process id here.
          */
         this.repositoryType = repositoryType;
@@ -200,7 +200,7 @@ public class RepositoryReviewDialog extends Dialog {
         this.type = type;
         /*
          * avoid select self repository node for Process Type.
-         * 
+         *
          * borrow the repositoryType to set the current process id here.
          */
         this.repositoryType = elemParameter.getRepositoryValue();
@@ -222,7 +222,7 @@ public class RepositoryReviewDialog extends Dialog {
 
     /**
      * DOC ycbai RepositoryReviewDialog constructor comment.
-     * 
+     *
      * @param parentShell
      * @param type
      * @param repositoryType
@@ -283,7 +283,7 @@ public class RepositoryReviewDialog extends Dialog {
 
     /**
      * Creates a processor which provides multiple types of process. Added by Marvin Wang on Apr 19, 2013.
-     * 
+     *
      * @return
      */
     private IRepositoryTypeProcessor createMultiTypesProcessor() {
@@ -295,7 +295,7 @@ public class RepositoryReviewDialog extends Dialog {
 
     /**
      * bqian create the correct TypeProcessor according to the type.
-     * 
+     *
      * @return
      */
     private IRepositoryTypeProcessor createTypeProcessor() {
@@ -306,7 +306,7 @@ public class RepositoryReviewDialog extends Dialog {
             }
         }
         boolean isGeneric = false;
-        if(this.elem != null && (this.elem instanceof INode) 
+        if(this.elem != null && (this.elem instanceof INode)
                 && ((INode)elem).getComponent().getComponentType() == EComponentType.GENERIC){
             isGeneric = true;
         }
@@ -416,7 +416,7 @@ public class RepositoryReviewDialog extends Dialog {
 
     /**
      * Configures the shell
-     * 
+     *
      * @param shell the shell
      */
     @Override
@@ -515,7 +515,7 @@ public class RepositoryReviewDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -564,7 +564,7 @@ public class RepositoryReviewDialog extends Dialog {
 
     /**
      * DOC bqian Comment method "createFilterField".
-     * 
+     *
      * @param container
      */
     private void createFilterField(Composite container) {
@@ -644,7 +644,7 @@ public class RepositoryReviewDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -655,7 +655,7 @@ public class RepositoryReviewDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     @Override
@@ -740,7 +740,7 @@ class DatabaseTypeFilter extends ViewerFilter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers.Viewer, java.lang.Object,
      * java.lang.Object)
      */

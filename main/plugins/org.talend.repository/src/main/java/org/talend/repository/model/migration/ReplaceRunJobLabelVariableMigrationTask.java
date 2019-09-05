@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * ggu class global comment. Detailled comment
- * 
+ *
  * only in the tRunJob node and only for the parameter label.
  */
 public class ReplaceRunJobLabelVariableMigrationTask extends AbstractItemMigrationTask {
@@ -110,7 +110,7 @@ public class ReplaceRunJobLabelVariableMigrationTask extends AbstractItemMigrati
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @SuppressWarnings("unchecked")
@@ -147,7 +147,7 @@ public class ReplaceRunJobLabelVariableMigrationTask extends AbstractItemMigrati
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
      */
     public Date getOrder() {

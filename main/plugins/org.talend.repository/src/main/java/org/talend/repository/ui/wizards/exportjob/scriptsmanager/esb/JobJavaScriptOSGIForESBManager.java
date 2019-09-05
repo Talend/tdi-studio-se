@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,8 +29,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,14 +86,21 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsM
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.TemplateProcessor;
 
+import aQute.bnd.header.Attrs;
 import aQute.bnd.osgi.Analyzer;
+import aQute.bnd.osgi.Clazz;
+import aQute.bnd.osgi.Descriptors;
 import aQute.bnd.osgi.FileResource;
 import aQute.bnd.osgi.Jar;
+import aQute.bnd.service.AnalyzerPlugin;
+import aQute.bnd.service.Plugin;
+import aQute.service.reporter.Reporter;
 
 /**
  * DOC ycbai class global comment. Detailled comment
  */
 public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
+
 
     protected static final char MANIFEST_ITEM_SEPARATOR = ',';
 
@@ -119,6 +129,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
     protected static final char PACKAGE_SEPARATOR = '.';
 
     private static final String JAVA = "java"; //$NON-NLS-1$
+
+    private static final String JAVA_VERSION = "java.version";
 
     private MultiKeyMap requireBundleModules = new MultiKeyMap();
 
@@ -213,38 +225,38 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
             ExportFileResource libResource = getCompiledLibExportFileResource(processes);
             list.add(libResource);
-            
-            
+
+
             ExportFileResource libResourceSelected = new ExportFileResource(null, LIBRARY_FOLDER_NAME);
-            
+
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
                 ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
                         ICamelDesignerCoreService.class);
-                
+
                 Collection<String> unselectList = camelService.getUnselectDependenciesBundle(processItem);
                 List<URL> unselectListURLs = new ArrayList<>();
- 
+
                 for(Set<URL> set:libResource.getAllResources()) {
 
                     for (URL url : set) {
 
                         boolean exist = false;
                         for(String name: unselectList) {
-                            if (name.equals(new File(url.toURI()).getName())) {
+                            if (name.equals(new File(new File(url.getFile()).toURI()).getName())) {
                                exist = true;
                             }
                         }
-                        
+
                         if (!exist) {
                             unselectListURLs.add(url);
                         }
-                        
+
                     }
                 }
-                
+
                 libResourceSelected.addResources(unselectListURLs);
             }
-            
+
             // generate the META-INFO folder
             ExportFileResource metaInfoFolder = genMetaInfoFolder(libResourceSelected, processItem);
             list.add(0, metaInfoFolder);
@@ -720,7 +732,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     private Manifest getManifest(ExportFileResource libResource, ProcessItem processItem) throws IOException {
         Analyzer analyzer = createAnalyzer(libResource, processItem);
-        
+
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
                     .getService(IRunProcessService.class);
@@ -731,6 +743,10 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 IFile srcFile = talendProcessJavaProject.getSrcFolder().getFile(src);
                 Set<String> imports = importCompiler(srcFile.getLocation().toString());
                 String[] defaultPackages = analyzer.getProperty(Analyzer.IMPORT_PACKAGE).split(",");
+
+                // JDK upgrade to 11
+                imports.add("org.osgi.framework");
+
                 for (String dp : defaultPackages) {
                     if (!imports.contains(dp) && !imports.contains(dp + optional)) {
                         imports.add(dp);
@@ -743,15 +759,17 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 for (String packageName : imports) {
                     importPackage.append(packageName).append(',');
                 }
+
                 importPackage.append("*;resolution:=optional");
                 analyzer.setProperty(Analyzer.IMPORT_PACKAGE, importPackage.toString());
-            }   
+            }
         }
-        
+
         // Calculate the manifest
         Manifest manifest = null;
         try {
             manifest = analyzer.calcManifest();
+            filterImportPackages(manifest);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
@@ -759,7 +777,53 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         } finally {
             analyzer.close();
         }
+
+        // In some cases of Java8, if user compiled some classes with newer(Java 11) JDK versions, the
+        // Require-Capability will use the last version(Java 11)
+        // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Analyzer.java#L975
+        if (System.getProperty(JAVA_VERSION) != null && System.getProperty(JAVA_VERSION).startsWith("1.8")) { //$NON-NLS-1$
+            String requireCapability = manifest.getMainAttributes().getValue(Analyzer.REQUIRE_CAPABILITY);
+            // set back to 1.8, version from:
+            // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Clazz.java#L141
+            requireCapability = requireCapability.replace(Clazz.JAVA.OpenJDK9.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
+                    .replace(Clazz.JAVA.OpenJDK10.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
+                    .replace(Clazz.JAVA.OpenJDK11.getFilter(), Clazz.JAVA.OpenJDK8.getFilter());
+            manifest.getMainAttributes().put(new Attributes.Name(Analyzer.REQUIRE_CAPABILITY), requireCapability);
+        }
+
         return manifest;
+    }
+    
+    private void filterImportPackages(Manifest manifest) {
+
+        // remove import packages which are present in private packages
+
+        List<String> privatePackages = new ArrayList<String>(); 
+        String privatePackagesString = manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE);
+        if (privatePackagesString != null) {
+            String [] packages = privatePackagesString.split(",");
+            for (String p : packages) {
+                privatePackages.add(p);
+            }
+        }
+        
+        StringBuilder fileterdImportPackage = new StringBuilder();
+        String importPackagesString = manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE);
+        if (importPackagesString != null) {
+            String [] packages = importPackagesString.split(",");
+            for (String p : packages) {
+                String importPackage = p.split(";")[0];
+                if (!privatePackages.contains(importPackage) || importPackage.startsWith("routines")) {
+                    fileterdImportPackage.append(p).append(",");
+                }
+            }
+        }
+        
+        String str = fileterdImportPackage.toString();
+        if (str != null && str.length() > 0 && str.endsWith(",")) {
+            str = str.substring(0, str.length() - 1);
+        }
+        manifest.getMainAttributes().putValue(Analyzer.IMPORT_PACKAGE, str);
     }
 
     protected Analyzer createAnalyzer(ExportFileResource libResource, ProcessItem processItem) throws IOException {
@@ -816,6 +880,11 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             bundleNativeCode.setLength(bundleNativeCode.length() - 1);
             analyzer.setProperty(Analyzer.BUNDLE_NATIVECODE, bundleNativeCode.toString());
         }
+
+        // TESB-24730 set specific version for "javax.annotation"
+        ImportedPackageRangeReplacer r = new ImportedPackageRangeReplacer();
+        r.addRange("javax.annotation", "[1.3,2)");
+        analyzer.addBasicPlugin(r);
 
         return analyzer;
     }
@@ -968,7 +1037,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
         return providedModulesSet;
     }
-    
+
     @Override
     protected IProcess generateJobFiles(ProcessItem process, String contextName, String version, boolean statistics,
             boolean trace, boolean applyContextToChildren, IProgressMonitor monitor) throws ProcessorException {
@@ -983,7 +1052,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         try {
-            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn", new PrintWriter(out),
+            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn -maxProblems 100000 ", new PrintWriter(out),
                     new PrintWriter(err), null);
             String errString = new String(err.toByteArray());
             String[] errBlocks = errString.split("----------");
@@ -1009,5 +1078,117 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             e.printStackTrace();
         }
         return imports;
+    }
+
+    private class ImportedPackageRangeReplacer implements AnalyzerPlugin, Plugin {
+
+        private Set<Range> ranges = new TreeSet<>();
+
+        public void addRange(String packageName, String packageVersion) {
+            ranges.add(new Range(packageName, packageVersion));
+        }
+
+        /**
+         * Analyzes the jar and update the version range.
+         *
+         * @param analyzer the analyzer
+         * @return {@code false}
+         * @throws Exception if the analaysis fails.
+         */
+        @Override
+        public boolean analyzeJar(Analyzer analyzer) throws Exception {
+
+            if (analyzer.getReferred() == null) {
+                return false;
+            }
+
+            for (Map.Entry<Descriptors.PackageRef, Attrs> entry : analyzer.getReferred().entrySet()) {
+                for (Range range : ranges) {
+                    if (range.matches(entry.getKey().getFQN())) {
+                        String value = range.getRange(analyzer);
+                        if (value != null) {
+                            entry.getValue().put("version", value);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+
+        private class Range implements Comparable<Range> {
+            final String name;
+            final String value;
+            final Pattern regex;
+
+            private String foundRange;
+
+            private Range(String name, String value) {
+                this.name = name;
+                this.value = value;
+                this.regex = Pattern.compile(name.trim().replace(".", "\\.").replace("*", ".*"));
+            }
+
+            private boolean matches(String pck) {
+                return regex.matcher(pck).matches();
+            }
+
+            private String getRange(Analyzer analyzer) throws Exception {
+                if (foundRange != null) {
+                    return foundRange;
+                }
+                if (null == value || value.isEmpty()) {
+                    for (Jar jar : analyzer.getClasspath()) {
+                        if (isProvidedByJar(jar) && jar.getVersion() != null) {
+                            foundRange = jar.getVersion();
+                            return jar.getVersion();
+                        }
+                    }
+                    return null;
+                } else {
+                    return value;
+                }
+            }
+
+            private boolean isProvidedByJar(Jar jar) {
+                for (String s : jar.getPackages()) {
+                    if (matches(s)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public int compareTo(Range o) {
+                return Integer.compare(this.regex.pattern().length(), o.regex.pattern().length());
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) {
+                    return true;
+                }
+                if (o == null || getClass() != o.getClass()) {
+                    return false;
+                }
+                Range range = (Range) o;
+                return Objects.equals(name, range.name) &&
+                        Objects.equals(value, range.value);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hashCode(name + value);
+            }
+        }
+
+        @Override
+        public void setReporter(Reporter processor) {
+        }
+
+        @Override
+        public void setProperties(Map<String, String> map) throws Exception {
+        }
     }
 }

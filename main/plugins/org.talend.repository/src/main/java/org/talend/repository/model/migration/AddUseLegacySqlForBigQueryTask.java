@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,14 +28,14 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 /**
- * 
+ *
  * @author kcoepeau
- * 
+ *
  * Migrate tBigQuery DI components to keep Legacy SQL usage for old jobs.
  *
  */
 public class AddUseLegacySqlForBigQueryTask extends AbstractJobMigrationTask {
-    
+
     @Override
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
@@ -51,24 +51,24 @@ public class AddUseLegacySqlForBigQueryTask extends AbstractJobMigrationTask {
         if(processType == null){
             return ExecutionResult.NOTHING_TO_DO;
         }
-        
+
         List<String> componentNames = Arrays.asList("tBigQueryInput");
-        
+
         IComponentConversion addUseLegacySql = new AddLegacySqlCheckbox();
         try {
             for(String componentName : componentNames){
-                ModifyComponentsAction.searchAndModify(item, processType, new NameComponentFilter(componentName), 
+                ModifyComponentsAction.searchAndModify(item, processType, new NameComponentFilter(componentName),
                         Arrays.<IComponentConversion> asList(addUseLegacySql));
             }
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
             return ExecutionResult.FAILURE;
         }
-        
-        
-        
+
+
+
     }
-    
+
     private class AddLegacySqlCheckbox implements IComponentConversion {
 
         private String field = "CHECK"; //$NON-NLS-1$
@@ -84,7 +84,7 @@ public class AddUseLegacySqlForBigQueryTask extends AbstractJobMigrationTask {
 
         }
     }
-    
+
     @Override
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2018, 1, 18, 18, 0, 0);

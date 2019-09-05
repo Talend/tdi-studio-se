@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ public class CorrectBatchModeForTeradataOutput extends AbstractJobMigrationTask 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override
@@ -45,22 +45,22 @@ public class CorrectBatchModeForTeradataOutput extends AbstractJobMigrationTask 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @Override
     public ExecutionResult execute(Item item) {
         ProcessType processType = getProcessType(item);
-        
+
         if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
             return ExecutionResult.NOTHING_TO_DO;
         }
-        
+
         //groupx
         List<String> filterList = Arrays.asList(
         		 "tTeradataOutput"
         		);
-        
+
         IComponentConversion correctBatchModeForDBComponents = new IComponentConversion() {
 			public void transform(NodeType node) {
 				ElementParameterType useExistingConnPara = ComponentUtilities.getNodeProperty(node, "USE_EXISTING_CONNECTION");
@@ -68,26 +68,26 @@ public class CorrectBatchModeForTeradataOutput extends AbstractJobMigrationTask 
                     ComponentUtilities.addNodeProperty(node, "USE_EXISTING_CONNECTION", "CHECK");
                     ComponentUtilities.getNodeProperty(node, "USE_EXISTING_CONNECTION").setValue("false");
 				}
-                
+
                 boolean useExistConn = ComponentUtilities.getNodeProperty(node, "USE_EXISTING_CONNECTION").getValue()
                         .equalsIgnoreCase("true");
-                
+
 				ElementParameterType useBatchSizePara = ComponentUtilities.getNodeProperty(node, "USE_BATCH_SIZE");
 				if(useBatchSizePara == null){
                     ComponentUtilities.addNodeProperty(node, "USE_BATCH_SIZE", "CHECK");
                     ComponentUtilities.getNodeProperty(node, "USE_BATCH_SIZE").setValue("false");
 				}
-				
+
                 boolean useBatchExistAndCheckForPreviousVersion = useBatchSizePara != null && useBatchSizePara.getValue().equalsIgnoreCase("true");
-                
+
                 ElementParameterType useBatchAndUseConnPara = ComponentUtilities.getNodeProperty(node, "USE_BATCH_AND_USE_CONN");
                 if (useBatchAndUseConnPara == null) {
                     ComponentUtilities.addNodeProperty(node, "USE_BATCH_AND_USE_CONN", "CHECK");
                     ComponentUtilities.getNodeProperty(node, "USE_BATCH_AND_USE_CONN").setValue(useBatchExistAndCheckForPreviousVersion ? "true" : "false");
                 }
-                
+
                 boolean useBatchExistAndUncheckForPreviousVersion = useBatchSizePara != null && useBatchSizePara.getValue().equalsIgnoreCase("false");
-                
+
 				if(useExistConn){
 					if(useBatchExistAndUncheckForPreviousVersion) {
 					    ComponentUtilities.getNodeProperty(node, "USE_BATCH_AND_USE_CONN").setValue("true");
@@ -99,10 +99,10 @@ public class CorrectBatchModeForTeradataOutput extends AbstractJobMigrationTask 
                         ComponentUtilities.getNodeProperty(node, "BATCH_SIZE").setValue("0");
                     }
 				}
-                  
+
 			}
 		};
-		
+
 		for(String componentName: filterList){
 			IComponentFilter filter = new NameComponentFilter(componentName);
 			try {
@@ -117,7 +117,7 @@ public class CorrectBatchModeForTeradataOutput extends AbstractJobMigrationTask 
 				return ExecutionResult.FAILURE;
 			}
 		}
-		
+
         return ExecutionResult.SUCCESS_NO_ALERT;
     }
 }

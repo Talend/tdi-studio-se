@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -42,6 +41,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.ImageUtils.ICON_SIZE;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.ui.images.CoreImageProvider;
@@ -53,11 +53,11 @@ import org.talend.designer.alfrescooutput.util.AlfrescoOutputException;
 
 /**
  * Dialog allowing to choose typing, i.e. an Alfresco type and Alfresco aspects within Alfresco model definitions.
- * 
+ *
  * @author Marc Dutoo - Open Wide SA
- * 
+ *
  * $Id: AlfrescoModelDialog.java,v 1.1 2008/10/07 21:27:31 mdutoo Exp $
- * 
+ *
  */
 public class AlfrescoModelDialog extends Dialog {
 
@@ -248,7 +248,7 @@ public class AlfrescoModelDialog extends Dialog {
                 try {
                     modelManager.addModel(AlfrescoModelDialog.this.chosenModelFilePath);
                 } catch (AlfrescoOutputException aoex) {
-                    MessageDialog.openError(new Shell(Display.getCurrent(), SWT.APPLICATION_MODAL), Messages
+                    MessageDialog.openError(DisplayUtils.getDefaultShell(false), Messages
                             .getString("AlfrescoModelDialog.addModelFailed"), aoex.getMessage()); //$NON-NLS-1$
                     return;
                 }
@@ -267,7 +267,7 @@ public class AlfrescoModelDialog extends Dialog {
                     try {
                         modelManager.removeModel(selectedItem);
                     } catch (AlfrescoOutputException aoex) {
-                        MessageDialog.openError(new Shell(Display.getCurrent(), SWT.APPLICATION_MODAL), Messages
+                        MessageDialog.openError(DisplayUtils.getDefaultShell(false), Messages
                                 .getString("AlfrescoModelDialog.removeModelFailed"), aoex.getMessage()); //$NON-NLS-1$
                         return;
                     }
@@ -303,14 +303,14 @@ public class AlfrescoModelDialog extends Dialog {
         List<String> missingTypeNames = modelManager.getMetadataManager().getMissingTypeNames();
         List<String> missingAspectNames = modelManager.getMetadataManager().getMissingAspectNames();
         if (!missingTypeNames.isEmpty()) {
-            MessageDialog.openError(new Shell(Display.getCurrent(), SWT.APPLICATION_MODAL), Messages
+            MessageDialog.openError(DisplayUtils.getDefaultShell(false), Messages
                     .getString("AlfrescoModelDialog.missingTypeDefinitions.title"), Messages.getString( //$NON-NLS-1$
                     "AlfrescoModelDialog.missingTypeDefinitions.msg", missingTypeNames)); //$NON-NLS-1$
         }
         if (!missingAspectNames.isEmpty()) {
-            MessageDialog.openError(new Shell(Display.getCurrent(), SWT.APPLICATION_MODAL), Messages
-                    .getString("AlfrescoModelDialog.missingAspectDefinitions.title"), Messages.getString( //$NON-NLS-1$
-                    "AlfrescoModelDialog.missingAspectDefinitions.msg", missingAspectNames)); //$NON-NLS-1$
+            MessageDialog.openError(DisplayUtils.getDefaultShell(false),
+                    Messages.getString("AlfrescoModelDialog.missingAspectDefinitions.title"), Messages.getString( //$NON-NLS-1$
+                            "AlfrescoModelDialog.missingAspectDefinitions.msg", missingAspectNames)); //$NON-NLS-1$
         }
         // NB. model is only saved on closing the dialog with OK
     }

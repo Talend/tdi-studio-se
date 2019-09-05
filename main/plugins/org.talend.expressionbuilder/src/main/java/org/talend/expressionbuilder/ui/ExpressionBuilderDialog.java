@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -62,9 +62,9 @@ import org.xml.sax.SAXException;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExpressionBuilderDialog.java ä¸Šå�ˆ10:12:13 2007-7-24 +0000 (2007-7-24) yzhang $
- * 
+ *
  */
 public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBuilderDialogController {
 
@@ -98,7 +98,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /**
      * Create the dialog
-     * 
+     *
      * @param parentShell
      */
     public ExpressionBuilderDialog(Shell parentShell, IExpressionDataBean dataBean, INode component) {
@@ -112,7 +112,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /**
      * Create contents of the dialog
-     * 
+     *
      * @param parent
      */
     @Override
@@ -151,7 +151,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#create()
      */
     @Override
@@ -163,15 +163,15 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /**
      * yzhang ExpressionBuilderDialog class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: ExpressionBuilderDialog.java ä¸‹å�ˆ08:32:27 2007-9-13 +0000 (2007-9-13) yzhang $
-     * 
+     *
      */
     class UndoKeyListener extends KeyAdapter {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.swt.events.KeyAdapter#keyPressed(org.eclipse.swt.events.KeyEvent)
          */
         @Override
@@ -185,7 +185,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /**
      * yzhang Comment method "addUndoOperationListener".
-     * 
+     *
      * @param composite
      */
     protected void addUndoOperationListener(Composite composite) {
@@ -202,7 +202,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /**
      * Create contents of the button bar
-     * 
+     *
      * @param parent
      */
     @Override
@@ -228,7 +228,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
              */
             @Override
@@ -262,7 +262,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
              */
             @Override
@@ -309,7 +309,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#close()
      */
     @Override
@@ -332,7 +332,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     protected String newExpression() {
         String expression = null;
-        int startInx = nodeStyle.indexOf("-") + 2;//$NON-NLS-1$ 
+        int startInx = nodeStyle.indexOf("-") + 2;//$NON-NLS-1$
         int endInx = nodeStyle.lastIndexOf("-") - 1;//$NON-NLS-1$
         String sub;
         if (endInx - startInx > 0) {
@@ -352,7 +352,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /**
      * Getter for testComposite.
-     * 
+     *
      * @return the testComposite
      */
     public static TestComposite getTestComposite() {
@@ -361,7 +361,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /**
      * Getter for expressionComposite.
-     * 
+     *
      * @return the expressionComposite
      */
     public static ExpressionComposite getExpressionComposite() {
@@ -370,7 +370,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /**
      * Getter for categoryComposite.
-     * 
+     *
      * @return the categoryComposite
      */
     public static CategoryComposite getCategoryComposite() {
@@ -379,13 +379,13 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     @Override
     protected void okPressed() {
         String expression = null;
-        int startInx = nodeStyle.indexOf("-") + 2;//$NON-NLS-1$ 
+        int startInx = nodeStyle.indexOf("-") + 2;//$NON-NLS-1$
         int endInx = nodeStyle.lastIndexOf("-") - 1;//$NON-NLS-1$
         String sub;
         if (endInx - startInx > 0) {
@@ -412,7 +412,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.expressionbuilder.ui.IExpressionBuilderDialogController#openDialog()
      */
     @Override
@@ -452,7 +452,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.expressionbuilder.ui.IExpressionBuilderDialogController#setDefaultExpression(java.lang.String)
      */
     @Override
@@ -462,7 +462,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.expressionbuilder.ui.IExpressionBuilderDialogController#setVariables(java.util.List)
      */
     @Override
@@ -472,7 +472,7 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
 
     /**
      * yzhang Comment method "getExpressionStorePath".
-     * 
+     *
      * @return
      */
     protected String getExpressionStorePath() {

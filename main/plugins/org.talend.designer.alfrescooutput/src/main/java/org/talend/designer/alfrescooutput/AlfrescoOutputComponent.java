@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,11 +28,11 @@ import org.talend.designer.codegen.ICodeGeneratorService;
 
 /**
  * Component class of tAlfrescoOutput
- * 
+ *
  * @author Marc Dutoo - Open Wide SA
- * 
+ *
  * $Id: AlfrescoOutputComponent.java,v 1.1 2008/10/07 21:27:31 mdutoo Exp $
- * 
+ *
  */
 public class AlfrescoOutputComponent extends AbstractExternalNode {
 
@@ -50,7 +50,7 @@ public class AlfrescoOutputComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#initialize()
      */
     public void initialize() {
@@ -58,7 +58,7 @@ public class AlfrescoOutputComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getComponentDocumentation(java.lang.String, java.lang.String)
      */
     public IComponentDocumentation getComponentDocumentation(String componentName, String tempFolderPath) {
@@ -67,7 +67,7 @@ public class AlfrescoOutputComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getExternalData()
      */
     public IExternalData getExternalData() {
@@ -76,7 +76,7 @@ public class AlfrescoOutputComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#open(org.eclipse.swt.widgets.Composite)
      */
     public int open(Composite parent) {
@@ -85,7 +85,7 @@ public class AlfrescoOutputComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#open(org.eclipse.swt.widgets.Display)
      */
     public int open(Display display) {
@@ -105,7 +105,7 @@ public class AlfrescoOutputComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#setExternalData(org.talend.core.model.process.IExternalData)
      */
     public void setExternalData(IExternalData persistentData) {
@@ -114,7 +114,7 @@ public class AlfrescoOutputComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#renameMetadataColumnName(java.lang.String,
      * java.lang.String, java.lang.String)
      */
@@ -138,7 +138,7 @@ public class AlfrescoOutputComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getGeneratedCode()
      */
     public String getGeneratedCode() {
@@ -162,7 +162,7 @@ public class AlfrescoOutputComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getTMapExternalData()
      */
     public IExternalData getTMapExternalData() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,7 @@ import org.talend.metadata.managment.ui.wizard.metadata.xml.utils.TreeUtil;
 
 /**
  * DOC ke class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class FOXManager {
 
@@ -53,9 +53,9 @@ public class FOXManager {
     protected Map<String, Integer> orderMap = new HashMap<String, Integer>();
 
     /**
-     * 
+     *
      * wzhang Comment method "getCurrentSchema".
-     * 
+     *
      * @return
      */
     public String getCurrentSchema() {
@@ -63,9 +63,9 @@ public class FOXManager {
     }
 
     /**
-     * 
+     *
      * wzhang Comment method "setCurrentSchema".
-     * 
+     *
      * @param currentSchema
      */
     public void setCurrentSchema(String currentSchema) {
@@ -83,7 +83,7 @@ public class FOXManager {
 
     /**
      * Getter for k.
-     * 
+     *
      * @return the foxComponent
      */
     public FileOutputXMLComponent getFoxComponent() {
@@ -108,7 +108,7 @@ public class FOXManager {
 
     /**
      * Sets the foxComponent.
-     * 
+     *
      * @param foxComponent the foxComponent to set
      */
     public void setFoxComponent(FileOutputXMLComponent foxComponent) {
@@ -117,7 +117,7 @@ public class FOXManager {
 
     /**
      * Getter for uiManager.
-     * 
+     *
      * @return the uiManager
      */
     public UIManager getUiManager() {
@@ -126,7 +126,7 @@ public class FOXManager {
 
     /**
      * Sets the uiManager.
-     * 
+     *
      * @param uiManager the uiManager to set
      */
     public void setUiManager(UIManager uiManager) {
@@ -318,9 +318,9 @@ public class FOXManager {
     }
 
     /**
-     * 
+     *
      * wzhang Comment method "orderNode".
-     * 
+     *
      * @param node
      */
     public void orderNode(FOXTreeNode node) {
@@ -345,9 +345,9 @@ public class FOXManager {
     }
 
     /**
-     * 
+     *
      * wzhang Comment method "sortOrder".
-     * 
+     *
      * @param treeNode
      * @param node
      */
@@ -526,9 +526,9 @@ public class FOXManager {
     }
 
     /**
-     * 
+     *
      * DOC wzhang Comment method "getOriginalNodes".
-     * 
+     *
      * @return
      */
     protected List<FOXTreeNode> getOriginalNodes() {
@@ -600,9 +600,9 @@ public class FOXManager {
     }
 
     /**
-     * 
+     *
      * DOC wzhang Comment method "getRootFOXTreeNode".
-     * 
+     *
      * @param node
      * @return
      */

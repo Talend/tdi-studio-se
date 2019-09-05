@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,9 +46,9 @@ import org.talend.sqlbuilder.erdiagram.ui.actions.ErDiagramItemDeleteAction;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) qzhang $
- * 
+ *
  */
 public class ErdiagramDiagramEditor extends GraphicalEditor {
 
@@ -123,7 +123,7 @@ public class ErdiagramDiagramEditor extends GraphicalEditor {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.gef.ui.parts.GraphicalEditor#hookGraphicalViewer()
      */
     @Override
@@ -133,7 +133,7 @@ public class ErdiagramDiagramEditor extends GraphicalEditor {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.gef.ui.parts.GraphicalEditor#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
      */
     @Override
@@ -187,7 +187,7 @@ public class ErdiagramDiagramEditor extends GraphicalEditor {
 
     /**
      * Get the viewer in the editor.
-     * 
+     *
      * @return
      */
     public GraphicalViewer getViewer() {
@@ -196,7 +196,7 @@ public class ErdiagramDiagramEditor extends GraphicalEditor {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
      */
     @Override

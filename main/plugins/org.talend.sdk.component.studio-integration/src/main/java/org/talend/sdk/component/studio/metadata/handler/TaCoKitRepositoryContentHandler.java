@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -34,7 +34,6 @@ import org.talend.commons.utils.data.container.Container;
 import org.talend.commons.utils.data.container.RootContainer;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.MetadataManager;
-import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PropertiesFactory;
@@ -165,13 +164,13 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
      * Checks whether {@code repositoryType} belongs to TaCoKit and creates RepositoryTypeProcessor if it is true
      * RepositoryTypeProcessor implements repository tree filtering logic, which allows to show only repository nodes,
      * which are related to the component, in repository review dialog.
-     * 
+     *
      * @param repositoryType a String, which represents supported repository nodes types
      * @return RepositoryTypeProcessor or null, it repository type doesn't belong to TaCoKit
      */
     @Override
     public IRepositoryTypeProcessor getRepositoryTypeProcessor(final String repositoryType) {
-        if (isTaCoKitRepositoryType(repositoryType)) {
+        if (containsTaCoKitRepositoryType(repositoryType)) {
             if (repositoryType.contains("|")) {
                 return new TaCoKitTypeProcessor(repositoryType.split("\\|"));
             } else {
@@ -182,13 +181,25 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
         }
     }
 
-    private boolean isTaCoKitRepositoryType(final String repositoryType) {
-        return repositoryType != null && repositoryType.startsWith(TaCoKitConst.METADATA_TACOKIT_PREFIX);
+    private boolean containsTaCoKitRepositoryType(final String repositoryTypes) {
+        if (repositoryTypes == null) {
+            return false;
+        }
+        String[] typeArray = repositoryTypes.split("\\|"); //$NON-NLS-1$
+        for (String type : typeArray) {
+            ERepositoryObjectType typeFromKey = ERepositoryObjectType.getTypeFromKey(type);
+            if (typeFromKey != null) {
+                if (TaCoKitUtil.isTaCoKitType(typeFromKey)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     public IImage getIcon(final ERepositoryObjectType type) {
-        if (TaCoKitUtil.isTaCoKitType(type)) {
+        if (TaCoKitConst.METADATA_TACOKIT.equals(type)) {
             return ETaCoKitImage.TACOKIT_REPOSITORY_ICON;
         }
         return null;
