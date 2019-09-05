@@ -135,10 +135,7 @@ public class JSONToJsonPathLinker extends JSONToXPathLinker {
         } else {
             fullPath = relativeXpathPrm;
         }
-        TreeItem treeItemFromAbsoluteXPath = null;
-        if(fieldToExtract(relativeXpathPrm, treePopulator.getAllNodes())) {
-        	treeItemFromAbsoluteXPath = treePopulator.getTreeItem(fullPath);
-        }
+        TreeItem treeItemFromAbsoluteXPath = treePopulator.getTreeItem(fullPath);
         if (treeItemFromAbsoluteXPath != null) {
             addFieldLink(treeItemFromAbsoluteXPath, treeItemFromAbsoluteXPath.getData(), tableItemTarget.getParent(),
                     (SchemaTarget) tableItemTarget.getData());

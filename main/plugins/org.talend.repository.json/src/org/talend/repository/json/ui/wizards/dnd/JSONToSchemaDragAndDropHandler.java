@@ -109,6 +109,10 @@ public class JSONToSchemaDragAndDropHandler {
     public void setReadbyMode(String readbyMode) {
         this.readbyMode = readbyMode;
     }
+    
+    public String getReadbyMode() {
+        return this.readbyMode;
+    }
 
     /**
      *
@@ -392,7 +396,7 @@ public class JSONToSchemaDragAndDropHandler {
         return currentExpr;
     }
 
-    private String extractTagName(String currentExpr, String readbyMode) {
+    public String extractTagName(String currentExpr, String readbyMode) {
         if (EJsonReadbyMode.JSONPATH.getValue().equals(readbyMode)) {
             return extractTagName4JsonPath(currentExpr);
         } else {
