@@ -241,10 +241,11 @@ public class LoginHelper {
     }
 
     /**
-     * if the connection is Cloud US/EU/APAC/US-West/Custom
+     * if the connection is AWS – USA East/AWS – Europe/AWS – Asia Pacific/Azure – USA West/Cloud – Custom
      *
      * @param connectionBean
-     * @return true if connection is Cloud US or Cloud EU or Cloud APAC or Cloud US-West or Cloud Custom
+     * @return true if connection is USA East or AWS – Europe or AWS – Asia Pacific or Azure – USA West or Cloud –
+     * Custom
      */
     public static boolean isCloudConnection(ConnectionBean connectionBean) {
         if (connectionBean == null) {
