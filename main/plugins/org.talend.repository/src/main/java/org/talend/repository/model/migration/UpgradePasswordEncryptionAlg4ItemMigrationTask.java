@@ -58,6 +58,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
         toReturn.addAll(getAllMetaDataType());
         toReturn.addAll(ERepositoryObjectType.getAllTypesOfProcess());
         toReturn.addAll(ERepositoryObjectType.getAllTypesOfProcess2());
+        toReturn.addAll(ERepositoryObjectType.getAllTypesOfTestContainer());
         return toReturn;
     }
 
@@ -75,10 +76,11 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
             } else if (item instanceof ConnectionItem) {
                 modified = updateConnectionItem((ConnectionItem) item);
             } else if (item instanceof ProcessItem) {
-                modified = updateProcessItem((ProcessItem) item);
+                ProcessItem processItem = (ProcessItem) item;
+                modified = updateProcessItem(item, processItem.getProcess());
             } else if (item instanceof JobletProcessItem) {
-                List<ContextType> contextTypeList = ((JobletProcessItem) item).getJobletProcess().getContext();
-                modified = checkContext(item, contextTypeList);
+                JobletProcessItem jobletItem = (JobletProcessItem) item;
+                modified = updateProcessItem(item, jobletItem.getJobletProcess());
             }
         } catch (Exception ex) {
             ExceptionHandler.process(ex);
@@ -178,23 +180,22 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
         return true;
     }
 
-    private boolean updateProcessItem(ProcessItem processItem) throws Exception {
-        ProcessType processType = processItem.getProcess();
+    private boolean updateProcessItem(Item item, ProcessType processType) throws Exception {
         EmfHelper.visitChilds(processType);
 
         boolean modified = false;
         // context
-        if (checkContext(processItem, processType.getContext())) {
+        if (checkContext(item, processType.getContext())) {
             modified = true;
         }
 
         // job settings
-        if (checkJobsettintsParameter(processItem, processType)) {
+        if (checkJobsettintsParameter(item, processType)) {
             modified = true;
         }
 
         // nodes parameters
-        if (checkNodes(processItem, processType)) {
+        if (checkNodes(item, processType)) {
             modified = true;
         }
         return modified;
