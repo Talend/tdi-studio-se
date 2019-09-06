@@ -88,9 +88,10 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                 nodeType.setComponentName(newComponentName);
                 String label = ParameterUtilTool.getParameterValue(nodeType, "LABEL"); //$NON-NLS-1$
                 if (label != null) {
-                    ElementParameterType paraType = ParameterUtilTool.findParameterType(nodeType, label.replaceAll("_", "")); //$NON-NLS-1$ //$NON-NLS-2$
+                    ElementParameterType paraType = ParameterUtilTool.findParameterType(nodeType, "LABEL"); //$NON-NLS-1$ //$NON-NLS-2$
                     if (paraType != null) {
-                        ParameterUtilTool.findParameterType(nodeType, "LABEL").setValue(paraType.getValue()); //$NON-NLS-1$
+                    	label = label.replaceAll("TABLE", "tableSelection.tablename"); //$NON-NLS-1$
+                    	paraType.setValue(label);
                         modified = true;
                     }
                 }
