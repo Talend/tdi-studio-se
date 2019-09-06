@@ -2088,15 +2088,15 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 }
                 connectionName = connectionName + " (" + remoteLabel; //$NON-NLS-1$
             } else if (LoginHelper.isCloudUSConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.us"); //$NON-NLS-1$//$NON-NLS-2$
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.aws-us"); //$NON-NLS-1$//$NON-NLS-2$
             } else if (LoginHelper.isCloudEUConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.eu"); //$NON-NLS-1$//$NON-NLS-2$
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.aws-eu"); //$NON-NLS-1$//$NON-NLS-2$
             } else if (LoginHelper.isCloudAPACConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.apac"); //$NON-NLS-1$//$NON-NLS-2$
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.aws-apac"); //$NON-NLS-1$//$NON-NLS-2$
             } else if (LoginHelper.isCloudUSWestConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.us-west"); //$NON-NLS-1$//$NON-NLS-2$
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.usa-west"); //$NON-NLS-1$//$NON-NLS-2$
             } else if (LoginHelper.isCloudCustomConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.custom"); //$NON-NLS-1$//$NON-NLS-2$
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.cloud-custom"); //$NON-NLS-1$//$NON-NLS-2$
             } else {
                 connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.local"); //$NON-NLS-1$//$NON-NLS-2$
             }
