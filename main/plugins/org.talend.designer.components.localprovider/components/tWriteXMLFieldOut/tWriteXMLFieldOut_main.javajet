@@ -294,7 +294,7 @@ class GenerateToolByDom4j{
 		}
 <% 			if(istWriteJSONField && allowEmptyStrings) { %>
 		else {
-			nestXMLTool_<%=cid%> .setText(<%=currEleName%>_<%=cid%>,"null");
+			nestXMLTool_<%=cid%>.setText(<%=currEleName%>_<%=cid%>,"null");
 			<%=currEleName%>_<%=cid%>.addAttribute("null", "true");
 		}
 <%
