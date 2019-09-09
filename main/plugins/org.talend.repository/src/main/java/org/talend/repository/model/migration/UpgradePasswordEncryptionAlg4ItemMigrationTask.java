@@ -122,8 +122,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
 
     protected boolean updateDatabaseConnection(DatabaseConnection dbConnection) throws Exception {
         String pass = dbConnection.getPassword();
-        String rawPass = dbConnection.getRawPassword();
-        if (pass != null && pass.equals(rawPass)) {
+        if (pass != null) {
             dbConnection.setPassword(PasswordMigrationUtil.getEncryptPasswordIfNeed(dbConnection.getPassword()));
             return true;
         }
