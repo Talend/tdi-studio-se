@@ -221,11 +221,13 @@
 		}
 
 		String query_<%=cid%> = <%=query%>;
-		String dataset = query_<%=cid%>.substring(query_<%=cid%>.indexOf("from") + 4, query_<%=cid%>.indexOf(".")).trim();
-		String temp_table = "temp_" + dataset + java.util.UUID.randomUUID().toString().replaceAll("-", "") 
-													 + "<%=cid%>".toLowerCase().replaceAll("[^a-z0-9]", "0").replaceAll("^[^a-z]", "a") 
-													 + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
-
+		<%
+			if(isLog4jEnabled){
+		%>
+			log.info("<%=cid%> - query " + <%=query%>);
+		<%
+		}
+		%>
 		com.google.cloud.bigquery.BigQuery bigquery_<%=cid%> = com.google.cloud.bigquery.BigQueryOptions.newBuilder()
 				.setCredentials(credentials_<%=cid%>)
 				.setProjectId(<%=projectId%>)
@@ -233,15 +235,31 @@
 				.getService();
 		
 		com.google.cloud.bigquery.QueryJobConfiguration.Builder queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>);
-																
-		<%
-		if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {
+		<%if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {%>
+		String tempDataset = java.util.UUID.randomUUID().toString().replaceAll("-", "")
+         + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt())
+         + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
+       <%
+			if(isLog4jEnabled){
 		%>
-			queryConfiguration_<%=cid%>.setDestinationTable(com.google.cloud.bigquery.TableId.of(dataset, temp_table)).setAllowLargeResults(true);
+			log.info("<%=cid%> - tempDataset : " + tempDataset);
 		<%
 		}
-		%>		
-	
+		%>  
+		String tempTable = java.util.UUID.randomUUID().toString().replaceAll("-", "")
+         + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt())
+         + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
+        <%
+			if(isLog4jEnabled){
+		%>
+			log.info("<%=cid%> - tempTable : " + tempTable);
+		<%
+		}
+		%>    
+        com.google.cloud.bigquery.DatasetInfo datasetInfo = com.google.cloud.bigquery.DatasetInfo.newBuilder(tempDataset).build();
+        bigquery_<%=cid%> .create(datasetInfo);
+        queryConfiguration_<%=cid%>.setDestinationTable(com.google.cloud.bigquery.TableId.of(tempDataset, tempTable)).setAllowLargeResults(true);
+		<%}%>
 		com.google.cloud.bigquery.JobId jobId_<%=cid%> = com.google.cloud.bigquery.JobId.of(java.util.UUID.randomUUID().toString());
 		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>.build()).setJobId(jobId_<%=cid%>).build());
 
