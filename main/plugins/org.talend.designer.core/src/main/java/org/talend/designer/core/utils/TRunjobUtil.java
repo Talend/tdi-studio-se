@@ -56,6 +56,9 @@ public class TRunjobUtil {
                 		String proId = loop + "&" + id;  //$NON-NLS-1$
                 		idList.add(proId);
                 		IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(id);
+                		if(obj == null || obj.getProperty() == null || obj.getProperty().getItem() == null) {
+                			return;
+                		}
                 		Item item = obj.getProperty().getItem();
                 		if(item instanceof ProcessItem) {
                 			ProcessType process = ((ProcessItem)item).getProcess();
@@ -105,6 +108,9 @@ public class TRunjobUtil {
 	    			idList.add(subid);
 	    			
 	    			IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(id);
+	    			if(obj == null || obj.getProperty() == null || obj.getProperty().getItem() == null) {
+            			return false;
+            		}
 	        		Item item = obj.getProperty().getItem();
 	        		if(item instanceof ProcessItem) {
 	        			ProcessType subprocess = ((ProcessItem)item).getProcess();
