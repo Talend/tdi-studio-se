@@ -5,9 +5,9 @@
 >
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.talend.libraries</groupId>
+	<groupId>org.talend.components.lib</groupId>
 	<artifactId>thashfile</artifactId>
-	<version>3.0-20170711</version>
+	<version>3.1-20190910</version>
 	<packaging>jar</packaging>
 
 	<name>thashfile</name>
