@@ -194,7 +194,7 @@
 		}
 		%>
 
-		BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, tokenFile_<%=cid%>);
+    BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, tokenFile_<%=cid%><% if (isCustomTemporaryName) {%>, <%=tempDataset%> <%} %>);
 
 		<%
 		if(isLog4jEnabled){
