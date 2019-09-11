@@ -77,8 +77,10 @@
 				String part_<%=cid %> = mailParts_<%=cid %>[i_<%=cid %>];
 				String sep_<%=cid%>= mailSeparator_<%=cid %>[i_<%=cid %>];
 				if(part_<%=cid %>.equalsIgnoreCase("body")) {
+					boolean multiValueBody_<%=cid%> = ("true").equals(mailChecked_<%=cid %>[i_<%=cid%>]);
 					if(msg_<%=cid %>.isMimeType("multipart/*")) {
 						javax.mail.Multipart mp<%=cid%> = (javax.mail.Multipart) msg_<%=cid %>.getContent();
+						StringBuilder body_<%=cid %> = new StringBuilder();
 						for (int i = 0; i < mp<%=cid%>.getCount(); i++) {
 							javax.mail.BodyPart mpart<%=cid%> = mp<%=cid%>.getBodyPart(i);
 							String disposition<%=cid%> = mpart<%=cid%>.getDisposition();
@@ -100,26 +102,42 @@
 												for(int j_<%=cid %>_body = 0; j_<%=cid %>_body < mimeMultipart_<%=cid %>_body.getCount(); j_<%=cid %>_body++){
 													javax.mail.BodyPart bodyPart_<%=cid %>_body = mimeMultipart_<%=cid %>_body.getBodyPart(j_<%=cid %>_body);
 													if (bodyPart_<%=cid %>_body.isMimeType("text/*")) {
-														list_<%=cid %>.add(bodyPart_<%=cid %>_body.getContent().toString());
+														if(multiValueBody_<%=cid%>) {
+															body_<%=cid %>.append(bodyPart_<%=cid %>_body.getContent().toString()).append(sep_<%=cid%>);
+														} else {
+															list_<%=cid %>.add(bodyPart_<%=cid %>_body.getContent().toString());
+														}
 													} else {
 														System.out.println("Ignore the part " + bodyPart_<%=cid %>_body.getContentType());
 													}
 												}
 											}else{
 												if (bodyPart_<%=cid %>.isMimeType("text/*")) {
-													list_<%=cid %>.add(bodyPart_<%=cid %>.getContent().toString());
+													if(multiValueBody_<%=cid%>) {
+														body_<%=cid %>.append(bodyPart_<%=cid %>.getContent().toString()).append(sep_<%=cid%>);
+													} else {
+														list_<%=cid %>.add(bodyPart_<%=cid %>.getContent().toString());
+													}
 												} else {
 													System.out.println("Ignore the part " + bodyPart_<%=cid %>.getContentType());
 												}
 											}
 										}
 									} else {    
-										list_<%=cid %>.add(mpart<%=cid%>.getContent().toString());
+										if(multiValueBody_<%=cid%>) {
+											body_<%=cid %>.append(mpart<%=cid%>.getContent().toString()).append(sep_<%=cid%>);
+										} else {
+											list_<%=cid %>.add(mpart<%=cid%>.getContent().toString());
+										}
 									}    
 								}catch (java.io.UnsupportedEncodingException e){
 									java.io.ByteArrayOutputStream bao_<%=cid%> = new java.io.ByteArrayOutputStream();
 									mpart<%=cid %>.writeTo(bao_<%=cid%>);
-									list_<%=cid %>.add(bao_<%=cid%>.toString());
+									if(multiValueBody_<%=cid%>) {
+										body_<%=cid %>.append(bao_<%=cid%>.toString()).append(sep_<%=cid%>);
+									} else {
+										list_<%=cid %>.add(bao_<%=cid%>.toString());
+									}
 									<%if(isLog4jEnabled){%>
 										log.warn("<%=cid%> - " + bao_<%=cid%>.toString());
 									<%}%>
@@ -128,8 +146,15 @@
 								//both attachment and message context in the email,bug TDI-19065
 								%>
 							}else if(disposition<%=cid%> != null && disposition<%=cid%>.equals(javax.mail.Part.INLINE)){
-								list_<%=cid %>.add(mpart<%=cid%>.getContent().toString());
+								if(multiValueBody_<%=cid%>) {
+									body_<%=cid %>.append(mpart<%=cid%>.getContent().toString()).append(sep_<%=cid%>);
+								} else {
+									list_<%=cid %>.add(mpart<%=cid%>.getContent().toString());
+								}
 							}
+						}
+						if(multiValueBody_<%=cid%>) {
+							list_<%=cid %>.add(body_<%=cid %>.toString());
 						}
 					} else {
 						java.io.InputStream in_<%=cid %> = msg_<%=cid %>.getInputStream();
