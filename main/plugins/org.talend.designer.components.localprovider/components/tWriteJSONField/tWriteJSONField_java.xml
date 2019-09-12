@@ -104,7 +104,7 @@
                 <ITEM NAME="WRAP_NULL_STRINGS"  VALUE="WRAP_NULL_STRINGS"/>
             </ITEMS>
         </PARAMETER>
-       <PARAMETER NAME="ALLOW_EMPTY_STRINGS" FIELD="CHECK" NUM_ROW="21"
+       <PARAMETER NAME="ALLOW_EMPTY_STRINGS" FIELD="CHECK" NUM_ROW="40"
                         REQUIRED="false">
                         <DEFAULT>false</DEFAULT>
         </PARAMETER>
