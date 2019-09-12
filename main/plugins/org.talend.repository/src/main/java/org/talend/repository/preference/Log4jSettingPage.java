@@ -93,11 +93,14 @@ public class Log4jSettingPage extends ProjectSettingPage {
         log4jBtn = new Button(composite, SWT.CHECK);
         log4jBtn.setText(Messages.getString("Log4jSettingPage.ActivateLog4j"));//$NON-NLS-1$
 
-        Label label = new Label(composite, SWT.NONE);
-        label.setText("Log4j verson:"); //$NON-NLS-1$
+        Composite compositeVersion = new Composite(composite, SWT.NONE);
+        GridLayout gridLayoutVersion = new GridLayout(2, false);
+        compositeVersion.setLayout(gridLayoutVersion);
+        Label label = new Label(compositeVersion, SWT.NONE);
+        label.setText(Messages.getString("Log4jSettingPage.Log4jVersion")); //$NON-NLS-1$
         GridData labelData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false, 1, 1);
         label.setLayoutData(labelData);
-        combo = new Combo(composite, SWT.READ_ONLY);
+        combo = new Combo(compositeVersion, SWT.READ_ONLY);
         GridData comboData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false, 1, 1);
         GC gc = new GC(combo);
         Point labelSize = gc.stringExtent(Log4jPrefsConstants.LOG4J1);
@@ -113,7 +116,7 @@ public class Log4jSettingPage extends ProjectSettingPage {
         combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(log4jVersion));
 
         GridLayout layout = new GridLayout();
-        layout.numColumns = 3;
+        layout.numColumns = 1;
         layout.marginWidth = 0;
         layout.marginHeight = 0;
         layout.horizontalSpacing = 8;
