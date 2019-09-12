@@ -47,6 +47,7 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.utils.BitwiseOptionUtils;
+import org.talend.designer.core.CheckLogManamger;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
@@ -77,6 +78,7 @@ public class JavaProcessUtil {
         // call recursive function to get all dependencies from job & subjobs
         getNeededModules(process, searchItems, modulesNeeded, options);
 
+        updateLog4jToModuleList(modulesNeeded);
         /*
          * Remove duplicates in the modulesNeeded list after having prioritize the modules. Details in the
          * ModuleNeededComparator class.
@@ -111,6 +113,61 @@ public class JavaProcessUtil {
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
+    public static void updateLog4jToModuleList(Collection<ModuleNeeded> jarList) {
+        boolean isSelectLog4j2 = CheckLogManamger.isSelectLog4j2();
+        List<ModuleNeeded> moduleNeededList = new ArrayList<ModuleNeeded>();
+        List<ModuleNeeded> moduleDeleteList = new ArrayList<ModuleNeeded>();
+        if (isSelectLog4j2) {
+            boolean foundLog4j2CoreJar = false;
+            boolean foundLog4j2ApiJar = false;
+
+            for (ModuleNeeded jar : jarList) {
+                if (jar.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    moduleDeleteList.add(jar);
+                }
+                if (jar.getModuleName().matches("log4j-core-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    foundLog4j2CoreJar = true;
+                }
+                if (jar.getModuleName().matches("log4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    foundLog4j2ApiJar = true;
+                }
+            }
+            if (!foundLog4j2CoreJar) {
+                ModuleNeeded log4jCore = new ModuleNeeded("org.apache.logging.log4j", "log4j-core-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+                log4jCore.setMavenUri("mvn:org.apache.logging.log4j/log4j-core/2.12.1");//$NON-NLS-1$
+                moduleNeededList.add(log4jCore);
+
+            }
+            if (!foundLog4j2ApiJar) {
+                ModuleNeeded log4jApi = new ModuleNeeded("org.apache.logging.log4j", "log4j-api-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+                log4jApi.setMavenUri("mvn:org.apache.logging.log4j/log4j-api/2.12.1");//$NON-NLS-1$
+                moduleNeededList.add(log4jApi);
+            }
+
+        } else {
+            boolean foundLog4jJar = false;
+            for (ModuleNeeded jar : jarList) {
+                if (jar.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    foundLog4jJar = true;
+                }
+                if (jar.getModuleName().matches("log4j-core-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    moduleDeleteList.add(jar);
+                }
+                if (jar.getModuleName().matches("log4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    moduleDeleteList.add(jar);
+                }
+            }
+            if (!foundLog4jJar) {
+                ModuleNeeded log4j = new ModuleNeeded("log4j", "log4j-1.2.17.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+                log4j.setMavenUri("mvn:log4j/log4j/1.2.17");//$NON-NLS-1$
+                moduleNeededList.add(log4j);
+            }
+
+        }
+
+        jarList.removeAll(moduleDeleteList);
+        jarList.addAll(moduleNeededList);
+    }
     // for MapReduce job, if the jar on Xml don't set MRREQUIRED="true", shouldn't add it to
     // DistributedCache
     public static Set<String> getNeededLibraries(final IProcess process, int options) {

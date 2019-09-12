@@ -438,6 +438,17 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         param.setReadOnly(true);
         addElementParameter(param);
 
+        param = new ElementParameter(this);
+        param.setCategory(EComponentCategory.TECHNICAL);
+        param.setName(EParameterName.LOG4J2_ACTIVATE.getName());
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setDisplayName(EParameterName.LOG4J2_ACTIVATE.getDisplayName());
+        param.setNumRow(99);
+        param.setShow(false);
+        param.setValue(new Boolean(Log4jPrefsSettingManager.getInstance().isLog4jEnable()).toString());
+        param.setReadOnly(true);
+        addElementParameter(param);
+
         // MOD by zshen for TDQ_INSTALL_DIR bug 17622
         param = new ElementParameter(this);
         param.setName(EParameterName.PRODUCT_ROOT_DIR.getName());
@@ -3901,10 +3912,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         public void preferenceChange(PreferenceChangeEvent event) {
             if (event.getKey().equals(Log4jPrefsConstants.LOG4J_ENABLE_NODE)) {
                 if (getCommandStack() != null) {
-                    Process.this.getCommandStack()
-                            .execute(
-                                    new PropertyChangeCommand(Process.this, EParameterName.LOG4J_ACTIVATE.getName(), event
-                                            .getNewValue()));
+                    Process.this.getCommandStack().execute(new PropertyChangeCommand(Process.this,
+                            EParameterName.LOG4J_ACTIVATE.getName(), event.getNewValue()));
+                }
+            }
+            if (event.getKey().equals(Log4jPrefsConstants.LOG4J_SELECT_VERSION2)) {
+                if (getCommandStack() != null) {
+                    Process.this.getCommandStack().execute(new PropertyChangeCommand(Process.this,
+                            EParameterName.LOG4J2_ACTIVATE.getName(), event.getNewValue()));
                 }
             }
         }
@@ -3945,6 +3960,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             IEclipsePreferences projectPreferences = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_ENABLE_NODE, false);
             projectPreferences.addPreferenceChangeListener(preferenceEventListener);
+
+            IEclipsePreferences projectPreferences2 = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
+                    .getLog4jPreferences(Log4jPrefsConstants.LOG4J_SELECT_VERSION2, false);
+            projectPreferences2.addPreferenceChangeListener(preferenceEventListener);
         }
     }
 

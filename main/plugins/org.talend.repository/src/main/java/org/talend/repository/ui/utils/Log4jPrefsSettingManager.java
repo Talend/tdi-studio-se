@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.repository.ui.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -152,19 +154,53 @@ public class Log4jPrefsSettingManager {
     }
 
     public boolean addLog4jToJarList(Collection<String> jarList) {
-        boolean added = false;
-        boolean foundLog4jJar = false;
-        for (String jar : jarList) {
-            if (jar.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                foundLog4jJar = true;
+        boolean isSelectLog4j2 = Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
+        List<String> moduleNeededList = new ArrayList<String>();
+        List<String> moduleDeleteList = new ArrayList<String>();
+        if (isSelectLog4j2) {
+            boolean foundLog4j2CoreJar = false;
+            boolean foundLog4j2ApiJar = false;
+            for (String jar : jarList) {
+                if (jar.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    moduleDeleteList.add(jar);
+                }
+                if (jar.matches("log4j-core-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    foundLog4j2CoreJar = true;
+                }
+                if (jar.matches("log4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    foundLog4j2ApiJar = true;
+                }
             }
-        }
-        if (!foundLog4jJar) {
-            jarList.add("log4j-1.2.17.jar"); //$NON-NLS-1$
-            added = true;
-        }
+            if (!foundLog4j2CoreJar) {
+                moduleNeededList.add("log4j-core-2.12.1.jar");//$NON-NLS-1$
 
-        return added;
+            }
+            if (!foundLog4j2ApiJar) {
+                moduleNeededList.add("log4j-api-2.12.1.jar");//$NON-NLS-1$
+            }
+
+        } else {
+            boolean foundLog4jJar = false;
+            for (String jar : jarList) {
+                if (jar.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    foundLog4jJar = true;
+                }
+                if (jar.matches("log4j-core-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    moduleDeleteList.add(jar);
+                }
+                if (jar.matches("log4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    moduleDeleteList.add(jar);
+                }
+            }
+            if (!foundLog4jJar) {
+                moduleNeededList.add("log4j-1.2.17.jar");//$NON-NLS-1$
+            }
+
+        }
+        jarList.removeAll(moduleDeleteList);
+        jarList.addAll(moduleNeededList);
+
+        return moduleNeededList.size() > 0;
     }
 
     public void checkLog4jState() {
@@ -185,6 +221,16 @@ public class Log4jPrefsSettingManager {
             return false;
         }
         if (Log4jUtil.isEnable() && Boolean.parseBoolean(getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE))) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSelectLog4j2() {
+        if (!org.talend.core.PluginChecker.isCoreTISPluginLoaded()) {
+            return false;
+        }
+        if (Log4jUtil.isEnable() && Boolean.parseBoolean(getValueOfPreNode(Log4jPrefsConstants.LOG4J_SELECT_VERSION2))) {
             return true;
         }
         return false;
