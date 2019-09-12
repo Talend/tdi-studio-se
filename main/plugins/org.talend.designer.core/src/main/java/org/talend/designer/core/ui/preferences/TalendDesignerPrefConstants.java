@@ -67,6 +67,8 @@ public class TalendDesignerPrefConstants {
     public static final String EDITOR_LINESTYLE = "editorLineStyle "; //$NON-NLS-1$
 
     public static final String DUPLICATE_TESTCASE = "duplicateTestCases "; //$NON-NLS-1$
+    
+    public static final String PROPAGATE_CONTEXT = "propagateContext"; //$NON-NLS-1$
 
     public static final String SCHEMA_OPTIONS = "schemaOptions"; //$NON-NLS-1$
 

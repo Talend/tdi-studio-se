@@ -115,6 +115,7 @@ import org.talend.core.ui.ICDCProviderService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.cwm.helper.SAPBWTableHelper;
+import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
@@ -126,6 +127,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.update.UpdateCheckResult;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
+import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.SAPParametersUtils;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
@@ -308,6 +310,10 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     }
                 }
             } else {
+            	Boolean propagate = DesignerPlugin.getDefault().getPreferenceStore().getBoolean(TalendDesignerPrefConstants.PROPAGATE_CONTEXT);
+            	if(!propagate) {
+            		return contextResults;
+            	}
                 // only handle added groups
                 Set<String> contextSourceChecked = new HashSet<String>();
                 Set<String> processContextGroups = new HashSet<String>();

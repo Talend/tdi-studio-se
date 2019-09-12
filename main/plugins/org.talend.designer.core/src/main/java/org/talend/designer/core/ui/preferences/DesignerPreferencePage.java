@@ -133,6 +133,11 @@ public class DesignerPreferencePage extends FieldEditorPreferencePage implements
                     Messages.getString("DesignerPreferencePage.duplicateTestCases"), getFieldEditorParent()); //$NON-NLS-1$
             addField(duplicateTestCases);
         }
+        
+        BooleanFieldEditor propagateContext;
+        propagateContext = new BooleanFieldEditor(TalendDesignerPrefConstants.PROPAGATE_CONTEXT,
+                Messages.getString("DesignerPreferencePage.propagateContext"), getFieldEditorParent()); //$NON-NLS-1$
+        addField(propagateContext);
 
         DirectoryFieldEditor compDefaultFileDir = new DirectoryFieldEditor(TalendDesignerPrefConstants.COMP_DEFAULT_FILE_DIR,
                 Messages.getString("DesignerPreferencePage.defaultFilePathDirectory"), getFieldEditorParent()) {
