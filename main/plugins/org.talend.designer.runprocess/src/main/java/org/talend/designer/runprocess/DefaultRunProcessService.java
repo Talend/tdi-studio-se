@@ -595,10 +595,16 @@ public class DefaultRunProcessService implements IRunProcessService {
 
             IFolder resFolder = talendJavaProject.getExternalResourcesFolder();
             IFile log4jFile = null;
+            IFile log4jFile2delete = null;
             if (Log4jPrefsSettingManager.getInstance().isSelectLog4j2()) {
                 log4jFile = resFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+                log4jFile2delete = resFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
             } else {
                 log4jFile = resFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                log4jFile2delete = resFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+            }
+            if (log4jFile2delete != null && log4jFile2delete.exists()) {
+                log4jFile2delete.delete(true, null);
             }
             // TUP-3014, update the log4j in .Java always.
             // if (isLogForJob) { // when execute or export job need the log4j files under .src folder

@@ -1370,53 +1370,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     }
 
     protected boolean addLog4jToJarList(Collection<String> jarList) {
-        boolean isSelectLog4j2 = Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
-        List<String> moduleNeededList = new ArrayList<String>();
-        List<String> moduleDeleteList = new ArrayList<String>();
-        if (isSelectLog4j2) {
-            boolean foundLog4j2CoreJar = false;
-            boolean foundLog4j2ApiJar = false;
-            for (String jar : jarList) {
-                if (jar.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    moduleDeleteList.add(jar);
-                }
-                if (jar.matches("log4j-core-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    foundLog4j2CoreJar = true;
-                }
-                if (jar.matches("log4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    foundLog4j2ApiJar = true;
-                }
-            }
-            if (!foundLog4j2CoreJar) {
-                moduleNeededList.add("log4j-core-2.12.1.jar");//$NON-NLS-1$
-
-            }
-            if (!foundLog4j2ApiJar) {
-                moduleNeededList.add("log4j-api-2.12.1.jar");//$NON-NLS-1$
-            }
-
-        } else {
-            boolean foundLog4jJar = false;
-            for (String jar : jarList) {
-                if (jar.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    foundLog4jJar = true;
-                }
-                if (jar.matches("log4j-core-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    moduleDeleteList.add(jar);
-                }
-                if (jar.matches("log4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    moduleDeleteList.add(jar);
-                }
-            }
-            if (!foundLog4jJar) {
-                moduleNeededList.add("log4j-1.2.17.jar");//$NON-NLS-1$
-            }
-
-        }
-        jarList.removeAll(moduleDeleteList);
-        jarList.addAll(moduleNeededList);
-
-        return moduleNeededList.size() > 0;
+        return Log4jPrefsSettingManager.getInstance().addLog4jToJarList(jarList);
     }
 
     /**
