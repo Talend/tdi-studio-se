@@ -251,7 +251,8 @@ public class LoginHelper {
         if (connectionBean == null) {
             return false;
         }
-        return isCloudUSConnection(connectionBean) || isCloudEUConnection(connectionBean) || isCloudAPACConnection(connectionBean)
+        return isCloudUSConnection(connectionBean) || isCloudUSWestConnection(connectionBean)
+                || isCloudEUConnection(connectionBean) || isCloudAPACConnection(connectionBean)
                 || isCloudCustomConnection(connectionBean);
     }
 
