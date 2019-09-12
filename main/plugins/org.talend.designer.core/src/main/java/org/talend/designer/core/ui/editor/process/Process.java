@@ -3961,9 +3961,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_ENABLE_NODE, false);
             projectPreferences.addPreferenceChangeListener(preferenceEventListener);
 
-            IEclipsePreferences projectPreferences2 = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
+            IEclipsePreferences projectPreferencesLog4jVersion = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_SELECT_VERSION2, false);
-            projectPreferences2.addPreferenceChangeListener(preferenceEventListener);
+            if (projectPreferencesLog4jVersion != null) {
+                projectPreferencesLog4jVersion.addPreferenceChangeListener(preferenceEventListener);
+            }
         }
     }
 
@@ -3978,6 +3980,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             IEclipsePreferences projectPreferences = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_ENABLE_NODE, false);
             projectPreferences.removePreferenceChangeListener(preferenceEventListener);
+
+            IEclipsePreferences projectPreferencesLog4jVersion = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
+                    .getLog4jPreferences(Log4jPrefsConstants.LOG4J_SELECT_VERSION2, false);
+            projectPreferencesLog4jVersion.removePreferenceChangeListener(preferenceEventListener);
         }
         generatingProcess = null;
         editor = null;
