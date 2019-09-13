@@ -33,7 +33,7 @@ public class TalendProxySelector extends ProxySelector {
         globalProxyHolder = new ProxyHolder();
     }
 
-    public void addProxySettings(Proxy proxy, boolean forAllThreads, String host, int port) {
+    public synchronized void addProxySettings(Proxy proxy, boolean forAllThreads, String host, int port) {
         if (forAllThreads) {
             globalProxyHolder.putNewHost(proxy, host, port);
         } else {
@@ -54,7 +54,7 @@ public class TalendProxySelector extends ProxySelector {
      * @param uriString host:port
      * @return Optional of Proxy if such proxy setting was set
      */
-    public Proxy getProxyForUriString(String uriString) {
+    public synchronized Proxy getProxyForUriString(String uriString) {
         if (proxyHolderContainsHost(globalProxyHolder, uriString)) {
             log.debug("All threads proxy " + globalProxyHolder.getProxyMap().get(uriString) + " is using to connect to URI " + uriString);
             return globalProxyHolder.getProxyMap().containsKey(uriString) ? globalProxyHolder.getProxyMap().get(uriString) :
