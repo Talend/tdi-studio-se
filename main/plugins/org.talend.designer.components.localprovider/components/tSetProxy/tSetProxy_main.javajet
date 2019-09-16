@@ -32,7 +32,7 @@ imports="
 
     if (setProxyGlobal) {
 %>
-            java.net.ProxySelector.setDefault(talendProxySelector_<%=cid %>);
+           java.net.ProxySelector.setDefault(talendProxySelector_<%=cid %>);
            java.util.Properties props_<%=cid %> = System.getProperties();
 <%
            String passwordFieldName = "__PROXY_PASSWORD__";
