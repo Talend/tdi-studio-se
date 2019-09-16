@@ -29,6 +29,7 @@
 	String query = ElementParameterParser.getValue(node,"__QUERY__");
 	boolean useLegacySql = ElementParameterParser.getBooleanValue(node,"__USE_LEGACY_SQL__");
 	String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
+	String basePackage = "";
 
 	query = query.replaceAll("\n"," ");
 	query = query.replaceAll("\r"," ");
@@ -101,7 +102,7 @@
 		// access token.
 		if (storedRefreshToken_<%=cid%> != null) {
 			// Request a new Access token using the refresh token.
-			com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential_<%=cid%> = new com.google.api.client.googleapis.auth.oauth2. GoogleCredential.Builder().setTransport(TRANSPORT_<%=cid%>)
+			com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential_<%=cid%> = new com.google.api.client.googleapis.auth.oauth2.GoogleCredential.Builder().setTransport(TRANSPORT_<%=cid%>)
 					.setJsonFactory(JSON_FACTORY_<%=cid%>).setClientSecrets(clientSecrets_<%=cid%>)
 					.build().setFromTokenResponse(new com.google.api.client.auth.oauth2.TokenResponse().setRefreshToken(storedRefreshToken_<%=cid%>));
 	
