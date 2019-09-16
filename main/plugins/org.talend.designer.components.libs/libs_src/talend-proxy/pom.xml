@@ -6,7 +6,7 @@
 
     <groupId>org.talend.components.lib</groupId>
     <artifactId>talend-proxy</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <build>
         <plugins>
             <plugin>
