@@ -81,6 +81,8 @@ String sequenceName = ElementParameterParser.getValue(node,"__SK_DB_SEQUENCE__")
 
 String startDateField = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD__");
 String endDateField = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD__");
+String l2EndDateFieldType = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD_TYPE__");
+String l2EndDateFieldFixedDateValue = ElementParameterParser.getValue(node,"__FIXED_DATE_VALUE__");
 boolean isEnableActive = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_ACTIVE__"));
 String activeField = ElementParameterParser.getValue(node,"__L2_ACTIVE_FIELD__");
 boolean isEnableVersion = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_VERSION__"));
@@ -104,8 +106,11 @@ if(isEnableType2) {
     	}
     }
     %>
+    <% if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) { %>
+      String customEndDate_<%=cid%> = java.sql.Timestamp.valueOf(<%=l2EndDateFieldFixedDateValue%> +" 00:00:00").toString();
+    <%}%>
     String updateForType2_<%=cid %> = "UPDATE \"" + tableName_<%=cid%> + "\" d SET \"<%=endDateField%>\" = '" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))) + "'<%if (isEnableActive) {%>, \"<%=activeField%>\" = 0<%}%> WHERE EXISTS (SELECT 1 FROM \"" + sourceTable_<%=cid%> + 
-    "\" t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>)) AND d.\"<%=endDateField%>\" IS NULL";
+    "\" t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>)) AND d.\"<%=endDateField%>\"<% if ("NULL".equals(l2EndDateFieldType)) { %> IS NULL "<% } else { %> = '" + (customEndDate_<%=cid%>) + "'"<%}%>;
     java.sql.Statement stmtType2Update_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType2Update_<%=cid%>.executeUpdate(updateForType2_<%=cid%>);
     stmtType2Update_<%=cid%>.close();
@@ -143,7 +148,7 @@ if(isEnableType2) {
     columnNameString = StringUtils.join(columnNames.toArray(), ", ");
     %>
     String insertForType2_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\"(<%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%>\"<%=surrogateKey%>\", <%}%><%=columnNameString%>) SELECT <%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%>NEXT VALUE FOR " + <%=sequenceName%> + ", <%}%>t.<%=selectColumnString%>, '" + 
-    (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))) + "', CAST(NULL AS <%=endDateFieldType%>)<%if(isEnableActive) {%>, 1<%}%><%if(isEnableVersion) {%>, d.\"<%=versionField%>\" + 1<%}%> FROM \"" + 
+    (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))) + "',<% if("NULL".equals(l2EndDateFieldType)) { %> CAST(NULL AS <%=endDateFieldType%>) <% } else {%> '" + (customEndDate_<%=cid%>) + "'<%} if(isEnableActive) {%>, 1<%}%><%if(isEnableVersion) {%>, d.\"<%=versionField%>\" + 1<%}%> FROM \"" + 
     sourceTable_<%=cid%> + "\" t, \"" + tableName_<%=cid%> + "\" d WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.\"<%=endDateField%>\" = '" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))) + "'";
     java.sql.Statement stmtType2Insert_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType2Insert_<%=cid%>.executeUpdate(insertForType2_<%=cid%>);
@@ -162,9 +167,9 @@ for (Map<String, String> sk : sourceKeys) {
 }
 String outerWhereClauseString = StringUtils.join(outerWhereClause.toArray(), " AND ");
 %>
-String insert_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\"(<%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%>\"<%=surrogateKey%>\", <%}%><%=columnNameString%>) SELECT <%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%>NEXT VALUE FOR " + <%=sequenceName%> + ", <%}%>t.<%=selectColumnString%>"<%if(isEnableType2) {%> + ", '" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))) + "', CAST(NULL AS <%=endDateFieldType%>)"<%}%>
-+ "<%if(isEnableType2 && isEnableActive) {%>, 1<%}%><%if(isEnableType2 && isEnableVersion) {%>, 1<%}%> FROM \"" + 
-sourceTable_<%=cid%> + "\" t LEFT JOIN \"" + tableName_<%=cid%> + "\" d ON <%=joinClauseString%> WHERE (<%=outerWhereClauseString%>)";
+String insert_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\"(<%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%>\"<%=surrogateKey%>\", <%}%><%=columnNameString%>) SELECT <%if(("DB_SEQUENCE").equals(surrogateKeyType)) {%>NEXT VALUE FOR " + <%=sequenceName%> + ", <%}%>t.<%=selectColumnString%>" <%if(isEnableType2) {%> 
+  + ", '" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))) + "',<% if ("NULL".equals(l2EndDateFieldType)) { %> CAST(NULL AS <%=endDateFieldType%>)"<% } else {%> '" + (customEndDate_<%=cid%>) + "'"<%}}%> 
+  + "<%if(isEnableType2 && isEnableActive) {%>, 1<%}%><%if(isEnableType2 && isEnableVersion) {%>, 1<%}%> FROM \"" + sourceTable_<%=cid%> + "\" t LEFT JOIN \"" + tableName_<%=cid%> + "\" d ON <%=joinClauseString%> WHERE (<%=outerWhereClauseString%>)";
 java.sql.Statement stmtInsert_<%=cid%> = conn_<%=cid%>.createStatement();
 stmtInsert_<%=cid%>.executeUpdate(insert_<%=cid%>);
 stmtInsert_<%=cid%>.close();
@@ -175,4 +180,3 @@ if(isEnableDebug) {
     <%
 }
 %>
-

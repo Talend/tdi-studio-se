@@ -109,6 +109,12 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         List<String> commandList = makeUpCommandSegments();
         return commandList.toArray(new String[commandList.size()]);
     }
+    
+    @Override
+    public String[] getCommandLine(boolean ignoreCustomJVMSetting) throws ProcessorException {
+        List<String> commandList = makeUpCommandSegments(ignoreCustomJVMSetting);
+        return commandList.toArray(new String[commandList.size()]);
+    }
 
     /**
      * <pre>
@@ -130,6 +136,16 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
     protected List<String> makeUpCommandSegments() {
         return super.makeUpCommandSegments();
     }
+    
+    private List<String> makeUpCommandSegments(boolean ignoreCustomJVMSetting) {
+    	List<String> commands = new ArrayList<String>();
+        commands.addAll(extractAheadCommandSegments());
+        commands.addAll(extractJavaCommandSegments(ignoreCustomJVMSetting));
+        commands.addAll(extractCPCommandSegments());
+        commands.add(extractMainClassSegments() == null ? "" : extractMainClassSegments()); //$NON-NLS-1$
+        commands.addAll(extractArgumentSegments());
+        return commands;
+    }
 
     @Override
     public List<String> extractAheadCommandSegments() {
@@ -141,6 +157,10 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
     @Override
     public List<String> extractJavaCommandSegments() {
+        return extractJavaCommandSegments(false);
+    }
+    
+    private List<String> extractJavaCommandSegments(boolean ignoreCustomJVMSetting) {
         List<String> commandSegments = new ArrayList<>();
         String command = ProcessorConstants.CMD_KEY_WORD_JAVA;
         try {
@@ -150,7 +170,9 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         }
 
         commandSegments.add(command);
-        commandSegments.addAll(extractJavaVMArguments());
+        if(!ignoreCustomJVMSetting) {
+        	commandSegments.addAll(extractJavaVMArguments());
+        }
         return commandSegments;
     }
 

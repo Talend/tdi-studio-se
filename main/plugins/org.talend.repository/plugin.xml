@@ -3242,6 +3242,15 @@
               name="changeDBVersionForMapROJAIOutputMigrationTask"
               version="7.0.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.AddRAWFlowTDataMasking"
+              description="Add the check box to seperate the output"
+              id="org.talend.repository.model.migration.AddRAWFlowTDataMasking"
+              name="AddRAWFlowTDataMasking"
+              version="7.3.1">
+        </projecttask>
    </extension>
 
    <extension
