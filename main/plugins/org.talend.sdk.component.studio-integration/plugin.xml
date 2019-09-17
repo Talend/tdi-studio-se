@@ -292,7 +292,12 @@
            version="7.2.2">
      </projecttask>
   </extension>
-
+ <extension
+       point="org.eclipse.ui.startup">
+    <startup
+          class="org.talend.sdk.component.studio.startup.TacokitLoadComponentsStatusStartup">
+    </startup>
+ </extension>
   <!-- don't use it since there is already one which is integrated and studio doesnt support composition here
   <extension point="org.talend.core.runtime.service">
     <Service serviceId="IGenericWizardService" class="org.talend.sdk.component.studio.metadata.WizardRegistry" />
