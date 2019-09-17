@@ -48,6 +48,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.repository.model.migration.EncryptPasswordInComponentsMigrationTask.FakeNode;
 import org.talend.utils.security.CryptoHelperWrapper;
+import org.talend.utils.security.PasswordMigrationUtil;
 
 public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswordEncryption4ItemMigrationTask {
 
