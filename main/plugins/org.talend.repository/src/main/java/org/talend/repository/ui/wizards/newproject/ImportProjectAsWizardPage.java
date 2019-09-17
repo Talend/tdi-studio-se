@@ -420,13 +420,10 @@ public class ImportProjectAsWizardPage extends WizardPage {
             ZipFile sourceFile = getSpecifiedZipSourceFile(path);
             if (sourceFile == null) {
                 return;
-            } 
-            else {
+            } else {
                 try {
                     sourceFile.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 }
             }
         }
