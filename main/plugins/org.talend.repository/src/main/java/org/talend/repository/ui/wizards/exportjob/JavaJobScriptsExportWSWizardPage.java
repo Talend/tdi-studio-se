@@ -986,7 +986,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                     }
                 }
                 setDestinationValue(
-                        directoryNames[0].substring(0, (directoryNames[0].lastIndexOf("\\") + 1)) + fileName);//$NON-NLS-1$
+                        directoryNames[0].substring(0, (directoryNames[0].lastIndexOf(File.separator) + 1)) + fileName);// $NON-NLS-1$
             } else {
                 setDefaultDestination();
             }
