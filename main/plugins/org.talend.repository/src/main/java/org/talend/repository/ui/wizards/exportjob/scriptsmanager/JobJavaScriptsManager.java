@@ -117,6 +117,7 @@ import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.resources.util.EMavenBuildScriptProperties;
@@ -1370,7 +1371,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     }
 
     protected boolean addLog4jToJarList(Collection<String> jarList) {
-        return Log4jPrefsSettingManager.getInstance().addLog4jToJarList(jarList);
+        return UpdateLog4jJarUtils.addLog4jToJarList(jarList, Log4jPrefsSettingManager.getInstance().isSelectLog4j2());
     }
 
     /**

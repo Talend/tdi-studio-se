@@ -81,6 +81,7 @@ import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 /**
  * DOC nrousseau class global comment. Detailled comment
@@ -427,7 +428,7 @@ public class JavaProcessorUtilities {
     }
 
     public static boolean addLog4jToModuleList(Collection<ModuleNeeded> jarList) {
-        return Log4jPrefsSettingManager.getInstance().addLog4jToModuleList(jarList);
+        return UpdateLog4jJarUtils.addLog4jToModuleList(jarList, Log4jPrefsSettingManager.getInstance().isSelectLog4j2());
     }
 
     /**

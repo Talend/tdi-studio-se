@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 public class CheckLogManamger {
 
@@ -12,6 +13,6 @@ public class CheckLogManamger {
     }
 
     public static void updateLog4jToModuleList(Collection<ModuleNeeded> jarList) {
-        Log4jPrefsSettingManager.getInstance().addLog4jToModuleList(jarList);
+        UpdateLog4jJarUtils.addLog4jToModuleList(jarList, isSelectLog4j2());
     }
 }
