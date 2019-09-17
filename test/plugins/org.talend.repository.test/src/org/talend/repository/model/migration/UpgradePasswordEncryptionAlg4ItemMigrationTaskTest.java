@@ -61,6 +61,7 @@ import org.talend.repository.items.importexport.manager.ResourcesManager;
 import org.talend.repository.items.importexport.ui.managers.FileResourcesUnityManager;
 import org.talend.repository.items.importexport.ui.managers.ResourcesManagerFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.utils.security.PasswordMigrationUtil;
 
 public class UpgradePasswordEncryptionAlg4ItemMigrationTaskTest {
 
