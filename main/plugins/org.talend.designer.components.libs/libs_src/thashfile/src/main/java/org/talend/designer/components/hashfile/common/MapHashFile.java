@@ -24,15 +24,7 @@ public class MapHashFile {
 		private Map<Object, Object> tMultiTheadLockMap = new ConcurrentHashMap<>();
 
 		public synchronized Object get(Object key) {
-			Object value = tMultiTheadLockMap.get(key);
-			if (value == null) {
-				value = new Object();
-				Object storedValue = tMultiTheadLockMap.putIfAbsent(key, value);
-				if (storedValue != null) {
-					value = storedValue;
-				}
-			}
-			return value;
+			return tMultiTheadLockMap.computeIfAbsent(key, k -> new Object());
 		}
 
 		public synchronized void remove(Object key) {
