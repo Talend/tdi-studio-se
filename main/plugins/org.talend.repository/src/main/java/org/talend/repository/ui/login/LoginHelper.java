@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.repository.ui.login;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -78,12 +76,8 @@ import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.ui.dialog.OverTimePopupDialogTask;
 import org.talend.repository.ui.login.AbstractLoginActionPage.ErrorManager;
 import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
-import org.talend.utils.files.FileUtils;
-import org.talend.utils.io.FilesUtils;
 import org.talend.utils.json.JSONException;
 import org.talend.utils.json.JSONObject;
-
-import sun.security.action.GetPropertyAction;
 
 /**
  * created by cmeng on May 22, 2015 Detailled comment
@@ -542,7 +536,6 @@ public class LoginHelper {
                 } catch (OperationCanceledException e) {
                     throw new InterruptedException(e.getLocalizedMessage());
                 }
-                deleteTempFolderAfterLogin();
                 monitor.done();
             }
         };
@@ -582,23 +575,6 @@ public class LoginHelper {
         }
 
         return true;
-    }
-
-    private void deleteTempFolderAfterLogin() {
-        File tmpdir = new File(GetPropertyAction.privilegedGetProperty("java.io.tmpdir"));
-        List<File> filesToRemove = FileUtils.getAllFilesFromFolder(tmpdir, new FilenameFilter() {
-
-            @Override
-            public boolean accept(File dir, String name) {
-                if (name == null) {
-                    return false;
-                }
-                return name.startsWith("talendImportTmp");
-            }
-        });
-        for (File fileToRemove : filesToRemove) {
-            FilesUtils.deleteFile(fileToRemove, true);
-        }
     }
 
     public void saveUpdateStatus(Project project) throws JSONException {
