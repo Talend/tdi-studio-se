@@ -311,12 +311,14 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
                                 deprecatedNode.setLabel(Messages.getString("repository.node.missingparent")); //$NON-NLS-1$
                                 deprecatedNode.setDeprecated(true);
                                 boolean add = false;
+                                Map<String, IRepositoryViewObject> objectMap = new HashMap<>();
                                 for (IRepositoryViewObject repObj : objs) {
                                     ConnectionItem item = (ConnectionItem) repObj.getProperty().getItem();
                                     TaCoKitConfigurationItemModel itemModule = new TaCoKitConfigurationItemModel(item);
                                     TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
                                     // Not be add if parent object was deleted
-                                    if (checkParentObjectDeleted(module.getParentItemId())) {
+                                    if (checkParentObjectDeleted(module.getParentItemId(), module.getConfigTypeNode(),
+                                            objectMap)) {
                                         continue;
                                     }
                                     TaCoKitLeafRepositoryNode deprecatedLeafNode = createLeafRepositoryNode(deprecatedNode,
@@ -342,17 +344,23 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
         repoNode.setInitialized(true);
     }
 
-    private boolean checkParentObjectDeleted(String requiredParentId) throws Exception {
+    private boolean checkParentObjectDeleted(String requiredParentId, ConfigTypeNode configTypeNode,
+            Map<String, IRepositoryViewObject> objectMap) throws Exception {
         if (!TaCoKitUtil.isBlank(requiredParentId)) {
+            if (objectMap.containsKey(requiredParentId)) {
+                return true;
+            }
+            ERepositoryObjectType objectType = TaCoKitUtil.getOrCreateERepositoryObjectType(configTypeNode);
             IRepositoryViewObject parentObj = ProxyRepositoryFactory.getInstance().getLastVersion(requiredParentId, null,
-                    TaCoKitConst.METADATA_TACOKIT);
+                    objectType);
             if (parentObj != null) {
                 if (parentObj.isDeleted()) {
+                    objectMap.put(requiredParentId, parentObj);
                     return true;
                 } else {
                     ConnectionItem item = (ConnectionItem) parentObj.getProperty().getItem();
                     TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
-                    return checkParentObjectDeleted(module.getParentItemId());
+                    return checkParentObjectDeleted(module.getParentItemId(), module.getConfigTypeNode(), objectMap);
                 }
             }
         }
