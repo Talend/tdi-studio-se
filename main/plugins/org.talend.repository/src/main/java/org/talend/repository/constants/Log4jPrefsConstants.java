@@ -34,7 +34,7 @@ public class Log4jPrefsConstants {
 
     public static final String LOG4J2 = "log4j2";//$NON-NLS-1$
 
-    public static final List<String> LOG4J_VERSIONS = Arrays.asList("log4j1", "log4j2");//$NON-NLS-1$ //$NON-NLS-2$
+    public static final List<String> LOG4J_VERSIONS = Arrays.asList(LOG4J1, LOG4J2);// $NON-NLS-1$ //$NON-NLS-2$
 
     public static final String COMMON_LOGGING_NODE = "commonLoging";
 
