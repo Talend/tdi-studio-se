@@ -32,7 +32,6 @@ imports="
 
     if (setProxyGlobal) {
 %>
-           java.net.ProxySelector.setDefault(talendProxySelector_<%=cid %>);
            java.util.Properties props_<%=cid %> = System.getProperties();
 <%
            String passwordFieldName = "__PROXY_PASSWORD__";
@@ -45,10 +44,6 @@ imports="
             System.setProperty("http.nonProxyHosts", <%=nonProxyHosts %>);
 
             System.setProperty("http.proxyUser", <%=proxyUser %>);
-
-            <%
-            String passwordFieldName = "__PROXY_PASSWORD__";
-            %>
 
             <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
@@ -70,10 +65,6 @@ imports="
             System.setProperty("socksProxyHost", <%=proxyHost %>);
             System.setProperty("socksProxyPort", <%=proxyPort %>);
             System.setProperty("java.net.socks.username", <%=proxyUser %>);
-
-<%
-            String passwordFieldName = "__PROXY_PASSWORD__";
-%>
 
             <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
