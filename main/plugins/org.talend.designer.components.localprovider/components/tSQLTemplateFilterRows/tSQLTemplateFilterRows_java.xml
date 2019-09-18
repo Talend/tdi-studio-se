@@ -50,6 +50,7 @@
 				<ITEM NAME="SYBASE" VALUE="SYBASE" />
 				<ITEM NAME="TERADATA" VALUE="TERADATA" />
 				<ITEM NAME="VERTICA" VALUE="VERTICA" />
+				<ITEM NAME="SNOWFLAKE" VALUE="SNOWFLAKE" />
 			</ITEMS>
 		</PARAMETER>
 	   
@@ -206,6 +207,14 @@
 			NUM_ROW="2"
 			SHOW_IF="DBTYPE=='VERTICA'" 
 		/>	
+		<!-- Snowflake -->
+		<PARAMETER
+			NAME="CONNECTION_SNOWFLAKE"
+			FIELD="COMPONENT_LIST"
+			REQUIRED="true" FILTER="REGEXP:^tSnowflakeConnection|tJDBCConnection$"
+			NUM_ROW="2"
+			SHOW_IF="DBTYPE=='SNOWFLAKE'"
+		/>
 		<!-- connections end -->
 		<PARAMETER 
 		  NAME="DATABASE_NAME" 
@@ -277,6 +286,7 @@
       		<DEFAULT IF="DBTYPE=='SYBASE'">sybase_id</DEFAULT>
       		<DEFAULT IF="DBTYPE=='VERTICA'">vertica_id</DEFAULT>
       		<DEFAULT IF="DBTYPE=='TERADATA'">teradata_id</DEFAULT>
+      		<DEFAULT IF="DBTYPE=='SNOWFLAKE'">snowflake_id</DEFAULT>
       		<DEFAULT>teradata_id</DEFAULT>
     	</PARAMETER>
 

@@ -1,0 +1,32 @@
+<%@ jet
+%>
+
+    ftp_<%=cid %> = new com.enterprisedt.net.ftp.FTPClient();
+    ftp_<%=cid %>.setRemoteHost(<%=host %>);
+    ftp_<%=cid %>.setRemotePort(<%=port %>);
+
+    <%if(isLog4jEnabled){%>
+        log.debug("<%=cid%> - " + <%=(("ACTIVE").equals(connectMode))?"\"Using the active mode.\"":"\"Using the passive mode.\""%>);
+    <%}%>
+    <%if (("ACTIVE").equals(connectMode)) {%>
+        ftp_<%=cid %>.setConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
+    <%} else {%>
+        ftp_<%=cid %>.setConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+    <%}%>
+    ftp_<%=cid %>.setControlEncoding(<%=encoding%>);
+    <%if(isLog4jEnabled){%>
+        log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" +<%=user %>+ "'.");
+    <%}%>
+
+    if (connectionTimeout_<%=cid %> > 0) {
+        ftp_<%=cid %>.setTimeout(connectionTimeout_<%=cid %>);
+    }
+
+    ftp_<%=cid %>.connect();
+
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+    ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);  
+    <%if(isLog4jEnabled){%>
+        log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
+    <%}%>

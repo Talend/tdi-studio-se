@@ -45,6 +45,7 @@
 				<ITEM NAME="TERADATA" VALUE="TERADATA" />
 				<ITEM NAME="NETEZZA" VALUE="NETEZZA" />
 				<ITEM NAME="VERTICA" VALUE="VERTICA" />
+				<ITEM NAME="SNOWFLAKE" VALUE="SNOWFLAKE" />
 			</ITEMS>
 		</PARAMETER>
 	   
@@ -210,7 +211,15 @@
 			NUM_ROW="3"
 			SHOW_IF="DBTYPE=='NETEZZA'" 
 		/>	
-		
+		<!-- Snowflake -->
+		<PARAMETER
+			NAME="CONNECTION_SNOWFLAKE"
+			FIELD="COMPONENT_LIST"
+			REQUIRED="true" FILTER="REGEXP:^tSnowflakeConnection|tJDBCConnection$"
+			NUM_ROW="3"
+			SHOW_IF="DBTYPE=='SNOWFLAKE'"
+		/>
+
 		<!-- connections end -->	
 
 		<PARAMETER 
@@ -261,7 +270,8 @@
       		<DEFAULT IF="DBTYPE=='VERTICA'">vertica_id</DEFAULT>
       		<DEFAULT IF="DBTYPE=='TERADATA'">teradata_id</DEFAULT>
       		<DEFAULT IF="DBTYPE=='NETEZZA'">netezza_id</DEFAULT>
-      		<DEFAULT>teradata_id</DEFAULT>
+      		<DEFAULT IF="DBTYPE=='SNOWFLAKE'">snowflake_id</DEFAULT>
+			<DEFAULT>teradata_id</DEFAULT>
     	</PARAMETER>
 		
 	</PARAMETERS>

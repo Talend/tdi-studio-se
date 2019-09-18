@@ -367,16 +367,14 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             outputFolder = tProcessJavaProject.getTestOutputFolder();
         } else {
             srcFolder = tProcessJavaProject.getSrcFolder();
-            boolean needsToHaveContextInsideJar = true;
-
-            if (property != null && property.getItem() instanceof ProcessItem) {
-                needsToHaveContextInsideJar = !new BigDataJobUtil(process).needsToHaveContextInsideJar();
+            boolean needContextInJar = false;
+            if (process != null) {
+                needContextInJar = new BigDataJobUtil(process).needsToHaveContextInsideJar();
             }
-
-            if (ProcessorUtilities.isExportConfig() && property != null && needsToHaveContextInsideJar) {
-                resourcesFolder = tProcessJavaProject.getExternalResourcesFolder();
-            } else {
+            if (needContextInJar) {
                 resourcesFolder = tProcessJavaProject.getResourcesFolder();
+            } else {
+                resourcesFolder = tProcessJavaProject.getExternalResourcesFolder();
             }
             outputFolder = tProcessJavaProject.getOutputFolder();
         }
@@ -1144,6 +1142,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
     @Override
     public String[] getCommandLine() throws ProcessorException {
+        return getCommandLine(false);
+    }
+    
+    @Override
+    public String[] getCommandLine(boolean ignoreCustomJVMSetting) throws ProcessorException {
         // java -cp libdirectory/*.jar;project_path classname;
 
         List<String> tmpParams = new ArrayList<>();
@@ -1173,7 +1176,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         }
 
         // vm args
-        String[] cmd2 = addVMArguments(tmpParams.toArray(new String[0]));
+        String[] cmd2 = addVMArguments(tmpParams.toArray(new String[0]), ignoreCustomJVMSetting);
 
         if (isExportConfig()) { // only for export
             // add bat/sh header lines.
@@ -1575,7 +1578,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     }
 
     protected String[] addVMArguments(String[] strings) {
-        String[] vmargs = getJVMArgs();
+        return addVMArguments(strings, false);
+    }
+    
+    private String[] addVMArguments(String[] strings, boolean ignoreCustomJVMSetting) {
+        String[] vmargs = getJVMArgs(ignoreCustomJVMSetting);
 
         if (vmargs != null && vmargs.length > 0) {
             String[] lines = new String[strings.length + vmargs.length];
@@ -1589,7 +1596,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
     @Override
     public String[] getJVMArgs() {
-        String[] vmargs = getSettingsJVMArguments();
+        return getJVMArgs(false);
+    }
+
+    private String[] getJVMArgs(boolean ignoreCustomJVMSetting) {
+        //ignore the custom jvm setting by customer in Run config or preferences for TDI-42443
+        String[] vmargs = ignoreCustomJVMSetting ? new String[0] : getSettingsJVMArguments();
         /* check parameter won't happened on exportingJob */
         List<String> asList = convertArgsToList(vmargs);
         if (!isExportConfig() && !isRunAsExport()) {
@@ -1622,7 +1634,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         vmargs = asList.toArray(new String[0]);
         return vmargs;
     }
-
+    
     protected String[] getSettingsJVMArguments() {
         String string = "";//$NON-NLS-1$
         if (this.process != null) {

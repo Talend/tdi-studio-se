@@ -141,6 +141,7 @@
 	        <ITEM NAME="EU_WEST_3" VALUE="&quot;eu-west-3&quot;" />
 	        <ITEM NAME="EU_NORTH_1" VALUE="&quot;eu-north-1&quot;" />
 	        <ITEM NAME="CN_NORTH_1" VALUE="&quot;cn-north-1&quot;" />
+	        <ITEM NAME="CN_NORTHWEST_1" VALUE="&quot;cn-northwest-1&quot;" />
 	        <ITEM NAME="AP_EAST_1" VALUE="&quot;ap-east-1&quot;" />
          	<ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
 	        <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />

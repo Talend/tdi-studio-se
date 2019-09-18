@@ -141,6 +141,7 @@
 	        <ITEM NAME="EU_WEST_3" VALUE="&quot;eu-west-3&quot;" />
 	        <ITEM NAME="EU_NORTH_1" VALUE="&quot;eu-north-1&quot;" />
 	        <ITEM NAME="CN_NORTH_1" VALUE="&quot;cn-north-1&quot;" />
+	        <ITEM NAME="CN_NORTHWEST_1" VALUE="&quot;cn-northwest-1&quot;" />
 	        <ITEM NAME="AP_EAST_1" VALUE="&quot;ap-east-1&quot;" />
          	<ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
 	        <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />
@@ -295,7 +296,6 @@
 		>
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
-    
     <PARAMETER
         NAME="DIE_ON_ERROR"
         FIELD="CHECK"
@@ -303,6 +303,7 @@
     >
         <DEFAULT>false</DEFAULT>
     </PARAMETER>
+
    </PARAMETERS>
 
     <ADVANCED_PARAMETERS>
@@ -382,6 +383,18 @@
           SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
         >   	
         <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER NAME="ACCESS_CONTROL_LIST" FIELD="CHECK" NUM_ROW="87">
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+        <PARAMETER NAME="ACL" FIELD="TABLE" NUM_ROW="88" NB_LINES="3" SHOW_IF="ACCESS_CONTROL_LIST == 'true'">
+            <ITEMS>
+                <ITEM NAME="ID" FIELD="TEXT"/>
+                <ITEM NAME="READ" FIELD="CHECK"/>
+                <ITEM NAME="READ_ACL" FIELD="CHECK"/>
+                <ITEM NAME="WRITE_ACL" FIELD="CHECK"/>
+            </ITEMS>
         </PARAMETER>
 
     </ADVANCED_PARAMETERS>

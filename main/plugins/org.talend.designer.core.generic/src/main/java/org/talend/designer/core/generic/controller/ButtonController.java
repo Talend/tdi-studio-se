@@ -16,6 +16,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
@@ -126,7 +127,9 @@ public class ButtonController extends AbstractElementPropertySectionController {
                 	continue;
                 }
                 for(String path : listString){
-                    jars.add(GenericTableUtils.getDriverJarPath(path));
+                    if (!StringUtils.isBlank(path)) {
+                        jars.add(GenericTableUtils.getDriverJarPath(path));
+                    }
                 }
 
             }

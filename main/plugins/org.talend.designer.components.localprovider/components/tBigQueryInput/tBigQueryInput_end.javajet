@@ -10,7 +10,10 @@ imports="
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
-	String authMode = ElementParameterParser.getValue(node,"__AUTH_MODE__");
+    String authMode = ElementParameterParser.getValue(node,"__AUTH_MODE__");
+    String projectId = ElementParameterParser.getValue(node,"__PROJECT_ID__");
+    String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
+	
 	if (authMode.equals("OAUTH")) {
 	%>
 			}
@@ -24,7 +27,10 @@ imports="
   	} else if (authMode.equals("SERVICEACCOUNT")) {
   	%>
   		}
-  		bigquery_<%=cid%>.delete(com.google.cloud.bigquery.TableId.of(dataset, temp_table));
+        <% if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {  %>
+					com.google.cloud.bigquery.DatasetId datasetId = com.google.cloud.bigquery.DatasetId.of(<%=projectId%>, tempDataset);
+					bigquery_<%=cid%>.delete(datasetId, com.google.cloud.bigquery.BigQuery.DatasetDeleteOption.deleteContents());
+        <% }%> 
   	<%
   	} else {
 		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);

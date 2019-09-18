@@ -52,6 +52,8 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     private IElementParameter elemParameter;
 
+    private List<B> beforeChangeBeansList = new ArrayList<B>();
+
     private IProcess process;
 
     private boolean dynamicData;
@@ -187,6 +189,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
      */
     @Override
     public boolean remove(B bean) {
+        initBeforeChangeBeansList();
         boolean result = super.remove(bean);
         refreshMR();
         return result;
@@ -225,7 +228,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
                 IMetadataTable metadata = MetadataToolHelper.getMetadataTableFromNodeTableName(node, schemaName);
                 if (metadata != null) {
                     metadatasToRemove.add(metadata);
-                    IDesignerCoreService service = (IDesignerCoreService) GlobalServiceRegister.getDefault().getService(
+                    IDesignerCoreService service = GlobalServiceRegister.getDefault().getService(
                             IDesignerCoreService.class);
                     if (service != null) {
                         service.removeConnection(node, metadata.getTableName());
@@ -234,6 +237,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
             }
             node.getMetadataList().removeAll(metadatasToRemove);
         }
+        initBeforeChangeBeansList();
         boolean result = super.removeAll(c);
         refreshMR();
         return result;
@@ -319,18 +323,21 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     @Override
     public void addAll(final Integer index, List<B> beans, boolean fireBefore, boolean fireAfter) {
+        initBeforeChangeBeansList();
         super.addAll(index, beans, fireBefore, fireAfter);
         refreshMR();
     }
 
     @Override
     public void addAll(List<Integer> indicesWhereAdd, List<B> beans) {
+        initBeforeChangeBeansList();
         super.addAll(indicesWhereAdd, beans);
         refreshMR();
     }
 
     @Override
     public B remove(int index) {
+        initBeforeChangeBeansList();
         B b = super.remove(index);
         refreshMR();
         return b;
@@ -338,6 +345,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     @Override
     public List<B> remove(int[] indexArray) {
+        initBeforeChangeBeansList();
         List<B> list = super.remove(indexArray);
         return list;
     }
@@ -359,5 +367,14 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
             ((IProcess2) node.getProcess()).setMRData();
             node.refreshNodeContainer();
         }
+    }
+
+    private void initBeforeChangeBeansList() {
+        beforeChangeBeansList.clear();
+        beforeChangeBeansList.addAll(getBeansList());
+    }
+
+    public List<B> getBeforeChangeBeansList() {
+        return this.beforeChangeBeansList;
     }
 }

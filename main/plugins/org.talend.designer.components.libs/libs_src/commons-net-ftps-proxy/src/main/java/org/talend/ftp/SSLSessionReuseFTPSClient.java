@@ -3,6 +3,7 @@ package org.talend.ftp;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.Socket;
+import java.net.InetAddress;
 import java.util.Locale;
 
 import javax.net.ssl.SSLContext;
@@ -29,11 +30,13 @@ public class SSLSessionReuseFTPSClient extends FTPSClient {
                 final Object cache = sessionHostPortCache.get(context);
                 final Method putMethod = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
                 putMethod.setAccessible(true);
-                final Method getHostMethod = socket.getClass().getDeclaredMethod("getHost");
-                getHostMethod.setAccessible(true);
-                Object host = getHostMethod.invoke(socket);
-                final String key =
-                        String.format("%s:%s", host, String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT);
+                InetAddress address = socket.getInetAddress();
+                int port = socket.getPort();
+                
+                String key = String.format("%s:%s", address.getHostName(), String.valueOf(port)).toLowerCase(Locale.ROOT);
+                putMethod.invoke(cache, key, session);
+                
+                key = String.format("%s:%s", address.getHostAddress(), String.valueOf(port)).toLowerCase(Locale.ROOT);
                 putMethod.invoke(cache, key, session);
             } catch (Exception e) {
                 e.printStackTrace();

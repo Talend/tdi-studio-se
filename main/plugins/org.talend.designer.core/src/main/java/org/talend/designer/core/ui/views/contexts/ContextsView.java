@@ -111,7 +111,7 @@ public class ContextsView extends AbstractContextView implements PropertyChangeL
                 Set<String> addedContext = ConnectionContextHelper.checkAndAddContextVariables(contextItem, contextSet,
                         contextManager, false);
                 if (addedContext != null && addedContext.size() > 0) {
-                    ConnectionContextHelper.addContextVarForJob(process, contextItem, contextSet);
+                    ConnectionContextHelper.addContextVarForJob(process, contextItem, addedContext);
                     created = true;
                 }
             }
