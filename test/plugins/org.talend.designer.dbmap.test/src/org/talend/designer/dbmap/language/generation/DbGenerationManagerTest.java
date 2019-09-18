@@ -1,7 +1,8 @@
 package org.talend.designer.dbmap.language.generation;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -625,5 +626,28 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
                 +"  \n"
                 +" ) table2\"";
         assertEquals(exceptQuery.replaceAll("\n", "").trim(), query.trim());
+    }
+
+    @Test
+    public void testReplaceVariablesForExpression() {
+        JobContext newContext = new JobContext("Default");
+        List<IContextParameter> newParamList = new ArrayList<IContextParameter>();
+        newContext.setContextParameterList(newParamList);
+        JobContextParameter param = new JobContextParameter();
+        param.setName("test1");
+        param.setValue("test");
+        newParamList.add(param);
+        process = mock(Process.class);
+        JobContextManager contextManger = new JobContextManager();
+        contextManger.setDefaultContext(newContext);
+        when(process.getContextManager()).thenReturn(contextManger);
+        dbMapComponent.setProcess(process);
+
+        String originalExpression = "CASE WHEN t.column1 IS NULL THEN context.test1 ELSE t.column1 END AS column1";
+        String expectExpression = "CASE WHEN t.column1 IS NULL THEN \" +context.test1+ \" ELSE t.column1 END AS column1";
+        GenericDbGenerationManager manager = new GenericDbGenerationManager();
+        String result = manager.replaceVariablesForExpression(dbMapComponent, originalExpression);
+        assertEquals(expectExpression, result);
+
     }
 }
