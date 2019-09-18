@@ -1177,6 +1177,12 @@ public class Node extends Element implements IGraphicalNode {
         if (useConn != null) {
             connParam = this.getElementParameter("CONNECTION"); //$NON-NLS-1$
         }
+        
+        boolean isGeneric = this.getComponent().getComponentType() == EComponentType.GENERIC;
+        if(isGeneric && labelToParse != null) {
+        	labelToParse = labelToParse.replaceAll("__TABLE__", "__tableSelection.tablename__"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
         if (useConn != null && connParam != null && Boolean.TRUE.equals(useConn.getValue())) {
 
             String connName = (String) connParam.getValue();
