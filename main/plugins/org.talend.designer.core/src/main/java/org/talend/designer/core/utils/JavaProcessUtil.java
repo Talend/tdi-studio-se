@@ -78,7 +78,6 @@ public class JavaProcessUtil {
         // call recursive function to get all dependencies from job & subjobs
         getNeededModules(process, searchItems, modulesNeeded, options);
 
-        updateLog4jToModuleList(modulesNeeded);
         /*
          * Remove duplicates in the modulesNeeded list after having prioritize the modules. Details in the
          * ModuleNeededComparator class.
