@@ -18,7 +18,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
-import org.talend.utils.security.StudioEncryption;
+import org.talend.utils.security.CryptoHelperWrapper;
 
 /**
  * UtilTool to handle NodeType.
@@ -26,8 +26,6 @@ import org.talend.utils.security.StudioEncryption;
  * created by hcyi on Apr 7, 2016 Detailled comment
  */
 public final class ParameterUtilTool {
-
-    private static StudioEncryption se = StudioEncryption.getStudioEncryption(null);
 
     public static ElementParameterType findParameterType(NodeType node, String paramName) {
         for (Object param : node.getElementParameter()) {
@@ -103,7 +101,7 @@ public final class ParameterUtilTool {
             // Check param name
         	if (EParameterFieldType.PASSWORD.getName().equals(paramType.getField())) {
             	try{
-                    return se.decrypt(paramValue);
+                    return CryptoHelperWrapper.decrypt(paramValue);
             	}catch(Exception e){
             		return paramValue;
             	}
