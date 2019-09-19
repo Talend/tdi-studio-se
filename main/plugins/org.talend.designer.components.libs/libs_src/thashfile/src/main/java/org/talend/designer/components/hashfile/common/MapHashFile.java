@@ -23,11 +23,11 @@ public class MapHashFile {
 
 		private Map<Object, Object> tMultiTheadLockMap = new ConcurrentHashMap<>();
 
-		public synchronized Object get(Object key) {
+		public Object get(Object key) {
 			return tMultiTheadLockMap.computeIfAbsent(key, k -> new Object());
 		}
 
-		public synchronized void remove(Object key) {
+		public void remove(Object key) {
 			tMultiTheadLockMap.remove(key);
 		}
 	}
