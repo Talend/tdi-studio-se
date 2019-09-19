@@ -72,7 +72,7 @@ public class AddRAWFlowTDataMasking extends AbstractJobMigrationTask {
             ModifyComponentsAction.searchAndModify(item, processType, filter,
                     Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
 
-            filter = new NameComponentFilter("tDataUnMasking"); //$NON-NLS-1$
+            filter = new NameComponentFilter("tDataUnmasking"); //$NON-NLS-1$
             unCheckRaw = new UnCheckRAWFlow();
             changeMetadataName = new ChangeMetadataName();
             ModifyComponentsAction.searchAndModify(item, processType, filter,
