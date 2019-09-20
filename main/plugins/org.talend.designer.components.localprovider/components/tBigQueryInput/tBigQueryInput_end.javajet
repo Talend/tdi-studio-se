@@ -28,8 +28,8 @@ imports="
   	%>
   		}
         <% if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {  %>
-					com.google.cloud.bigquery.DatasetId datasetId = com.google.cloud.bigquery.DatasetId.of(<%=projectId%>, tempDataset);
-					bigquery_<%=cid%>.delete(datasetId, com.google.cloud.bigquery.BigQuery.DatasetDeleteOption.deleteContents());
+					com.google.cloud.bigquery.DatasetId datasetId_<%=cid%> = com.google.cloud.bigquery.DatasetId.of(<%=projectId%>, tempDataset_<%=cid%>);
+					bigquery_<%=cid%>.delete(datasetId_<%=cid%>, com.google.cloud.bigquery.BigQuery.DatasetDeleteOption.deleteContents());
         <% }%> 
   	<%
   	} else {
