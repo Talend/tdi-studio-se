@@ -20,6 +20,8 @@ import junit.framework.TestCase;
 import net.sf.json.JSONFunction;
 import net.sf.json.JSONObject;
 
+import java.math.BigDecimal;
+
 /**
  * @author Andres Almiray <aalmiray@users.sourceforge.net>
  */
@@ -85,7 +87,7 @@ public class TestJSONStringer extends TestCase {
             .endObject();
       JSONObject jsonObj = JSONObject.fromObject( b.toString() );
       assertEquals( Boolean.TRUE, jsonObj.get( "bool" ) );
-      assertEquals( new Double( 1.1d ), jsonObj.get( "numDouble" ) );
+      assertEquals( Double.valueOf( "1.1" ), jsonObj.get( "numDouble" ) );
       assertEquals( new Long( 2 ).longValue(), ((Number) jsonObj.get( "numInt" )).longValue() );
       assertEquals( "text", jsonObj.get( "text" ) );
       assertTrue( JSONUtils.isFunction( jsonObj.get( "func" ) ) );

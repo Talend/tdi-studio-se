@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test
+Bundle-SymbolicName: org.talend.expressionbuilder.test
+Bundle-Version: 7.3.1.qualifier
+Fragment-Host: org.talend.expressionbuilder
+Require-Bundle: org.talend.testutils

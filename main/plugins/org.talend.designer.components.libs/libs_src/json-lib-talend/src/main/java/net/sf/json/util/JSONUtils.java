@@ -184,14 +184,12 @@ public final class JSONUtils {
             return Integer.class;
          }else if( isLong( n ) ){
             return Long.class;
-         }else if( isFloat( n ) ){
-            return Float.class;
          }else if( isBigInteger( n ) ){
             return BigInteger.class;
-         }else if( isBigDecimal( n ) ){
-            return BigDecimal.class;
          }else if( isDouble( n ) ){
             return Double.class;
+         }else if( isBigDecimal( n ) ){
+            return BigDecimal.class;
          }else{
             throw new JSONException( "Unsupported type" );
          }

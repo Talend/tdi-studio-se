@@ -209,7 +209,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         final Composite propertyComposite = new Composite(parent, SWT.NONE);
         propertyComposite.setBackground(parent.getBackground());
         propertyComposite.setLayout(new FormLayout());
-        propertyComposite.setLayoutData(levelLayoutData(null));
+        propertyComposite.setLayoutData(levelLayoutData(getMessagesComp()));
         final IElementParameter propertyType = elem.getElementParameter("PROPERTY");
         addWidgetIfActive(propertyComposite, propertyType);
         return propertyComposite;

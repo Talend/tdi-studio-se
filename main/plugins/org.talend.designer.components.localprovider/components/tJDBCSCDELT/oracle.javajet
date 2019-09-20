@@ -87,7 +87,7 @@ String versionField = ElementParameterParser.getValue(node,"__L2_VERSION_FIELD__
 String l2StartDateFieldType = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD_TYPE__");
 String l2EndDateFieldType = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD_TYPE__");
 String l2StartDateFieldInputFieldName =  ElementParameterParser.getValue(node,"__INPUT_FIELD_NAME__");
-String l2EndDateFieldFixedYearValue = ElementParameterParser.getValue(node,"__FIXED_YEAR_VALUE__");
+String l2EndDateFieldFixedYearValue = ElementParameterParser.getValue(node,"__FIXED_DATE_VALUE__");
 
 if(isEnableType2) {
     List<String> whereClause = new ArrayList<String>();
@@ -114,9 +114,9 @@ if(isEnableType2) {
     %>
      " IS NULL";
     <%
-    }else if ("FIXED_YEAR_VALUE".equals(l2EndDateFieldType)) {
+  }else if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) {
     %>
-     "= to_date ('" + <%=l2EndDateFieldFixedYearValue%> +"-01-01', 'yyyy-mm-dd')";
+     "= to_date ('" + <%=l2EndDateFieldFixedYearValue%> + "', 'yyyy-mm-dd')";
     <%
     }%>
     java.sql.Statement stmtType2Update_<%=cid%> = conn_<%=cid%>.createStatement();
@@ -171,9 +171,9 @@ if(isEnableType2) {
      %>
      ", NULL"
      <%
-     }else if ("FIXED_YEAR_VALUE".equals(l2EndDateFieldType)) {
+   }else if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) {
      %>
-     ", to_date('"+<%=l2EndDateFieldFixedYearValue%>+"-01-01', 'yyyy-mm-dd')"
+     ", to_date('" + <%=l2EndDateFieldFixedYearValue%> + "', 'yyyy-mm-dd')"
      <%
      }%>
      +"
@@ -225,9 +225,9 @@ String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + "(<%if(("DB_SEQUE
 	%>
 		", NULL"
 	<%
-	}else if ("FIXED_YEAR_VALUE".equals(l2EndDateFieldType)) {
+}else if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) {
 	%>
-		 ", to_date('"+<%=l2EndDateFieldFixedYearValue%>+"-01-01', 'yyyy-mm-dd')"
+		 ", to_date('" + <%=l2EndDateFieldFixedYearValue%> + "', 'yyyy-mm-dd')"
 	<%
 	}%>
 
@@ -247,4 +247,3 @@ if(isEnableDebug) {
     <%
 }
 %>
-

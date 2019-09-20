@@ -815,7 +815,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             for (ProjectReference ref : references) {
                 initRefPoms(new Project(ref.getReferencedProject()));
             }
-            helper.updateRefProjectModules(references);
+            helper.updateRefProjectModules(references, monitor);
             helper.updateCodeProjects(monitor, true);
         } catch (Exception e) {
             ExceptionHandler.process(e);

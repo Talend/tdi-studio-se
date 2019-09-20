@@ -283,10 +283,17 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     @Override
     public String[] getCommandLine(boolean needContext, boolean externalUse, int statOption, int traceOption,
             String... codeOptions) {
+        return getCommandLine(needContext, externalUse, statOption, traceOption, false,
+                codeOptions);
+    }
+    
+    @Override
+    public String[] getCommandLine(boolean needContext, boolean externalUse, int statOption, int traceOption, boolean ignoreCustomJVMSetting,
+            String... codeOptions) {
         setExternalUse(externalUse);
         String[] cmd = null;
         try {
-            cmd = getCommandLine();
+            cmd = getCommandLine(ignoreCustomJVMSetting);
 
         } catch (ProcessorException e) {
             ExceptionHandler.process(e);
@@ -565,6 +572,8 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     public abstract IProject getCodeProject();
 
     public abstract String[] getCommandLine() throws ProcessorException;
+    
+    public abstract String[] getCommandLine(boolean ignoreCustomJVMSetting) throws ProcessorException;
 
     /*
      * (non-Javadoc)

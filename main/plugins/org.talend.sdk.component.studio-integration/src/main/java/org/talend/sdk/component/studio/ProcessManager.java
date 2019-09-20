@@ -15,12 +15,11 @@
  */
 package org.talend.sdk.component.studio;
 
-import static java.lang.ClassLoader.getSystemClassLoader;
-import static java.lang.Thread.sleep;
-import static java.util.Collections.emptyEnumeration;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
+import static java.lang.ClassLoader.*;
+import static java.lang.Thread.*;
+import static java.util.Collections.*;
+import static java.util.Optional.*;
+import static java.util.stream.Collectors.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,6 +73,8 @@ public class ProcessManager implements AutoCloseable {
     private URLClassLoader loader;
 
     private Thread serverThread;
+
+    private Exception loadException;
 
     public ProcessManager(final String groupId, final Function<String, File> resolver) {
         this.groupId = groupId;
@@ -284,6 +285,14 @@ public class ProcessManager implements AutoCloseable {
                         throw new IllegalStateException(ie.getTargetException());
                     }
                 } catch (final Exception e) {
+                    Throwable cause = getThrowableException(e);
+                    if (cause != null) {
+                        if (cause instanceof Exception) {
+                            setLoadException((Exception) cause);
+                        } else {
+                            setLoadException(new Exception(cause));
+                        }
+                    }
                     throw new IllegalStateException(e);
                 }
             }
@@ -550,4 +559,24 @@ public class ProcessManager implements AutoCloseable {
         return port;
     }
 
+    private Throwable getThrowableException(Throwable ex) {
+        if (ex != null) {
+            if (ex instanceof IllegalArgumentException) {
+                return ex;
+            } else {
+                if (ex.getCause() != null) {
+                    return getThrowableException(ex.getCause());
+                }
+            }
+        }
+        return ex;
+    }
+
+    public Exception getLoadException() {
+        return this.loadException;
+    }
+
+    public void setLoadException(Exception loadException) {
+        this.loadException = loadException;
+    }
 }

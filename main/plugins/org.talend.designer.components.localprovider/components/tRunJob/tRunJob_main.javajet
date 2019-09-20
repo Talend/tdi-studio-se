@@ -138,9 +138,10 @@ String inputConnName = null;
 		paraList_<%=cid %>.addAll(childJob_commandLine_Mapper_<%=cid%>.get(<%=dynamicJobName%>));
 	<%
 	}else{
+		boolean use_custom_jvm_setting = "true".equals(ElementParameterParser.getValue(node, "__USE_CUSTOM_JVM_SETTING__"));
 		try {
 			if(useIndependentProcess){
-		    	commandLineWindows = ProcessorUtilities.getCommandLine("win32", false, true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, codeOptions);
+		    	commandLineWindows = ProcessorUtilities.getCommandLine("win32", false, true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, use_custom_jvm_setting, codeOptions);
 		    	// remove the 2 fist lines
 		    	if (commandLineWindows.length > 0 && ProcessorUtilities.isExportConfig()){
 		    		int tmpSize = commandLineWindows.length - 2;
@@ -148,7 +149,7 @@ String inputConnName = null;
 		    		System.arraycopy(commandLineWindows, 2, tmp, 0, tmpSize);
 		    		commandLineWindows = tmp;
 	    		}
-		    	commandLineUnix = ProcessorUtilities.getCommandLine("linux", false, true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, codeOptions);
+		    	commandLineUnix = ProcessorUtilities.getCommandLine("linux", false, true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, use_custom_jvm_setting, codeOptions);
 	    		// remove the 2 first lines
 				if (commandLineUnix.length > 0 && ProcessorUtilities.isExportConfig()){
 					int tmpSize = commandLineUnix.length - 2;
@@ -190,21 +191,21 @@ String inputConnName = null;
 		      			if (commandLineWindows[i].indexOf("\"") >= 0){
 							if(commandLineWindows[i].indexOf(".jar")>=0){
 		      				%>
-								paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=commandLineWindows[i] %>));
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=commandLineWindows[i] %>));
 		      				<%
 							}else{
 		      				%>
-		      					paraList_<%=cid %>.add(<%=commandLineWindows[i] %>);
+		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=commandLineWindows[i] %>);
 		      				<%
 		          			}
 		      			}else{
 		          			if(commandLineWindows[i].indexOf(".jar")>=0){
               				%>
-		        				paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap("<%=commandLineWindows[i] %>"));
+		        				jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap("<%=commandLineWindows[i] %>"));
 		      				<%
 		          			}else{
               				%>
-		      					paraList_<%=cid %>.add("<%=commandLineWindows[i] %>");
+		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, "<%=commandLineWindows[i] %>");
 		      				<%
 		          			}
 		      			}	
@@ -228,24 +229,31 @@ String inputConnName = null;
 						if (param.contains("$ROOT_PATH")) {
 							if(param.indexOf(".jar") >= 0){
 		      				%>
-								paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
 		      				<%}else{%>
-		        				paraList_<%=cid %>.add(<%=param %>.replace("$ROOT_PATH",System.getProperty("user.dir")));
+		        				jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=param %>.replace("$ROOT_PATH",System.getProperty("user.dir")));
 		     	 			<%
 		      				}
 		      			}else{
 							if(param.indexOf(".jar") >= 0){
 		      				%>
-		      					paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
 		      				<%}else{%>
-								paraList_<%=cid %>.add(<%=param %>);
-		      				<%			
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=param %>);
+		      				<%
 		      				}
 		      			}	
 	    			}
 		  		}
 		  		%>
-			}    
+			}
+			
+			<%
+			if(use_custom_jvm_setting) {
+			%>
+			jvm_argument_helper_<%=cid%>.reset();
+			<%}%>
+			
 	  	<%
 		}
 		if(isLog4jEnabled){//For TDI-27659

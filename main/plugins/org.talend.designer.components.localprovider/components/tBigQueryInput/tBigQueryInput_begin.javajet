@@ -224,6 +224,7 @@
 		<% if(isLog4jEnabled) { %>
 			log.info("<%=cid%> - query " + <%=query%>);
 		<% } %>
+
 		com.google.cloud.bigquery.BigQuery bigquery_<%=cid%> = com.google.cloud.bigquery.BigQueryOptions.newBuilder()
 				.setCredentials(credentials_<%=cid%>)
 				.setProjectId(<%=projectId%>)
@@ -231,7 +232,8 @@
 				.getService();
 		
 		com.google.cloud.bigquery.QueryJobConfiguration.Builder queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>);
-       <%if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {%>
+
+     <%if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {%>
          
           com.google.cloud.bigquery.QueryJobConfiguration jobConfDryRun_<%=cid%> = queryConfiguration_<%=cid%> .setDryRun(true).build();
           com.google.cloud.bigquery.Job jobDryRun_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(jobConfDryRun_<%=cid%>));
@@ -273,6 +275,7 @@
 	   
 	   <% } %>
 	       com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>.build()).setJobId(jobId_<%=cid%>).build());
+
 
 		<% if(isLog4jEnabled) {	%>
 			log.info("<%=cid%> - Sending job " + jobId_<%=cid%> + " with query: " + <%=query%>);
