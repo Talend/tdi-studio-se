@@ -358,7 +358,7 @@ public class GenericDBService implements IGenericDBService{
                 } else if (proName.equals("userId")) {//$NON-NLS-1$
                     dbConnection.setUsername((String) value);
                 } else if (proName.equals("password")) {//$NON-NLS-1$
-                    dbConnection.setPassword((String) value);
+                    dbConnection.setRawPassword((String) value);
                 } else if (proName.equals("mappingFile")) {//$NON-NLS-1$
                     dbConnection.setDbmsId((String) value);
                 } else if (proName.equals("drivers") && GenericTypeUtils.isListStringType((org.talend.daikon.properties.property.Property) otherProp)) {//$NON-NLS-1$
