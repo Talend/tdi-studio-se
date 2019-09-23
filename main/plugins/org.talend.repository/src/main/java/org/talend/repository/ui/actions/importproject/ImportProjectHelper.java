@@ -273,11 +273,8 @@ public class ImportProjectHelper {
         operation.run(new SubProgressMonitor(monitor, 95));
         monitor.worked(5);
         monitor.done();
-        if (provider != null && provider instanceof TalendZipLeveledStructureProvider) {
-            ((TalendZipLeveledStructureProvider) provider).closeArchive();
-        }
-        if (provider != null && provider instanceof TarLeveledStructureProvider) {
-            ((TarLeveledStructureProvider) provider).closeArchive();
+        if (provider instanceof ILeveledImportStructureProvider) {
+            ((ILeveledImportStructureProvider) provider).closeArchive();
         }
     }
 

@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.xml.XMLFileUtil;
 import org.talend.commons.utils.io.FilesUtils;
@@ -427,6 +428,9 @@ public class ImportProjectAsWizardPage extends WizardPage {
                 try {
                     sourceFile.close();
                 } catch (IOException e) {
+                    if (CommonsPlugin.isDebugMode()) {
+                        ExceptionHandler.process(e);
+                    }
                 }
             }
         }
