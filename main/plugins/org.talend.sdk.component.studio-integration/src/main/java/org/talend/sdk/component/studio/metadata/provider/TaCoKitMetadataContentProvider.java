@@ -347,15 +347,18 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
     private boolean checkParentObjectDeleted(String requiredParentId, ConfigTypeNode configTypeNode,
             Map<String, IRepositoryViewObject> objectMap) throws Exception {
         if (!TaCoKitUtil.isBlank(requiredParentId)) {
+            IRepositoryViewObject parentObj = null;
             if (objectMap.containsKey(requiredParentId)) {
-                return true;
+                parentObj = objectMap.get(requiredParentId);
+            } else {
+                ERepositoryObjectType objectType = TaCoKitUtil.getOrCreateERepositoryObjectType(configTypeNode);
+                parentObj = ProxyRepositoryFactory.getInstance().getLastVersion(requiredParentId, null, objectType);
+                if (parentObj != null) {
+                    objectMap.put(requiredParentId, parentObj);
+                }
             }
-            ERepositoryObjectType objectType = TaCoKitUtil.getOrCreateERepositoryObjectType(configTypeNode);
-            IRepositoryViewObject parentObj = ProxyRepositoryFactory.getInstance().getLastVersion(requiredParentId, null,
-                    objectType);
             if (parentObj != null) {
                 if (parentObj.isDeleted()) {
-                    objectMap.put(requiredParentId, parentObj);
                     return true;
                 } else {
                     ConnectionItem item = (ConnectionItem) parentObj.getProperty().getItem();
