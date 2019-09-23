@@ -105,8 +105,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
                 if(pass != null){
                     pass.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
                     pass.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, pass.getName());
-                    String password = connection.getRawPassword();
-                    pass.setValue(password);
+                    pass.setValue(connection.getRawPassword());
                 }
                 if(mappingFile != null){
                     mappingFile.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
@@ -114,10 +113,6 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
                 }
                 setDrivers(dirJar, connection.getDriverJarPath(), isContextMode);
                 connection.setCompProperties(properties.toSerialized());
-                // save migrated connection
-                connection.setEncryptAndDecryptFuncPair(null, null);
-                connection.setRawPassword(pass.getStringValue());
-                
                 try {
                     if (isContextMode) {
                         // for context mode JDBC connection, the value of DriverJar context parameter need to be changed

@@ -60,6 +60,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
         toReturn.addAll(ERepositoryObjectType.getAllTypesOfProcess());
         toReturn.addAll(ERepositoryObjectType.getAllTypesOfProcess2());
         toReturn.addAll(ERepositoryObjectType.getAllTypesOfTestContainer());
+        toReturn.add(ERepositoryObjectType.JDBC);
         return toReturn;
     }
 
