@@ -77,8 +77,6 @@ public class FTPForm extends AbstractForm {
     private LabelledText keyPasswordText;
 
     private LabelledCombo connModelCombo;
-    
-    private LabelledText connTimeoutText;
 
     private LabelledCombo encodeCombo;
 
@@ -205,13 +203,6 @@ public class FTPForm extends AbstractForm {
         connList.add("Passive"); //$NON-NLS-1$
         connList.add("Active"); //$NON-NLS-1$
         connModelCombo = new LabelledCombo(ftpParameterGroup, Messages.getString("FTPForm_conn_model"), "", connList); //$NON-NLS-1$ //$NON-NLS-2$
-        if (getConnection().getMode() == null || "".equals(getConnection().getMode())) { //$NON-NLS-1$
-            connModelCombo.setText(Messages.getString("FTPForm_passive")); //$NON-NLS-1$
-            getConnection().setMode(connModelCombo.getText());
-        }
-        
-        connTimeoutText = new LabelledText(ftpParameterGroup, Messages.getString("FTPForm_conn_timeout"), true); //$NON-NLS-1$
-        connTimeoutText.setText("0");
         if (getConnection().getMode() == null || "".equals(getConnection().getMode())) { //$NON-NLS-1$
             connModelCombo.setText(Messages.getString("FTPForm_passive")); //$NON-NLS-1$
             getConnection().setMode(connModelCombo.getText());
@@ -382,14 +373,6 @@ public class FTPForm extends AbstractForm {
             public void modifyText(ModifyEvent e) {
                 FTPConnection conn = getConnection();
                 conn.setKeystorePassword(conn.getValue(keyPasswordText.getText(), true));
-            }
-        });
-        connTimeoutText.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                getConnection().setTimeout(Long.parseLong(connTimeoutText.getText()));
-                checkFieldsValue();
             }
         });
         connModelCombo.addModifyListener(new ModifyListener() {
@@ -654,7 +637,6 @@ public class FTPForm extends AbstractForm {
         ftpPortText.setText(conn.getPort());
         ftpHostText.setText(conn.getHost());
         encodeCombo.setText(conn.getEcoding());
-        connTimeoutText.setText(String.valueOf(conn.getTimeout()));
         if (CUSTOM.equals(encodeCombo.getText())) {
             customText.setVisible(true);
         } else {
