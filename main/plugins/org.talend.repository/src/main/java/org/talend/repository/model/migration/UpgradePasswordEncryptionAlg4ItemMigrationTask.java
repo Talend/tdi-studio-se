@@ -20,7 +20,6 @@ import java.util.List;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.commons.utils.PasswordEncryptUtil;
-import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -39,7 +38,6 @@ import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
-import org.talend.daikon.NamedThing;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
@@ -47,7 +45,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.repository.model.migration.EncryptPasswordInComponentsMigrationTask.FakeNode;
-import org.talend.utils.security.CryptoHelperWrapper;
 import org.talend.utils.security.PasswordMigrationUtil;
 
 public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswordEncryption4ItemMigrationTask {
@@ -314,28 +311,6 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
                             }
                         }
                     }
-                }
-                updateComponentProperties(fNode.getComponentProperties());
-            }
-        }
-        return modified;
-    }
-
-    protected boolean updateComponentProperties(ComponentProperties componentProperties) {
-        boolean modified = false;
-        if (componentProperties != null) {
-            for (NamedThing namedThing : componentProperties.getProperties()) {
-                if (namedThing != null && namedThing instanceof org.talend.daikon.properties.property.StringProperty) {
-                    org.talend.daikon.properties.property.StringProperty property = (org.talend.daikon.properties.property.StringProperty) namedThing;
-                    if (property.isFlag(org.talend.daikon.properties.property.Property.Flags.ENCRYPT)) {
-                        Object value = property.getStoredValue();
-                        property.setValue(CryptoHelperWrapper.decrypt(String.valueOf(value)));
-                        property.encryptStoredValue(true);
-                        if (!modified) {
-                            modified = true;
-                        }
-                    }
-
                 }
             }
         }
