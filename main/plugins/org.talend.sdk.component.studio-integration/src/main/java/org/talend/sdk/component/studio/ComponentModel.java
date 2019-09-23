@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.PluginChecker;
@@ -197,6 +198,15 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     @Override
     public String getOriginalName() {
         return getName();
+    }
+
+    @Override
+    public String getDisplayName() {
+        String name = getName();
+        if (isTaCoKitComponentMadeByTalend()) {
+            return "t" + name; //$NON-NLS-1$
+        }
+        return name;
     }
 
     /**
@@ -676,5 +686,13 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
 
     public ComponentId getId(){
         return this.index.getId();
+    }
+
+    public boolean isTaCoKitComponentMadeByTalend() {
+        String location = getId().getPluginLocation().trim();
+        if (StringUtils.isNotBlank(location) && location.startsWith(MavenConstants.DEFAULT_GROUP_ID)) {
+            return true;
+        }
+        return false;
     }
 }
