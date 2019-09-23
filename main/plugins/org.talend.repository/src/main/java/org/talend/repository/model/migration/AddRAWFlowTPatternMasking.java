@@ -82,11 +82,17 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
         processType = getProcessType(item);
         try {
             IComponentFilter filter = new NameComponentFilter("tPatternMasking"); //$NON-NLS-1$
-            IComponentConversion checkGIDType = new UnCheckRAWFlow();
+            IComponentConversion unCheckRaw = new UnCheckRAWFlow();
             IComponentConversion changeMetadataName = new ChangeMetadataName();
             ModifyComponentsAction
                     .searchAndModify(item, processType, filter,
-                            Arrays.<IComponentConversion> asList(checkGIDType, changeMetadataName));
+                            Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
+
+            filter = new NameComponentFilter("tPatternUnmasking"); //$NON-NLS-1$
+            unCheckRaw = new UnCheckRAWFlow();
+            changeMetadataName = new ChangeMetadataName();
+            ModifyComponentsAction.searchAndModify(item, processType, filter,
+                    Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
             ExceptionHandler.process(e);
