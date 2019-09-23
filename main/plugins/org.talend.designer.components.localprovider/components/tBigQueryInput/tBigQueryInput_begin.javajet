@@ -29,8 +29,8 @@
 	String query = ElementParameterParser.getValue(node,"__QUERY__");
 	boolean useLegacySql = ElementParameterParser.getBooleanValue(node,"__USE_LEGACY_SQL__");
 	String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
-  boolean isCustomTemporaryName = ElementParameterParser.getBooleanValue(node,"__USE_CUSTOM_TEMPORARY_DATASET__");
-  String tempDataset =  ElementParameterParser.getValue(node,"__TEMPORARY_DATASET_NAME__");
+	boolean isCustomTemporaryName = ElementParameterParser.getBooleanValue(node,"__USE_CUSTOM_TEMPORARY_DATASET__");
+	String tempDataset =  ElementParameterParser.getValue(node,"__TEMPORARY_DATASET_NAME__");
 
 	query = query.replaceAll("\n"," ");
 	query = query.replaceAll("\r"," ");
@@ -194,7 +194,7 @@
 		}
 		%>
 
-    BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, tokenFile_<%=cid%><% if (isCustomTemporaryName) {%>, <%=tempDataset%> <%} %>);
+		BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, tokenFile_<%=cid%><% if (isCustomTemporaryName) {%>, <%=tempDataset%> <%} %>);
 
 		<%
 		if(isLog4jEnabled){
@@ -237,11 +237,11 @@
 
      <%if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {
           if (isCustomTemporaryName) {%>
-            String tempDataset_<%=cid%> = <%=tempDataset%>;
-<%          if(isLog4jEnabled){	%>
-              log.info("<%=cid%> - temporary Dataset name : " + tempDataset_<%=cid%>);
+              String tempDataset_<%=cid%> = <%=tempDataset%>;
+<%            if(isLog4jEnabled){	%>
+                  log.info("<%=cid%> - temporary Dataset name : " + tempDataset_<%=cid%>);
 <%
-            }
+              }
           } else {
 %>
           com.google.cloud.bigquery.QueryJobConfiguration jobConfDryRun_<%=cid%> = queryConfiguration_<%=cid%> .setDryRun(true).build();
@@ -249,16 +249,16 @@
 
           String queryLocation_<%=cid%> =jobDryRun_<%=cid%>.getJobId().getLocation();
           String location_<%=cid%> = queryLocation_<%=cid%> == null ? "US" : queryLocation_<%=cid%>;
-		    String tempDataset_<%=cid%> = java.util.UUID.randomUUID().toString().replaceAll("-", "")
+          String tempDataset_<%=cid%> = java.util.UUID.randomUUID().toString().replaceAll("-", "")
              + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt())
              + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
 
-               <% if(isLog4jEnabled){	%>
-              log.info("<%=cid%> - query location :" + queryLocation_<%=cid%>);
-              log.info("<%=cid%> - temporary dataset location :" + location_<%=cid%>);
-			     log.info("<%=cid%> - temporary Dataset name : " + tempDataset_<%=cid%>);
+              <% if(isLog4jEnabled){	%>
+                  log.info("<%=cid%> - query location :" + queryLocation_<%=cid%>);
+                  log.info("<%=cid%> - temporary dataset location :" + location_<%=cid%>);
+                  log.info("<%=cid%> - temporary Dataset name : " + tempDataset_<%=cid%>);
 
-		       <% } %>
+              <% } %>
 
          com.google.cloud.bigquery.DatasetInfo datasetInfo_<%=cid%> = com.google.cloud.bigquery.DatasetInfo.newBuilder(tempDataset_<%=cid%>).setLocation(location_<%=cid%>).build();
          com.google.cloud.bigquery.Dataset dataset_<%=cid%> = bigquery_<%=cid%> .create(datasetInfo_<%=cid%>);
@@ -268,10 +268,10 @@
           String tempTable_<%=cid%> = java.util.UUID.randomUUID().toString().replaceAll("-", "")
              + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt())
              + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
-       <% if(isLog4jEnabled){	%>
-            log.info("<%=cid%> - temporary table name : " + tempTable_<%=cid%>);
+          <% if(isLog4jEnabled){	%>
+              log.info("<%=cid%> - temporary table name : " + tempTable_<%=cid%>);
 <%
-        }
+            }
 %>
          queryConfiguration_<%=cid%>
              .setDryRun(false)
