@@ -92,7 +92,7 @@ public class TalendProxySelector extends ProxySelector {
     private static boolean proxyHolderContainsHost(ProxyHolder holder, String uriString) {
         return holder != null &&
                 (holder.getProxyMap().containsKey(uriString)
-                        || holder.getProxyMap().containsKey(uriString.substring(0, uriString.indexOf(":"))));
+                        || (uriString.contains(":") && holder.getProxyMap().containsKey(uriString.substring(0, uriString.indexOf(":")))));
     }
 }
 
