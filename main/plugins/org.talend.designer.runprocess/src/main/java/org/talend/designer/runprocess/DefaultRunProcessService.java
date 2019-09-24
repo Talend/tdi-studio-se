@@ -855,6 +855,9 @@ public class DefaultRunProcessService implements IRunProcessService {
         if (ProcessUtils.isRequiredBeans(null, refProject)) {
             installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
         }
+        
+        deleteRefProjects(refProject, refHelper);
+
     }
 
     private void installRefCodeProject(ERepositoryObjectType codeType, AggregatorPomsHelper refHelper, IProgressMonitor monitor)
@@ -870,6 +873,35 @@ public class DefaultRunProcessService implements IRunProcessService {
             argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
             argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, TalendMavenConstants.ARG_MAIN_SKIP);
             codeProject.buildModules(monitor, null, argumentsMap);
+        }
+    }
+    
+    private void deleteRefProjects(Project refProject, AggregatorPomsHelper refHelper) throws Exception {
+        IProgressMonitor monitor = new NullProgressMonitor();
+        
+        deleteRefProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
+        
+        if (ProcessUtils.isRequiredPigUDFs(null, refProject)) {
+        	deleteRefProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
+        }
+
+        if (ProcessUtils.isRequiredBeans(null, refProject)) {
+        	deleteRefProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
+        }
+
+    }
+    
+    private void deleteRefProject(ERepositoryObjectType codeType, AggregatorPomsHelper refHelper, IProgressMonitor monitor)
+            throws Exception, CoreException {
+    	
+        if (!refHelper.getProjectRootPom().exists()) {
+            return;
+        }
+        
+        String projectTechName = refHelper.getProjectTechName();
+        ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType, projectTechName);
+       	
+        if (codeProject != null) {
             codeProject.getProject().delete(false, true, monitor);
             TalendJavaProjectManager.removeFromCodeJavaProjects(codeType, projectTechName);
         }
