@@ -354,17 +354,17 @@ if (sftp) {// *** sftp *** //
 	for (String filemask_<%=cid %> : maskList_<%=cid %>) {
 		java.util.regex.Pattern fileNamePattern_<%=cid %> = java.util.regex.Pattern.compile(filemask_<%=cid %>.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
 
-		List<String> listWithNames_<%=cid %> = java.util.Arrays.asList(arrayWithNames_<%=cid %>);
+		java.util.Set<String> setWithNames_<%=cid %> = new java.util.HashSet<>(java.util.Arrays.asList(arrayWithNames_<%=cid %>));
 		for (com.enterprisedt.net.ftp.FTPFile ftpFile : fileList_<%=cid %>){
 			String filemaskTemp_<%=cid%> = "";
 			String filemaskTempName_<%=cid%> = "";
-			if (listWithNames_<%=cid %>.contains(ftpFile.getName())){
+			if (setWithNames_<%=cid %>.contains(ftpFile.getName())){
 				filemaskTemp_<%=cid%> = ftpFile.getRaw();
 				filemaskTempName_<%=cid%> = ftpFile.getName();
-			}
-			if (fileNamePattern_<%=cid %>.matcher(filemaskTempName_<%=cid %>).matches()) {
-				fileListTemp_<%=cid %>.add(filemaskTemp_<%=cid %>);
-				fileListTempWithNames_<%=cid%>.add(filemaskTempName_<%=cid%>);
+				if (fileNamePattern_<%=cid %>.matcher(filemaskTempName_<%=cid %>).matches()) {
+					fileListTemp_<%=cid %>.add(filemaskTemp_<%=cid %>);
+					fileListTempWithNames_<%=cid%>.add(filemaskTempName_<%=cid%>);
+				}
 			}
 		}
 	}
