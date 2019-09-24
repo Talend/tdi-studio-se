@@ -1,6 +1,7 @@
 package org.talend.designer.dbmap.language.generation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -629,25 +630,88 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
     }
 
     @Test
-    public void testReplaceVariablesForExpression() {
+    public void testSubQueryBuildSqlSelect() {
+        List<IConnection> incomingConnections = new ArrayList<IConnection>();
+        String[] mainTableEntities = new String[] { "ID", "column1", "column2" };
+        // mock the real case in the parameters:
+        // ELT_SCHEMA_NAME: context.schema
+        // ELT_TABLE_NAME: "test_table"
+        incomingConnections.add(mockConnection("context.schema", "\"test_table\"", mainTableEntities));
+        dbMapComponent.setIncomingConnections(incomingConnections);
+
+        ExternalDbMapData externalData = new ExternalDbMapData();
+        List<ExternalDbMapTable> inputs = new ArrayList<ExternalDbMapTable>();
+        List<ExternalDbMapTable> outputs = new ArrayList<ExternalDbMapTable>();
+        // input
+        ExternalDbMapTable inputTable = new ExternalDbMapTable();
+        inputTable.setTableName("context.schema.test_table");
+        inputTable.setName("t");
+        inputTable.setAlias("t");
+        List<ExternalDbMapEntry> entities = getMetadataEntities(mainTableEntities, new String[3]);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // output
+        ExternalDbMapTable outputTable = new ExternalDbMapTable();
+        outputTable.setTableName("t");
+        outputTable.setName("table1");
+        String[] names = new String[] { "ID", "column1", "column2" };
+        // String mainTable = mainTableName;
+        String[] expressions = new String[] { "t.ID", "CASE WHEN t.column1 IS NULL THEN context.param1 ELSE t.column1 END",
+                "t.column2" };
+        outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
+        
+        String[] whereNames = new String[] { "newFilter1" };
+        String[] whereExps = new String[] { "t.column2 = 'context.param2'" };
+        outputTable.setCustomWhereConditionsEntries(getMetadataEntities(whereNames, whereExps));
+        outputs.add(outputTable);
+
+        externalData.setInputTables(inputs);
+        externalData.setOutputTables(outputs);
+        dbMapComponent.setExternalData(externalData);
+
         JobContext newContext = new JobContext("Default");
         List<IContextParameter> newParamList = new ArrayList<IContextParameter>();
         newContext.setContextParameterList(newParamList);
         JobContextParameter param = new JobContextParameter();
-        param.setName("test1");
-        param.setValue("test");
+        param.setName("schema");
         newParamList.add(param);
         process = mock(Process.class);
         JobContextManager contextManger = new JobContextManager();
         contextManger.setDefaultContext(newContext);
         when(process.getContextManager()).thenReturn(contextManger);
         dbMapComponent.setProcess(process);
+        
+        JobContextParameter param1 = new JobContextParameter();
+        param1.setName("param1");
+        newParamList.add(param1);
+        JobContextParameter param2 = new JobContextParameter();
+        param2.setName("param2");
+        newParamList.add(param2);
+        JobContextParameter param3 = new JobContextParameter();
+        param2.setName("param3");
+        newParamList.add(param3);
+        JobContextParameter schema = new JobContextParameter();
+        param2.setName("schema");
+        newParamList.add(schema);
 
-        String originalExpression = "CASE WHEN t.column1 IS NULL THEN context.test1 ELSE t.column1 END AS column1";
-        String expectExpression = "CASE WHEN t.column1 IS NULL THEN \" +context.test1+ \" ELSE t.column1 END AS column1";
-        GenericDbGenerationManager manager = new GenericDbGenerationManager();
-        String result = manager.replaceVariablesForExpression(dbMapComponent, originalExpression);
-        assertEquals(expectExpression, result);
+        dbManager = new GenericDbGenerationManager();
+        String sqlSelect = dbManager.buildSqlSelect(dbMapComponent, "table1", "  ");
+        assertNotNull(sqlSelect);
 
+        // should be
+        // "SELECT
+        // t.ID AS ID, CASE WHEN t.column1 IS NULL THEN " +context.param1+ " ELSE t.column1 END AS column1, t.column2 AS
+        // column2
+        // FROM
+        // " +context.schema+"."+"test_table"+ " t
+        // WHERE t.column2 = 'context.param2'"
+
+        String expectQuery = "\"SELECT\n"
+                + "  t.ID AS ID, CASE WHEN t.column1 IS NULL THEN \" +context.param1+ \" ELSE t.column1 END AS column1, t.column2 AS column2\n"
+                + "  FROM\n" + "   \" +context.schema+\".\"+\"test_table\"+ \" t\n"
+                + "  WHERE t.column2 = 'context.param2'\"";
+        assertEquals(expectQuery.replaceAll("\n", "").trim(), sqlSelect.replaceAll("\n", "").trim());
+        
     }
 }
