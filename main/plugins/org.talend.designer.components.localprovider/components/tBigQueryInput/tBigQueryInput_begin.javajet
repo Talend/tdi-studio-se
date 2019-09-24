@@ -281,7 +281,6 @@
          com.google.cloud.bigquery.JobId jobId_<%=cid%>  = com.google.cloud.bigquery.JobId
 						.newBuilder().setProject(<%=projectId%>)
 						.setJob(java.util.UUID.randomUUID().toString())
-						.setLocation(location_<%=cid%>)
 						.build();
 
 		       <% if(isLog4jEnabled){ %>
