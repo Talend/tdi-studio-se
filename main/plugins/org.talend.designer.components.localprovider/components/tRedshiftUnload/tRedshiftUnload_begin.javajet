@@ -32,6 +32,10 @@ imports="
 	dbquery = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(dbquery);
 	
 	boolean useExistingConnection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+	
+	boolean useExistingS3Connection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION_S3__"));
+	String s3ConnectionCid = ElementParameterParser.getValue(node,"__CONNECTION_S3__");
+	INode s3ConnectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(),s3ConnectionCid,true);
 %>
 	java.sql.Connection conn_<%=cid%> = null;
 <%
@@ -120,7 +124,7 @@ imports="
 	
 	boolean assumeRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__ASSUME_ROLE__"));
 	String access_key = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
-	if(!assumeRole){
+	if(!assumeRole && !useExistingS3Connection){
 		String passwordFieldKey = "__SECRET_KEY__";
 
 		if (ElementParameterParser.canEncrypt(node, passwordFieldKey)) {
@@ -131,13 +135,25 @@ imports="
 %>
 		    final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldKey)%>;
 <%
-		}	
+		}
+	} else if (useExistingS3Connection) {
+		access_key = ElementParameterParser.getValue(s3ConnectionNode, "__ACCESS_KEY__");
+		String passwordFieldKey = "__SECRET_KEY__";
+		if (ElementParameterParser.canEncrypt(s3ConnectionNode, passwordFieldKey)) {
+%>
+		    final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(s3ConnectionNode, passwordFieldKey)%>);
+<%
+		} else {
+%>
+		    final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(s3ConnectionNode, passwordFieldKey)%>;
+<%
+		}
 	}
 %>
 	command_<%=cid%>.append("'s3://").append(<%=bucket%>).append("/").append(<%=keyPrefix%>).append("' ")
 	.append("credentials '")
 <%
-	if(assumeRole){
+	if(assumeRole && !useExistingS3Connection){
 		List<Map<String,String>> roles = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ROLE_TABLE__");
 		int roleListSize=roles.size();
 		if(roleListSize > 0){
@@ -163,25 +179,43 @@ imports="
 <%
 	}
 	boolean encrypt = "true".equals(ElementParameterParser.getValue(node, "__ENCRYPT__"));
-	if(encrypt) {
-		String encryptionKeyPropertyName = "__ENCRYPTED_KEY__";
+	boolean encryptS3Conn = "true".equals(ElementParameterParser.getValue(s3ConnectionNode, "__ENCRYPT__"));
+	if(!useExistingS3Connection){
+		if(encrypt) {
+			String encryptionKeyPropertyName = "__ENCRYPTED_KEY__";
 %>
-		.append(";master_symmetric_key=")
+			.append(";master_symmetric_key=")
 <%
-		if (ElementParameterParser.canEncrypt(node, encryptionKeyPropertyName)) {
+			if (ElementParameterParser.canEncrypt(node, encryptionKeyPropertyName)) {
 %>
-			.append(routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, encryptionKeyPropertyName)%>))
+				.append(routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, encryptionKeyPropertyName)%>))
 <%
-		} else {
+			} else {
 %>
-			.append(<%=ElementParameterParser.getValue(node, encryptionKeyPropertyName)%>)
+				.append(<%=ElementParameterParser.getValue(node, encryptionKeyPropertyName)%>)
 <%
+			}
+		}
+	} else {
+		if(encryptS3Conn) {
+%>
+			.append(";master_symmetric_key=")
+<%
+			if (ElementParameterParser.canEncrypt(s3ConnectionNode, "__ENCRYPTED_KEY_BASE64__")) {
+%>
+				.append(routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(s3ConnectionNode, "__ENCRYPTED_KEY_BASE64__")%>))
+<%
+			} else {
+%>
+				.append(<%=ElementParameterParser.getValue(s3ConnectionNode, "__ENCRYPTED_KEY_BASE64__")%>)
+<%
+			}
 		}
 	}
 %>
 	.append("' ")
 <%
-	if(encrypt) {
+	if((encrypt && !useExistingS3Connection) || encryptS3Conn) {
 %>
 		.append("ENCRYPTED ")
 <%
