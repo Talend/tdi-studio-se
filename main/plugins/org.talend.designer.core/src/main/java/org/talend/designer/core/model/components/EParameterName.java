@@ -361,6 +361,7 @@ public enum EParameterName {
 
     // Added for log4j.xml
     LOG4J_ACTIVATE("LOG4J_ACTIVATE"), //$NON-NLS-1$
+    LOG4J2_ACTIVATE("LOG4J2_ACTIVATE"), //$NON-NLS-1$
     HMAP_PATH("HMAP_PATH"), //$NON-NLS-1$
 
     WINDOW_DURATION("WINDOW_DURATION"), //$NON-NLS-1$

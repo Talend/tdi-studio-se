@@ -272,7 +272,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	.append("' credentials '")
 <%
     boolean assumeRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__ASSUME_ROLE__"));
-	if(s3Mode && assumeRole){
+	if(assumeRole){
 		List<Map<String,String>> roles = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ROLE_TABLE__");
 		int roleListSize=roles.size();
 		if(roleListSize > 0){

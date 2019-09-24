@@ -4,6 +4,7 @@ imports="
     org.talend.core.model.process.ElementParameterParser 
     org.talend.designer.codegen.config.CodeGeneratorArgument
 	java.util.List
+	java.util.ArrayList
 	java.util.Map
 " 
 %>
@@ -26,6 +27,9 @@ imports="
 	}
 	
 	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_SERVER_SIDE_ENCRYPTION__"));
+
+	boolean enableACL = "true".equals(ElementParameterParser.getValue(node, "__ACCESS_CONTROL_LIST__"));
+	List<Map<String, String>> paramsACL = ElementParameterParser.getTableValue(node,"__ACL__");
 	
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
@@ -71,6 +75,48 @@ imports="
 		<%
 		}
 		%>
+  		<%
+		if (enableACL) {
+		%>
+			com.amazonaws.services.s3.model.AccessControlList accessCtrlList = new com.amazonaws.services.s3.model.AccessControlList();
+			accessCtrlList.setOwner(conn_<%=cid%>.getS3AccountOwner());
+			accessCtrlList.setRequesterCharged(true); 
+        <%
+                        int grantee_id = 1;
+			for (Map<String, String> paramACL : paramsACL) {
+				List<String> logAcl = new ArrayList<String>();
+				String aclAccountId = paramACL.get("ID");
+        %> 
+                    com.amazonaws.services.s3.model.Grantee grantee_<%=cid%>_<%=grantee_id%> = (<%=aclAccountId%>.indexOf('@') > -1) ? new com.amazonaws.services.s3.model.EmailAddressGrantee(<%=aclAccountId%>) : new com.amazonaws.services.s3.model.CanonicalGrantee(<%=aclAccountId%>);
+        <%
+				if ("true".equalsIgnoreCase(paramACL.get("READ"))) {
+					logAcl.add("Read");
+        %> 
+                    accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.services.s3.model.Permission.Read);
+        <%
+				}
+				if ("true".equalsIgnoreCase(paramACL.get("READ_ACL"))) {
+					logAcl.add("ReadAcp");
+        %> 
+accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.services.s3.model.Permission.ReadAcp);
+        <%
+				}
+				if ("true".equalsIgnoreCase(paramACL.get("WRITE_ACL"))) {
+					logAcl.add("Write");
+        %> 
+accessCtrlList.grantPermission(grantee_<%=cid%>_<%=grantee_id%>, com.amazonaws.services.s3.model.Permission.WriteAcp);
+        <%
+				}
+                                grantee_id++;
+
+				if(isLog4jEnabled){
+				%>	
+					log.debug("<%=cid%> - Set ACL on object '"+<%=key%>+"' in bucket '"+<%=bucket%>+"' for '"+<%=aclAccountId%>+"' : <%=String.join(", ", logAcl)%>");
+				<%
+				}
+			}
+		}
+  		%>
 		
 		if(!useStream_<%=cid%>) {
 				java.io.File inputFile_<%=cid%> = new java.io.File((String)fileOrStream_<%=cid%>);
@@ -85,7 +131,10 @@ imports="
     			.build();
     			
   			com.amazonaws.services.s3.model.PutObjectRequest putRequest_<%=cid%> = new com.amazonaws.services.s3.model.PutObjectRequest(<%=bucket%>, key_<%=cid%>, inputFile_<%=cid%>).withMetadata(objectMetadata_<%=cid%>);
-  		
+			<%if (enableACL) {%>
+				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
+			<%}%>
+
   			<%@ include file="./set_kms.javajet"%>
   		
   			com.amazonaws.services.s3.transfer.Upload upload_<%=cid%> = tm_<%=cid%>.upload(putRequest_<%=cid%>);
@@ -116,6 +165,10 @@ imports="
     				objectMetadata_<%=cid%>.setContentLength(curPartSize_<%=cid%>);
     				uploadStream_<%=cid%> = new java.io.ByteArrayInputStream(buffer_<%=cid%>,0,Long.valueOf(curPartSize_<%=cid%>).intValue());
     				com.amazonaws.services.s3.model.PutObjectRequest putRequest_<%=cid%> = new com.amazonaws.services.s3.model.PutObjectRequest(<%=bucket%>, key_<%=cid%>, uploadStream_<%=cid%>, objectMetadata_<%=cid%>);
+			
+                    <%if (enableACL) {%>
+				          putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
+			        <%}%>
     				
     				<%@ include file="./set_kms.javajet"%>
     				
@@ -124,6 +177,9 @@ imports="
     				uploadStream_<%=cid%> = new java.io.ByteArrayInputStream(buffer_<%=cid%>);
       			java.util.List<com.amazonaws.services.s3.model.PartETag> partTags_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.s3.model.PartETag>();
       			com.amazonaws.services.s3.model.InitiateMultipartUploadRequest putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(<%=bucket%>, key_<%=cid%>, objectMetadata_<%=cid%>);
+                <%if (enableACL) {%>
+				putRequest_<%=cid%>.withAccessControlList(accessCtrlList);
+			    <%}%>
       			
       			<%@ include file="./set_kms.javajet"%>
       			
@@ -132,12 +188,14 @@ imports="
       			int partNumber_<%=cid%> = 1;
       			boolean streamHasNext_<%=cid%> = true;
       			byte[] probeAvailability_<%=cid%> = new byte[1];
-      			try {
-  							while (streamHasNext_<%=cid%>) {
+				try {
+					while (streamHasNext_<%=cid%>) {
         						com.amazonaws.services.s3.model.UploadPartRequest uploadRequest_<%=cid%> = new com.amazonaws.services.s3.model.UploadPartRequest()
                     	.withBucketName(<%=bucket%>)
-                    	.withKey(key_<%=cid%>).withUploadId(uploadId_<%=cid%>)
-                    	.withPartNumber(partNumber_<%=cid%>).withPartSize(curPartSize_<%=cid%>);
+                    	.withKey(key_<%=cid%>)
+						.withUploadId(uploadId_<%=cid%>)
+                    	.withPartNumber(partNumber_<%=cid%>)
+						.withPartSize(curPartSize_<%=cid%>);
             		    uploadRequest_<%=cid%>.setInputStream(uploadStream_<%=cid%>);
             		    streamHasNext_<%=cid%> = sourceStream_<%=cid%>.read(probeAvailability_<%=cid%>) != -1;
             		    if(!streamHasNext_<%=cid%>){

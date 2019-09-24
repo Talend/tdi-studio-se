@@ -270,6 +270,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         destinationNameField.setLayoutData(data);
         destinationNameField.setFont(font);
+        destinationNameField.setTextDirection(SWT.RIGHT_TO_LEFT);
         BidiUtils.applyBidiProcessing(destinationNameField, "file"); //$NON-NLS-1$
 
         // destination browse button
@@ -904,8 +905,9 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                         addDestinationItem(directoryNames[i]);
                     }
                 }
+                String sepa = java.io.File.separator;
                 setDestinationValue(
-                        directoryNames[0].substring(0, (directoryNames[0].lastIndexOf("\\") + 1)) + fileName);//$NON-NLS-1$
+                        directoryNames[0].substring(0, (directoryNames[0].lastIndexOf(sepa) + 1)) + fileName);// $NON-NLS-1$
             } else {
                 setDefaultDestination();
             }
@@ -984,7 +986,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                     }
                 }
                 setDestinationValue(
-                        directoryNames[0].substring(0, (directoryNames[0].lastIndexOf("\\") + 1)) + fileName);//$NON-NLS-1$
+                        directoryNames[0].substring(0, (directoryNames[0].lastIndexOf(File.separator) + 1)) + fileName);// $NON-NLS-1$
             } else {
                 setDefaultDestination();
             }

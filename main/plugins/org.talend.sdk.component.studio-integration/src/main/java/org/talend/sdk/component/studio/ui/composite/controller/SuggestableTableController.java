@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.sdk.component.studio.ui.composite.controller;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +22,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,14 +41,19 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNotModifiable;
+import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
+import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.properties.controllers.ColumnListController;
 import org.talend.designer.core.ui.editor.properties.controllers.TableController;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
@@ -288,4 +298,69 @@ public class SuggestableTableController extends TableController {
         return ySize2 + ITabbedPropertyConstants.VSPACE;
     }
 
+    @Override
+    public void updateColumnList(IElementParameter param) {
+        List<String> prevColumnList = new ArrayList<String>();
+        if (elem instanceof Node) {
+            ColumnListController.updateColumnList((Node) elem, null);
+            prevColumnList.addAll(ColumnListController.getPrevColumnList((Node) elem, null));
+        } else if (elem instanceof Connection) {
+            ColumnListController.updateColumnList(((Connection) elem).getSource(), null);
+        }
+
+        TableViewerCreator tableViewerCreator = (TableViewerCreator) hashCurControls.get(param.getName());
+        Object[] itemsValue = param.getListItemsValue();
+        if (tableViewerCreator != null) {
+            List colList = tableViewerCreator.getColumns();
+            for (int j = 0; j < itemsValue.length; j++) {
+                if (itemsValue[j] instanceof IElementParameter) {
+                    IElementParameter tmpParam = (IElementParameter) itemsValue[j];
+                    if (tmpParam.getFieldType() == EParameterFieldType.COLUMN_LIST
+                            || tmpParam.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST
+                            || tmpParam.getFieldType() == EParameterFieldType.LOOKUP_COLUMN_LIST) {
+                        if ((j + 1) >= colList.size()) {
+                            break;
+                        }
+                        TableViewerCreatorColumnNotModifiable column = (TableViewerCreatorColumnNotModifiable) colList.get(j + 1);
+                        CellEditor cellEditor = column.getCellEditor();
+                        String[] oldItems = null;
+                        if (cellEditor instanceof ComboBoxCellEditor) {
+                            CCombo combo = (CCombo) cellEditor.getControl();
+                            oldItems = combo.getItems();
+                            combo.setItems(tmpParam.getListItemsDisplayName());
+                        }
+                        List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
+                        String[] items = param.getListItemsDisplayCodeName();
+
+                        for (int currentIndex = 0; currentIndex < paramValues.size(); currentIndex++) {
+                            Map<String, Object> currentLine = paramValues.get(currentIndex);
+                            Object o = currentLine.get(items[j]);
+                            if (o instanceof Integer) {
+                                Integer nb = (Integer) o;
+                                if ((nb >= oldItems.length) || (nb == -1)) {
+                                    nb = new Integer(
+                                            tmpParam.getIndexOfItemFromList((String) tmpParam.getDefaultClosedListValue()));
+                                    currentLine.put(items[j], nb);
+                                } else {
+                                    nb = new Integer(tmpParam.getIndexOfItemFromList(oldItems[nb]));
+                                    currentLine.put(items[j], nb);
+                                }
+                            }
+                        }
+                    } else if (tmpParam.getFieldType() == EParameterFieldType.TEXT) {
+                        List<Map<String, Object>> paramValues = (List<Map<String, Object>>) param.getValue();
+                        String[] items = param.getListItemsDisplayCodeName();
+                        Iterator<Map<String, Object>> iterator = paramValues.iterator();
+                        while (iterator.hasNext()) {
+                            Map<String, Object> currentLine = iterator.next();
+                            Object o = currentLine.get(items[j]);
+                            if (!prevColumnList.contains(o)) {
+                                iterator.remove();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

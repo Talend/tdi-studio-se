@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.build;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -616,6 +617,12 @@ public class TestProcessor implements IProcessor {
      */
     @Override
     public void reloadProcess() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void updateModulesAfterSetLog4j(Collection<ModuleNeeded> modulesNeeded) {
         // TODO Auto-generated method stub
 
     }

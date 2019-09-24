@@ -607,7 +607,7 @@ public final class TalendEditorPaletteFactory {
             while (iter.hasNext()) {
                 IComponent xmlComponent = iter.next();
 
-                Matcher matcher = pattern.matcher(xmlComponent.getName().toLowerCase());
+                Matcher matcher = pattern.matcher(xmlComponent.getDisplayName().toLowerCase());
                 if (matcher.find()) {
                     resultByName.add(new ComponentHit(xmlComponent, matcher.start()));
                     continue;
@@ -643,7 +643,7 @@ public final class TalendEditorPaletteFactory {
     private static void addDelegateComponents(IComponentsFactory compFac, Collection<IComponent> componentSet,
             String lowerCasedKeyword) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
+            IUnifiedComponentService service = GlobalServiceRegister.getDefault().getService(
                     IUnifiedComponentService.class);
             service.filterUnifiedComponentForPalette(compFac, componentSet, lowerCasedKeyword);
 
@@ -730,13 +730,12 @@ public final class TalendEditorPaletteFactory {
             return null;
         }
         IComponent delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
-        String name = component.getName();
         String filter = null;
         if (delegateComponent != component) {
             // emf component name
             filter = component.getName();
-            name = UnifiedComponentUtil.getComponentDisplayNameForPalette(delegateComponent, filter);
         }
+        String name = UnifiedComponentUtil.getComponentDisplayNameForPalette(delegateComponent, filter);
         ImageDescriptor imageSmall = delegateComponent.getIcon16();
         IPreferenceStore store = DesignerPlugin.getDefault().getPreferenceStore();
         ImageDescriptor imageLarge;
