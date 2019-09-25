@@ -549,7 +549,6 @@ public class LoginHelper {
                 } catch (OperationCanceledException e) {
                     throw new InterruptedException(e.getLocalizedMessage());
                 }
-
                 monitor.done();
             }
         };

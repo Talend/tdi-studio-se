@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.ui.utils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.talend.repository.ui.actions.importproject.ImportProjectBean;
+import org.talend.utils.io.FilesUtils;
 
 /**
  *
@@ -71,6 +73,12 @@ public class AfterImportProjectUtil {
                     ((AbsAfterImportProjectAction) action).projectBean = null;
                 }
             }
+        }
+    }
+
+    public static void deleteTempFolderAfterImport(List<File> tempFolders) {
+        for (File folder : tempFolders) {
+            FilesUtils.deleteFolder(folder, true);
         }
     }
 }

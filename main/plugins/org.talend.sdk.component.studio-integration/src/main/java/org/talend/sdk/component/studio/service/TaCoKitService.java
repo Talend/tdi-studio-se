@@ -40,6 +40,10 @@ public class TaCoKitService implements ITaCoKitService {
         try {
             TaCoKitUtil.registAllTaCoKitRepositoryTypes();
         } catch (Exception e) {
+            Exception ex = Lookups.manager().getLoadException();
+            if (ex == null) {
+                Lookups.manager().setLoadException(e);
+            }
             ExceptionHandler.process(e);
         }
     }

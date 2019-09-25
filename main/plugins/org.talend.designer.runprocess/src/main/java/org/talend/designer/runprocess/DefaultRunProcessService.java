@@ -580,6 +580,8 @@ public class DefaultRunProcessService implements IRunProcessService {
                     getLogTemplate(RESOURCE_LOG_FILE_PATH));
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.COMMON_LOGGING_NODE,
                     getLogTemplate(RESOURCE_COMMONLOG_FILE_PATH));
+            Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
+                    Boolean.FALSE.toString());
         }
         // if directly init or modify log4j,need handle with the log4j under .setting/,if not,means execute or export
         // job,need to copy the latest log4j from .setting/ to /java/src
@@ -592,7 +594,18 @@ public class DefaultRunProcessService implements IRunProcessService {
             // ResourceModelHelper.getProject(ProjectManager.getInstance().getCurrentProject()), ".settings", false);
 
             IFolder resFolder = talendJavaProject.getExternalResourcesFolder();
-            IFile log4jFile = resFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+            IFile log4jFile = null;
+            IFile log4jFile2delete = null;
+            if (Log4jPrefsSettingManager.getInstance().isSelectLog4j2()) {
+                log4jFile = resFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+                log4jFile2delete = resFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+            } else {
+                log4jFile = resFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                log4jFile2delete = resFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+            }
+            if (log4jFile2delete != null && log4jFile2delete.exists()) {
+                log4jFile2delete.delete(true, null);
+            }
             // TUP-3014, update the log4j in .Java always.
             // if (isLogForJob) { // when execute or export job need the log4j files under .src folder
             String log4jStr = getTemplateStrFromPreferenceStore(Log4jPrefsConstants.LOG4J_CONTENT_NODE);

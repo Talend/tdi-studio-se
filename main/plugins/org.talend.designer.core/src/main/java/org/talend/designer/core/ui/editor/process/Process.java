@@ -438,6 +438,17 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         param.setReadOnly(true);
         addElementParameter(param);
 
+        param = new ElementParameter(this);
+        param.setCategory(EComponentCategory.TECHNICAL);
+        param.setName(EParameterName.LOG4J2_ACTIVATE.getName());
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setDisplayName(EParameterName.LOG4J2_ACTIVATE.getDisplayName());
+        param.setNumRow(99);
+        param.setShow(false);
+        param.setValue(new Boolean(Log4jPrefsSettingManager.getInstance().isSelectLog4j2()).toString());
+        param.setReadOnly(true);
+        addElementParameter(param);
+
         // MOD by zshen for TDQ_INSTALL_DIR bug 17622
         param = new ElementParameter(this);
         param.setName(EParameterName.PRODUCT_ROOT_DIR.getName());
@@ -1074,6 +1085,20 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             listParamType.add(pType);
         }
     }
+    
+    private boolean isDefaultValue(IElementParameter param) {
+    	if (param != null && param.getName().equals(EParameterName.JOB_RUN_VM_ARGUMENTS.getName())) {
+    		if(param.getElement() instanceof Process) {
+    			IElementParameter jvmOptParam = ((Process)param.getElement()).getElementParameter(EParameterName.JOB_RUN_VM_ARGUMENTS_OPTION.getName());
+    			if(jvmOptParam != null && param.isValueSetToDefault() && jvmOptParam.isValueSetToDefault()) {
+    				return true;
+    			}else {
+    				return false;
+    			}
+    		}
+        }
+    	return param.isValueSetToDefault();
+    }
 
     private void saveElementParameter(IElementParameter param, ProcessType process, TalendFileFactory fileFact,
             List<? extends IElementParameter> paramList, EList listParamType) {
@@ -1086,8 +1111,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 isJoblet = true;
             }
         }
-        if (param.isValueSetToDefault()) {
-            return;
+        if (isDefaultValue(param)) {
+        	return;
         }
 
         if (param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
@@ -3336,7 +3361,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         if (node instanceof Node) {
             component = ((Node) node).getDelegateComponent();
         }
-        String baseName = component.getOriginalName();
+        String baseName = component.getDisplayName();
         return UniqueNodeNameGenerator.generateUniqueNodeName(baseName, uniqueNodeNameList);
     }
 
@@ -3901,10 +3926,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         public void preferenceChange(PreferenceChangeEvent event) {
             if (event.getKey().equals(Log4jPrefsConstants.LOG4J_ENABLE_NODE)) {
                 if (getCommandStack() != null) {
-                    Process.this.getCommandStack()
-                            .execute(
-                                    new PropertyChangeCommand(Process.this, EParameterName.LOG4J_ACTIVATE.getName(), event
-                                            .getNewValue()));
+                    Process.this.getCommandStack().execute(new PropertyChangeCommand(Process.this,
+                            EParameterName.LOG4J_ACTIVATE.getName(), event.getNewValue()));
+                }
+            }
+            if (event.getKey().equals(Log4jPrefsConstants.LOG4J_SELECT_VERSION2)) {
+                if (getCommandStack() != null) {
+                    Process.this.getCommandStack().execute(new PropertyChangeCommand(Process.this,
+                            EParameterName.LOG4J2_ACTIVATE.getName(), event.getNewValue()));
                 }
             }
         }
@@ -3945,6 +3974,12 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             IEclipsePreferences projectPreferences = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_ENABLE_NODE, false);
             projectPreferences.addPreferenceChangeListener(preferenceEventListener);
+
+            IEclipsePreferences projectPreferencesLog4jVersion = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
+                    .getLog4jPreferences(Log4jPrefsConstants.LOG4J_SELECT_VERSION2, false);
+            if (projectPreferencesLog4jVersion != null) {
+                projectPreferencesLog4jVersion.addPreferenceChangeListener(preferenceEventListener);
+            }
         }
     }
 
@@ -3959,6 +3994,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             IEclipsePreferences projectPreferences = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_ENABLE_NODE, false);
             projectPreferences.removePreferenceChangeListener(preferenceEventListener);
+
+            IEclipsePreferences projectPreferencesLog4jVersion = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
+                    .getLog4jPreferences(Log4jPrefsConstants.LOG4J_SELECT_VERSION2, false);
+            projectPreferencesLog4jVersion.removePreferenceChangeListener(preferenceEventListener);
         }
         generatingProcess = null;
         editor = null;
