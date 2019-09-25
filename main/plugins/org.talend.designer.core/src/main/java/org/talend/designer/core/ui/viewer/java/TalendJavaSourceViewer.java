@@ -231,8 +231,11 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
             buff.append("new org.apache.camel.model.RouteDefinition()\n");
         }
         // End of https://jira.talendforge.org/browse/TESB-7615
-        buff.append(" ");
+
+        buff.append("\n");
         int documentOffset = buff.toString().length();
+        buff.append("\n");
+
         buff.append("){\n\t}"); //$NON-NLS-1$
         buff.append("\n\t\n}\n}"); //$NON-NLS-1$
 
@@ -271,8 +274,11 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
         buff.append("\tpublic void myFunction(){\n"); //$NON-NLS-1$
         buff.append("\t  if( \n"); //$NON-NLS-1$
-        buff.append(" ");
+
+        buff.append("\n");
         int documentOffset = buff.toString().length();
+        buff.append("\n");
+
         buff.append("\n){\n\t}"); //$NON-NLS-1$
         buff.append("\n\t\n}}"); //$NON-NLS-1$
 
@@ -333,8 +339,11 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
 
             buff.append("\t\treturn \n"); //$NON-NLS-1$
         }
-        buff.append(" ");
+
+        buff.append("\n");
         int length = buff.toString().length();
+        buff.append("\n");
+
         String defaultValue = ""; //$NON-NLS-1$
         buff.append(defaultValue + "\n;\t\n}\n}"); //$NON-NLS-1$
 
@@ -420,8 +429,11 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         buff.append(globalFields);
         buff.append("\tpublic void myFunction(){\n"); //$NON-NLS-1$
         buff.append(localFields);
-        buff.append(" ");
+
+        buff.append("\n");
         documentOffset = buff.toString().length();
+        buff.append("\n");
+
         buff.append("\n\t\n}\n}"); //$NON-NLS-1$
 
         newDoc.set(buff.toString());
