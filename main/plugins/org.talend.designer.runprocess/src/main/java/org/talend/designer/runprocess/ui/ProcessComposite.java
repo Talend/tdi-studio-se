@@ -1687,9 +1687,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
             if (errorMessMap.size() <= CorePlugin.getDefault().getPreferenceStore()
                     .getInt(ITalendCorePrefConstants.PREVIEW_LIMIT)) {
-                if (!(LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL))) {
-                    getAllErrorMess(psMess);
-                }
+                getAllErrorMess(psMess);
             }
 //                } else {
 //                    addPerlMark(psMess);
