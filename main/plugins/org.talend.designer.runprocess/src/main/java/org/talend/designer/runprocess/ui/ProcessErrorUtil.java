@@ -28,8 +28,9 @@ import org.talend.designer.runprocess.RunProcessContext;
 public class ProcessErrorUtil {
 
     public static HashMap<String, IProcessMessage> getAllErrorMess(IProcessMessage psMess, RunProcessContext processContext) {
-        HashMap<String, IProcessMessage> errorMessMap = new HashMap<String, IProcessMessage>();
+        HashMap<String, IProcessMessage> errorMessMap = null;
         if (psMess.getType().equals(MsgType.STD_ERR)) {
+            errorMessMap = new HashMap<String, IProcessMessage>();
             String mess = psMess.getContent();
             String[] linesMess = mess.split("\n");//$NON-NLS-1$
             StringBuffer currentMess = new StringBuffer();
