@@ -175,7 +175,7 @@ class BigQueryUtil_<%=cid%> {
 					<%}%>
 					// Do not throw exception to avoid behavior changed(because it may throw "duplicate" exception which do not throw before);
         			<%
-			    	if(isLog4jEnabled){TBD-9236
+			    	if(isLog4jEnabled){
 					%>
 						log.error("<%=cid%> - Reason: " + errorProto.getReason() + "\nMessage: " + errorProto.getMessage());
 					<%
