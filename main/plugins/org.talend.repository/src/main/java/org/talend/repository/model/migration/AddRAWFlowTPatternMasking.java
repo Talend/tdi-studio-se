@@ -236,5 +236,32 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
             }
             return false;
         }
+
+        private boolean checkTheColumnExist(MetadataType mt) {
+            EList<ConnectionTypeImpl> connections = processType.getConnection();
+            EList<NodeTypeImpl> nodes = processType.getNode();
+            String metadataName = mt.getName();
+            for (ConnectionTypeImpl theConnection : connections) {
+                if (metadataName.equals(theConnection.getTarget())) {
+                    for (NodeTypeImpl node : nodes) {
+
+                        EList<MetadataType> previousNodeMetadataTypes = node.getMetadata();
+                        for (MetadataType outputMetadataType : previousNodeMetadataTypes) {
+                            if (outputMetadataType.getName().equals(theConnection.getSource())) {
+                                EList<ColumnType> columns = outputMetadataType.getColumn();
+                                for (ColumnType theColumn : columns) {
+                                    if ("ORIGINAL_MARK".equals(theColumn.getName())) { //$NON-NLS-1$
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+            return false;
+        }
     }
 }
