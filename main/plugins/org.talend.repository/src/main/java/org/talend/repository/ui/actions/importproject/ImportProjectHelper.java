@@ -273,6 +273,9 @@ public class ImportProjectHelper {
         operation.run(new SubProgressMonitor(monitor, 95));
         monitor.worked(5);
         monitor.done();
+        if (provider instanceof ILeveledImportStructureProvider) {
+            ((ILeveledImportStructureProvider) provider).closeArchive();
+        }
     }
 
     /**

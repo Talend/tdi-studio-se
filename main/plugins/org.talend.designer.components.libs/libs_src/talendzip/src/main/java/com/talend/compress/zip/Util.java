@@ -1,5 +1,7 @@
 package com.talend.compress.zip;
 
+import java.io.IOException;
+
 public class Util {
 	public java.util.List<UnzippedFile> unzippedFiles = new java.util.ArrayList<UnzippedFile>();
 
@@ -53,6 +55,10 @@ public class Util {
 			f = new java.io.File(path, shortName);
 		}
 
+		if(!f.getCanonicalPath().startsWith(new java.io.File(path).getCanonicalPath())) {
+			throw new IOException("expanding " + f.getName()
+					+ " would create file outside of " + path);
+		}
 		checkDir(f);
 
 		f.getParentFile().mkdirs();
@@ -89,6 +95,10 @@ public class Util {
 			f = new java.io.File(path, shortName);
 		}
 
+		if(!f.getCanonicalPath().startsWith(new java.io.File(path).getCanonicalPath())) {
+			throw new IOException("expanding " + f.getName()
+					+ " would create file outside of " + path);
+		}
 		if (isDirectory) {
 			if (!f.exists()) {
 				f.mkdirs();
