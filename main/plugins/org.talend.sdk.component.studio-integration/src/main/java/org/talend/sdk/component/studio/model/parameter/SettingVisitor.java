@@ -38,12 +38,14 @@ import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
+import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
@@ -201,6 +203,15 @@ public class SettingVisitor implements PropertyVisitor {
      */
     @Override
     public void visit(final PropertyNode node) {
+        // skip 'configuration.dataSet.csvConfiguration.csvSchema' field in 'azure-dls-gen2' component
+        if (element != null && element instanceof Node && ((Node)element).getComponent() != null &&
+                ((Node)element).getComponent().getName() != null &&
+                ((Node)element).getComponent().getName().equals("AzureAdlsGen2Input") &&
+                node != null && node.getProperty() != null && node.getProperty().getPath() != null &&
+                node.getProperty().getPath().equals("configuration.dataSet.csvConfiguration.csvSchema")) {
+            return;
+        }
+
         if (node.isLeaf() && !PropertyTypes.OBJECT.equalsIgnoreCase(node.getProperty().getType())) {
             switch (node.getFieldType()) {
             case CHECK:
