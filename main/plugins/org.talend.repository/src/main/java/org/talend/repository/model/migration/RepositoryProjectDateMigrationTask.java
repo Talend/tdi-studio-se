@@ -28,7 +28,8 @@ import org.talend.repository.RepositoryPlugin;
  */
 public class RepositoryProjectDateMigrationTask extends AbstractProjectMigrationTask {
 
-    private static StudioEncryption se = StudioEncryption.getStudioEncryption(null);
+    private static final StudioEncryption SE = StudioEncryption
+            .getStudioEncryption(StudioEncryption.EnryptionKeyName.MIGRATION_TOKEN);
 
     @Override
     public Date getOrder() {
@@ -46,7 +47,7 @@ public class RepositoryProjectDateMigrationTask extends AbstractProjectMigration
         if (StringUtils.isBlank(value)) {
             // re-use product date, else will be current
             String v = System.getProperty(prodKey, String.valueOf(System.currentTimeMillis()));
-            projectPrefManager.setValue(prjKey, se.encrypt(v));
+            projectPrefManager.setValue(prjKey, SE.encrypt(v));
             projectPrefManager.save();
             return ExecutionResult.SUCCESS_NO_ALERT;
         }
