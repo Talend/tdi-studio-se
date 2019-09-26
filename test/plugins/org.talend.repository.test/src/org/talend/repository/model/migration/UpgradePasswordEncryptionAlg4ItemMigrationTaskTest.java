@@ -130,7 +130,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTaskTest {
                     for (ContextParameterType param : paramTypes) {
                         String value = param.getValue();
                         if (value != null && PasswordEncryptUtil.isPasswordType(param.getType())) {
-                            assertEquals(expectValue, PasswordMigrationUtil.getDecryptPassword(value));
+                            assertEquals(expectValue, PasswordMigrationUtil.decryptPassword(value));
                         }
                     }
                 }
@@ -147,7 +147,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTaskTest {
                     // variable name used for Stat&Logs
                     if ("PASS".equals(param.getName())) { //$NON-NLS-1$
                         String orginValue = param.getValue();
-                        assertEquals(expectValue, PasswordMigrationUtil.getDecryptPassword(orginValue));
+                        assertEquals(expectValue, PasswordMigrationUtil.decryptPassword(orginValue));
                     }
                 }
             }

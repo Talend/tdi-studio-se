@@ -62,7 +62,7 @@ public class TaCoKitConfigurationModel {
 
     private boolean printEncryptionException = true;
 
-    private StudioEncryption se = StudioEncryption.getStudioEncryption(null);
+    private StudioEncryption se = StudioEncryption.getStudioEncryption(StudioEncryption.EnryptionKeyName.SYSTEM);
 
     public TaCoKitConfigurationModel(final Connection connection) {
         this(connection, Lookups.taCoKitCache().getConfigTypeNode(getConfigId(connection)));

@@ -51,7 +51,7 @@ public class ImportProjectSettings {
 
     private Project pro;
 
-    private StudioEncryption se = StudioEncryption.getStudioEncryption(null);
+    private StudioEncryption se = StudioEncryption.getStudioEncryption(StudioEncryption.EnryptionKeyName.SYSTEM);
 
     public ImportProjectSettings(String path) {
         this.path = path;

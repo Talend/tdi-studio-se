@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
-import org.talend.utils.security.CryptoHelperWrapper;
+import org.talend.utils.security.CryptoMigrationUtil;
 import org.talend.utils.security.StudioEncryption;
 import org.talend.repository.RepositoryPlugin;
 

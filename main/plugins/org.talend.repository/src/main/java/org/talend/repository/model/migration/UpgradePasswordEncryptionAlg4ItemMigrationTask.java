@@ -122,7 +122,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
     protected boolean updateDatabaseConnection(DatabaseConnection dbConnection) throws Exception {
         String pass = dbConnection.getPassword();
         if (pass != null) {
-            dbConnection.setPassword(PasswordMigrationUtil.getEncryptPasswordIfNeed(dbConnection.getPassword()));
+            dbConnection.setPassword(PasswordMigrationUtil.encryptPasswordIfNeeded(dbConnection.getPassword()));
             return true;
         }
         return false;
@@ -131,22 +131,22 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
     protected boolean updateFTPConnection(FTPConnection ftpConn) throws Exception {
         boolean modified = false;
         if (ftpConn.getPassword() != null) {
-            String password = PasswordMigrationUtil.getEncryptPasswordIfNeed(ftpConn.getPassword());
+            String password = PasswordMigrationUtil.encryptPasswordIfNeeded(ftpConn.getPassword());
             ftpConn.setPassword(password);
             modified = true;
         }
         if (ftpConn.getPassphrase() != null) {
-            String password = PasswordMigrationUtil.getEncryptPasswordIfNeed(ftpConn.getPassphrase());
+            String password = PasswordMigrationUtil.encryptPasswordIfNeeded(ftpConn.getPassphrase());
             ftpConn.setPassphrase(password);
             modified = true;
         }
         if (ftpConn.getKeystorePassword() != null) {
-            String password = PasswordMigrationUtil.getEncryptPasswordIfNeed(ftpConn.getKeystorePassword());
+            String password = PasswordMigrationUtil.encryptPasswordIfNeeded(ftpConn.getKeystorePassword());
             ftpConn.setKeystorePassword(password);
             modified = true;
         }
         if (ftpConn.getProxypassword() != null) {
-            String password = PasswordMigrationUtil.getEncryptPasswordIfNeed(ftpConn.getProxypassword());
+            String password = PasswordMigrationUtil.encryptPasswordIfNeeded(ftpConn.getProxypassword());
             ftpConn.setProxypassword(password);
             modified = true;
         }
@@ -155,26 +155,26 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
 
     protected boolean updateMDMConnection(MDMConnection mdmConn) throws Exception {
         String pass = mdmConn.getPassword();
-        mdmConn.setPassword(PasswordMigrationUtil.getEncryptPasswordIfNeed(pass));
+        mdmConn.setPassword(PasswordMigrationUtil.encryptPasswordIfNeeded(pass));
         return true;
     }
 
     protected boolean updateSalesforceSchemaConnection(SalesforceSchemaConnection ssConn) throws Exception {
-        ssConn.setPassword(PasswordMigrationUtil.getEncryptPasswordIfNeed(ssConn.getPassword()));
-        ssConn.setProxyPassword(PasswordMigrationUtil.getEncryptPasswordIfNeed(ssConn.getProxyPassword()));
-        ssConn.setConsumeSecret(PasswordMigrationUtil.getEncryptPasswordIfNeed(ssConn.getConsumeSecret()));
+        ssConn.setPassword(PasswordMigrationUtil.encryptPasswordIfNeeded(ssConn.getPassword()));
+        ssConn.setProxyPassword(PasswordMigrationUtil.encryptPasswordIfNeeded(ssConn.getProxyPassword()));
+        ssConn.setConsumeSecret(PasswordMigrationUtil.encryptPasswordIfNeeded(ssConn.getConsumeSecret()));
         return true;
     }
 
     protected boolean updateLDAPSchemaConnection(LDAPSchemaConnection ldapConn) throws Exception {
         String pass = ldapConn.getBindPassword();
-        ldapConn.setBindPassword(PasswordMigrationUtil.getEncryptPasswordIfNeed(pass));
+        ldapConn.setBindPassword(PasswordMigrationUtil.encryptPasswordIfNeeded(pass));
         return true;
     }
 
     protected boolean updateSAPConnection(SAPConnection sapConn) throws Exception {
         String pass = sapConn.getPassword();
-        sapConn.setPassword(PasswordMigrationUtil.getEncryptPasswordIfNeed(pass));
+        sapConn.setPassword(PasswordMigrationUtil.encryptPasswordIfNeeded(pass));
         return true;
     }
 
@@ -209,7 +209,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
                     for (ContextParameterType param : paramTypes) {
                         String value = param.getValue();
                         if (value != null && PasswordEncryptUtil.isPasswordType(param.getType())) {
-                            param.setRawValue(PasswordMigrationUtil.getDecryptPassword(value));
+                            param.setRawValue(PasswordMigrationUtil.decryptPassword(value));
                             modify = true;
                         }
                     }
@@ -320,7 +320,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
     protected static boolean reencryptValueIfNeeded(ElementParameterType param) throws Exception {
         String value = param.getValue();
         if (value != null) {
-            String decryptValue = PasswordMigrationUtil.getDecryptPassword(value);
+            String decryptValue = PasswordMigrationUtil.decryptPassword(value);
             param.setRawValue(decryptValue);
             return true;
         }
@@ -330,7 +330,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
     private boolean reencryptValueIfNeeded(ContextParameterType param) throws Exception {
         String value = param.getValue();
         if (value != null) {
-            String decryptValue = PasswordMigrationUtil.getDecryptPassword(value);
+            String decryptValue = PasswordMigrationUtil.decryptPassword(value);
             param.setRawValue(decryptValue);
             return true;
         }
