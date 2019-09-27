@@ -12,8 +12,7 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.generation;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,12 +148,7 @@ public class DbGenerationManagerTestHelper {
         when(node.getElementParameter("ELT_TABLE_NAME")).thenReturn(param);
         String tName = "".equals(schemaName) ? tableName : schemaName + "." + tableName;
         // quote will be removed in the ui for connections ,so we do the same for test
-        if ("".equals(schemaName)) {
-            tName = TalendTextUtils.removeQuotes(tName);
-        } else {
-            // in case of context.schema."test_table"
-            tName = TalendTextUtils.removeQuotes(schemaName) + "." + TalendTextUtils.removeQuotes(tableName);
-        }
+        tName = TalendTextUtils.removeQuotes(tName);
         when(connection.getName()).thenReturn(tName);
         when(connection.getSource()).thenReturn(node);
         when(connection.getMetaName()).thenReturn(tName);
