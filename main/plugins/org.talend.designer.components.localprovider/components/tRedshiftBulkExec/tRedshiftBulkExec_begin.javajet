@@ -34,12 +34,14 @@ skeleton="../templates/db_output_bulk.skeleton"
 	boolean useExistingS3Connection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION_S3__"));
 	String s3ConnectionCid = ElementParameterParser.getValue(node,"__CONNECTION_S3__");
 	INode current_node = node;
+	if(useExistingS3Connection){
+		current_node = NodeUtil.getNodeByUniqueName(node.getProcess(),s3ConnectionCid,true);
+	}
 	List<IMetadataColumn> columnList = getColumnList(node);
 %>
 	String dbschema_<%=cid%> = null;
 	<%
 	if(useExistingConnection) {
-		current_node = NodeUtil.getNodeByUniqueName(node.getProcess(),s3ConnectionCid,true);
 		%>
 		dbschema_<%=cid%> = (String)globalMap.get("schema_" + "<%=ElementParameterParser.getValue(node,"__CONNECTION__")%>");
 		<%

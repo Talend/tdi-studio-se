@@ -41,18 +41,10 @@
 			<%
 			}
 			%>
-		} catch(java.lang.Exception e_<%=cid%>) {
-			throw new java.lang.Exception(e_<%=cid%>.getMessage());
-			<%
-			if(!("true").equals(useExistingConn)) {
-			%>
 		} finally {
-			if(conn_<%=cid%> !=null){
+			if(conn_<%=cid%> !=null && ("false").equals(<%=useExistingConn %>)){
 				conn_<%=cid%>.shutdown();
 			}
-			<%
-			}
-			%>
 		}
 	} else {
 <%
