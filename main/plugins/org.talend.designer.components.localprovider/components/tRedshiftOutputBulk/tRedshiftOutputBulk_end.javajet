@@ -42,9 +42,15 @@
 			}
 			%>
 		} finally {
-			if(conn_<%=cid%> !=null && ("false").equals(<%=useExistingConn %>)){
-				conn_<%=cid%>.shutdown();
+<%
+			if(("false").equals(useExistingConn)){
+%>
+				if(conn_<%=cid%> !=null){
+					conn_<%=cid%>.shutdown();
+				}
+<%
 			}
+%>
 		}
 	} else {
 <%
