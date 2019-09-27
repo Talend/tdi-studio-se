@@ -207,7 +207,7 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
             newMT = EcoreUtil.copy(mt);
             newMT.setConnector(NEWCONNECTORNAME);
             newMT.setName(NEWCONNECTORNAME);
-
+            node.getMetadata().add(newMT);
         }
 
         private boolean checkTheColumnExist(MetadataType mt) {
@@ -220,7 +220,7 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
 
                         EList<MetadataType> previousNodeMetadataTypes = node.getMetadata();
                         for (MetadataType outputMetadataType : previousNodeMetadataTypes) {
-                            if (outputMetadataType.getName().equals(theConnection.getSource())) {
+                            if (outputMetadataType.getName().equals(theConnection.getMetaname())) {
                                 EList<ColumnType> columns = outputMetadataType.getColumn();
                                 for (ColumnType theColumn : columns) {
                                     if ("ORIGINAL_MARK".equals(theColumn.getName())) { //$NON-NLS-1$
