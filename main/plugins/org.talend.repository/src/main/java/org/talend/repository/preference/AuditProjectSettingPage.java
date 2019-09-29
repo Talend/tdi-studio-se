@@ -106,7 +106,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
     private Map<Integer, String> currentParameters = new HashMap<Integer, String>();
 
-    private StudioEncryption se = StudioEncryption.getStudioEncryption(StudioEncryption.EnryptionKeyName.SYSTEM);
+    private StudioEncryption se = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM);
     
     /*
      * (non-Javadoc)

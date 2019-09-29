@@ -29,7 +29,7 @@ import org.talend.repository.RepositoryPlugin;
 public class RepositoryProjectDateMigrationTask extends AbstractProjectMigrationTask {
 
     private static final StudioEncryption SE = StudioEncryption
-            .getStudioEncryption(StudioEncryption.EnryptionKeyName.MIGRATION_TOKEN);
+            .getStudioEncryption(StudioEncryption.EncryptionKeyName.MIGRATION_TOKEN);
 
     @Override
     public Date getOrder() {
