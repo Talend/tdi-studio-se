@@ -3251,6 +3251,15 @@
               name="AddRAWFlowTDataMasking"
               version="7.3.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.AddMissingContextMigrationTask"
+              description="add missing context variable to make sure every context group has the same list of variable"
+              id="org.talend.repository.model.migration.AddMissingContextMigrationTask"
+              name="AddMissingContextMigrationTask"
+              version="7.3.1">
+        </projecttask>
    </extension>
 
    <extension
