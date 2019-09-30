@@ -433,8 +433,8 @@ if (sftp) {// *** sftp *** //
 	<%}%>
 	String remotedir_<%=cid %> = (<%=remotedir%>).replaceAll("\\\\","/");
 	ftp_<%=cid %>.chdir(remotedir_<%=cid %>);
-	String[] fileList_<%=cid %> = ftp_<%=cid %>.dir(null, true);
-    String[] fileListwithNames_<%=cid %> = ftp_<%=cid %>.dir(null, false);
+	com.enterprisedt.net.ftp.FTPFile[] fileList_<%=cid %> = ftp_<%=cid %>.dirDetails(null);
+	String[] arrayWithNames_<%=cid %> = ftp_<%=cid %>.dir(null, false);
 <%
 	if (("true").equals(useExistingConn)) {
 		if(!moveToCurrentDir){
@@ -445,17 +445,22 @@ if (sftp) {// *** sftp *** //
 	}
 %>
 	List<String> fileListTemp_<%=cid %> = new java.util.ArrayList<String>();
-    List<String> fileListTempWithNames_<%=cid %> = new java.util.ArrayList<String>();
+	List<String> fileListTempWithNames_<%=cid %> = new java.util.ArrayList<String>();
 
 	for (String filemask_<%=cid %> : maskList_<%=cid %>) {
 		java.util.regex.Pattern fileNamePattern_<%=cid %> = java.util.regex.Pattern.compile(filemask_<%=cid %>.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
-        for (int i_<%=cid%> = 0; i_<%=cid%> < fileList_<%=cid%>.length; i_<%=cid%>++){
-            String filemaskTemp_<%=cid%> = fileList_<%=cid%>[i_<%=cid%>];
-            String filemaskTempName_<%=cid%> = fileListwithNames_<%=cid%>[i_<%=cid%>];
-            
-			if (fileNamePattern_<%=cid %>.matcher(filemaskTempName_<%=cid %>).matches()) {
-				fileListTemp_<%=cid %>.add(filemaskTemp_<%=cid %>);
-                fileListTempWithNames_<%=cid%>.add(fileListwithNames_<%=cid%>[i_<%=cid%>]);
+
+		java.util.Set<String> setWithNames_<%=cid %> = new java.util.HashSet<>(java.util.Arrays.asList(arrayWithNames_<%=cid %>));
+		for (com.enterprisedt.net.ftp.FTPFile ftpFile : fileList_<%=cid %>){
+			String filemaskTemp_<%=cid%> = "";
+			String filemaskTempName_<%=cid%> = "";
+			if (setWithNames_<%=cid %>.contains(ftpFile.getName())){
+				filemaskTemp_<%=cid%> = ftpFile.getRaw();
+				filemaskTempName_<%=cid%> = ftpFile.getName();
+				if (fileNamePattern_<%=cid %>.matcher(filemaskTempName_<%=cid %>).matches()) {
+					fileListTemp_<%=cid %>.add(filemaskTemp_<%=cid %>);
+					fileListTempWithNames_<%=cid%>.add(filemaskTempName_<%=cid%>);
+				}
 			}
 		}
 	}
