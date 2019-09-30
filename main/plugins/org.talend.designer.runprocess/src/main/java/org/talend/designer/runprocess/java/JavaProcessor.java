@@ -24,6 +24,7 @@ import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1555,6 +1556,14 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             JavaProcessorUtilities.addLog4jToModuleList(neededLibraries);
         }
         return neededLibraries;
+    }
+
+    @Override
+    public void updateModulesAfterSetLog4j(Collection<ModuleNeeded> modulesNeeded) {
+        boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
+        if (isLog4jEnabled) {
+            JavaProcessorUtilities.addLog4jToModuleList(modulesNeeded);
+        }
     }
 
     protected String[] getAdditionCommandStrings() {

@@ -47,6 +47,7 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.utils.BitwiseOptionUtils;
+import org.talend.designer.core.CheckLogManamger;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
@@ -111,6 +112,9 @@ public class JavaProcessUtil {
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
+    public static void updateLog4jToModuleList(Collection<ModuleNeeded> jarList) {
+        CheckLogManamger.updateLog4jToModuleList(jarList);
+    }
     // for MapReduce job, if the jar on Xml don't set MRREQUIRED="true", shouldn't add it to
     // DistributedCache
     public static Set<String> getNeededLibraries(final IProcess process, int options) {

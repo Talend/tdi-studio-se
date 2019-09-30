@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.repository.ui.utils;
 
-import java.util.Collection;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -151,22 +149,6 @@ public class Log4jPrefsSettingManager {
         return levels;
     }
 
-    public boolean addLog4jToJarList(Collection<String> jarList) {
-        boolean added = false;
-        boolean foundLog4jJar = false;
-        for (String jar : jarList) {
-            if (jar.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                foundLog4jJar = true;
-            }
-        }
-        if (!foundLog4jJar) {
-            jarList.add("log4j-1.2.17.jar"); //$NON-NLS-1$
-            added = true;
-        }
-
-        return added;
-    }
-
     public void checkLog4jState() {
         if (isPreEnableAndStudioNot()) {
             throw new IllegalStateException(Messages.getString("Log4jSettingPage.IlleagalExp")); //$NON-NLS-1$
@@ -185,6 +167,16 @@ public class Log4jPrefsSettingManager {
             return false;
         }
         if (Log4jUtil.isEnable() && Boolean.parseBoolean(getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE))) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSelectLog4j2() {
+        if (!org.talend.core.PluginChecker.isCoreTISPluginLoaded()) {
+            return false;
+        }
+        if (Log4jUtil.isEnable() && Boolean.parseBoolean(getValueOfPreNode(Log4jPrefsConstants.LOG4J_SELECT_VERSION2))) {
             return true;
         }
         return false;

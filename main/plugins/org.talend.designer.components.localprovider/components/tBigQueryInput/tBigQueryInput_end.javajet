@@ -1,9 +1,9 @@
-<%@ jet 
+<%@ jet
 imports="
-        org.talend.core.model.process.INode 
+        org.talend.core.model.process.INode
         org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.process.ElementParameterParser 
-" 
+		org.talend.core.model.process.ElementParameterParser
+"
 %>
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/Log4jFileUtil.javajet"%>
 	<%
@@ -13,7 +13,8 @@ imports="
     String authMode = ElementParameterParser.getValue(node,"__AUTH_MODE__");
     String projectId = ElementParameterParser.getValue(node,"__PROJECT_ID__");
     String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
-	
+    boolean isCustomTemporaryName = ElementParameterParser.getBooleanValue(node,"__USE_CUSTOM_TEMPORARY_DATASET__");
+
 	if (authMode.equals("OAUTH")) {
 	%>
 			}
@@ -27,13 +28,20 @@ imports="
   	} else if (authMode.equals("SERVICEACCOUNT")) {
   	%>
   		}
-        <% if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {  %>
-					com.google.cloud.bigquery.DatasetId datasetId_<%=cid%> = com.google.cloud.bigquery.DatasetId.of(<%=projectId%>, tempDataset_<%=cid%>);
-					bigquery_<%=cid%>.delete(datasetId_<%=cid%>, com.google.cloud.bigquery.BigQuery.DatasetDeleteOption.deleteContents());
-        <% }%> 
-  	<%
-  	} else {
-		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
-  	}
-	log4jFileUtil.retrievedDataNumberInfo(node);
-	%>
+        <% if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {
+              if (isCustomTemporaryName) {
+%>
+                  bigquery_<%=cid%>.delete(com.google.cloud.bigquery.TableId.of(tempDataset_<%=cid%>, tempTable_<%=cid%>));
+<%
+              } else {
+%>
+                  com.google.cloud.bigquery.DatasetId datasetId_<%=cid%> = com.google.cloud.bigquery.DatasetId.of(<%=projectId%>, tempDataset_<%=cid%>);
+                  bigquery_<%=cid%>.delete(datasetId_<%=cid%>, com.google.cloud.bigquery.BigQuery.DatasetDeleteOption.deleteContents());
+<%
+              }
+          }
+      } else {
+          throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
+      }
+      log4jFileUtil.retrievedDataNumberInfo(node);
+%>
