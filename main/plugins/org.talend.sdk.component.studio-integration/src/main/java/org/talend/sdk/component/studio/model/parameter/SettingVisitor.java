@@ -204,9 +204,7 @@ public class SettingVisitor implements PropertyVisitor {
     public void visit(final PropertyNode node) {
         // skip 'configuration.dataSet.csvConfiguration.csvSchema' field in 'azure-dls-gen2' component
         if (element != null && element instanceof Node && ((Node)element).getComponent() != null &&
-                ((Node)element).getComponent().getName() != null &&
                 ((Node)element).getComponent().getName().equals("AzureAdlsGen2Input") &&
-                node != null && node.getProperty() != null && node.getProperty().getPath() != null &&
                 node.getProperty().getPath().equals("configuration.dataSet.csvConfiguration.csvSchema")) {
             return;
         }
