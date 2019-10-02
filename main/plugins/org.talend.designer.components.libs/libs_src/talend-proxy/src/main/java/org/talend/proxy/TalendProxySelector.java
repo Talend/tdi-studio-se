@@ -33,10 +33,8 @@ public class TalendProxySelector extends ProxySelector {
         globalProxyHolder = new ProxyHolder();
     }
 
-    public synchronized void addProxySettings(Proxy proxy, boolean forAllThreads, String host, int port) {
-        if (forAllThreads) {
-            globalProxyHolder.putNewHost(proxy, host, port);
-        } else {
+    public synchronized void addProxySettings(Proxy proxy, boolean threadSpecific, String host, int port) {
+        if (threadSpecific) {
             if (threadLocalProxyHolder == null) {
                 threadLocalProxyHolder = new ThreadLocal<>();
             }
@@ -46,6 +44,8 @@ public class TalendProxySelector extends ProxySelector {
             }
 
             threadLocalProxyHolder.get().putNewHost(proxy, host, port);
+        } else {
+            globalProxyHolder.putNewHost(proxy, host, port);
         }
     }
 
