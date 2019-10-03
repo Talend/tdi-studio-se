@@ -778,7 +778,8 @@ if(!hasDynamic && isIncludeHeader){
 		xlsxTool_<%=cid%>.setXY(<%=firstCellYAbsolute%>,<%=firstCellXStr%>,<%=firstCellYStr%>,<%=keepCellFormating%>);
 		<%if(!useStream){%>
 		synchronized ( globalMap.get("concurrentHashMap") ) {
-		xlsxTool_<%=cid%>.prepareXlsxFile(fileName_<%=cid%>); }
+			xlsxTool_<%=cid%>.prepareXlsxFile(fileName_<%=cid%>); 
+		}
 		<%}else{%>
 		xlsxTool_<%=cid%>.prepareStream();
 		<%}%>
