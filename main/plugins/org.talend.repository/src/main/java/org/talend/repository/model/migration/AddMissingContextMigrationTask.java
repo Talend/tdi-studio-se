@@ -41,42 +41,7 @@ public class AddMissingContextMigrationTask extends AbstractItemMigrationTask {
         }
         try {
             if (contexts != null && contexts.size() > 1) {
-                // calculate all group of context var
-                Map<String, ContextParameterTypeImpl> allContextMap = new HashMap<String, ContextParameterTypeImpl>();
-                List<Map<String, ContextParameterTypeImpl>> contextList = new ArrayList<>();
-                for (int i = 0; i < contexts.size(); i++) {
-                    Map<String, ContextParameterTypeImpl> contextMap = new HashMap<String, ContextParameterTypeImpl>();
-                    List<ContextParameterTypeImpl> contextParams = contexts.get(i).getContextParameter();
-                    for (ContextParameterTypeImpl cp : contextParams) {
-                        String contextName = cp.getName();
-                        contextMap.put(contextName,cp);
-                        if (allContextMap.get(contextName) == null) {
-                            allContextMap.put(contextName, cp);
-                        }
-                    }
-                    contextList.add(contextMap);
-
-                }
-                // add context var to context group
-                for (int i = 0; i < contexts.size(); i++) {
-                    List<ContextParameterType> contextParams = contexts.get(i).getContextParameter();
-                    if (contextParams.size() != allContextMap.size()) {
-                        for (String contextName : allContextMap.keySet()) {
-                            if (contextList.get(i).get(contextName) == null) {
-                                ContextParameterTypeImpl contextParameterType = allContextMap.get(contextName);
-                                ContextParameterType addMissing = TalendFileFactory.eINSTANCE.createContextParameterType();
-                                addMissing.setName(contextParameterType.getName());
-                                addMissing.setComment("");
-                                addMissing.setValue("");
-                                addMissing.setRepositoryContextId(contextParameterType.getRepositoryContextId());
-                                addMissing.setPromptNeeded(contextParameterType.isPromptNeeded());
-                                addMissing.setType(contextParameterType.getType());
-                                addMissing.setPrompt(contextParameterType.getPrompt());
-                                contexts.get(i).getContextParameter().add(addMissing);
-                            }
-                        }
-                    }
-                }
+                fillContextGroupList(contexts);
                 ProxyRepositoryFactory.getInstance().save(item, true);
                 return ExecutionResult.SUCCESS_NO_ALERT;
             }
@@ -87,6 +52,44 @@ public class AddMissingContextMigrationTask extends AbstractItemMigrationTask {
         return ExecutionResult.NOTHING_TO_DO;
     }
 
+    private void fillContextGroupList(EList<ContextType> contexts) {
+        // calculate all group of context var
+        Map<String, ContextParameterTypeImpl> allContextMap = new HashMap<String, ContextParameterTypeImpl>();
+        List<Map<String, ContextParameterTypeImpl>> contextList = new ArrayList<>();
+        for (int i = 0; i < contexts.size(); i++) {
+            Map<String, ContextParameterTypeImpl> contextMap = new HashMap<String, ContextParameterTypeImpl>();
+            List<ContextParameterTypeImpl> contextParams = contexts.get(i).getContextParameter();
+            for (ContextParameterTypeImpl cp : contextParams) {
+                String contextName = cp.getName();
+                contextMap.put(contextName, cp);
+                if (allContextMap.get(contextName) == null) {
+                    allContextMap.put(contextName, cp);
+                }
+            }
+            contextList.add(contextMap);
+
+        }
+        // add context var to context group
+        for (int i = 0; i < contexts.size(); i++) {
+            List<ContextParameterType> contextParams = contexts.get(i).getContextParameter();
+            if (contextParams.size() != allContextMap.size()) {
+                for (String contextName : allContextMap.keySet()) {
+                    if (contextList.get(i).get(contextName) == null) {
+                        ContextParameterTypeImpl contextParameterType = allContextMap.get(contextName);
+                        ContextParameterType addMissing = TalendFileFactory.eINSTANCE.createContextParameterType();
+                        addMissing.setName(contextParameterType.getName());
+                        addMissing.setComment("");
+                        addMissing.setValue("");
+                        addMissing.setRepositoryContextId(contextParameterType.getRepositoryContextId());
+                        addMissing.setPromptNeeded(contextParameterType.isPromptNeeded());
+                        addMissing.setType(contextParameterType.getType());
+                        addMissing.setPrompt(contextParameterType.getPrompt());
+                        contexts.get(i).getContextParameter().add(addMissing);
+                    }
+                }
+            }
+        }
+    }
     @Override
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
