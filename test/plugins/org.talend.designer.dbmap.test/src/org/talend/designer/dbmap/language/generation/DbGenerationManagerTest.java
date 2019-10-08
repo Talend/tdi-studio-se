@@ -543,7 +543,6 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         contextManger.setDefaultContext(newContext);
         when(process.getContextManager()).thenReturn(contextManger);
         dbMapComponent.setProcess(process);
-        ////////////////////////////////////////////////////////////////////////////////
         ExternalDbMapData externalData2 = new ExternalDbMapData();
         DbMapComponent dbMapComponent2 = new DbMapComponent();
         dbMapComponent2.setExternalData(externalData2);
