@@ -90,12 +90,8 @@ public class AddMissingContextMigrationTask extends AbstractItemMigrationTask {
     @Override
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
-        toReturn.add(ERepositoryObjectType.JOBLET);
-        toReturn.add(ERepositoryObjectType.PROCESS);
-        toReturn.add(ERepositoryObjectType.PROCESS_MR);
-        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
-        toReturn.add(ERepositoryObjectType.PROCESS_ROUTE);
-        toReturn.add(ERepositoryObjectType.PROCESS_ROUTELET);
+        toReturn.addAll(ERepositoryObjectType.getAllTypesOfProcess());
+        toReturn.addAll(ERepositoryObjectType.getAllTypesOfJoblet());
         return toReturn;
     }
 }
