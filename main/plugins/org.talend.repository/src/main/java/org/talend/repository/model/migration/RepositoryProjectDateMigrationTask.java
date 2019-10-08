@@ -28,9 +28,6 @@ import org.talend.repository.RepositoryPlugin;
  */
 public class RepositoryProjectDateMigrationTask extends AbstractProjectMigrationTask {
 
-    private static final StudioEncryption SE = StudioEncryption
-            .getStudioEncryption(StudioEncryption.EncryptionKeyName.MIGRATION_TOKEN);
-
     @Override
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2018, 1, 16, 12, 0, 0);
@@ -47,7 +44,8 @@ public class RepositoryProjectDateMigrationTask extends AbstractProjectMigration
         if (StringUtils.isBlank(value)) {
             // re-use product date, else will be current
             String v = System.getProperty(prodKey, String.valueOf(System.currentTimeMillis()));
-            projectPrefManager.setValue(prjKey, SE.encrypt(v));
+            projectPrefManager.setValue(prjKey,
+                    StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.MIGRATION_TOKEN).encrypt(v));
             projectPrefManager.save();
             return ExecutionResult.SUCCESS_NO_ALERT;
         }
