@@ -47,8 +47,8 @@ do {
 
             if (!proxyToUse.equals(java.net.Proxy.NO_PROXY)) {
                 java.net.InetSocketAddress proxyAddress = (java.net.InetSocketAddress) proxyToUse.address();
-                String proxyHost = ((java.net.InetSocketAddress) proxyAddress).getHostName();
-                int proxyPort = ((java.net.InetSocketAddress) proxyAddress).getPort();
+                String proxyHost = proxyAddress.getAddress().getHostAddress();
+                int proxyPort = proxyAddress.getPort();
 
                 com.jcraft.jsch.ProxyHTTP proxy_<%=cid%> = new com.jcraft.jsch.ProxyHTTP(proxyHost, proxyPort);
 

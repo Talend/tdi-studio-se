@@ -29,8 +29,8 @@
             if (!proxyToUse.equals(java.net.Proxy.NO_PROXY)) {
                 java.net.InetSocketAddress proxyAddress = (java.net.InetSocketAddress) proxyToUse.address();
 
-                String httpProxyHost = ((java.net.InetSocketAddress) proxyAddress).getHostName();
-                int httpProxyPort = ((java.net.InetSocketAddress) proxyAddress).getPort();
+                String httpProxyHost = proxyAddress.getAddress().getHostAddress();
+                int httpProxyPort = proxyAddress.getPort();
                 String httpProxyUser = "";
                 String httpProxyPass = ""; //leave it empty if proxy creds weren't specified
 
