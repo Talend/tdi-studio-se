@@ -30,7 +30,9 @@ import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.repository.ProjectManager;
+import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
@@ -291,6 +293,27 @@ public class TaCoKitUtil {
                 TaCoKitUtil.getOrCreateERepositoryObjectType(node);
             }
         }
+    }
+
+    public static String getDisplayName(final ComponentIndex index) {
+        if (index != null) {
+            String componentName = getFullComponentName(index.getId().getFamily(), index.getId().getName());
+            if (isTaCoKitComponentMadeByTalend(index)) {
+                return TaCoKitConst.COMPONENT_NAME_PREFIX + componentName;
+            }
+            return componentName;
+        }
+        return null;
+    }
+
+    public static boolean isTaCoKitComponentMadeByTalend(final ComponentIndex index) {
+        if (index != null) {
+            String location = index.getId().getPluginLocation().trim();
+            if (StringUtils.isNotBlank(location) && location.startsWith(MavenConstants.DEFAULT_GROUP_ID)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static class GAV {

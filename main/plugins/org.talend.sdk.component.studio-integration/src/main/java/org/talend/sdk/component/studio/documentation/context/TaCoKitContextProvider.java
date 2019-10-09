@@ -61,14 +61,15 @@ public class TaCoKitContextProvider extends AbstractContextProvider {
         if (firstIndex == null) {
             return null;
         }
+        String displayName = TaCoKitUtil.getDisplayName(firstIndex);
         DocumentationContent doc = client.v1().documentation().getDocumentation(expLocale.getLanguage(),
                 firstIndex.getId().getId(), "asciidoc");
-        TaCoKitHelpContext context = new TaCoKitHelpContext(parseDescription(doc.getSource(), firstIndex.getDisplayName()));
+        TaCoKitHelpContext context = new TaCoKitHelpContext(parseDescription(doc.getSource(), displayName));
 
         TaCoKitTopic topic = new TaCoKitTopic();
         topic.setHref(
-                "/" + GAV.INSTANCE.getArtifactId() + "/" + firstIndex.getId().getId() + ".html#_" + firstIndex.getDisplayName().toLowerCase());
-        topic.setLabel(firstIndex.getDisplayName());
+                "/" + GAV.INSTANCE.getArtifactId() + "/" + firstIndex.getId().getId() + ".html#_" + displayName.toLowerCase());
+        topic.setLabel(displayName);
         context.addRelatedTopic(topic);
 
         return context;
