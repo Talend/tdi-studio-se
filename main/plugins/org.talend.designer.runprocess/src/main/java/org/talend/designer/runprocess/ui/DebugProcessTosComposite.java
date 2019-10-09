@@ -15,7 +15,9 @@ package org.talend.designer.runprocess.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1138,13 +1140,18 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                                         isAddedStreamListener = false;
 
                                         if (processContext.isRunning()) {
-                                            final String endingPattern = Messages.getString("ProcessComposite.endPattern"); //$NON-NLS-1$
+                                            final String endingPattern = Messages.getString("ProcessComposite.endJobPattern"); //$NON-NLS-1$
                                             MessageFormat mf = new MessageFormat(endingPattern);
-                                            String byeMsg;
                                             try {
-                                                byeMsg = "\n" //$NON-NLS-1$
-                                                        + mf.format(new Object[] { processContext.getProcess().getName(),
-                                                                new Date(), new Integer(process.getExitValue()) });
+                                                DateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+                                                String byeMsg = "\n" //$NON-NLS-1$
+                                                		+ mf.format(new Object[] { processContext.getProcess().getName(), format.format(new Date())});
+                                                
+                                                final String endExitPattern = Messages.getString("ProcessComposite.endExitCode"); //$NON-NLS-1$
+                                                MessageFormat ef = new MessageFormat(endExitPattern);
+                                                String endMsg = ef.format(new Object[] { new Integer(process.getExitValue()) });
+                                                byeMsg = byeMsg + " [" + endMsg + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+                                                
                                                 processContext.addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT,
                                                         byeMsg));
                                             } catch (DebugException e) {
@@ -1192,10 +1199,12 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                                             clearTraceAction.run();
                                             isAddedStreamListener = true;
 
-                                            final String startingPattern = Messages.getString("ProcessComposite.startPattern"); //$NON-NLS-1$
+                                            final String startingPattern = Messages.getString("ProcessComposite.startJobPattern"); //$NON-NLS-1$
                                             MessageFormat mf = new MessageFormat(startingPattern);
-                                            String welcomeMsg = mf.format(new Object[] { processContext.getProcess().getName(),
-                                                    new Date() });
+                                            
+                                            DateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+                                            String welcomeMsg = mf.format(new Object[] { processContext.getProcess().getName(), format.format(new Date())});
+                                            
                                             processContext.addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT,
                                                     welcomeMsg + "\r\n"));//$NON-NLS-1$
                                         }

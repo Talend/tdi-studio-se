@@ -22,7 +22,9 @@ import java.io.LineNumberReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -653,10 +655,12 @@ public class RunProcessContext {
                                                 startingMessageWritten = true;
 
                                                 final String startingPattern =
-                                                        Messages.getString("ProcessComposite.startPattern"); //$NON-NLS-1$
+                                                        Messages.getString("ProcessComposite.startJobPattern"); //$NON-NLS-1$
                                                 MessageFormat mf = new MessageFormat(startingPattern);
-                                                String welcomeMsg =
-                                                        mf.format(new Object[] { process.getLabel(), new Date() });
+                                                
+                                                DateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+                                                String welcomeMsg = mf.format(new Object[] { process.getLabel(), format.format(new Date())});
+                                                
                                                 processMessageManager
                                                         .addMessage(new ProcessMessage(MsgType.CORE_OUT,
                                                                 welcomeMsg + "\r\n")); //$NON-NLS-1$
@@ -805,10 +809,16 @@ public class RunProcessContext {
      */
     private void displayJobEndMessage(int exitCode) {
 
-        final String endingPattern = Messages.getString("ProcessComposite.endPattern"); //$NON-NLS-1$
+        final String endingPattern = Messages.getString("ProcessComposite.endJobPattern"); //$NON-NLS-1$
         MessageFormat mf = new MessageFormat(endingPattern);
-        String byeMsg = mf.format(new Object[] { process.getLabel(), new Date(), new Integer(exitCode) });
-        byeMsg = (processMessageManager.isLastMessageEndWithCR() ? "" : "\n") + byeMsg; //$NON-NLS-1$ //$NON-NLS-2$
+        DateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+        String byeMsg = mf.format(new Object[] { process.getLabel(), format.format(new Date())});
+        
+        
+        final String endExitPattern = Messages.getString("ProcessComposite.endExitCode"); //$NON-NLS-1$
+        MessageFormat ef = new MessageFormat(endExitPattern);
+        String endMsg = ef.format(new Object[] { new Integer(exitCode) });
+        byeMsg = (processMessageManager.isLastMessageEndWithCR() ? "" : "\n") + byeMsg + " [" + endMsg + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$  //$NON-NLS-4$
         processMessageManager.addMessage(new ProcessMessage(MsgType.CORE_OUT, byeMsg));
     }
 
