@@ -112,6 +112,10 @@ imports="
                 System.setProperty("http.proxySet","local");
                 
 <%
+            } else if (useAuth && enableBasic) { //support https proxy with auth
+%>
+                System.setProperty("jdk.http.auth.tunneling.disabledSchemes","");
+<%
             }
 %>
             proxy_<%=cid %> = new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(<%=proxyHost %>, Integer.valueOf(<%=proxyPort %>)));
