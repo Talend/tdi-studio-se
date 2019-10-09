@@ -1063,6 +1063,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                             .getProcess().getProperty(), context);
                     monitor.beginTask("Launching debugger", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
                     try {
+                        ProcessorUtilities.setDebug(true);
                         // use this function to generate childrens also.
                         ProcessorUtilities.generateCode(processContext.getProcess(), context, false, false, true, monitor);
 
@@ -1222,6 +1223,8 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                         } catch (InterruptedException e) {
                             // e.printStackTrace();
                             ExceptionHandler.process(e);
+                        } finally {
+                            ProcessorUtilities.setDebug(false);
                         }
                     }
                 }
