@@ -51,8 +51,6 @@ public class ImportProjectSettings {
 
     private Project pro;
 
-    private StudioEncryption se = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM);
-
     public ImportProjectSettings(String path) {
         this.path = path;
         this.pro = ProjectManager.getInstance().getCurrentProject();
@@ -199,7 +197,7 @@ public class ImportProjectSettings {
          * If the value is raw (before 5.6.0), the decrypted value will be null.
          */
         if (PasswordEncryptUtil.isPasswordField(foundType.getField())) {
-            String decValue = se.decrypt(value);
+            String decValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(value);
             if (decValue != null) {
                 value = decValue;
             }

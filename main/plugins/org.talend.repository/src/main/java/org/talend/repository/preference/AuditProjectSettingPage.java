@@ -106,8 +106,6 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
     private Map<Integer, String> currentParameters = new HashMap<Integer, String>();
 
-    private StudioEncryption se = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM);
-    
     /*
      * (non-Javadoc)
      *
@@ -468,7 +466,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             driverText.setText(prefManager.getValue(AuditManager.AUDIT_DRIVER));
             urlText.setText(prefManager.getValue(AuditManager.AUDIT_URL));
             usernameText.setText(prefManager.getValue(AuditManager.AUDIT_USERNAME));
-            passwordText.setText(se.decrypt(prefManager.getValue(AuditManager.AUDIT_PASSWORD)));
+            passwordText.setText(StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                    .decrypt(prefManager.getValue(AuditManager.AUDIT_PASSWORD)));
         }
         hideControl(!savedInDBButton.getSelection());
     }
@@ -493,7 +492,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             prefManager.setValue(AuditManager.AUDIT_DRIVER, driverText.getText());
             prefManager.setValue(AuditManager.AUDIT_URL, urlText.getText());
             prefManager.setValue(AuditManager.AUDIT_USERNAME, usernameText.getText());
-            prefManager.setValue(AuditManager.AUDIT_PASSWORD, se.encrypt(passwordText.getText()));
+            prefManager.setValue(AuditManager.AUDIT_PASSWORD, StudioEncryption
+                    .getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).encrypt(passwordText.getText()));
             prefManager.setValue(AuditManager.AUDIT_SAVEDINDB, savedInDBButton.getSelection());
             prefManager.save();
         }

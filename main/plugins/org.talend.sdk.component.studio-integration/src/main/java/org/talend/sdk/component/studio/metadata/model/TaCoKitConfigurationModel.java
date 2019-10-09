@@ -60,8 +60,6 @@ public class TaCoKitConfigurationModel {
 
     private boolean printEncryptionException = true;
 
-    private StudioEncryption se = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM);
-
     public TaCoKitConfigurationModel(final Connection connection) {
         this(connection, Lookups.taCoKitCache().getConfigTypeNode(getConfigId(connection)));
     }
@@ -179,7 +177,7 @@ public class TaCoKitConfigurationModel {
         try {
             if (!TaCoKitUtil.isBlank(value) && contains(key)
                     && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
-                decryptedValue = se.decrypt(value);
+                decryptedValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(value);
                 if (decryptedValue == null) {
                     // if null, means error occurs, just reuse the original value
                     decryptedValue = value;
@@ -295,7 +293,8 @@ public class TaCoKitConfigurationModel {
 
             try {
                 if (contains(key) && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
-                    storeValue = se.encrypt(originalValue);
+                    storeValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                            .encrypt(originalValue);
                 }
             } catch (Exception e) {
                 ExceptionHandler.process(e);
