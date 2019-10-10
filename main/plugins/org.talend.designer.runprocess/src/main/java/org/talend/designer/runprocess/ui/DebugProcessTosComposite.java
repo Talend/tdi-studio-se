@@ -1223,8 +1223,6 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                         } catch (InterruptedException e) {
                             // e.printStackTrace();
                             ExceptionHandler.process(e);
-                        } finally {
-                            ProcessorUtilities.setDebug(false);
                         }
                     }
                 }
@@ -1234,6 +1232,8 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
             ExceptionHandler.process(e);
             processContext.addErrorMessage(e);
             kill();
+        } finally {
+            ProcessorUtilities.setDebug(false);
         }
     }
 
