@@ -1149,7 +1149,7 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                                                 
                                                 final String endExitPattern = Messages.getString("ProcessComposite.endExitCode"); //$NON-NLS-1$
                                                 MessageFormat ef = new MessageFormat(endExitPattern);
-                                                String endMsg = ef.format(new Object[] { new Integer(process.getExitValue()) });
+                                                String endMsg = ef.format(new Object[] { " = " + new Integer(process.getExitValue()) }); //$NON-NLS-1$
                                                 byeMsg = byeMsg + " [" + endMsg + "]"; //$NON-NLS-1$ //$NON-NLS-2$
                                                 
                                                 processContext.addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT,

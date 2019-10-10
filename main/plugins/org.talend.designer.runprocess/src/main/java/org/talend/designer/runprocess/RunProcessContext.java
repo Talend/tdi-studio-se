@@ -817,8 +817,9 @@ public class RunProcessContext {
         
         final String endExitPattern = Messages.getString("ProcessComposite.endExitCode"); //$NON-NLS-1$
         MessageFormat ef = new MessageFormat(endExitPattern);
-        String endMsg = ef.format(new Object[] { new Integer(exitCode) });
-        byeMsg = (processMessageManager.isLastMessageEndWithCR() ? "" : "\n") + byeMsg + " [" + endMsg + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$  //$NON-NLS-4$
+        String endMsg = ef.format(new Object[] { " = " + new Integer(exitCode) }); //$NON-NLS-1$
+        byeMsg = (processMessageManager.isLastMessageEndWithCR() ? "" : "\n") +   //$NON-NLS-1$ //$NON-NLS-2$
+        		byeMsg + " [" + endMsg + "]"; //$NON-NLS-1$ //$NON-NLS-2$
         processMessageManager.addMessage(new ProcessMessage(MsgType.CORE_OUT, byeMsg));
     }
 
