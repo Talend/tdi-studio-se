@@ -107,12 +107,21 @@
       <DEFAULT>Greenplum</DEFAULT>
     </PARAMETER>
 
+	<PARAMETER
+			NAME="USE_ALTERNATE_SCHEMA"
+			FIELD="CHECK"
+		    NUM_ROW="3"
+		    SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+		>
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
+	
     <PARAMETER
       NAME="SCHEMA_DB"
       FIELD="TEXT"
       NUM_ROW="4"
       REPOSITORY_VALUE="SCHEMA"
-      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      SHOW_IF="((USE_EXISTING_CONNECTION == 'false') or (USE_ALTERNATE_SCHEMA == 'true'))"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
