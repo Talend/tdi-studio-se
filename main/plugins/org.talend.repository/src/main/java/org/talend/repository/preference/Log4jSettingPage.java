@@ -124,11 +124,32 @@ public class Log4jSettingPage extends ProjectSettingPage {
         String property = System.getProperty("showLog4j2");//$NON-NLS-1$
         Boolean showLog4j2 = Boolean.valueOf(property);
         combo.setVisible(showLog4j2);
+        combo.setEnabled(
+                Boolean.valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE)));
         label.setVisible(showLog4j2);
         return group;
     }
 
     private void initListerner() {
+        log4jBtn.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (!log4jBtn.getSelection()) {
+                    combo.setEnabled(false);
+                    combo.select(0);
+                    IRunProcessService service = null;
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                        service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+                    }
+                    if (service != null) {
+                        String logTemplate = service.getLogTemplate(Log4jPrefsConstants.LOG4JFILEPATH);
+                        templateTxt.setText(logTemplate);
+                    }
+                } else {
+                    combo.setEnabled(true);
+                }
+            }
+        });
         combo.addSelectionListener(new SelectionAdapter() {
 
             @Override
