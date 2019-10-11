@@ -38,7 +38,7 @@ public class HiveGenerationManager extends DbGenerationManager {
     @Override
     public String buildSqlSelect(DbMapComponent component, String outputTableName) {
         String query = super.buildSqlSelect(component, outputTableName);
-        // tELTHiveMap no need DBName/SchemaName in the SELECT stattement of the HIVE QL generated
+        // tELTHiveMap no need DBName/SchemaName in the SELECT statement of the HIVE QL generated
         ExternalDbMapData data = (ExternalDbMapData) component.getExternalData();
         for (ExternalDbMapTable input : data.getInputTables()) {
             String inputTableName = input.getTableName();
@@ -85,7 +85,6 @@ public class HiveGenerationManager extends DbGenerationManager {
                 String replacement = parser.getGlobalMapReplacement(globalMapStr);
                 expression = expression.replaceAll(regex, "\" +" + replacement + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$
             }
-
         return expression;
     }
 }
