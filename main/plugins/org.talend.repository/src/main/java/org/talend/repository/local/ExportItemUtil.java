@@ -320,7 +320,7 @@ public class ExportItemUtil {
                 tdmService = (ITransformService) GlobalServiceRegister.getDefault().getService(ITransformService.class);
             }
             itemProjectMap.clear();
-            Set<String> jarNameList = new HashSet<String>();
+            Map<String,String> jarNameAndUrl = new HashMap<String,String>();
             Iterator<Item> iterator = allItems.iterator();
             Set<String> projectHasTdm = new HashSet<String>();
             while (iterator.hasNext()) {
@@ -409,7 +409,7 @@ public class ExportItemUtil {
                     List list = ((RoutineItem) item).getImports();
                     for (int i = 0; i < list.size(); i++) {
                         String jarName = ((IMPORTTypeImpl) list.get(i)).getMODULE();
-                        jarNameList.add(jarName.toString());
+                        jarNameAndUrl.put(jarName, ((IMPORTTypeImpl) list.get(i)).getMVN());
                     }
 
                 }
@@ -452,9 +452,10 @@ public class ExportItemUtil {
             // add the routines of the jars at the end, to add them only once in the export.
             IPath libPath = getProjectOutputPath().append(JavaUtils.JAVA_LIB_DIRECTORY);
             String libAbsPath = new Path(destinationDirectory.toString()).append(libPath.toString()).toPortableString();
-            for (String jarName : jarNameList) {
+            for (String jarName : jarNameAndUrl.keySet()) {
                 if (repositoryBundleService.contains(jarName)) {
-                    repositoryBundleService.retrieve(jarName, libAbsPath, new NullProgressMonitor());
+                	String mavenUri =  jarNameAndUrl.get(jarName);
+                    repositoryBundleService.retrieve(jarName, mavenUri, libAbsPath, new NullProgressMonitor());
                     toExport.put(new File(libAbsPath, jarName), libPath.append(jarName));
                 }
             }
