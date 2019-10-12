@@ -43,7 +43,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
 /**
  * The class for AddRAWFlowTPatternMasking
  */
-public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
+public class AddRAWFlowMaskingComponents extends AbstractJobMigrationTask {
 
     private ProcessType processType = null;
 
@@ -97,6 +97,19 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
             ModifyComponentsAction
                     .searchAndModify(item, processType, filter,
                             Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
+
+            filter = new NameComponentFilter("tDataMasking"); //$NON-NLS-1$
+            unCheckRaw = new UnCheckRAWFlow();
+            changeMetadataName = new ChangeMetadataName();
+            ModifyComponentsAction.searchAndModify(item, processType, filter,
+                    Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
+
+            filter = new NameComponentFilter("tDataUnmasking"); //$NON-NLS-1$
+            unCheckRaw = new UnCheckRAWFlow();
+            changeMetadataName = new ChangeMetadataName();
+            ModifyComponentsAction.searchAndModify(item, processType, filter,
+                    Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
+
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -208,33 +221,6 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
             newMT.setConnector(NEWCONNECTORNAME);
             newMT.setName(NEWCONNECTORNAME);
             node.getMetadata().add(newMT);
-        }
-
-        private boolean checkTheColumnExist(MetadataType mt) {
-            EList<ConnectionTypeImpl> connections = processType.getConnection();
-            EList<NodeTypeImpl> nodes = processType.getNode();
-            String metadataName = mt.getName();
-            for (ConnectionTypeImpl theConnection : connections) {
-                if (metadataName.equals(theConnection.getTarget())) {
-                    for (NodeTypeImpl node : nodes) {
-
-                        EList<MetadataType> previousNodeMetadataTypes = node.getMetadata();
-                        for (MetadataType outputMetadataType : previousNodeMetadataTypes) {
-                            if (outputMetadataType.getName().equals(theConnection.getMetaname())) {
-                                EList<ColumnType> columns = outputMetadataType.getColumn();
-                                for (ColumnType theColumn : columns) {
-                                    if ("ORIGINAL_MARK".equals(theColumn.getName())) { //$NON-NLS-1$
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            }
-                        }
-                    }
-                    return false;
-                }
-            }
-            return false;
         }
 
         private boolean checkTheColumnExist(MetadataType mt) {
