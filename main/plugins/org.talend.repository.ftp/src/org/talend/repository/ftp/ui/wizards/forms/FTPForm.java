@@ -388,7 +388,7 @@ public class FTPForm extends AbstractForm {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                getConnection().setTimeout(Long.parseLong(connTimeoutText.getText()));
+                getConnection().setTimeout(connTimeoutText.getText());
                 checkFieldsValue();
             }
         });
