@@ -72,16 +72,18 @@ public class TRunjobUtil {
                 }
                 
             }else {
-            	 IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                         IJobletProviderService.class);
-                 if (service != null && service.isJobletComponent(node)) {
-                	 ProcessType processType = service.getJobletProcess(node.getComponent());
-                	 boolean result = isInLoop(processType, idList, 1);
-         			if(result) {
-         				String message = Messages.getString("Node.inLoop", node.getUniqueName()); //$NON-NLS-1$
-                         Problems.add(ProblemStatus.WARNING, node, message);
-         			}
-                 }
+                if(GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
+                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                            IJobletProviderService.class);
+                    if (service != null && service.isJobletComponent(node)) {
+                        ProcessType processType = service.getJobletProcess(node.getComponent());
+                        boolean result = isInLoop(processType, idList, 1);
+                       if(result) {
+                           String message = Messages.getString("Node.inLoop", node.getUniqueName()); //$NON-NLS-1$
+                            Problems.add(ProblemStatus.WARNING, node, message);
+                       }
+                    }
+                }
             }
 		} catch (PersistenceException e) {
 			ExceptionHandler.process(e);
@@ -89,6 +91,9 @@ public class TRunjobUtil {
     }
     
     private boolean isInLoop(ProcessType process, List<String> idList, int loop) throws PersistenceException{
+    	if(process == null) {
+    		return false;
+    	}
     	List<NodeType> nodeList = process.getNode();
 		for(NodeType nodeTye : nodeList) {
 			boolean isJoblet = false;
@@ -135,19 +140,26 @@ public class TRunjobUtil {
 		        } else if (frameWork.equals(HadoopConstants.FRAMEWORK_SPARK_STREAMING)) {
 		            jobletPaletteType = ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName();
 		        }
+		        
+		        if(GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
+		            IJobletProviderService service =
+	                        (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+	                                IJobletProviderService.class);
+	                if (service != null) {
+	                    IComponent jobletComponent = service.getJobletComponent(nodeTye, jobletPaletteType);
+	                    if(jobletComponent != null) {
+	                    	ProcessType jobletProcess = service.getJobletProcess(jobletComponent);
+		                    if(jobletProcess != null) {
+		                    	boolean result = isInLoop(jobletProcess, idList, loop + 1);
+			                    if(result) {
+			                        return result;
+			                    }
+		                    }
+	                    }
+	                    
+	                }
+		        }
 		    	
-		    	IJobletProviderService service =
-	                    (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-	                            IJobletProviderService.class);
-	            if (service != null) {
-	                IComponent jobletComponent = service.getJobletComponent(nodeTye, jobletPaletteType);
-	                ProcessType jobletProcess = service.getJobletProcess(jobletComponent);
-	                
-	    			boolean result = isInLoop(jobletProcess, idList, loop + 1);
-	    			if(result) {
-	    				return result;
-	    			}
-	            }
 	    	}
 	    	
 		}

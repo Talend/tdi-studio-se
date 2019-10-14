@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.widgets.Display;
@@ -36,6 +37,7 @@ import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.ContextItem;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.update.EUpdateItemType;
 import org.talend.core.model.update.EUpdateResult;
 import org.talend.core.model.update.UpdateResult;
@@ -86,15 +88,16 @@ public class UpdateContextParameterCommand extends Command {
         if (result == null) {
             return;
         }
-        List<String> contextItemGroupNames = new ArrayList<String>();
+        Map<String, ContextType> repoContextMap = new HashMap<String, ContextType>();
+        String repoDefaultContextName = null;
         if (result.getParameter() != null) {
             if (result.getParameter() instanceof ContextItem) {
-                contextItemGroupNames.clear();
                 EList<?> contextGroups = ((ContextItem) result.getParameter()).getContext();
-                for (Object contextGroup : contextGroups) {
+                repoDefaultContextName = ((ContextItem) result.getParameter()).getDefaultContext();
+                for (Object contextGroup : contextGroups) {                                                                                                                                                                                                     
                     if (contextGroup instanceof ContextTypeImpl) {
                         String name = ((ContextTypeImpl) contextGroup).getName();
-                        contextItemGroupNames.add(name);
+                        repoContextMap.put(name, ((ContextTypeImpl) contextGroup));
                     }
                 }
             }
@@ -137,13 +140,19 @@ public class UpdateContextParameterCommand extends Command {
                                     }
                                     break;
                                 case UPDATE:
-                                if (contextItemGroupNames.contains(context.getName())) {
+                                    String sourceContextName = null;
+                                    if (repoContextMap.containsKey(context.getName())) {
+                                        sourceContextName = context.getName();
+                                    } else {
+                                        sourceContextName = repoDefaultContextName;
+                                    }
+                                if (sourceContextName != null) {
                                     item = (ContextItem) result.getParameter();
 
                                     if (item != null && item.getProperty().getId().equals(param.getSource())
                                             && result.isChecked()) {
 
-                                        ContextUtils.updateParameterFromRepository(item, param, context.getName());
+                                        ContextUtils.updateParameterFromRepository(item, param, sourceContextName);
                                     } else {
                                         param.setSource(IContextParameter.BUILT_IN);
                                     }
@@ -201,6 +210,30 @@ public class UpdateContextParameterCommand extends Command {
                                 continue;
                             }
                             param = (JobContextParameter) contextParam.clone();
+                            final Item contextItem = ContextUtils.getRepositoryContextItemById(param.getSource());
+                            if (contextItem != null) {
+                                if (contextItem instanceof ContextItem) {
+                                    String defaultContextName = ((ContextItem) contextItem).getDefaultContext();
+                                    ContextTypeImpl defaultContext = null;
+                                    EList<?> contextGroups = ((ContextItem) contextItem).getContext();
+                                    for (Object contextGroup : contextGroups) {
+                                        if (contextGroup instanceof ContextTypeImpl) {
+                                            String conName = ((ContextTypeImpl) contextGroup).getName();
+                                            if (StringUtils.equals(defaultContextName, conName)) {
+                                                defaultContext = ((ContextTypeImpl) contextGroup);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (defaultContext != null) {
+                                        final ContextParameterType conParamType = ContextUtils
+                                                .getContextParameterTypeByName(defaultContext, param.getName());
+                                        if (conParamType != null) {
+                                            ContextUtils.updateParameter(conParamType, param);
+                                        }
+                                    }
+                                }
+                            }
                             param.setContext(newContext);
                             newParamList.add(param);
                         }

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
@@ -43,6 +44,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.xml.XMLFileUtil;
 import org.talend.commons.utils.io.FilesUtils;
@@ -103,6 +105,8 @@ public class ImportProjectAsWizardPage extends WizardPage {
     private String previouslyBrowsedArchive = ""; //$NON-NLS-1$
 
     private String lastPath;
+
+    private List<File> tempFolders = new ArrayList<>();
 
     // constant from WizardArchiveFileResourceImportPage1
     private static final String[] FILE_IMPORT_MASK = { "*.jar;*.zip;*.tar;*.tar.gz;*.tgz", "*.*" }; //$NON-NLS-1$ //$NON-NLS-2$
@@ -420,6 +424,14 @@ public class ImportProjectAsWizardPage extends WizardPage {
             ZipFile sourceFile = getSpecifiedZipSourceFile(path);
             if (sourceFile == null) {
                 return;
+            } else {
+                try {
+                    sourceFile.close();
+                } catch (IOException e) {
+                    if (CommonsPlugin.isDebugMode()) {
+                        ExceptionHandler.process(e);
+                    }
+                }
             }
         }
         lastPath = path;
@@ -458,6 +470,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
         if (ArchiveFileManipulations.isZipFile(path)) {
             File tmpPath = FileUtils.createTmpFolder("talendImportTmp", null);
             String tmpPathStr = tmpPath.getPath();
+            tempFolders.add(tmpPath);
             try {
                 FilesUtils.unzip(path, tmpPathStr);
             } catch (Exception e) {
@@ -482,6 +495,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
         // find the talend.project file
         tp.collectProjectFilesFromDirectory(files, new File(sourcePath), null);
         File tmpPath = FileUtils.createTmpFolder("talendImportTmp", null);
+        tempFolders.add(tmpPath);
         Iterator filesIterator = files.iterator();
         String tepPath = "";
         while (filesIterator.hasNext()) {
@@ -700,6 +714,10 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
     public String getSourcePath() {
         return lastPath;
+    }
+
+    public List<File> getTempFolders() {
+        return tempFolders;
     }
 
     public boolean isArchive() {

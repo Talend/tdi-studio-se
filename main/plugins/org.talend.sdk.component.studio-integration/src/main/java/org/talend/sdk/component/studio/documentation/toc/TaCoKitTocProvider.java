@@ -29,6 +29,7 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.documentation.Locales;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.lang.Pair;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
 public class TaCoKitTocProvider extends AbstractTocProvider {
@@ -64,8 +65,9 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
                 return contribution;
             });
             final TaCoKitTopic topic = new TaCoKitTopic();
-            topic.setHref(index.getId().getId() + ".html#_" + index.getDisplayName().toLowerCase());
-            topic.setLabel(index.getDisplayName());
+            String displayName = TaCoKitUtil.getDisplayName(index);
+            topic.setHref(index.getId().getId() + ".html#_" + displayName.toLowerCase());
+            topic.setLabel(displayName);
             familyContribution.getToc().addTopic(topic);
         });
 

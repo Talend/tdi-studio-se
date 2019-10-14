@@ -96,6 +96,7 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ISubjobContainer;
 import org.talend.core.model.process.ReplaceNodesInProcessProvider;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.branding.IBrandingService;
@@ -1682,12 +1683,12 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             }
         } else if (ProcessMessageManager.PROP_MESSAGE_ADD.equals(propName)
                 || ProcessMessageManager.PROP_DEBUG_MESSAGE_ADD.equals(propName)) {
-//            IProcessMessage psMess = (IProcessMessage) evt.getNewValue();
-//
-//            if (errorMessMap.size() <= CorePlugin.getDefault().getPreferenceStore()
-//                    .getInt(ITalendCorePrefConstants.PREVIEW_LIMIT)) {
-//                if (!(LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL))) {
-//                    getAllErrorMess(psMess);
+            IProcessMessage psMess = (IProcessMessage) evt.getNewValue();
+
+            if (errorMessMap.size() <= CorePlugin.getDefault().getPreferenceStore()
+                    .getInt(ITalendCorePrefConstants.PREVIEW_LIMIT)) {
+                getAllErrorMess(psMess);
+            }
 //                } else {
 //                    addPerlMark(psMess);
 //                }
@@ -1793,8 +1794,11 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     }
 
     public void getAllErrorMess(IProcessMessage psMess) {
-        errorMessMap.putAll(ProcessErrorUtil.getAllErrorMess(psMess, processContext));
-        refreshNode(psMess);
+        HashMap<String, IProcessMessage> result = ProcessErrorUtil.getAllErrorMess(psMess, processContext);
+        if (result != null) {
+            errorMessMap.putAll(result);
+            refreshNode(psMess);
+        }
     }
 
     public void refreshNode(final IProcessMessage psMess) {
