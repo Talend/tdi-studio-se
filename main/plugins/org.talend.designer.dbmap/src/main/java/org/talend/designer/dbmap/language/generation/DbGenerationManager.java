@@ -333,6 +333,13 @@ public abstract class DbGenerationManager {
                     String expression = dbMapEntry.getExpression();
                     expression = initExpression(component, dbMapEntry);
                     expression = addQuoteForSpecialChar(expression, component);
+                    // for (IMetadataColumn column : columns) {
+                    // if (expression != null && column.getLabel().equals(dbMapEntry.getName())) {
+                    //                            expression = expression.replaceFirst("." + dbMapEntry.getName(), //$NON-NLS-1$
+                    //                                    "." + column.getOriginalDbColumnName()); //$NON-NLS-1$
+                    // break;
+                    // }
+                    // }
                     if (!DEFAULT_TAB_SPACE_STRING.equals(this.tabSpaceString)) {
                         expression += DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
                                 + getAliasOf(dbMapEntry.getName());
@@ -415,7 +422,13 @@ public abstract class DbGenerationManager {
                         }
 
                     } else {
+
+                        // ExternalDbMapTable rightTable = joinLeftToJoinRightTables.get(inputTable.getName());
                         buildTableDeclaration(component, sb, inputTable, false, false, true);
+                        // if (rightTable != null) {
+                        // } else {
+                        // sb.append(" <!! NO JOIN CLAUSES FOR '" + inputTable.getName() + "' !!> ");
+                        // }
                         appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                         appendSqlQuery(sb, DbMapSqlConstants.ON);
                         appendSqlQuery(sb, DbMapSqlConstants.LEFT_BRACKET);
@@ -463,6 +476,13 @@ public abstract class DbGenerationManager {
                     for (ExternalDbMapEntry entry : customWhereConditionsEntries) {
                         String exp = initExpression(component, entry);
                         if (exp != null && !DbMapSqlConstants.EMPTY.equals(exp.trim())) {
+                            // if (containWith(exp, DbMapSqlConstants.GROUP_BY_PATTERN, true)
+                            // || containWith(exp, DbMapSqlConstants.ORDER_BY_PATTERN, true)) {
+                            // byAddition.add(exp);
+                            // } else if (containWith(exp, DbMapSqlConstants.GROUP_BY_PATTERN, false)
+                            // || containWith(exp, DbMapSqlConstants.ORDER_BY_PATTERN, false)) {
+                            // containWhereAddition.add(exp);
+                            // } else
                             if (containWith(exp, DbMapSqlConstants.OR, true) || containWith(exp, DbMapSqlConstants.AND, true)) {
                                 exp = replaceVariablesForExpression(component, exp);
                                 originalWhereAddition.add(exp);
@@ -534,6 +554,7 @@ public abstract class DbGenerationManager {
         String sqlQuery = sb.toString();
         sqlQuery = handleQuery(sqlQuery);
         queryColumnsName = handleQuery(queryColumnsName);
+
         return sqlQuery;
     }
 
@@ -941,7 +962,7 @@ public abstract class DbGenerationManager {
                 query = query + " \""; //$NON-NLS-1$
             } else {
                 if (query.trim().endsWith("+ \"")) { //$NON-NLS-1$
-                    query = query + "\""; //$NON-NLS-1$
+                    query = query.substring(0, query.lastIndexOf("+ \"")); //$NON-NLS-1$
                 }
             }
         }

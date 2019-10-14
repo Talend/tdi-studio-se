@@ -244,7 +244,13 @@ public class OracleGenerationManager extends DbGenerationManager {
                         }
 
                     } else {
+
+                        // ExternalDbMapTable rightTable = joinLeftToJoinRightTables.get(inputTable.getName());
                         buildTableDeclaration(component, sb, inputTable, false, false, true);
+                        // if (rightTable != null) {
+                        // } else {
+                        // sb.append(" <!! NO JOIN CLAUSES FOR '" + inputTable.getName() + "' !!> ");
+                        // }
                         appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                         appendSqlQuery(sb, DbMapSqlConstants.ON);
                         appendSqlQuery(sb, DbMapSqlConstants.LEFT_BRACKET);
