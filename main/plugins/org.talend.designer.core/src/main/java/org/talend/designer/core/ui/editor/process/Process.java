@@ -185,7 +185,6 @@ import org.talend.designer.core.utils.DetectContextVarsUtils;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
-import org.talend.designer.core.utils.UpdateParameterUtils;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -1425,11 +1424,6 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             }
         }
-
-        for (IElementParameter param : elemParam.getElementParameters()) {
-            UpdateParameterUtils.setDefaultValues(param, elemParam);
-        }
-
     }
 
     protected boolean noNeedSetValue(IElementParameter param, String paraValue) {
