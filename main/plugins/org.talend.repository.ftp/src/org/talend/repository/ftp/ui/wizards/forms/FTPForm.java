@@ -211,6 +211,7 @@ public class FTPForm extends AbstractForm {
         }
         
         connTimeoutText = new LabelledText(ftpParameterGroup, Messages.getString("FTPForm_conn_timeout"), true); //$NON-NLS-1$
+        connTimeoutText.setToolTipText(Messages.getString("FTPForm_conn_timeunit")); //$NON-NLS-1$
         connTimeoutText.setText("0");
         if (getConnection().getMode() == null || "".equals(getConnection().getMode())) { //$NON-NLS-1$
             connModelCombo.setText(Messages.getString("FTPForm_passive")); //$NON-NLS-1$
