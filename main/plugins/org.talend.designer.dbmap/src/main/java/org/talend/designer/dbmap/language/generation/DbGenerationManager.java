@@ -935,15 +935,9 @@ public abstract class DbGenerationManager {
 
     protected String handleQuery(String query) {
         if (query != null) {
-            if (!query.trim().endsWith("\"")) { //$NON-NLS-1$
-                query = query + "\""; //$NON-NLS-1$
-            } else if (query.trim().endsWith("\\\"")) { //$NON-NLS-1$
-                query = query + " \""; //$NON-NLS-1$
-            } else {
-                if (query.trim().endsWith("+ \"")) { //$NON-NLS-1$
-                    query = query + "\""; //$NON-NLS-1$
-                }
-            }
+            if ( !query.trim().endsWith("\"") || query.trim().endsWith("\\\"") || query.trim().endsWith("+ \"")) { 
+                query = query + "\""; 
+            } 
         }
         return query;
     }
