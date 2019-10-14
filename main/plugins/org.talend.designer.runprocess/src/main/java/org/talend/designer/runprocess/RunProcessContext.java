@@ -93,6 +93,7 @@ import org.talend.designer.runprocess.ui.actions.ClearPerformanceAction;
 import org.talend.designer.runprocess.ui.actions.ClearTraceAction;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
 import org.talend.repository.utils.EmfModelUtils;
+import org.talend.utils.dates.DateUtils;
 import org.talend.utils.network.FreePortFinder;
 
 import routines.system.NoHeaderObjectInputStream;
@@ -658,8 +659,7 @@ public class RunProcessContext {
                                                         Messages.getString("ProcessComposite.startJobPattern"); //$NON-NLS-1$
                                                 MessageFormat mf = new MessageFormat(startingPattern);
                                                 
-                                                DateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-                                                String welcomeMsg = mf.format(new Object[] { process.getLabel(), format.format(new Date())});
+                                                String welcomeMsg = mf.format(new Object[] { process.getLabel(), DateUtils.getCurrentDate("HH:mm dd/MM/yyyy")});
                                                 
                                                 processMessageManager
                                                         .addMessage(new ProcessMessage(MsgType.CORE_OUT,
@@ -811,8 +811,7 @@ public class RunProcessContext {
 
         final String endingPattern = Messages.getString("ProcessComposite.endJobPattern"); //$NON-NLS-1$
         MessageFormat mf = new MessageFormat(endingPattern);
-        DateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-        String byeMsg = mf.format(new Object[] { process.getLabel(), format.format(new Date())});
+        String byeMsg = mf.format(new Object[] { process.getLabel(), DateUtils.getCurrentDate("HH:mm dd/MM/yyyy")});
         
         
         final String endExitPattern = Messages.getString("ProcessComposite.endExitCode"); //$NON-NLS-1$

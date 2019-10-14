@@ -124,6 +124,7 @@ import org.talend.designer.runprocess.prefs.RunProcessTokenCollector;
 import org.talend.designer.runprocess.ui.actions.ClearPerformanceAction;
 import org.talend.designer.runprocess.ui.actions.ClearTraceAction;
 import org.talend.designer.runprocess.ui.views.ProcessView;
+import org.talend.utils.dates.DateUtils;
 
 /**
  * DOC Administrator class global comment. Detailled comment
@@ -1143,9 +1144,9 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                                             final String endingPattern = Messages.getString("ProcessComposite.endJobPattern"); //$NON-NLS-1$
                                             MessageFormat mf = new MessageFormat(endingPattern);
                                             try {
-                                                DateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
                                                 String byeMsg = "\n" //$NON-NLS-1$
-                                                		+ mf.format(new Object[] { processContext.getProcess().getName(), format.format(new Date())});
+                                                		+ mf.format(new Object[] { processContext.getProcess().getName(), 
+                                                		        DateUtils.getCurrentDate("HH:mm dd/MM/yyyy")});
                                                 
                                                 final String endExitPattern = Messages.getString("ProcessComposite.endExitCode"); //$NON-NLS-1$
                                                 MessageFormat ef = new MessageFormat(endExitPattern);
@@ -1202,8 +1203,8 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                                             final String startingPattern = Messages.getString("ProcessComposite.startJobPattern"); //$NON-NLS-1$
                                             MessageFormat mf = new MessageFormat(startingPattern);
                                             
-                                            DateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-                                            String welcomeMsg = mf.format(new Object[] { processContext.getProcess().getName(), format.format(new Date())});
+                                            String welcomeMsg = mf.format(new Object[] { processContext.getProcess().getName(), 
+                                                    DateUtils.getCurrentDate("HH:mm dd/MM/yyyy")});
                                             
                                             processContext.addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT,
                                                     welcomeMsg + "\r\n"));//$NON-NLS-1$
