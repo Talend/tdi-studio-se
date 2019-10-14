@@ -655,7 +655,13 @@ public class FTPForm extends AbstractForm {
         ftpPortText.setText(conn.getPort());
         ftpHostText.setText(conn.getHost());
         encodeCombo.setText(conn.getEcoding());
-        connTimeoutText.setText(String.valueOf(conn.getTimeout()));
+        
+        if(conn.getTimeout() == null || "".equals(conn.getTimeout())){
+            connTimeoutText.setText("0");
+        }else {
+            connTimeoutText.setText(String.valueOf(conn.getTimeout()));
+        }
+        
         if (CUSTOM.equals(encodeCombo.getText())) {
             customText.setVisible(true);
         } else {
