@@ -38608,12 +38608,12 @@
             <IMPORT
                 NAME="json-smart-2.2.1.jar"
                 MODULE="json-smart-2.2.1.jar"
-                MVN="mvn:org.talend.libraries/json-smart-2.2.1/6.0.0"
+                MVN="mvn:net.minidev/json-smart/2.2.1"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
                 NAME="accessors-smart-1.1"
                 MODULE="accessors-smart-1.1.jar"
-                MVN="mvn:org.talend.libraries/accessors-smart-1.1/6.0.0"
+                MVN="mvn:net.minidev/accessors-smart/1.1"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
                 NAME="mail-1.4.7"

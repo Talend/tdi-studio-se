@@ -937,7 +937,7 @@ public abstract class DbGenerationManager {
         if (query != null) {
             if ( !query.trim().endsWith("\"") || query.trim().endsWith("\\\"") || query.trim().endsWith("+ \"")) { 
                 query = query + "\""; 
-            } 
+            }
         }
         return query;
     }

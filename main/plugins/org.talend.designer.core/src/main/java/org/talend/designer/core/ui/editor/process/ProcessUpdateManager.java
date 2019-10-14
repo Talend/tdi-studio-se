@@ -421,8 +421,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
         Map<ContextItem, Set<String>> existedParams = new HashMap<ContextItem, Set<String>>();
 
-        List<String> contextItemGroupNames = new ArrayList<String>();
-
         for (IContext context : contextManager.getListContext()) {
             for (IContextParameter param : context.getContextParameterList()) {
                 if (!param.isBuiltIn()) {
@@ -446,14 +444,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         boolean builtin = true;
                         if (contextItem != null) {
                             if (contextItem instanceof ContextItem) {
-                                contextItemGroupNames.clear();
-                                EList<?> contextGroups = ((ContextItem) contextItem).getContext();
-                                for (Object contextGroup : contextGroups) {
-                                    if (contextGroup instanceof ContextTypeImpl) {
-                                        String name = ((ContextTypeImpl) contextGroup).getName();
-                                        contextItemGroupNames.add(name);
-                                    }
-                                }
                                 final ContextType contextType = ContextUtils.getContextTypeByName((ContextItem) contextItem,
                                         context.getName(), true);
                                 if (contextType != null) {
@@ -465,10 +455,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                             existedParams.put(repositoryContext, new HashSet<String>());
                                         }
                                         existedParams.get(repositoryContext).add(paramName);
-                                        String jobContextGroupName = context.getName();
-                                        boolean contains = contextItemGroupNames.contains(jobContextGroupName);
-                                        if (contains && (onlySimpleShow || !ContextUtils.samePropertiesForContextParameter(param,
-                                                contextParameterType))) {
+                                        if (onlySimpleShow || !ContextUtils.samePropertiesForContextParameter(param,
+                                                contextParameterType)) {
                                             unsameMap.add(contextItem, paramName);
                                         }
                                         builtin = false;
@@ -602,10 +590,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     if (newParametersMap.get(contextItem) == null) {
                         newParametersMap.put(contextItem, new HashSet<String>());
                     }
-                    newParametersMap.get(contextItem).add(parameterType.getName());
+                    // To avoid the case: serval contexts contain more than one same name parameters, but we only can add
+                    // one of them
+                    IContext processContext = ((JobContextManager) contextManager).getDefaultContext();
+                    if (processContext.getContextParameter(parameterType.getName()) == null) {
+                        newParametersMap.get(contextItem).add(parameterType.getName());
+                    }
                 }
             }
-
         }
     }
 
