@@ -3251,6 +3251,15 @@
               name="AddRAWFlowTDataMasking"
               version="7.3.1">
         </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.3.1"
+               class="org.talend.repository.model.migration.OracleSPAutomappingDateToTimestampTask"
+               description="Modify automapping for input date to timestamp"
+               id="org.talend.repository.model.migration.OracleSPAutomappingDateToTimestampTask"
+               name="oracleSPAutomappingDateToTimestampTask"
+               version="7.3.2">
+       </projecttask>
    </extension>
 
    <extension
