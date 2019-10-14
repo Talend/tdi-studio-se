@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.Path;
 import org.talend.core.CorePlugin;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
+import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IContext;
@@ -217,7 +218,7 @@ public class JavaProcessUtil {
 
                 // for JDBC, user set the customize driver jars need the high Priority
                 // but after tLibraryLoad
-                if (node.getComponent().getName().equals("tJDBCConnection") && !isTestcaseProcess) {
+                if (node.getComponent().getComponentType() == EComponentType.GENERIC && !isTestcaseProcess) {
                     List<ModuleNeeded> jdbcNodeModuleNeededList = new ArrayList<ModuleNeeded>();
                     for (IElementParameter curParam : node.getElementParameters()) {
                         if (curParam.getFieldType() == EParameterFieldType.TABLE) {
