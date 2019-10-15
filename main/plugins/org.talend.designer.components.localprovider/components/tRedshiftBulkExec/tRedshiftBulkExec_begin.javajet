@@ -216,6 +216,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 	.append(" FROM '");
 <%	
+	boolean assumeRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__ASSUME_ROLE__"));
 	String access_key = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
     String passwordFieldKey = "__SECRET_KEY__";
     if(emrMode) {
@@ -228,20 +229,22 @@ skeleton="../templates/db_output_bulk.skeleton"
     	access_key = ElementParameterParser.getValue(node, "__ACCESS_KEY_SSH__");
     	passwordFieldKey = "__SECRET_KEY_SSH__";
     }
-    if(useExistingS3Connection){
+    if(useExistingS3Connection && !assumeRole){
     	access_key = ElementParameterParser.getValue(current_node, "__ACCESS_KEY__");
     	passwordFieldKey = "__SECRET_KEY__";
     }
 %>
 <%
-	if (ElementParameterParser.canEncrypt(current_node, passwordFieldKey)) {
+	if(!assumeRole) {
+		if (ElementParameterParser.canEncrypt(current_node, passwordFieldKey)) {
 %> 
-		final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(current_node, passwordFieldKey)%>);
+			final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(current_node, passwordFieldKey)%>);
 <%
-	} else {
+		} else {
 %>
-		final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(current_node, passwordFieldKey)%>; 
+			final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(current_node, passwordFieldKey)%>; 
 <%
+		}
 	}
 	if(avroMode) {
 		String avro_mapping = ElementParameterParser.getValue(node, "__JSON_MAPPING__");
@@ -286,7 +289,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 	.append("' credentials '")
 <%
-    boolean assumeRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__ASSUME_ROLE__"));
 	if(assumeRole){
 		List<Map<String,String>> roles = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ROLE_TABLE__");
 		int roleListSize=roles.size();
