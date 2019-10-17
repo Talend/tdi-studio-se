@@ -91,7 +91,7 @@ String xmlfile = ElementParameterParser.getValue(node, "__XMLFILE__");
 		
 		int offsetRoot<%=cid %>=sb<%=cid %>.indexOf("<"+rootnode<%=cid %>);
 		sb<%=cid%>.replace(0, offsetRoot<%=cid %>, reference<%=cid %>);		
-		is<%=cid %> = new java.io.ByteArrayInputStream(sb<%=cid%>.toString().getBytes("UTF-8")));
+		is<%=cid %> = new java.io.ByteArrayInputStream(sb<%=cid%>.toString().getBytes("UTF-8"));
 
 		class MyHandler<%=cid %> extends org.xml.sax.helpers.DefaultHandler{
 		    String errorMessage = null;
