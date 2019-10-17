@@ -143,6 +143,7 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.ui.projectsetting.ElementParameter2ParameterType;
 import org.talend.designer.core.ui.views.problems.Problems;
+import org.talend.designer.core.utils.TRunjobUtil;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.core.utils.UpgradeElementHelper;
 import org.talend.designer.joblet.model.JobletNode;
@@ -516,7 +517,7 @@ public class Node extends Element implements IGraphicalNode {
 
     private void init(IComponent newComponent) {
         this.component = UnifiedComponentUtil.getEmfComponent(this, newComponent);
-        this.label = component.getName();
+        this.label = component.getDisplayName();
         updateComponentStatusIfNeeded(true);
         IPreferenceStore store = DesignerPlugin.getDefault().getPreferenceStore();
 
@@ -1179,6 +1180,12 @@ public class Node extends Element implements IGraphicalNode {
         if (useConn != null) {
             connParam = this.getElementParameter("CONNECTION"); //$NON-NLS-1$
         }
+        
+        boolean isGeneric = this.getComponent().getComponentType() == EComponentType.GENERIC;
+        if(isGeneric && labelToParse != null) {
+        	labelToParse = labelToParse.replaceAll("__TABLE__", "__tableSelection.tablename__"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
         if (useConn != null && connParam != null && Boolean.TRUE.equals(useConn.getValue())) {
 
             String connName = (String) connParam.getValue();
@@ -4312,6 +4319,7 @@ public class Node extends Element implements IGraphicalNode {
             checkNodeProblems();
 
             checkDependencyLibraries();
+            new TRunjobUtil().checkTRunjobRecursiveLoop(this);
 
             // feature 2,add a new extension point to intercept the validation action for Uniserv
             List<ICheckNodesService> checkNodeServices = CheckNodeManager.getCheckNodesService();
@@ -4547,6 +4555,7 @@ public class Node extends Element implements IGraphicalNode {
         }
 
     }
+    
 
     /**
      * DOC xye Comment method "checkParallelizeStates".

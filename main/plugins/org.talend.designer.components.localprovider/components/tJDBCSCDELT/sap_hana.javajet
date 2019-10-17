@@ -78,6 +78,8 @@ if(isEnableType1) {
 
 String startDateField = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD__");
 String endDateField = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD__");
+String l2EndDateFieldType = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD_TYPE__");
+String l2EndDateFieldFixedDateValue = ElementParameterParser.getValue(node,"__FIXED_DATE_VALUE__");
 boolean isEnableActive = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_ACTIVE__"));
 String activeField = ElementParameterParser.getValue(node,"__L2_ACTIVE_FIELD__");
 boolean isEnableVersion = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_VERSION__"));
@@ -99,9 +101,11 @@ if(isEnableType2) {
     String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
     %>        
     String changeDateTime_<%=cid%> = (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString();
-	
-    String updateForType2_<%=cid %> = "UPDATE <%=text_util.wrap("tableName", cid)%> d SET <%=text_util.wrap(endDateField)%> = '" + (changeDateTime_<%=cid%>) + "'<%if (isEnableActive) {%>, <%=text_util.wrap(activeField)%> = 0<%}%> FROM  <%=text_util.wrap("tableName", cid)%> d, <%=text_util.wrap("sourceTable", cid)%> t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.<%=text_util.wrap(endDateField)%> IS NULL"; 
- 
+    <% if ("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) { %>
+      String customEndDate_<%=cid%> = java.sql.Timestamp.valueOf(<%=l2EndDateFieldFixedDateValue%> +" 00:00:00").toString();
+    <%}%>
+    String updateForType2_<%=cid %> = "UPDATE <%=text_util.wrap("tableName", cid)%> d SET <%=text_util.wrap(endDateField)%> = '" + (changeDateTime_<%=cid%>) 
+      + "'<%if (isEnableActive) {%>, <%=text_util.wrap(activeField)%> = 0<%}%> FROM  <%=text_util.wrap("tableName", cid)%> d, <%=text_util.wrap("sourceTable", cid)%> t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.<%=text_util.wrap(endDateField)%><% if ("NULL".equals(l2EndDateFieldType)) { %> IS NULL"<% } else { %> = '" + (customEndDate_<%=cid%>) + "'"<%}%>;
     java.sql.Statement stmtType2Update_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType2Update_<%=cid%>.executeUpdate(updateForType2_<%=cid%>);
     stmtType2Update_<%=cid%>.close();
@@ -139,7 +143,7 @@ if(isEnableType2) {
     columnNameString = StringUtils.join(columnNames.toArray(), ", ");
     %>
     String insertForType2_<%=cid%> = "INSERT INTO <%=text_util.wrap("tableName", cid)%> (<%if(useSequence) {%><%=text_util.wrap(surrogateKey)%>, <%}%><%=columnNameString%>) SELECT " + <%if(useSequence) {%>sequenceValueFetchPattern_<%=cid%> + ", " + <%}%>" t.<%=selectColumnString%>, '" + 
-    (changeDateTime_<%=cid%>) + "', NULL<%if(isEnableActive) {%>, 1<%}%><%if(isEnableVersion) {%>, d.<%=text_util.wrap(versionField)%> + 1<%}%> FROM <%=text_util.wrap("sourceTable", cid)%> t, <%=text_util.wrap("tableName", cid)%> d WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.<%=text_util.wrap(endDateField)%> = '" + (changeDateTime_<%=cid%>) + "'";
+    (changeDateTime_<%=cid%>) + "',<% if("NULL".equals(l2EndDateFieldType)) { %> NULL<% } else {%> '" + (customEndDate_<%=cid%>) + "'<%} if(isEnableActive) {%>, 1<%}%><%if(isEnableVersion) {%>, d.<%=text_util.wrap(versionField)%> + 1<%}%> FROM <%=text_util.wrap("sourceTable", cid)%> t, <%=text_util.wrap("tableName", cid)%> d WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.<%=text_util.wrap(endDateField)%> = '" + (changeDateTime_<%=cid%>) + "'";
     java.sql.Statement stmtType2Insert_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType2Insert_<%=cid%>.executeUpdate(insertForType2_<%=cid%>);
     stmtType2Insert_<%=cid%>.close();
@@ -157,7 +161,8 @@ for (Map<String, String> sk : sourceKeys) {
 }
 String outerWhereClauseString = StringUtils.join(outerWhereClause.toArray(), " AND ");
 %>
-String insert_<%=cid%> = "INSERT INTO <%=text_util.wrap("tableName", cid)%> (<%if(useSequence) {%><%=text_util.wrap(surrogateKey)%>, <%}%><%=columnNameString%>) SELECT " + <%if(useSequence) {%>sequenceValueFetchPattern_<%=cid%> + ", " + <%}%>" t.<%=selectColumnString%>"<%if(isEnableType2) {%> + ", '" + (changeDateTime_<%=cid%>) + "', NULL"<%}%>
+String insert_<%=cid%> = "INSERT INTO <%=text_util.wrap("tableName", cid)%> (<%if(useSequence) {%><%=text_util.wrap(surrogateKey)%>, <%}%><%=columnNameString%>) SELECT " + <%if(useSequence) {%>sequenceValueFetchPattern_<%=cid%> + ", " + <%}%>" t.<%=selectColumnString%>"<%if(isEnableType2) {%> + ", '" + (changeDateTime_<%=cid%>) 
++ "',<% if ("NULL".equals(l2EndDateFieldType)) { %> NULL"<% } else {%> '" + (customEndDate_<%=cid%>) + "'"<%}}%>
 + "<%if(isEnableType2 && isEnableActive) {%>, 1<%}%><%if(isEnableType2 && isEnableVersion) {%>, 1<%}%> FROM <%=text_util.wrap("sourceTable", cid)%> t LEFT JOIN <%=text_util.wrap("tableName", cid)%> d ON <%=joinClauseString%> WHERE (<%=outerWhereClauseString%>)";
 
 java.sql.Statement stmtInsert_<%=cid%> = conn_<%=cid%>.createStatement();

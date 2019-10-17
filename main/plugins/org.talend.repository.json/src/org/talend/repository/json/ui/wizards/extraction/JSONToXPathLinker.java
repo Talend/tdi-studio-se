@@ -332,7 +332,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
             TableItem tableItem = fieldsTableItems[i];
             SchemaTarget schemaTarget = schemaTargetList.get(indexShemaTarget);
             String relativeXpathQuery = schemaTarget.getRelativeXPathQuery();
-            if(fieldToExtract(schemaTarget.getTagName(), treePopulator.getAllNodes())) {
+            if(fieldToExtract(jsonDndHandler.extractTagName(relativeXpathQuery, jsonDndHandler.getReadbyMode()), treePopulator.getAllNodes())) {
             	createFieldLinks(relativeXpathQuery, tableItem, monitorWrap, schemaTarget);
             }
             monitorWrap.worked(1);
@@ -792,10 +792,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
         } else {
             fullPath = relativeXpath;
         }
-        TreeItem treeItemFromAbsoluteXPath = null;
-        if(fieldToExtract(relativeXpath, treePopulator.getAllNodes())) {
-        	treeItemFromAbsoluteXPath = treePopulator.getTreeItem(fullPath);
-        }
+        TreeItem treeItemFromAbsoluteXPath = treePopulator.getTreeItem(fullPath);
         if (treeItemFromAbsoluteXPath != null && !alreadyProcessedXPath.contains(fullPath)) {
             addFieldLink(treeItemFromAbsoluteXPath, treeItemFromAbsoluteXPath.getData(), tableItemTarget.getParent(),
                     (SchemaTarget) tableItemTarget.getData());

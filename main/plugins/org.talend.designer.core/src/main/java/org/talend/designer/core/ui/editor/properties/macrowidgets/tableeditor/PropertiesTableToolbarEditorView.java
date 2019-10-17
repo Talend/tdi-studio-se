@@ -49,6 +49,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.cmd.PropertyTablePasteCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.TableController;
@@ -198,7 +199,24 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
                      * "firePropertyChange(RETURNS_CHANGED, null, null)" in Node.
                      */
                     if (param.getFieldType().equals(EParameterFieldType.TABLE)) {
-                        node.setPropertyValue(param.getName(), param.getValue());
+                        boolean isTacokit = false;
+                        if (param instanceof ElementParameter) {
+                            Object sourceName = ((ElementParameter) param).getTaggedValue("org.talend.sdk.component.source"); //$NON-NLS-1$
+                            isTacokit = "tacokit".equalsIgnoreCase(String.valueOf(sourceName)); //$NON-NLS-1$
+                        }
+                        if (isTacokit) {
+                            Object paramValue = param.getValue();
+                            if (paramValue != null && paramValue instanceof List) {
+                                List<Map<String, Object>> beansList = new ArrayList<Map<String, Object>>();
+                                beansList.addAll(tableEditorModel.getBeansList());
+                                node.setPropertyValue(param.getName(), tableEditorModel.getBeforeChangeBeansList());
+                                node.setPropertyValue(param.getName(), beansList);
+                            } else {
+                                node.setPropertyValue(param.getName(), paramValue);
+                            }
+                        } else {
+                            node.setPropertyValue(param.getName(), param.getValue());
+                        }
                     }
                 }
             };

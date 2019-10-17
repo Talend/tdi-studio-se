@@ -115,6 +115,7 @@ import org.talend.core.ui.ICDCProviderService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.cwm.helper.SAPBWTableHelper;
+import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
@@ -126,6 +127,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.impl.ContextTypeImpl;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.update.UpdateCheckResult;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
+import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.SAPParametersUtils;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
@@ -308,6 +310,10 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     }
                 }
             } else {
+            	Boolean propagate = DesignerPlugin.getDefault().getPreferenceStore().getBoolean(TalendDesignerPrefConstants.PROPAGATE_CONTEXT);
+            	if(!propagate) {
+            		return contextResults;
+            	}
                 // only handle added groups
                 Set<String> contextSourceChecked = new HashSet<String>();
                 Set<String> processContextGroups = new HashSet<String>();
@@ -415,8 +421,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
         Map<ContextItem, Set<String>> existedParams = new HashMap<ContextItem, Set<String>>();
 
-        List<String> contextItemGroupNames = new ArrayList<String>();
-
         for (IContext context : contextManager.getListContext()) {
             for (IContextParameter param : context.getContextParameterList()) {
                 if (!param.isBuiltIn()) {
@@ -440,14 +444,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         boolean builtin = true;
                         if (contextItem != null) {
                             if (contextItem instanceof ContextItem) {
-                                contextItemGroupNames.clear();
-                                EList<?> contextGroups = ((ContextItem) contextItem).getContext();
-                                for (Object contextGroup : contextGroups) {
-                                    if (contextGroup instanceof ContextTypeImpl) {
-                                        String name = ((ContextTypeImpl) contextGroup).getName();
-                                        contextItemGroupNames.add(name);
-                                    }
-                                }
                                 final ContextType contextType = ContextUtils.getContextTypeByName((ContextItem) contextItem,
                                         context.getName(), true);
                                 if (contextType != null) {
@@ -459,10 +455,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                             existedParams.put(repositoryContext, new HashSet<String>());
                                         }
                                         existedParams.get(repositoryContext).add(paramName);
-                                        String jobContextGroupName = context.getName();
-                                        boolean contains = contextItemGroupNames.contains(jobContextGroupName);
-                                        if (contains && (onlySimpleShow || !ContextUtils.samePropertiesForContextParameter(param,
-                                                contextParameterType))) {
+                                        if (onlySimpleShow || !ContextUtils.samePropertiesForContextParameter(param,
+                                                contextParameterType)) {
                                             unsameMap.add(contextItem, paramName);
                                         }
                                         builtin = false;
@@ -596,10 +590,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     if (newParametersMap.get(contextItem) == null) {
                         newParametersMap.put(contextItem, new HashSet<String>());
                     }
-                    newParametersMap.get(contextItem).add(parameterType.getName());
+                    // To avoid the case: serval contexts contain more than one same name parameters, but we only can add
+                    // one of them
+                    IContext processContext = ((JobContextManager) contextManager).getDefaultContext();
+                    if (processContext.getContextParameter(parameterType.getName()) == null) {
+                        newParametersMap.get(contextItem).add(parameterType.getName());
+                    }
                 }
             }
-
         }
     }
 

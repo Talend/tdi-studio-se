@@ -37,6 +37,8 @@ import org.talend.designer.core.model.utils.emf.talendfile.MetadataType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.ConnectionTypeImpl;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
 
 /**
  * The class for AddRAWFlowTPatternMasking
@@ -80,13 +82,21 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
     @Override
     public ExecutionResult execute(Item item) {
         processType = getProcessType(item);
+
         try {
             IComponentFilter filter = new NameComponentFilter("tPatternMasking"); //$NON-NLS-1$
-            IComponentConversion checkGIDType = new UnCheckRAWFlow();
+            IComponentConversion unCheckRaw = new UnCheckRAWFlow();
             IComponentConversion changeMetadataName = new ChangeMetadataName();
             ModifyComponentsAction
                     .searchAndModify(item, processType, filter,
-                            Arrays.<IComponentConversion> asList(checkGIDType, changeMetadataName));
+                            Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
+
+            filter = new NameComponentFilter("tPatternUnmasking"); //$NON-NLS-1$
+            unCheckRaw = new UnCheckRAWFlow();
+            changeMetadataName = new ChangeMetadataName();
+            ModifyComponentsAction
+                    .searchAndModify(item, processType, filter,
+                            Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -157,6 +167,9 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
         }
 
         private void removeCustomColumn(MetadataType mt) {
+            if (checkTheColumnExist(mt)) {
+                return;
+            }
             EList<?> columns = mt.getColumn();
             for (Object theColumnObject : columns) {
                 ColumnType theColumn = (ColumnType) theColumnObject;
@@ -174,6 +187,7 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
          * @param metadataName
          */
         private void changeConnection(String metadataName) {
+
             for (Object o : processType.getConnection()) {
                 ConnectionType ct = (ConnectionType) o;
                 if (metadataName.equals(ct.getMetaname()) && OLDCONNECTORNAME.equals(ct.getConnectorName())) {
@@ -189,10 +203,38 @@ public class AddRAWFlowTPatternMasking extends AbstractJobMigrationTask {
          * Create new metadata
          */
         private void createNewMetadata(NodeType node, MetadataType mt) {
+
             newMT = EcoreUtil.copy(mt);
             newMT.setConnector(NEWCONNECTORNAME);
             newMT.setName(NEWCONNECTORNAME);
+            node.getMetadata().add(newMT);
+        }
 
+        private boolean checkTheColumnExist(MetadataType mt) {
+            EList<ConnectionTypeImpl> connections = processType.getConnection();
+            EList<NodeTypeImpl> nodes = processType.getNode();
+            String metadataName = mt.getName();
+            for (ConnectionTypeImpl theConnection : connections) {
+                if (metadataName.equals(theConnection.getTarget())) {
+                    for (NodeTypeImpl node : nodes) {
+
+                        EList<MetadataType> previousNodeMetadataTypes = node.getMetadata();
+                        for (MetadataType outputMetadataType : previousNodeMetadataTypes) {
+                            if (outputMetadataType.getName().equals(theConnection.getMetaname())) {
+                                EList<ColumnType> columns = outputMetadataType.getColumn();
+                                for (ColumnType theColumn : columns) {
+                                    if ("ORIGINAL_MARK".equals(theColumn.getName())) { //$NON-NLS-1$
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+            return false;
         }
     }
 }

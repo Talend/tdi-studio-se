@@ -16,7 +16,7 @@
 		<webservice.dir>${project.basedir}/components/tWebServiceInput</webservice.dir>
 		<webservicecore.dir>${project.basedir}/components/tWebService</webservicecore.dir>
 		<thashfile.dir>${project.basedir}/components/tHashInput</thashfile.dir>
-		<thashfile.version>3.0-20170711</thashfile.version>
+		<thashfile.version>3.1-20190910</thashfile.version>
 		<ftpProxy.dir>${project.basedir}/components/tFTPConnection</ftpProxy.dir>
 		<ftpProxy.version>3.6.1-talend-20190819</ftpProxy.version>
 		<talendMQRFH2.dir>${project.basedir}/components/tMomInput</talendMQRFH2.dir>
@@ -24,6 +24,8 @@
 		<talendMQConnectionUtil.dir>${project.basedir}/components/tMomConnection</talendMQConnectionUtil.dir>
 		<talendMQConnectionUtil.version>1.0.1-20190215</talendMQConnectionUtil.version>
 		<tldapinput.dir>${project.basedir}/components/tLDAPInput</tldapinput.dir>
+		<tproxy.dir>${project.basedir}/components/tSetProxy</tproxy.dir>
+		<tproxy.version>1.0.0</tproxy.version>
 	</properties>
 
 	<build>
@@ -117,7 +119,7 @@
 									<outputDirectory>${webservicecore.dir}</outputDirectory>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.talend.libraries</groupId>
+									<groupId>org.talend.components.lib</groupId>
 									<artifactId>thashfile</artifactId>
 									<version>${thashfile.version}</version>
 									<type>jar</type>
@@ -155,6 +157,14 @@
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${tldapinput.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.components.lib</groupId>
+									<artifactId>talend-proxy</artifactId>
+									<version>${tproxy.version}</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${tproxy.dir}</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>

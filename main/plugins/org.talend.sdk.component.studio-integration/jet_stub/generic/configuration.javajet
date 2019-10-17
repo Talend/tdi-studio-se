@@ -123,7 +123,16 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                   %>
                     globalMap.putIfAbsent("MAX_BATCH_SIZE_<%=cid%>", Integer.parseInt(<%=value%>));
                   <%
-                 }
+                 } else if(p.getFieldType() == EParameterFieldType.CLOSED_LIST) {
+                   String valueTemp = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
+                    if ("".equals(valueTemp)) {
+                       String[] listItemsDisplayCodeValue = p.getListItemsDisplayCodeName();
+                       if(listItemsDisplayCodeValue != null && listItemsDisplayCodeValue.length > 0){
+                          valueTemp = listItemsDisplayCodeValue[0];
+                          value = org.talend.core.model.utils.TalendTextUtils.addQuotes(valueTemp);
+                       }
+                    }
+                }
 %>
                     configuration_<%=cid%>.put("<%=key%>", <%=value%>);
 <%

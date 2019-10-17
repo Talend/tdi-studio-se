@@ -26,6 +26,7 @@ import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
@@ -57,7 +58,7 @@ public class AddEncodingTypeForDQComponentsTask extends AbstractJobMigrationTask
         ProcessType processType = getProcessType(item);
         try {
             IComponentFilter filter = new IComponentFilter() {
-                
+
                 final transient List<String> names = new ArrayList<String>() {
 
                     private static final long serialVersionUID = 1L;
@@ -73,10 +74,11 @@ public class AddEncodingTypeForDQComponentsTask extends AbstractJobMigrationTask
                 public boolean accept(NodeType node) {
                     return names.contains(node.getComponentName());
                 }
-                
+
             };
             IComponentConversion checkGIDType = new CheckGIDType();
-            ModifyComponentsAction.searchAndModify(item, processType, filter, Arrays.<IComponentConversion> asList(checkGIDType));
+            ModifyComponentsAction
+                    .searchAndModify(item, processType, filter, Arrays.<IComponentConversion> asList(checkGIDType));
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -108,4 +110,13 @@ public class AddEncodingTypeForDQComponentsTask extends AbstractJobMigrationTask
 
     }
 
+    @Override
+    public List<ERepositoryObjectType> getTypes() {
+        List<ERepositoryObjectType> toReturn = super.getTypes();
+        // PROCESS_MR stands for Map/Reduce and Spark.
+        toReturn.add(ERepositoryObjectType.PROCESS_MR);
+        // PROCESS_STORM stands for Storm and Spark Streaming.
+        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
+        return toReturn;
+    }
 }
