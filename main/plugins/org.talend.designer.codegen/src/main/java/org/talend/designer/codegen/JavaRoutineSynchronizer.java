@@ -92,7 +92,7 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
 
     private void syncRoutineItems(Collection<RoutineItem> routineObjects, boolean forceUpdate) throws SystemException {
         for (RoutineItem routineItem : routineObjects) {
-            syncRoutine(routineItem, true, true, forceUpdate);
+            syncRoutine(routineItem, true, forceUpdate);
         }
         syncSystemRoutine(ProjectManager.getInstance().getCurrentProject());
     }

@@ -428,6 +428,11 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
+    public IFolder getCodeSrcFolder(ERepositoryObjectType type, String projectTechName) {
+        return delegateService.getCodeSrcFolder(type, projectTechName);
+    }
+
+    @Override
     public ITalendProcessJavaProject getTempJavaProject() {
         return delegateService.getTempJavaProject();
     }
