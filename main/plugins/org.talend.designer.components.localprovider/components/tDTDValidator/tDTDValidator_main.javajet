@@ -45,7 +45,7 @@ String xmlfile = ElementParameterParser.getValue(node, "__XMLFILE__");
 		java.lang.StringBuilder sb<%=cid %>=new java.lang.StringBuilder("");
 		
 		try{
-    		br<%=cid %> = new java.io.BufferedReader(new UnicodeReader(url<%=cid %>.openStream(), "UTF-8"));
+    		br<%=cid %> = new java.io.BufferedReader(new UnicodeReader(url<%=cid %>.openStream(), null));
 
     		char[] buffer<%=cid %> = new char[1024];
     		int length<%=cid %> = -1;
