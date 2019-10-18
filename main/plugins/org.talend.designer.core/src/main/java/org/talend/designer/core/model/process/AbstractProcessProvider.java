@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
@@ -32,6 +33,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.update.UpdateResult;
+import org.talend.core.ui.editor.JobEditorInput;
 import org.talend.designer.core.ui.editor.process.Process;
 
 /**
@@ -142,6 +144,23 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
                 processProvider.loadComponentsFromExtensionPoint(type);
             }
         }
+    }
+    
+    /**
+     * DOC hwang Comment method "loadComponentsFromProviders".
+     *
+     * @return
+     * @throws PersistenceException 
+     */
+    public static JobEditorInput createEditorInput(JobletProcessItem processItem, boolean load, Boolean lastVersion, Boolean readonly,
+            Boolean openedInJob) throws PersistenceException {
+        for (AbstractProcessProvider processProvider : findAllProcessProviders()) {
+            JobEditorInput editorInput= processProvider.createJobletEditorInput(processItem, load, lastVersion, readonly, openedInJob);
+            if(editorInput != null) {
+                return editorInput;
+            }
+        }
+        return null;
     }
 
     /**
@@ -256,6 +275,11 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
 
     public boolean canHandleNode(INode node) {
         return false;
+    }
+    
+    public JobEditorInput createJobletEditorInput(JobletProcessItem processItem, boolean load, Boolean lastVersion, Boolean readonly,
+            Boolean openedInJob) throws PersistenceException{
+        return null;
     }
 
 }
