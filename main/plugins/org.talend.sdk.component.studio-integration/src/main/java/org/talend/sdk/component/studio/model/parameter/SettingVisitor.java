@@ -40,6 +40,7 @@ import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
@@ -203,6 +204,14 @@ public class SettingVisitor implements PropertyVisitor {
      */
     @Override
     public void visit(final PropertyNode node) {
+        // skip 'configuration.dataSet.csvConfiguration.csvSchema' field in 'azure-dls-gen2' component
+        if (element != null && element instanceof Node && ((Node)element).getComponent() != null &&
+                (((Node)element).getComponent().getName().equals("AzureAdlsGen2Input") ||
+                ((Node)element).getComponent().getName().equals("AzureAdlsGen2Output")) &&
+                node.getProperty().getPath().equals("configuration.dataSet.csvConfiguration.csvSchema")) {
+            return;
+        }
+
         if (node.isLeaf()) {
             switch (node.getFieldType()) {
             case CHECK:
