@@ -125,6 +125,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.XmiResourceManager;
+import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.service.IScdComponentService;
@@ -4479,8 +4480,18 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     private void loadAdditionalProperties() {
         if (additionalProperties == null) {
             additionalProperties = new HashMap<Object, Object>();
+            boolean needDeleteRouteBuildType = false;
             for (Object key : this.property.getAdditionalProperties().keySet()) {
+                boolean isRouteProcess = ERepositoryObjectType.getType(property).equals(ERepositoryObjectType.PROCESS_ROUTE);
+                if (!isRouteProcess && ERepositoryObjectType.PROCESS_ROUTE.getType()
+                        .equals(this.property.getAdditionalProperties().get(key))) {
+                    needDeleteRouteBuildType = true;
+                    continue;
+                }
                 additionalProperties.put(key, this.property.getAdditionalProperties().get(key));
+            }
+            if (needDeleteRouteBuildType) {
+                this.property.getAdditionalProperties().remove(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
             }
         }
     }
