@@ -375,7 +375,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 needContextInJar = new BigDataJobUtil(process).needsToHaveContextInsideJar();
                 if (ProcessorUtilities.getMainJobInfo() != null) {
                     if (ProcessorUtilities.getMainJobInfo().getProcess() != null) {
-                        if (ProcessorUtilities.isEsbJob(ProcessorUtilities.getMainJobInfo().getProcess())) {
+                        if (ProcessorUtilities.isEsbJob(ProcessorUtilities.getMainJobInfo().getProcess())
+                                || "CAMEL".equals(ProcessorUtilities.getMainJobInfo().getProcess().getComponentsType())) {
                             if (property.getItem() instanceof ProcessItem) {
                                 if (null != EmfModelUtils.getComponentByName((ProcessItem) property.getItem(), "tRunJob","cTalendJob")) {
                                     needContextInJar = false;
