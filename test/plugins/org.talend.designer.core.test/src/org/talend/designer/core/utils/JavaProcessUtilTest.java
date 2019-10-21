@@ -23,8 +23,10 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.talend.core.model.components.ComponentCategory;
@@ -149,6 +151,37 @@ public class JavaProcessUtilTest {
         param.setFieldType(EParameterFieldType.CHECK);
         param.setCategory(EComponentCategory.BASIC);
         return param;
+    }
+
+    @Test
+    public void testDescendingOrderModuleList() {
+        String[] moduleNames = new String[] { "slf4j-api-1.5.11.jar", "slf4j-api-1.7.5.jar", "slf4j-api-1.8.0-beta1.jar",
+                "slf4j-api-1.7.25.jar" };
+        Set<ModuleNeeded> moduleNeededSet = prepareModuleNeededSet(moduleNames);
+        List<ModuleNeeded> descendingOrderModuleList = JavaProcessUtil.descendingOrderModuleList(moduleNeededSet);
+        assertEquals(4, descendingOrderModuleList.size());
+        assertEquals(moduleNames[2], descendingOrderModuleList.get(0).getModuleName());
+        assertEquals(moduleNames[3], descendingOrderModuleList.get(1).getModuleName());
+        assertEquals(moduleNames[1], descendingOrderModuleList.get(2).getModuleName());
+        assertEquals(moduleNames[0], descendingOrderModuleList.get(3).getModuleName());
+
+        moduleNames = new String[] { "auto-common-0.8.jar", "auto-common-0.3.jar", "auto-common-0.10.jar" };
+        moduleNeededSet = prepareModuleNeededSet(moduleNames);
+        descendingOrderModuleList = JavaProcessUtil.descendingOrderModuleList(moduleNeededSet);
+        assertEquals(3, descendingOrderModuleList.size());
+        assertEquals(moduleNames[2], descendingOrderModuleList.get(0).getModuleName());
+        assertEquals(moduleNames[0], descendingOrderModuleList.get(1).getModuleName());
+        assertEquals(moduleNames[1], descendingOrderModuleList.get(2).getModuleName());
+    }
+
+    private Set<ModuleNeeded> prepareModuleNeededSet(String[] moduleNames) {
+        String fakeNodeName = "tJDBCConnection";
+        Set<ModuleNeeded> moduleNeededSet = new HashSet<ModuleNeeded>();
+        for (String moduleName : moduleNames) {
+            ModuleNeeded module = new ModuleNeeded(fakeNodeName, moduleName, null, false);
+            moduleNeededSet.add(module);
+        }
+        return moduleNeededSet;
     }
 
 }
