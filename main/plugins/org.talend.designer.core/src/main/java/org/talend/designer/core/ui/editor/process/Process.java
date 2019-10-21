@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -185,7 +186,6 @@ import org.talend.designer.core.utils.DetectContextVarsUtils;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
-import org.talend.designer.core.utils.UpdateParameterUtils;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -1414,11 +1414,6 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             }
         }
-
-        for (IElementParameter param : elemParam.getElementParameters()) {
-            UpdateParameterUtils.setDefaultValues(param, elemParam);
-        }
-
     }
 
     protected boolean noNeedSetValue(IElementParameter param, String paraValue) {
@@ -1834,23 +1829,36 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             routinesDependencies = new ArrayList<RoutinesParameterType>();
         }
         try {
+            Project targetProject = new Project(ProjectManager.getInstance().getProject(getProperty()));
+            IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+            Set<IRepositoryViewObject> routines = new HashSet<>();
+            routines.addAll(factory.getAll(targetProject, ERepositoryObjectType.ROUTINES));
+            List<Project> referenceProjects = ProjectManager.getInstance().getAllReferencedProjects(targetProject, false);
+            referenceProjects.stream().forEach(p -> {
+                try {
+                    routines.addAll(factory.getAll(p, ERepositoryObjectType.ROUTINES));
+                } catch (PersistenceException e) {
+                    ExceptionHandler.process(e);
+                }
+            });
+            Map<String, String> allRoutinesMap = routines.stream()
+                    .collect(Collectors.toMap(IRepositoryViewObject::getId, IRepositoryViewObject::getLabel));
+            Iterator<RoutinesParameterType> iterator = routinesDependencies.iterator();
+            while (iterator.hasNext()) {
+                RoutinesParameterType routine = iterator.next();
+                if (!allRoutinesMap.containsKey(routine.getId())) {
+                    iterator.remove();
+                }
+            }
             List<String> possibleRoutines = new ArrayList<String>();
             List<String> routinesToAdd = new ArrayList<String>();
             String additionalString = LanguageManager.getCurrentLanguage() == ECodeLanguage.JAVA ? "." : "";
-
             List<String> routinesAlreadySetup = new ArrayList<String>();
-
             for (RoutinesParameterType routine : routinesDependencies) {
                 routinesAlreadySetup.add(routine.getName());
             }
-
-            IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-            List<IRepositoryViewObject> routines = factory.getAll(ProjectManager.getInstance().getCurrentProject(),
-                    ERepositoryObjectType.ROUTINES);
-            routines.addAll(factory.getAll(ProjectManager.getInstance().getCurrentProject(), ERepositoryObjectType.PIG_UDF));
-            for (Project project : ProjectManager.getInstance().getAllReferencedProjects()) {
+            for (Project project : referenceProjects) {
                 List<IRepositoryViewObject> refRoutines = factory.getAll(project, ERepositoryObjectType.ROUTINES);
-                refRoutines.addAll(factory.getAll(project, ERepositoryObjectType.PIG_UDF));
                 for (IRepositoryViewObject object : refRoutines) {
                     if (!((RoutineItem) object.getProperty().getItem()).isBuiltIn()) {
                         if (!possibleRoutines.contains(object.getLabel()) && !routinesAlreadySetup.contains(object.getLabel())) {
@@ -1875,9 +1883,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                     possibleRoutines.add(object.getLabel());
                 }
             }
-            for (Project project : ProjectManager.getInstance().getAllReferencedProjects()) {
+            for (Project project : referenceProjects) {
                 List<IRepositoryViewObject> refRoutines = factory.getAll(project, ERepositoryObjectType.ROUTINES);
-                refRoutines.addAll(factory.getAll(project, ERepositoryObjectType.PIG_UDF));
                 for (IRepositoryViewObject object : refRoutines) {
                     if (!((RoutineItem) object.getProperty().getItem()).isBuiltIn()) {
                         if (!possibleRoutines.contains(object.getLabel()) && !routinesAlreadySetup.contains(object.getLabel())) {
@@ -3350,7 +3357,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         if (node instanceof Node) {
             component = ((Node) node).getDelegateComponent();
         }
-        String baseName = component.getOriginalName();
+        String baseName = component.getDisplayName();
         return UniqueNodeNameGenerator.generateUniqueNodeName(baseName, uniqueNodeNameList);
     }
 

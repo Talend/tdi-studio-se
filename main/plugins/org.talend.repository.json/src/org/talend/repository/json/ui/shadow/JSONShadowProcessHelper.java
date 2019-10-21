@@ -195,13 +195,16 @@ public class JSONShadowProcessHelper {
         forceStopPreview();
 
         IPreview preview = null;
-        if (configurationElements.length > 0) {
-            preview = (IPreview) configurationElements[0].createExecutableExtension("class"); //$NON-NLS-1$
-        }
-
+        
         for (IConfigurationElement configurationElement : configurationElements) {
             String fileType = configurationElement.getAttribute("type"); //$NON-NLS-1$
 
+            if(preview == null) {
+            	preview = (IPreview) configurationElement.createExecutableExtension("class"); //$NON-NLS-1$
+            	if (!PluginChecker.isOnlyTopLoaded() && preview.isTopPreview()) {
+                	preview = null;
+                }
+            }
             // to do this just make sure the code behaviour is same like before
             if (type == null && fileType != null) {
                 // fileType is not null which means this previewer is for some specified file type, not good for the

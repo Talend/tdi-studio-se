@@ -232,7 +232,7 @@
       <IMPORT NAME="xmlbeans" MODULE="xmlbeans-3.1.0.jar" MVN="mvn:org.apache.xmlbeans/xmlbeans/3.1.0" REQUIRED_IF="(VERSION_2007 == 'true')" />
       <IMPORT NAME="commons-collections4" MODULE="commons-collections4-4.1.jar" MVN="mvn:org.talend.libraries/commons-collections4-4.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/commons-collections4-4.1.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
       
-      <IMPORT NAME="commons-compress" MODULE="commons-compress-1.18.jar" MVN="mvn:org.apache.commons/commons-compress/1.18" REQUIRED_IF="(VERSION_2007 == 'true')" />
+      <IMPORT NAME="commons-compress" MODULE="commons-compress-1.19.jar" MVN="mvn:org.apache.commons/commons-compress/1.19" REQUIRED_IF="(VERSION_2007 == 'true')" />
       <IMPORT NAME="commons-math3" MODULE="commons-math3-3.6.1.jar" MVN="mvn:org.apache.commons/commons-math3/3.6.1" REQUIRED_IF="(VERSION_2007 == 'true')" />
     </IMPORTS>
   </CODEGENERATION>

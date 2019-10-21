@@ -185,7 +185,7 @@
 			<IMPORT NAME="simpleexcel" MODULE="simpleexcel-2.1-20190507.jar" MVN="mvn:org.talend.libraries/simpleexcel-2.1-20190507/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/simpleexcel-2.1-20190507.jar" REQUIRED_IF="(VERSION_2007 == 'true') AND GENERATION_MODE == 'EVENT_MODE')" />
 			<IMPORT NAME="commons-collections4" MODULE="commons-collections4-4.1.jar" MVN="mvn:org.talend.libraries/commons-collections4-4.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/commons-collections4-4.1.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
 			
-			<IMPORT NAME="commons-compress" MODULE="commons-compress-1.18.jar" MVN="mvn:org.apache.commons/commons-compress/1.18" REQUIRED_IF="(VERSION_2007 == 'true')" />
+			<IMPORT NAME="commons-compress" MODULE="commons-compress-1.19.jar" MVN="mvn:org.apache.commons/commons-compress/1.19" REQUIRED_IF="(VERSION_2007 == 'true')" />
 			<IMPORT NAME="commons-math3" MODULE="commons-math3-3.6.1.jar" MVN="mvn:org.apache.commons/commons-math3/3.6.1" REQUIRED_IF="(VERSION_2007 == 'true')" />
 		</IMPORTS>
 	</CODEGENERATION>

@@ -311,7 +311,7 @@ public class MavenJavaProcessor extends JavaProcessor {
 
         buildTypeName = exportType != null ? exportType.toString() : null;
 
-        if (StringUtils.isBlank(buildTypeName)) {
+        if (StringUtils.isBlank(buildTypeName) && GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
             List<IRepositoryViewObject> serviceRepoList = null;
 
             IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
