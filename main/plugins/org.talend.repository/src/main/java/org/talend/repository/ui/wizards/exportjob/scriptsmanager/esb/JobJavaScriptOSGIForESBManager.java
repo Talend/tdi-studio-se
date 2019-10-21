@@ -55,6 +55,7 @@ import org.talend.core.PluginChecker;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
@@ -756,9 +757,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(processItem.getProperty());
             if (talendProcessJavaProject != null) {
                 String optional = ";resolution:=optional";
-                String src = JavaResourcesHelper.getJobClassFilePath(processItem, true);
-                IFile srcFile = talendProcessJavaProject.getSrcFolder().getFile(src);
-                Set<String> imports = importCompiler(srcFile.getLocation().toString());
+                Set<String> imports = importCompiler(service, processItem);
                 String[] defaultPackages = analyzer.getProperty(Analyzer.IMPORT_PACKAGE).split(",");
                 for (String dp : defaultPackages) {
                     if (!imports.contains(dp) && !imports.contains(dp + optional)) {
@@ -791,7 +790,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
         return manifest;
     }
-    
+
     private void filterImportPackages(Manifest manifest) {
 
         // remove import packages which are present in private packages
@@ -804,7 +803,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 privatePackages.add(p);
             }
         }
-        
+
         StringBuilder fileterdImportPackage = new StringBuilder();
         String importPackagesString = manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE);
         if (importPackagesString != null) {
@@ -816,14 +815,14 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 }
             }
         }
-        
+
         String str = fileterdImportPackage.toString();
         if (str != null && str.length() > 0 && str.endsWith(",")) {
             str = str.substring(0, str.length() - 1);
         }
         manifest.getMainAttributes().putValue(Analyzer.IMPORT_PACKAGE, str);
-    }    
-
+    }
+    
     protected Analyzer createAnalyzer(ExportFileResource libResource, ProcessItem processItem) throws IOException {
         Analyzer analyzer = new Analyzer();
         Jar bin = new Jar(classesLocation);
@@ -884,8 +883,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         // TESB-24730 set specific version for "javax.annotation"
         ImportedPackageRangeReplacer r = new ImportedPackageRangeReplacer();
         r.addRange("javax.annotation", "[1.3,2)");
-        analyzer.addBasicPlugin(r); 
-        
+        analyzer.addBasicPlugin(r);        
+
         return analyzer;
     }
 
@@ -1046,40 +1045,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         IProcessor processor = ProcessorUtilities.getProcessor(currentProcess, process.getProperty());
         return processor.getProcess();
     }
-
-    private Set<String> importCompiler(String src) {
-        Set<String> imports = new HashSet<String>();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ByteArrayOutputStream err = new ByteArrayOutputStream();
-        try {
-            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn -maxProblems 100000 ", new PrintWriter(out),
-                    new PrintWriter(err), null);
-            String errString = new String(err.toByteArray());
-            String[] errBlocks = errString.split("----------");
-            String reg = "(^[a-z_0-9\\.]+)\\.";
-            Pattern pattern = Pattern.compile(reg);
-            for (String errBlock : errBlocks) {
-                String[] lines = errBlock.trim().replaceAll("\r", "").split("\n");
-                if (lines.length == 4) {
-                    if (lines[3].endsWith("cannot be resolved to a type") || lines[3].endsWith("cannot be resolved")) {
-                        int markerPos = lines[2].indexOf('^');
-                        Matcher m = pattern.matcher(lines[1].substring(markerPos));
-                        if (m.find()) {
-                            if (m.groupCount() == 1 && m.group(1).indexOf('.') > 0) {
-                                imports.add(m.group(1) + ";resolution:=optional");
-                            }
-                        }
-                    }
-                }
-            }
-            out.close();
-            err.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return imports;
-    }
     
+
     private class ImportedPackageRangeReplacer implements AnalyzerPlugin, Plugin {
 
         private Set<Range> ranges = new TreeSet<>();
@@ -1190,5 +1157,58 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         @Override
         public void setProperties(Map<String, String> map) throws Exception {
         }
+    }
+    
+    private Set<String> importCompiler(IRunProcessService service, ProcessItem processItem) {
+        Set<String> imports = new HashSet<String>();
+        if (processItem != null && service != null && processItem.getProperty() != null) {
+            ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(processItem.getProperty());
+            if (talendProcessJavaProject != null) {
+                String src = JavaResourcesHelper.getJobClassFilePath(processItem, true);
+                IFile srcFile = talendProcessJavaProject.getSrcFolder().getFile(src);
+                imports.addAll(importCompiler(srcFile.getLocation().toString()));
+
+                // include imports from child jobs
+                if (ERepositoryObjectType.getType(processItem.getProperty()).equals(ERepositoryObjectType.PROCESS)) {
+                    for (JobInfo subjobInfo : ProcessorUtilities.getChildrenJobInfo(processItem)) {
+                        imports.addAll(importCompiler(service, subjobInfo.getProcessItem()));
+                    }
+                }
+            }
+        }
+        return imports;
+    }
+
+    private Set<String> importCompiler(String src) {
+        Set<String> imports = new HashSet<String>();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        try {
+            org.eclipse.jdt.core.compiler.batch.BatchCompiler.compile(src + " -1.7 -nowarn -maxProblems 100000 ", new PrintWriter(out),
+                    new PrintWriter(err), null);
+            String errString = new String(err.toByteArray());
+            String[] errBlocks = errString.split("----------");
+            String reg = "(^[a-z_0-9\\.]+)\\.";
+            Pattern pattern = Pattern.compile(reg);
+            for (String errBlock : errBlocks) {
+                String[] lines = errBlock.trim().replaceAll("\r", "").split("\n");
+                if (lines.length == 4) {
+                    if (lines[3].endsWith("cannot be resolved to a type") || lines[3].endsWith("cannot be resolved")) {
+                        int markerPos = lines[2].indexOf('^');
+                        Matcher m = pattern.matcher(lines[1].substring(markerPos));
+                        if (m.find()) {
+                            if (m.groupCount() == 1 && m.group(1).indexOf('.') > 0) {
+                                imports.add(m.group(1) + ";resolution:=optional");
+                            }
+                        }
+                    }
+                }
+            }
+            out.close();
+            err.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imports;
     }
 }
