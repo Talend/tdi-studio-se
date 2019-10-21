@@ -100,15 +100,20 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
                                 for (int j = 0; j < param.getListItemsValue().length; j++) {
                                     if (((CCombo) ctrl).getText().equals(param.getListItemsDisplayName()[j])) {
                                         value = (String) param.getListItemsValue()[j];
-                                        if (j == 0 && (boolean) ((ElementParameter) propertyParameter)
-                                                .getTaggedValue(IGenericConstants.IS_PROPERTY_SHOW)) {
+                                        if (j == 0) {
                                             // The first item in the combo is
                                             // this component
                                             props.referenceType
                                                     .setValue(ComponentReferenceProperties.ReferenceType.THIS_COMPONENT);
                                             props.componentInstanceId.setValue(null);
                                             props.setReference(null);
-                                            propertyParameter.setShow(true);
+                                            boolean isPropertyShow = true;
+                                            Object isPropertyShowObj = ((ElementParameter) propertyParameter)
+                                                    .getTaggedValue(IGenericConstants.IS_PROPERTY_SHOW);
+                                            if (isPropertyShowObj != null) {
+                                                isPropertyShow = Boolean.valueOf(isPropertyShowObj.toString());
+                                            }
+                                            propertyParameter.setShow(isPropertyShow);
                                         } else {
                                             props.referenceType
                                                     .setValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
