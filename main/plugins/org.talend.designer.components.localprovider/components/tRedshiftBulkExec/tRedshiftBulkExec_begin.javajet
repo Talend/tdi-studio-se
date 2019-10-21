@@ -6,6 +6,7 @@ imports="
 	org.talend.core.model.metadata.IMetadataTable
 	org.talend.core.model.metadata.MetadataTalendType
 	org.talend.core.model.metadata.MappingTypeRetriever
+	org.talend.core.model.utils.NodeUtil
 	java.util.List
 	java.util.ArrayList
 	java.util.Map
@@ -29,6 +30,13 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
 	
 	boolean useExistingConnection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+	
+	boolean useExistingS3Connection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION_S3__"));
+	String s3ConnectionCid = ElementParameterParser.getValue(node,"__CONNECTION_S3__");
+	INode current_node = node;
+	if(useExistingS3Connection){
+		current_node = NodeUtil.getNodeByUniqueName(node.getProcess(),s3ConnectionCid,true);
+	}
 	List<IMetadataColumn> columnList = getColumnList(node);
 %>
 	String dbschema_<%=cid%> = null;
@@ -207,7 +215,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 	}
 %>
 	.append(" FROM '");
-<%
+<%	
+	boolean assumeRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__ASSUME_ROLE__"));
 	String access_key = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
     String passwordFieldKey = "__SECRET_KEY__";
     if(emrMode) {
@@ -220,14 +229,23 @@ skeleton="../templates/db_output_bulk.skeleton"
     	access_key = ElementParameterParser.getValue(node, "__ACCESS_KEY_SSH__");
     	passwordFieldKey = "__SECRET_KEY_SSH__";
     }
+    if(useExistingS3Connection && !assumeRole){
+    	access_key = ElementParameterParser.getValue(current_node, "__ACCESS_KEY__");
+    	passwordFieldKey = "__SECRET_KEY__";
+    }
 %>
-	<%if (ElementParameterParser.canEncrypt(node, passwordFieldKey)) {%> 
-	final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldKey)%>);
-	<%} else {%>
-	final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldKey)%>; 
-	<%}%>
-	
 <%
+	if(!assumeRole) {
+		if (ElementParameterParser.canEncrypt(current_node, passwordFieldKey)) {
+%> 
+			final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(current_node, passwordFieldKey)%>);
+<%
+		} else {
+%>
+			final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(current_node, passwordFieldKey)%>; 
+<%
+		}
+	}
 	if(avroMode) {
 		String avro_mapping = ElementParameterParser.getValue(node, "__JSON_MAPPING__");
 %>
@@ -271,7 +289,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 	.append("' credentials '")
 <%
-    boolean assumeRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__ASSUME_ROLE__"));
 	if(assumeRole){
 		List<Map<String,String>> roles = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ROLE_TABLE__");
 		int roleListSize=roles.size();
@@ -298,19 +315,24 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
 	}
 	boolean encrypt = "true".equals(ElementParameterParser.getValue(node, "__ENCRYPT__"));
-	encrypt = encrypt && s3Mode;
+	String encryptionKeyPropertyName = "__ENCRYPTED_KEY__";
+	if(useExistingS3Connection){
+		encrypt = "true".equals(ElementParameterParser.getValue(current_node, "__ENCRYPT__"));
+		encryptionKeyPropertyName = "__ENCRYPTED_KEY_BASE64__";
+	}else{
+		encrypt = encrypt && s3Mode;
+	}
 	if(encrypt) {
-		String encryptionKeyPropertyName = "__ENCRYPTED_KEY__";
 %>
 		.append(";master_symmetric_key=")
 <%
-		if (ElementParameterParser.canEncrypt(node, encryptionKeyPropertyName)) {
+		if (ElementParameterParser.canEncrypt(current_node, encryptionKeyPropertyName)) {
 %>
-			.append(routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, encryptionKeyPropertyName)%>))
+			.append(routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(current_node, encryptionKeyPropertyName)%>))
 <%
 		} else {
 %>
-			.append(<%=ElementParameterParser.getValue(node, encryptionKeyPropertyName)%>)
+			.append(<%=ElementParameterParser.getValue(current_node, encryptionKeyPropertyName)%>)
 <%
 		}
 	}
@@ -367,13 +389,33 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
 	}
 	
+	boolean regionAdded = false;
+	if(useExistingS3Connection) {
+		String regionS3 = ElementParameterParser.getValue(current_node, "__REGION__");
+		boolean set_regionS3 = (regionS3!=null && !regionS3.isEmpty() && !"DEFAULT".equalsIgnoreCase(regionS3));
+		if(set_regionS3) {
+			regionAdded = true;
+%>
+			command_<%=cid%>.append("REGION '").append(<%=regionS3%>).append("' ");
+<%
+		}
+	}
+	
 	boolean isSetMaxError = false;
 	final List<Map<String, String>> settings = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__OTHER_CONFIGURATION__");
 	if(settings!=null && !settings.isEmpty()) {
 		for(Map<String, String> parameter : settings) {
 			String parameterKey = parameter.get("OTHER_PARAMETER");
 			String value = parameter.get("DATA_VALUE");
-			if("REGION,NULL".contains(parameterKey)) {
+			if("REGION".equals(parameterKey) && !regionAdded || "NULL".equals(parameterKey)) {
+				if(useExistingS3Connection) {
+					String regionS3 = ElementParameterParser.getValue(current_node, "__REGION__");
+					boolean set_regionS3 = (regionS3!=null && !regionS3.isEmpty() && !"DEFAULT".equalsIgnoreCase(regionS3));
+					if(set_regionS3) {
+						parameterKey = "REGION";
+						value = regionS3;
+					}
+				}
 %>
 			command_<%=cid%>.append("<%=parameterKey%> '").append(<%=value%>).append("' ");
 <%

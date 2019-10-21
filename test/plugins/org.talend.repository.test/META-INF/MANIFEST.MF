@@ -4,4 +4,7 @@ Bundle-Name: Test
 Bundle-SymbolicName: org.talend.repository.test
 Bundle-Version: 7.3.1.qualifier
 Fragment-Host: org.talend.repository
-Require-Bundle: org.talend.testutils
+Require-Bundle: org.talend.testutils,
+ org.talend.model,
+ org.talend.repository.generic,
+ org.talend.designer.core.generic

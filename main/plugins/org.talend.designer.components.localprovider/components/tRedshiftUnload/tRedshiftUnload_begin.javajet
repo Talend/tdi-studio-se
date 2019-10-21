@@ -32,6 +32,13 @@ imports="
 	dbquery = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(dbquery);
 	
 	boolean useExistingConnection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+	
+	boolean useExistingS3Connection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION_S3__"));
+	String s3ConnectionCid = ElementParameterParser.getValue(node,"__CONNECTION_S3__");
+	INode current_node = node;
+	if(useExistingS3Connection){
+		current_node = NodeUtil.getNodeByUniqueName(node.getProcess(),s3ConnectionCid,true);
+	}
 %>
 	java.sql.Connection conn_<%=cid%> = null;
 <%
@@ -120,18 +127,21 @@ imports="
 	
 	boolean assumeRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__ASSUME_ROLE__"));
 	String access_key = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
+	if(useExistingS3Connection){
+		access_key = ElementParameterParser.getValue(current_node, "__ACCESS_KEY__");
+	}
 	if(!assumeRole){
 		String passwordFieldKey = "__SECRET_KEY__";
 
-		if (ElementParameterParser.canEncrypt(node, passwordFieldKey)) {
+		if (ElementParameterParser.canEncrypt(current_node, passwordFieldKey)) {
 %>
-		    final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldKey)%>);
+		    final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(current_node, passwordFieldKey)%>);
 <%
 		} else {
 %>
-		    final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldKey)%>;
+		    final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(current_node, passwordFieldKey)%>;
 <%
-		}	
+		}
 	}
 %>
 	command_<%=cid%>.append("'s3://").append(<%=bucket%>).append("/").append(<%=keyPrefix%>).append("' ")
@@ -163,18 +173,22 @@ imports="
 <%
 	}
 	boolean encrypt = "true".equals(ElementParameterParser.getValue(node, "__ENCRYPT__"));
+	String encryptionKeyPropertyName = "__ENCRYPTED_KEY__";
+	if(useExistingS3Connection){
+		encrypt = "true".equals(ElementParameterParser.getValue(current_node, "__ENCRYPT__"));
+		encryptionKeyPropertyName = "__ENCRYPTED_KEY_BASE64__";
+	}
 	if(encrypt) {
-		String encryptionKeyPropertyName = "__ENCRYPTED_KEY__";
 %>
 		.append(";master_symmetric_key=")
 <%
-		if (ElementParameterParser.canEncrypt(node, encryptionKeyPropertyName)) {
+		if (ElementParameterParser.canEncrypt(current_node, encryptionKeyPropertyName)) {
 %>
-			.append(routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, encryptionKeyPropertyName)%>))
+			.append(routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(current_node, encryptionKeyPropertyName)%>))
 <%
 		} else {
 %>
-			.append(<%=ElementParameterParser.getValue(node, encryptionKeyPropertyName)%>)
+			.append(<%=ElementParameterParser.getValue(current_node, encryptionKeyPropertyName)%>)
 <%
 		}
 	}

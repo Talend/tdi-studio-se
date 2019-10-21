@@ -773,6 +773,25 @@ if(execStat) {
 
     startTime = System.currentTimeMillis();
 <%
+
+    boolean isCustomProxySettingsUsed = false;
+    List<? extends INode> proxyNodes = process.getNodesOfType("tSetProxy");
+    for (int i = 0; i < proxyNodes.size(); i++) {
+        INode proxyNode = proxyNodes.get(i);
+        String useCustomProxyCheckboxValue = ElementParameterParser.getValue(proxyNode, "__PROXY_GLOBAL__");
+
+        if (useCustomProxyCheckboxValue != null && !"true".equals(useCustomProxyCheckboxValue)) {
+            isCustomProxySettingsUsed = true;
+            break;
+        }
+    }
+    
+    if (isCustomProxySettingsUsed) {
+%>
+        java.net.ProxySelector proxySelectorOnStartJob = java.net.ProxySelector.getDefault();
+<%
+    }
+
         //1. send the begin msg
 
         for (INode statCatcherNode : process.getNodesOfType("tStatCatcher")) {
@@ -995,6 +1014,13 @@ this.globalResumeTicket = true;//to run tPostJob
 
 <%= ElementParameterParser.getValue(process, "__FOOTER_CODE__")%>
 
+<%
+    if (isCustomProxySettingsUsed) { 
+%>
+        java.net.ProxySelector.setDefault(proxySelectorOnStartJob);
+<%
+    }
+%>
         end = System.currentTimeMillis();
 
         if (watch) {

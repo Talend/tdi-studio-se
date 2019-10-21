@@ -35,12 +35,30 @@ do {
 
     session_<%=cid%>.setUserInfo(defaultUserInfo_<%=cid%>); 
     <%if (!useProxy) {%>
-        if(("true").equals(System.getProperty("http.proxySet")) ){
+        if(("true").equals(System.getProperty("http.proxySet"))) {
             com.jcraft.jsch.ProxyHTTP proxy_<%=cid%> = new com.jcraft.jsch.ProxyHTTP(System.getProperty("http.proxyHost"),Integer.parseInt(System.getProperty("http.proxyPort")));
             if(!"".equals(System.getProperty("http.proxyUser"))){
                 proxy_<%=cid%>.setUserPasswd(System.getProperty("http.proxyUser"),System.getProperty("http.proxyPassword"));
             }
             session_<%=cid%>.setProxy(proxy_<%=cid%>);
+        } else if ("local".equals(System.getProperty("http.proxySet"))) {
+            String uriString = <%=host %> + ":" + <%=port%>;
+            java.net.Proxy proxyToUse = org.talend.proxy.TalendProxySelector.getInstance().getProxyForUriString(uriString);
+
+            if (!proxyToUse.equals(java.net.Proxy.NO_PROXY)) {
+                java.net.InetSocketAddress proxyAddress = (java.net.InetSocketAddress) proxyToUse.address();
+                String proxyHost = proxyAddress.getAddress().getHostAddress();
+                int proxyPort = proxyAddress.getPort();
+
+                com.jcraft.jsch.ProxyHTTP proxy_<%=cid%> = new com.jcraft.jsch.ProxyHTTP(proxyHost, proxyPort);
+
+                org.talend.proxy.ProxyCreds proxyCreds = org.talend.proxy.TalendProxyAuthenticator.getInstance().getCredsForProxyURI(proxyHost + ":" + proxyPort);
+                if (proxyCreds != null) {
+                    proxy_<%=cid%>.setUserPasswd(proxyCreds.getUser(), proxyCreds.getPass());
+                }
+
+                session_<%=cid%>.setProxy(proxy_<%=cid%>);
+            }
         }
     <%}%>
 

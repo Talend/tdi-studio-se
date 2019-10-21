@@ -117,6 +117,7 @@ import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.resources.util.EMavenBuildScriptProperties;
@@ -1103,7 +1104,12 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                 ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendJobJavaProject(resource.getItem().getProperty());
                 if (talendProcessJavaProject != null) {
                     IFolder resourcesFolder = talendProcessJavaProject.getExternalResourcesFolder();
-                    IFile log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    IFile log4jFile = null;
+                    if (Log4jPrefsSettingManager.getInstance().isSelectLog4j2()) {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+                    } else {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    }
                     if (log4jFile.exists()) {
                         List<URL> log4jFileUrls = new ArrayList<URL>();
                         log4jFileUrls.add(FileLocator.toFileURL(log4jFile.getLocationURI().toURL()));
@@ -1316,7 +1322,12 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                 ITalendProcessJavaProject talendProcessJavaProject = processService.getTempJavaProject();
                 if (talendProcessJavaProject != null) {
                     IFolder resourcesFolder = talendProcessJavaProject.getExternalResourcesFolder();
-                    IFile log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    IFile log4jFile = null;
+                    if (Log4jPrefsSettingManager.getInstance().isSelectLog4j2()) {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+                    } else {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    }
                     if (log4jFile.exists()) {
                         list.add(FileLocator.toFileURL(log4jFile.getLocationURI().toURL()));
                     }
@@ -1340,7 +1351,12 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                 ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendJobJavaProject(libResource.getItem().getProperty());
                 if (talendProcessJavaProject != null) {
                     IFolder resourcesFolder = talendProcessJavaProject.getExternalResourcesFolder();
-                    IFile log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    IFile log4jFile = null;
+                    if (Log4jPrefsSettingManager.getInstance().isSelectLog4j2()) {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+                    } else {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    }
                     if (log4jFile.exists()) {
                         list.add(log4jFile.getLocationURI().toURL());
                     }
@@ -1355,19 +1371,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     }
 
     protected boolean addLog4jToJarList(Collection<String> jarList) {
-        boolean added = false;
-        boolean foundLog4jJar = false;
-        for (String jar : jarList) {
-            if (jar.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                foundLog4jJar = true;
-            }
-        }
-        if (!foundLog4jJar) {
-            jarList.add("log4j-1.2.17.jar"); //$NON-NLS-1$
-            added = true;
-        }
-
-        return added;
+        return UpdateLog4jJarUtils.addLog4jToJarList(jarList, Log4jPrefsSettingManager.getInstance().isSelectLog4j2());
     }
 
     /**

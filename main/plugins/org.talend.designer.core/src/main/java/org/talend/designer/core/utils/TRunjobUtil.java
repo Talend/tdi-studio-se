@@ -91,6 +91,9 @@ public class TRunjobUtil {
     }
     
     private boolean isInLoop(ProcessType process, List<String> idList, int loop) throws PersistenceException{
+    	if(process == null) {
+    		return false;
+    	}
     	List<NodeType> nodeList = process.getNode();
 		for(NodeType nodeTye : nodeList) {
 			boolean isJoblet = false;
@@ -144,12 +147,16 @@ public class TRunjobUtil {
 	                                IJobletProviderService.class);
 	                if (service != null) {
 	                    IComponent jobletComponent = service.getJobletComponent(nodeTye, jobletPaletteType);
-	                    ProcessType jobletProcess = service.getJobletProcess(jobletComponent);
-	                    
-	                    boolean result = isInLoop(jobletProcess, idList, loop + 1);
-	                    if(result) {
-	                        return result;
+	                    if(jobletComponent != null) {
+	                    	ProcessType jobletProcess = service.getJobletProcess(jobletComponent);
+		                    if(jobletProcess != null) {
+		                    	boolean result = isInLoop(jobletProcess, idList, loop + 1);
+			                    if(result) {
+			                        return result;
+			                    }
+		                    }
 	                    }
+	                    
 	                }
 		        }
 		    	

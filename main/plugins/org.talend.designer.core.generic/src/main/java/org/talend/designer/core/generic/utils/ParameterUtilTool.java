@@ -15,10 +15,10 @@ package org.talend.designer.core.generic.utils;
 import java.util.List;
 
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.daikon.security.CryptoHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
+import org.talend.utils.security.CryptoMigrationUtil;
 
 /**
  * UtilTool to handle NodeType.
@@ -101,7 +101,7 @@ public final class ParameterUtilTool {
             // Check param name
         	if (EParameterFieldType.PASSWORD.getName().equals(paramType.getField())) {
             	try{
-            		return CryptoHelper.getDefault().decrypt(paramValue);
+                    return CryptoMigrationUtil.decrypt(paramValue);
             	}catch(Exception e){
             		return paramValue;
             	}

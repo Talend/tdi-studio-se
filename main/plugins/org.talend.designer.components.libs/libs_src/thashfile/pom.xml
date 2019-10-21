@@ -5,9 +5,9 @@
 >
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.talend.libraries</groupId>
+	<groupId>org.talend.components.lib</groupId>
 	<artifactId>thashfile</artifactId>
-	<version>3.0-20170711</version>
+	<version>3.1-20190910</version>
 	<packaging>jar</packaging>
 
 	<name>thashfile</name>
@@ -45,8 +45,8 @@
 		        <artifactId>maven-compiler-plugin</artifactId>
 		        <version>3.5.1</version>
 		        <configuration>
-		            <source>1.7</source>
-		            <target>1.7</target>
+		            <source>1.8</source>
+		            <target>1.8</target>
 		        </configuration>
     		</plugin>
 			

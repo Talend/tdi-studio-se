@@ -53,21 +53,29 @@
 		</PARAMETER>
 		
 		<PARAMETER NAME="ENCRYPT" FIELD="CHECK" NUM_ROW="45"
-			REQUIRED="true" GROUP="DATA_FILE_CONFIG">
+			REQUIRED="true" GROUP="DATA_FILE_CONFIG" SHOW_IF="USE_EXISTING_CONNECTION =='false'">
 			<DEFAULT>false</DEFAULT>
 		</PARAMETER>
 		
 		<PARAMETER NAME="ENCRYPTED_KEY" FIELD="PASSWORD" NUM_ROW="45"
-			REQUIRED="true" GROUP="DATA_FILE_CONFIG" SHOW_IF="ENCRYPT=='true'">
+			REQUIRED="true" GROUP="DATA_FILE_CONFIG" SHOW_IF="isShow[ENCRYPT] AND (ENCRYPT=='true')">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
+
+		<PARAMETER NAME="USE_EXISTING_CONNECTION" FIELD="CHECK"
+	        NUM_ROW="46"  GROUP="S3_CONFIG">
+	        <DEFAULT>false</DEFAULT>
+	    </PARAMETER>
+
+		<PARAMETER NAME="CONNECTION" FIELD="COMPONENT_LIST" REQUIRED="true" FILTER="tS3Connection"
+        	NUM_ROW="46" SHOW_IF="USE_EXISTING_CONNECTION == 'true'" GROUP="S3_CONFIG"/>
 
 	    <PARAMETER
 	      NAME="ACCESS_KEY"
 	      FIELD="TEXT"
 	      NUM_ROW="50"
 	      REQUIRED="true"
-	      SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+	      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (INHERIT_CREDENTIALS == 'false')"
 	      GROUP="S3_CONFIG"
 	    >
 	      <DEFAULT>""</DEFAULT>
@@ -78,7 +86,7 @@
 	      FIELD="PASSWORD"
 	      NUM_ROW="50"
 	      REQUIRED="true"
-	      SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+	      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (INHERIT_CREDENTIALS == 'false')"
 	      GROUP="S3_CONFIG"
 	    >
 	      <DEFAULT>""</DEFAULT>
@@ -90,6 +98,7 @@
 	      NUM_ROW="55"
 	      REQUIRED="true"
 	      GROUP="S3_CONFIG"
+	      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
 	    >
 	      <DEFAULT>false</DEFAULT>
 	    </PARAMETER>
@@ -100,6 +109,7 @@
 	      NUM_ROW="60"
 	      REQUIRED="true"
 	      GROUP="S3_CONFIG"
+	      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
 	    >
 	      <DEFAULT>false</DEFAULT>
 	    </PARAMETER>
@@ -109,7 +119,7 @@
 	      FIELD="TEXT"
 	      NUM_ROW="65"
 	      REQUIRED="true"
-	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
 	      GROUP="S3_CONFIG"
 	    >
 	      <DEFAULT>""</DEFAULT>
@@ -120,7 +130,7 @@
 	      FIELD="TEXT"
 	      NUM_ROW="70"
 	      REQUIRED="true"
-	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
 	      GROUP="S3_CONFIG"
 	    >
 	      <DEFAULT>""</DEFAULT>
@@ -131,7 +141,7 @@
 	      FIELD="TEXT"
 	      NUM_ROW="75"
 	      REQUIRED="true"
-	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
 	      GROUP="S3_CONFIG"
 	    >
 	      <DEFAULT>15</DEFAULT>
@@ -143,7 +153,9 @@
 	        RAW="true" 
 	        NUM_ROW="80" 
 	        REQUIRED="true"
-	        GROUP="S3_CONFIG">
+	        GROUP="S3_CONFIG"
+	        SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	    >
 	        
 	        <ITEMS DEFAULT="DEFAULT">
 	        	<ITEM NAME="DEFAULT" VALUE="DEFAULT" />
@@ -175,7 +187,7 @@
 	      FIELD="CHECK"
 	      NUM_ROW="85"
 	      NB_LINES="5"
-	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
 	      GROUP="S3_CONFIG"
 	    >
 	    </PARAMETER>
