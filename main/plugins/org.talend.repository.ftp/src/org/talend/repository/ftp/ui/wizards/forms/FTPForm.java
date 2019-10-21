@@ -616,6 +616,13 @@ public class FTPForm extends AbstractForm {
             updateStatus(IStatus.ERROR, Messages.getString("FTPForm_ftpUsernameText_check")); //$NON-NLS-1$
             return false;
         }
+        
+        try {
+            Long.parseLong(connTimeoutText.getText());
+        } catch (NumberFormatException e) {
+            updateStatus(IStatus.ERROR, Messages.getString("FTPForm_ftpTimeoutText_check")); //$NON-NLS-1$
+            return false;
+        }
 
         // only check the Password model
         if (sftpSuppBut.getSelection() && methodCombo != null && PASSWORD.equals(methodCombo.getText())) {
