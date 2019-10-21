@@ -300,6 +300,10 @@ public class MapperUI {
         if (outputsTablesView.size() > 0) {
             uiManager.selectDataMapTableView(outputsTablesView.get(0), true, false);
         }
+
+        for (DataMapTableView view : outputsTablesView) {
+            view.getTableViewerCreatorForColumns().getTableViewer().refresh();
+        }
     }
 
     private void resizeNotMinimizedTablesAtExpandedSize(final Display display) {
