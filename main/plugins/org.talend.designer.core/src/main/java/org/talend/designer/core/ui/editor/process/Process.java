@@ -4483,8 +4483,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             boolean needDeleteRouteBuildType = false;
             for (Object key : this.property.getAdditionalProperties().keySet()) {
                 boolean isRouteProcess = ERepositoryObjectType.getType(property).equals(ERepositoryObjectType.PROCESS_ROUTE);
-                if (!isRouteProcess && ERepositoryObjectType.PROCESS_ROUTE.getType()
-                        .equals(this.property.getAdditionalProperties().get(key))) {
+                if (!isRouteProcess && "ROUTE".equals(this.property.getAdditionalProperties().get(key))) {
                     needDeleteRouteBuildType = true;
                     continue;
                 }
