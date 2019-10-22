@@ -378,9 +378,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                         if (ProcessorUtilities.isEsbJob(ProcessorUtilities.getMainJobInfo().getProcess())
                                 || "CAMEL".equals(ProcessorUtilities.getMainJobInfo().getProcess().getComponentsType())) {
                             if (property.getItem() instanceof ProcessItem) {
-                                if (null != EmfModelUtils.getComponentByName((ProcessItem) property.getItem(), "tRunJob","cTalendJob")) {
-                                    needContextInJar = false;
-                                } else {
+                                if (null == EmfModelUtils.getComponentByName((ProcessItem) property.getItem(), "tRunJob",
+                                        "cTalendJob")) {
                                     needContextInJar = true;
                                 }
                             } else {
