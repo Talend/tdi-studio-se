@@ -219,19 +219,23 @@ public class JavaProcessUtil {
 
                 // for JDBC, user set the customize driver jars need the high Priority
                 // but after tLibraryLoad
-                if (node.getComponent().getComponentType() == EComponentType.GENERIC && !isTestcaseProcess) {
-                    List<ModuleNeeded> jdbcNodeModuleNeededList = new ArrayList<ModuleNeeded>();
-                    for (IElementParameter curParam : node.getElementParameters()) {
-                        if (curParam.getFieldType() == EParameterFieldType.TABLE) {
-                            getModulesInTable(process, curParam, jdbcNodeModuleNeededList);
+                if (isSetHighPriorityForJDBCCustomizeDriver()) {
+                    if (node.getComponent().getComponentType() == EComponentType.GENERIC && !isTestcaseProcess) {
+                        List<ModuleNeeded> jdbcNodeModuleNeededList = new ArrayList<ModuleNeeded>();
+                        for (IElementParameter curParam : node.getElementParameters()) {
+                            if (curParam.getFieldType() == EParameterFieldType.TABLE) {
+                                getModulesInTable(process, curParam, jdbcNodeModuleNeededList);
+                            }
                         }
+                        jdbcCustomizeModulesSet.addAll(jdbcNodeModuleNeededList);
                     }
-                    jdbcCustomizeModulesSet.addAll(jdbcNodeModuleNeededList);
                 }
             }
         }
         // in case of multiple Version jars in customize modules, descendOrder
-        highPriorityLinkedSet.addAll(descendingOrderModuleList(jdbcCustomizeModulesSet));
+        if (isSetHighPriorityForJDBCCustomizeDriver()) {
+            highPriorityLinkedSet.addAll(descendingOrderModuleList(jdbcCustomizeModulesSet));
+        }
         LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(), process.getVersion(),
                 highPriorityLinkedSet);
 
@@ -250,6 +254,10 @@ public class JavaProcessUtil {
             useCustomConfsJarIfNeeded(modulesNeeded, hadoopItemId);
         }
         new BigDataJobUtil(process).setExcludedModules(modulesNeeded);
+    }
+
+    private static boolean isSetHighPriorityForJDBCCustomizeDriver() {
+        return Boolean.getBoolean("talend.JDBC.setHighPriorityForDriverJar"); //$NON-NLS-1$
     }
 
     public static List<ModuleNeeded> descendingOrderModuleList(Set<ModuleNeeded> moduleList) {
