@@ -107,17 +107,13 @@ imports="
 
 <%
         if ("HTTP_PROXY".equals(proxyType) || "HTTPS_PROXY".equals(proxyType)) {
-            if ("HTTP_PROXY".equals(proxyType)) {
-%>
-                System.setProperty("http.proxySet","local");
-                
-<%
-            } else if (useAuth && enableBasic) { //support https proxy with auth
+            if ("HTTPS_PROXY".equals(proxyType) && useAuth && enableBasic) {
 %>
                 System.setProperty("jdk.http.auth.tunneling.disabledSchemes","");
 <%
             }
 %>
+            System.setProperty("http.proxySet","local");
             proxy_<%=cid %> = new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(<%=proxyHost %>, Integer.valueOf(<%=proxyPort %>)));
 <%
         } else if ("SOCKS_PROXY".equals(proxyType)) {
