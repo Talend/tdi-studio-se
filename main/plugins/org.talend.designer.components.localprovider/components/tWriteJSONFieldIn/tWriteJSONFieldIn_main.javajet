@@ -22,7 +22,6 @@ INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 String jsonField = ElementParameterParser.getValue(node, "__JSONFIELD__");
 String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
-String jsonWrapStandard = ElementParameterParser.getValue(node, "__JSON_STANDARD__");
 
 List<IMetadataTable> metadatas = node.getMetadataList();
 if ((metadatas!=null)&&(metadatas.size()>0)) {
@@ -101,9 +100,11 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                             <%
                    }
             }
+        boolean wrapNullStrings = "true".equals(ElementParameterParser.getValue(node, "__QUOTE_NULL_VALUES__"));
 %>
+        System.out.println("OCHKO: <%=ElementParameterParser.getValue(node, "__QUOTE_NULL_VALUES__") %>");
         //Convert XML to JSON
-        net.sf.json.JsonStandard jsonStandard_<%=cid %> = net.sf.json.JsonStandard.valueOf("<%=jsonWrapStandard %>");
+        net.sf.json.JsonStandard jsonStandard_<%=cid %> = <% if (wrapNullStrings) { %> net.sf.json.JsonStandard.WRAP_NULL_STRINGS <% } else { %> net.sf.json.JsonStandard.LEGACY  <%}%>;
         xmlSerializer_<%=cid %>.setJsonStandard(jsonStandard_<%=cid %>);
         net.sf.json.JSONObject json_<%=cid%> = (net.sf.json.JSONObject) xmlSerializer_<%=cid%>.read(str_<%=cid %>);
         <%=conn.getName()%>.<%=jsonField %> = net.sf.json.util.JSONUtils.jsonToStandardizedString(json_<%=cid %>, jsonStandard_<%=cid %>);
