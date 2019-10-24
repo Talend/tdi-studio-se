@@ -44,7 +44,7 @@ List<Map<String, String>> spArgs =
 	(List<Map<String, String>>) ElementParameterParser.getObjectValue(node, "__SP_ARGS__");
 
 String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__");
-// La TZ n'est compatible qu'avec ojdbc8, qui n'est reliee qu'avec ORACLE 18 (tOracle_SP.xml).
+// TimeZone is only compatible with ojdbc8 which is only link with ORACLE 18 (tOracle_SP.xml).
 boolean isTimeZoneCompatible = "ORACLE_18".equals(dbVersion);
 
 // Functions have an additionnal output parameter
@@ -167,7 +167,7 @@ if (canGenerate) {
 			// Note: first argument in JDBC is arg #1, and for functions, arg #1 is return value
 			int argIndex = i + 1;
 %>
-			// traitement de l'argument <%= argIndex %> type '<%= dbType %>'
+			// code for the argument <%= argIndex %> (<%=argName%>) of type '<%=argType%> <%= dbType %>'
 <%
 			
 			// Input argument
@@ -213,7 +213,7 @@ if (canGenerate) {
     					statement_<%=cid%>.setTimestamp(<%=argIndex%>, new java.sql.Timestamp(<%=inConnectionName%>.<%=argName%>.getTime()));
     					<%
 						}
-						else if ("DATE".equals(dbType)) { %>
+						else if ("DATE".equals(dbType) || "AUTOMAPPING".equals(dbType)) { %>
     					statement_<%=cid%>.setDate(<%=argIndex%>, new java.sql.Date(<%=inConnectionName%>.<%=argName%>.getTime()));
                         <%
                         }

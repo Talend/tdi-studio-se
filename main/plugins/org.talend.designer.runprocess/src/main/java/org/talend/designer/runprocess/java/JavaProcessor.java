@@ -155,6 +155,7 @@ import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.constants.BuildJobConstants;
+import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.utils.io.FilesUtils;
 
@@ -369,9 +370,27 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         } else {
             srcFolder = tProcessJavaProject.getSrcFolder();
             boolean needContextInJar = false;
+
             if (process != null) {
                 needContextInJar = new BigDataJobUtil(process).needsToHaveContextInsideJar();
+                if (ProcessorUtilities.getMainJobInfo() != null) {
+                    if (ProcessorUtilities.getMainJobInfo().getProcess() != null) {
+                        if (ProcessorUtilities.isEsbJob(ProcessorUtilities.getMainJobInfo().getProcess())
+                                || "CAMEL".equals(ProcessorUtilities.getMainJobInfo().getProcess().getComponentsType())) {
+                            if (property.getItem() instanceof ProcessItem) {
+                                if (null != EmfModelUtils.getComponentByName((ProcessItem) property.getItem(), "tRunJob","cTalendJob")) {
+                                    needContextInJar = false;
+                                } else {
+                                    needContextInJar = true;
+                                }
+                            } else {
+                                needContextInJar = true;
+                            }
+                        }
+                    }
+                }
             }
+
             if (needContextInJar) {
                 resourcesFolder = tProcessJavaProject.getResourcesFolder();
             } else {

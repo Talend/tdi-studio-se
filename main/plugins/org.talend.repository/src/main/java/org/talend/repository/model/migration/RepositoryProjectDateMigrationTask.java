@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
-import org.talend.daikon.security.CryptoHelper;
+import org.talend.utils.security.CryptoMigrationUtil;
 import org.talend.repository.RepositoryPlugin;
 
 /**
@@ -43,7 +43,7 @@ public class RepositoryProjectDateMigrationTask extends AbstractProjectMigration
         if (StringUtils.isBlank(value)) {
             // re-use product date, else will be current
             String v = System.getProperty(prodKey, String.valueOf(System.currentTimeMillis()));
-            projectPrefManager.setValue(prjKey, CryptoHelper.getDefault().encrypt(v));
+            projectPrefManager.setValue(prjKey, CryptoMigrationUtil.encrypt(v));
             projectPrefManager.save();
             return ExecutionResult.SUCCESS_NO_ALERT;
         }

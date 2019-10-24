@@ -15,6 +15,7 @@ package org.talend.repository.model.migration;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EList;
@@ -28,6 +29,7 @@ import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.core.model.utils.emf.talendfile.ColumnType;
 import org.talend.designer.core.model.utils.emf.talendfile.ConnectionType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
@@ -35,8 +37,13 @@ import org.talend.designer.core.model.utils.emf.talendfile.MetadataType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.ConnectionTypeImpl;
+import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
 
-public class AddRAWFlowTDataMasking extends AbstractJobMigrationTask {
+/**
+ * The class for AddRAWFlowTPatternMasking
+ */
+public class AddRAWFlowMaskingComponents extends AbstractJobMigrationTask {
 
     private ProcessType processType = null;
 
@@ -53,9 +60,21 @@ public class AddRAWFlowTDataMasking extends AbstractJobMigrationTask {
      */
     @Override
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2019, 9, 1, 0, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2019, 8, 1, 0, 0, 0);
         return gc.getTime();
     }
+
+    @Override
+    public List<ERepositoryObjectType> getTypes() {
+        List<ERepositoryObjectType> toReturn = super.getTypes();
+        // PROCESS_MR stands for Map/Reduce and Spark.
+        toReturn.add(ERepositoryObjectType.PROCESS_MR);
+        // PROCESS_STORM stands for Storm and Spark Streaming.
+        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
+        return toReturn;
+    }
+
+
 
     /*
      * (non-Javadoc)
@@ -65,19 +84,35 @@ public class AddRAWFlowTDataMasking extends AbstractJobMigrationTask {
     @Override
     public ExecutionResult execute(Item item) {
         processType = getProcessType(item);
+
         try {
-            IComponentFilter filter = new NameComponentFilter("tDataMasking"); //$NON-NLS-1$
+            IComponentFilter filter = new NameComponentFilter("tPatternMasking"); //$NON-NLS-1$
             IComponentConversion unCheckRaw = new UnCheckRAWFlow();
             IComponentConversion changeMetadataName = new ChangeMetadataName();
-            ModifyComponentsAction.searchAndModify(item, processType, filter,
-                    Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
+            ModifyComponentsAction
+                    .searchAndModify(item, processType, filter,
+                            Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
+
+            filter = new NameComponentFilter("tPatternUnmasking"); //$NON-NLS-1$
+            unCheckRaw = new UnCheckRAWFlow();
+            changeMetadataName = new ChangeMetadataName();
+            ModifyComponentsAction
+                    .searchAndModify(item, processType, filter,
+                            Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
+
+            filter = new NameComponentFilter("tDataMasking"); //$NON-NLS-1$
+            unCheckRaw = new UnCheckRAWFlow();
+            changeMetadataName = new ChangeMetadataName();
+            ModifyComponentsAction
+                    .searchAndModify(item, processType, filter,
+                            Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
 
             filter = new NameComponentFilter("tDataUnmasking"); //$NON-NLS-1$
             unCheckRaw = new UnCheckRAWFlow();
             changeMetadataName = new ChangeMetadataName();
-            ModifyComponentsAction.searchAndModify(item, processType, filter,
-                    Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
-
+            ModifyComponentsAction
+                    .searchAndModify(item, processType, filter,
+                            Arrays.<IComponentConversion> asList(unCheckRaw, changeMetadataName));
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -148,6 +183,9 @@ public class AddRAWFlowTDataMasking extends AbstractJobMigrationTask {
         }
 
         private void removeCustomColumn(MetadataType mt) {
+            if (checkTheColumnExist(mt)) {
+                return;
+            }
             EList<?> columns = mt.getColumn();
             for (Object theColumnObject : columns) {
                 ColumnType theColumn = (ColumnType) theColumnObject;
@@ -165,6 +203,7 @@ public class AddRAWFlowTDataMasking extends AbstractJobMigrationTask {
          * @param metadataName
          */
         private void changeConnection(String metadataName) {
+
             for (Object o : processType.getConnection()) {
                 ConnectionType ct = (ConnectionType) o;
                 if (metadataName.equals(ct.getMetaname()) && OLDCONNECTORNAME.equals(ct.getConnectorName())) {
@@ -180,10 +219,38 @@ public class AddRAWFlowTDataMasking extends AbstractJobMigrationTask {
          * Create new metadata
          */
         private void createNewMetadata(NodeType node, MetadataType mt) {
+
             newMT = EcoreUtil.copy(mt);
             newMT.setConnector(NEWCONNECTORNAME);
             newMT.setName(NEWCONNECTORNAME);
+            node.getMetadata().add(newMT);
+        }
 
+        private boolean checkTheColumnExist(MetadataType mt) {
+            EList<ConnectionTypeImpl> connections = processType.getConnection();
+            EList<NodeTypeImpl> nodes = processType.getNode();
+            String metadataName = mt.getName();
+            for (ConnectionTypeImpl theConnection : connections) {
+                if (metadataName.equals(theConnection.getTarget())) {
+                    for (NodeTypeImpl node : nodes) {
+
+                        EList<MetadataType> previousNodeMetadataTypes = node.getMetadata();
+                        for (MetadataType outputMetadataType : previousNodeMetadataTypes) {
+                            if (outputMetadataType.getName().equals(theConnection.getMetaname())) {
+                                EList<ColumnType> columns = outputMetadataType.getColumn();
+                                for (ColumnType theColumn : columns) {
+                                    if ("ORIGINAL_MARK".equals(theColumn.getName())) { //$NON-NLS-1$
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+            return false;
         }
     }
 }
