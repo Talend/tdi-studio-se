@@ -378,11 +378,15 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                         if (ProcessorUtilities.isEsbJob(ProcessorUtilities.getMainJobInfo().getProcess())
                                 || "CAMEL".equals(ProcessorUtilities.getMainJobInfo().getProcess().getComponentsType())) {
                             if (property.getItem() instanceof ProcessItem) {
-                                if (null == EmfModelUtils.getComponentByName((ProcessItem) property.getItem(), "tRunJob",
-                                        "cTalendJob")) {
-                                    needContextInJar = true;
+                                if (!needContextInJar) {
+                                    if (null != EmfModelUtils.getComponentByName((ProcessItem) property.getItem(), "tRunJob","cTalendJob")) { 
+                                        needContextInJar = false;
+                                    } else {
+                                        needContextInJar = true;
+                                    }
                                 }
-                            } else {
+                            }else if(property.getItem().eClass().getClassifierID() == 4) {
+                                // CamelPropertiesPackage Line 516 int ROUTELET_PROCESS_ITEM = 4;
                                 needContextInJar = true;
                             }
                         }
