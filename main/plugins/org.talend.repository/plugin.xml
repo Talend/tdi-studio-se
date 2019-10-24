@@ -3155,14 +3155,6 @@
               version="7.2.1">
         </projecttask>
        <projecttask
-               beforeLogon="false"
-               breaks="7.2.0"
-               class="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
-               id="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
-	       name="UseDefaultJSONWrappingStandard"
-	       version="7.2.1">
-       </projecttask>
-       <projecttask
 	       class="org.talend.repository.model.migration.SafelyCreateTemporaryFileMigrationTask"
                description="Force old behaviour for existing jobs, for create temporary files"
                id="org.talend.repository.model.migration.SafelyCreateTemporaryFileMigrationTask"
@@ -3266,6 +3258,14 @@
               name="AddMissingContextMigrationTask"
               version="7.3.1">
         </projecttask>
+         <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
+               id="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
+	       name="UseDefaultJSONWrappingStandard"
+	       version="7.3.1">
+       </projecttask>
    </extension>
 
    <extension

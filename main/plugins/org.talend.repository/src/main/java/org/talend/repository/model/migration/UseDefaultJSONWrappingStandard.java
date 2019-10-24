@@ -28,13 +28,14 @@ import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
 
 public class UseDefaultJSONWrappingStandard extends AbstractJobMigrationTask {
-    private static final String JSON_STANDARD_PROPERTY_NAME = "JSON_STANDARD";
-    private static final String JSON_STANDARD_PROPERTY_TYPE = "CLOSED_LIST";
-    private static final String JSON_STANDARD_MIGRATION_VALUE = "LEGACY";
+    private static final String QUOTE_NULL_VALUES_PROPERTY_NAME = "QUOTE_NULL_VALUES";
+    private static final String QUOTE_ALL_VALUES_PROPERTY_NAME = "QUOTE_ALL_VALUES";
+    private static final String QUOTE_NULL_VALUES_PROPERTY_TYPE = "CHECK";
+    private static final String QUOTE_NULL_VALUES_MIGRATION_VALUE = "false";
 
     @Override
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2019, Calendar.FEBRUARY, 21, 14, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2019, Calendar.OCTOBER, 24, 14, 0, 0);
         return gc.getTime();
     }
 
@@ -45,11 +46,15 @@ public class UseDefaultJSONWrappingStandard extends AbstractJobMigrationTask {
             return ExecutionResult.NOTHING_TO_DO;
         }
         IComponentConversion setOldStandardConversion = node -> {
-            if (ComponentUtilities.getNodeProperty(node, JSON_STANDARD_PROPERTY_NAME) == null) {
-                ComponentUtilities.addNodeProperty(node, JSON_STANDARD_PROPERTY_NAME, JSON_STANDARD_PROPERTY_TYPE);
+            if (ComponentUtilities.getNodeProperty(node, QUOTE_NULL_VALUES_PROPERTY_NAME) == null) {
+                ComponentUtilities.addNodeProperty(node, QUOTE_NULL_VALUES_PROPERTY_NAME, QUOTE_NULL_VALUES_PROPERTY_TYPE);
             }
-
-            ComponentUtilities.setNodeValue(node, JSON_STANDARD_PROPERTY_NAME, JSON_STANDARD_MIGRATION_VALUE);
+            
+            String quoteAllValuesCheckValue = ComponentUtilities.getNodeProperty(node, QUOTE_ALL_VALUES_PROPERTY_NAME).getValue();
+            if ("true".equals(quoteAllValuesCheckValue)) {
+                ComponentUtilities.setNodeValue(node, QUOTE_NULL_VALUES_PROPERTY_NAME, QUOTE_NULL_VALUES_MIGRATION_VALUE);
+            }
+            
         };
         IComponentFilter filter = new NameComponentFilter("tWriteJSONField");
         try {
