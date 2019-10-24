@@ -102,7 +102,6 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
             }
         boolean wrapNullStrings = "true".equals(ElementParameterParser.getValue(node, "__QUOTE_NULL_VALUES__"));
 %>
-        System.out.println("OCHKO: <%=ElementParameterParser.getValue(node, "__QUOTE_NULL_VALUES__") %>");
         //Convert XML to JSON
         net.sf.json.JsonStandard jsonStandard_<%=cid %> = <% if (wrapNullStrings) { %> net.sf.json.JsonStandard.WRAP_NULL_STRINGS <% } else { %> net.sf.json.JsonStandard.LEGACY  <%}%>;
         xmlSerializer_<%=cid %>.setJsonStandard(jsonStandard_<%=cid %>);
