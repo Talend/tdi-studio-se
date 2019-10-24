@@ -97,12 +97,12 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 			private javax.net.ssl.SSLContext createSSLContext() {
 				javax.net.ssl.SSLContext sslcontext = null;
 				try {
-					sslcontext = javax.net.ssl.SSLContext.getInstance("SSL");
-					javax.net.ssl.KeyManager[] keyManagers = null;
-                    String keyStoreType = System.getProperty("javax.net.ssl.keyStoreType");
-                    String keyStoreFile = System.getProperty("javax.net.ssl.keyStore");
-                    String keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword");
-                    if (keyStoreType != null && keyStoreFile != null && keyStorePassword != null) {
+                    sslcontext = javax.net.ssl.SSLContext.getInstance("SSL");
+                    javax.net.ssl.KeyManager[] keyManagers = null;
+                    String keyStoreType = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.keyStoreType")).orElse("");
+                    String keyStoreFile = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.keyStore")).orElse("");
+                    String keyStorePassword = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.keyStorePassword")).orElse("");
+                    if (!keyStoreType.isEmpty() && !keyStoreFile.isEmpty() && !keyStorePassword.isEmpty()) {
                         try {
                             java.security.KeyStore keyStore = java.security.KeyStore.getInstance(keyStoreType);
                             keyStore.load(new java.io.FileInputStream(keyStoreFile), keyStorePassword.toCharArray());
@@ -110,12 +110,30 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                             kmf.init(keyStore, keyStorePassword.toCharArray());
                             keyManagers = kmf.getKeyManagers();
                         } catch (Exception e) {
-                            log.error("<%=cid%> - " + e.getMessage());
+                            log.error(e.getLocalizedMessage());
                             e.printStackTrace();
                         }
                     }
-					sslcontext.init(keyManagers, new javax.net.ssl.TrustManager[] { new TrustAnyTrustManager() }, new java.security.SecureRandom());
-				} catch (java.security.NoSuchAlgorithmException e) {
+                    javax.net.ssl.TrustManager[] trustManagers = new javax.net.ssl.TrustManager[]{new TrustAnyTrustManager()};
+                    String trustStoreType = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStoreType")).orElse("");
+                    String trustStoreFile = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStore")).orElse("");
+                    String trustStorePassword = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStorePassword")).orElse("");
+                    if (!trustStoreType.isEmpty() && !trustStoreFile.isEmpty() && !trustStorePassword.isEmpty()) {
+                        try {
+                            java.security.KeyStore trustStore = java.security.KeyStore.getInstance(trustStoreType);
+                            trustStore.load(new java.io.FileInputStream(trustStoreFile), trustStorePassword.toCharArray());
+                            javax.net.ssl.TrustManagerFactory tmf = javax.net.ssl.TrustManagerFactory.getInstance(javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm());
+                            tmf.init(trustStore);
+                            trustManagers = tmf.getTrustManagers();
+
+                        } catch (Exception e) {
+                            log.error(e.getLocalizedMessage());
+                            e.printStackTrace();
+
+                        }
+                    }
+                    sslcontext.init(keyManagers, trustManagers, new java.security.SecureRandom());
+                } catch (java.security.NoSuchAlgorithmException e) {
 					<%if(isLog4jEnabled){%>
 						log.error("<%=cid%> - " + e.getMessage());
 					<%}%>
