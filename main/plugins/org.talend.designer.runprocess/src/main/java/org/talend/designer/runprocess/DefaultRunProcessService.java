@@ -831,9 +831,8 @@ public class DefaultRunProcessService implements IRunProcessService {
         if (ProcessUtils.isRequiredBeans(null, refProject)) {
             installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
         }
-        
-        deleteRefProjects(refProject, refHelper);
 
+        deleteRefProjects(refProject, refHelper);
     }
     
     private void installRefCodeProject(ERepositoryObjectType codeType, AggregatorPomsHelper refHelper, IProgressMonitor monitor)
@@ -855,16 +854,9 @@ public class DefaultRunProcessService implements IRunProcessService {
     
     private void deleteRefProjects(Project refProject, AggregatorPomsHelper refHelper) throws Exception {
         IProgressMonitor monitor = new NullProgressMonitor();
-        
         deleteRefProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
-        
-        if (ProcessUtils.isRequiredPigUDFs(null, refProject)) {
-        	deleteRefProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
-        }
-
-        if (ProcessUtils.isRequiredBeans(null, refProject)) {
-        	deleteRefProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
-        }
+        deleteRefProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
+        deleteRefProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
 
     }
     
