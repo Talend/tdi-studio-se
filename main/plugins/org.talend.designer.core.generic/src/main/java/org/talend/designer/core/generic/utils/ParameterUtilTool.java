@@ -18,8 +18,6 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
-import org.talend.utils.security.CryptoMigrationUtil;
-import org.talend.utils.security.StudioEncryption;
 
 /**
  * UtilTool to handle NodeType.
