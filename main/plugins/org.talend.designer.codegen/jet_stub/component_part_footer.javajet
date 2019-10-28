@@ -329,14 +329,26 @@ end_Hash.put("<%=node.getUniqueName() %>", System.currentTimeMillis());
 				}
 				// Else, that means the component is a ON_COMPONENT_OK virtual component typed.
 			}
-			
+
 			if(generateMethodCall) {
+			/*check if parralel iterate call not finished from this component */
+			boolean parallelIterate = false;
+			for (IConnection iterateConn : iterateConnSet) {
+				parallelIterate = "true".equals(ElementParameterParser.getValue(iterateConn, "__ENABLE_PARALLEL__"));
+				if (parallelIterate) {
+					if (codePart.equals(ECodePart.END)) {
+						String iterateTargetNodeName = iterateConn.getTarget().getUniqueName();
+%>
+						mtp_<%=iterateTargetNodeName %>.waitForEndOfQueue();
+<%
+					}
+				}
+			}
 %>
 				<%=outgoingConn.getTarget().getUniqueName() %>Process(globalMap);
 <%  
 			}
-  	    }        
-       
+		}
 
    		if (outgoingConn.getLineStyle().equals(EConnectionType.RUN_IF)) {
 		%>
@@ -344,12 +356,27 @@ end_Hash.put("<%=node.getUniqueName() %>", System.currentTimeMillis());
    				<%//send the true status to socket
 				if(stat){
 				%>
-					if(execStat){   
+					if(execStat){
    	 					runStat.updateStatOnConnection("<%=outgoingConn.getUniqueName() %>", 0, "true");
 					}
-				<%}%>
-    			<%=outgoingConn.getTarget().getUniqueName() %>Process(globalMap);
-   			}
+<%
+				}
+				/*check if parralel iterate call not finished from this component */
+				boolean parallelIterate = false;
+				for (IConnection iterateConn : iterateConnSet) {
+					parallelIterate = "true".equals(ElementParameterParser.getValue(iterateConn, "__ENABLE_PARALLEL__"));
+					if (parallelIterate) {
+						if (codePart.equals(ECodePart.END)) {
+							String iterateTargetNodeName = iterateConn.getTarget().getUniqueName();
+%>
+							mtp_<%=iterateTargetNodeName %>.waitForEndOfQueue();
+<%
+						}
+					}
+				}
+%>
+				<%=outgoingConn.getTarget().getUniqueName() %>Process(globalMap);
+			}
 
 			<%
 			//send the false status to socket
@@ -376,7 +403,7 @@ end_Hash.put("<%=node.getUniqueName() %>", System.currentTimeMillis());
 		parallelIterate = "true".equals(ElementParameterParser.getValue(iterateConn, "__ENABLE_PARALLEL__"));
 		if (parallelIterate) {
 			if (codePart.equals(ECodePart.END)) {
-			String iterateTargetNodeName = iterateConn.getTarget().getUniqueName();				
+			String iterateTargetNodeName = iterateConn.getTarget().getUniqueName();
 %>
 			mtp_<%=iterateTargetNodeName %>.waitForEndOfQueue();
 			
