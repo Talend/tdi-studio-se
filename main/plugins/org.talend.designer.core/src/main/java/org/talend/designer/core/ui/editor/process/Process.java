@@ -4476,6 +4476,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             loadRoutinesParameters(processType);
         }
     }
+
     private void loadAdditionalProperties() {
         if (additionalProperties == null) {
             additionalProperties = new HashMap<Object, Object>();
