@@ -311,7 +311,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 	.append("' credentials '")
 <%
-	if(assumeRole){
+	if(assumeRole && !inheritRole){
 		List<Map<String,String>> roles = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ROLE_TABLE__");
 		int roleListSize=roles.size();
 		if(roleListSize > 0){
@@ -331,7 +331,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%		
 			}
 		}
-	}else{
+	} else if(!assumeRole && !inheritRole) {
 %>
 	    .append("aws_access_key_id=").append(<%=access_key%>).append(";aws_secret_access_key=").append(decryptedPwd_<%=cid%>)
 <%
