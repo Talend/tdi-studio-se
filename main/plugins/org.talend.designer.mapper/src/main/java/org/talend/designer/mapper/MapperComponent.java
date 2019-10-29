@@ -885,8 +885,8 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         if (this.externalData.getInputTables().size() > 2 || this.externalData.getInputTables().size() == 1) {
         	res = false;
         } // one connection must be all matches and inner
-        else if (!isAllMatch(this.externalData.getInputTables().get(0)) 
-        			&& !isAllMatch(this.externalData.getInputTables().get(1))) {
+        else if (!isAllMatchInner(this.externalData.getInputTables().get(0)) 
+        			&& !isAllMatchInner(this.externalData.getInputTables().get(1))) {
         	res = false;
         }              
 
