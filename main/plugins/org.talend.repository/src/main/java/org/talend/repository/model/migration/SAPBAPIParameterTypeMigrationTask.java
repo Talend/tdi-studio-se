@@ -68,7 +68,7 @@ public class SAPBAPIParameterTypeMigrationTask extends AbstractJobMigrationTask 
 										if ("CHANGING".equals(elementValue.getElementRef())) {
 											ElementValueType value = fileFact.createElementValueType();
 											value.setElementRef("PARAMETER_TYPE");
-											boolean is_changing_parameter = !"false".equals(elementValue.getValue());
+											boolean is_changing_parameter = "true".equalsIgnoreCase(elementValue.getValue());
 											if (tableType) {
 												value.setValue(is_changing_parameter ? "CHANGING" : "TABLES");
 											} else {
