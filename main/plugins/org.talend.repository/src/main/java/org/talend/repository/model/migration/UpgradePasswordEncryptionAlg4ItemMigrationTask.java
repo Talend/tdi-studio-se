@@ -354,7 +354,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
      */
     @Override
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2019, 9, 1, 12, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2019, 10, 22, 12, 0, 0);
         return gc.getTime();
     }
 }

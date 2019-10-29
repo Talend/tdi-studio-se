@@ -18,7 +18,6 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
-import org.talend.utils.security.CryptoMigrationUtil;
 
 /**
  * UtilTool to handle NodeType.
@@ -100,11 +99,8 @@ public final class ParameterUtilTool {
         if (paramName != null && paramValue != null) {
             // Check param name
         	if (EParameterFieldType.PASSWORD.getName().equals(paramType.getField())) {
-            	try{
-                    return CryptoMigrationUtil.decrypt(paramValue);
-            	}catch(Exception e){
-            		return paramValue;
-            	}
+                // we should always depend on getRawValue to get clear password
+                return paramType.getRawValue();
             }
 
         	if ("ACTION".equalsIgnoreCase(paramName)) {//$NON-NLS-1$
