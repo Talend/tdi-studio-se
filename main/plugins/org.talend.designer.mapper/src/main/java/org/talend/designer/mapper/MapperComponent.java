@@ -882,7 +882,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
     	}
     	//only two input connections
 
-        if (this.externalData.getInputTables().size() > 2 || this.externalData.getInputTables().size() == 1) {
+        if (this.externalData.getInputTables().size() != 2) {
         	res = false;
         } // one connection must be all matches and inner
         else if (!isAllMatchInner(this.externalData.getInputTables().get(0)) 
