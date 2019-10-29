@@ -311,33 +311,28 @@ public class MavenJavaProcessor extends JavaProcessor {
 
         buildTypeName = exportType != null ? exportType.toString() : null;
 
-        if (StringUtils.isBlank(buildTypeName)) {
+        if (StringUtils.isBlank(buildTypeName) && GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+            List<IRepositoryViewObject> serviceRepoList = null;
 
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+            IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
 
-                List<IRepositoryViewObject> serviceRepoList = null;
+            try {
+                IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+                serviceRepoList = factory.getAll(ERepositoryObjectType.valueOf(ERepositoryObjectType.class, "SERVICES"));
 
-                IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
-
-                try {
-                    IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-                    serviceRepoList = factory.getAll(ERepositoryObjectType.valueOf(ERepositoryObjectType.class, "SERVICES"));
-
-                    for (IRepositoryViewObject serviceItem : serviceRepoList) {
-                        if (service != null) {
-                            List<String> jobIds = service.getSerivceRelatedJobIds(serviceItem.getProperty().getItem());
-                            if (jobIds.contains(itemProperty.getId())) {
-                                buildTypeName = "OSGI";
-                                break;
-                            }
+                for (IRepositoryViewObject serviceItem : serviceRepoList) {
+                    if (service != null) {
+                        List<String> jobIds = service.getSerivceRelatedJobIds(serviceItem.getProperty().getItem());
+                        if (jobIds.contains(itemProperty.getId())) {
+                            buildTypeName = "OSGI";
+                            break;
                         }
                     }
-
-                } catch (PersistenceException e) {
-                    ExceptionHandler.process(e);
                 }
-            }
 
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
         }
 
         Map<String, Object> parameters = new HashMap<String, Object>();

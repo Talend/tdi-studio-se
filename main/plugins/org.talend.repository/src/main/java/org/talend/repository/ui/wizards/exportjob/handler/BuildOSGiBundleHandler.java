@@ -172,6 +172,7 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
     }
 
     private void setFileContent(InputStream inputStream, IFile file, IProgressMonitor monitor) throws CoreException {
+        file.refreshLocal(IResource.DEPTH_ZERO, monitor);
         if (file.exists()) {
             file.setContents(inputStream, 0, monitor);
         } else {
