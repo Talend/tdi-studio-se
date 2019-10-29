@@ -4480,12 +4480,16 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     private void loadAdditionalProperties() {
         if (additionalProperties == null) {
             additionalProperties = new HashMap<Object, Object>();
-            if (ERepositoryObjectType.getType(property) != null) {
-                boolean isRouteProcess = ERepositoryObjectType.getType(property).equals(ERepositoryObjectType.PROCESS_ROUTE);
-                if (!isRouteProcess && "ROUTE"
-                        .equals(this.property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
-                    this.property.getAdditionalProperties().remove(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+            try {
+                if (ERepositoryObjectType.getType(property) != null && property.getItem() != null) {
+                    boolean isRouteProcess = ERepositoryObjectType.getType(property).equals(ERepositoryObjectType.PROCESS_ROUTE);
+                    if (!isRouteProcess && "ROUTE"
+                            .equals(this.property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+                        this.property.getAdditionalProperties().remove(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+                    }
                 }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
             }
 
             for (Object key : this.property.getAdditionalProperties().keySet()) {
