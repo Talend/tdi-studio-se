@@ -902,7 +902,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
     
 
     private boolean isOneInputTableAllMatch(ExternalMapperData data) {
-    	return data.getInputTables().get(0).getMatchingMode().equals("ALL_MATCHES") || data.getInputTables().get(1).getMatchingMode().equals("ALL_MATCHES");
+    	return "ALL_MATCHES".equals(data.getInputTables().get(0).getMatchingMode()) || "ALL_MATCHES".equals(data.getInputTables().get(1).getMatchingMode());
     }
     
     public boolean getShouldGenerateDataset() {
