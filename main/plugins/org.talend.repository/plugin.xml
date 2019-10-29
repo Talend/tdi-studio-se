@@ -3258,14 +3258,15 @@
               name="AddMissingContextMigrationTask"
               version="7.3.1">
         </projecttask>
-         <projecttask
-               beforeLogon="false"
-               breaks="7.3.0"
-               class="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
-               id="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
-	       name="UseDefaultJSONWrappingStandard"
-	       version="7.3.1">
-            <projecttask
+	    <projecttask
+	          beforeLogon="false"
+	          breaks="7.3.0"
+	          class="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
+	          id="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
+	          name="UseDefaultJSONWrappingStandard"
+	          version="7.3.1">
+	    </projecttask>
+        <projecttask
                beforeLogon="false"
                breaks="7.3.0"
                class="org.talend.repository.model.migration.OracleSPAutomappingDateToTimestampTask"
@@ -3273,7 +3274,7 @@
                id="org.talend.repository.model.migration.OracleSPAutomappingDateToTimestampTask"
                name="oracleSPAutomappingDateToTimestampTask"
                version="7.3.1">
-       </projecttask>
+        </projecttask>
    </extension>
 
    <extension
