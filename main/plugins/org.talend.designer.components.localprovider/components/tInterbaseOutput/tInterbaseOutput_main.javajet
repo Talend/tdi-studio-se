@@ -154,6 +154,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                        try {
                            insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                            nb_line_<%=cid%>++;
+                           <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                            <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                        } catch(java.lang.Exception e) {
                            whetherReject_<%=cid%> = true;
@@ -254,6 +255,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                        try {
                            updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                            nb_line_<%=cid%>++;
+                           <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                         <%dbLog.data().updating(dbLog.var("nb_line"));%>
                        } catch(java.lang.Exception e) {
                            whetherReject_<%=cid%> = true;
@@ -372,6 +374,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 try {
                     updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmtUpdate_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
                     whetherReject_<%=cid%> = true;
@@ -433,6 +436,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 try {
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
                     whetherReject_<%=cid%> = true;
@@ -558,9 +562,11 @@ skeleton="../templates/db_output_bulk.skeleton"
                 %>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 }else{
                     nb_line_<%=cid%>++;
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
                 }
                 } catch(java.lang.Exception e) {
@@ -647,6 +653,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                        try {
                            deletedCount_<%=cid%> = deletedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                            nb_line_<%=cid%>++;
+                           <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                            <%dbLog.data().deleting(dbLog.var("nb_line"));%>
                        } catch(java.lang.Exception e) {
                            whetherReject_<%=cid%> = true;
