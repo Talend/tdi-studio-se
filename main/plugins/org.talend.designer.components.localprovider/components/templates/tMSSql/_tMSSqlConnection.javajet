@@ -11,8 +11,9 @@ if(useExistingConnection) {
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	String conn = "conn_" + connection;
 	if(useAlternateSchema) {
+		String alternateSchema = ElementParameterParser.getValue(node,"__ALTERNATE_SCHEMA__");
 	%>
-	dbschema_<%=cid%> = <%=dbschema%>;
+	dbschema_<%=cid%> = <%=alternateSchema%>;
 	<%
 	} else {
 		String schema = "dbschema_" + connection;

@@ -67,6 +67,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
 
 	boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
+	
+	String alternateSchema = ElementParameterParser.getValue(node, "__ALTERNATE_SCHEMA__");
 
     String rejectConnName = null;
     List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
@@ -157,6 +159,10 @@ if(useExistingConn){
 		String schema = "dbschema_" + connection;
 	%>
 	dbschema_<%=cid%> = (String)globalMap.get("<%=schema%>");
+	<%
+	} else {
+	%>
+	dbschema_<%=cid%> = <%=alternateSchema%>;
 	<%
 	}
 	String user = "user_" + connection;

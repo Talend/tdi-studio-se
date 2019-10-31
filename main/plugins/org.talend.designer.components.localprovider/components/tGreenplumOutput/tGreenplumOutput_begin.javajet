@@ -54,6 +54,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 	
 	boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
 	
+	String alternateSchema = ElementParameterParser.getValue(node, "__ALTERNATE_SCHEMA__");
+	
 	boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
 
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
@@ -90,7 +92,7 @@ String dbschema_<%=cid%> = null;
 if(("true").equals(useExistingConn)) {
 	if(useAlternateSchema) {
 	%>
-		dbschema_<%=cid%> = <%=dbschema%>;
+		dbschema_<%=cid%> = <%=alternateSchema%>;
 	<%
 	} else {
 	%>

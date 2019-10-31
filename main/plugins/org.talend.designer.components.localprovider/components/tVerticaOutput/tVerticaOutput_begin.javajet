@@ -61,6 +61,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String batchSize = ElementParameterParser.getValue(node, "__BATCH_SIZE__");
 
 	boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
+	
+	String alternateSchema = ElementParameterParser.getValue(node,"__ALTERNATE_SCHEMA__");
 
 	String rejectConnName = null;
 	List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
@@ -155,7 +157,7 @@ if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || (
 			        String conn = "conn_" + connection;
 			        if(useAlternateSchema) {
 			        %>
-			        dbschema_<%=cid%> = <%=dbschema%>;
+			        dbschema_<%=cid%> = <%=alternateSchema%>;
 			        <%
 			        } else {
 			            String schema = "dbschema_" + connection;

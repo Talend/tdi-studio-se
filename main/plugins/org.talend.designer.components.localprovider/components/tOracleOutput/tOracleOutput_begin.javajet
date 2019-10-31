@@ -54,6 +54,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
 	
+	String alternateSchema = ElementParameterParser.getValue(node,"__ALTERNATE_SCHEMA__");
+	
     String rejectConnName = null;
     List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
     if(rejectConns != null && rejectConns.size() > 0) {
@@ -206,7 +208,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         String conn = "conn_" + connection;
         if(useAlternateSchema) {
         %>
-		dbschema_<%=cid%> = <%=tableSchema%>;
+		dbschema_<%=cid%> = <%=alternateSchema%>;
         <%
         } else {
         String schema = "dbschema_" + connection;

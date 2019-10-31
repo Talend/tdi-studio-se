@@ -43,6 +43,7 @@ boolean isEnableDebug = ("true").equals(ElementParameterParser.getValue(node,"__
 boolean useBatchSize = ("true").equals(ElementParameterParser.getValue(node,"__USE_BATCH_SIZE__"));
 String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
 boolean useAlternateSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_ALTERNATE_SCHEMA__"));
+String alternateSchema = ElementParameterParser.getValue(node, "__ALTERNATE_SCHEMA__");
 
 String rejectConnName = null;
 IConnection rejectConn = null;
@@ -159,7 +160,7 @@ if(("true").equals(useExistingConn)) {
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
     String conn = "conn_" + connection;
 	if(useAlternateSchema) {%>
-		dbschema_<%=cid%> = <%=tableSchema%>;
+		dbschema_<%=cid%> = <%=alternateSchema%>;
 	<%
 	} else {
 		String tableschema = "tableschema_" + connection;

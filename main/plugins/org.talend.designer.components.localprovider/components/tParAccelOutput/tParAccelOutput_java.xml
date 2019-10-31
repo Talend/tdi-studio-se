@@ -85,15 +85,6 @@
     >
       <DEFAULT>"5439"</DEFAULT>
     </PARAMETER>
-	
-	<PARAMETER
-      NAME="USE_ALTERNATE_SCHEMA"
-      FIELD="CHECK"
-      NUM_ROW="3"
-      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
-    >
-      <DEFAULT>false</DEFAULT>
-    </PARAMETER>
 
     <PARAMETER
       NAME="DBNAME"
@@ -121,7 +112,7 @@
       FIELD="TEXT"
       NUM_ROW="4"
       REPOSITORY_VALUE="SCHEMA"
-      SHOW_IF="((USE_EXISTING_CONNECTION == 'false') or (USE_ALTERNATE_SCHEMA == 'true'))"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -236,6 +227,26 @@
 		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
+
+	<PARAMETER
+      NAME="USE_ALTERNATE_SCHEMA"
+      FIELD="CHECK"
+      NUM_ROW="3"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="ALTERNATE_SCHEMA"
+      FIELD="TEXT"
+      NUM_ROW="4"
+	  REQUIRED="true"
+      SHOW_IF="((USE_EXISTING_CONNECTION == 'true') AND (USE_ALTERNATE_SCHEMA == 'true'))"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
   	<PARAMETER
       	NAME="ENCODING"
       	FIELD="ENCODING_TYPE"
