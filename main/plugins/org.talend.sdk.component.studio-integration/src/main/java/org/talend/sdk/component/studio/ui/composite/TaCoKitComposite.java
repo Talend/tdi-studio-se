@@ -15,8 +15,8 @@
  */
 package org.talend.sdk.component.studio.ui.composite;
 
-import static java.util.stream.Stream.*;
-import static org.talend.sdk.component.studio.model.parameter.SchemaElementParameter.*;
+import static java.util.stream.Stream.of;
+import static org.talend.sdk.component.studio.model.parameter.SchemaElementParameter.guessButtonName;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
@@ -92,7 +93,19 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
             this.problemManager.registTckComposite(this);
         }
         elem.getElementParameters().stream().filter(Objects::nonNull).filter(TaCoKitElementParameter.class::isInstance)
-                .map(TaCoKitElementParameter.class::cast).forEach(p -> p.setProblemManager(problemManager));
+                .map(TaCoKitElementParameter.class::cast).forEach(p -> {
+                    /**
+                     * Regist validators, so that problems from validators can be shown using problem manager
+                     */
+                    p.getRegistValidatorCallback().ifPresent(r -> {
+                        try {
+                            r.call();
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
+                    });
+                    p.setProblemManager(problemManager);
+                });
     }
 
     private void unregistProblemManager() {

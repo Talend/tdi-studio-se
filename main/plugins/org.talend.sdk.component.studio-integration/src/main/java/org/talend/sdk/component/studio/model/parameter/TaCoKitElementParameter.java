@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import org.talend.core.model.process.IElement;
 import org.talend.core.runtime.IAdditionalInfo;
@@ -47,6 +48,8 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     private Map<String, Object> additionalInfoMap = new HashMap<>();
 
     private Optional<IProblemManager> problemManager = Optional.ofNullable(null);
+
+    private Optional<Callable<Void>> registValidatorCallback = Optional.ofNullable(null);
 
     public TaCoKitElementParameter() {
         this(null);
@@ -80,6 +83,14 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
 
     public void setProblemManager(IProblemManager problemManager) {
         this.problemManager = Optional.ofNullable(problemManager);
+    }
+
+    public Optional<Callable<Void>> getRegistValidatorCallback() {
+        return registValidatorCallback;
+    }
+
+    public void setRegistValidatorCallback(Callable<Void> registValidatorCallback) {
+        this.registValidatorCallback = Optional.ofNullable(registValidatorCallback);
     }
 
     public void registerListener(final String propertyName, final PropertyChangeListener listener) {

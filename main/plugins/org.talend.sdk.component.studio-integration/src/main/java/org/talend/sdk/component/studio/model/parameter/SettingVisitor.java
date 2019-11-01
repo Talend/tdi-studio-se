@@ -15,10 +15,12 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Collections.*;
-import static java.util.Optional.*;
-import static java.util.function.Function.*;
-import static java.util.stream.Collectors.*;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -31,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +41,9 @@ import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
-import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
@@ -529,7 +532,14 @@ public class SettingVisitor implements PropertyVisitor {
             final TaCoKitElementParameter taCoKitElementParameter = TaCoKitElementParameter.class.cast(parameter);
             taCoKitElementParameter.updateValueOnly(defaultValue);
             if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
-                createValidationLabel(node, taCoKitElementParameter);
+                taCoKitElementParameter.setRegistValidatorCallback(new Callable<Void>() {
+
+                    @Override
+                    public Void call() throws Exception {
+                        createValidationLabel(node, taCoKitElementParameter);
+                        return null;
+                    }
+                });
             }
             buildActivationCondition(node, node);
         } else {
