@@ -84,7 +84,8 @@ public class LibraryField extends TableField {
                     final TableItem item = contextTable.getSelection()[0];
                     if (item.getBounds(1).contains(event.x, event.y)) {
                         IMPORTType it = (IMPORTType) getList().get(contextTable.getSelectionIndex());
-                        if ("BeanItem".equals(it.eContainer().eClass().getName())) {
+                        if ("BeanItem".equals(it.eContainer().eClass().getName())
+                                || "RoutineItem".equals(it.eContainer().eClass().getName())) {
                             it.setREQUIRED(!it.isREQUIRED());
                             setInput(getList());
                         }
