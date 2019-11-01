@@ -96,40 +96,48 @@ public class TRunjobUtil {
     	}
     	List<NodeType> nodeList = process.getNode();
 		for(NodeType nodeTye : nodeList) {
+            String subid = null;
+            String id = null;
 			boolean isJoblet = false;
+            boolean nodeActivate = true;
 			List<ElementParameterType> typeList = nodeTye.getElementParameter();
 	    	for(ElementParameterType eType : typeList) {
 	    		if("PROCESS:PROCESS_TYPE_PROCESS".equals(eType.getName())) {//$NON-NLS-1$
-	    			String id = eType.getValue();
+                    id = eType.getValue();
 	    			id = id.substring(id.indexOf(":") + 1);//$NON-NLS-1$
-	    			String subid = loop + "&" +id;//$NON-NLS-1$
-	    			for(String pid : idList) {
-	    				int parent = Integer.parseInt(pid.substring(0, pid.indexOf("&")));//$NON-NLS-1$
-	    				String child = pid.substring(pid.indexOf("&") + 1, pid.length());//$NON-NLS-1$
-	    				if(parent != loop && child.equals(id)) {
-	    					return true;
-	    				}
-	    			}
-	    			idList.add(subid);
-	    			
-	    			IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(id);
-	    			if(obj == null || obj.getProperty() == null || obj.getProperty().getItem() == null) {
-            			return false;
-            		}
-	        		Item item = obj.getProperty().getItem();
-	        		if(item instanceof ProcessItem) {
-	        			ProcessType subprocess = ((ProcessItem)item).getProcess();
-	        			boolean result = isInLoop(subprocess, idList, loop + 1);
-	        			if(result) {
-	        				return result;
-	        			}
-	        		}
+                    subid = loop + "&" + id;//$NON-NLS-1$
+                } else if ("ACTIVATE".equals(eType.getName())) {
+                    nodeActivate = Boolean.parseBoolean(eType.getValue());
 	    		}else if("FAMILY".equals(eType.getName()) && "Joblets".equals(eType.getValue())) {
 	    			isJoblet = true;
-	    			break;
+                    break;
 	    		}
 	    	}
 	    	
+            if (nodeActivate && StringUtils.isNotBlank(id)) {
+                for (String pid : idList) {
+                    int parent = Integer.parseInt(pid.substring(0, pid.indexOf("&")));//$NON-NLS-1$
+                    String child = pid.substring(pid.indexOf("&") + 1, pid.length());//$NON-NLS-1$
+                    if (parent != loop && child.equals(id)) {
+                        return true;
+                    }
+                }
+                idList.add(subid);
+                
+                IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(id);
+                if (obj == null || obj.getProperty() == null || obj.getProperty().getItem() == null) {
+                    return false;
+                }
+                Item item = obj.getProperty().getItem();
+                if (item instanceof ProcessItem) {
+                    ProcessType subprocess = ((ProcessItem) item).getProcess();
+                    boolean result = isInLoop(subprocess, idList, loop + 1);
+                    if (result) {
+                        return result;
+                    }
+                }
+            }
+
 	    	if(isJoblet) {
 	    		String jobletPaletteType = null;
 		        String frameWork = process.getFramework();
