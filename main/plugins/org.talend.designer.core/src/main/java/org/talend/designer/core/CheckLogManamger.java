@@ -13,6 +13,6 @@ public class CheckLogManamger {
     }
 
     public static void updateLog4jToModuleList(Collection<ModuleNeeded> jarList) {
-        UpdateLog4jJarUtils.addLog4jToModuleList(jarList, isSelectLog4j2());
+        UpdateLog4jJarUtils.addLog4jToModuleList(jarList, isSelectLog4j2(), null);
     }
 }
