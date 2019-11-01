@@ -677,7 +677,11 @@ public abstract class DbGenerationManager {
                 query = query + " \""; //$NON-NLS-1$
             } else {
                 if (query.trim().endsWith("+ \"")) { //$NON-NLS-1$
-                    query = query.substring(0, query.lastIndexOf("+ \"")); //$NON-NLS-1$
+                    if (DEFAULT_TAB_SPACE_STRING.equals(this.tabSpaceString)) {
+                        query = query.substring(0, query.lastIndexOf("+ \"")); //$NON-NLS-1$
+                    } else {
+                        query = query + "\"";
+                    }
                 }
             }
         }
