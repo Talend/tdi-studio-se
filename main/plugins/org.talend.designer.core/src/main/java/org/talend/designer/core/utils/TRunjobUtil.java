@@ -24,6 +24,7 @@ import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.Problem.ProblemStatus;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -103,8 +104,7 @@ public class TRunjobUtil {
 			List<ElementParameterType> typeList = nodeTye.getElementParameter();
 	    	for(ElementParameterType eType : typeList) {
 	    		if("PROCESS:PROCESS_TYPE_PROCESS".equals(eType.getName())) {//$NON-NLS-1$
-                    id = eType.getValue();
-	    			id = id.substring(id.indexOf(":") + 1);//$NON-NLS-1$
+                    id = ProcessUtils.getPureItemId(eType.getValue());
                     subid = loop + "&" + id;//$NON-NLS-1$
                 } else if ("ACTIVATE".equals(eType.getName())) {
                     nodeActivate = Boolean.parseBoolean(eType.getValue());
