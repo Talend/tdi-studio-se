@@ -32,8 +32,8 @@ import org.talend.core.model.process.IReplaceNodeInProcess;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryEditorInput;
 import org.talend.core.model.update.UpdateResult;
-import org.talend.core.ui.editor.JobEditorInput;
 import org.talend.designer.core.ui.editor.process.Process;
 
 /**
@@ -146,23 +146,6 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
         }
     }
     
-    /**
-     * DOC hwang Comment method "loadComponentsFromProviders".
-     *
-     * @return
-     * @throws PersistenceException 
-     */
-    public static JobEditorInput createEditorInput(JobletProcessItem processItem, boolean load, Boolean lastVersion, Boolean readonly,
-            Boolean openedInJob) throws PersistenceException {
-        for (AbstractProcessProvider processProvider : findAllProcessProviders()) {
-            JobEditorInput editorInput= processProvider.createJobletEditorInput(processItem, load, lastVersion, readonly, openedInJob);
-            if(editorInput != null) {
-                return editorInput;
-            }
-        }
-        return null;
-    }
-
     /**
      * DOC qzhang Comment method "canDeleteNode".
      * 
@@ -277,7 +260,7 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
         return false;
     }
     
-    public JobEditorInput createJobletEditorInput(JobletProcessItem processItem, boolean load, Boolean lastVersion, Boolean readonly,
+    public IRepositoryEditorInput createJobletEditorInput(JobletProcessItem processItem, boolean load, Boolean lastVersion, Boolean readonly,
             Boolean openedInJob) throws PersistenceException{
         return null;
     }
