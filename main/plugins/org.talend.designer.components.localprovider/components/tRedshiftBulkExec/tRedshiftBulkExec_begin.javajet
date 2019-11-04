@@ -311,7 +311,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 	.append("' credentials '")
 <%
-	if(assumeRole && !inheritRole){
+	if(assumeRole){
 		List<Map<String,String>> roles = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ROLE_TABLE__");
 		int roleListSize=roles.size();
 		if(roleListSize > 0){
