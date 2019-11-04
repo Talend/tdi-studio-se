@@ -890,7 +890,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         	res = false;
         }              
 
-        //only one output
+        //only one output, can be equal to 0 when graphically adding component so we avoid NPE
         if (this.externalData.getOutputTables().size() != 1) {
         	res = false;
         } //no rejects
