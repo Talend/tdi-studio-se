@@ -2045,7 +2045,23 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             process.setParameters(parameterType);
         }
         checkRoutineDependencies();
-        process.getParameters().getRoutinesParameter().addAll(routinesDependencies);
+        List<RoutinesParameterType> toAddList = new ArrayList<RoutinesParameterType>();
+        boolean found = false;
+        for (RoutinesParameterType routineType : routinesDependencies) {
+            found = false;
+            for (Object o : process.getParameters().getRoutinesParameter()) {
+                RoutinesParameterType type = (RoutinesParameterType) o;
+                if (StringUtils.equals(type.getId(), routineType.getId())
+                        || StringUtils.equals(type.getName(), routineType.getName())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                toAddList.add(EcoreUtil.copy(routineType));
+            }
+        }
+        process.getParameters().getRoutinesParameter().addAll(toAddList);
     }
 
     public void addGeneratingRoutines(List<RoutinesParameterType> routinesParameters) {

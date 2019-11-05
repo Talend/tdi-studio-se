@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -722,34 +723,30 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         ICreateXtextProcessService convertJobtoScriptService = CorePlugin.getDefault().getCreateXtextProcessService();
 
         try {
-            Item item = getProcess().getProperty().getItem();
-            ProcessType processType = null;
-            if (item instanceof ProcessItem) {
-                processType = ((ProcessItem) item).getProcess();
-                final String scriptValue = convertJobtoScriptService.convertJobtoScript(processType);
-                IFile file = (IFile) jobletEditor.getEditorInput().getAdapter(IResource.class);
-                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(scriptValue.getBytes());
-                if (file.exists()) {
-                    jobletEditor.getDocumentProvider().getDocument(jobletEditor.getEditorInput()).set(scriptValue);
-                    boolean isProcessReadOnly = ((JobEditorInput) getEditor(0).getEditorInput()).isReadOnly();
-                    IProxyRepositoryFactory rFactory = ProxyRepositoryFactory.getInstance();
-                    if (isProcessReadOnly || rFactory.isUserReadOnlyOnCurrentProject()) {
-                        IDocumentProvider provider = jobletEditor.getDocumentProvider();
-                        Class p = provider.getClass();
-                        Class[] type = new Class[1];
-                        type[0] = Boolean.TYPE;
-                        Object[] para = new Object[1];
-                        para[0] = Boolean.TRUE;
-                        Method method = p.getMethod("setReadOnly", type);
-                        method.invoke(provider, para);
-                    }
+            final String scriptValue = convertJobtoScriptService.convertJobtoScript(getProcess().saveXmlFile());
+            IFile file = (IFile) jobletEditor.getEditorInput().getAdapter(IResource.class);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(scriptValue.getBytes());
+            if (file.exists()) {
+                jobletEditor.getDocumentProvider().getDocument(jobletEditor.getEditorInput()).set(scriptValue);
+                boolean isProcessReadOnly = ((JobEditorInput) getEditor(0).getEditorInput()).isReadOnly();
 
-                    IAction action = jobletEditor.getAction("FoldingRestore"); //$NON-NLS-1$
-                    action.run();
-                    jobletEditor.doSave(null);
-                } else {
-                    file.create(byteArrayInputStream, true, null);
+                IProxyRepositoryFactory rFactory = ProxyRepositoryFactory.getInstance();
+                if (isProcessReadOnly || rFactory.isUserReadOnlyOnCurrentProject()) {
+                    IDocumentProvider provider = jobletEditor.getDocumentProvider();
+                    Class p = provider.getClass();
+                    Class[] type = new Class[1];
+                    type[0] = Boolean.TYPE;
+                    Object[] para = new Object[1];
+                    para[0] = Boolean.TRUE;
+                    Method method = p.getMethod("setReadOnly", type);
+                    method.invoke(provider, para);
                 }
+
+                IAction action = jobletEditor.getAction("FoldingRestore"); //$NON-NLS-1$
+                action.run();
+                jobletEditor.doSave(null);
+            } else {
+                file.create(byteArrayInputStream, true, null);
             }
             if (propertyListener == null) {
                 propertyListener = new IPropertyListener() {
@@ -761,12 +758,16 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                             getProcess().setNeedRegenerateCode(true);
                         }
                     }
+
                 };
                 jobletEditor.addPropertyListener(propertyListener);
             }
+
         } catch (PartInitException e) {
             ExceptionHandler.process(e);
         } catch (CoreException e) {
+            ExceptionHandler.process(e);
+        } catch (IOException e) {
             ExceptionHandler.process(e);
         } catch (SecurityException e) {
             ExceptionHandler.process(e);
@@ -780,6 +781,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
             ExceptionHandler.process(e);
         }
         changeContextsViewStatus(false);
+
     }
 
     protected void turnToCodePage(int newPageIndex) {
