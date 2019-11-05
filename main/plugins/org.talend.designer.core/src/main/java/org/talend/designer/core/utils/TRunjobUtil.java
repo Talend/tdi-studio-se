@@ -110,7 +110,6 @@ public class TRunjobUtil {
                     nodeActivate = Boolean.parseBoolean(eType.getValue());
 	    		}else if("FAMILY".equals(eType.getName()) && "Joblets".equals(eType.getValue())) {
 	    			isJoblet = true;
-                    break;
 	    		}
 	    	}
 	    	
