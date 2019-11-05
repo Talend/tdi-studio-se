@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
@@ -33,10 +32,10 @@ public class UpdateLog4jJarUtils {
                 process = (IProcess2) activeProcess;
             }
         }
-        if (process != null && ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
-            addLog4jToJarListForESB(jarList, isSelectLog4j2);
-            return;
-        }
+//        if (process != null && ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
+//            addLog4jToJarListForESB(jarList, isSelectLog4j2);
+//            return;
+//        }
         List<String> modulesUsedBefore = removeLog4jFromJarListAndGetUsedJarBefore(process, jarList);
         addBackJars(jarList, isSelectLog4j2, modulesUsedBefore);
     }
@@ -46,10 +45,10 @@ public class UpdateLog4jJarUtils {
         if (currentProcess instanceof IProcess2) {
             process = (IProcess2) currentProcess;
         }
-        if (process != null && ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
-            addLog4jToModuleListForESB(jarList, isSelectLog4j2);
-            return;
-        }
+//        if (process != null && ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
+//            addLog4jToModuleListForESB(jarList, isSelectLog4j2);
+//            return;
+//        }
         List<ModuleNeeded> modulesUsedBefore = removeLog4jFromModuleListAndGetModulesUsedBefore(process, jarList);
         addBackModules(jarList, isSelectLog4j2, modulesUsedBefore);
     }
