@@ -102,7 +102,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                     String keyStoreType = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.keyStoreType")).orElse("");
                     String keyStoreFile = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.keyStore")).orElse("");
                     String keyStorePassword = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.keyStorePassword")).orElse("");
-                    if (!keyStoreType.isEmpty() && !keyStoreFile.isEmpty() && !keyStorePassword.isEmpty()) {
+                    if (!keyStoreType.isEmpty() && !keyStoreFile.isEmpty()) {
                         try {
                             java.security.KeyStore keyStore = java.security.KeyStore.getInstance(keyStoreType);
                             keyStore.load(new java.io.FileInputStream(keyStoreFile), keyStorePassword.toCharArray());
@@ -118,7 +118,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                     String trustStoreType = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStoreType")).orElse("");
                     String trustStoreFile = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStore")).orElse("");
                     String trustStorePassword = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStorePassword")).orElse("");
-                    if (!trustStoreType.isEmpty() && !trustStoreFile.isEmpty() && !trustStorePassword.isEmpty()) {
+                    if (!trustStoreType.isEmpty() && !trustStoreFile.isEmpty()) {
                         try {
                             java.security.KeyStore trustStore = java.security.KeyStore.getInstance(trustStoreType);
                             trustStore.load(new java.io.FileInputStream(trustStoreFile), trustStorePassword.toCharArray());
