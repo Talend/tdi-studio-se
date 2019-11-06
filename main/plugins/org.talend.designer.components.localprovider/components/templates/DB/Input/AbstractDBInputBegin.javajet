@@ -73,7 +73,8 @@ imports="
 							jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
 						}
 					}
-					boolean needUserAndPassword = !"SSO".equals(jdbcUrl);
+					//TODO changeme
+					boolean needUserAndPassword = true;
 					log4jCodeGenerateUtil.useExistConnection(node, needUserAndPassword);
 				} else {
 					log4jCodeGenerateUtil.useExistConnection(node);

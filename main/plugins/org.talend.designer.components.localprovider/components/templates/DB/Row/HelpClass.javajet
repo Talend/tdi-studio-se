@@ -81,7 +81,8 @@
 							jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
 						}
 					}
-					needUserAndPassword = !"SSO".equals(jdbcUrl);
+					//TODO changeme
+					needUserAndPassword = true;
 					this.afterUseExistConnection(node, needUserAndPassword);
 				} else {
 					this.afterUseExistConnection(node);

@@ -99,7 +99,6 @@
       NUM_ROW="4"
       REPOSITORY_VALUE="USERNAME"
       REQUIRED="true"
-      SHOW_IF="JDBC_URL=='STANDARD'"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -110,7 +109,6 @@
       NUM_ROW="4"
       REPOSITORY_VALUE="PASSWORD"
       REQUIRED="true"
-      SHOW_IF="JDBC_URL=='STANDARD'"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
