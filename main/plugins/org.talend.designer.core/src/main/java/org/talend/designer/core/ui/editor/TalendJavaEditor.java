@@ -12,23 +12,41 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaSourceViewer;
+import org.eclipse.jdt.internal.ui.text.JavaCompositeReconcilingStrategy;
+import org.eclipse.jdt.internal.ui.text.JavaReconciler;
+import org.eclipse.jdt.internal.ui.text.java.JavaFormattingContext;
 import org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds;
 import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
 import org.eclipse.jdt.ui.text.JavaTextTools;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IWidgetTokenKeeper;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
+import org.eclipse.jface.text.formatter.FormattingContextProperties;
+import org.eclipse.jface.text.formatter.IFormattingContext;
+import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -295,6 +313,131 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
             return;
         }
         super.initializeDragAndDrop(viewer);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor#createJavaSourceViewer(org.eclipse.swt.widgets.
+     * Composite, org.eclipse.jface.text.source.IVerticalRuler, org.eclipse.jface.text.source.IOverviewRuler, boolean,
+     * int, org.eclipse.jface.preference.IPreferenceStore)
+     */
+    @Override
+    protected ISourceViewer createJavaSourceViewer(Composite parent, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler,
+            boolean isOverviewRulerVisible, int styles, IPreferenceStore store) {
+        return new TalendAdaptedSourceViewer(parent, verticalRuler, overviewRuler, isOverviewRulerVisible, styles, store);
+    }
+
+    /**
+     * backport from 731 (upgraded eclipse), AdaptedSourceViewer here is internal class of ComilationUnitEditor, so
+     * extends parent class JavaSourceViewer, write the content of AdaptedSourceViewer here. DOC jding TalendJavaEditor
+     * class global comment. Detailled comment
+     */
+    @SuppressWarnings("restriction")
+    protected class TalendAdaptedSourceViewer extends JavaSourceViewer {
+
+        private final boolean CODE_ASSIST_DEBUG = "true" //$NON-NLS-1$
+                .equalsIgnoreCase(Platform.getDebugOption("org.eclipse.jdt.ui/debug/ResultCollector")); //$NON-NLS-1$
+
+        public TalendAdaptedSourceViewer(Composite parent, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler,
+                boolean showAnnotationsOverview, int styles, IPreferenceStore store) {
+            super(parent, verticalRuler, overviewRuler, showAnnotationsOverview, styles, store);
+        }
+
+        @Override
+        public void configure(SourceViewerConfiguration configuration) {
+            super.configure(configuration);
+            if (fReconciler == null) {
+                JavaCompositeReconcilingStrategy strategy = new JavaCompositeReconcilingStrategy(this, TalendJavaEditor.this,
+                        configuration.getConfiguredDocumentPartitioning(this));
+                JavaReconciler reconciler = new JavaReconciler(TalendJavaEditor.this, strategy, false);
+                reconciler.setIsAllowedToModifyDocument(false);
+                reconciler.setDelay(500);
+                fReconciler = reconciler;
+                fReconciler.install(this);
+            }
+        }
+
+        public IContentAssistant getContentAssistant() {
+            return fContentAssistant;
+        }
+
+        /*
+         * @see ITextOperationTarget#doOperation(int)
+         */
+        @Override
+        public void doOperation(int operation) {
+
+            if (getTextWidget() == null)
+                return;
+
+            switch (operation) {
+            case CONTENTASSIST_PROPOSALS:
+                long time = CODE_ASSIST_DEBUG ? System.currentTimeMillis() : 0;
+                String msg = fContentAssistant.showPossibleCompletions();
+                if (CODE_ASSIST_DEBUG) {
+                    long delta = System.currentTimeMillis() - time;
+                    System.err.println("Code Assist (total): " + delta); //$NON-NLS-1$
+                }
+                setStatusLineErrorMessage(msg);
+                return;
+            case QUICK_ASSIST:
+                /*
+                 * XXX: We can get rid of this once the SourceViewer has a way to update the status line
+                 * https://bugs.eclipse.org/bugs/show_bug.cgi?id=133787
+                 */
+                msg = fQuickAssistAssistant.showPossibleQuickAssists();
+                setStatusLineErrorMessage(msg);
+                return;
+            }
+
+            super.doOperation(operation);
+        }
+
+        /*
+         * @see IWidgetTokenOwner#requestWidgetToken(IWidgetTokenKeeper)
+         */
+        @Override
+        public boolean requestWidgetToken(IWidgetTokenKeeper requester) {
+            if (PlatformUI.getWorkbench().getHelpSystem().isContextHelpDisplayed())
+                return false;
+            return super.requestWidgetToken(requester);
+        }
+
+        /*
+         * @see IWidgetTokenOwnerExtension#requestWidgetToken(IWidgetTokenKeeper, int)
+         * 
+         * @since 3.0
+         */
+        @Override
+        public boolean requestWidgetToken(IWidgetTokenKeeper requester, int priority) {
+            if (PlatformUI.getWorkbench().getHelpSystem().isContextHelpDisplayed())
+                return false;
+            return super.requestWidgetToken(requester, priority);
+        }
+
+        /*
+         * @see org.eclipse.jface.text.source.SourceViewer#createFormattingContext()
+         * 
+         * @since 3.0
+         */
+        @Override
+        public IFormattingContext createFormattingContext() {
+            IFormattingContext context = new JavaFormattingContext();
+
+            Map<String, String> preferences;
+            IJavaElement inputJavaElement = getInputJavaElement();
+            IJavaProject javaProject = inputJavaElement != null ? inputJavaElement.getJavaProject() : null;
+            if (javaProject == null)
+                preferences = new HashMap<String, String>(JavaCore.getOptions());
+            else
+                preferences = new HashMap<String, String>(javaProject.getOptions(true));
+
+            context.setProperty(FormattingContextProperties.CONTEXT_PREFERENCES, preferences);
+
+            return context;
+        }
+
     }
 
 
