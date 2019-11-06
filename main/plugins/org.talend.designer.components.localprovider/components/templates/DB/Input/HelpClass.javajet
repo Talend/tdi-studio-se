@@ -93,7 +93,7 @@ imports="
 				<%this.setURL(node);%>
 				<%
 				log4jCodeGenerateUtil.debugConnectionParams(node);
-				if ("SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__")) || !needUserAndPassword){
+				if (!needUserAndPassword){
 					log4jCodeGenerateUtil.connect_begin_noUser();
 				} else {
 					log4jCodeGenerateUtil.connect_begin();

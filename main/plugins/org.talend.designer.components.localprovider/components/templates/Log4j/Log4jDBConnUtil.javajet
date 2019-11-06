@@ -88,11 +88,7 @@ imports="
 
 		public void connect(INode node){
 			beforeComponentProcess(node);
-			if ("SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__"))){
-				connectWithSSO();
-			} else {
-				connect();
-			}
+			connect();
 		}
 
 		public void connect(){
@@ -103,14 +99,6 @@ imports="
 			connect_end();
 		}
 		
-		public void connectWithSSO(){
-			connect_begin_noUser();
-			%>
-			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>);
-			<%
-			connect_end();
-		}
-
 		public void connect_begin(){
 			logInfo(node,"debug",cid+" - Connection attempt to '\" + url_"+cid+" + \"' with the username '\" + dbUser_"+cid+" + \"'.");
 		}

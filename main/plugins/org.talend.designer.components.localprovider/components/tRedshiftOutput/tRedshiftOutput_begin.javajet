@@ -221,11 +221,7 @@ if(("true").equals(useExistingConn)) {
 			jdbcUrl = ElementParameterParser.getValue(ne, "__JDBC_URL__");
 		}
 	}
-	if ("SSO".equals(jdbcUrl)){
-		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", null);
-	} else {
-		dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");
-	}
+	dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");
 %>
 	<%
 } else {
@@ -261,23 +257,18 @@ if(("true").equals(useExistingConn)) {
 	
 	
 	
-<%  if ("SSO".equals(jdbcUrl)){%>
-		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>);
-		<%dbLog.conn().connTry(dbLog.var("url"), null);%>
-		<%dbLog.conn().connDone(dbLog.var("url"));%>
-<%  } else {%>
-		String dbUser_<%=cid %> = <%=dbuser%>;
-		<%
-		String passwordFieldName = "__PASS__";
-		%>
+	String dbUser_<%=cid %> = <%=dbuser%>;
+	<%
+	String passwordFieldName = "__PASS__";
+	%>
 
-		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-		String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
-		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
-		<%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>
-		<%dbLog.conn().connDone(dbLog.var("url"));%>
-<%  }%>
+	String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
+	conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
+	<%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>
+	<%dbLog.conn().connDone(dbLog.var("url"));%>
+		
 	resourceMap.put("conn_<%=cid%>", conn_<%=cid%>);
     conn_<%=cid%>.setAutoCommit(false);
 	<%
