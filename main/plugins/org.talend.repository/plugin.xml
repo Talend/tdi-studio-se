@@ -3279,6 +3279,85 @@
           message="Library needed to export to JBoss ESB"
           name="jbossesb-rosetta.jar"  mvn_uri="mvn:org.talend.libraries/jbossesb-rosetta/6.0.0"
           required="true"/>
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-1.2.17.jar"
+        name="log4j-1.2.17.jar"
+        mvn_uri="mvn:log4j/log4j/1.2.17"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="slf4j-log4j12-1.7.25.jar"
+        name="slf4j-log4j12-1.7.25.jar"
+        mvn_uri="mvn:org.slf4j/slf4j-log4j12/1.7.25"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/slf4j-log4j12-1.7.25.jar">
+      </libraryNeeded>
+    
+       <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-to-slf4j-2.12.1.jar"
+        name="log4j-to-slf4j-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-to-slf4j/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-to-slf4j-2.12.1.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="jul-to-slf4j-1.7.25.jar"
+        name="jul-to-slf4j-1.7.25.jar"
+        mvn_uri="mvn:org.slf4j/jul-to-slf4j/1.7.25"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/jul-to-slf4j-1.7.25.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="jcl-over-slf4j-1.7.25.jar"
+        name="jcl-over-slf4j-1.7.25.jar"
+        mvn_uri="mvn:org.slf4j/jcl-over-slf4j/1.7.25"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/jcl-over-slf4j-1.7.25.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-core-2.12.1.jar"
+        name="log4j-core-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-core/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-core-2.12.1.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-api-2.12.1.jar"
+        name="log4j-api-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-api/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-api-2.12.1.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-slf4j-impl-2.12.1.jar"
+        name="log4j-slf4j-impl-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-slf4j-impl/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-slf4j-impl-2.12.1.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-jul-2.12.1.jar"
+        name="log4j-jul-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-jul/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-jul-2.12.1.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-jcl-2.12.1.jar"
+        name="log4j-jcl-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-jcl/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-jcl-2.12.1.jar">
+      </libraryNeeded>          
    </extension>
    <!--
    <extension
