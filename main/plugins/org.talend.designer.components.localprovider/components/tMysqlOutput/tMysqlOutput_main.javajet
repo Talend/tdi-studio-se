@@ -1600,6 +1600,7 @@ if(columnList != null && columnList.size() > 0) {
             int replaceCount_<%=cid%> = 0;
             try {
                 replaceCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 <%dbLog.data().replacing(null);%>
             } catch(java.lang.Exception e) {
                 whetherReject_<%=cid%> = true;
@@ -1689,7 +1690,7 @@ if(columnList != null && columnList.size() > 0) {
             int count_on_duplicate_key_<%=cid%> = 0;
             try {
                 count_on_duplicate_key_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
-                <%dbLog.data().sqlExecuteTry("insertIgnore_"+cid+"");%>
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 <%dbLog.data().insertingOnDuplicateKeyUpdating(null);%>
             } catch(java.lang.Exception e) {
                 whetherReject_<%=cid%> = true;
