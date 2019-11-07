@@ -79,17 +79,14 @@ imports="
 			    java.lang.Class jdbcclazz_<%=cid%> = java.lang.Class.forName(driverClass_<%=cid%>);
 <%
 				newInstance(node);
+%>
+				String dbUser_<%=cid %> = <%=dbuser%>;
+				<%
+				String passwordFieldName = "__PASS__";
+				%>
+				<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 				
-				if (needUserAndPassword){%>
-					String dbUser_<%=cid %> = <%=dbuser%>;
-					<%
-					String passwordFieldName = "__PASS__";
-					%>
-					
-					<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-					
-					String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
-<%              }%>
+				String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
 				<%this.setURL(node);%>
 				<%
 				log4jCodeGenerateUtil.debugConnectionParams(node);

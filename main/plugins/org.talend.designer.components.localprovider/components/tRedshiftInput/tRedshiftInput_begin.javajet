@@ -17,8 +17,6 @@ imports="
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
 
-        private boolean needUserAndPassword = true;
-
 		public void setURL(INode node) {
 			
 			boolean useLogFile= "true".equals(ElementParameterParser.getValue(node, "__USE_LOG_FILE__"));
