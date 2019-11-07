@@ -34,7 +34,6 @@ import org.talend.updates.runtime.model.ExtraFeature;
 import org.talend.updates.runtime.model.InstallationStatus;
 import org.talend.updates.runtime.model.InstallationStatus.Status;
 import org.talend.updates.runtime.model.interfaces.ITaCoKitCarFeature;
-import org.talend.updates.runtime.nexus.component.ComponentIndexBean;
 import org.talend.updates.runtime.service.ITaCoKitUpdateService;
 import org.talend.updates.runtime.storage.AbstractFeatureStorage;
 
@@ -64,11 +63,6 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
     }
 
     @Override
-    public ITaCoKitCarFeature generateExtraFeature(ComponentIndexBean indexBean, IProgressMonitor monitor) throws Exception {
-        return new TaCoKitCarFeature(indexBean);
-    }
-
-    @Override
     public ICarInstallationResult installCars(Collection<File> files, boolean share, IProgressMonitor monitor) throws Exception {
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -87,7 +81,6 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
                 ITaCoKitCarFeature carFeature = null;
                 try {
                     carFeature = generateExtraFeature(carFile, monitor);
-                    carFeature.setShareEnable(share);
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
@@ -138,8 +131,6 @@ public class TaCoKitUpdateService implements ITaCoKitUpdateService {
                         carFeature.setAutoReloadAfterInstalled(false);
                         IStatus installStatus = carFeature.install(monitor, Collections.EMPTY_LIST);
                         if (share) {
-                            // won't share here, just copy file to installed folder
-                            carFeature.setShareEnable(false);
                             carFeature.syncComponentsToInstalledFolder(monitor, carFeature.getStorage().getFeatureFile(monitor));
                         }
                         result.getInstalledStatus().put(carFeature.getCarFile(monitor), installStatus);
