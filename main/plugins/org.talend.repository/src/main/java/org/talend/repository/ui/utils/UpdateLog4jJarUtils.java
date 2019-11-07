@@ -250,7 +250,7 @@ public class UpdateLog4jJarUtils {
             "log4j-jcl-\\d+\\.\\d+\\.\\d+\\.jar", "log4j-jul-\\d+\\.\\d+\\.\\d+\\.jar", //$NON-NLS-1$//$NON-NLS-2$
             "log4j-slf4j-impl-\\d+\\.\\d+\\.\\d+\\.jar", "log4j-1.2-api-\\d+\\.\\d+\\.\\d+\\.jar", //$NON-NLS-1$//$NON-NLS-2$
             "log4j-core-\\d+\\.\\d+\\.\\d+\\.jar", "log4j-api-\\d+\\.\\d+\\.\\d+\\.jar", //$NON-NLS-1$//$NON-NLS-2$
-            "commons-logging-\\d+\\.\\d+\\.\\d+\\.jar", "slf4j-standard-\\d+\\.\\d+\\.\\d+\\.jar" };//$NON-NLS-1$//$NON-NLS-2$
+            "slf4j-standard-\\d+\\.\\d+\\.\\d+\\.jar" };//$NON-NLS-1$
 
     private static boolean isNeedRemoveModule(ModuleNeeded module, String moduleName) {
         for (String needRemoveModuleName : NEEDREMOVEMODULES) {
