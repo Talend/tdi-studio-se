@@ -119,6 +119,8 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     private static final String RESOURCE_COMMONLOG_FILE_PATH = "log/common-logging.properties_template";
 
+    private static final String LOG4J_VERSION2_FILEPATH = "log/log4j2.properties_template"; //$NON-NLS-1$
+
     /*
      * (non-Javadoc)
      *
@@ -577,11 +579,11 @@ public class DefaultRunProcessService implements IRunProcessService {
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_ENABLE_NODE,
                     Log4jUtil.isEnable() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
-                    getLogTemplate(RESOURCE_LOG_FILE_PATH));
+                    getLogTemplate(LOG4J_VERSION2_FILEPATH));
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.COMMON_LOGGING_NODE,
                     getLogTemplate(RESOURCE_COMMONLOG_FILE_PATH));
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
-                    Boolean.FALSE.toString());
+                    Boolean.TRUE.toString());
         }
         // if directly init or modify log4j,need handle with the log4j under .setting/,if not,means execute or export
         // job,need to copy the latest log4j from .setting/ to /java/src
