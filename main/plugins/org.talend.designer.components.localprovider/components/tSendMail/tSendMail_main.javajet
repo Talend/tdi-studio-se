@@ -208,6 +208,8 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 		mc_<%=cid%>.addMailcap("multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed");
 		mc_<%=cid%>.addMailcap("message/rfc822;; x-java-content-handler=com.sun.mail.handlers.message_rfc822");
 		javax.activation.CommandMap.setDefaultCommandMap(mc_<%=cid%>);
+		// add com.sun.mail.handlers to job imports / depenencies (TESB-27110)
+		com.sun.mail.handlers.text_plain text_plain_h_<%=cid%> = null;
 		// -- Send the message --
 		javax.mail.Transport.send(msg_<%=cid %>);
 	} catch(java.lang.Exception e){
