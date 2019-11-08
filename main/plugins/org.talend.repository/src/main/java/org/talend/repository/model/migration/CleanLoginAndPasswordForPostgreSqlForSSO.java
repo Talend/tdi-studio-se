@@ -23,7 +23,7 @@ public class CleanLoginAndPasswordForPostgreSqlForSSO extends AbstractJobMigrati
 
     @Override
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2019, 11, 7, 10, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2019, 10, 7, 10, 0, 0);
         return gc.getTime();
     }
 
