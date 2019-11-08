@@ -627,7 +627,7 @@ public abstract class DbGenerationManager {
                 int lstSizeOutTableEntries = metadataTableEntries.size();
                 for (int i = 0; i < lstSizeOutTableEntries; i++) {
                     ExternalDbMapEntry dbMapEntry = metadataTableEntries.get(i);
-                    String columnEntry = outTableName + DbMapSqlConstants.DOT + dbMapEntry.getName();
+                    String columnEntry = dbMapEntry.getName();
                     String expression = dbMapEntry.getExpression();
                     expression = initExpression(component, dbMapEntry);
                     expression = addQuoteForSpecialChar(expression, component);
