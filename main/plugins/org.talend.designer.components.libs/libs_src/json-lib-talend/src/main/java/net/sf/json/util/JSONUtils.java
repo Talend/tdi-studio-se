@@ -755,10 +755,15 @@ public final class JSONUtils {
       return quote( value.toString() );
    }
 
-    public static String jsonToStandardizedString(JSONObject json, JsonStandard standard) {
+    public static String jsonToStandardizedString(JSON json, JsonStandard standard) {
        switch (standard) {
             case WRAP_NULL_STRINGS:
-               return jsonToWrappedNullStrings(json);
+               if (json.isArray()) {
+                  JSONArray jsonArray = (JSONArray) json;
+                  return jsonArrayToWrappedNullStrings(jsonArray);
+               } else if (!JSONNull.getInstance().equals(json)) {
+                  return jsonToWrappedNullStrings((JSONObject) json);
+               }
             default:
                 return json.toString();
        }

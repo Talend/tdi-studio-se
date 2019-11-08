@@ -17,8 +17,10 @@
 package net.sf.json.util;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import junit.framework.TestCase;
 import net.sf.json.JSONArray;
@@ -201,7 +203,7 @@ public class TestJSONUtils extends TestCase {
       jsonObject.putAll(valuesMap, config);
 
       String resultingString = JSONUtils.jsonToStandardizedString(jsonObject, JsonStandard.WRAP_NULL_STRINGS);
-      assertFalse("Wrapping null strings standard's broken", jsonObject.toString().equals(resultingString));
+      assertFalse("Wrapping null strings standard's broken", Objects.equals(jsonObject.toString(), resultingString));
       assertTrue(resultingString.contains("\"null\""));
    }
 
@@ -211,5 +213,29 @@ public class TestJSONUtils extends TestCase {
 
       String resultingString = JSONUtils.jsonToStandardizedString(jsonObject, JsonStandard.WRAP_NULL_STRINGS);
       assertEquals(jsonObject.toString(), resultingString);
+   }
+
+   public void testNullStringsOnArrayWrapped() {
+      JsonConfig config = new JsonConfig();
+      config.setJsonStandard(JsonStandard.WRAP_NULL_STRINGS);
+
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.add("abc");
+      jsonArray.add("null", config);
+      jsonArray.add(null);
+
+      String resultingString = JSONUtils.jsonToStandardizedString(jsonArray, JsonStandard.WRAP_NULL_STRINGS);;
+      assertFalse("Wrapping null strings standard's broken", Objects.equals(jsonArray.toString(), resultingString));
+      assertTrue(resultingString.contains("\"null\""));
+   }
+
+   public void testNullStringsOnArrayUnwrapped() {
+      JSONArray jsonArray = new JSONArray();
+      jsonArray.add("abc");
+      jsonArray.add("null");
+      jsonArray.add(null);
+
+      String resultingString = JSONUtils.jsonToStandardizedString(jsonArray, JsonStandard.LEGACY);
+      assertEquals(jsonArray.toString(), resultingString);
    }
 }
