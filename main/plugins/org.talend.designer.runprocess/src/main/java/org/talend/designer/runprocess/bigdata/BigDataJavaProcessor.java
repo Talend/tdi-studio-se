@@ -325,7 +325,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         Set<String> libsRequiredByJob = new HashSet<>();
         Set<ModuleNeeded> neededModules = JavaProcessorUtilities.getNeededModulesForProcess(process);
         if (!ProcessorUtilities.isExportConfig()) {
-            JavaProcessorUtilities.addLog4jToModuleList(neededModules);
+            JavaProcessorUtilities.addLog4jToModuleList(neededModules, process);
         }
         JavaProcessorUtilities.checkJavaProjectLib(neededModules);
 

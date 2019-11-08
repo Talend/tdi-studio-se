@@ -1579,7 +1579,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         Set<ModuleNeeded> neededLibraries = JavaProcessorUtilities.getNeededModulesForProcess(process, options);
         boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
         if (isLog4jEnabled) {
-            JavaProcessorUtilities.addLog4jToModuleList(neededLibraries);
+            JavaProcessorUtilities.addLog4jToModuleList(neededLibraries, process);
         }
         return neededLibraries;
     }
@@ -1588,7 +1588,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     public void updateModulesAfterSetLog4j(Collection<ModuleNeeded> modulesNeeded) {
         boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
         if (isLog4jEnabled) {
-            JavaProcessorUtilities.addLog4jToModuleList(modulesNeeded);
+            JavaProcessorUtilities.addLog4jToModuleList(modulesNeeded, process);
         }
     }
 
@@ -1988,6 +1988,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             IFolder extResourcePath = externalResourcesFolder.getFolder(jobContextFolderPath);
             IFolder resourcesPath = resourcesFolder.getFolder(jobContextFolderPath);
             
+            if (!extResourcePath.exists()) {
+                tProcessJvaProject.createSubFolder(null, externalResourcesFolder, jobContextFolderPath.toString());
+            }
+
+            extResourcePath.refreshLocal(IResource.DEPTH_INFINITE, null);
+
             if(!resourcesPath.exists()) {
                 tProcessJvaProject.createSubFolder(null, resourcesFolder, jobContextFolderPath.toString());
             }

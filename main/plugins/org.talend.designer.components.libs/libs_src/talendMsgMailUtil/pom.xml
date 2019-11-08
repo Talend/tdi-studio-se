@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.libraries</groupId>
-	<artifactId>talendMsgMailUtil-1.1-20170419</artifactId>
+	<artifactId>talendMsgMailUtil-1.1-20191012</artifactId>
 	<name>talendMsgMailUtil</name>
 	<version>6.0.0</version>
 	<packaging>jar</packaging>
@@ -37,6 +37,11 @@
     </distributionManagement>
 	
 	<dependencies>
+	    <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>

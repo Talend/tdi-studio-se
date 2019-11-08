@@ -164,9 +164,11 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTaskTest {
             assertNotNull(connection);
             if (connection instanceof DatabaseConnection) {
                 DatabaseConnection connectionImp = (DatabaseConnection) connection;
-                String pass = connectionImp.getPassword();
-                assertNotNull(pass);
-                assertEquals("root", connectionImp.getValue(pass, false));
+                if ("mysql".equals(connectionImp.getLabel())) {
+                    String pass = connectionImp.getPassword();
+                    assertNotNull(pass);
+                    assertEquals("talend", connectionImp.getValue(pass, false));
+                }
             }
         }
     }

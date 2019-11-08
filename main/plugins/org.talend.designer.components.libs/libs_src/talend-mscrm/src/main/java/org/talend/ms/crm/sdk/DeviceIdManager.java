@@ -38,7 +38,8 @@ import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -53,7 +54,7 @@ public final class DeviceIdManager {
     /**
      * Logger
      */
-    static final Logger Log = Logger.getLogger(DeviceIdManager.class.getName());
+    static final Logger Log = LoggerFactory.getLogger(DeviceIdManager.class.getName());
 
     private static final Random RandomInstance = new Random();
 

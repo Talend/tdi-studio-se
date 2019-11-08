@@ -22,7 +22,8 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.transport.http.HTTPTransportConstants;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.axis2.transport.http.HttpTransportProperties.ProxyProperties;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.datacontract.schemas._2004._07.system_collections_generic.KeyValuePairOfEndpointTypestringztYlk6OT;
 import org.talend.ms.crm.sdk.OnlineAuthenticationPolicy;
 import org.talend.ms.crm.sdk.OrganizationServiceStubWrapper;
@@ -61,7 +62,7 @@ import com.microsoft.schemas.xrm._2011.contracts.discovery.RetrieveOrganizationR
  */
 public class MSCRMClient {
 
-    static Logger logger = Logger.getLogger(MSCRMClient.class.getName());
+    static Logger logger = LoggerFactory.getLogger(MSCRMClient.class.getName());
 
     /**
      * Microsoft account (e.g. youremail@live.com) or Microsoft Office 365 (Org ID e.g.

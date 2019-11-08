@@ -27,7 +27,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.text.WordUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +42,7 @@ import org.json.JSONObject;
  */
 public class JSONHelper {
 
-    private static Logger logger = Logger.getLogger(JSONHelper.class);
+    private static Logger logger = LoggerFactory.getLogger(JSONHelper.class);
 
     JSONHelper() {
         // PropertyConfigurator.configure("log4j.properties");

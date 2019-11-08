@@ -19,15 +19,21 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaSourceViewer;
+import org.eclipse.jdt.internal.ui.text.JavaCompositeReconcilingStrategy;
+import org.eclipse.jdt.internal.ui.text.JavaReconciler;
 import org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds;
 import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
 import org.eclipse.jdt.ui.text.JavaTextTools;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.FileEditorInput;
 import org.talend.commons.exception.SystemException;
@@ -295,6 +301,42 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
             return;
         }
         super.initializeDragAndDrop(viewer);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor#createJavaSourceViewer(org.eclipse.swt.widgets.
+     * Composite, org.eclipse.jface.text.source.IVerticalRuler, org.eclipse.jface.text.source.IOverviewRuler, boolean,
+     * int, org.eclipse.jface.preference.IPreferenceStore)
+     */
+    @Override
+    protected ISourceViewer createJavaSourceViewer(Composite parent, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler,
+            boolean isOverviewRulerVisible, int styles, IPreferenceStore store) {
+        return new TalendAdaptedSourceViewer(parent, verticalRuler, overviewRuler, isOverviewRulerVisible, styles, store);
+    }
+
+    @SuppressWarnings("restriction")
+    protected class TalendAdaptedSourceViewer extends AdaptedSourceViewer {
+
+        public TalendAdaptedSourceViewer(Composite parent, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler,
+                boolean showAnnotationsOverview, int styles, IPreferenceStore store) {
+            super(parent, verticalRuler, overviewRuler, showAnnotationsOverview, styles, store);
+        }
+
+        @Override
+        public void configure(SourceViewerConfiguration configuration) {
+            super.configure(configuration);
+            if (fReconciler == null) {
+                JavaCompositeReconcilingStrategy strategy = new JavaCompositeReconcilingStrategy(this, TalendJavaEditor.this,
+                        configuration.getConfiguredDocumentPartitioning(this));
+                JavaReconciler reconciler = new JavaReconciler(TalendJavaEditor.this, strategy, false);
+                reconciler.setIsAllowedToModifyDocument(false);
+                reconciler.setDelay(500);
+                fReconciler = reconciler;
+                fReconciler.install(this);
+            }
+        }
     }
 
 

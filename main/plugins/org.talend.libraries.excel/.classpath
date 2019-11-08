@@ -10,7 +10,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/poi-scratchpad-4.1.0-20190523141255_modified_talend.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/simpleexcel-2.2-20190722.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/talendExcel-1.5-20190731.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/talendMsgMailUtil-1.1-20170419.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/talendMsgMailUtil-1.1-20191012.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="class"/>
