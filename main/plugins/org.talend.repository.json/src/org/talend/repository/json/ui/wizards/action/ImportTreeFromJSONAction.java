@@ -22,6 +22,10 @@ import org.eclipse.ui.actions.SelectionProviderAction;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.utils.ContextParameterUtils;
+import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.node.FOXTreeNode;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.utils.TreeUtil;
 import org.talend.repository.json.ui.wizards.AbstractJSONStepForm;
@@ -66,6 +70,14 @@ public class ImportTreeFromJSONAction extends SelectionProviderAction {
                     Connection connection = connectionItem.getConnection();
                     if (connection instanceof JSONFileConnection) {
                         encoding = ((JSONFileConnection) connection).getEncoding();
+                        try {
+                            ContextType contextType = ConnectionContextHelper.getContextTypeForContextMode(connection,
+                                    connection.getContextName());
+                            encoding = TalendQuoteUtils
+                                    .removeQuotes(ContextParameterUtils.getOriginalValue(contextType, encoding));
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
                     }
                 }
             }
