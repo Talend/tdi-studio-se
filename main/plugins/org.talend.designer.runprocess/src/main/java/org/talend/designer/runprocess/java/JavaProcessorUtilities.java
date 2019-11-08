@@ -54,7 +54,9 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.repository.IRepositoryObject;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.repository.RepositoryObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -333,13 +335,14 @@ public class JavaProcessorUtilities {
         }
         if (/*alreadyRetrievedModules.isEmpty()*/ true) { // FIXME check TDI-35139
             // to update this only one time in one build of full job/subjobs
-            if (process instanceof Process) {
+            if (process instanceof Process || process instanceof RepositoryObject) {
                 IRunProcessService service = null;
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
                     service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
                 }
                 if (service != null) {
-                    ITalendProcessJavaProject talendProject = service.getTalendJobJavaProject(((Process) process).getProperty());
+                    ITalendProcessJavaProject talendProject = service
+                            .getTalendJobJavaProject(((IRepositoryObject) process).getProperty());
                     service.updateLogFiles(talendProject, true);
                 }
             }
