@@ -4,7 +4,7 @@
 	
 	<groupId>org.neo4j.talend</groupId>
 	<artifactId>neo4j-talend-component</artifactId>
-	<version>1.3-20171206</version>
+	<version>1.3-20191012</version>
 	<packaging>jar</packaging>
 	
 	<name>Neo4j Talend </name>
@@ -100,12 +100,23 @@
 			<artifactId>neo4j-import-tool</artifactId>
 			<version>${neo4j.version}</version>
 		</dependency>
+		<dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
 		<!-- Talend log4j library -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.25</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-			<scope>provided</scope>
+			<version>1.2.17</version>
+			<scope>test</scope>
 		</dependency>
 		<!-- JUnit -->
 		<dependency>

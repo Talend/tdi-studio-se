@@ -155,6 +155,7 @@ import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.constants.BuildJobConstants;
+import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.utils.io.FilesUtils;
 
@@ -369,9 +370,34 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         } else {
             srcFolder = tProcessJavaProject.getSrcFolder();
             boolean needContextInJar = false;
+
             if (process != null) {
                 needContextInJar = new BigDataJobUtil(process).needsToHaveContextInsideJar();
+                if (ProcessorUtilities.getMainJobInfo() != null) {
+                    if (ProcessorUtilities.getMainJobInfo().getProcess() != null) {
+                        if (ProcessorUtilities.isEsbJob(ProcessorUtilities.getMainJobInfo().getProcess(), true)
+                                || "CAMEL".equals(ProcessorUtilities.getMainJobInfo().getProcess().getComponentsType())) {
+                            if (property.getItem() instanceof ProcessItem) {
+                                if (!needContextInJar) {
+                                    if (null != EmfModelUtils.getComponentByName((ProcessItem) property.getItem(), "tRunJob", "cTalendJob")) {
+                                        needContextInJar = false;
+                                    } else {
+                                        if (ProcessorUtilities.isEsbJob(process, true)) {
+                                            needContextInJar = false;
+                                        } else {
+                                            needContextInJar = true;
+                                        }
+                                    }
+                                }
+                            } else if (property.getItem().eClass().getClassifierID() == 4) {
+                                // CamelPropertiesPackage Line 516 int ROUTELET_PROCESS_ITEM = 4;
+                                needContextInJar = true;
+                            }
+                        }
+                    }
+                }
             }
+
             if (needContextInJar) {
                 resourcesFolder = tProcessJavaProject.getResourcesFolder();
             } else {
@@ -1553,7 +1579,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         Set<ModuleNeeded> neededLibraries = JavaProcessorUtilities.getNeededModulesForProcess(process, options);
         boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
         if (isLog4jEnabled) {
-            JavaProcessorUtilities.addLog4jToModuleList(neededLibraries);
+            JavaProcessorUtilities.addLog4jToModuleList(neededLibraries, process);
         }
         return neededLibraries;
     }
@@ -1562,7 +1588,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     public void updateModulesAfterSetLog4j(Collection<ModuleNeeded> modulesNeeded) {
         boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
         if (isLog4jEnabled) {
-            JavaProcessorUtilities.addLog4jToModuleList(modulesNeeded);
+            JavaProcessorUtilities.addLog4jToModuleList(modulesNeeded, process);
         }
     }
 
@@ -1945,6 +1971,48 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             if (oidcEnabled) {
                 copyEsbConfigFile(esbConfigsSourceFolder, esbConfigsTargetFolder, "oidc.properties"); //$NON-NLS-1$
             }
+        }
+
+        try {
+
+            ITalendProcessJavaProject tProcessJvaProject = this.getTalendJavaProject();
+            if (tProcessJvaProject == null) {
+                return;
+            }
+            Item item = property.getItem();
+            IFolder externalResourcesFolder = tProcessJvaProject.getExternalResourcesFolder();
+            IFolder resourcesFolder = tProcessJvaProject.getResourcesFolder();
+            String jobClassPackageFolder = JavaResourcesHelper.getJobClassPackageFolder(item, false);
+            IPath jobContextFolderPath = new Path(jobClassPackageFolder).append(JavaUtils.JAVA_CONTEXTS_DIRECTORY);
+
+            IFolder extResourcePath = externalResourcesFolder.getFolder(jobContextFolderPath);
+            IFolder resourcesPath = resourcesFolder.getFolder(jobContextFolderPath);
+            
+            if (!extResourcePath.exists()) {
+                tProcessJvaProject.createSubFolder(null, externalResourcesFolder, jobContextFolderPath.toString());
+            }
+
+            extResourcePath.refreshLocal(IResource.DEPTH_INFINITE, null);
+
+            if(!resourcesPath.exists()) {
+                tProcessJvaProject.createSubFolder(null, resourcesFolder, jobContextFolderPath.toString());
+            }
+
+            resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
+
+            for (IResource resource : extResourcePath.members()) {
+                IFile context = resourcesPath.getFile(resource.getName());
+
+                if (context.exists()) {
+                    context.delete(true, null);
+                }
+                resource.copy(context.getFullPath(), true, null);
+            }
+
+            resourcesPath.refreshLocal(IResource.DEPTH_INFINITE, null);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -1,7 +1,8 @@
 package org.neo4j.talend;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.neo4j.tooling.ImportTool;
 
 import java.io.BufferedWriter;
@@ -18,7 +19,7 @@ public class Neo4jImportTool {
     /**
      * The logger
      */
-    private final static Logger log = Logger.getLogger(Neo4jImportTool.class);
+    private final static Logger log = LoggerFactory.getLogger(Neo4jImportTool.class);
 
     protected final static String HEADERS_KEY = "HEADERS";
     protected final static String FILE_KEY = "FILE";

@@ -37,6 +37,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	if(useExistingS3Connection){
 		current_node = NodeUtil.getNodeByUniqueName(node.getProcess(),s3ConnectionCid,true);
 	}
+	boolean inheritRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(current_node, "__INHERIT_CREDENTIALS__"));
 	List<IMetadataColumn> columnList = getColumnList(node);
 %>
 	String dbschema_<%=cid%> = null;
@@ -229,23 +230,44 @@ skeleton="../templates/db_output_bulk.skeleton"
     	access_key = ElementParameterParser.getValue(node, "__ACCESS_KEY_SSH__");
     	passwordFieldKey = "__SECRET_KEY_SSH__";
     }
+    
     if(useExistingS3Connection && !assumeRole){
-    	access_key = ElementParameterParser.getValue(current_node, "__ACCESS_KEY__");
-    	passwordFieldKey = "__SECRET_KEY__";
-    }
+    	if(inheritRole){
+    		access_key = "\"\"";
 %>
+			final String decryptedPwd_<%=cid%> = ""; 
 <%
-	if(!assumeRole) {
-		if (ElementParameterParser.canEncrypt(current_node, passwordFieldKey)) {
+    	}else{
+    		access_key = ElementParameterParser.getValue(current_node, "__ACCESS_KEY__");
+    		if (ElementParameterParser.canEncrypt(current_node, passwordFieldKey)) {
 %> 
-			final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(current_node, passwordFieldKey)%>);
+				final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(current_node, passwordFieldKey)%>);
 <%
-		} else {
+			} else {
 %>
-			final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(current_node, passwordFieldKey)%>; 
+				final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(current_node, passwordFieldKey)%>; 
 <%
-		}
-	}
+			}
+    	}
+    }else if(!useExistingS3Connection && !assumeRole){
+    	if(inheritRole){
+    		access_key = "\"\"";
+%>
+			final String decryptedPwd_<%=cid%> = ""; 
+<%
+    	}else{
+    		access_key = ElementParameterParser.getValue(current_node, "__ACCESS_KEY__");
+    		if (ElementParameterParser.canEncrypt(current_node, passwordFieldKey)) {
+%> 
+				final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(current_node, passwordFieldKey)%>);
+<%
+			} else {
+%>
+				final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(current_node, passwordFieldKey)%>; 
+<%
+			}
+    	}
+    }
 	if(avroMode) {
 		String avro_mapping = ElementParameterParser.getValue(node, "__JSON_MAPPING__");
 %>
@@ -309,7 +331,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%		
 			}
 		}
-	}else{
+	} else if(!assumeRole && !inheritRole) {
 %>
 	    .append("aws_access_key_id=").append(<%=access_key%>).append(";aws_secret_access_key=").append(decryptedPwd_<%=cid%>)
 <%

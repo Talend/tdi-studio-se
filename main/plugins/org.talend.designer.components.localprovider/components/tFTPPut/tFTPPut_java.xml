@@ -354,6 +354,7 @@ COMPATIBILITY="ALL"
 		<IMPORT NAME="Java-FTPS-talend" MODULE="commons-net-ftps-proxy-3.6.1-talend-20190819.jar" 
 			MVN="mvn:org.talend.components.lib/commons-net-ftps-proxy/3.6.1-talend-20190819" 
 			REQUIRED_IF="(FTPS == 'true') AND (USE_EXISTING_CONNECTION == 'false')" />
+		<IMPORT NAME="talend-proxy" MODULE="talend-proxy-1.0.0.jar" MVN="mvn:org.talend.components.lib/talend-proxy/1.0.0" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((FTPS == 'true') OR (SFTP == 'true'))" />
      </IMPORTS>
    </CODEGENERATION>
   <RETURNS>

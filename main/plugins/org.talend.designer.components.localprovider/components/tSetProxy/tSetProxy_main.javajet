@@ -3,6 +3,8 @@ imports="
     org.talend.core.model.process.ElementParameterParser
     org.talend.core.model.process.INode
     org.talend.designer.codegen.config.CodeGeneratorArgument
+    java.util.List
+    java.util.Map
 "
 %>
 
@@ -20,56 +22,62 @@ imports="
    String proxyUser = ElementParameterParser.getValue(node,"__PROXY_USERNAME__");
    String proxyPassword = ElementParameterParser.getValue(node,"__PROXY_PASSWORD__");
    String nonProxyHosts = ElementParameterParser.getValue(node,"__NONPROXYHOSTS__");
+   boolean setProxyGlobal = "true".equals(ElementParameterParser.getValue(node,"__PROXY_GLOBAL__"));
+   boolean threadSpecificProxy = "true".equals(ElementParameterParser.getValue(node,"__THREAD_ONLY__"));
+   List<Map<String, String>> proxyHostsList =
+    (List<Map<String,String>>)ElementParameterParser.getObjectValue(
+        node,
+        "__HOSTS__"
+    );
+
+    if (setProxyGlobal) {
 %>
            java.util.Properties props_<%=cid %> = System.getProperties();
 <%
            String passwordFieldName = "__PROXY_PASSWORD__";
            if ("HTTP_PROXY".equals(proxyType)) {
-           
 %>
-			System.setProperty("http.proxySet","true");   
-			
-			System.setProperty("http.proxyHost", <%=proxyHost %>);
-            System.setProperty("http.proxyPort", <%=proxyPort %>);            
-            System.setProperty("http.nonProxyHosts", <%=nonProxyHosts %>);
-            
-            System.setProperty("http.proxyUser", <%=proxyUser %>);
-            
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-            
-            System.setProperty("http.proxyPassword", decryptedPassword_<%=cid%>);
-			
-			java.net.Authenticator.setDefault(
-				new java.net.Authenticator() {
-					public java.net.PasswordAuthentication getPasswordAuthentication() {
-						return new java.net.PasswordAuthentication(
-						   <%=proxyUser %>, decryptedPassword_<%=cid%>.toCharArray());
-					}
-				}
-			);
-<%
-			} else if ("SOCKS_PROXY".equals(proxyType)) {
-%>
-			System.setProperty("socksProxySet","true");   
-			
-			System.setProperty("socksProxyHost", <%=proxyHost %>);
-            System.setProperty("socksProxyPort", <%=proxyPort %>);            
-            System.setProperty("java.net.socks.username", <%=proxyUser %>);
-            
+            System.setProperty("http.proxySet","true");
 
-            
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>            
-            
-        	System.setProperty("java.net.socks.password", decryptedPassword_<%=cid%>);    
+            System.setProperty("http.proxyHost", <%=proxyHost %>);
+            System.setProperty("http.proxyPort", <%=proxyPort %>);
+            System.setProperty("http.nonProxyHosts", <%=nonProxyHosts %>);
+
+            System.setProperty("http.proxyUser", <%=proxyUser %>);
+
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+            System.setProperty("http.proxyPassword", decryptedPassword_<%=cid%>);
+
+            java.net.Authenticator.setDefault(
+                new java.net.Authenticator() {
+                    public java.net.PasswordAuthentication getPasswordAuthentication() {
+                        return new java.net.PasswordAuthentication(
+                          <%=proxyUser %>, decryptedPassword_<%=cid%>.toCharArray());
+                    }
+                }
+            );
 <%
-			}else if ("HTTPS_PROXY".equals(proxyType)) {
-%>		
-			//System.setProperty("httpsProxySet", "true");
-			
-			System.setProperty("https.proxyHost", <%=proxyHost %>);
+            } else if ("SOCKS_PROXY".equals(proxyType)) {
+%>
+            System.setProperty("socksProxySet","true");
+
+            System.setProperty("socksProxyHost", <%=proxyHost %>);
+            System.setProperty("socksProxyPort", <%=proxyPort %>);
+            System.setProperty("java.net.socks.username", <%=proxyUser %>);
+
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+            System.setProperty("java.net.socks.password", decryptedPassword_<%=cid%>);
+<%
+            }else if ("HTTPS_PROXY".equals(proxyType)) {
+%>
+            //System.setProperty("httpsProxySet", "true");
+
+            System.setProperty("https.proxyHost", <%=proxyHost %>);
             System.setProperty("https.proxyPort", <%=proxyPort %>);  
                 <%if(useAuth){
-                	if(enableBasic) {%>
+                    if(enableBasic) {%>
                     System.setProperty("jdk.http.auth.tunneling.disabledSchemes","");
                     <%}%>
                     
@@ -79,16 +87,59 @@ imports="
                             return new java.net.PasswordAuthentication(<%=proxyUser %>, decryptedPassword_<%=cid%>.toCharArray()); 
                         }
                     });
-            <%
-                }
-			}else if ("FTP_PROXY".equals(proxyType)) {
-%>			
-			//set it, though in some cases, it is not useful. 
-			System.setProperty("ftpProxySet", "true");
-			
-			System.setProperty("ftp.proxyHost", <%=proxyHost %>);
-            System.setProperty("ftp.proxyPort", <%=proxyPort %>);            
-            System.setProperty("ftp.nonProxyHosts", <%=nonProxyHosts %>);  
 <%
-			}
+                }
+            }else if ("FTP_PROXY".equals(proxyType)) {
+%>
+            //set it, though in some cases, it is not useful. 
+            System.setProperty("ftpProxySet", "true");
+
+            System.setProperty("ftp.proxyHost", <%=proxyHost %>);
+            System.setProperty("ftp.proxyPort", <%=proxyPort %>);
+            System.setProperty("ftp.nonProxyHosts", <%=nonProxyHosts %>);
+<%
+            }
+    } else {
+%>
+        org.talend.proxy.TalendProxySelector talendProxySelector_<%=cid %> = org.talend.proxy.TalendProxySelector.getInstance();
+        java.net.ProxySelector.setDefault(talendProxySelector_<%=cid %>);
+        java.net.Proxy proxy_<%=cid %> = null;
+
+<%
+        if ("HTTP_PROXY".equals(proxyType) || "HTTPS_PROXY".equals(proxyType)) {
+            if ("HTTPS_PROXY".equals(proxyType) && useAuth && enableBasic) {
+%>
+                System.setProperty("jdk.http.auth.tunneling.disabledSchemes","");
+<%
+            }
+%>
+            System.setProperty("http.proxySet","local");
+            proxy_<%=cid %> = new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(<%=proxyHost %>, Integer.valueOf(<%=proxyPort %>)));
+<%
+        } else if ("SOCKS_PROXY".equals(proxyType)) {
+%>
+            System.setProperty("socksProxySet","local");
+            proxy_<%=cid %> = new java.net.Proxy(java.net.Proxy.Type.SOCKS, new java.net.InetSocketAddress(<%=proxyHost %>, Integer.valueOf(<%=proxyPort %>)));
+<%
+        }
+
+        for (Map<String, String> hostURI : proxyHostsList) {
+            String hostToUseProxy = hostURI.get("HOST");
+            String portToUseProxy = hostURI.get("PORT");
+%>
+            talendProxySelector_<%=cid %>.addProxySettings(proxy_<%=cid %>, <%=threadSpecificProxy %>, <%=hostToUseProxy %> , Integer.valueOf(<%=portToUseProxy %>));
+<%
+        }
+        if (("HTTP_PROXY".equals(proxyType) || "HTTPS_PROXY".equals(proxyType) || "SOCKS_PROXY".equals(proxyType)) && proxyUser != null && !proxyUser.isEmpty()) {
+            String passwordFieldName = "__PROXY_PASSWORD__";
+%>
+
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+            org.talend.proxy.TalendProxyAuthenticator customAuthenticator_<%=cid %> = org.talend.proxy.TalendProxyAuthenticator.getInstance();
+            customAuthenticator_<%=cid %>.addAuthForProxy(<%=proxyHost %>, <%=proxyPort %>, <%=proxyUser %>, decryptedPassword_<%=cid%>);
+            java.net.Authenticator.setDefault(customAuthenticator_<%=cid %>);
+
+<%
+        }
+    }
 %>

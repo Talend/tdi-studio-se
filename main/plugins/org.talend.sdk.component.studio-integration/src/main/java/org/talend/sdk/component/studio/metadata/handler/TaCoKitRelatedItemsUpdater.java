@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
@@ -14,7 +15,9 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.items.importexport.handlers.model.ImportItem;
 import org.talend.repository.items.importexport.manager.ResourcesManager;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
+import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 
 /**
  * Updates related Jobs after metadata migration (during metadata import)
@@ -37,6 +40,16 @@ public class TaCoKitRelatedItemsUpdater extends AbstractImportResourcesHandler {
                     if (repositoryObject.getProperty().getVersion().equals(importItem.getItemVersion())) {
                         final Item item = repositoryObject.getProperty().getItem();
                         if (ConnectionItem.class.isInstance(item)) {
+                            Connection connection = ConnectionItem.class.cast(item).getConnection();
+                            if (connection == null) {
+                                ExceptionHandler.process(new Exception(
+                                        Messages.getString("TaCoKitRelatedItemsUpdater.exception.connectionNotAvailable", //$NON-NLS-1$
+                                                repositoryObject.getLabel())));
+                                continue;
+                            }
+                            if (!TaCoKitConfigurationModel.isTacokit(connection)) {
+                                continue;
+                            }
                             String version = getVersion(item, repositoryObject, versions);
                             manager().updatedRelatedItems((ConnectionItem) item, version, monitor);
                         }

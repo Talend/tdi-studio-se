@@ -1,6 +1,7 @@
 package org.neo4j.talend;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.helpers.collection.MapUtil;
@@ -23,7 +24,7 @@ public class Neo4jBatchDatabase {
     /**
      * The logger
      */
-    private static Logger log = Logger.getLogger(Neo4jBatchDatabase.class);
+    private static Logger log = LoggerFactory.getLogger(Neo4jBatchDatabase.class);
 
     /**
      * Name of the field index for the importId
