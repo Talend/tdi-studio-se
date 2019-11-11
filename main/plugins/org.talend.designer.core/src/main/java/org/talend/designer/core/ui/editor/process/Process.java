@@ -4636,6 +4636,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     private void saveJobletNode(AbstractJobletContainer jobletContainer) {
+        if (CommonsPlugin.isHeadless()) {
+            return;
+        }
         INode jobletNode = jobletContainer.getNode();
         IProcess jobletProcess = jobletNode.getComponent().getProcess();
         if (jobletProcess == null) {
