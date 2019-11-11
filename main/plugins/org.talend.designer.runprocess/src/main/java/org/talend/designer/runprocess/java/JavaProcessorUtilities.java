@@ -79,6 +79,7 @@ import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.RunProcessPlugin;
 import org.talend.designer.runprocess.i18n.Messages;
+import org.talend.designer.runprocess.shadow.FileinToDelimitedProcess;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryConstants;
@@ -335,7 +336,7 @@ public class JavaProcessorUtilities {
         }
         if (/*alreadyRetrievedModules.isEmpty()*/ true) { // FIXME check TDI-35139
             // to update this only one time in one build of full job/subjobs
-            if (process instanceof Process || process instanceof RepositoryObject) {
+            if (process instanceof Process || process instanceof FileinToDelimitedProcess) { // FileinToDelimitedProcess
                 IRunProcessService service = null;
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
                     service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
