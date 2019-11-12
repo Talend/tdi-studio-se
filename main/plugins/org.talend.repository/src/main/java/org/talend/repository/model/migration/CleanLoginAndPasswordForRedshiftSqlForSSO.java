@@ -6,7 +6,6 @@ import java.util.Collections;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.utils.PasswordEncryptUtil;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.ModifyComponentsAction;
@@ -14,16 +13,12 @@ import org.talend.core.model.components.conversions.IComponentConversion;
 import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
-import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.properties.Item;
-import org.talend.cwm.helper.ConnectionHelper;
-import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.utils.security.StudioEncryption;
 
 public class CleanLoginAndPasswordForRedshiftSqlForSSO extends AbstractJobMigrationTask {
-
-	private final static String ENCRYPTED_EMPTY_PASSWORD = "0RMsyjmybrE=";
 	
     @Override
     public Date getOrder() {
@@ -56,7 +51,7 @@ public class CleanLoginAndPasswordForRedshiftSqlForSSO extends AbstractJobMigrat
                                 
                 if (useSSO) {
                 	ComponentUtilities.setNodeValue(node, "USER", "\"\"");             	
-					ComponentUtilities.setNodeValue(node, "PASS", ENCRYPTED_EMPTY_PASSWORD);
+                	ComponentUtilities.setNodeValue(node, "PASS", StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).encrypt(""));
                 }
             }
         };
