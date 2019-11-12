@@ -16,9 +16,10 @@ import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.utils.security.StudioEncryption;
 
 public class CleanLoginAndPasswordForRedshiftSqlForSSO extends AbstractJobMigrationTask {
+	
+	private final static String ENCRYPTED_EMPTY_PASSWORD = "0RMsyjmybrE=";
 	
     @Override
     public Date getOrder() {
@@ -51,7 +52,7 @@ public class CleanLoginAndPasswordForRedshiftSqlForSSO extends AbstractJobMigrat
                                 
                 if (useSSO) {
                 	ComponentUtilities.setNodeValue(node, "USER", "\"\"");             	
-                	ComponentUtilities.setNodeValue(node, "PASS", StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).encrypt(""));
+                	ComponentUtilities.setNodeValue(node, "PASS", ENCRYPTED_EMPTY_PASSWORD);
                 }
             }
         };
