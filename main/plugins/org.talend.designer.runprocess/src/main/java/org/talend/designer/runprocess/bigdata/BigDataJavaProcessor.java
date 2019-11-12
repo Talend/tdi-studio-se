@@ -15,11 +15,13 @@ package org.talend.designer.runprocess.bigdata;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -51,6 +53,7 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessorUtilities;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.designer.runprocess.maven.MavenJavaProcessor;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 
@@ -207,18 +210,19 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         List<String> list = new ArrayList<>();
         list.add(ProcessorConstants.CMD_KEY_WORD_LIBJAR);
         StringBuffer libJars = new StringBuffer();
-        Set<String> libNames = new HashSet<>();
+        Set<String> libNamesUnsorted = new HashSet<>();
         boolean isExport = isExportConfig() || isRunAsExport();
         if (process instanceof IProcess2) {
             if (isExport) {
                 // In an export mode, all the dependencies and the routines/beans/udfs are packaged in the lib folder.
-                libNames = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducer((IProcess2) process);
+                libNamesUnsorted = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducer((IProcess2) process);
             } else {
                 // In the local mode, all the dependencies are packaged in the lib folder. The routines/beans/udfs are
                 // not.
                 // We will
                 // handle them separetely.
-                libNames = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducerWithoutRoutines((IProcess2) process);
+                libNamesUnsorted = JavaProcessorUtilities
+                        .extractLibNamesOnlyForMapperAndReducerWithoutRoutines((IProcess2) process);
             }
         }
         Set<ModuleNeeded> modulesNeeded = LastGenerationInfo.getInstance().getModulesNeededWithSubjobPerJob(process.getId(),
@@ -227,6 +231,19 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         for (ModuleNeeded module : modulesNeeded) {
             allNeededLibsAfterAdjuster.add(MavenUrlHelper.generateModuleNameByMavenURI(module.getMavenUri()));
         }
+        Set<String> libNames = new TreeSet<String>(new Comparator<String>() {
+
+            @Override
+            public int compare(String o1, String o2) {
+                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_ADDED_BACK) {
+                    if (StringUtils.equals(moduleName, o2)) {
+                        return -1;
+                    }
+                }
+                return 1;
+            }
+        });
+        libNames.addAll(libNamesUnsorted);
         Iterator<String> it = libNames.iterator();
         while (it.hasNext()) {
             String jarName = it.next();

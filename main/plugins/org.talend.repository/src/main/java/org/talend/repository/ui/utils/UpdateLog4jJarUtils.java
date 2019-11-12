@@ -53,6 +53,10 @@ public class UpdateLog4jJarUtils {
         addBackModules(jarList, isSelectLog4j2, modulesUsedBefore);
     }
 
+    public static final String[] MODULES_NEED_ADDED_BACK = { "log4j-jcl-2.12.1.jar", "log4j-jul-2.12.1.jar",
+            "log4j-slf4j-impl-2.12.1.jar", "log4j-api-2.12.1.jar", "log4j-core-2.12.1.jar", "jcl-over-slf4j-1.7.25.jar",
+            "jul-to-slf4j-1.7.25.jar", "log4j-to-slf4j-2.12.1.jar", "slf4j-log4j12-1.7.25.jar", "log4j-1.2.17.jar" };
+
     private static void addBackJars(Collection<String> moduleNeededList, boolean isSelectLog4j2, List<String> modulesUsedBefore) {
         if (isSelectLog4j2) {
             boolean usedlog4jJclBefore = false;
