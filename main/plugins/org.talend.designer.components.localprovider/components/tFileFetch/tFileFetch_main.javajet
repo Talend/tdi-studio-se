@@ -94,7 +94,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 
 			private javax.net.ssl.SSLContext sslcontext = null;
 
-			private javax.net.ssl.SSLContext createSSLContext() {
+			private javax.net.ssl.SSLContext createSSLContext() throws java.io.IOException{
 				javax.net.ssl.SSLContext sslcontext = null;
 				try {
                     sslcontext = javax.net.ssl.SSLContext.getInstance("SSL");
@@ -109,7 +109,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                             javax.net.ssl.KeyManagerFactory kmf = javax.net.ssl.KeyManagerFactory.getInstance(javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
                             kmf.init(keyStore, keyStorePassword.toCharArray());
                             keyManagers = kmf.getKeyManagers();
-                        } catch (Exception e) {
+                        } catch (UnrecoverableKeyException|java.security.KeyStoreException|java.security.cert.CertificateException e) {
                             log.error(e.getLocalizedMessage());
                             e.printStackTrace();
                         }
@@ -126,7 +126,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                             tmf.init(trustStore);
                             trustManagers = tmf.getTrustManagers();
 
-                        } catch (Exception e) {
+                        } catch (java.security.KeyStoreException|java.security.cert.CertificateException e) {
                             log.error(e.getLocalizedMessage());
                             e.printStackTrace();
 
