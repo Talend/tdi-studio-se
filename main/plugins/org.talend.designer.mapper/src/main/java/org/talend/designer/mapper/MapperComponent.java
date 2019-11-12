@@ -905,6 +905,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
     	return "ALL_MATCHES".equals(data.getInputTables().get(0).getMatchingMode()) || "ALL_MATCHES".equals(data.getInputTables().get(1).getMatchingMode());
     }
     
+    @Override
     public boolean getShouldGenerateDataset() {
     	return this.shouldGenerateDatasetCode;
     }
