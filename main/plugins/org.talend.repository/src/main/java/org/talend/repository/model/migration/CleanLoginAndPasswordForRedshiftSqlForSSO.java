@@ -14,12 +14,14 @@ import org.talend.core.model.components.conversions.IComponentConversion;
 import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.properties.Item;
 import org.talend.cwm.helper.ConnectionHelper;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
-public class CleanLoginAndPasswordForPostgreSqlForSSO extends AbstractJobMigrationTask {
+public class CleanLoginAndPasswordForRedshiftSqlForSSO extends AbstractJobMigrationTask {
 
     @Override
     public Date getOrder() {
@@ -49,17 +51,10 @@ public class CleanLoginAndPasswordForPostgreSqlForSSO extends AbstractJobMigrati
             @Override
             public void transform(NodeType node) {
                 boolean useSSO = "SSO".equals(ComponentUtilities.getNodePropertyValue(node, "JDBC_URL"));
-              
-                String password = "";
-				try {
-					password = PasswordEncryptUtil.encryptPassword(ConnectionHelper.getDecryptPassword(""));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-                
+                                
                 if (useSSO) {
-                	ComponentUtilities.setNodeValue(node, "USER", "\"\"");
-                	ComponentUtilities.setNodeValue(node, "PASS", password);
+                	ComponentUtilities.setNodeValue(node, "USER", "\"\"");             	
+					ComponentUtilities.setNodeValue(node, "PASS", "0RMsyjmybrE=");
                 }
             }
         };
