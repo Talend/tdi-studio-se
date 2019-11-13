@@ -40,7 +40,7 @@ public class CleanLoginAndPasswordForRedshiftSqlForSSO extends AbstractJobMigrat
                 "tRedshiftOutput",
                 "tRedshiftOutputBulkExec",
                 "tRedshiftRow",
-                "tRedshiftUnload",
+                "tRedshiftUnload"
         };
 
         IComponentConversion defaultDBVersion = new IComponentConversion() {
@@ -51,7 +51,7 @@ public class CleanLoginAndPasswordForRedshiftSqlForSSO extends AbstractJobMigrat
                                 
                 if (useSSO) {
                 	ComponentUtilities.setNodeValue(node, "USER", "\"\"");             	
-                	ComponentUtilities.setNodeValue(node, "PASS", StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).encrypt(""));
+                	ComponentUtilities.setNodeValue(node, "PASS", StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).encrypt("\"\""));
                 }
             }
         };
