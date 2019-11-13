@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.dbmap.model.table;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +100,6 @@ public class InputTable extends AbstractInOutTable {
             }
         }
 
-        ArrayList<IMetadataColumn> columnsToRemove = new ArrayList<IMetadataColumn>();
         for (IMetadataColumn column : columns) {
             InputColumnTableEntry inputEntry = (InputColumnTableEntry) getNewTableEntry(column);
             ExternalDbMapEntry externalMapperTableEntry = nameToPerTabEntry.get(inputEntry.getMetadataColumn().getLabel());
@@ -110,13 +108,8 @@ public class InputTable extends AbstractInOutTable {
                 fillInputEntry(inputEntry, externalMapperTableEntry);
                 nameToPerTabEntry.remove(externalMapperTableEntry.getName());
             }
-            if (externalMapperTableEntry != null || !isAliasTable) {
-                dataMapTableEntries.add(inputEntry);
-            } else {
-                columnsToRemove.add(column);
-            }
+            dataMapTableEntries.add(inputEntry);
         }
-        columns.removeAll(columnsToRemove);
 
         // create unmatching entries
         for (ExternalDbMapEntry perTableEntry : nameToPerTabEntry.values()) {
