@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.DynaBean;
+
 import net.sf.ezmorph.MorphUtils;
 import net.sf.ezmorph.MorpherRegistry;
 import net.sf.ezmorph.bean.MorphDynaBean;
@@ -36,9 +38,8 @@ import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONString;
 import net.sf.json.JsonConfig;
+import net.sf.json.JsonStandard;
 import net.sf.json.regexp.RegexpUtils;
-
-import org.apache.commons.beanutils.DynaBean;
 
 /**
  * Provides useful methods on java objects and JSON values.
@@ -124,7 +125,7 @@ public final class JSONUtils {
    public static String getFunctionBody( String function ) {
       return RegexpUtils.getMatcher( FUNCTION_BODY_PATTERN, true ).getGroupIfMatches( function, 1 );
    }
-   
+
    /**
     * Returns the params of a function literal.
     */
@@ -605,7 +606,7 @@ public final class JSONUtils {
       return input.startsWith( SINGLE_QUOTE ) && input.endsWith( SINGLE_QUOTE ) ||
          input.startsWith( DOUBLE_QUOTE ) && input.endsWith( DOUBLE_QUOTE );
    }
-   
+
    public static boolean isJsonKeyword( String input, JsonConfig jsonConfig ) {
       if( input == null ){
          return false;
@@ -615,7 +616,7 @@ public final class JSONUtils {
               "false".equals( input ) ||
               (jsonConfig.isJavascriptCompliant() && "undefined".equals( input ));
    }
-   
+
    /**
     * Throw an exception if the object is an NaN or infinite number.
     *
@@ -754,7 +755,77 @@ public final class JSONUtils {
       return quote( value.toString() );
    }
 
-   /**
+    public static String jsonToStandardizedString(JSON json, JsonStandard standard) {
+       switch (standard) {
+            case WRAP_NULL_STRINGS:
+               if (json.isArray()) {
+                  JSONArray jsonArray = (JSONArray) json;
+                  return jsonArrayToWrappedNullStrings(jsonArray);
+               } else if (!JSONNull.getInstance().equals(json)) {
+                  return jsonToWrappedNullStrings((JSONObject) json);
+               }
+            default:
+                return json.toString();
+       }
+   }
+
+
+    /**
+     *
+     * @return plain String from JSONObject (@see JSONObject#toString()), but wrap null strings to quotation
+     */
+    private static String jsonToWrappedNullStrings(JSONObject json) {
+        if (json.isNullObject()) {
+            return JSONNull.getInstance()
+                    .toString();
+        }
+        try {
+            Iterator keys = json.keys();
+            StringBuilder sb = new StringBuilder("{");
+
+            while (keys.hasNext()) {
+                if (sb.length() > 1) {
+                    sb.append(',');
+                }
+                Object o = keys.next();
+                sb.append(quote(o.toString()));
+                sb.append(':');
+                sb.append(valueToStringWrappedNullStrings(json.get(o)));
+            }
+            sb.append('}');
+            return sb.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+   private static String jsonArrayToWrappedNullStrings(JSONArray jsonArray) {
+      final String separator = ",";
+      StringBuilder sb = new StringBuilder("[");
+
+      for (int i = 0; i < jsonArray.size(); i++) {
+         if (i > 0) {
+            sb.append(separator);
+         }
+         sb.append(JSONUtils.valueToStringWrappedNullStrings(jsonArray.get(i)));
+      }
+
+      return sb.append("]").toString();
+   }
+
+   private static String valueToStringWrappedNullStrings(Object o) {
+        if ("null".equals(o)) {
+            return quote(o.toString());
+        } else if (o instanceof JSONArray) {
+           return jsonArrayToWrappedNullStrings((JSONArray) o);
+        } else if (o instanceof JSONObject) {
+           return jsonToWrappedNullStrings((JSONObject) o);
+        } else {
+            return valueToString(o);
+        }
+    }
+
+    /**
     * Finds out if n represents a BigInteger
     *
     * @return true if n is instanceOf BigInteger or the literal value can be

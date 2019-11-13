@@ -25,11 +25,11 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.sf.json.util.JSONUtils;
-import net.sf.json.util.JsonEventListener;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import net.sf.json.util.JSONUtils;
+import net.sf.json.util.JsonEventListener;
 
 /**
  * Base class for JSONObject and JSONArray.
@@ -227,7 +227,8 @@ abstract class AbstractJSON implements JSON {
    }
 
    protected Object _processValue( Object value, JsonConfig jsonConfig ) {
-      if( JSONNull.getInstance().equals( value ) ) {
+      if( JSONNull.getInstance().equals( value ) &&
+              ((jsonConfig.getJsonStandard() != JsonStandard.WRAP_NULL_STRINGS) || !"null".equals(value))) {
          return JSONNull.getInstance();
       } else if( Class.class.isAssignableFrom( value.getClass() ) || value instanceof Class ) {
          return ((Class) value).getName();

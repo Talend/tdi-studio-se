@@ -114,7 +114,7 @@ public class JavaProcessUtil {
         if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED)) {
             new BigDataJobUtil(process).removeExcludedModules(modulesNeeded);
         }
-
+        CheckLogManamger.updateLog4jToModuleList(modulesNeeded);
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 

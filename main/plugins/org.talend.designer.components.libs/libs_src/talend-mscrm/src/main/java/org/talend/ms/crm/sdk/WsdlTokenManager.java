@@ -44,7 +44,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -55,7 +56,7 @@ import org.xml.sax.SAXException;
  */
 public final class WsdlTokenManager {
 
-    static Logger logger = Logger.getLogger(WsdlTokenManager.class.getName());
+    static Logger logger = LoggerFactory.getLogger(WsdlTokenManager.class.getName());
 
     private final String DeviceTokenTemplate = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + " <s:Envelope "
             + " xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\""
