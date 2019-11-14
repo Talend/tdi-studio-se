@@ -1004,7 +1004,7 @@ public abstract class DbGenerationManager {
      */
     protected boolean buildConditions(DbMapComponent component, StringBuilder sb, ExternalDbMapTable inputTable,
             boolean writeForJoin, boolean isFirstClause) {
-    	return buildConditions(component, sb, inputTable, writeForJoin, isFirstClause, false);
+        return buildConditions(component, sb, inputTable, writeForJoin, isFirstClause, false);
     }
 
     /**
@@ -1314,8 +1314,8 @@ public abstract class DbGenerationManager {
     }
 
     protected String initExpression(DbMapComponent component, ExternalDbMapEntry dbMapEntry) {
-    	String quote = getQuote(component);
-    	String quto_mark = TalendQuoteUtils.QUOTATION_MARK;
+        String quote = getQuote(component);
+        String quto_mark = TalendQuoteUtils.QUOTATION_MARK;
         String expression = dbMapEntry.getExpression();
         if (expression != null) {
             List<Map<String, String>> itemNameList = null;
@@ -1424,7 +1424,7 @@ public abstract class DbGenerationManager {
                                             oriName = oriName.replaceAll("\\$", "\\\\\\$"); //$NON-NLS-1$ //$NON-NLS-2$
                                         }
                                         expression = expression.replaceFirst(tableValue + "\\." + co.getLabel(), //$NON-NLS-1$
-                                        		tableValue + "\\." + oriName); //$NON-NLS-1$
+                                                tableValue + "\\." + oriName); //$NON-NLS-1$
                                         expression = replaceAuotes(expression, quto_markParser, quto_mark);
                                     }
                                 }
@@ -1478,23 +1478,23 @@ public abstract class DbGenerationManager {
     }
 
     private String getQuote(DbMapComponent component){
-    	String quote = TalendQuoteUtils.QUOTATION_MARK;
-    	IElementParameter mappingPara = component.getElementParameter(EParameterName.MAPPING.getName());
-    	if(mappingPara == null){
-    		return quote;
-    	}
-    	String mapping = (String) mappingPara.getValue();
-    	if(mapping == null){
-    		return quote;
-    	}
-		MappingTypeRetriever mappingTypeRetriever = MetadataTalendType.getMappingTypeRetriever(mapping);
-		if (mappingTypeRetriever == null) {
-			return quote;
-		}
-		Dbms dbms = mappingTypeRetriever.getDbms();
-		String product = dbms.getProduct();
-		EDatabaseTypeName type = EDatabaseTypeName.getTypeFromProductName(product);
-		return TalendQuoteUtils.getQuoteByDBType(type);
+        String quote = TalendQuoteUtils.QUOTATION_MARK;
+        IElementParameter mappingPara = component.getElementParameter(EParameterName.MAPPING.getName());
+        if(mappingPara == null){
+            return quote;
+        }
+        String mapping = (String) mappingPara.getValue();
+        if(mapping == null){
+            return quote;
+        }
+        MappingTypeRetriever mappingTypeRetriever = MetadataTalendType.getMappingTypeRetriever(mapping);
+        if (mappingTypeRetriever == null) {
+            return quote;
+        }
+        Dbms dbms = mappingTypeRetriever.getDbms();
+        String product = dbms.getProduct();
+        EDatabaseTypeName type = EDatabaseTypeName.getTypeFromProductName(product);
+        return TalendQuoteUtils.getQuoteByDBType(type);
     }
 
     private String getOriginalColumnName(String entryName, DbMapComponent component, ExternalDbMapTable table) {
