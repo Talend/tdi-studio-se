@@ -3363,7 +3363,15 @@
         name="log4j-jcl-2.12.1.jar"
         mvn_uri="mvn:org.apache.logging.log4j/log4j-jcl/2.12.1"
         uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-jcl-2.12.1.jar">
-      </libraryNeeded>          
+      </libraryNeeded>  
+      
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-1.2-api-2.12.1.jar"
+        name="log4j-1.2-api-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-1.2-api/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2-api-2.12.1.jar">
+      </libraryNeeded>         
    </extension>
    <!--
    <extension
