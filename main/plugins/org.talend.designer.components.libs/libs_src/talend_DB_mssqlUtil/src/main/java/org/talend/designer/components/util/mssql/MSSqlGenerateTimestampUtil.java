@@ -120,7 +120,6 @@ public class MSSqlGenerateTimestampUtil {
     /**
      * parse datetimeoffset string to date.
      * datetimeoffset string show as YYYY-MM-DD hh:mm:ss[.nnnnnnn] [+|-]hh:mm
-     * and no enough infomation for the DST decision,so no DST consider[not sure if 100% support for DST].
      *
      * @param datetimeOffsetString
      * @return
@@ -131,13 +130,17 @@ public class MSSqlGenerateTimestampUtil {
         String offsetString = datetimeOffsetString.substring(idx + 1);
         int offset = TimeZone.getTimeZone("GMT" + offsetString).getRawOffset();
 
+        //for example, if +8 timezone, this value is 8 hours(conver to millisecond) bigger than GMT's
+        long millisecondsWithOffset = java.sql.Timestamp.valueOf(datetimeString).getTime();
+        //get GMT's millisecond number since GMT 1970_01_01
+        long milliseconds4GMT_to_GMT_1970_01_01 = millisecondsWithOffset - offset;
+        
         // get local timezone, also consider the DST
         TimeZone local = TimeZone.getDefault();
-        int localOffset = local.getOffset(new java.util.Date().getTime());
+        int localOffset = local.getOffset(milliseconds4GMT_to_GMT_1970_01_01);
 
-        long milliseconds = java.sql.Timestamp.valueOf(datetimeString).getTime();
-        long millisecondsToGMT1970_01_01 = milliseconds - offset + localOffset;
-        return new java.util.Date(millisecondsToGMT1970_01_01);
+        long millisecondsLocalToGMT1970_01_01 = milliseconds4GMT_to_GMT_1970_01_01 + localOffset;
+        return new java.util.Date(millisecondsLocalToGMT1970_01_01);
     }
 
 }
