@@ -14,6 +14,8 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.LastGenerationInfo;
@@ -50,7 +52,7 @@ public class UpdateLog4jJarUtils {
 //            return;
 //        }
         List<ModuleNeeded> modulesUsedBefore = removeLog4jFromModuleListAndGetModulesUsedBefore(process, jarList);
-        addBackModules(jarList, isSelectLog4j2, modulesUsedBefore);
+        addBackModules(jarList, isSelectLog4j2, modulesUsedBefore, process);
     }
 
     public static final String[] MODULES_NEED_ADDED_BACK = { "log4j-jcl-2.12.1.jar", "log4j-jul-2.12.1.jar",
@@ -111,7 +113,7 @@ public class UpdateLog4jJarUtils {
     }
 
     private static void addBackModules(Collection<ModuleNeeded> moduleNeededList, boolean isSelectLog4j2,
-            List<ModuleNeeded> modulesUsedBefore) {
+            List<ModuleNeeded> modulesUsedBefore, IProcess2 process) {
         if (isSelectLog4j2) {
             boolean usedlog4jJclBefore = false;
             boolean usedlog4jJulBefore = false;
@@ -124,8 +126,18 @@ public class UpdateLog4jJarUtils {
                 if (module.getModuleName().matches("log4j-jul-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
                     usedlog4jJulBefore = true;
                 }
-                if (module.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
-                    usedlog4j1JarBefore = true;
+            }
+            if (process instanceof IProcess2) {
+                Item item = ((IProcess2) process).getProperty().getItem();
+                if (item instanceof ProcessItem) {
+                    Set<ModuleNeeded> modulesNeededForProcess = ModulesNeededProvider
+                            .getModulesNeededForProcess((ProcessItem) item, process);
+                    for (ModuleNeeded m : modulesNeededForProcess) {
+                        if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
+                            usedlog4j1JarBefore = true;
+                            break;
+                        }
+                    }
                 }
             }
             if (usedlog4jJclBefore) {

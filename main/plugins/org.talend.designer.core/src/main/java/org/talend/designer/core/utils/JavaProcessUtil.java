@@ -59,6 +59,8 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.maven.utils.MavenVersionHelper;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
+import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 /**
  * DOC xye class global comment. Detailled comment
@@ -114,7 +116,7 @@ public class JavaProcessUtil {
         if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED)) {
             new BigDataJobUtil(process).removeExcludedModules(modulesNeeded);
         }
-        CheckLogManamger.updateLog4jToModuleList(modulesNeeded);
+        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, Log4jPrefsSettingManager.getInstance().isSelectLog4j2(), process);
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
