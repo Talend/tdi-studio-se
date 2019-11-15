@@ -39,7 +39,7 @@ public class UpdateLog4jJarUtils {
 //            return;
 //        }
         List<String> modulesUsedBefore = removeLog4jFromJarListAndGetUsedJarBefore(process, jarList);
-        addBackJars(jarList, isSelectLog4j2, modulesUsedBefore);
+        addBackJars(jarList, isSelectLog4j2, modulesUsedBefore, process);
     }
 
     public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, boolean isSelectLog4j2, IProcess currentProcess) {
@@ -59,7 +59,8 @@ public class UpdateLog4jJarUtils {
             "log4j-slf4j-impl-2.12.1.jar", "log4j-api-2.12.1.jar", "log4j-core-2.12.1.jar", "jcl-over-slf4j-1.7.25.jar",
             "jul-to-slf4j-1.7.25.jar", "log4j-to-slf4j-2.12.1.jar", "slf4j-log4j12-1.7.25.jar", "log4j-1.2.17.jar" };
 
-    private static void addBackJars(Collection<String> moduleNeededList, boolean isSelectLog4j2, List<String> modulesUsedBefore) {
+    private static void addBackJars(Collection<String> moduleNeededList, boolean isSelectLog4j2, List<String> modulesUsedBefore,
+            IProcess2 process) {
         if (isSelectLog4j2) {
             boolean usedlog4jJclBefore = false;
             boolean usedlog4jJulBefore = false;
@@ -72,8 +73,18 @@ public class UpdateLog4jJarUtils {
                 if (module.matches("log4j-jul-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
                     usedlog4jJulBefore = true;
                 }
-                if (module.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
-                    usedlog4j1JarBefore = true;
+            }
+            if (process instanceof IProcess2) {
+                Item item = ((IProcess2) process).getProperty().getItem();
+                if (item instanceof ProcessItem) {
+                    Set<ModuleNeeded> modulesNeededForProcess = ModulesNeededProvider
+                            .getModulesNeededForProcess((ProcessItem) item, process);
+                    for (ModuleNeeded m : modulesNeededForProcess) {
+                        if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
+                            usedlog4j1JarBefore = true;
+                            break;
+                        }
+                    }
                 }
             }
             if (usedlog4jJclBefore) {
