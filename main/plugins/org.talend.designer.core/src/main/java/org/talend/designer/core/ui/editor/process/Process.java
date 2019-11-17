@@ -3358,7 +3358,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         if (node instanceof Node) {
             component = ((Node) node).getDelegateComponent();
         }
-        String baseName = component.getDisplayName();
+        String baseName = component.getOriginalName();
+        if (EComponentType.GENERIC.equals(component.getComponentType())) {
+            baseName = component.getDisplayName();
+        }
         return UniqueNodeNameGenerator.generateUniqueNodeName(baseName, uniqueNodeNameList);
     }
 
