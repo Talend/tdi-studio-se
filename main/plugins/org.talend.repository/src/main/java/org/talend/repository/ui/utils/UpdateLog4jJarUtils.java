@@ -10,12 +10,11 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.CommonExceptionHandler;
+import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
-import org.talend.core.model.properties.Item;
-import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.LastGenerationInfo;
@@ -75,10 +74,9 @@ public class UpdateLog4jJarUtils {
                 }
             }
             if (process instanceof IProcess2) {
-                Item item = ((IProcess2) process).getProperty().getItem();
-                if (item instanceof ProcessItem) {
-                    Set<ModuleNeeded> modulesNeededForProcess = ModulesNeededProvider
-                            .getModulesNeededForProcess((ProcessItem) item, process);
+                Set<ModuleNeeded> modulesNeededForProcess = CorePlugin.getDefault().getDesignerCoreService()
+                        .getNeededLibrariesForProcessBeforeUpdateLog(process, false);
+                if (modulesNeededForProcess != null) {
                     for (ModuleNeeded m : modulesNeededForProcess) {
                         if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
                             usedlog4j1JarBefore = true;
@@ -139,10 +137,9 @@ public class UpdateLog4jJarUtils {
                 }
             }
             if (process instanceof IProcess2) {
-                Item item = ((IProcess2) process).getProperty().getItem();
-                if (item instanceof ProcessItem) {
-                    Set<ModuleNeeded> modulesNeededForProcess = ModulesNeededProvider
-                            .getModulesNeededForProcess((ProcessItem) item, process);
+                Set<ModuleNeeded> modulesNeededForProcess = CorePlugin.getDefault().getDesignerCoreService()
+                        .getNeededLibrariesForProcessBeforeUpdateLog(process, false);
+                if (modulesNeededForProcess != null) {
                     for (ModuleNeeded m : modulesNeededForProcess) {
                         if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
                             usedlog4j1JarBefore = true;
