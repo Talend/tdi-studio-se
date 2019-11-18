@@ -154,7 +154,7 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
             }
             if (JSONFileOutputStep1Form.this.tempPath == null) {
                 if (jsonXmlPath != null && !jsonXmlPath.equals("")) {
-                    JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(jsonXmlPath, getConnection().getEncoding());
+                    JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(jsonXmlPath, getConnectionEncoding());
                 } else {
                     JSONFileOutputStep1Form.this.tempPath = "";
                 }
@@ -318,7 +318,7 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
 
         List<FOXTreeNode> rootFoxTreeNodes = null;
         if (JSONFileOutputStep1Form.this.tempPath == null) {
-            JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(text, getConnection().getEncoding());
+            JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(text, getConnectionEncoding());
         }
         if (treeNode == null) {
             rootFoxTreeNodes = TreeUtil.getFoxTreeNodes(JSONFileOutputStep1Form.this.tempPath);
@@ -365,12 +365,12 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
                 }
                 // getConnection().setJSONFilePath(PathUtils.getPortablePath(JSONXsdFilePath.getText()));
                 if (JSONFileOutputStep1Form.this.tempPath == null) {
-                    JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(text, getConnection().getEncoding());
+                    JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(text, getConnectionEncoding());
                 }
                 File file = new File(text);
                 if (file.exists()) {
                     List<ATreeNode> treeNodes = new ArrayList<ATreeNode>();
-                    valid = treePopulator.populateTree(JSONUtil.changeJsonToXml(text, getConnection().getEncoding()), treeNode);
+                    valid = treePopulator.populateTree(JSONUtil.changeJsonToXml(text, getConnectionEncoding()), treeNode);
                     checkFieldsValue();
                     if (!valid) {
                         return;
@@ -403,9 +403,8 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
             @Override
             public void modifyText(ModifyEvent e) {
                 getConnection().setEncoding(encodingCombo.getText());
-                String encoding = getConnection().getEncoding();
                 try {
-                    Charset charSet = Charset.forName(encoding);
+                    Charset charSet = Charset.forName(getConnectionEncoding());
                     if (charSet != null) {
                         validateJsonFile();
                         return;
@@ -431,7 +430,7 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
                 }
                 if (JSONFileOutputStep1Form.this.tempPath == null) {
                     JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(jsonFilePath.getText(),
-                            getConnection().getEncoding());
+                            getConnectionEncoding());
                 }
 
                 File file = new File(JSONFileOutputStep1Form.this.tempPath);
@@ -726,7 +725,7 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
         try {
             Charset guessCharset = null;
             try {
-                guessCharset = Charset.forName(getConnection().getEncoding());
+                guessCharset = Charset.forName(getConnectionEncoding());
             } catch (Exception e) {
                 if (CommonsPlugin.isDebugMode()) {
                     ExceptionHandler.process(e, Priority.INFO);
@@ -801,7 +800,7 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
         // valid = treePopulator.populateTree(text, treeNode);
         // }
         if (file.exists()) {
-            valid = treePopulator.populateTree(JSONUtil.changeJsonToXml(text, getConnection().getEncoding()), treeNode);
+            valid = treePopulator.populateTree(JSONUtil.changeJsonToXml(text, getConnectionEncoding()), treeNode);
             updateConnection(text);
         }
         checkFieldsValue();
