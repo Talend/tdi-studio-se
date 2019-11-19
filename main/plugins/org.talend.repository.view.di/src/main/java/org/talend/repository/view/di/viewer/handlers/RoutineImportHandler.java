@@ -25,9 +25,11 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.ILibraryManagerService;
 import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PropertiesPackage;
@@ -221,11 +223,28 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
         if (jarsToDeploy.size() > 0) {
             ILibrariesService libService = (ILibrariesService) GlobalServiceRegister.getDefault().getService(
                     ILibrariesService.class);
-            try {
-                libService.deployLibrarys(jarsToDeploy.toArray(new URL[0]));
-            } catch (IOException e) {
-                ExceptionHandler.process(e);
+            ILibraryManagerService librairesManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
+                    ILibraryManagerService.class);
+            if (librairesManagerService != null) {
+                try {
+                    for(URL url : jarsToDeploy) {
+                        IPath path = new Path(url.getPath());
+                        boolean exist = librairesManagerService.retrieve(path.lastSegment(), path.removeLastSegments(1).toOSString(), new NullProgressMonitor());
+                        if(!exist) {
+                            libService.deployLibrary(url, false);
+                        }
+                    }
+                } catch (IOException e) {
+                    ExceptionHandler.process(e);
+                }
+            }else {
+                try {
+                    libService.deployLibrarys(jarsToDeploy.toArray(new URL[0]));
+                } catch (IOException e) {
+                    ExceptionHandler.process(e);
+                }
             }
+            
         }
         jarsToDeploy.clear();
     }
