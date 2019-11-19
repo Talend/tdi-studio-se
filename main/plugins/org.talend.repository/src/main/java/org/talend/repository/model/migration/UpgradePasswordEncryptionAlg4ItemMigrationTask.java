@@ -209,7 +209,10 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
                     for (ContextParameterType param : paramTypes) {
                         String value = param.getValue();
                         if (value != null && PasswordEncryptUtil.isPasswordType(param.getType())) {
-                            param.setRawValue(PasswordMigrationUtil.decryptPassword(value));
+                            String decryptValue = PasswordMigrationUtil.decryptPassword(value);
+                            if (decryptValue != null) {
+                                param.setRawValue(decryptValue);
+                            }
                             modify = true;
                         }
                     }
@@ -321,7 +324,9 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
         String value = param.getValue();
         if (value != null) {
             String decryptValue = PasswordMigrationUtil.decryptPassword(value);
-            param.setRawValue(decryptValue);
+            if (decryptValue != null) {
+                param.setRawValue(decryptValue);
+            }
             return true;
         }
         return false;
@@ -331,7 +336,9 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
         String value = param.getValue();
         if (value != null) {
             String decryptValue = PasswordMigrationUtil.decryptPassword(value);
-            param.setRawValue(decryptValue);
+            if (decryptValue != null) {
+                param.setRawValue(decryptValue);
+            }
             return true;
         }
         return false;

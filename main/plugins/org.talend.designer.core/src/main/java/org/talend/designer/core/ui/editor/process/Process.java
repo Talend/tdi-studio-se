@@ -2046,7 +2046,23 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             process.setParameters(parameterType);
         }
         checkRoutineDependencies();
-        process.getParameters().getRoutinesParameter().addAll(routinesDependencies);
+        List<RoutinesParameterType> toAddList = new ArrayList<RoutinesParameterType>();
+        boolean found = false;
+        for (RoutinesParameterType routineType : routinesDependencies) {
+            found = false;
+            for (Object o : process.getParameters().getRoutinesParameter()) {
+                RoutinesParameterType type = (RoutinesParameterType) o;
+                if (StringUtils.equals(type.getId(), routineType.getId())
+                        || StringUtils.equals(type.getName(), routineType.getName())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                toAddList.add(EcoreUtil.copy(routineType));
+            }
+        }
+        process.getParameters().getRoutinesParameter().addAll(toAddList);
     }
 
     public void addGeneratingRoutines(List<RoutinesParameterType> routinesParameters) {
@@ -3369,7 +3385,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         if (node instanceof Node) {
             component = ((Node) node).getDelegateComponent();
         }
-        String baseName = component.getDisplayName();
+        String baseName = component.getOriginalName();
+        if (EComponentType.GENERIC.equals(component.getComponentType())) {
+            baseName = component.getDisplayName();
+        }
         return UniqueNodeNameGenerator.generateUniqueNodeName(baseName, uniqueNodeNameList);
     }
 
@@ -4636,6 +4655,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     private void saveJobletNode(AbstractJobletContainer jobletContainer) {
+        if (CommonsPlugin.isHeadless()) {
+            return;
+        }
         INode jobletNode = jobletContainer.getNode();
         IProcess jobletProcess = jobletNode.getComponent().getProcess();
         if (jobletProcess == null) {

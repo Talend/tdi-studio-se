@@ -2391,7 +2391,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
       }
       try{
          Iterator keys = keys();
-         StringBuffer sb = new StringBuffer( "{" );
+         StringBuilder sb = new StringBuilder( "{" );
 
          while( keys.hasNext() ){
             if( sb.length() > 1 ){
@@ -2460,7 +2460,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          return this.toString();
       }
       Iterator keys = keys();
-      StringBuffer sb = new StringBuffer( "{" );
+      StringBuilder sb = new StringBuilder( "{" );
       int newindent = indent + indentFactor;
       Object o;
       if( n == 1 ){
@@ -2549,7 +2549,7 @@ public final class JSONObject extends AbstractJSON implements JSON, Map, Compara
          if( o instanceof JSONArray ){
             ((JSONArray) o).element( value, jsonConfig );
          }else{
-            setInternal( key, new JSONArray().element( o )
+            setInternal( key, new JSONArray().element( o, jsonConfig )
                   .element( value, jsonConfig ), jsonConfig );
          }
       }

@@ -94,13 +94,47 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 
 			private javax.net.ssl.SSLContext sslcontext = null;
 
-			private javax.net.ssl.SSLContext createSSLContext() {
+			private javax.net.ssl.SSLContext createSSLContext() throws java.io.IOException{
 				javax.net.ssl.SSLContext sslcontext = null;
-
 				try {
-					sslcontext = javax.net.ssl.SSLContext.getInstance("SSL");
-					sslcontext.init(null, new javax.net.ssl.TrustManager[] { new TrustAnyTrustManager() }, new java.security.SecureRandom());
-				} catch (java.security.NoSuchAlgorithmException e) {
+                    sslcontext = javax.net.ssl.SSLContext.getInstance("SSL");
+                    javax.net.ssl.KeyManager[] keyManagers = null;
+                    String keyStoreType = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.keyStoreType")).orElse("");
+                    String keyStoreFile = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.keyStore")).orElse("");
+                    String keyStorePassword = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.keyStorePassword")).orElse("");
+                    if (!keyStoreType.isEmpty() && !keyStoreFile.isEmpty()) {
+                        try {
+                            java.security.KeyStore keyStore = java.security.KeyStore.getInstance(keyStoreType);
+                            keyStore.load(new java.io.FileInputStream(keyStoreFile), keyStorePassword.toCharArray());
+                            javax.net.ssl.KeyManagerFactory kmf = javax.net.ssl.KeyManagerFactory.getInstance(javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
+                            kmf.init(keyStore, keyStorePassword.toCharArray());
+                            keyManagers = kmf.getKeyManagers();
+                        } catch (java.security.UnrecoverableKeyException|java.security.KeyStoreException|java.security.cert.CertificateException e) {
+                            log.error(e.getLocalizedMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                    javax.net.ssl.TrustManager[] trustManagers = new javax.net.ssl.TrustManager[]{new TrustAnyTrustManager()};
+                    String trustStoreType = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStoreType")).orElse("");
+                    String trustStoreFile = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStore")).orElse("");
+                    String trustStorePassword = java.util.Optional.ofNullable(System.getProperty("javax.net.ssl.trustStorePassword")).orElse("");
+                    if (!trustStoreType.isEmpty() && !trustStoreFile.isEmpty()) {
+                        try {
+                            java.security.KeyStore trustStore = java.security.KeyStore.getInstance(trustStoreType);
+                            trustStore.load(new java.io.FileInputStream(trustStoreFile), trustStorePassword.toCharArray());
+                            javax.net.ssl.TrustManagerFactory tmf = javax.net.ssl.TrustManagerFactory.getInstance(javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm());
+                            tmf.init(trustStore);
+                            trustManagers = tmf.getTrustManagers();
+
+                        } catch (java.security.KeyStoreException|java.security.cert.CertificateException e) {
+                            log.error(e.getLocalizedMessage());
+                            e.printStackTrace();
+                            trustManagers = new javax.net.ssl.TrustManager[]{};
+
+                        }
+                    }
+                    sslcontext.init(keyManagers, trustManagers, new java.security.SecureRandom());
+                } catch (java.security.NoSuchAlgorithmException e) {
 					<%if(isLog4jEnabled){%>
 						log.error("<%=cid%> - " + e.getMessage());
 					<%}%>
@@ -114,7 +148,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 				return sslcontext;
 			}
 
-			private javax.net.ssl.SSLContext getSSLContext() {
+			private javax.net.ssl.SSLContext getSSLContext() throws java.io.IOException{
 
 				if (this.sslcontext == null) {
 					this.sslcontext = createSSLContext();

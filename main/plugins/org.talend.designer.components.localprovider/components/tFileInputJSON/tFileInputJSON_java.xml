@@ -192,6 +192,8 @@
                 REQUIRED_IF="(READ_BY == 'JSONPATH')" />
             <IMPORT NAME="slf4j-api-1.7.5.jar" MODULE="slf4j-api-1.7.5.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.7.5/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-api-1.7.5.jar"
                 REQUIRED_IF="(READ_BY == 'JSONPATH')" BundleID="" />
+            <IMPORT NAME="slf4j-log4j12-1.7.5.jar" MODULE="slf4j-log4j12-1.7.5.jar" MVN="mvn:org.talend.libraries/slf4j-log4j12-1.7.5/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-log4j12-1.7.5.jar"
+                REQUIRED_IF="(READ_BY == 'JSONPATH')" BundleID="" />
 		</IMPORTS>
 	</CODEGENERATION>
 

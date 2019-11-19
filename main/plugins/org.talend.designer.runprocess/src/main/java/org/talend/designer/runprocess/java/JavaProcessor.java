@@ -25,12 +25,14 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.jar.Attributes;
@@ -155,6 +157,7 @@ import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.constants.BuildJobConstants;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.utils.io.FilesUtils;
@@ -1459,9 +1462,21 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         if (isExportConfig() || isSkipClasspathJar()) {
             option = option | TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED;
         }
-        Set<ModuleNeeded> neededModules = getNeededModules(option);
-        JavaProcessorUtilities.checkJavaProjectLib(neededModules);
+        Set<ModuleNeeded> neededModulesLogjarUnsorted = getNeededModules(option);
+        JavaProcessorUtilities.checkJavaProjectLib(neededModulesLogjarUnsorted);
+        Set<ModuleNeeded> neededModules = new TreeSet<ModuleNeeded>(new Comparator<ModuleNeeded>() {
 
+            @Override
+            public int compare(ModuleNeeded o1, ModuleNeeded o2) {
+                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_ADDED_BACK) {
+                    if (StringUtils.equals(moduleName, o2.getModuleName())) {
+                        return -1;
+                    }
+                }
+                return 1;
+            }
+        });
+        neededModules.addAll(neededModulesLogjarUnsorted);
         // Ignore hadoop confs jars in lib path.
         if (ProcessorUtilities.hadoopConfJarCanBeLoadedDynamically(property)) {
             Iterator<ModuleNeeded> moduleIter = neededModules.iterator();
