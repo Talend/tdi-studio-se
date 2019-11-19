@@ -13,7 +13,8 @@ public class CheckLogManamger {
         return Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
     }
 
-    public static void updateLog4jToModuleList(Collection<ModuleNeeded> jarList, IProcess currentProcess) {
-        UpdateLog4jJarUtils.addLog4jToModuleList(jarList, isSelectLog4j2(), currentProcess);
+    public static void updateLog4jToModuleList(Collection<ModuleNeeded> jarList, IProcess currentProcess,
+            boolean isSelectLog4j2) {
+        UpdateLog4jJarUtils.addLog4jToModuleList(jarList, isSelectLog4j2, currentProcess);
     }
 }
