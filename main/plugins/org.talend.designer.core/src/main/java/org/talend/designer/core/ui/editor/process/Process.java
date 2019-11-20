@@ -126,6 +126,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.XmiResourceManager;
+import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.service.IScdComponentService;
@@ -2045,7 +2046,23 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             process.setParameters(parameterType);
         }
         checkRoutineDependencies();
-        process.getParameters().getRoutinesParameter().addAll(routinesDependencies);
+        List<RoutinesParameterType> toAddList = new ArrayList<RoutinesParameterType>();
+        boolean found = false;
+        for (RoutinesParameterType routineType : routinesDependencies) {
+            found = false;
+            for (Object o : process.getParameters().getRoutinesParameter()) {
+                RoutinesParameterType type = (RoutinesParameterType) o;
+                if (StringUtils.equals(type.getId(), routineType.getId())
+                        || StringUtils.equals(type.getName(), routineType.getName())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                toAddList.add(EcoreUtil.copy(routineType));
+            }
+        }
+        process.getParameters().getRoutinesParameter().addAll(toAddList);
     }
 
     public void addGeneratingRoutines(List<RoutinesParameterType> routinesParameters) {
@@ -3368,7 +3385,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         if (node instanceof Node) {
             component = ((Node) node).getDelegateComponent();
         }
-        String baseName = component.getDisplayName();
+        String baseName = component.getOriginalName();
+        if (EComponentType.GENERIC.equals(component.getComponentType())) {
+            baseName = component.getDisplayName();
+        }
         return UniqueNodeNameGenerator.generateUniqueNodeName(baseName, uniqueNodeNameList);
     }
 
@@ -4492,6 +4512,18 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     private void loadAdditionalProperties() {
         if (additionalProperties == null) {
             additionalProperties = new HashMap<Object, Object>();
+            try {
+                if (property.getItem() != null && ERepositoryObjectType.getType(property) != null) {
+                    boolean isRouteProcess = ERepositoryObjectType.getType(property).equals(ERepositoryObjectType.PROCESS_ROUTE);
+                    if (!isRouteProcess && "ROUTE"
+                            .equals(this.property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+                        this.property.getAdditionalProperties().remove(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+                    }
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+
             for (Object key : this.property.getAdditionalProperties().keySet()) {
                 additionalProperties.put(key, this.property.getAdditionalProperties().get(key));
             }
@@ -4623,6 +4655,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     private void saveJobletNode(AbstractJobletContainer jobletContainer) {
+        if (CommonsPlugin.isHeadless()) {
+            return;
+        }
         INode jobletNode = jobletContainer.getNode();
         IProcess jobletProcess = jobletNode.getComponent().getProcess();
         if (jobletProcess == null) {

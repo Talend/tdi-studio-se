@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
@@ -31,6 +32,7 @@ import org.talend.core.model.process.IReplaceNodeInProcess;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryEditorInput;
 import org.talend.core.model.update.UpdateResult;
 import org.talend.designer.core.ui.editor.process.Process;
 
@@ -143,7 +145,7 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
             }
         }
     }
-
+    
     /**
      * DOC qzhang Comment method "canDeleteNode".
      *
@@ -256,6 +258,11 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
 
     public boolean canHandleNode(INode node) {
         return false;
+    }
+    
+    public IRepositoryEditorInput createJobletEditorInput(JobletProcessItem processItem, boolean load, Boolean lastVersion, Boolean readonly,
+            Boolean openedInJob) throws PersistenceException{
+        return null;
     }
 
 }

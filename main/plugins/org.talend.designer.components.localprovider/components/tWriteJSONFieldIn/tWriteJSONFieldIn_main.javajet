@@ -100,10 +100,13 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                             <%
                    }
             }
+        boolean wrapNullStrings = "true".equals(ElementParameterParser.getValue(node, "___QUOTE_ALL_VALUES___")) && "true".equals(ElementParameterParser.getValue(node, "__QUOTE_NULL_VALUES__"));
 %>
         //Convert XML to JSON
+        net.sf.json.JsonStandard jsonStandard_<%=cid %> = <% if (wrapNullStrings) { %> net.sf.json.JsonStandard.WRAP_NULL_STRINGS <% } else { %> net.sf.json.JsonStandard.LEGACY  <%}%>;
+        xmlSerializer_<%=cid %>.setJsonStandard(jsonStandard_<%=cid %>);
         net.sf.json.JSON json_<%=cid%> = xmlSerializer_<%=cid%>.read(str_<%=cid %>);
-        <%=conn.getName()%>.<%=jsonField %> = json_<%=cid%>.toString();
+        <%=conn.getName()%>.<%=jsonField %> = net.sf.json.util.JSONUtils.jsonToStandardizedString(json_<%=cid %>, jsonStandard_<%=cid %>);
     
         nb_line_<%=cid%>++;
 <%

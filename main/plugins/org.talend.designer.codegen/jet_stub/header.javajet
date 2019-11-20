@@ -141,7 +141,9 @@ for (INode node : process.getNodesOfType("tRESTClient")) {
 boolean talendEsbJobFactory = actAsProvider || !process.getNodesOfType("tRouteInput").isEmpty();
 boolean talendEsbJob = talendEsbJobFactory || actAsConsumer || ProcessorUtilities.isEsbJob(process);
 
-boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));
+boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));//log4j enable
+boolean isLog4j2Enabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J2_ACTIVATE__"));//log4j2 enable
+boolean isLog4j1Enabled = !isLog4j2Enabled;//log4j1 enable
 
 if (talendMdmJob) {
 	talendJobInterfaces += ", TalendMDMJob"; // Talend MDM job
@@ -156,7 +158,14 @@ if (talendEsbJobFactory) {
 public class <%=className%> implements <%=talendJobInterfaces%> {
 <%if(isLog4jEnabled){%>
 	static {System.setProperty("TalendJob.log", "<%=className%>.log");}
+
+	<%if(isLog4j1Enabled){%>
 	private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(<%=className%>.class);
+	<%}%>
+
+	<%if(isLog4j2Enabled){%>
+	private static org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(<%=className%>.class);
+	<%}%>
 <%}%>
 
 protected static void logIgnoredError(String message, Throwable cause) {

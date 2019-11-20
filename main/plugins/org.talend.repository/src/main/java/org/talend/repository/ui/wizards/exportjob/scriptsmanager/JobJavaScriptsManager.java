@@ -1370,8 +1370,8 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         libResource.addResources(list);
     }
 
-    protected boolean addLog4jToJarList(Collection<String> jarList) {
-        return UpdateLog4jJarUtils.addLog4jToJarList(jarList, Log4jPrefsSettingManager.getInstance().isSelectLog4j2());
+    protected void addLog4jToJarList(Collection<String> jarList) {
+        UpdateLog4jJarUtils.addLog4jToJarList(jarList, Log4jPrefsSettingManager.getInstance().isSelectLog4j2());
     }
 
     /**
