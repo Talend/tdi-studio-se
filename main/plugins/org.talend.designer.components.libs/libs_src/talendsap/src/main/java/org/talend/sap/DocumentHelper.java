@@ -49,11 +49,11 @@ public class DocumentHelper {
 		}
 	}
 
-	public void addSingleParameter(String name, String value, boolean isChanging) {
+	public void addSingleParameter(String name, String value, SAPParameterType parameter_type) {
 		if(value == null) {
 			value = "";
 		}
-		if (isChanging) {
+		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
 			changing.addElement(name).setText(value);
 		} else {
@@ -62,8 +62,8 @@ public class DocumentHelper {
 		}
 	}
 
-	public void addStructParameter(String name, boolean isChanging) {
-		if (isChanging) {
+	public void addStructParameter(String name, SAPParameterType parameter_type) {
+		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
 			currentStruct = changing.addElement(name);
 		} else {
@@ -79,13 +79,16 @@ public class DocumentHelper {
 		currentStruct.addElement(name).setText(value);
 	}
 
-	public void addTableParameter(String name, boolean isChanging) {
-		if (isChanging) {
+	public void addTableParameter(String name, SAPParameterType parameter_type) {
+		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
 			currentTable = changing.addElement(name);
-		} else {
+		} else if(parameter_type == SAPParameterType.TABLES) {
 			correctTables();
 			currentTable = tables.addElement(name);
+		} else {
+			correctInput();
+			currentTable = input.addElement(name);
 		}
 	}
 
@@ -108,18 +111,18 @@ public class DocumentHelper {
 		DocumentHelper helper = new DocumentHelper();
 		helper.setFunctionName("READ_TABLE_FUNCTION");
 
-		helper.addSingleParameter("ID", "1", true);
-		helper.addSingleParameter("NAME", "gaoyan", false);
+		helper.addSingleParameter("ID", "1", SAPParameterType.CHANGING);
+		helper.addSingleParameter("NAME", "gaoyan", SAPParameterType.IMPORT);
 
-		helper.addStructParameter("INFO", true);
+		helper.addStructParameter("INFO", SAPParameterType.CHANGING);
 		helper.addStructChildParameter("ID", "2");
 		helper.addStructChildParameter("NAME", "wangwei");
 
-		helper.addStructParameter("INFO1", false);
+		helper.addStructParameter("INFO1", SAPParameterType.IMPORT);
 		helper.addStructChildParameter("ID1", "4");
 		helper.addStructChildParameter("NAME1", "momo");
 
-		helper.addTableParameter("TABLE1", false);
+		helper.addTableParameter("TABLE1", SAPParameterType.TABLES);
 		for (int i = 0; i < 200000; i++) {
 			helper.addTableRow();
 			helper.addTableRowChildParameter("c1", i + "");
@@ -132,7 +135,7 @@ public class DocumentHelper {
 			helper.addTableRowChildParameter("c8", "wangwei" + i);
 		}
 
-		helper.addTableParameter("TABLE2", false);
+		helper.addTableParameter("TABLE2", SAPParameterType.TABLES);
 		for (int i = 0; i < 2; i++) {
 			helper.addTableRow();
 			helper.addTableRowChildParameter("ID4", i + "");
