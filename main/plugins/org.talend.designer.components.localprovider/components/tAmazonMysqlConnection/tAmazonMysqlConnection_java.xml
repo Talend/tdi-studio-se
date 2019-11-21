@@ -164,6 +164,8 @@
      <IMPORTS>
        <IMPORT NAME="Driver-MysqlConnector" MODULE="mysql-connector-java-5.1.30-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0"  REQUIRED_IF="DB_VERSION == 'MYSQL_5'" />
        <IMPORT NAME="Driver-MysqlConnector_Old" MODULE="mysql-connector-java-5.1.0-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-5.1.0-bin/6.0.0"  REQUIRED="false" />
+       <IMPORT NAME="slf4j-api-1.7.25.jar" MODULE="slf4j-api-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-api/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
+       <IMPORT NAME="slf4j-log4j12-1.7.25.jar" MODULE="slf4j-log4j12-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-log4j12/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
      </IMPORTS>
     </CODEGENERATION>
    <RETURNS/>

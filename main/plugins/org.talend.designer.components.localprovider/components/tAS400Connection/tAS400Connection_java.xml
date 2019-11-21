@@ -149,6 +149,8 @@
        <IMPORT NAME="Driver-V5R3_V6R1" MODULE="jt400_V5R3.jar" MVN="mvn:org.talend.libraries/jt400_V5R3/6.0.0"  REQUIRED_IF="DB_VERSION == 'jt400_V5R3.jar'" />
        <IMPORT NAME="Driver-V6R1_V7R2" MODULE="jt400_V6R1.jar" MVN="mvn:org.talend.libraries/jt400_V6R1/6.0.0"  REQUIRED_IF="DB_VERSION == 'jt400_V6R1.jar'" />
        <IMPORT NAME="Driver-V7R1_V7R3" MODULE="jt400-9.8.jar" MVN="mvn:net.sf.jt400/jt400/9.8"  REQUIRED_IF="DB_VERSION == 'jt400-9.8.jar'" />
+       <IMPORT NAME="slf4j-api-1.7.25.jar" MODULE="slf4j-api-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-api/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
+       <IMPORT NAME="slf4j-log4j12-1.7.25.jar" MODULE="slf4j-log4j12-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-log4j12/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
      </IMPORTS>
 	</CODEGENERATION>
 
