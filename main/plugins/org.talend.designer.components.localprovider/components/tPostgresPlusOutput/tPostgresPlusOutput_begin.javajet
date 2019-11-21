@@ -92,13 +92,19 @@ if(columnList != null && columnList.size() > 0) {
 
 String dbschema_<%=cid%> = null;
 <%
-if(("true").equals(useExistingConn) && !useAlternateSchema) {
+if(("true").equals(useExistingConn)) {
+	if(useAlternateSchema) {
+	%>
+	dbschema_<%=cid%> = <%=alternateSchema%>;
+	<%
+	} else {
 	%>
 	dbschema_<%=cid%> = (String)globalMap.get("schema_" + "<%=ElementParameterParser.getValue(node,"__CONNECTION__")%>");
 	<%
+	}
 } else {
 	%>
-	dbschema_<%=cid%> = <%=alternateSchema%>;
+	dbschema_<%=cid%> = <%=dbschema%>;
 	<%
 }
 %>
