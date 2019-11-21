@@ -39,7 +39,6 @@ import org.talend.designer.abstractmap.ui.listener.DefaultDropTargetListener;
 import org.talend.designer.dbmap.language.IDbLanguage;
 import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.designer.dbmap.managers.UIManager;
-import org.talend.designer.dbmap.model.tableentry.AbstractInOutTableEntry;
 import org.talend.designer.dbmap.model.tableentry.InputColumnTableEntry;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 import org.talend.designer.dbmap.model.tableentry.VarTableEntry;
@@ -547,10 +546,6 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
 
                 if (location != null) {
                     dataMapTableEntry.setExpression(location + " "); //$NON-NLS-1$
-                    if(dataMapTableEntry instanceof AbstractInOutTableEntry && tableEntrySource instanceof AbstractInOutTableEntry) {
-                        ((AbstractInOutTableEntry)dataMapTableEntry).setAlias(((AbstractInOutTableEntry)tableEntrySource).getAlias());
-                        ((AbstractInOutTableEntry)dataMapTableEntry).setTableName(((AbstractInOutTableEntry)tableEntrySource).getTableName());
-                    }
                 }
             }
         }
