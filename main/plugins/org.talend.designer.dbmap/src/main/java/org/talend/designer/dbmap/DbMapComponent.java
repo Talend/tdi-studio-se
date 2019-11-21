@@ -543,12 +543,17 @@ public class DbMapComponent extends AbstractMapComponent {
                 oldLocation.columnName = currentLocation.columnName;
                 newLocation.columnName = currentLocation.columnName;
             }
+            
             if (currentLocation.equals(oldLocation)) {
                 currentExpression = dataMapExpressionParser.replaceLocation(currentExpression, currentLocation, newLocation);
+            }else if(entry.getAlias() != null && entry.getTableName() != null) {
+                if(entry.getTableName().equals(oldLocation.tableName) && entry.getAlias().equals(currentLocation.tableName)) {
+                    TableEntryLocation tempLocation = new TableEntryLocation(entry.getAlias(), newLocation.columnName);
+                    currentExpression = dataMapExpressionParser.replaceLocation(currentExpression, currentLocation, tempLocation);
+                }
             }
         } // for (int i = 0; i < tableEntryLocations.length; i++) {
         entry.setExpression(currentExpression);
-
     }
 
     /*

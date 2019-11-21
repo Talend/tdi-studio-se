@@ -209,9 +209,13 @@ public class UIManager extends AbstractUIManager {
                         dataMapTableView);
                 mapperManager.executeCommand(command);
             }
-
+            boolean isAlias = false;
+            if(abstractDataMapTable instanceof InputTable) {
+                isAlias = ((InputTable)abstractDataMapTable).getAlias() != null;
+            }
             currentMetadataTableEditor = new MetadataTableEditor(abstractDataMapTable.getMetadataTable(),
                     abstractDataMapTable.getTitle());
+            currentMetadataTableEditor.setAlias(isAlias);
 
             currentMetadataTableEditor.setModifiedBeanListenable(metadataTableEditorView.getTableViewerCreator());
 

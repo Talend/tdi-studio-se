@@ -34,6 +34,10 @@ public class ExternalDbMapEntry implements IExternalMapEntry, Serializable, Clon
     private String expression;
 
     private String operator;
+    
+    private String alias;
+    
+    private String tableName;
 
     private boolean join;
 
@@ -64,6 +68,15 @@ public class ExternalDbMapEntry implements IExternalMapEntry, Serializable, Clon
         this.name = name;
         this.expression = expression;
         this.operator = operator;
+    }
+    
+    public ExternalDbMapEntry(String name, String expression, String operator, String alias, String tableName) {
+        super();
+        this.name = name;
+        this.expression = expression;
+        this.operator = operator;
+        this.alias = alias;
+        this.tableName = tableName;
     }
 
     public String getExpression() {
@@ -162,5 +175,22 @@ public class ExternalDbMapEntry implements IExternalMapEntry, Serializable, Clon
         return true;
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    
+    public String getTableName() {
+        return tableName;
+    }
+
+    
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
 
 }
