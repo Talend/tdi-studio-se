@@ -15,6 +15,7 @@ package org.talend.designer.dbmap.model.tableentry;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.designer.abstractmap.model.table.IDataMapTable;
 import org.talend.designer.abstractmap.model.tableentry.IColumnEntry;
+import org.talend.designer.dbmap.model.table.InputTable;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -25,6 +26,10 @@ import org.talend.designer.abstractmap.model.tableentry.IColumnEntry;
 public class AbstractInOutTableEntry extends TableEntry implements IColumnEntry {
 
     private IMetadataColumn metadataColumn;
+    
+    private String alias;
+    
+    private String tableName;
 
     public AbstractInOutTableEntry(IDataMapTable abstractDataMapTable, IMetadataColumn metadataColumn, String expression) {
         super(abstractDataMapTable, expression);
@@ -52,6 +57,36 @@ public class AbstractInOutTableEntry extends TableEntry implements IColumnEntry 
     @Override
     public void setName(String name) {
         this.metadataColumn.setLabel(name);
+    }
+    
+    public String getAlias() {
+        if(alias != null) {
+            return alias;
+        }
+        IDataMapTable dataMapTable = this.getParent();
+        if (dataMapTable instanceof InputTable) {
+            return ((InputTable)dataMapTable).getAlias();
+        }
+        return null;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+    
+    public String getTableName() {
+        if(tableName != null) {
+            return tableName;
+        }
+        IDataMapTable dataMapTable = this.getParent();
+        if (dataMapTable instanceof InputTable) {
+            return ((InputTable)dataMapTable).getTableName();
+        }
+        return null;
+    }
+    
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
 }
