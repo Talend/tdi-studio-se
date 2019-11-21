@@ -34,7 +34,6 @@ import org.talend.designer.dbmap.model.MapperModel;
 import org.talend.designer.dbmap.model.table.InputTable;
 import org.talend.designer.dbmap.model.table.OutputTable;
 import org.talend.designer.dbmap.model.table.VarsTable;
-import org.talend.designer.dbmap.model.tableentry.AbstractInOutTableEntry;
 import org.talend.designer.dbmap.model.tableentry.FilterTableEntry;
 import org.talend.designer.dbmap.model.tableentry.InputColumnTableEntry;
 
@@ -224,10 +223,6 @@ public class ExternalDataConverter {
                 ExternalDbMapEntry externalMapperTableEntry = new ExternalDbMapEntry();
                 externalMapperTableEntry.setExpression(dataMapTableEntry.getExpression());
                 externalMapperTableEntry.setName(dataMapTableEntry.getName());
-                if(dataMapTableEntry instanceof AbstractInOutTableEntry) {
-                    externalMapperTableEntry.setAlias(((AbstractInOutTableEntry)dataMapTableEntry).getAlias());
-                    externalMapperTableEntry.setTableName(((AbstractInOutTableEntry)dataMapTableEntry).getTableName());
-                }
                 if (isInputTable) {
                     externalMapperTableEntry.setOperator(((InputColumnTableEntry) dataMapTableEntry).getOperator());
                     externalMapperTableEntry.setJoin(((InputColumnTableEntry) dataMapTableEntry).isJoin());
