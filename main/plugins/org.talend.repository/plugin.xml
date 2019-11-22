@@ -3284,6 +3284,15 @@
                name="cleanLoginAndPasswordForRedshiftSqlForSSO"
                version="7.3.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.SAPBAPIParameterTypeMigrationTask"
+              description="adjust the tsapbapi ui"
+              id="org.talend.repository.model.migration.SAPBAPIParameterTypeMigrationTask"
+              name="SAPBAPIParameterTypeMigrationTask"
+              version="7.3.1">
+        </projecttask>
    </extension>
 
    <extension
@@ -3372,7 +3381,15 @@
         name="log4j-jcl-2.12.1.jar"
         mvn_uri="mvn:org.apache.logging.log4j/log4j-jcl/2.12.1"
         uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-jcl-2.12.1.jar">
-      </libraryNeeded>          
+      </libraryNeeded>  
+      
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-1.2-api-2.12.1.jar"
+        name="log4j-1.2-api-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-1.2-api/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2-api-2.12.1.jar">
+      </libraryNeeded>         
    </extension>
    <!--
    <extension

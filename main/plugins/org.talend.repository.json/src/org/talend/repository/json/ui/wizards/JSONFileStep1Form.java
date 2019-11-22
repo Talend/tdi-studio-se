@@ -244,7 +244,7 @@ public class JSONFileStep1Form extends AbstractJSONFileStepForm {
         if (JSONFileStep1Form.this.wizard.getTempJsonPath() == null
                 || JSONFileStep1Form.this.wizard.getTempJsonPath().length() == 0) {
             if (EJsonReadbyMode.XPATH.getValue().equals(JSONFileStep1Form.this.wizard.getReadbyMode())) {
-                tempxml = JSONUtil.changeJsonToXml(jsonFilePath, getConnection().getEncoding());
+                tempxml = JSONUtil.changeJsonToXml(jsonFilePath, getConnectionEncoding());
             } else {
                 tempxml = jsonFilePath;
             }
@@ -271,7 +271,7 @@ public class JSONFileStep1Form extends AbstractJSONFileStepForm {
         treePopulator.setLimit(limit);
         this.treePopulator.configureDefaultTreeViewer();
         if (filePath != null && !filePath.isEmpty()) {
-            this.treePopulator.setEncoding(getConnection().getEncoding());
+            this.treePopulator.setEncoding(getConnectionEncoding());
             valid = this.treePopulator.populateTree(filePath, treeNode);
         }
     }
@@ -507,7 +507,7 @@ public class JSONFileStep1Form extends AbstractJSONFileStepForm {
                 if (EJsonReadbyMode.JSONPATH.getValue().equals(readbyMode)) {
                     tempxml = text;
                 } else {
-                    tempxml = JSONUtil.changeJsonToXml(text, getConnection().getEncoding());
+                    tempxml = JSONUtil.changeJsonToXml(text, getConnectionEncoding());
                 }
                 JSONFileStep1Form.this.wizard.setTempJsonPath(tempxml);
                 switchPopulator(readbyMode, tempxml);
@@ -529,7 +529,7 @@ public class JSONFileStep1Form extends AbstractJSONFileStepForm {
             @Override
             public void modifyText(final ModifyEvent e) {
                 getConnection().setEncoding(encodingCombo.getText());
-                String encoding = getConnection().getEncoding();
+                String encoding = getConnectionEncoding();
                 if (treePopulator != null) {
                     treePopulator.setEncoding(encoding);
                 }
@@ -756,7 +756,7 @@ public class JSONFileStep1Form extends AbstractJSONFileStepForm {
         if (EJsonReadbyMode.JSONPATH.getValue().equals(readbyMode)) {
             tempxml = text;
         } else {
-            tempxml = JSONUtil.changeJsonToXml(text, getConnection().getEncoding());
+            tempxml = JSONUtil.changeJsonToXml(text, getConnectionEncoding());
         }
         File file = new File(text);
         if (!file.exists()) {

@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.CommonExceptionHandler;
+import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.IProcess;
@@ -37,7 +38,7 @@ public class UpdateLog4jJarUtils {
 //            return;
 //        }
         List<String> modulesUsedBefore = removeLog4jFromJarListAndGetUsedJarBefore(process, jarList);
-        addBackJars(jarList, isSelectLog4j2, modulesUsedBefore);
+        addBackJars(jarList, isSelectLog4j2, modulesUsedBefore, process);
     }
 
     public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, boolean isSelectLog4j2, IProcess currentProcess) {
@@ -50,23 +51,38 @@ public class UpdateLog4jJarUtils {
 //            return;
 //        }
         List<ModuleNeeded> modulesUsedBefore = removeLog4jFromModuleListAndGetModulesUsedBefore(process, jarList);
-        addBackModules(jarList, isSelectLog4j2, modulesUsedBefore);
+        addBackModules(jarList, isSelectLog4j2, modulesUsedBefore, process);
     }
 
     public static final String[] MODULES_NEED_ADDED_BACK = { "log4j-jcl-2.12.1.jar", "log4j-jul-2.12.1.jar",
             "log4j-slf4j-impl-2.12.1.jar", "log4j-api-2.12.1.jar", "log4j-core-2.12.1.jar", "jcl-over-slf4j-1.7.25.jar",
             "jul-to-slf4j-1.7.25.jar", "log4j-to-slf4j-2.12.1.jar", "slf4j-log4j12-1.7.25.jar", "log4j-1.2.17.jar" };
 
-    private static void addBackJars(Collection<String> moduleNeededList, boolean isSelectLog4j2, List<String> modulesUsedBefore) {
+    private static void addBackJars(Collection<String> moduleNeededList, boolean isSelectLog4j2, List<String> modulesUsedBefore,
+            IProcess2 process) {
         if (isSelectLog4j2) {
             boolean usedlog4jJclBefore = false;
             boolean usedlog4jJulBefore = false;
+            boolean usedlog4j1JarBefore = false;
             for (String module : modulesUsedBefore) {
-                if (module.matches("log4j-jcl-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                if (module.matches("log4j-jcl-\\d+\\.\\d+\\.\\d+\\.jar") //$NON-NLS-1$
+                        || module.matches("commons-logging-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
                     usedlog4jJclBefore = true;
                 }
                 if (module.matches("log4j-jul-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
                     usedlog4jJulBefore = true;
+                }
+            }
+            if (process instanceof IProcess2) {
+                Set<ModuleNeeded> modulesNeededForProcess = CorePlugin.getDefault().getDesignerCoreService()
+                        .getNeededLibrariesForProcessBeforeUpdateLog(process, false);
+                if (modulesNeededForProcess != null) {
+                    for (ModuleNeeded m : modulesNeededForProcess) {
+                        if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
+                            usedlog4j1JarBefore = true;
+                            break;
+                        }
+                    }
                 }
             }
             if (usedlog4jJclBefore) {
@@ -75,6 +91,9 @@ public class UpdateLog4jJarUtils {
             if (usedlog4jJulBefore) {
                 moduleNeededList.add("log4j-jul-2.12.1.jar");//$NON-NLS-1$
             }
+            if (usedlog4j1JarBefore) {
+                moduleNeededList.add("log4j-1.2-api-2.12.1.jar");
+            }
             moduleNeededList.add("log4j-slf4j-impl-2.12.1.jar");//$NON-NLS-1$
             moduleNeededList.add("log4j-api-2.12.1.jar");//$NON-NLS-1$
             moduleNeededList.add("log4j-core-2.12.1.jar");//$NON-NLS-1$
@@ -82,7 +101,8 @@ public class UpdateLog4jJarUtils {
             boolean usedjclOverSlf4jBefore = false;
             boolean usedjulToSlf4jBefore = false;
             for (String module : modulesUsedBefore) {
-                if (module.matches("jcl-over-slf4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                if (module.matches("jcl-over-slf4j-\\d+\\.\\d+\\.\\d+\\.jar") //$NON-NLS-1$
+                        || module.matches("commons-logging-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
                     usedjclOverSlf4jBefore = true;
                 }
                 if (module.matches("jul-to-slf4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
@@ -102,16 +122,30 @@ public class UpdateLog4jJarUtils {
     }
 
     private static void addBackModules(Collection<ModuleNeeded> moduleNeededList, boolean isSelectLog4j2,
-            List<ModuleNeeded> modulesUsedBefore) {
+            List<ModuleNeeded> modulesUsedBefore, IProcess2 process) {
         if (isSelectLog4j2) {
             boolean usedlog4jJclBefore = false;
             boolean usedlog4jJulBefore = false;
+            boolean usedlog4j1JarBefore = false;
             for (ModuleNeeded module : modulesUsedBefore) {
-                if (module.getModuleName().matches("log4j-jcl-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                if (module.getModuleName().matches("log4j-jcl-\\d+\\.\\d+\\.\\d+\\.jar") //$NON-NLS-1$
+                        || module.getModuleName().matches("commons-logging-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
                     usedlog4jJclBefore = true;
                 }
                 if (module.getModuleName().matches("log4j-jul-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
                     usedlog4jJulBefore = true;
+                }
+            }
+            if (process instanceof IProcess2) {
+                Set<ModuleNeeded> modulesNeededForProcess = CorePlugin.getDefault().getDesignerCoreService()
+                        .getNeededLibrariesForProcessBeforeUpdateLog(process, false);
+                if (modulesNeededForProcess != null) {
+                    for (ModuleNeeded m : modulesNeededForProcess) {
+                        if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
+                            usedlog4j1JarBefore = true;
+                            break;
+                        }
+                    }
                 }
             }
             if (usedlog4jJclBefore) {
@@ -123,6 +157,11 @@ public class UpdateLog4jJarUtils {
                 ModuleNeeded log4jJul = new ModuleNeeded("org.apache.logging.log4j", "log4j-jul-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
                 log4jJul.setMavenUri("mvn:org.apache.logging.log4j/log4j-jul/2.12.1");//$NON-NLS-1$
                 moduleNeededList.add(log4jJul);
+            }
+            if (usedlog4j1JarBefore) {
+                ModuleNeeded log4j1To2Api = new ModuleNeeded("org.apache.logging.log4j", "log4j-1.2-api-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+                log4j1To2Api.setMavenUri("mvn:org.apache.logging.log4j/log4j-1.2-api/2.12.1");//$NON-NLS-1$
+                moduleNeededList.add(log4j1To2Api);
             }
             ModuleNeeded log4jSlf4jImpl = new ModuleNeeded("org.apache.logging.log4j", "log4j-slf4j-impl-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
             log4jSlf4jImpl.setMavenUri("mvn:org.apache.logging.log4j/log4j-slf4j-impl/2.12.1");//$NON-NLS-1$
@@ -137,7 +176,8 @@ public class UpdateLog4jJarUtils {
             boolean usedjclOverSlf4jBefore = false;
             boolean usedjulToSlf4jBefore = false;
             for (ModuleNeeded module : modulesUsedBefore) {
-                if (module.getModuleName().matches("jcl-over-slf4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                if (module.getModuleName().matches("jcl-over-slf4j-\\d+\\.\\d+\\.\\d+\\.jar") //$NON-NLS-1$
+                        || module.getModuleName().matches("commons-logging-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
                     usedjclOverSlf4jBefore = true;
                 }
                 if (module.getModuleName().matches("jul-to-slf4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
@@ -192,7 +232,8 @@ public class UpdateLog4jJarUtils {
 
     public static final String[] SPECIALMODULESUSEDBEFORES = { "log4j-jcl-\\d+\\.\\d+\\.\\d+\\.jar", //$NON-NLS-1$
             "log4j-jul-\\d+\\.\\d+\\.\\d+\\.jar", "jcl-over-slf4j-\\d+\\.\\d+\\.\\d+\\.jar", //$NON-NLS-1$//$NON-NLS-2$
-            "jul-to-slf4j-\\d+\\.\\d+\\.\\d+\\.jar" };//$NON-NLS-1$
+            "jul-to-slf4j-\\d+\\.\\d+\\.\\d+\\.jar", "commons-logging-\\d+\\.\\d+\\.\\d+\\.jar", //$NON-NLS-1$
+            "log4j-\\d+\\.\\d+\\.\\d+\\.jar" };//$NON-NLS-1$
 
     private static List<ModuleNeeded> getSpecialModulesUsedBefore(List<ModuleNeeded> modulesUsedBefore, ModuleNeeded module) {
         for (String moduleUsedBefore : SPECIALMODULESUSEDBEFORES) {

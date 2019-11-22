@@ -90,6 +90,7 @@ public class DocumentExtractor {
 		List<Element> tablesAndChangingElements = new ArrayList<Element>(3);
 		tablesAndChangingElements.add(functionElement.element("TABLES"));
 		tablesAndChangingElements.add(functionElement.element("CHANGING"));
+		tablesAndChangingElements.add(functionElement.element("OUTPUT"));
 
 		for(Element tablesOrChangingElement : tablesAndChangingElements) {
 			if (tablesOrChangingElement == null) {
@@ -120,6 +121,10 @@ public class DocumentExtractor {
 					}
 				}
 				result.add(row);
+			}
+			
+			if(!result.isEmpty()) {
+				return result;
 			}
 		}
 		

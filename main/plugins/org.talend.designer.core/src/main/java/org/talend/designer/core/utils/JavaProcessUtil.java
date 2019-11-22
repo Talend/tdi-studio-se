@@ -52,13 +52,14 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.utils.BitwiseOptionUtils;
-import org.talend.designer.core.CheckLogManamger;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.maven.utils.MavenVersionHelper;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
+import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 /**
  * DOC xye class global comment. Detailled comment
@@ -66,6 +67,10 @@ import org.talend.librariesmanager.model.ModulesNeededProvider;
 public class JavaProcessUtil {
 
     public static Set<ModuleNeeded> getNeededModules(final IProcess process, int options) {
+        return getNeededModules(process, options, false);
+    }
+
+    public static Set<ModuleNeeded> getNeededModules(final IProcess process, int options, boolean isOriganlModuleNeeded) {
         List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
         // see bug 4939: making tRunjobs work loop will cause a error of "out of memory"
         Set<ProcessItem> searchItems = new HashSet<ProcessItem>();
@@ -114,13 +119,13 @@ public class JavaProcessUtil {
         if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED)) {
             new BigDataJobUtil(process).removeExcludedModules(modulesNeeded);
         }
-        CheckLogManamger.updateLog4jToModuleList(modulesNeeded);
+        if (!isOriganlModuleNeeded) {
+            UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, Log4jPrefsSettingManager.getInstance().isSelectLog4j2(),
+                    process);
+        }
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
-    public static void updateLog4jToModuleList(Collection<ModuleNeeded> jarList) {
-        CheckLogManamger.updateLog4jToModuleList(jarList);
-    }
     // for MapReduce job, if the jar on Xml don't set MRREQUIRED="true", shouldn't add it to
     // DistributedCache
     public static Set<String> getNeededLibraries(final IProcess process, int options) {

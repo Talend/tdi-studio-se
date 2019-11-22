@@ -110,6 +110,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             }            
             %>
             try {
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 nb_line_<%=cid%>++;
             	<%dbLog.data().inserting(dbLog.var("nb_line"));%>
@@ -183,6 +184,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             }            
             %>
             try {
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 nb_line_<%=cid%>++;
         	    <%dbLog.data().updating(dbLog.var("nb_line"));%>                
@@ -274,6 +276,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 }                
                 %>
                 try {
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmtUpdate_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
         			<%dbLog.data().updating(dbLog.var("nb_line"));%>
@@ -335,6 +338,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 }                
                 %>
                 try {
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
@@ -416,6 +420,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             %>
         
             try {
+            	<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 updateFlag_<%=cid%> = pstmtUpdate_<%=cid %>.executeUpdate();
                 if(updateFlag_<%=cid%> != 0) {
             		nb_line_<%=cid%>++;
@@ -482,6 +487,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 }                
                 %>
                 try {
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
                 	<%dbLog.data().inserting(dbLog.var("nb_line"));%>
@@ -544,6 +550,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             }            
             %>
             try {
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 deletedCount_<%=cid%> = deletedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 nb_line_<%=cid%>++;
                 <%dbLog.data().deleting(dbLog.var("nb_line"));%>

@@ -5,7 +5,7 @@
     "family":"",
     "parameter":{
         "mapping":{
-            "connection.account":"SERVER_NAME",        
+            "connection.account":"SERVER_NAME",
             "connection.userPassword.userId":"USERNAME",
             "connection.userPassword.password":"PASSWORD",
             "connection.schemaName":"SCHEMA",
@@ -25,17 +25,29 @@
     "family":"",
     "parameter":{
         "mapping":{
-            "connection.account":"SERVER_NAME",        
+            "connection.account":"SERVER_NAME",
             "connection.userPassword.userId":"USERNAME",
             "connection.userPassword.password":"PASSWORD",
             "connection.schemaName":"SCHEMA",
             "connection.db":"SID"
         }
-     }    
+     }
 },
 {
     "component_delegate":"tDBClose",
     "component":"tSnowflakeClose",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tSnowflakeCommit",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tSnowflakeRollback",
     "category":"DI",
     "family":""
 },
@@ -46,13 +58,13 @@
     "family":"",
     "parameter":{
         "mapping":{
-            "account":"SERVER_NAME",        
+            "account":"SERVER_NAME",
             "userPassword.userId":"USERNAME",
             "userPassword.password":"PASSWORD",
             "schemaName":"SCHEMA",
             "db":"SID"
         }
-     }    
+     }
 },
 {
     "component_delegate":"tDBRow",
@@ -61,7 +73,7 @@
     "family":"",
     "parameter":{
         "mapping":{
-            "connection.account":"SERVER_NAME",        
+            "connection.account":"SERVER_NAME",
             "connection.userPassword.userId":"USERNAME",
             "connection.userPassword.password":"PASSWORD",
             "connection.schemaName":"SCHEMA",
