@@ -15,7 +15,9 @@ package org.talend.designer.runprocess.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -96,6 +98,7 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ISubjobContainer;
 import org.talend.core.model.process.ReplaceNodesInProcessProvider;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.branding.IBrandingService;
@@ -129,6 +132,7 @@ import org.talend.designer.runprocess.ui.actions.ClearTraceAction;
 import org.talend.designer.runprocess.ui.actions.SaveJobBeforeRunAction;
 import org.talend.designer.runprocess.ui.views.IProcessViewHelper;
 import org.talend.designer.runprocess.ui.views.ProcessView;
+import org.talend.utils.dates.DateUtils;
 
 /**
  * DOC chuger class global comment. Detailled comment <br/>
@@ -1559,15 +1563,21 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                                         isAddedStreamListener = false;
 
                                         if (processContext.isRunning()) {
-                                            final String endingPattern = Messages.getString("ProcessComposite.endPattern"); //$NON-NLS-1$
+                                            final String endingPattern = Messages.getString("ProcessComposite.endJobPattern"); //$NON-NLS-1$
                                             MessageFormat mf = new MessageFormat(endingPattern);
-                                            String byeMsg;
                                             try {
-                                                byeMsg = "\n" //$NON-NLS-1$
-                                                        + mf.format(new Object[] { processContext.getProcess().getName(),
-                                                                new Date(), new Integer(process.getExitValue()) });
+                                                
+                                                String byeMsg = "\n" //$NON-NLS-1$
+                                                		+ mf.format(new Object[] { processContext.getProcess().getName(), 
+                                                		        DateUtils.getCurrentDate("HH:mm dd/MM/yyyy")});
+                                                
+                                                final String endExitPattern = Messages.getString("ProcessComposite.endExitCode"); //$NON-NLS-1$
+                                                MessageFormat ef = new MessageFormat(endExitPattern);
+                                                String endMsg = ef.format(new Object[] { " = " + new Integer(process.getExitValue()) });//$NON-NLS-1$
+                                                byeMsg = byeMsg + " [" + endMsg + "]"; //$NON-NLS-1$ //$NON-NLS-2$ 
+                                                
                                                 processContext
-                                                        .addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT, byeMsg));
+                                                	.addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT, byeMsg));
                                             } catch (DebugException e) {
                                                 // e.printStackTrace();
                                                 ExceptionHandler.process(e);
@@ -1608,10 +1618,12 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                                             clearTraceAction.run();
                                             isAddedStreamListener = true;
 
-                                            final String startingPattern = Messages.getString("ProcessComposite.startPattern"); //$NON-NLS-1$
+                                            final String startingPattern = Messages.getString("ProcessComposite.startJobPattern"); //$NON-NLS-1$
                                             MessageFormat mf = new MessageFormat(startingPattern);
-                                            String welcomeMsg = mf
-                                                    .format(new Object[] { processContext.getProcess().getName(), new Date() });
+                                            
+                                            String welcomeMsg = mf.format(new Object[] { processContext.getProcess().getName(), 
+                                                    DateUtils.getCurrentDate("HH:mm dd/MM/yyyy")});
+                                            
                                             processContext.addDebugResultToConsole(
                                                     new ProcessMessage(MsgType.CORE_OUT, welcomeMsg + "\r\n"));//$NON-NLS-1$
                                         }
@@ -1682,12 +1694,12 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             }
         } else if (ProcessMessageManager.PROP_MESSAGE_ADD.equals(propName)
                 || ProcessMessageManager.PROP_DEBUG_MESSAGE_ADD.equals(propName)) {
-//            IProcessMessage psMess = (IProcessMessage) evt.getNewValue();
-//
-//            if (errorMessMap.size() <= CorePlugin.getDefault().getPreferenceStore()
-//                    .getInt(ITalendCorePrefConstants.PREVIEW_LIMIT)) {
-//                if (!(LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL))) {
-//                    getAllErrorMess(psMess);
+            IProcessMessage psMess = (IProcessMessage) evt.getNewValue();
+
+            if (errorMessMap.size() <= CorePlugin.getDefault().getPreferenceStore()
+                    .getInt(ITalendCorePrefConstants.PREVIEW_LIMIT)) {
+                getAllErrorMess(psMess);
+            }
 //                } else {
 //                    addPerlMark(psMess);
 //                }
@@ -1793,8 +1805,11 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     }
 
     public void getAllErrorMess(IProcessMessage psMess) {
-        errorMessMap.putAll(ProcessErrorUtil.getAllErrorMess(psMess, processContext));
-        refreshNode(psMess);
+        HashMap<String, IProcessMessage> result = ProcessErrorUtil.getAllErrorMess(psMess, processContext);
+        if (result != null) {
+            errorMessMap.putAll(result);
+            refreshNode(psMess);
+        }
     }
 
     public void refreshNode(final IProcessMessage psMess) {

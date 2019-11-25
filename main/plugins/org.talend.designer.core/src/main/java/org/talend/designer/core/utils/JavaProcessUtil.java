@@ -16,13 +16,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IPath;
@@ -30,6 +34,7 @@ import org.eclipse.core.runtime.Path;
 import org.talend.core.CorePlugin;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
+import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IContext;
@@ -50,8 +55,11 @@ import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.maven.utils.MavenVersionHelper;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
+import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 /**
  * DOC xye class global comment. Detailled comment
@@ -59,6 +67,10 @@ import org.talend.librariesmanager.model.ModulesNeededProvider;
 public class JavaProcessUtil {
 
     public static Set<ModuleNeeded> getNeededModules(final IProcess process, int options) {
+        return getNeededModules(process, options, false);
+    }
+
+    public static Set<ModuleNeeded> getNeededModules(final IProcess process, int options, boolean isOriganlModuleNeeded) {
         List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
         // see bug 4939: making tRunjobs work loop will cause a error of "out of memory"
         Set<ProcessItem> searchItems = new HashSet<ProcessItem>();
@@ -107,7 +119,10 @@ public class JavaProcessUtil {
         if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED)) {
             new BigDataJobUtil(process).removeExcludedModules(modulesNeeded);
         }
-
+        if (!isOriganlModuleNeeded) {
+            UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, Log4jPrefsSettingManager.getInstance().isSelectLog4j2(),
+                    process);
+        }
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
@@ -182,6 +197,8 @@ public class JavaProcessUtil {
         String hadoopItemId = null;
         List<INode> nodeList = (List<INode>) process.getGeneratingNodes();
 
+        Set<ModuleNeeded> highPriorityLinkedSet = new LinkedHashSet<ModuleNeeded>();
+        Set<ModuleNeeded> jdbcCustomizeModulesSet = new HashSet<ModuleNeeded>();
         for (INode node : nodeList) {
             if (hadoopItemId == null) {
                 String itemId = getHadoopClusterItemId(node);
@@ -207,11 +224,26 @@ public class JavaProcessUtil {
                             highPriorityModuleNeeded.add(moduleNeeded);
                         }
                     }
-                    LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(), process.getVersion(),
-                            highPriorityModuleNeeded);
+                    highPriorityLinkedSet.addAll(highPriorityModuleNeeded);
+                }
+
+                // for JDBC, user set the customize driver jars need the high Priority
+                // but after tLibraryLoad
+                if (node.getComponent().getComponentType() == EComponentType.GENERIC && !isTestcaseProcess) {
+                    List<ModuleNeeded> jdbcNodeModuleNeededList = new ArrayList<ModuleNeeded>();
+                    for (IElementParameter curParam : node.getElementParameters()) {
+                        if (curParam.getFieldType() == EParameterFieldType.TABLE) {
+                            getModulesInTable(process, curParam, jdbcNodeModuleNeededList);
+                        }
+                    }
+                    jdbcCustomizeModulesSet.addAll(jdbcNodeModuleNeededList);
                 }
             }
         }
+        // in case of multiple Version jars in customize modules, descendOrder
+        highPriorityLinkedSet.addAll(descendingOrderModuleList(jdbcCustomizeModulesSet));
+        LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(), process.getVersion(),
+                highPriorityLinkedSet);
 
         if (hadoopItemId == null) { // Incase it is a bigdata process.
             IElementParameter propertyParam = process.getElementParameter("MR_PROPERTY"); //$NON-NLS-1$
@@ -228,6 +260,57 @@ public class JavaProcessUtil {
             useCustomConfsJarIfNeeded(modulesNeeded, hadoopItemId);
         }
         new BigDataJobUtil(process).setExcludedModules(modulesNeeded);
+    }
+
+    public static List<ModuleNeeded> descendingOrderModuleList(Set<ModuleNeeded> moduleList) {
+        List<ModuleNeeded> orderedList = new ArrayList<ModuleNeeded>();
+        Map<String, List<ModuleNeeded>> multipleVersionHM = new HashMap<String, List<ModuleNeeded>>();
+        Set<ModuleNeeded> tmpModuleList = new HashSet<ModuleNeeded>(moduleList);
+        Iterator<ModuleNeeded> it = tmpModuleList.iterator();
+        Pattern pattern = Pattern.compile("(-\\d+\\.\\d.*)+?(.jar)"); //$NON-NLS-1$
+        Pattern versionPattern = Pattern.compile("(?<=-)\\d+\\.\\d.*(?=.jar)"); //$NON-NLS-1$
+        while (it.hasNext()) {
+            ModuleNeeded module = it.next();
+            String moduleName = module.getModuleName();
+            Matcher matcher = pattern.matcher(moduleName);
+            if (matcher.find()) {
+                String matchStr = matcher.group();
+                String key = moduleName.substring(0, moduleName.indexOf(matchStr));
+                if (multipleVersionHM.get(key) == null) {
+                    multipleVersionHM.put(key, new ArrayList<ModuleNeeded>());
+                }
+                multipleVersionHM.get(key).add(module);
+                it.remove();
+            }
+        }
+
+        for (String key : multipleVersionHM.keySet()) {
+            multipleVersionHM.get(key).sort(new Comparator<ModuleNeeded>() {
+
+                @Override
+                public int compare(ModuleNeeded o1, ModuleNeeded o2) {
+                    String o1Version = "";
+                    String o2Version = "";
+                    String o1Name = o1.getModuleName();
+                    String o2Name = o2.getModuleName();
+                    Matcher o1Matcher = versionPattern.matcher(o1Name);
+                    if (o1Matcher.find()) {
+                        o1Version = o1Matcher.group();
+                    }
+                    Matcher o2Matcher = versionPattern.matcher(o2Name);
+                    if (o2Matcher.find()) {
+                        o2Version = o2Matcher.group();
+                    }
+                    return MavenVersionHelper.compareTo(o2Version, o1Version);
+                }
+
+            });
+
+            orderedList.addAll(multipleVersionHM.get(key));
+        }
+        orderedList.addAll(tmpModuleList);
+
+        return orderedList;
     }
 
     public static String getHadoopClusterItemId(INode node) {
@@ -437,7 +520,9 @@ public class JavaProcessUtil {
                                             if (var.equals(contextPara.getName())) {
                                                 String value =
                                                         context.getContextParameter(contextPara.getName()).getValue();
-
+                                                if (StringUtils.isBlank(value)) {
+                                                    continue;
+                                                }
                                                 if (curParam.getName().equals(EParameterName.DRIVER_JAR.getName())
                                                         && value.contains(";")) { //$NON-NLS-1$
                                                     String[] jars = value.split(";"); //$NON-NLS-1$

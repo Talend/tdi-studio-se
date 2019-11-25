@@ -13,7 +13,9 @@
 package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -411,6 +413,8 @@ public class ChangeActivateStatusElementCommand extends Command {
         for (INode node : jobletandnodeList) {
 
             if (node.isActivate()) {
+                // MiddleNodes Map<IConnection, Node> connection->Node
+                // if Node deactivate then connection->null
                 Map<IConnection, Node> outMiddleNodes = getAllOutMiddleNodes(node);
                 Map<IConnection, Node> inMiddleNodes = getAllInMiddleNodes(node);
 
@@ -457,7 +461,8 @@ public class ChangeActivateStatusElementCommand extends Command {
                         }
                     }
                     if (!exist) {
-                        middConnMap.put(nodeList, connList);
+                        List<IConnection> exactConnections = getExactConnectionsBetweenNodes(node, nodeList, connList, true);
+                        middConnMap.put(nodeList, exactConnections);
                     }
                 }
 
@@ -504,11 +509,86 @@ public class ChangeActivateStatusElementCommand extends Command {
                         }
                     }
                     if (!exist) {
-                        middConnMap.put(nodeList, connList);
+                        List<IConnection> exactConnections = getExactConnectionsBetweenNodes(node, nodeList, connList, false);
+                        middConnMap.put(nodeList, exactConnections);
                     }
                 }
             }
         }
+        // middConnMap=> key(BaseNode, Node1, Node2......);
+        // BaseNode->(0/some deactivate node)->Node1;BaseNode->(0/some deactivate node)->Node2;
+        // middConnMap=> value(connections between Node1 and Node2).
         return middConnMap;
+    }
+
+    public static List<IConnection> getExactConnectionsBetweenNodes(INode node, List<INode> nodeList, List<IConnection> connList,
+            boolean isOutgoing) {
+        List<IConnection> exactList = new ArrayList<IConnection>(connList);
+        List<INode> targetNodeList = new ArrayList<INode>(nodeList);
+        targetNodeList.remove(node);
+        Map<INode, Set<INode>> pathhm = new HashMap<INode, Set<INode>>();
+        for (INode targetNode : targetNodeList) {
+            Set<INode> pathNodes = new HashSet<INode>();
+            pathNodes.add(node);
+            // Got the passby Node between node and tatgetNode
+            boolean pathFound = getPathsNodes(node, targetNode, pathNodes, isOutgoing);
+            if (pathFound) {
+                pathhm.put(targetNode, pathNodes);
+            }
+        }
+
+        Collection<Set<INode>> pathSets = pathhm.values();
+        if (!pathSets.isEmpty()) {
+            Iterator<IConnection> connectionIte = exactList.iterator();
+            while (connectionIte.hasNext()) {
+                IConnection connection = (IConnection) connectionIte.next();
+
+                boolean rightIn = false;
+
+                Iterator<Set<INode>> pathIte = pathSets.iterator();
+                while (pathIte.hasNext()) {
+                    Set<INode> nodes = (Set<INode>) pathIte.next();
+                    // if sourceNode and targetNode of the connection don't exist in the NodePath then this connection
+                    // doesn't belong to this flow of BaseNode->(0/some deactivate node)->Node1
+                    // maybe belongs to other flow of BaseNode but all flow deactivate.
+                    if (nodes.contains(connection.getSource()) && nodes.contains(connection.getTarget())) {
+                        rightIn = true;
+                    }
+                }
+
+                if (!rightIn) {
+                    connectionIte.remove();
+                }
+
+            }
+        }
+
+        return exactList;
+    }
+
+    private static boolean getPathsNodes(INode node, INode targetNode, Set<INode> nodes, boolean isOutgoing) {
+        List<? extends IConnection> connections = null;
+        if (node.equals(targetNode)) {
+            return true;
+        }
+        if (isOutgoing) {
+            connections = node.getOutgoingConnections();
+        } else {
+            connections = node.getIncomingConnections();
+        }
+        for (IConnection connection : connections) {
+            INode deepNode = null;
+            if (isOutgoing) {
+                deepNode = connection.getTarget();
+            } else {
+                deepNode = connection.getSource();
+            }
+            boolean flag = getPathsNodes(deepNode, targetNode, nodes, isOutgoing);
+            if (flag) {
+                nodes.add(deepNode);
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -34,12 +34,14 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.FakeElement;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
 import org.talend.sdk.component.studio.model.parameter.Layout;
@@ -91,7 +93,19 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
             this.problemManager.registTckComposite(this);
         }
         elem.getElementParameters().stream().filter(Objects::nonNull).filter(TaCoKitElementParameter.class::isInstance)
-                .map(TaCoKitElementParameter.class::cast).forEach(p -> p.setProblemManager(problemManager));
+                .map(TaCoKitElementParameter.class::cast).forEach(p -> {
+                    /**
+                     * Regist validators, so that problems from validators can be shown using problem manager
+                     */
+                    p.getRegistValidatorCallback().ifPresent(r -> {
+                        try {
+                            r.call();
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
+                    });
+                    p.setProblemManager(problemManager);
+                });
     }
 
     private void unregistProblemManager() {
@@ -199,15 +213,16 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
      */
     protected Composite addCommonWidgets() {
         final Composite propertyComposite = addPropertyType(composite);
-        final Composite lastSchemaComposite = addSchemas(composite, propertyComposite);
-        return lastSchemaComposite;
+        final Composite schemaComposite = addSchemas(composite, propertyComposite);
+        final Composite lastComposite = addStatCatcher(schemaComposite);
+        return lastComposite;
     }
 
     protected Composite addPropertyType(final Composite parent) {
         final Composite propertyComposite = new Composite(parent, SWT.NONE);
         propertyComposite.setBackground(parent.getBackground());
         propertyComposite.setLayout(new FormLayout());
-        propertyComposite.setLayoutData(levelLayoutData(null));
+        propertyComposite.setLayoutData(levelLayoutData(getMessagesComp()));
         final IElementParameter propertyType = elem.getElementParameter("PROPERTY");
         addWidgetIfActive(propertyComposite, propertyType);
         return propertyComposite;
@@ -238,6 +253,14 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
             addSchemaWidget(schemaComposite, schema);
         }
         return previousComposite;
+    }
+
+    protected Composite addStatCatcher(final Composite parent) {
+        final IElementParameter parameter = elem.getElementParameter(EParameterName.TSTATCATCHER_STATS.getName());
+        if (doShow(parameter)) {
+            addWidget(parent, parameter, null);
+        }
+        return parent;
     }
 
     private boolean isNotPresentOnLayout(final IElementParameter schema) {

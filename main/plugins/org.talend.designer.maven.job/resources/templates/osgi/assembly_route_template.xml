@@ -16,6 +16,7 @@
 			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
 				<include>${talend.job.path}/**/*.class</include>
+				<include>${talend.job.path}/**/*.wsdl</include>
 				<include>__tdm/**</include>
 			</includes>
 		</fileSet>
@@ -46,6 +47,14 @@
 
 		<fileSet><!-- add context resources -->
 			<directory>${current.resources.dir}</directory>
+			<outputDirectory>${file.separator}</outputDirectory>
+			<includes>
+				<include>${talend.job.path}/**</include>
+			</includes>
+		</fileSet>
+		
+		<fileSet><!-- add context resources -->
+			<directory>${resources.path}</directory>
 			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
 				<include>${talend.job.path}/**</include>

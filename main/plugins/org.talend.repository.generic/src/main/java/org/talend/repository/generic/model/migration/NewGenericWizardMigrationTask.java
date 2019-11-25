@@ -29,11 +29,11 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.utils.ReflectionUtils;
 import org.talend.daikon.NamedThing;
-import org.talend.daikon.security.CryptoHelper;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
+import org.talend.utils.security.CryptoMigrationUtil;
 
 /**
  * created by hcyi on Apr 11, 2016 Detailled comment
@@ -136,7 +136,7 @@ public abstract class NewGenericWizardMigrationTask extends AbstractItemMigratio
                             }
                             if (property.isFlag(org.talend.daikon.properties.property.Property.Flags.ENCRYPT)
                                     && !oldConnection.isContextMode()) {
-                                componentProperties.setValue(propsKey, CryptoHelper.getDefault().decrypt(String.valueOf(value)));
+                                componentProperties.setValue(propsKey, CryptoMigrationUtil.decrypt(String.valueOf(value)));
                                 property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, property.getName());
                                 modified = true;
                                 changed = true;

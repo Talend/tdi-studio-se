@@ -557,6 +557,7 @@ public class ChangeMetadataCommand extends Command {
                     }
                 }
                 MetadataToolHelper.copyTable(newInputMetadata, currentInputMetadata);
+                currentOutputMetadata.setOriginalColumns(newOutputMetadata.getOriginalColumns());
             }
         }
 
@@ -573,6 +574,7 @@ public class ChangeMetadataCommand extends Command {
                 }
             }
             MetadataToolHelper.copyTable(newOutputMetadata, currentOutputMetadata);
+            currentOutputMetadata.setOriginalColumns(newOutputMetadata.getOriginalColumns());
         }
         if (inputSchemaParam != null
                 && inputSchemaParam.getChildParameters().get(EParameterName.SCHEMA_TYPE.getName()) != null
@@ -624,8 +626,10 @@ public class ChangeMetadataCommand extends Command {
         setTableMAPPING();
 
         if (!internal) {
-            updateColumnList(oldOutputMetadata, newOutputMetadata);
-            ((Process) node.getProcess()).checkProcess();
+            if (!oldOutputMetadata.sameMetadataAs(newOutputMetadata, IMetadataColumn.OPTIONS_NONE)) {
+                updateColumnList(oldOutputMetadata, newOutputMetadata);
+                ((Process) node.getProcess()).checkProcess();
+            }
         }
         refreshMetadataChanged();
     }

@@ -138,9 +138,10 @@ String inputConnName = null;
 		paraList_<%=cid %>.addAll(childJob_commandLine_Mapper_<%=cid%>.get(<%=dynamicJobName%>));
 	<%
 	}else{
+		boolean use_custom_jvm_setting = "true".equals(ElementParameterParser.getValue(node, "__USE_CUSTOM_JVM_SETTING__"));
 		try {
 			if(useIndependentProcess){
-		    	commandLineWindows = ProcessorUtilities.getCommandLine("win32", false, true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, codeOptions);
+		    	commandLineWindows = ProcessorUtilities.getCommandLine("win32", false, true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, use_custom_jvm_setting, codeOptions);
 		    	// remove the 2 fist lines
 		    	if (commandLineWindows.length > 0 && ProcessorUtilities.isExportConfig()){
 		    		int tmpSize = commandLineWindows.length - 2;
@@ -148,7 +149,7 @@ String inputConnName = null;
 		    		System.arraycopy(commandLineWindows, 2, tmp, 0, tmpSize);
 		    		commandLineWindows = tmp;
 	    		}
-		    	commandLineUnix = ProcessorUtilities.getCommandLine("linux", false, true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, codeOptions);
+		    	commandLineUnix = ProcessorUtilities.getCommandLine("linux", false, true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, use_custom_jvm_setting, codeOptions);
 	    		// remove the 2 first lines
 				if (commandLineUnix.length > 0 && ProcessorUtilities.isExportConfig()){
 					int tmpSize = commandLineUnix.length - 2;
@@ -190,21 +191,21 @@ String inputConnName = null;
 		      			if (commandLineWindows[i].indexOf("\"") >= 0){
 							if(commandLineWindows[i].indexOf(".jar")>=0){
 		      				%>
-								paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=commandLineWindows[i] %>));
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=commandLineWindows[i] %>));
 		      				<%
 							}else{
 		      				%>
-		      					paraList_<%=cid %>.add(<%=commandLineWindows[i] %>);
+		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=commandLineWindows[i] %>);
 		      				<%
 		          			}
 		      			}else{
 		          			if(commandLineWindows[i].indexOf(".jar")>=0){
               				%>
-		        				paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap("<%=commandLineWindows[i] %>"));
+		        				jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap("<%=commandLineWindows[i] %>"));
 		      				<%
 		          			}else{
               				%>
-		      					paraList_<%=cid %>.add("<%=commandLineWindows[i] %>");
+		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, "<%=commandLineWindows[i] %>");
 		      				<%
 		          			}
 		      			}	
@@ -228,24 +229,31 @@ String inputConnName = null;
 						if (param.contains("$ROOT_PATH")) {
 							if(param.indexOf(".jar") >= 0){
 		      				%>
-								paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
 		      				<%}else{%>
-		        				paraList_<%=cid %>.add(<%=param %>.replace("$ROOT_PATH",System.getProperty("user.dir")));
+		        				jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=param %>.replace("$ROOT_PATH",System.getProperty("user.dir")));
 		     	 			<%
 		      				}
 		      			}else{
 							if(param.indexOf(".jar") >= 0){
 		      				%>
-		      					paraList_<%=cid %>.add(dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
+		      					jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, dealChildJobLibrary_<%=cid %>.replaceJarPathsFromCrcMap(<%=param %>).replace("$ROOT_PATH",System.getProperty("user.dir")));
 		      				<%}else{%>
-								paraList_<%=cid %>.add(<%=param %>);
-		      				<%			
+								jvm_argument_helper_<%=cid%>.addArgumentsTo(paraList_<%=cid %>, <%=param %>);
+		      				<%
 		      				}
 		      			}	
 	    			}
 		  		}
 		  		%>
-			}    
+			}
+			
+			<%
+			if(use_custom_jvm_setting) {
+			%>
+			jvm_argument_helper_<%=cid%>.reset();
+			<%}%>
+			
 	  	<%
 		}
 		if(isLog4jEnabled){//For TDI-27659
@@ -425,7 +433,7 @@ String inputConnName = null;
 	%>
 		<%=childJob %> childJob_<%=cid %> = new <%=childJob %>();
         <%
-            if (ProcessorUtilities.isEsbJob(process, version)) {
+            if (ProcessorUtilities.isEsbJob(currentProcess)) {
         %>
         childJob_<%=cid %>.setEndpointRegistry(registry);
         <%
@@ -555,66 +563,92 @@ String inputConnName = null;
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 	// use independent process to run subjob
 	%>
-		Runtime runtime_<%=cid %> = Runtime.getRuntime();
-		final Process ps_<%=cid %>;
-		ps_<%=cid %> = runtime_<%=cid %>.exec((String[])paraList_<%=cid %>.toArray(new String[paraList_<%=cid %>.size()]));
-
-		Thread normal_<%=cid %> = new Thread() {
-			public void run() {
-				try {
-					java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps_<%=cid %>.getInputStream()));
-					String line = "";
-					try {
-						while((line = reader.readLine()) != null) {
-						System.out.println(line);
-						}
-					} finally {
-					reader.close();
+				class ConsoleHelper_<%=cid %> {
+					private Thread getNormalThread(Process process) {
+						return new Thread() {
+							public void run() {
+								try {
+									java.io.BufferedReader reader = new java.io.BufferedReader(
+											new java.io.InputStreamReader(
+													process.getInputStream()));
+									String line = "";
+									try {
+										while ((line = reader.readLine()) != null) {
+											System.out.println(line);
+										}
+									} finally {
+										reader.close();
+									}
+								} catch (java.io.IOException ioe) {
+						            <%if(isLog4jEnabled){%>
+										log.error("<%=cid %> - " + ioe.getMessage());
+						            <%}%>
+									ioe.printStackTrace();
+								}
+							}
+						};
 					}
-				} catch(java.io.IOException ioe) {
-					<%if(isLog4jEnabled){%>
-						log.error("<%=cid %> - " + ioe.getMessage());
-					<%}%>
-					ioe.printStackTrace();
+
+					private Thread getErrorThread(Process process, StringBuffer sb) {
+						return new Thread() {
+							public void run() {
+								try {
+									java.io.BufferedReader reader = new java.io.BufferedReader(
+											new java.io.InputStreamReader(
+													process.getErrorStream()));
+									String line = "";
+									try {
+										while ((line = reader.readLine()) != null) {
+											sb.append(line)
+													.append("\n");
+										}
+									} finally {
+										reader.close();
+									}
+								} catch (java.io.IOException ioe) {
+						            <%if(isLog4jEnabled){%>
+										log.error("<%=cid %> - " + ioe.getMessage());
+						            <%}%>
+									ioe.printStackTrace();
+								}
+							}
+						};
+					}
 				}
-	    	}
-  		};
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - The child job '<%if(!useDynamicJob){%><%=childJob %><%}else{%>"+<%=dynamicJobName%>+"<%}%>' starts on the version '<%=version%>' with the context '<%=context%>'.");
-		<%}%>
-		normal_<%=cid %>.start();
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - The child job '<%if(!useDynamicJob){%><%=childJob %><%}else{%>"+<%=dynamicJobName%>+"<%}%>' is done.");
-		<%}%>
+				ConsoleHelper_<%=cid %> consoleHelper_<%=cid %> = new ConsoleHelper_<%=cid %>();
 
-		final StringBuffer errorMsg_<%=cid %> = new StringBuffer();
-		Thread error_<%=cid %> = new Thread() {
-			public void run() {
-				try {
-					java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps_<%=cid %>.getErrorStream()));
-					String line = "";
-        			try {
-          				while((line = reader.readLine()) != null) {
-            				errorMsg_<%=cid %>.append(line).append("\n");
-          				}
-        			} finally {
-          				reader.close();
-        			}
-      			} catch(java.io.IOException ioe) {
-					<%if(isLog4jEnabled){%>
-						log.error("<%=cid %> - " + ioe.getMessage());
-					<%}%>
-			        ioe.printStackTrace();
-      			}
-    		}
-		};
-		error_<%=cid %>.start();
+		Runtime runtime_<%=cid %> = Runtime.getRuntime();
+		Process ps_<%=cid %> = null;
 
-		//0 indicates normal termination	
-		int result_<%=cid %> = ps_<%=cid %>.waitFor();
-		normal_<%=cid %>.join(10000);
-		error_<%=cid %>.join(10000);
-  
+		//0 indicates normal termination
+        int result_<%=cid %>;
+        StringBuffer errorMsg_<%=cid %> = new StringBuffer();
+        try {
+            ps_<%=cid %> = runtime_<%=cid %>.exec((String[])paraList_<%=cid %>.toArray(new String[paraList_<%=cid %>.size()]));
+
+            Thread normal_<%=cid %> = consoleHelper_<%=cid %>.getNormalThread(ps_<%=cid %>);
+            <%if(isLog4jEnabled){%>
+                log.info("<%=cid%> - The child job '<%if(!useDynamicJob){%><%=childJob %><%}else{%>"+<%=dynamicJobName%>+"<%}%>' starts on the version '<%=version%>' with the context '<%=context%>'.");
+            <%}%>
+            normal_<%=cid %>.start();
+            <%if(isLog4jEnabled){%>
+                log.info("<%=cid%> - The child job '<%if(!useDynamicJob){%><%=childJob %><%}else{%>"+<%=dynamicJobName%>+"<%}%>' is done.");
+            <%}%>
+
+            Thread error_<%=cid %> = consoleHelper_<%=cid %>.getErrorThread(ps_<%=cid %>, errorMsg_<%=cid %>);
+            error_<%=cid %>.start();
+
+            result_<%=cid %> = ps_<%=cid %>.waitFor();
+            normal_<%=cid %>.join(10000);
+            error_<%=cid %>.join(10000);
+        } catch (ThreadDeath tde) {
+            <%if(isLog4jEnabled){%>
+            	log.error("<%=cid %> - thread was terminated.");
+            <%}%>
+            ps_<%=cid %>.destroy();
+            throw tde;
+        }
+
 		globalMap.put("<%=cid %>_CHILD_RETURN_CODE",result_<%=cid %>);
 		if(result_<%=cid %> != 0){
    			globalMap.put("<%=cid %>_CHILD_EXCEPTION_STACKTRACE",errorMsg_<%=cid %>.toString());

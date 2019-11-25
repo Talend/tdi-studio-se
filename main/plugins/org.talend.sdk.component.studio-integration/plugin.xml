@@ -141,6 +141,11 @@
               mapping="TACOKIT_SUGGESTABLE_TABLE"
               name="Suggestable Table Generator">
       </generator>
+      <generator
+           class="org.talend.sdk.component.studio.ui.composite.generator.TaCoKitTextAreaSelectionGenerator"
+           mapping="TACOKIT_TEXT_AREA_SELECTION"
+           name="Text Area Selection Generator">
+     </generator>
   </extension>
   <extension
         point="org.talend.designer.core.process_provider">
@@ -292,7 +297,12 @@
            version="7.3.0">
      </projecttask>
   </extension>
-
+ <extension
+       point="org.eclipse.ui.startup">
+    <startup
+          class="org.talend.sdk.component.studio.startup.TacokitLoadComponentsStatusStartup">
+    </startup>
+ </extension>
   <!-- don't use it since there is already one which is integrated and studio doesnt support composition here
   <extension point="org.talend.core.runtime.service">
     <Service serviceId="IGenericWizardService" class="org.talend.sdk.component.studio.metadata.WizardRegistry" />

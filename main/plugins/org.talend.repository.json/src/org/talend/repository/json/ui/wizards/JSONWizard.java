@@ -52,7 +52,9 @@ import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
+import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
@@ -127,6 +129,8 @@ public class JSONWizard extends CheckLastVersionRepositoryWizard implements INew
     private List<ATreeNode> rootNodes;
 
     private final Map<String, List<FOXTreeNode>> foxNodesMap = new HashMap<String, List<FOXTreeNode>>();
+    
+    private List<IMetadataTable> oldMetadataTable = new ArrayList<IMetadataTable>();
 
     private boolean isToolbar;
 
@@ -232,6 +236,10 @@ public class JSONWizard extends CheckLastVersionRepositoryWizard implements INew
             this.originalDescription = this.connectionItem.getProperty().getDescription();
             this.originalPurpose = this.connectionItem.getProperty().getPurpose();
             this.originalStatus = this.connectionItem.getProperty().getStatusCode();
+            MetadataTable[] tables = ConnectionHelper.getTables(connectionItem.getConnection()).toArray(new MetadataTable[0]);
+            for (MetadataTable table : tables) {
+                this.oldMetadataTable.add(ConvertionHelper.convert(table));
+            }
         }
     }
 
@@ -297,6 +305,10 @@ public class JSONWizard extends CheckLastVersionRepositoryWizard implements INew
             this.originalDescription = this.connectionItem.getProperty().getDescription();
             this.originalPurpose = this.connectionItem.getProperty().getPurpose();
             this.originalStatus = this.connectionItem.getProperty().getStatusCode();
+            MetadataTable[] tables = ConnectionHelper.getTables(connectionItem.getConnection()).toArray(new MetadataTable[0]);
+            for (MetadataTable table : tables) {
+                this.oldMetadataTable.add(ConvertionHelper.convert(table));
+            }
         }
     }
 
@@ -505,7 +517,7 @@ public class JSONWizard extends CheckLastVersionRepositoryWizard implements INew
                                                     "There are some new fields to extract, guess your schema manually if you want to apply the update.");
                                 }
                                 // update
-                                RepositoryUpdateManager.updateFileConnection(connectionItem);
+                                RepositoryUpdateManager.updateFileConnection(connectionItem, oldMetadataTable);
                                 refreshInFinish(propertiesWizardPage.isNameModifiedByUser());
                                 final RepositoryWorkUnit<Object> workUnit = new RepositoryWorkUnit<Object>("", this) {
 
@@ -629,11 +641,6 @@ public class JSONWizard extends CheckLastVersionRepositoryWizard implements INew
         if (connection.isContextMode()) {
             ContextType contextType = ConnectionContextHelper.getContextTypeForContextMode(connectionItem.getConnection(), true);
             file = TalendQuoteUtils.removeQuotes(ConnectionContextHelper.getOriginalValue(contextType, file));
-        }
-
-        if (file != null) {
-            // prepareColumnsFromXSD(file, newColumns, schemaTarget);
-            return;
         }
 
         if (csvArray == null || csvArray.getRows().isEmpty()) {

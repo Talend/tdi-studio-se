@@ -1,5 +1,5 @@
 Talend Open Studio for Data Integration
-Copyright (c) 2006 - 2017 Talend Inc. - www.talend.com
+Copyright (c) 2006-2019 Talend Inc. - www.talend.com
 All rights reserved.
 
 
@@ -21,565 +21,565 @@ The Eclipse Foundation (http://www.eclipse.org).
 Licensed under the Eclipse Public License - v1.0
 
 
-This product includes software developed at 
+This product includes software developed at
 ASM Helper Minidev.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 AWS SDK Java (https://github.com/aws/aws-sdk-java).
 Licensed under Apache-2.0
-© 2016, Amazon Web Services
+(C) 2016, Amazon Web Services
 
-This product includes software developed at 
+This product includes software developed at
 Amazon Aws Libraries.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Amazon SDK for Java (https://aws.amazon.com/sdkforjava).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Amazon-S3 (https://github.com/aws/aws-sdk-java/blob/master/LICENSE.txt).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 AtInject (https://code.google.com/p/atinject/).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Avro MapReduce.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Box Java SDK (V2) (https://github.com/box/box-java-sdk-v2/blob/master/LICENSE).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 CSV Tools.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Castor.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Ehcache.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Ezmorph.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Google APIs Client Library for Java.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Google Gson (https://code.google.com/p/google-gson/).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Groovy.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Guava (https://github.com/google/guava).
 Licensed under Apache-2.0
 Copyright (C) 2010 The Guava Authors
 
-This product includes software developed at 
+This product includes software developed at
 Guava (https://github.com/google/guava/blob/master/COPYING).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Guava: Google Core Libraries for Java (https://code.google.com/p/guava-libraries/).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Guava: Google Core Libraries for Java 1.6+ (https://code.google.com/p/guava-libraries/).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Guava: Google Core Libraries for Java 1.6+.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Hadoop Libraries.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Hadoop Libraries (Retrieved from CDH3u0. LICENSE.txt explains that Zookeeper is distributed under Apache License 2.0).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Ini4j.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 JClouds.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jackcess (http://jackcess.sourceforge.net/).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jackson.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jackson JSON Processor (http://wiki.fasterxml.com/JacksonLicensing).
 Licensed under Apache-2.0
-Copyright © 2012-2013 FasterXML.
+Copyright (C) 2012-2013 FasterXML.
 
-This product includes software developed at 
+This product includes software developed at
 Jackson JSON processor.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jackson Java JSON-processor.
 Licensed under Apache-2.0
 Copyright ©2009 FasterXML, LLC
 
-This product includes software developed at 
+This product includes software developed at
 Jackson Java JSON-processor.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jackson Libraries.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jasypt : Java Simplified Encryption.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 JetS3t.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jettison.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Joda Time.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Joda-Time (http://www.joda.org/joda-time/).
 Licensed under Apache-2.0
 Copyright ©2002-2016 Joda.org
 
-This product includes software developed at 
+This product includes software developed at
 Joda-Time (http://www.joda.org/joda-time/).
 Licensed under Apache-2.0
 Copyright ©2002-2015 Joda.org
 
-This product includes software developed at 
+This product includes software developed at
 Joda-Time.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Json Simple (https://code.google.com/p/json-simple/).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Json-Simple (https://github.com/fangyidong/json-simple).
 Licensed under Apache-2.0
 Yidong Fang
 Chris Nokleberg
 Dave Hughes
 
-This product includes software developed at 
+This product includes software developed at
 Lucene Core.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 MarkLogic Java Client API.
 Licensed under Apache-2.0
 Copyright 2012-2015 MarkLogic Corporation
 
-This product includes software developed at 
+This product includes software developed at
 Microsoft Azure SDK for Java (https://github.com/Azure/azure-sdk-for-java).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 OpenSAML (https://wiki.shibboleth.net/confluence/display/OpenSAML/Home/).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Plexus (https://codehaus-plexus.github.io/index.html).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Resty : A simple HTTP REST client for Java.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Rocoto (http://99soft.github.io/rocoto/index.html
 ).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Sisu Guice (https://github.com/sonatype/sisu-guice).
 Licensed under Apache-2.0
 Copyright (c) 2006 Google, Inc. All rights reserved.
 
-This product includes software developed at 
+This product includes software developed at
 Sonatype Plexus (https://github.com/sonatype?utf8=%E2%9C%93&query=plexus).
 Licensed under Apache-2.0
 Copyright The Codehaus Foundation.
 
-This product includes software developed at 
+This product includes software developed at
 Spring.
 Licensed under Apache-2.0
 Pivotal Software Inc. / The original author or authors
 
-This product includes software developed at 
+This product includes software developed at
 SshJ (https://github.com/shikhar/sshj/blob/master/LICENSE).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 StAX API.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 StAXON - JSON via StAX (https://github.com/beckchr/staxon/).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Talend ESB Libraries.
 Licensed under Apache-2.0
 Talend
 
-This product includes software developed at 
+This product includes software developed at
 WSS4J.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Woden.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Woodstox.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 XMLSchema.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Xerces2 Java Parser.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 XmlBeans.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 XmlSchema Core.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Zip4J.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 google-gson.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 google-guice (https://code.google.com/p/google-guice/).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 json-path (https://code.google.com/p/json-path/).
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 json-smart.
 Licensed under Apache-2.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jetty (http://www.eclipse.org/jetty/).
 Licensed under Apache-2.0;EPL-1.0
-Copyright © 2016 The Eclipse Foundation.
+Copyright (C) 2016 The Eclipse Foundation.
 
-This product includes software developed at 
+This product includes software developed at
 Jetty.
 Licensed under Apache-2.0;EPL-1.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jetty (http://www.eclipse.org/jetty/licenses.php).
 Licensed under Apache-2.0;EPL-1.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jackson Java JSON-processor.
 Licensed under Apache-2.0;LGPL-2.1
 
 
-This product includes software developed at 
+This product includes software developed at
 Woodstox : High-performance XML processor (http://woodstox.codehaus.org/ http://woodstox.codehaus.org/Download).
 Licensed under Apache-2.0;LGPL-2.1
 
 
-This product includes software developed at 
+This product includes software developed at
 Woodstox : High-performance XML processor (http://woodstox.codehaus.org).
 Licensed under Apache-2.0;LGPL-2.1
 
 
-This product includes software developed at 
+This product includes software developed at
 Cryptacular.
 Licensed under Apache-2.0;LGPL-3.0
 
 
-This product includes software developed at 
+This product includes software developed at
 SqliteJDBC.
 Licensed under BSD-2-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 ASM.
 Licensed under BSD-3-Clause
 INRIA
 
-This product includes software developed at 
+This product includes software developed at
 AntlR.
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 Antlr 3 Runtime.
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 Force.com Web Service Connector (WSC).
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 Ganymed SSH-2 for Java.
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 HsqlDB.
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 Jaxen.
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 Paraccel JDBC Driver.
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 PostgreSQL JDBC Driver.
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 Salesforce.com (http://www.force.com).
 Licensed under BSD-3-Clause
 Copyright (c) 2005-2013, salesforce.com
 
-This product includes software developed at 
+This product includes software developed at
 Scala (http://www.scala-lang.org/).
 Licensed under BSD-3-Clause
 Copyright (c) 2002-2016 EPFL; Copyright (c) 2011-2016 Lightbend, Inc. (formerly Typesafe, Inc.)
 
-This product includes software developed at 
+This product includes software developed at
 XStream (http://xstream.codehaus.org/license.html).
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 XStream.
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 XStream Core.
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 jsr-305 (JSR 305: Annotations for Software Defect Detection in Java;https://code.google.com/p/jsr-305/).
 Licensed under BSD-3-Clause
 
 
-This product includes software developed at 
+This product includes software developed at
 Java API for RESTful Services.
 Licensed under CDDL-1.1
 
 
-This product includes software developed at 
+This product includes software developed at
 Java API for RESTful Services (http://grepcode.com/snapshot/repo1.maven.org/maven2/javax.ws.rs/javax.ws.rs-api/2.0-m10).
 Licensed under CDDL-1.1
 
 
-This product includes software developed at 
+This product includes software developed at
 Jaxb.
 Licensed under CDDL-1.1;GPL-2.0-with-classpath-exception
 
 
-This product includes software developed at 
+This product includes software developed at
 WSDL4J.
 Licensed under CPL-1.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Aether (http://www.eclipse.org/aether/).
 Licensed under EPL-1.0
 Copyright (c) 2010, 2014 Sonatype, Inc.
 
-This product includes software developed at 
+This product includes software developed at
 Eclipse Sisu.
 Licensed under EPL-1.0
 Copyright (c) 2010, 2015 Sonatype, Inc.
 
-This product includes software developed at 
+This product includes software developed at
 H2 Embedded Database and JDBC Driver (H2 is EPL 1.0 !).
 Licensed under EPL-1.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Jetty.
 Licensed under EPL-1.0
 Copyright (c) ${copyright-range} Mort Bay Consulting Pty. Ltd.
 
-This product includes software developed at 
+This product includes software developed at
 Mondrian.
 Licensed under EPL-1.0
 
 
-This product includes software developed at 
+This product includes software developed at
 SWTChart.
 Licensed under EPL-1.0
 
 
-This product includes software developed at 
+This product includes software developed at
 Logback.
 Licensed under EPL-1.0;LGPL-2.1
 
 
-This product includes software developed at 
+This product includes software developed at
 Java Json (http://www.json.org/license.html).
 Licensed under Json
 
 
-This product includes software developed at 
+This product includes software developed at
 org-json-java.
 Licensed under Json
 
 
-This product includes software developed at 
+This product includes software developed at
 AOP Alliance (Java/J2EE AOP standards) (http://aopalliance.sourceforge.net/).
 Licensed under Public Domain
 
 
-This product includes software developed at 
+This product includes software developed at
 Simple API for CSS.
 Licensed under W3C
 
 
-This product includes software developed at 
+This product includes software developed at
 BCProv.
 Licensed under X11
 Copyright (c) 2000 - 2016 The Legion of the Bouncy Castle Inc. (https://www.bouncycastle.org)
 
-This product includes software developed at 
+This product includes software developed at
 BouncyCastle.
 Licensed under X11
 
 
-This product includes software developed at 
+This product includes software developed at
 SL4J.
 Licensed under X11
 
 
-This product includes software developed at 
+This product includes software developed at
 SL4J (http://www.slf4j.org/license.html).
 Licensed under X11
 
 
-This product includes software developed at 
+This product includes software developed at
 SL4J.
 Licensed under X11
 Copyright (c) 2004-2013 QOS.ch
 
-This product includes software developed at 
+This product includes software developed at
 Simple Logging Facade for Java (http://www.slf4j.org/license.html).
 Licensed under X11
 
 
-This product includes software developed at 
+This product includes software developed at
 Simple Logging Facade for Java.
 Licensed under X11
 
 
-This product includes software developed at 
+This product includes software developed at
 dropbox-sdk-java : Java library for the Dropbox Core API.
 Licensed under X11
 

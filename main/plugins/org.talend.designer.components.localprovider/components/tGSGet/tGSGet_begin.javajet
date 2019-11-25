@@ -185,14 +185,14 @@ imports="
 		%>
 			for (org.jets3t.service.model.GSObject objectSummary_<%=cid%> : objects_<%=cid%>) {
 				String objkey_<%=cid%> = objectSummary_<%=cid%>.getKey();
-				java.io.File file_<%=cid%> = new java.io.File(<%=outputsDir%>+objkey_<%=cid%>);
+				java.io.File file_<%=cid%> = new java.io.File(<%=outputsDir%>, objkey_<%=cid%>);
 				org.jets3t.service.model.GSObject obj_<%=cid%> = service_<%=cid%>.getObject(currentBucketName_<%=cid%>, objkey_<%=cid%>);
 		<%
 		}else{
 		%>
 			for (java.util.Map<String, String> map_<%=cid %>: list_<%=cid%>) {
 				String currentBucketName_<%=cid%>=map_<%=cid %>.get("BUCKET_NAME");
-				java.io.File file_<%=cid%> = new java.io.File(<%=outputsDir%>+map_<%=cid %>.get("OBJECT_NEWNAME"));
+				java.io.File file_<%=cid%> = new java.io.File(<%=outputsDir%>, map_<%=cid %>.get("OBJECT_NEWNAME"));
 				org.jets3t.service.model.GSObject obj_<%=cid%> =null;
 				try {
 					obj_<%=cid%> = service_<%=cid%>.getObject(currentBucketName_<%=cid%>, map_<%=cid %>.get("OBJECT_KEY"));

@@ -409,7 +409,7 @@ public class TableController extends AbstractElementPropertySectionController {
     private ITDQPatternService getDQPatternService() {
         ITDQPatternService service = null;
         try {
-            service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
+            service = GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
         } catch (RuntimeException e) {
             // nothing to do
         }
@@ -475,7 +475,7 @@ public class TableController extends AbstractElementPropertySectionController {
         paramValues.addAll(newParamValues);
     }
 
-    private void updateColumnList(IElementParameter param) {
+    public void updateColumnList(IElementParameter param) {
         if (elem instanceof Node) {
             ColumnListController.updateColumnList((Node) elem, null);
         } else if (elem instanceof Connection) {

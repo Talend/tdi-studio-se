@@ -34,6 +34,7 @@ import org.talend.core.model.metadata.types.AutoConversionType;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.utils.files.FileUtils;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -71,7 +72,7 @@ public class AutoConvertTypesUtils {
     public static List<AutoConversionType> load(File file) {
         beanList = new ArrayList<>();
         try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory documentBuilderFactory = XmlUtils.getSecureDocumentBuilderFactory();
             DocumentBuilder analyseur = documentBuilderFactory.newDocumentBuilder();
             analyseur.setErrorHandler(new ErrorHandler() {
 
@@ -109,7 +110,7 @@ public class AutoConvertTypesUtils {
     }
 
     public static boolean save(List<AutoConversionType> beans, File file) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = XmlUtils.getSecureDocumentBuilderFactory();
         OutputStreamWriter output = null;
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();

@@ -39,6 +39,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.CommonUIPlugin;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
@@ -416,7 +419,14 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
 
                             @Override
                             public void run() {
-                                MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                                Shell shell = null;
+                                IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+
+                                if (activeWorkbenchWindow != null) {
+                                    shell = activeWorkbenchWindow.getShell();
+                                }
+
+                                MessageBoxExceptionHandler.process(e, shell);
                             }
                         });
                     } else {

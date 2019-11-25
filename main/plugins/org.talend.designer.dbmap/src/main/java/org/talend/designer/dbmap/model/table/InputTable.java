@@ -83,7 +83,6 @@ public class InputTable extends AbstractInOutTable {
     public void initFromExternalData(ExternalDbMapTable externalMapperTable) {
 
         boolean isAliasTable = externalMapperTable != null && externalMapperTable.getAlias() != null;
-
         if (isAliasTable) {
             // dbmap table is alias
             setMetadataTable(connection.getTable().clone());
@@ -101,7 +100,6 @@ public class InputTable extends AbstractInOutTable {
             }
         }
 
-        ArrayList<IMetadataColumn> columnsToRemove = new ArrayList<IMetadataColumn>();
         for (IMetadataColumn column : columns) {
             InputColumnTableEntry inputEntry = (InputColumnTableEntry) getNewTableEntry(column);
             ExternalDbMapEntry externalMapperTableEntry = nameToPerTabEntry.get(inputEntry.getMetadataColumn().getLabel());
@@ -110,13 +108,8 @@ public class InputTable extends AbstractInOutTable {
                 fillInputEntry(inputEntry, externalMapperTableEntry);
                 nameToPerTabEntry.remove(externalMapperTableEntry.getName());
             }
-            if (externalMapperTableEntry != null || !isAliasTable) {
-                dataMapTableEntries.add(inputEntry);
-            } else {
-                columnsToRemove.add(column);
-            }
+            dataMapTableEntries.add(inputEntry);
         }
-        columns.removeAll(columnsToRemove);
 
         // create unmatching entries
         for (ExternalDbMapEntry perTableEntry : nameToPerTabEntry.values()) {

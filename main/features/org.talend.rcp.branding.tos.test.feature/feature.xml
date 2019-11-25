@@ -55,5 +55,6 @@
   <plugin id="org.talend.testutils" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.updates.runtime.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.utils.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
+  <plugin id="org.talend.sdk.component.studio-integration.test" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="test.all.test.suite" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 </feature>

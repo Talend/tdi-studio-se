@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.repository.constants;
 
+import java.util.Arrays;
+import java.util.List;
+
 @SuppressWarnings("nls")
 public class Log4jPrefsConstants {
 
@@ -25,6 +28,14 @@ public class Log4jPrefsConstants {
 
     public static final String LOG4J_CONTENT_NODE = "log4jContent";
 
+    public static final String LOG4J_SELECT_VERSION2 = "log4jVersion2";//$NON-NLS-1$
+
+    public static final String LOG4J1 = "log4j1";//$NON-NLS-1$
+
+    public static final String LOG4J2 = "log4j2";//$NON-NLS-1$
+
+    public static final List<String> LOG4J_VERSIONS = Arrays.asList(LOG4J1, LOG4J2);// $NON-NLS-1$ //$NON-NLS-2$
+
     public static final String COMMON_LOGGING_NODE = "commonLoging";
 
     public static final String LOG4J_RESOURCES = "org.talend.log4j";
@@ -35,9 +46,13 @@ public class Log4jPrefsConstants {
 
     public static final String COMMONLOGINGFILEPATH = "log/common-logging.properties_template"; //$NON-NLS-1$
 
+    public static final String LOG4J_VERSION2_FILEPATH = "log/log4j2.properties_template"; //$NON-NLS-1$
+
     public static final String LOG4JFILEPATH = "log/log4j.properties_template"; //$NON-NLS-1$
 
-    public static final String LOG4J_FILE_NAME = "log4j.xml";
+    public static final String LOG4J_FILE_NAME = "log4j.xml";//$NON-NLS-1$
+
+    public static final String LOG4J2_FILE_NAME = "log4j2.xml";//$NON-NLS-1$
 
     public static final String COMMON_LOGGING_FILE = "common-logging.properties";
 

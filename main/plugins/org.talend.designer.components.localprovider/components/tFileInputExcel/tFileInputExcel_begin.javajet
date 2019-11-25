@@ -55,6 +55,17 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		String mode = ElementParameterParser.getValue(node,"__GENERATION_MODE__");
 		final boolean eventMode = "EVENT_MODE".equals(mode);
 
+        if (version07) {
+            String passwordFieldName = "__PASSWORD__";
+        %>
+        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+        String password_<%=cid%> = decryptedPassword_<%=cid%>;
+        if (password_<%=cid%>.isEmpty()){
+            password_<%=cid%> = null;
+        }
+        <%
+        }
+
 		boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 		
 		int dynamic_index = -1;
@@ -692,9 +703,9 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		org.apache.poi.xssf.usermodel.XSSFWorkbook workbook_<%=cid%> = null;
 
 		if(source_<%=cid %> instanceof String){
-			workbook_<%=cid%> = new org.apache.poi.xssf.usermodel.XSSFWorkbook((String)source_<%=cid %>);
+			workbook_<%=cid%> = (org.apache.poi.xssf.usermodel.XSSFWorkbook) org.apache.poi.ss.usermodel.WorkbookFactory.create(new java.io.File((String)source_<%=cid %>), password_<%=cid%>);
 		} else if(source_<%=cid %> instanceof java.io.InputStream) {
-     		workbook_<%=cid%> = new org.apache.poi.xssf.usermodel.XSSFWorkbook((java.io.InputStream)source_<%=cid %>);
+     		workbook_<%=cid%> = (org.apache.poi.xssf.usermodel.XSSFWorkbook) org.apache.poi.ss.usermodel.WorkbookFactory.create((java.io.InputStream)source_<%=cid %>, password_<%=cid%>);
 		} else{
 			workbook_<%=cid%> = null;
 			throw new java.lang.Exception("The data source should be specified as Inputstream or File Path!");
@@ -1266,9 +1277,9 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         char decimalChar_<%=cid %> = df_<%=cid %>.getDecimalFormatSymbols().getDecimalSeparator();
 
 		if(source_<%=cid %> instanceof String){
-			excelReader_<%=cid%>.parse((String)source_<%=cid %>,<%=encoding %>);
+			excelReader_<%=cid%>.parse((String)source_<%=cid %>,<%=encoding %>, password_<%=cid%>);
 		} else if(source_<%=cid %> instanceof java.io.InputStream) {
-			excelReader_<%=cid%>.parse((java.io.InputStream)source_<%=cid %>,<%=encoding %>);
+			excelReader_<%=cid%>.parse((java.io.InputStream)source_<%=cid %>,<%=encoding %>, password_<%=cid%>);
 		}
 		<%
 		if(hasDynamic){

@@ -34,6 +34,7 @@ import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.metadata.editor.MetadataEmfTableEditor;
@@ -384,6 +385,20 @@ public abstract class AbstractJSONFileStepForm extends AbstractJSONStepForm {
             }
         }
         return null;
+    }
+
+    protected String getConnectionEncoding() {
+        JSONFileConnection conn = getConnection();
+        String encoding = conn.getEncoding();
+        try {
+            if (isContextMode()) {
+                ContextType contextType = ConnectionContextHelper.getContextTypeForContextMode(conn, conn.getContextName());
+                encoding = TalendQuoteUtils.removeQuotes(ContextParameterUtils.getOriginalValue(contextType, encoding));
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return encoding;
     }
 
     @Override

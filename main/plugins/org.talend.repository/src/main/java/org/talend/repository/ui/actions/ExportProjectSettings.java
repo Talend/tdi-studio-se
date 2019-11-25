@@ -30,6 +30,7 @@ import org.talend.core.model.properties.Status;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.repository.ProjectManager;
 import org.talend.utils.files.FileUtils;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -61,7 +62,7 @@ public class ExportProjectSettings {
         org.talend.core.model.properties.Project project = pro.getEmfProject();
 
         try {
-            final DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
+            final DocumentBuilderFactory fabrique = XmlUtils.getSecureDocumentBuilderFactory();
 
             DocumentBuilder analyseur = fabrique.newDocumentBuilder();
             analyseur.setErrorHandler(new ErrorHandler() {

@@ -500,8 +500,14 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 	private boolean acquireJVM() {
 		long startTime = System.currentTimeMillis();
 		long endTime;
-		String remoteHost = processContext.getSelectedTargetExecutionConfig().getHost();
-		int remotePort = processContext.getSelectedTargetExecutionConfig().getRemotePort();
+        String remoteHost = null;
+        int remotePort = -1;
+        ITargetExecutionConfig targExecConfig = processContext.getSelectedTargetExecutionConfig();
+        // normally this value is always null in TOS
+        if (targExecConfig != null) {
+            remoteHost = targExecConfig.getHost();
+            remotePort = targExecConfig.getRemotePort();
+        }
 		while(true){
 			if ((processContext != null && !processContext.isRunning()) && !isReadyToStart) {
 				return false;

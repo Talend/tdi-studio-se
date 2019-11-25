@@ -14,6 +14,7 @@ package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,6 +56,7 @@ import org.talend.core.PluginChecker;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
@@ -84,6 +86,7 @@ import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JarBuilder;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobJavaScriptsManager;
 import org.talend.repository.utils.EmfModelUtils;
+import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.repository.utils.TemplateProcessor;
 
 import aQute.bnd.header.Attrs;
@@ -104,15 +107,35 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     protected static final char MANIFEST_ITEM_SEPARATOR = ',';
 
+    protected static final String OSGI_EXCLUDE_PROP_FILENAME = "osgi-exclude.properties"; ////$NON-NLS-1$
+
     @SuppressWarnings("serial")
     private static final Collection<String> EXCLUDED_MODULES = new ArrayList<String>() {
         {
-            try (InputStream is = RepositoryPlugin.getDefault().getBundle()
-                    .getEntry("/resources/osgi-exclude.properties").openStream()) { //$NON-NLS-1$
-                final Properties p = new Properties();
-                p.load(is);
-                for (Enumeration<?> e = p.propertyNames(); e.hasMoreElements();) {
-                    add((String) e.nextElement());
+            File propFile = null;
+            File esbConfigurationLocation = EsbConfigUtils.getEclipseEsbFolder();
+            
+            if (esbConfigurationLocation != null && esbConfigurationLocation.exists()
+                    && esbConfigurationLocation.isDirectory()) {
+                propFile = new File(esbConfigurationLocation.getAbsolutePath(), OSGI_EXCLUDE_PROP_FILENAME);
+            }
+
+            InputStream is = null;
+            try {
+                if (propFile != null && propFile.exists() && propFile.isFile()) {
+                    is = new FileInputStream(propFile);
+                } else {
+                    is = RepositoryPlugin.getDefault().getBundle()
+                            .getEntry("/resources/" + OSGI_EXCLUDE_PROP_FILENAME)
+                            .openStream();
+                }
+    
+                if (is != null) {
+                    final Properties p = new Properties();
+                    p.load(is);
+                    for (Enumeration<?> e = p.propertyNames(); e.hasMoreElements();) {
+                        add((String) e.nextElement());
+                    }
                 }
             } catch (IOException e) {
                 RepositoryPlugin.getDefault().getLog()
@@ -739,9 +762,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(processItem.getProperty());
             if (talendProcessJavaProject != null) {
                 String optional = ";resolution:=optional";
-                String src = JavaResourcesHelper.getJobClassFilePath(processItem, true);
-                IFile srcFile = talendProcessJavaProject.getSrcFolder().getFile(src);
-                Set<String> imports = importCompiler(srcFile.getLocation().toString());
+                Set<String> imports = importCompiler(service, processItem);
                 String[] defaultPackages = analyzer.getProperty(Analyzer.IMPORT_PACKAGE).split(",");
 
                 // JDK upgrade to 11
@@ -769,6 +790,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         Manifest manifest = null;
         try {
             manifest = analyzer.calcManifest();
+            filterImportPackages(manifest);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
@@ -791,6 +813,38 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
 
         return manifest;
+    }
+    
+    private void filterImportPackages(Manifest manifest) {
+
+        // remove import packages which are present in private packages
+
+        List<String> privatePackages = new ArrayList<String>(); 
+        String privatePackagesString = manifest.getMainAttributes().getValue(Analyzer.PRIVATE_PACKAGE);
+        if (privatePackagesString != null) {
+            String [] packages = privatePackagesString.split(",");
+            for (String p : packages) {
+                privatePackages.add(p);
+            }
+        }
+        
+        StringBuilder fileterdImportPackage = new StringBuilder();
+        String importPackagesString = manifest.getMainAttributes().getValue(Analyzer.IMPORT_PACKAGE);
+        if (importPackagesString != null) {
+            String [] packages = importPackagesString.split(",");
+            for (String p : packages) {
+                String importPackage = p.split(";")[0];
+                if (!privatePackages.contains(importPackage) || importPackage.startsWith("routines")) {
+                    fileterdImportPackage.append(p).append(",");
+                }
+            }
+        }
+        
+        String str = fileterdImportPackage.toString();
+        if (str != null && str.length() > 0 && str.endsWith(",")) {
+            str = str.substring(0, str.length() - 1);
+        }
+        manifest.getMainAttributes().putValue(Analyzer.IMPORT_PACKAGE, str);
     }
 
     protected Analyzer createAnalyzer(ExportFileResource libResource, ProcessItem processItem) throws IOException {
@@ -825,7 +879,9 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             Set<URL> resources = libResource.getResourcesByRelativePath(path);
             for (URL url : resources) {
                 // TESB-21804:Fail to deploy cMessagingEndpoint with quartz component in runtime for ClassCastException
-                if (url.getPath().matches("(.*)camel-(.*)-alldep-(.*)$")) {
+                if (url.getPath().matches("(.*)camel-(.*)-alldep-(.*)$") 
+                        || url.getPath().matches("(.*)activemq-all-[\\d\\.]*.jar$")
+                        || url.getPath().matches("(.*)jms[\\d\\.-]*.jar$")) {
                     continue;
                 }
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));
@@ -1014,6 +1070,26 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         return processor.getProcess();
     }
 
+    private Set<String> importCompiler(IRunProcessService service, ProcessItem processItem) {
+        Set<String> imports = new HashSet<String>();
+        if (processItem != null && service != null && processItem.getProperty() != null) {
+            ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(processItem.getProperty());
+            if (talendProcessJavaProject != null) {
+                String src = JavaResourcesHelper.getJobClassFilePath(processItem, true);
+                IFile srcFile = talendProcessJavaProject.getSrcFolder().getFile(src);
+                imports.addAll(importCompiler(srcFile.getLocation().toString()));
+		        
+                // include imports from child jobs
+                if (ERepositoryObjectType.getType(processItem.getProperty()).equals(ERepositoryObjectType.PROCESS)) {
+                    for (JobInfo subjobInfo : ProcessorUtilities.getChildrenJobInfo(processItem)) {
+                        imports.addAll(importCompiler(service, subjobInfo.getProcessItem()));
+                    }
+                }
+	        }
+    	}
+        return imports;
+    }
+    
     private Set<String> importCompiler(String src) {
         Set<String> imports = new HashSet<String>();
         ByteArrayOutputStream out = new ByteArrayOutputStream();

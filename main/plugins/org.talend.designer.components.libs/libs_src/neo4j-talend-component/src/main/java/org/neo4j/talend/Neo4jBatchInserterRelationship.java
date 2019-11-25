@@ -1,7 +1,8 @@
 package org.neo4j.talend;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.neo4j.graphdb.DynamicRelationshipType;
 
@@ -11,7 +12,7 @@ import java.util.Map;
 
 public class Neo4jBatchInserterRelationship extends Neo4jBatchInserterAbstract {
 
-    private static Logger log = Logger.getLogger(Neo4jBatchInserterRelationship.class);
+    private static Logger log = LoggerFactory.getLogger(Neo4jBatchInserterRelationship.class);
 
     private String relationshipTypeField;
     private String direction;

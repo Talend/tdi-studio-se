@@ -17,17 +17,20 @@
 
 <% if(hotLibs!=null&&hotLibs.size() > 0){%>
 
-java.net.URLClassLoader sysloader_<%=cid %> = (java.net.URLClassLoader) ClassLoader.getSystemClassLoader();
-java.lang.reflect.Method method_<%=cid %> = java.net.URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { java.net.URL.class });
-method_<%=cid %>.setAccessible(true);
+String[] libPaths_<%=cid %> = new String[] { <% for(Map<String, String> item : hotLibs) {%> <%=item.get("LIBPATH") %>, <%}%> };
 
-String[] libPaths_<%=cid %> = new String[] { <% for(Map<String, String> item : hotLibs){%> <%=item.get("LIBPATH") %>, <%}%> };
-for(String lib_<%=cid %>:libPaths_<%=cid %> ){
+java.util.List<java.net.URL> libURL_<%=cid %> = new java.util.ArrayList<>();
+
+for(String lib_<%=cid %>:libPaths_<%=cid %>) {
 	String separator_<%=cid %> = System.getProperty("path.separator");
 	String[] jarFiles_<%=cid %> = lib_<%=cid %>.split(separator_<%=cid %>);	
-	for(String jarFile_<%=cid %>:jarFiles_<%=cid %>){		
-		method_<%=cid %>.invoke(sysloader_<%=cid %>, new Object[] { new java.io.File(jarFile_<%=cid %>).toURL() });
+	for(String jarFile_<%=cid %> : jarFiles_<%=cid %>) {
+		libURL_<%=cid %>.add( new java.io.File(jarFile_<%=cid %>).toURI().toURL() );
 	}
 }
-
+java.net.URL[] libURLArray_<%=cid %> = libURL_<%=cid %>.toArray(new java.net.URL[] {});
+ClassLoader threadClassLoader_<%=cid %> = Thread.currentThread().getContextClassLoader();
+java.net.URLClassLoader newthreadClassLoader_<%=cid %> = new java.net.URLClassLoader(libURLArray_<%=cid %>, threadClassLoader_<%=cid %>);
+Thread.currentThread().setContextClassLoader(newthreadClassLoader_<%=cid %>);
 <%}%>
+

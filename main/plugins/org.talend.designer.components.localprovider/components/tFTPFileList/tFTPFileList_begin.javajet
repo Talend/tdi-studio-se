@@ -42,6 +42,7 @@ boolean sftp = false;
 boolean ftps = false;
 String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
 String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
+String timeoutValue = ElementParameterParser.getValue(node, "__CONNECTION_TIMEOUT__");
 boolean useRemoteVerification = ("true").equals(ElementParameterParser.getValue(node, "__REMOTE_VERIFICATION__"));
 
 if (("true").equals(useExistingConn)) {
@@ -56,6 +57,9 @@ if (("true").equals(useExistingConn)) {
 } else {
   sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
   ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
+%>
+  int connectionTimeout_<%=cid %> = Integer.valueOf(<%=timeoutValue %>);
+<%
 }
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 String passwordFieldName = "";
@@ -151,7 +155,7 @@ if (sftp) {// *** sftp *** //
 		passwordFieldName = "__PASSWORD__";
 		%>
 		
-		<%@ include file="../tFTPConnection/sftp_connect.javajet"%>
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/sftp_connect.javajet"%>
 		
 		<%if(use_encoding) {%>
 			c_<%=cid%>.setFilenameEncoding(<%=encoding%>);
@@ -233,93 +237,18 @@ if (sftp) {// *** sftp *** //
 		nb_file_<%=cid%>++;
 <%
 } else if (ftps) { // *** ftps *** //
+%>
+    org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
+<%
 	if (("false").equals(useExistingConn)) {
 		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
 		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 %>
-		<%@ include file="../templates/FTP/ftpsTrust.javajet"%>
-		javax.net.ssl.SSLContext sslContext_<%=cid %> = null;
-		javax.net.ssl.TrustManager[] trustManager_<%=cid %> = null;
-		javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid %> = null;
-		org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> =null;
-		MyTrust_<%=cid %> myTrust_<%=cid%> = null;
-
-		try {
-			sslContext_<%=cid %> = javax.net.ssl.SSLContext.getInstance("SSL");
-			myTrust_<%=cid%> = new MyTrust_<%=cid%>();
-			trustManager_<%=cid %> = myTrust_<%=cid%>.getTrustManagers();
-			sslContext_<%=cid %>.init(null, trustManager_<%=cid %>, new java.security.SecureRandom());
-			sslSocketFactory_<%=cid %> = sslContext_<%=cid %>.getSocketFactory();
-			boolean isHTTPProxyUsed = "true".equals(System.getProperty("http.proxySet"));
-			if (isHTTPProxyUsed) {
-				String httpProxyHost = System.getProperty("http.proxyHost");
-				int httpProxyPort = Integer.getInteger("http.proxyPort");
-				String httpProxyUser = System.getProperty("http.proxyUser");
-				String httpProxyPass = System.getProperty("http.proxyPassword");
-
-				ftp_<%=cid %> = new org.talend.ftp.HTTPProxyFTPSClient(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>, httpProxyHost, httpProxyPort, httpProxyUser, httpProxyPass);
-			} else {
-				ftp_<%=cid %> = new org.talend.ftp.SSLSessionReuseFTPSClient(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
-			}
-			ftp_<%=cid %>.setControlEncoding(<%=encoding%>);
-
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> -FTPS security Mode is <%=securityMode%>.");
-				log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
-			<%}%>
-			ftp_<%=cid %>.connect(<%=host %>,<%=ftpsPort %>);
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
 <%
-			if(isLog4jEnabled){
-%>
-				log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
-<%
-			}
-
-			passwordFieldName = "__PASSWORD__";
-%>
-			ftp_<%=cid %>.setRemoteVerificationEnabled(<%=useRemoteVerification %>);
-
-			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-
-			boolean isLoginSuccessful_<%=cid %> = ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
-
-			if (!isLoginSuccessful_<%=cid %>) {
-				throw new RuntimeException("Login failed");
-			}
-
-<%
-			if (protectionBufferSize != null && !protectionBufferSize.isEmpty() ) {
-%>
-				ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
-<%
-			}
-
-			if (protectionLevel != null && !protectionLevel.isEmpty()) {
-%>
-				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
-<%
-			}
-%>
-		} catch (Exception e) {
-			<%if(isLog4jEnabled){%>
-				log.error("<%=cid%> - Can't create connection: " + e.getMessage());
-			<%}%>
-			throw e;
-		}
-<%
-		if ("PASSIVE".equals(connectMode)) {
-%>
-			ftp_<%=cid %>.enterLocalPassiveMode();
-<%
-			if (isLog4jEnabled) {
-%>
-				log.debug("<%=cid%> - Using the passive mode.");
-<%
-			}
-		}
 	} else {
 %>
-		org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
+		ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
 		String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
 <%
 	}
@@ -401,40 +330,15 @@ if (sftp) {// *** sftp *** //
 		<%if(!moveToCurrentDir){%>
 			String rootDir_<%=cid %> = ftp_<%=cid %>.pwd();
 		<%}%>
-	<%} else {%>	
-		ftp_<%=cid %> = new com.enterprisedt.net.ftp.FTPClient();
-		ftp_<%=cid %>.setRemoteHost(<%=host %>);
-		ftp_<%=cid %>.setRemotePort(<%=port %>);
-	
-		<%if(isLog4jEnabled){%>
-			log.debug("<%=cid%> - " + <%=(("ACTIVE").equals(connectMode))?"\"Using the active mode.\"":"\"Using the passive mode.\""%>);
-		<%}%>
-		<%if (("ACTIVE").equals(connectMode)) {%>
-		  ftp_<%=cid %>.setConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
-		<%} else {%>
-		  ftp_<%=cid %>.setConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
-		<%}%>
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" +<%=user %>+ "'.");
-		<%}%>
-		ftp_<%=cid %>.setControlEncoding(<%=encoding%>);
-		ftp_<%=cid %>.connect();  
-		
-		<%
-		passwordFieldName = "__PASSWORD__";
-		%> 
-		
-		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-		
-		ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>); 
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
-		<%}%>
+	<%} else {
+        passwordFieldName = "__PASSWORD__";
+%>
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
 	<%}%>
 	String remotedir_<%=cid %> = (<%=remotedir%>).replaceAll("\\\\","/");
 	ftp_<%=cid %>.chdir(remotedir_<%=cid %>);
-	String[] fileList_<%=cid %> = ftp_<%=cid %>.dir(null, true);
-    String[] fileListwithNames_<%=cid %> = ftp_<%=cid %>.dir(null, false);
+	com.enterprisedt.net.ftp.FTPFile[] fileList_<%=cid %> = ftp_<%=cid %>.dirDetails(null);
+	String[] arrayWithNames_<%=cid %> = ftp_<%=cid %>.dir(null, false);
 <%
 	if (("true").equals(useExistingConn)) {
 		if(!moveToCurrentDir){
@@ -445,17 +349,22 @@ if (sftp) {// *** sftp *** //
 	}
 %>
 	List<String> fileListTemp_<%=cid %> = new java.util.ArrayList<String>();
-    List<String> fileListTempWithNames_<%=cid %> = new java.util.ArrayList<String>();
+	List<String> fileListTempWithNames_<%=cid %> = new java.util.ArrayList<String>();
 
 	for (String filemask_<%=cid %> : maskList_<%=cid %>) {
 		java.util.regex.Pattern fileNamePattern_<%=cid %> = java.util.regex.Pattern.compile(filemask_<%=cid %>.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
-        for (int i_<%=cid%> = 0; i_<%=cid%> < fileList_<%=cid%>.length; i_<%=cid%>++){
-            String filemaskTemp_<%=cid%> = fileList_<%=cid%>[i_<%=cid%>];
-            String filemaskTempName_<%=cid%> = fileListwithNames_<%=cid%>[i_<%=cid%>];
-            
-			if (fileNamePattern_<%=cid %>.matcher(filemaskTempName_<%=cid %>).matches()) {
-				fileListTemp_<%=cid %>.add(filemaskTemp_<%=cid %>);
-                fileListTempWithNames_<%=cid%>.add(fileListwithNames_<%=cid%>[i_<%=cid%>]);
+
+		java.util.Set<String> setWithNames_<%=cid %> = new java.util.HashSet<>(java.util.Arrays.asList(arrayWithNames_<%=cid %>));
+		for (com.enterprisedt.net.ftp.FTPFile ftpFile : fileList_<%=cid %>){
+			String filemaskTemp_<%=cid%> = "";
+			String filemaskTempName_<%=cid%> = "";
+			if (setWithNames_<%=cid %>.contains(ftpFile.getName())){
+				filemaskTemp_<%=cid%> = ftpFile.getRaw();
+				filemaskTempName_<%=cid%> = ftpFile.getName();
+				if (fileNamePattern_<%=cid %>.matcher(filemaskTempName_<%=cid %>).matches()) {
+					fileListTemp_<%=cid %>.add(filemaskTemp_<%=cid %>);
+					fileListTempWithNames_<%=cid%>.add(filemaskTempName_<%=cid%>);
+				}
 			}
 		}
 	}

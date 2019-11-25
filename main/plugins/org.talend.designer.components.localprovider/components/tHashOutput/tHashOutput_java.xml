@@ -82,7 +82,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-        <IMPORT NAME="thashfile-3.0-20170711" MODULE="thashfile-3.0-20170711.jar" MVN="mvn:org.talend.libraries/thashfile-3.0-20170711/6.0.0" REQUIRED="true" />
+        <IMPORT NAME="thashfile-3.1-20190910" MODULE="thashfile-3.1-20190910.jar" MVN="mvn:org.talend.components.lib/thashfile/3.1-20190910" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
    

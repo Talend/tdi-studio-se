@@ -12,11 +12,10 @@
  */
 package org.talend.sdk.component.studio.metadata.model;
 
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_ID;
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_CONFIG_PARENT_ID;
-import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.TACOKIT_PARENT_ITEM_ID;
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
+import static org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys.*;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,14 +33,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.daikon.security.CryptoHelper;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
+import org.talend.sdk.component.studio.model.parameter.ValueConverter;
 import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.utils.security.StudioEncryption;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -177,7 +177,7 @@ public class TaCoKitConfigurationModel {
         try {
             if (!TaCoKitUtil.isBlank(value) && contains(key)
                     && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
-                decryptedValue = CryptoHelper.getDefault().decrypt(value);
+                decryptedValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(value);
                 if (decryptedValue == null) {
                     // if null, means error occurs, just reuse the original value
                     decryptedValue = value;
@@ -241,6 +241,33 @@ public class TaCoKitConfigurationModel {
         return Optional.empty();
     }
 
+    public Object convertParameterValue(String currentKey, String parentKey, String objectValue) {
+        if (objectValue == null || StringUtils.isEmpty(currentKey) || StringUtils.isEmpty(parentKey)) {
+            return objectValue;
+        }
+        boolean update = false;
+        final List<Map<String, Object>> tableValues = ValueConverter.toTable(objectValue);
+        final List<Map<String, Object>> converted = new ArrayList<>(tableValues.size());
+        for (Object current : tableValues) {
+            if (current != null && current instanceof Map) {
+                Map<String, Object> line = (Map<String, Object>) current;
+                Map<String, Object> convertedLine = new HashMap<>();
+                for (String key : line.keySet()) {
+                    if (key.startsWith(parentKey)) {
+                        final String newKey = key.replace(parentKey, currentKey);
+                        convertedLine.put(newKey, line.get(key));
+                        update = true;
+                    }
+                }
+                converted.add(convertedLine);
+            }
+        }
+        if (update) {
+            return converted.toString();
+        }
+        return objectValue;
+    }
+
     public EParameterFieldType getEParameterFieldType(String key) {
         Map<String, PropertyDefinitionDecorator> tree = buildPropertyTree();
         PropertyDefinitionDecorator property = tree.get(key);
@@ -266,7 +293,8 @@ public class TaCoKitConfigurationModel {
 
             try {
                 if (contains(key) && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
-                    storeValue = CryptoHelper.getDefault().encrypt(originalValue);
+                    storeValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                            .encrypt(originalValue);
                 }
             } catch (Exception e) {
                 ExceptionHandler.process(e);

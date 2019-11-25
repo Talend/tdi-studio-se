@@ -60,7 +60,8 @@ public class TaCoKitValueSelectionController extends AbstractValueSelectionContr
                         monitor.subTask(Messages.getString("suggestion.job.subtask.openDialog"));
                         Display.getDefault().asyncExec(new Runnable() {
                             public void run() {
-                                final ValueSelectionDialog dialog = new ValueSelectionDialog(composite.getShell(), possibleValues);
+                                final ValueSelectionDialog dialog = new ValueSelectionDialog(composite.getShell(), possibleValues,
+                                        false);
                                 if (dialog.open() == IDialogConstants.OK_ID) {
                                     final String selected = dialog.getSelectedValue();
                                     Text text = (Text) hashCurControls.get(valueSelectionParameter.getName());

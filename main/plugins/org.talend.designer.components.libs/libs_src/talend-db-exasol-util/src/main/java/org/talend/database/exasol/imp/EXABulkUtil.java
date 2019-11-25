@@ -27,15 +27,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * This class provides an IMPORT command for the EXASol database.
  * @author Jan Lolling, jan.lolling@cimt-ag.de
  */
 public class EXABulkUtil {
 
-	private static Logger logger = Logger.getLogger(EXABulkUtil.class);
+	private static Logger logger = LoggerFactory.getLogger(EXABulkUtil.class);
 	public static final String CSV = "CSV";
 	public static final String FBV = "FBV";
 	public static final String ORA = "ORA";
@@ -83,23 +83,14 @@ public class EXABulkUtil {
 	private int sourceIdentifierCase = 0; // 0 = unchanged, 1 = lower case, 2 = upper case
 	private boolean onlyBuildSQLCode = false;
 
-	public void setDebug(boolean debug) {
-		if (debug) {
-			logger.setLevel(Level.DEBUG);
-		} else {
-			logger.setLevel(Level.INFO);
-		}
-	}
-
 	private String createNumberFormat(Integer length, Integer precision, boolean hasGroups) {
         if (length != null && length.intValue() > 0) {
             StringBuilder sb = new StringBuilder();
-            int numGroups = (length.intValue() / 3) + 1;
-            for (int i = 0; i < numGroups; i++) {
-                if (i > 0 && hasGroups) {
-                    sb.append("G");
-                    }
-                sb.append("999");
+            for (int i = length - 1; i >= 0; i--) {
+            	if(hasGroups && i < length - 1 && i > 0 && (i % 3 == 2)) {
+            		sb.append("G");
+            	}
+            	sb.append("9");
             }
             if (precision != null && precision.intValue() > 0) {
                 sb.append("D");

@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.eclipse.help.AbstractTocProvider;
+import org.eclipse.help.HelpSystem;
+import org.eclipse.help.IContext;
 import org.eclipse.help.ITocContribution;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
@@ -29,6 +31,8 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.documentation.Locales;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.lang.Pair;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
 public class TaCoKitTocProvider extends AbstractTocProvider {
@@ -56,6 +60,11 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
         details.forEach(pair -> {
             final ComponentIndex index = pair.getFirst();
             final String familyName = index.getFamilyDisplayName();
+            String displayName = TaCoKitUtil.getDisplayName(index);
+            IContext existsContext = HelpSystem.getContext(TaCoKitConst.BASE_HELP_LINK + displayName);
+            if (existsContext != null) {
+                return;
+            }
             TaCoKitContribution familyContribution = familyContributionsMap.computeIfAbsent(familyName, name -> {
                 final TaCoKitContribution contribution = new TaCoKitContribution(index.getId().getFamilyId());
                 contribution.setLocale(expLocale.getLanguage());
@@ -64,8 +73,8 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
                 return contribution;
             });
             final TaCoKitTopic topic = new TaCoKitTopic();
-            topic.setHref(index.getId().getId() + ".html#_" + index.getDisplayName().toLowerCase());
-            topic.setLabel(index.getDisplayName());
+            topic.setHref(index.getId().getId() + ".html#_" + displayName.toLowerCase());
+            topic.setLabel(displayName);
             familyContribution.getToc().addTopic(topic);
         });
 

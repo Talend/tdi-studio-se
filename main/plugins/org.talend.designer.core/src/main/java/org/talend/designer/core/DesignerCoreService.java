@@ -99,6 +99,7 @@ import org.talend.designer.core.ui.views.jobsettings.JobSettings;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.ui.views.properties.ComponentSettings;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
+import org.talend.designer.core.utils.BigDataJobUtil;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.runprocess.ProcessorException;
@@ -704,8 +705,10 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     @Override
     public void createStatsLogAndImplicitParamter(Project project) {
-        ProjectSettingManager.createStatsAndLogsElement(project);
-        ProjectSettingManager.createImplicitContextLoadElement(project);
+        Element createStatsAndLogsElement = ProjectSettingManager.createStatsAndLogsElement(project);
+        ProjectSettingManager.saveStatsAndLogToProjectSettings(createStatsAndLogsElement, project);
+        Element createImplicitContextLoadElement = ProjectSettingManager.createImplicitContextLoadElement(project);
+        ProjectSettingManager.saveImplicitValuesToProjectSettings(createImplicitContextLoadElement, project);
     }
 
     @Override
@@ -762,6 +765,15 @@ public class DesignerCoreService implements IDesignerCoreService {
             options |= TalendProcessOptionConstants.MODULES_WITH_CHILDREN;
         }
         return JavaProcessUtil.getNeededModules(process, options);
+    }
+
+    @Override
+    public Set<ModuleNeeded> getNeededLibrariesForProcessBeforeUpdateLog(IProcess process, boolean withChildrens) {
+        int options = TalendProcessOptionConstants.MODULES_DEFAULT;
+        if (withChildrens) {
+            options |= TalendProcessOptionConstants.MODULES_WITH_CHILDREN;
+        }
+        return JavaProcessUtil.getNeededModules(process, options, true);
     }
 
     @Override
@@ -873,5 +885,10 @@ public class DesignerCoreService implements IDesignerCoreService {
             return UnifiedComponentUtil.isDelegateComponent(n.getDelegateComponent());
         }
         return false;
+    }
+
+    @Override
+    public boolean isNeedContextInJar(IProcess process) {
+        return new BigDataJobUtil(process).needsToHaveContextInsideJar();
     }
 }

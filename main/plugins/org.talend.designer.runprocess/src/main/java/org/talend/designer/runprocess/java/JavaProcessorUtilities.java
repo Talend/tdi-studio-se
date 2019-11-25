@@ -80,6 +80,8 @@ import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 /**
  * DOC nrousseau class global comment. Detailled comment
@@ -369,7 +371,7 @@ public class JavaProcessorUtilities {
             listModulesReallyNeeded.add(jar);
         }
 
-        addLog4jToModuleList(listModulesReallyNeeded);
+        addLog4jToModuleList(listModulesReallyNeeded, process);
         listModulesReallyNeeded.removeAll(alreadyRetrievedModules);
         alreadyRetrievedModules.addAll(listModulesReallyNeeded);
 
@@ -425,22 +427,8 @@ public class JavaProcessorUtilities {
         }
     }
 
-    public static boolean addLog4jToModuleList(Collection<ModuleNeeded> jarList) {
-        boolean added = false;
-        boolean foundLog4jJar = false;
-        for (ModuleNeeded jar : jarList) {
-            if (jar.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                foundLog4jJar = true;
-            }
-        }
-        if (!foundLog4jJar) {
-            ModuleNeeded log4j = new ModuleNeeded("log4j", "log4j-1.2.17.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-            log4j.setMavenUri("mvn:log4j/log4j/1.2.17");
-            jarList.add(log4j);
-            added = true;
-        }
-
-        return added;
+    public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, IProcess process) {
+        UpdateLog4jJarUtils.addLog4jToModuleList(jarList, Log4jPrefsSettingManager.getInstance().isSelectLog4j2(), process);
     }
 
     /**

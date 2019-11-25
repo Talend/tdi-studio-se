@@ -273,6 +273,9 @@ public class ImportProjectHelper {
         operation.run(new SubProgressMonitor(monitor, 95));
         monitor.worked(5);
         monitor.done();
+        if (provider instanceof ILeveledImportStructureProvider) {
+            ((ILeveledImportStructureProvider) provider).closeArchive();
+        }
     }
 
     /**
@@ -374,7 +377,7 @@ public class ImportProjectHelper {
         while (childrenEnum.hasNext()) {
             Object child = childrenEnum.next();
             if (level < 1) {
-                if (provider.isFolder(child)) {
+                if (provider.isFolder(child) && !".svnlog".equals(provider.getLabel(child))) { // $NON-NLS-1$
                     collectProjectFilesFromProvider(files, provider, child, level + 1, monitor, searchFileName);
                 }
             }

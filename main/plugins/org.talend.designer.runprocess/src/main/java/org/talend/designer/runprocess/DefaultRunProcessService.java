@@ -580,6 +580,8 @@ public class DefaultRunProcessService implements IRunProcessService {
                     getLogTemplate(RESOURCE_LOG_FILE_PATH));
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.COMMON_LOGGING_NODE,
                     getLogTemplate(RESOURCE_COMMONLOG_FILE_PATH));
+            Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
+                    Boolean.FALSE.toString());
         }
         // if directly init or modify log4j,need handle with the log4j under .setting/,if not,means execute or export
         // job,need to copy the latest log4j from .setting/ to /java/src
@@ -592,7 +594,18 @@ public class DefaultRunProcessService implements IRunProcessService {
             // ResourceModelHelper.getProject(ProjectManager.getInstance().getCurrentProject()), ".settings", false);
 
             IFolder resFolder = talendJavaProject.getExternalResourcesFolder();
-            IFile log4jFile = resFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+            IFile log4jFile = null;
+            IFile log4jFile2delete = null;
+            if (Log4jPrefsSettingManager.getInstance().isSelectLog4j2()) {
+                log4jFile = resFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+                log4jFile2delete = resFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+            } else {
+                log4jFile = resFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                log4jFile2delete = resFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+            }
+            if (log4jFile2delete != null && log4jFile2delete.exists()) {
+                log4jFile2delete.delete(true, null);
+            }
             // TUP-3014, update the log4j in .Java always.
             // if (isLogForJob) { // when execute or export job need the log4j files under .src folder
             String log4jStr = getTemplateStrFromPreferenceStore(Log4jPrefsConstants.LOG4J_CONTENT_NODE);
@@ -744,6 +757,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
+    public IFolder getCodeSrcFolder(ERepositoryObjectType type, String projectTechName) {
+        return new AggregatorPomsHelper(projectTechName).getCodeSrcFolder(type);
+    }
+
+    @Override
     public ITalendProcessJavaProject getTempJavaProject() {
         return TalendJavaProjectManager.getTempJavaProject();
     }
@@ -815,7 +833,7 @@ public class DefaultRunProcessService implements IRunProcessService {
             for (ProjectReference ref : references) {
                 initRefPoms(new Project(ref.getReferencedProject()));
             }
-            helper.updateRefProjectModules(references);
+            helper.updateRefProjectModules(references, monitor);
             helper.updateCodeProjects(monitor, true);
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -842,6 +860,8 @@ public class DefaultRunProcessService implements IRunProcessService {
         if (ProcessUtils.isRequiredBeans(null, refProject)) {
             installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
         }
+
+        deleteRefProjects(refProject, refHelper);
     }
 
     private void installRefCodeProject(ERepositoryObjectType codeType, AggregatorPomsHelper refHelper, IProgressMonitor monitor)
@@ -857,6 +877,28 @@ public class DefaultRunProcessService implements IRunProcessService {
             argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
             argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, TalendMavenConstants.ARG_MAIN_SKIP);
             codeProject.buildModules(monitor, null, argumentsMap);
+        }
+    }
+    
+    private void deleteRefProjects(Project refProject, AggregatorPomsHelper refHelper) throws Exception {
+        IProgressMonitor monitor = new NullProgressMonitor();
+        deleteRefProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
+        deleteRefProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
+        deleteRefProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
+
+    }
+    
+    private void deleteRefProject(ERepositoryObjectType codeType, AggregatorPomsHelper refHelper, IProgressMonitor monitor)
+            throws Exception, CoreException {
+    	
+        if (!refHelper.getProjectRootPom().exists()) {
+            return;
+        }
+        
+        String projectTechName = refHelper.getProjectTechName();
+        ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType, projectTechName);
+       	
+        if (codeProject != null) {
             codeProject.getProject().delete(false, true, monitor);
             TalendJavaProjectManager.removeFromCodeJavaProjects(codeType, projectTechName);
         }

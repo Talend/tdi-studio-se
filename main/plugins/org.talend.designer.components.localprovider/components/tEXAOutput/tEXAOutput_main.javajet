@@ -311,6 +311,8 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
             %>
             pstmt_<%=cid %>.addBatch();
             nb_line_<%=cid%>++;
+            
+              <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
               <%
               dbLog.data().addingToBatch(dbLog.var("nb_line"), dbLog.str(dataAction));
               %>
@@ -320,6 +322,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
             %>
             try {
                 nb_line_<%=cid%>++;
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().inserting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
@@ -446,6 +449,8 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
             %>
             pstmt_<%=cid %>.addBatch();
             nb_line_<%=cid%>++;
+            
+              <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
               <%
               dbLog.data().addingToBatch(dbLog.var("nb_line"), dbLog.str(dataAction));
               %>
@@ -455,6 +460,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
             %>
             try {
                 nb_line_<%=cid%>++;
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().updating(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
@@ -604,6 +610,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                 }
                 %>
                 try {
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmtUpdate_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
@@ -681,6 +688,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                 }
                 %>
                 try {
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
@@ -853,11 +861,13 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                     <%
                 }
                 %>
+                    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                     }else{
                         nb_line_<%=cid%>++;
+                        <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                         <%dbLog.data().updating(dbLog.var("nb_line"));%>
                     }
                 } catch(java.lang.Exception e) {
@@ -937,6 +947,8 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
             %>
             pstmt_<%=cid %>.addBatch();
             nb_line_<%=cid%>++;
+              
+              <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
               <%
               dbLog.data().addingToBatch(dbLog.var("nb_line"), dbLog.str(dataAction));
               %>
@@ -945,6 +957,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
             }else {
             %>
             try {
+                <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 deletedCount_<%=cid%> = deletedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 nb_line_<%=cid%>++;
                 <%dbLog.data().deleting(dbLog.var("nb_line"));%>

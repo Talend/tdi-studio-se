@@ -56,6 +56,11 @@ public class QueryTypeProcessor extends SingleTypeProcessor {
         if (isCDCConnection(node)) {
             return false;
         }
+        if (node.getObject() == null && node.getParent() != null) {
+            if (ERepositoryObjectType.METADATA.equals(node.getParent().getContentType())) {
+                return false;
+            }
+        }
         return true;
     }
 

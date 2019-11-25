@@ -295,12 +295,8 @@ public class GenericDBService implements IGenericDBService{
             // MOD qiongli 2012-11-19 TDQ-6287
             if (creation) {
                 tdqRepService.notifySQLExplorer(connectionItem);
-                tdqRepService.openConnectionEditor(connectionItem);
             } else {
                 tdqRepService.updateAliasInSQLExplorer(connectionItem, connectionItem.getProperty().getDisplayName());
-                // refresh the opened connection editor whatever is in DI or DQ perspective.
-                tdqRepService.refreshConnectionEditor(connectionItem);
-
             }
         }
     }
@@ -362,7 +358,7 @@ public class GenericDBService implements IGenericDBService{
                 } else if (proName.equals("userId")) {//$NON-NLS-1$
                     dbConnection.setUsername((String) value);
                 } else if (proName.equals("password")) {//$NON-NLS-1$
-                    dbConnection.setPassword((String) value);
+                    dbConnection.setRawPassword((String) value);
                 } else if (proName.equals("mappingFile")) {//$NON-NLS-1$
                     dbConnection.setDbmsId((String) value);
                 } else if (proName.equals("drivers") && GenericTypeUtils.isListStringType((org.talend.daikon.properties.property.Property) otherProp)) {//$NON-NLS-1$

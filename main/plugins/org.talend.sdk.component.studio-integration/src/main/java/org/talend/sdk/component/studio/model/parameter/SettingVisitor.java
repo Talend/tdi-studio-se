@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
@@ -203,7 +205,15 @@ public class SettingVisitor implements PropertyVisitor {
      */
     @Override
     public void visit(final PropertyNode node) {
-        if (node.isLeaf()) {
+        // skip 'configuration.dataSet.csvConfiguration.csvSchema' field in 'azure-dls-gen2' component
+        if (element != null && element instanceof Node && ((Node)element).getComponent() != null &&
+                (((Node)element).getComponent().getName().equals("AzureAdlsGen2Input") ||
+                ((Node)element).getComponent().getName().equals("AzureAdlsGen2Output")) &&
+                node.getProperty().getPath().equals("configuration.dataSet.csvConfiguration.csvSchema")) {
+            return;
+        }
+
+        if (node.isLeaf() && !PropertyTypes.OBJECT.equalsIgnoreCase(node.getProperty().getType())) {
             switch (node.getFieldType()) {
             case CHECK:
                 final CheckElementParameter check = visitCheck(node);
@@ -230,12 +240,16 @@ public class SettingVisitor implements PropertyVisitor {
                 settings.put(inSchema.getName(), inSchema);
                 break;
             case TACOKIT_VALUE_SELECTION:
-                final TaCoKitElementParameter valueSelection = visitValueSelection(node);
-                settings.put(valueSelection.getName(), valueSelection);
+                final TaCoKitElementParameter textAreaSelection = visitValueSelection(node);
+                settings.put(textAreaSelection.getName(), textAreaSelection);
                 break;
             case PREV_COLUMN_LIST:
                 final TaCoKitElementParameter prevColumnList = visitPrevColumnList(node);
                 settings.put(prevColumnList.getName(), prevColumnList);
+                break;
+            case TACOKIT_TEXT_AREA_SELECTION:
+                final TaCoKitElementParameter valueSelection = visitTextAreaSelection(node);
+                settings.put(valueSelection.getName(), valueSelection);
                 break;
             default:
                 final IElementParameter text;
@@ -481,6 +495,13 @@ public class SettingVisitor implements PropertyVisitor {
         return action;
     }
 
+    private TextAreaSelectionParameter visitTextAreaSelection(final PropertyNode node) {
+        final SuggestionsAction action = createSuggestionsAction(node);
+        final TextAreaSelectionParameter parameter = new TextAreaSelectionParameter(element, action);
+        commonSetup(parameter, node);
+        return parameter;
+    }
+
     protected TaCoKitElementParameter createSchemaParameter(final String connectionName, final String schemaName,
             final String discoverSchemaAction,
             final boolean show) {
@@ -511,7 +532,14 @@ public class SettingVisitor implements PropertyVisitor {
             final TaCoKitElementParameter taCoKitElementParameter = TaCoKitElementParameter.class.cast(parameter);
             taCoKitElementParameter.updateValueOnly(defaultValue);
             if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
-                createValidationLabel(node, taCoKitElementParameter);
+                taCoKitElementParameter.setRegistValidatorCallback(new Callable<Void>() {
+
+                    @Override
+                    public Void call() throws Exception {
+                        createValidationLabel(node, taCoKitElementParameter);
+                        return null;
+                    }
+                });
             }
             buildActivationCondition(node, node);
         } else {

@@ -54,7 +54,9 @@
 	jobFolderName = jobFolderName + JavaResourcesHelper.getJobFolderName(process.getName(), process.getVersion());
 	String jobClassPackageFolder = codeGenArgument.getCurrentProjectName().toLowerCase() + '/' + jobFolderName;
 
-    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));
+    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));//log4j enable
+	boolean isLog4j2Enabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J2_ACTIVATE__"));//log4j2 enable
+	boolean isLog4j1Enabled = !isLog4j2Enabled;//log4j1 enable
 
     boolean exist_tParallelize = false;
     List<? extends INode> tParallelizeList = process.getNodesOfType("tParallelize");
@@ -445,9 +447,11 @@
                 lastStr = "";
             }
         }
+        enableLogStash = "true".equalsIgnoreCase(System.getProperty("monitoring"));
 
         <%if(isLog4jEnabled){%>
 	        if(!"".equals(log4jLevel)){
+	        	<%if(isLog4j1Enabled){%>
 				if("trace".equalsIgnoreCase(log4jLevel)){
 					log.setLevel(org.apache.log4j.Level.TRACE);
 				}else if("debug".equalsIgnoreCase(log4jLevel)){
@@ -464,6 +468,26 @@
 					log.setLevel(org.apache.log4j.Level.OFF);
 				}
 				org.apache.log4j.Logger.getRootLogger().setLevel(log.getLevel());
+				<%}%>
+				
+				<%if(isLog4j2Enabled){%>
+				if("trace".equalsIgnoreCase(log4jLevel)){
+					org.apache.logging.log4j.core.config.Configurator.setLevel(log.getName(), org.apache.logging.log4j.Level.TRACE);
+				}else if("debug".equalsIgnoreCase(log4jLevel)){
+					org.apache.logging.log4j.core.config.Configurator.setLevel(log.getName(), org.apache.logging.log4j.Level.DEBUG);
+				}else if("info".equalsIgnoreCase(log4jLevel)){
+					org.apache.logging.log4j.core.config.Configurator.setLevel(log.getName(), org.apache.logging.log4j.Level.INFO);
+				}else if("warn".equalsIgnoreCase(log4jLevel)){
+					org.apache.logging.log4j.core.config.Configurator.setLevel(log.getName(), org.apache.logging.log4j.Level.WARN);
+				}else if("error".equalsIgnoreCase(log4jLevel)){
+					org.apache.logging.log4j.core.config.Configurator.setLevel(log.getName(), org.apache.logging.log4j.Level.ERROR);
+				}else if("fatal".equalsIgnoreCase(log4jLevel)){
+					org.apache.logging.log4j.core.config.Configurator.setLevel(log.getName(), org.apache.logging.log4j.Level.FATAL);
+				}else if ("off".equalsIgnoreCase(log4jLevel)){
+					org.apache.logging.log4j.core.config.Configurator.setLevel(log.getName(), org.apache.logging.log4j.Level.OFF);
+				}
+				org.apache.logging.log4j.core.config.Configurator.setLevel(org.apache.logging.log4j.LogManager.getRootLogger().getName(), log.getLevel());
+				<%}%>
     	    }
         	log.info("TalendJob: '<%=codeGenArgument.getJobName()%>' - Start.");
     	<%}%>
@@ -493,7 +517,22 @@
 				properties_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxsize", "52428800");
 				properties_<%=jobCatcherNode.getUniqueName()%>.setProperty("appender.file.maxbackup", "20");
 				properties_<%=jobCatcherNode.getUniqueName()%>.setProperty("host", "false");
-				
+
+				System.getProperties().stringPropertyNames().stream()
+					.filter(it -> it.startsWith("monitoring.audit.logger.properties."))
+					.forEach(key -> properties_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("monitoring.audit.logger.properties.".length()), System.getProperty(key)));
+
+				<%if(isLog4jEnabled) {%>
+					<%if(isLog4j1Enabled) {%>
+					org.apache.log4j.Logger.getLogger("audit").setLevel(org.apache.log4j.Level.DEBUG);
+					<%}%>
+					
+					<%if(isLog4j2Enabled) {%>
+					org.apache.logging.log4j.core.config.Configurator.setLevel("audit", org.apache.logging.log4j.Level.DEBUG);
+					<%}%>
+				<%} else {%>
+					org.apache.log4j.Logger.getLogger("audit").setLevel(org.apache.log4j.Level.DEBUG);
+				<%}%>
 				auditLogger_<%=jobCatcherNode.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(properties_<%=jobCatcherNode.getUniqueName()%>);
 			}
 		<%
@@ -768,6 +807,25 @@ if(execStat) {
 
     startTime = System.currentTimeMillis();
 <%
+
+    boolean isCustomProxySettingsUsed = false;
+    List<? extends INode> proxyNodes = process.getNodesOfType("tSetProxy");
+    for (int i = 0; i < proxyNodes.size(); i++) {
+        INode proxyNode = proxyNodes.get(i);
+        String useCustomProxyCheckboxValue = ElementParameterParser.getValue(proxyNode, "__PROXY_GLOBAL__");
+
+        if (useCustomProxyCheckboxValue != null && !"true".equals(useCustomProxyCheckboxValue)) {
+            isCustomProxySettingsUsed = true;
+            break;
+        }
+    }
+    
+    if (isCustomProxySettingsUsed) {
+%>
+        java.net.ProxySelector proxySelectorOnStartJob = java.net.ProxySelector.getDefault();
+<%
+    }
+
         //1. send the begin msg
 
         for (INode statCatcherNode : process.getNodesOfType("tStatCatcher")) {
@@ -990,6 +1048,13 @@ this.globalResumeTicket = true;//to run tPostJob
 
 <%= ElementParameterParser.getValue(process, "__FOOTER_CODE__")%>
 
+<%
+    if (isCustomProxySettingsUsed) { 
+%>
+        java.net.ProxySelector.setDefault(proxySelectorOnStartJob);
+<%
+    }
+%>
         end = System.currentTimeMillis();
 
         if (watch) {
@@ -1509,12 +1574,10 @@ if (execStat) {
             }
         } else if (arg.startsWith("--log4jLevel=")) {
             log4jLevel = arg.substring(13);
-		} else if (arg.startsWith("--monitoring=")) {//for trunjob call
-			enableLogStash = "true".equalsIgnoreCase(arg.substring(13));
-		}
-		
-		if(!enableLogStash) {
-			enableLogStash = "true".equalsIgnoreCase(System.getProperty("monitoring"));
+		} else if (arg.startsWith("--monitoring") && arg.contains("=")) {//for trunjob call
+		    final int equal = arg.indexOf('=');
+			final String key = arg.substring("--".length(), equal);
+			System.setProperty(key, arg.substring(equal + 1));
 		}
     }
     

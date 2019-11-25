@@ -751,7 +751,7 @@
                        		        boolean javaPrimitiveKeyColumn = JavaTypesManager.isJavaPrimitiveType(typeToGenerate);
                        		        
                        		        aKeysValues[iKeyName] = getExpressionWithAutoConvertFunction(aKeysValues[iKeyName], keysEntries.get(iKeyName), keysColumns.get(iKeyName), expressionParser, locationMap4Entry, locationMap4Column, autoConverterMap, enable_auto_convert_type);
-                       		        
+                       		    	
 									if(isPersistentSortedTable) {
 
 
@@ -768,9 +768,14 @@
                         		    		}
                         		    		<%
                         		    	} else {
+                        		    		if("java.util.Date".equals(typeToGenerate)) {%>
+                    		    		        <%= tableName %>HashKey.<%= aKeysNames[iKeyName] %> = rsc_<%=componentNameForKeyProblem%>_<%=currentJoinedTableIndex%>.exprKey_<%= tableName %>__<%= aKeysNames[iKeyName] %> == null ? null : new java.util.Date(rsc_<%=componentNameForKeyProblem%>_<%=currentJoinedTableIndex%>.exprKey_<%= tableName %>__<%= aKeysNames[iKeyName] %>.getTime());
+                    		    		    <%
+                    		    		    }else {
 	                        		    	%>
-                        		    		<%= tableName %>HashKey.<%= aKeysNames[iKeyName] %> = rsc_<%=componentNameForKeyProblem%>_<%=currentJoinedTableIndex%>.exprKey_<%= tableName %>__<%= aKeysNames[iKeyName] %>;
+                        		    		    <%= tableName %>HashKey.<%= aKeysNames[iKeyName] %> = rsc_<%=componentNameForKeyProblem%>_<%=currentJoinedTableIndex%>.exprKey_<%= tableName %>__<%= aKeysNames[iKeyName] %>;
                         		    		<%
+                        		    	    }
                         		    	}
 
                         		    } else {
@@ -788,9 +793,14 @@
                         		    		}
                         		    		<%
                         		    	} else {
-	                        		    	%>
-                        		    		<%= tableName %>HashKey.<%= aKeysNames[iKeyName] %> = <%= aKeysValues[iKeyName] %>;
+                        		    		if("java.util.Date".equals(typeToGenerate)) {%>
+                        		    		    <%= tableName %>HashKey.<%= aKeysNames[iKeyName] %> = <%= aKeysValues[iKeyName] %> == null ? null : new java.util.Date(<%= aKeysValues[iKeyName] %>.getTime());
                         		    		<%
+                        		    		}else {
+	                        		    	%>
+                        		    		    <%= tableName %>HashKey.<%= aKeysNames[iKeyName] %> = <%= aKeysValues[iKeyName] %>;
+                        		    		<%
+                        		    		}
                         		    	}
                         		    }
                         		    if (checkingSyntax) {

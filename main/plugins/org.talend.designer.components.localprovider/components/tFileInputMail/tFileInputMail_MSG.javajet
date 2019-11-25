@@ -5,8 +5,9 @@
 		org.talend.msg.utils.MsgMailUtil msgMailUtil_<%=cid%>=new org.talend.msg.utils.MsgMailUtil(<%=filename%>,<%=directory%>);
 		<%
 		if(isLog4jEnabled){
+			//the logger object maybe come from log4j1 or log4j2, but inside msgMailUtil, we use slf4j, so pass the logger name instead of logger object self
 		%>
-			msgMailUtil_<%=cid%>.activeLog(log,"<%=cid%>");
+			msgMailUtil_<%=cid%>.activeLog(log.getName(),"<%=cid%>");
 		<%
 		}
 		%>

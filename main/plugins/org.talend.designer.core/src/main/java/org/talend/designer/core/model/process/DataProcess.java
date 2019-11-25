@@ -91,6 +91,7 @@ import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesVisitor;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
+import org.talend.designer.core.CheckLogManamger;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
@@ -1947,8 +1948,18 @@ public class DataProcess implements IGeneratingProcess {
                 tagSubProcessAfterParallelIterator(node);
             }
         }
-
-        if (duplicatedProcess.getComponentsType().equals(ComponentCategory.CATEGORY_4_DI.getName()) && PluginChecker.isTIS() && !Boolean.getBoolean("deactivate_extended_component_log")) {
+        
+        boolean isJoblet = false;
+        if(GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
+            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                    IJobletProviderService.class);
+            if (service != null && service.isJobletProcess(this.process)) {
+            	isJoblet = true;
+            }
+        }
+        
+        if (duplicatedProcess.getComponentsType().equals(ComponentCategory.CATEGORY_4_DI.getName()) 
+        		&& PluginChecker.isTIS() && !Boolean.getBoolean("deactivate_extended_component_log") && !isJoblet) {
         	final String talendJobLogComponent = "tJobStructureCatcher";
             final String uid4TalendJobLogComponent = "talendJobLog";
         	IComponent jobStructComponent = ComponentsFactoryProvider.getInstance().get(talendJobLogComponent, ComponentCategory.CATEGORY_4_DI.getName());
@@ -1958,6 +1969,11 @@ public class DataProcess implements IGeneratingProcess {
 	        	jobStructure.setStart(true);
 	        	jobStructure.setSubProcessStart(true);
 	        	jobStructure.setProcess(duplicatedProcess);
+	        	if(!CheckLogManamger.isSelectLog4j2()) {
+	        		jobStructure.getElementParameter("LOG4J_VERSION").setValue("LOG4J1");
+	        	} else {
+	        		jobStructure.getElementParameter("LOG4J_VERSION").setValue("LOG4J2");
+	        	}
 	        	addDataNode(jobStructure);
 
 	        	//TODO consider to remove it as may not necessary
@@ -2498,12 +2514,13 @@ public class DataProcess implements IGeneratingProcess {
         List<? extends IConnection> mainConnections;
         IMetadataTable rejectMetadataTable = null;
         DataConnection dataConnection = null;
+        EConnectionType connectionType = connection.getLineStyle();
         if (isOutput) {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getIncomingConnections();
-            mainConnections = nodeUseValidationRule.getIncomingConnections(EConnectionType.FLOW_MAIN);
+            mainConnections = nodeUseValidationRule.getIncomingConnections(connectionType);
         } else {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getOutgoingConnections();
-            mainConnections = nodeUseValidationRule.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            mainConnections = nodeUseValidationRule.getOutgoingConnections(connectionType);
         }
 
         if (validRuleConnections == null || validRuleConnections.size() == 0) {
