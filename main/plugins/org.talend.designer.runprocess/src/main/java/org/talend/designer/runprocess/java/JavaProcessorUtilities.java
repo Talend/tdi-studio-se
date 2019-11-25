@@ -339,8 +339,7 @@ public class JavaProcessorUtilities {
                     service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
                 }
                 if (service != null) {
-                    ITalendProcessJavaProject talendProject = service
-                            .getTalendJobJavaProject(((Process) process).getProperty());
+                    ITalendProcessJavaProject talendProject = service.getTalendJobJavaProject(((Process) process).getProperty());
                     service.updateLogFiles(talendProject, true);
                 }
             }
