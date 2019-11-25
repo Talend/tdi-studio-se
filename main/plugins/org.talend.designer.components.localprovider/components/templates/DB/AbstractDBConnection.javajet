@@ -26,22 +26,17 @@ imports="
 	connUtil.beforeComponentProcess(node);
 	connUtil.createURL(node);
 %>
-<%
-	if (!"SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__"))){
-%>
-		String dbUser_<%=cid%> = <%=(dbuser != null && dbuser.trim().length() == 0)? "null":dbuser%>;<%//the tSQLiteConnection component not contain user and pass return null%>
-		
-		<%if(dbpass != null && dbpass.trim().length() == 0) {%>
-			String dbPwd_<%=cid%> = null;
-		<%} else {
-			String passwordFieldName = "__PASS__";
-		%>
-			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-			String dbPwd_<%=cid%> = decryptedPassword_<%=cid%>;
-		<%}%>
-<%
-	}
-%>
+	String dbUser_<%=cid%> = <%=(dbuser != null && dbuser.trim().length() == 0)? "null":dbuser%>;<%//the tSQLiteConnection component not contain user and pass return null%>
+	
+	<%if(dbpass != null && dbpass.trim().length() == 0) {%>
+		String dbPwd_<%=cid%> = null;
+	<%} else {
+		String passwordFieldName = "__PASS__";
+	%>
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+		String dbPwd_<%=cid%> = decryptedPassword_<%=cid%>;
+	<%}%>
+	
 	java.sql.Connection conn_<%=cid%> = null;
 	<%@ include file="../Log4j/Log4jDBConnUtil.javajet"%>
 <%
@@ -63,13 +58,8 @@ imports="
 		<%connUtil.classForName(node);%>
 		<%
 		log4jCodeGenerateUtil.debugConnectionParams(node);
-		if ("SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__"))){
-			log4jCodeGenerateUtil.connect_begin_noUser();
-			connUtil.createConnection(node, false);
-		} else {
-			log4jCodeGenerateUtil.connect_begin();
-			connUtil.createConnection(node);
-		}
+		log4jCodeGenerateUtil.connect_begin();
+        connUtil.createConnection(node);
 		
 		log4jCodeGenerateUtil.connect_end();
 		%>

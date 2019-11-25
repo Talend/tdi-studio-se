@@ -57,7 +57,7 @@ imports="
 			if(isLog4jEnabled){
 				shareDBClass = "SharedDBConnectionLog4j";
 %>
-			SharedDBConnectionLog4j.initLogger(log,"<%=cid%>");
+			SharedDBConnectionLog4j.initLogger(log.getName(),"<%=cid%>");
 <%
 			}
 %>
@@ -67,17 +67,10 @@ imports="
 		}
 		
 		public void createConnection(INode node) {
-			this.createConnection(node, true);
+%>
+			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
+<%
 		}
-
-		public void createConnection(INode node, boolean needUserAndPassword) {%>
-<%			if(needUserAndPassword){%>
-				conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
-<%			} else {%>
-				conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>);
-<%			}
-		}
-
 		public void setAutoCommit(INode node) {
 			boolean setAutoCommit = "true".equals(ElementParameterParser.getValue(node, "__AUTO_COMMIT__"));
 			if(isLog4jEnabled){

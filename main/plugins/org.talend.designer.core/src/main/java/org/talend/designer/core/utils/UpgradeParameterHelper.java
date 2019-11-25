@@ -296,23 +296,16 @@ public final class UpgradeParameterHelper {
         if (hasParent(repositoryParam.getName(), parentName)) {
             String id = getValueId(repositoryParam.getValue());
             if (id != null) {
-                if (type == ERepositoryObjectType.PROCESS) { // special process type
-                    // id is label
-                    String theId = getIdFormLabel(id, type);
-                    if (theId != null) {
-                        repositoryParam.setValue(theId);
-                    } else {
-                        repositoryParam.setValue(EMPTY);
-                    }
+                if (type == ERepositoryObjectType.PROCESS) {
+                    repositoryParam.setValue(id);
                     return true;
-                } else {
-                    String label = getValueLabel(repositoryParam.getValue());
-                    if (label != null) {
-                        String newId = getChildIdFormParent(id, label, type);
-                        if (newId != null) {
-                            repositoryParam.setValue(newId);
-                            return true;
-                        }
+                }
+                String label = getValueLabel(repositoryParam.getValue());
+                if (label != null) {
+                    String newId = getChildIdFormParent(id, label, type);
+                    if (newId != null) {
+                        repositoryParam.setValue(newId);
+                        return true;
                     }
                 }
             }
@@ -497,31 +490,6 @@ public final class UpgradeParameterHelper {
                     }
                 }
             }
-        }
-        return null;
-    }
-
-    /**
-     *
-     * ggu Comment method "getIdFormLabel".
-     *
-     * get label of id by type.
-     */
-    private static String getIdFormLabel(final String label, ERepositoryObjectType type) {
-        if (label == null || type == null) {
-            return null;
-        }
-        final IProxyRepositoryFactory proxyRepositoryFactory = DesignerPlugin.getDefault().getProxyRepositoryFactory();
-        try {
-            List<IRepositoryViewObject> allRepositoryObject = proxyRepositoryFactory.getAll(type, true);
-            for (IRepositoryViewObject repObject : allRepositoryObject) {
-                Item item = repObject.getProperty().getItem();
-                if (item != null && label.equals(item.getProperty().getLabel())) {
-                    return item.getProperty().getId();
-                }
-            }
-        } catch (PersistenceException e) {
-            //
         }
         return null;
     }
