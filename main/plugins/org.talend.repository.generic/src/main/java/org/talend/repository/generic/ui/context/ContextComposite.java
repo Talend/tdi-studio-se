@@ -15,7 +15,6 @@ package org.talend.repository.generic.ui.context;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -24,7 +23,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.talend.commons.ui.swt.formtools.Form;
 import org.talend.commons.ui.swt.formtools.UtilsButton;
 import org.talend.components.api.properties.ComponentProperties;
@@ -49,13 +47,13 @@ public class ContextComposite extends Composite {
 
     private UtilsButton revertContextBtn;
 
-    private UtilsButton metadataProxyBtn;
-
     private ConnectionItem connectionItem;
 
     private boolean isReadOnly;
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+    private static final String METADATA_PREFERENCE_PAGE = "org.talend.core.runtime.MetadataPrecisionPage";
 
     public ContextComposite(Composite parent, ConnectionItem connectionItem, boolean isReadOnly, IContextHandler contextHandler) {
         super(parent, SWT.NONE);
@@ -100,16 +98,6 @@ public class ContextComposite extends Composite {
         layout.spacing = 20;
         exportComposite.setLayout(layout);
 
-        displayStr = "Proxy Setting"; //$NON-NLS-1$
-        buttonSize = gc.stringExtent(displayStr);
-        metadataProxyBtn = new UtilsButton(exportComposite, displayStr, buttonSize.x + 12, HEIGHT_BUTTON_PIXEL);
-        metadataProxyBtn.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                openMetadataPreference();
-            }
-        });
         gc.dispose();
         refreshContextBtn();
     }
@@ -147,13 +135,6 @@ public class ContextComposite extends Composite {
             refreshContextBtn();
             fireRefreshUIEvent();
         }
-    }
-
-    private void openMetadataPreference() {
-        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getShell(),
-                "org.talend.core.runtime.MetadataPrecisionPage", //$NON-NLS-1$
-                new String[] { "org.talend.core.runtime.MetadataPrecisionPage" }, null); //$NON-NLS-1$
-        dialog.open();
     }
 
     private void refreshContextBtn() {
