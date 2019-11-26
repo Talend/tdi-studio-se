@@ -53,8 +53,6 @@ public class ContextComposite extends Composite {
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-    private static final String METADATA_PREFERENCE_PAGE = "org.talend.core.runtime.MetadataPrecisionPage";
-
     public ContextComposite(Composite parent, ConnectionItem connectionItem, boolean isReadOnly, IContextHandler contextHandler) {
         super(parent, SWT.NONE);
         this.connectionItem = connectionItem;
@@ -84,7 +82,7 @@ public class ContextComposite extends Composite {
         displayStr = Messages.getString("ContextComposite.revertContext"); //$NON-NLS-1$
         buttonSize = gc.stringExtent(displayStr);
         revertContextBtn = new UtilsButton(exportComposite, displayStr, buttonSize.x + 12, HEIGHT_BUTTON_PIXEL);
-
+        gc.dispose();
 
         revertContextBtn.addSelectionListener(new SelectionAdapter() {
 
@@ -98,7 +96,6 @@ public class ContextComposite extends Composite {
         layout.spacing = 20;
         exportComposite.setLayout(layout);
 
-        gc.dispose();
         refreshContextBtn();
     }
 
