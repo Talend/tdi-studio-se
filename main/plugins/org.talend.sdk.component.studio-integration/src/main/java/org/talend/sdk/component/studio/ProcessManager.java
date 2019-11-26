@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -46,9 +47,12 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.services.ICoreTisService;
 import org.talend.sdk.component.studio.lang.LocalLock;
 import org.talend.sdk.component.studio.lang.StringPropertiesTokenizer;
 import org.talend.sdk.component.studio.logging.JULToOsgiHandler;
@@ -372,7 +376,21 @@ public class ProcessManager implements AutoCloseable {
         if (m2Repo == null) {
             m2Repo = MavenPlugin.getMaven().getLocalRepositoryPath();
         }
-        final String components = System.getProperty(TaCoKitConst.PROP_COMPONENT);
+        String components = System.getProperty(TaCoKitConst.PROP_COMPONENT);
+        // filter from component blacklist.
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+            ICoreTisService coreTisService = GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
+            try {
+                StringBuilder builder = new StringBuilder();
+                String separator = TaCoKitConst.PROP_COMPONENT_SEPARATOR;
+                Set<String> blackList = coreTisService.getComponentBlackList();
+                Stream.of(components.split(separator)).filter(s -> !blackList.contains(s))
+                        .forEach(s -> builder.append(s).append(separator));
+                components = StringUtils.removeEnd(builder.toString(), separator);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        }
         final String registry = System.getProperty(TaCoKitConst.PROP_REGISTRY);
         if (m2Repo != null) {
             System.setProperty("talend.component.server.maven.repository", m2Repo);
