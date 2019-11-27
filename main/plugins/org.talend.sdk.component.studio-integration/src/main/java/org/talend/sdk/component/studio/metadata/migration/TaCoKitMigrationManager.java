@@ -17,21 +17,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IResourceRuleFactory;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.core.runtime.jobs.Job;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ConnectionItem;
-import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
@@ -42,7 +33,6 @@ import org.talend.core.repository.model.VersionList;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ProcessTypeImpl;
 import org.talend.repository.ProjectManager;
-import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
@@ -89,27 +79,6 @@ public class TaCoKitMigrationManager {
                         ExceptionHandler.process(e);
                     }
                 }
-            }
-        }
-        checkJobsMigration(monitor);
-    }
-
-    private void checkJobsMigration(final IProgressMonitor monitor) throws UserCancelledException {
-        monitor.subTask(Messages.getString("migration.check.process.checking")); //$NON-NLS-1$
-        final ProxyRepositoryFactory repositoryFactory = ProxyRepositoryFactory.getInstance();
-        for (final Project project : getAllProjects()) {
-            checkMonitor(monitor);
-            monitor.subTask(Messages.getString("migration.check.process.project", project.getLabel()));
-            try {
-                List<IRepositoryViewObject> processeViewObjects = repositoryFactory.getAll(project, ERepositoryObjectType.PROCESS, true, true);
-                for (final IRepositoryViewObject processViewObject : processeViewObjects) {
-                    final Item item = processViewObject.getProperty().getItem();
-                    if (item instanceof ProcessItem) {
-                        checkProcessItemMigration((ProcessItem) item, monitor);
-                    }
-                }
-            } catch (PersistenceException e) {
-                ExceptionHandler.process(e);
             }
         }
     }
@@ -260,41 +229,6 @@ public class TaCoKitMigrationManager {
         Map<String, String> migratedProperties = configurationClient.migrate(configModel.getConfigurationId(),
                 configModel.getVersion(), configModel.getProperties());
         configModel.migrate(migratedProperties);
-    }
-
-    public void runMigrationJob() throws Exception {
-        final String title = Messages.getString("migration.check.title"); //$NON-NLS-1$
-        final Job migrationJob = new Job(title) {
-
-            @Override
-            protected IStatus run(final IProgressMonitor jobMonitor) {
-                IWorkspace workspace = ResourcesPlugin.getWorkspace();
-                IResourceRuleFactory ruleFactory = workspace.getRuleFactory();
-                ProjectManager projectManager = ProjectManager.getInstance();
-                ISchedulingRule refreshRule = ruleFactory
-                        .refreshRule(projectManager.getResourceProject(projectManager.getCurrentProject().getEmfProject()));
-                try {
-                    workspace.run(workspaceMonitor -> ProxyRepositoryFactory.getInstance()
-                            .executeRepositoryWorkUnit(new RepositoryWorkUnit(title) {
-
-                                @Override
-                                protected void run() {
-                                    try {
-                                        checkMigration(workspaceMonitor);
-                                    } catch (Exception e) {
-                                        ExceptionHandler.process(e);
-                                    }
-                                }
-                            }), refreshRule, IWorkspace.AVOID_UPDATE, jobMonitor);
-                } catch (CoreException e) {
-                    ExceptionHandler.process(e);
-                }
-                return Status.OK_STATUS;
-            }
-        };
-        migrationJob.setUser(false);
-        migrationJob.schedule();
-        migrationJob.join();
     }
 
     public void updatedRelatedItems(final ConnectionItem item, final String version, final IProgressMonitor progressMonitor) {
