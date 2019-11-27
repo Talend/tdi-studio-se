@@ -285,7 +285,7 @@ for(Column colStmt:stmtStructure){
 <%
 		}else{
 %>
-			String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> "
+			String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> ";
 <%
 		}
 		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
@@ -300,14 +300,11 @@ for(Column colStmt:stmtStructure){
 <%
 			}else{
 %>
-				+"  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
+				updateQuery_<%=cid %> += "  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>;
 <%
 			}
 		}
 %>
-		<%if(!useUpdateStatement){%>
-			;
-		<%}%>
 		pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
 
 <%		
