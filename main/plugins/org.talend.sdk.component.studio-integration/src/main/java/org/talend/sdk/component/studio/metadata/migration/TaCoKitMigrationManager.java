@@ -14,7 +14,6 @@ package org.talend.sdk.component.studio.metadata.migration;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,8 +39,6 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.VersionList;
-import org.talend.core.repository.utils.ComponentsJsonModel;
-import org.talend.core.repository.utils.ProjectDataJsonProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ProcessTypeImpl;
 import org.talend.repository.ProjectManager;
@@ -92,34 +89,9 @@ public class TaCoKitMigrationManager {
                         ExceptionHandler.process(e);
                     }
                 }
-                // as for it will do migration for all project, need to cache config component to component.index file
-                // under .setting folder from all project
-                List<ComponentsJsonModel> adaptComponentIndexJson = adaptComponentIndexJson(nodes.values());
-                for (final Project project : getAllProjects()) {
-                    ProjectDataJsonProvider.saveConfigComponent(project.getTechnicalLabel(), adaptComponentIndexJson);
-                }
             }
         }
         checkJobsMigration(monitor);
-    }
-
-    public static List<ComponentsJsonModel> adaptComponentIndexJson(Collection<ConfigTypeNode> ConfigTypeNodes) {
-        List<ComponentsJsonModel> modelList = new LinkedList<ComponentsJsonModel>();
-        for (ConfigTypeNode configTypeNode : ConfigTypeNodes) {
-            ComponentsJsonModel model = new ComponentsJsonModel();
-            model.setId(configTypeNode.getId());
-            model.setVersion(String.valueOf(configTypeNode.getVersion()));
-            model.setName(configTypeNode.getName());
-            model.setDisplayName(configTypeNode.getDisplayName());
-            model.setParentId(configTypeNode.getParentId());
-            model.setEdges(configTypeNode.getEdges());
-            model.setConfigurationType(configTypeNode.getConfigurationType());
-            model.setActions(configTypeNode.getActions());
-            model.setProperties(configTypeNode.getProperties());
-            modelList.add(model);
-        }
-        return modelList;
-
     }
 
     private void checkJobsMigration(final IProgressMonitor monitor) throws UserCancelledException {
