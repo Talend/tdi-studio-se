@@ -155,11 +155,20 @@ public class TaCoKitMigrationManager {
             // ignore exception as it happens only during label retrieval and is not critical
         }
         monitor.subTask(Messages.getString("migration.check.process.item", label));
+        checkNodeMigration(processItem, null);
+    }
+
+    public void checkNodeMigration(final ProcessItem processItem, String currentNodeName) {
         final ProcessTypeImpl process = (ProcessTypeImpl) processItem.getProcess();
         boolean migrated = false;
         for (final Object elem : process.getNode()) {
             NodeTypeImpl node = (NodeTypeImpl) elem;
             if (TaCoKitNode.isTacokit(node)) {
+                if (currentNodeName != null) {
+                    if (!node.getComponentName().equals(currentNodeName)) {
+                        continue;
+                    }
+                }
                 final TaCoKitNode tacokitNode = new TaCoKitNode(node);
                 if (tacokitNode.needsMigration()) {
                     tacokitNode.migrate(componentClient.migrate(tacokitNode.getId(), tacokitNode.getPersistedVersion(),

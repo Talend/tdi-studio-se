@@ -54,6 +54,8 @@ public abstract class AbstractBasicComponent extends AbstractComponent {
 
     protected Boolean visibleFromComponentDefinition = null;
 
+    private boolean isNeedMigration;
+
     @Override
     public void setImageRegistry(Map<String, ImageDescriptor> imageRegistry) {
         this.imageRegistry = imageRegistry;
@@ -242,4 +244,11 @@ public abstract class AbstractBasicComponent extends AbstractComponent {
         this.initializing = initializing;
     }
 
+    public boolean isNeedMigration() {
+        return this.isNeedMigration;
+    }
+
+    public void setNeedMigration(boolean isNeedMigration) {
+        this.isNeedMigration = isNeedMigration;
+    }
 }
