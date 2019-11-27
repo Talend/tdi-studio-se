@@ -176,6 +176,8 @@
 		<IMPORT NAME="Driver-Informix" MODULE="ifxlsupp.jar" MVN="mvn:org.talend.libraries/ifxlsupp/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="Driver-Informix" MODULE="ifxsqlj.jar" MVN="mvn:org.talend.libraries/ifxsqlj/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="Driver-Informix" MODULE="ifxtools.jar" MVN="mvn:org.talend.libraries/ifxtools/6.0.0"  REQUIRED="true" />
+		<IMPORT NAME="slf4j-api-1.7.25.jar" MODULE="slf4j-api-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-api/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
+		<IMPORT NAME="slf4j-log4j12-1.7.25.jar" MODULE="slf4j-log4j12-1.7.25.jar" MVN="mvn:org.slf4j/slf4j-log4j12/1.7.25" REQUIRED_IF="USE_SHARED_CONNECTION =='true'" />
      </IMPORTS>
    </CODEGENERATION>
 

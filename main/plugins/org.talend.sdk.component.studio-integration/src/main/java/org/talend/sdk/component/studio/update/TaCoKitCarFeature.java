@@ -338,16 +338,6 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
     }
 
     @Override
-    public boolean isShareEnable() {
-        return share;
-    }
-
-    @Override
-    public void setShareEnable(boolean share) {
-        this.share = share;
-    }
-
-    @Override
     public File getCarFile(IProgressMonitor progress) throws Exception {
         return getCar(new NullProgressMonitor()).getCarFile();
     }

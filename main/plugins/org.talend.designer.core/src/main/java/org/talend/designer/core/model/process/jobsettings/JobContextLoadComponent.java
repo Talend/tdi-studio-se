@@ -256,6 +256,9 @@ public class JobContextLoadComponent implements IComponent {
                 source = self + "IGNORE_ERROR_MESSAGE"; //$NON-NLS-1$
                 multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".IGNORE_ERROR_MESSAGE"); //$NON-NLS-1$
 
+                source = self + "ENCODING";
+                multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".ENCODING"); //$NON-NLS-1$ //$NON-NLS-2$
+
             } else {
                 String source = self + JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
                 multipleComponentManager.addParam(source, DB_INPUT + ".URL");

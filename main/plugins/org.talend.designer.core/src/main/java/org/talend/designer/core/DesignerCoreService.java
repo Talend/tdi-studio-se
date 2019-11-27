@@ -768,6 +768,15 @@ public class DesignerCoreService implements IDesignerCoreService {
     }
 
     @Override
+    public Set<ModuleNeeded> getNeededLibrariesForProcessBeforeUpdateLog(IProcess process, boolean withChildrens) {
+        int options = TalendProcessOptionConstants.MODULES_DEFAULT;
+        if (withChildrens) {
+            options |= TalendProcessOptionConstants.MODULES_WITH_CHILDREN;
+        }
+        return JavaProcessUtil.getNeededModules(process, options, true);
+    }
+
+    @Override
     public Set<ModuleNeeded> getNeededModules(INode node, boolean withChildrens) {
         int options = TalendProcessOptionConstants.MODULES_DEFAULT;
         if (withChildrens) {
