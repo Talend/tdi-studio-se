@@ -149,6 +149,9 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 							} catch (TalendException te) {
 								this.lastException = te.getException();
 								this.currentComponent = te.getCurrentComponent();
+							} catch (java.lang.Error error) {
+								status = "failure";
+								throw error;
 							}
 						}
 					}
