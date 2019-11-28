@@ -305,48 +305,54 @@ for(Column colStmt:stmtStructure){
 
 	if(("INSERT").equals(dataAction)){
 %>	
-	String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>)  ("+select_query_<%=cid %>+")";
-	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery_<%=cid %>);
+		String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>)  ("+select_query_<%=cid %>+")";
+		pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery_<%=cid %>);
 
 <%
 	}else if (("UPDATE").equals(dataAction)){
-	if(useUpdateStatement){
+		if(useUpdateStatement){
 %>  
-    String updateQuery_<%=cid %> = select_query_<%=cid %>
+    		String updateQuery_<%=cid %> = select_query_<%=cid %>;
 <%
-    }else{
+    	}else{
 %>
-	String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> "
+			String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> ";
 <%
-    }
+    	}
+		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+			if(useUpdateStatement){
 %>
+				if(select_query_<%=cid %>.indexOf("WHERE")==-1){
+					updateQuery_<%=cid %> +="  WHERE ";
+				}else{
+					updateQuery_<%=cid %> +="  AND ";
+				} 
+				updateQuery_<%=cid %>+= <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>;
+<%
+			}else{
+%>
+				updateQuery_<%=cid %> += "  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>;
+<%
+			}
+		}
+%>
+		pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
+<%		
+	}else if (("DELETE").equals(dataAction)){
+%>
+		String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") " 
 <%
 		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
 %>
-		+"  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
+			+"  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
 <%
+		}
+%>
+		;
+		pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
+<%		
 	}
 %>
-	;
-	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
-<%		
-	}else if (("DELETE").equals(dataAction)){
-	%>
-	
-	String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") " 
-	<%
-	if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
-	%>
-	+"  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
-	<%
-	}
-	%>
-	;
-	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
-
-	<%		
-	}
-	%>
 int nb_line_<%=cid%> = 0;
 int nb_line_updated_<%=cid%> = 0;
 int nb_line_inserted_<%=cid%> = 0;
