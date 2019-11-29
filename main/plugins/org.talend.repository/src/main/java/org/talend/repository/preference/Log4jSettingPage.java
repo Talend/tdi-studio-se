@@ -16,8 +16,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.repository.utils.Log4jUtil;
+import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.constants.Log4jPrefsConstants;
 import org.talend.repository.i18n.Messages;
@@ -205,6 +207,11 @@ public class Log4jSettingPage extends ProjectSettingPage {
 
             }
             reset = false;
+            try {
+                new AggregatorPomsHelper().syncAllPoms();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
         }
         return ok;
     }
