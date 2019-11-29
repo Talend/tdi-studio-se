@@ -240,7 +240,7 @@ if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
               
               String pattern = column.getPattern();
               if(pattern == null || pattern.isEmpty() || pattern.equals("\"\"")) {
-                  pattern = "";
+                  pattern = "\"\"";
               }
               %>
               field = new java.util.HashMap<>();
@@ -250,7 +250,7 @@ if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
               field.put("talend_type", "<%=column.getTalendType()%>");
               field.put("type", "<%=column.getType()%>");
               field.put("nullable", "<%=column.isNullable()%>");
-              field.put("pattern", "<%=pattern%>");
+              field.put("pattern", <%=pattern%>);
               field.put("length", "<%=column.getLength()%>");
               field.put("precision", "<%=column.getPrecision()%>");
               schema.add(field);
