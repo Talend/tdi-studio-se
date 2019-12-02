@@ -1266,8 +1266,8 @@ public class Component extends AbstractBasicComponent {
         if(!CheckLogManamger.isSelectLog4j2()) {
             //TODO consider to let it works for all jobs, not only for tcompv0 components, mean move the code to ReplaceNodeInProcess and UpdateLog4jJarUtils when not log4j2
             moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-log4j12/1.7.25");
+            componentImportNeedsList.add(moduleNeeded);
         }
-        componentImportNeedsList.add(moduleNeeded);
         moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.28.0");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
@@ -1479,7 +1479,12 @@ public class Component extends AbstractBasicComponent {
             //as sql type value may have newline and return characters, which make compiler issue in java code,
             //so have to convert the newline characters to visible "\r", "\n" for pass the compiler issue and can't only convert them to white space as TDI-41898
             //jdbc drivers, salesforce driver can work like that sql : select * \nfrom Account, so it is ok
-            return NodeUtil.replaceCRLFInMEMO_SQL(value);
+            String replacedString = NodeUtil.replaceCRLFInMEMO_SQL(value).trim();
+
+            // For the case when sql field ends with extra semicolon, it has to be removed to avoid compilation error.
+            return replacedString.endsWith(";")
+                    ? replacedString.substring(0, replacedString.length() -1)
+                    : replacedString;
         }
         if (GenericTypeUtils.isSchemaType(property)) {
             // Handles embedded escaped quotes which might occur

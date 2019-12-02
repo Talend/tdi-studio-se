@@ -764,6 +764,15 @@
              name="ChangeOracleVersionForProjectSetting"
              version="5.2.1">
        </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.1.0"
+             class="org.talend.designer.core.utils.FillTRunJobReferenceParametersMigrationTask"
+             description="Fix empty process id parameters for tRunjob node."
+             id="org.talend.designer.core.utils.FillTRunJobReferenceParametersMigrationTask"
+             name="Fix empty process id parameters for tRunjob node"
+             version="7.1.1">
+       </projecttask>
     </extension>
     <extension
           point="org.talend.repository.projectsetting_page">

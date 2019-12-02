@@ -137,7 +137,7 @@ public class TRunjobUtil {
                 }
             }
 
-	    	if(isJoblet) {
+            if (isJoblet && nodeActivate) {
 	    		String jobletPaletteType = null;
 		        String frameWork = process.getFramework();
 		        if (StringUtils.isBlank(frameWork)) {

@@ -146,6 +146,7 @@ import org.talend.designer.core.utils.BigDataJobUtil;
 import org.talend.designer.maven.utils.ClasspathsJarGenerator;
 import org.talend.designer.maven.utils.MavenVersionHelper;
 import org.talend.designer.maven.utils.PomUtil;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.designer.runprocess.ProcessorConstants;
 import org.talend.designer.runprocess.ProcessorException;
@@ -250,6 +251,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             } else {
                 // for shadow process/data preview
                 this.talendJavaProject = TalendJavaProjectManager.getTempJavaProject();
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                    IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault()
+                            .getService(IRunProcessService.class);
+                    if (service != null) {
+                        service.updateLogFiles(talendJavaProject, true);
+                    }
+                }
             }
             Assert.isNotNull(this.talendJavaProject, Messages.getString("JavaProcessor.notFoundedProjectException"));
             this.project = this.talendJavaProject.getProject();
