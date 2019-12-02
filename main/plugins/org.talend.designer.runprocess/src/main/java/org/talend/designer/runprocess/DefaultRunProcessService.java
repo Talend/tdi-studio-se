@@ -987,4 +987,9 @@ public class DefaultRunProcessService implements IRunProcessService {
         }
     }
 
+    @Override
+    public boolean isSelectLog4j2() {
+        return Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
+    }
+
 }
