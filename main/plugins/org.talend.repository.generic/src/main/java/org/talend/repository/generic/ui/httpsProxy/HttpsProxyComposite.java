@@ -28,6 +28,9 @@ import org.talend.repository.generic.i18n.Messages;
 public class HttpsProxyComposite extends Composite {
 
     private static final String METADATA_PREFERENCE_PAGE = "org.talend.core.runtime.MetadataPrecisionPage";
+
+    private static final String PROXY_PREFERENCE_PAGE = "org.eclipse.ui.net.NetPreferences";// org.eclipse.ui.net.proxy
+
     private UtilsButton metadataProxyBtn;
 
     private static final int HEIGHT_BUTTON_PIXEL = 30;
@@ -59,7 +62,7 @@ public class HttpsProxyComposite extends Composite {
 
     private void openMetadataPreference() {
         PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(getShell(), METADATA_PREFERENCE_PAGE, // $NON-NLS-1$
-                new String[] { METADATA_PREFERENCE_PAGE }, null); // $NON-NLS-1$
+                new String[] { METADATA_PREFERENCE_PAGE, PROXY_PREFERENCE_PAGE }, null); // $NON-NLS-1$
         dialog.open();
     }
 }
