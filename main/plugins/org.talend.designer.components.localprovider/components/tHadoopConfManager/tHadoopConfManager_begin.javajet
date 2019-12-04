@@ -13,9 +13,22 @@
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
     String confLib = ElementParameterParser.getValue(node, "__CONF_LIB__");
+    Boolean setHadoopConf = ElementParameterParser.getBooleanValue(node, "__SET_HADOOP_CONF__");
+    String customHadoopConfPath = ElementParameterParser.getValue(node, "__HADOOP_CONF_SPECIFIC_JAR__");
+    if (setHadoopConf == null) {
+        setHadoopConf = Boolean.FALSE;
+    }
 %>
 
-<% if(confLib != null && confLib.length() > 0){%>
+<% if((confLib != null && confLib.length() > 0) || setHadoopConf){%>
+
+String libPath_<%=cid %> = "";
+
+<% if (setHadoopConf) { %>
+
+libPath_<%=cid %> = <%=customHadoopConfPath %>;
+
+<% } else { %>
 
 class DealJobLibrary_<%=cid%> {
 
@@ -75,14 +88,9 @@ class DealJobLibrary_<%=cid%> {
 
 }
 
-java.net.URLClassLoader currentLoader<%=cid %> = (java.net.URLClassLoader) Thread.currentThread().getContextClassLoader();
-java.lang.reflect.Method method_<%=cid %> = java.net.URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { java.net.URL.class });
-method_<%=cid %>.setAccessible(true);
-
 DealJobLibrary_<%=cid%> dealJobLibrary = new DealJobLibrary_<%=cid%>();
 String confJarName = dealJobLibrary.getConfJarName(<%=confLib %>, this.contextStr);
 
-String libPath_<%=cid %> = "";
 <%if (ProcessorUtilities.isExportConfig()) {%>
     libPath_<%=cid %> = "../lib/" + confJarName;
 <%} else {
@@ -90,6 +98,11 @@ String libPath_<%=cid %> = "";
     libPath_<%=cid %> = new java.io.File("<%=libFolder %>/" + confJarName).getAbsolutePath();
 <%}%>
 libPath_<%=cid %> = dealJobLibrary.replaceJarPathsFromCrcMap(libPath_<%=cid %>);
+<%}%>
+
+java.net.URLClassLoader currentLoader<%=cid %> = (java.net.URLClassLoader) Thread.currentThread().getContextClassLoader();
+java.lang.reflect.Method method_<%=cid %> = java.net.URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { java.net.URL.class });
+method_<%=cid %>.setAccessible(true);
 method_<%=cid %>.invoke(currentLoader<%=cid %>, new Object[] { new java.io.File(libPath_<%=cid %>).toURL() });
 
 <%}%>
