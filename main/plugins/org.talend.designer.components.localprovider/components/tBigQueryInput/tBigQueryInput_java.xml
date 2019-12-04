@@ -29,6 +29,14 @@
     <CONNECTOR CTYPE="RUN_IF"/>
   </CONNECTORS>
   <PARAMETERS>
+	<PARAMETER
+      NAME="MAPPING"
+      FIELD="MAPPING_TYPE"
+      NUM_ROW="120"
+      SHOW="false"
+    >
+      <DEFAULT>bigquery_id</DEFAULT>
+    </PARAMETER>
     <PARAMETER
     	NAME="SCHEMA"
     	FIELD="SCHEMA_TYPE"
