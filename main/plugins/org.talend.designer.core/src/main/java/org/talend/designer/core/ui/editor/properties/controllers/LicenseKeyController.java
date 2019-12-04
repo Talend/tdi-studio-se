@@ -24,6 +24,6 @@ public class LicenseKeyController extends PasswordController {
     }
 
     protected String getDialogTitle() {
-        return Messages.getString("PasswordController.NewLicenseKey"); //$NON-NLS-1$
+        return Messages.getString("LicenseKeyController.NewLicenseKey"); //$NON-NLS-1$
     }
 }
