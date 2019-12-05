@@ -949,7 +949,7 @@ public class Node extends Element implements IGraphicalNode {
                 if (metadata != null) {
                     List<IMetadataColumn> listColumns = metadata.getListColumns();
 
-                    for (int i = 0; i < listColumns.size(); i++) {
+                    for (IMetadataColumn column : listColumns) {
 
                         INodeReturn flowToIterateReturn = new NodeReturn() {
 
@@ -967,7 +967,6 @@ public class Node extends Element implements IGraphicalNode {
                             }
 
                         };
-                        IMetadataColumn column = listColumns.get(i);
                         String columnLabel = column.getLabel();
                         String columnType = column.getTalendType();
                         flowToIterateReturn.setName(columnLabel);
@@ -988,8 +987,7 @@ public class Node extends Element implements IGraphicalNode {
                     if (map != null && metadata != null) {
                         List<IMetadataColumn> listColumns = metadata.getListColumns();
 
-                        for (int i = 0; i < map.size(); i++) {
-                            Map<String, String> line = map.get(i);
+                        for (Map<String, String> line : map) {
                             String keyName = TalendTextUtils.removeQuotes(line.get("KEY")); //$NON-NLS-1$
 
                             INodeReturn flowToIterateReturn = new NodeReturn() {
@@ -1009,10 +1007,10 @@ public class Node extends Element implements IGraphicalNode {
                             };
 
                             String cueeName = line.get("VALUE"); //$NON-NLS-1$
-                            for (int j = 0; j < listColumns.size(); j++) {
-                                String columnName = listColumns.get(j).getLabel();
+                            for (IMetadataColumn listColumn : listColumns) {
+                                String columnName = listColumn.getLabel();
                                 if (columnName.equals(cueeName)) {
-                                    String columnType = listColumns.get(j).getTalendType();
+                                    String columnType = listColumn.getTalendType();
                                     flowToIterateReturn.setType(columnType);
                                 }
 
@@ -1375,8 +1373,7 @@ public class Node extends Element implements IGraphicalNode {
                             }
                             boolean customFound = false;
                             int customColNumber = 0;
-                            for (int i = 0; i < targetTable.getListColumns().size(); i++) {
-                                IMetadataColumn column = targetTable.getListColumns().get(i);
+                            for (IMetadataColumn column : targetTable.getListColumns()) {
                                 if (column.isCustom()) {
                                     customColNumber++;
                                 }
@@ -1612,8 +1609,8 @@ public class Node extends Element implements IGraphicalNode {
         }
         List<IConnection> listNm = (List<IConnection>) conn.getSource().getOutgoingConnections(conn.getLineStyle());
         int deactiveNum = 0;
-        for (int i = 0; i < outputs.size(); i++) {
-            if (!outputs.get(i).isActivate()) {
+        for (IConnection output : outputs) {
+            if (!output.isActivate()) {
                 deactiveNum = deactiveNum + 1;
             }
         }
@@ -2258,10 +2255,10 @@ public class Node extends Element implements IGraphicalNode {
 
     @Override
     public IMetadataTable getMetadataTable(String metaName) {
-        for (int i = 0; i < metadataList.size(); i++) {
-            String tableName = metadataList.get(i).getTableName();
+        for (IMetadataTable element : metadataList) {
+            String tableName = element.getTableName();
             if (tableName != null && tableName.equals(metaName)) {
-                return metadataList.get(i);
+                return element;
             }
         }
         return null;
@@ -3781,8 +3778,7 @@ public class Node extends Element implements IGraphicalNode {
 
             if (canEditSchema && table != null) {
                 if (LanguageManager.getCurrentLanguage() == ECodeLanguage.JAVA) {
-                    for (int i = 0; i < table.getListColumns().size(); i++) {
-                        IMetadataColumn column = table.getListColumns().get(i);
+                    for (IMetadataColumn column : table.getListColumns()) {
                         if (column.isCustom()) {
                             continue;
                         }
@@ -4146,8 +4142,7 @@ public class Node extends Element implements IGraphicalNode {
                         }
                     }
                     if (outputMeta != null) {
-                        for (int i = 0; i < outputMeta.getListColumns().size(); i++) {
-                            IMetadataColumn column = outputMeta.getListColumns().get(i);
+                        for (IMetadataColumn column : outputMeta.getListColumns()) {
                             String sourceType = column.getType();
                             String typevalue = column.getTalendType();
                             String currentDbmsId = outputMeta.getDbms();
@@ -4227,8 +4222,7 @@ public class Node extends Element implements IGraphicalNode {
                 }
 
                 if (outputMeta != null) {
-                    for (int i = 0; i < outputMeta.getListColumns().size(); i++) {
-                        IMetadataColumn column = outputMeta.getListColumns().get(i);
+                    for (IMetadataColumn column : outputMeta.getListColumns()) {
                         String sourceType = column.getType();
                         String typevalue = column.getTalendType();
                         String currentDbmsId = outputMeta.getDbms();
@@ -4982,15 +4976,24 @@ public class Node extends Element implements IGraphicalNode {
                         }
                     }
                     if (targetParam != null) {
-                        if (sourceParam.getName().equals(EParameterName.LABEL.getName())
-                                && (sourceParam.getValue() == null || "".equals(sourceParam.getValue()))) { //$NON-NLS-1$
-                            String name = null;
-                            if (EComponentType.JOBLET.equals(component.getComponentType())) {
-                                name = component.getName();
+                        if (sourceParam.getName().equals(EParameterName.LABEL.getName())) {
+                            boolean update = false;
+                            Object sourceParamObj = sourceParam.getValue();
+                            if (sourceParamObj != null && StringUtils.isNotBlank(sourceParamObj.toString())
+                                    && !(EComponentType.JOBLET.equals(component.getComponentType()) && isUpdate)) {
+                                setPropertyValue(sourceParam.getName(), sourceParamObj);
                             } else {
-                                name = component.getProcess().getName();
+                                update = true;
                             }
-                            setPropertyValue(sourceParam.getName(), name);
+                            if (update) {
+                                String name = null;
+                                if (EComponentType.JOBLET.equals(component.getComponentType())) {
+                                    name = component.getName();
+                                } else {
+                                    name = component.getProcess().getName();
+                                }
+                                setPropertyValue(sourceParam.getName(), name);
+                            }
                         } else {
                             setPropertyValue(sourceParam.getName(), sourceParam.getValue());
                         }
