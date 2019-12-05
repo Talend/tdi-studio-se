@@ -24,34 +24,19 @@ import org.talend.librariesmanager.model.ModulesNeededProvider;
 public class UpdateLog4jJarUtils {
 
     public static void addLog4jToJarList(Collection<String> jarList, boolean isSelectLog4j2) {
-        IProcess2 process = null;
+        IProcess process = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             IRunProcessService processService = (IRunProcessService) GlobalServiceRegister.getDefault()
                     .getService(IRunProcessService.class);
-            IProcess activeProcess = processService.getActiveProcess();
-            if (activeProcess instanceof IProcess2) {
-                process = (IProcess2) activeProcess;
-            }
+            process = processService.getActiveProcess();
         }
-//        if (process != null && ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
-//            addLog4jToJarListForESB(jarList, isSelectLog4j2);
-//            return;
-//        }
         List<String> modulesUsedBefore = removeLog4jFromJarListAndGetUsedJarBefore(process, jarList);
         addBackJars(jarList, isSelectLog4j2, modulesUsedBefore, process);
     }
 
     public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, boolean isSelectLog4j2, IProcess currentProcess) {
-        IProcess2 process = null;
-        if (currentProcess instanceof IProcess2) {
-            process = (IProcess2) currentProcess;
-        }
-//        if (process != null && ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
-//            addLog4jToModuleListForESB(jarList, isSelectLog4j2);
-//            return;
-//        }
-        List<ModuleNeeded> modulesUsedBefore = removeLog4jFromModuleListAndGetModulesUsedBefore(process, jarList);
-        addBackModules(jarList, isSelectLog4j2, modulesUsedBefore, process);
+        List<ModuleNeeded> modulesUsedBefore = removeLog4jFromModuleListAndGetModulesUsedBefore(currentProcess, jarList);
+        addBackModules(jarList, isSelectLog4j2, modulesUsedBefore, currentProcess);
     }
 
     public static final String[] MODULES_NEED_ADDED_BACK = { "log4j-jcl-2.12.1.jar", "log4j-jul-2.12.1.jar",
@@ -59,7 +44,7 @@ public class UpdateLog4jJarUtils {
             "jul-to-slf4j-1.7.25.jar", "log4j-to-slf4j-2.12.1.jar", "slf4j-log4j12-1.7.25.jar", "log4j-1.2.17.jar" };
 
     private static void addBackJars(Collection<String> moduleNeededList, boolean isSelectLog4j2, List<String> modulesUsedBefore,
-            IProcess2 process) {
+            IProcess process) {
         if (isSelectLog4j2) {
             boolean usedlog4jJclBefore = false;
             boolean usedlog4jJulBefore = false;
@@ -73,7 +58,7 @@ public class UpdateLog4jJarUtils {
                     usedlog4jJulBefore = true;
                 }
             }
-            if (process instanceof IProcess2) {
+            if (process instanceof IProcess) {
                 Set<ModuleNeeded> modulesNeededForProcess = CorePlugin.getDefault().getDesignerCoreService()
                         .getNeededLibrariesForProcessBeforeUpdateLog(process, false);
                 if (modulesNeededForProcess != null) {
@@ -122,7 +107,7 @@ public class UpdateLog4jJarUtils {
     }
 
     private static void addBackModules(Collection<ModuleNeeded> moduleNeededList, boolean isSelectLog4j2,
-            List<ModuleNeeded> modulesUsedBefore, IProcess2 process) {
+            List<ModuleNeeded> modulesUsedBefore, IProcess process) {
         if (isSelectLog4j2) {
             boolean usedlog4jJclBefore = false;
             boolean usedlog4jJulBefore = false;
@@ -136,7 +121,7 @@ public class UpdateLog4jJarUtils {
                     usedlog4jJulBefore = true;
                 }
             }
-            if (process instanceof IProcess2) {
+            if (process instanceof IProcess) {
                 Set<ModuleNeeded> modulesNeededForProcess = CorePlugin.getDefault().getDesignerCoreService()
                         .getNeededLibrariesForProcessBeforeUpdateLog(process, false);
                 if (modulesNeededForProcess != null) {
@@ -206,9 +191,12 @@ public class UpdateLog4jJarUtils {
         }
     }
 
-    private static List<ModuleNeeded> removeLog4jFromModuleListAndGetModulesUsedBefore(IProcess2 process,
+    private static List<ModuleNeeded> removeLog4jFromModuleListAndGetModulesUsedBefore(IProcess process,
             Collection<ModuleNeeded> jarList) {
-        Set<ModuleNeeded> highPriorityModuleNeeded = getHighPriorityModuleNeeded(process);
+        Set<ModuleNeeded> highPriorityModuleNeeded = new LinkedHashSet<>();
+        if (process instanceof IProcess2) {
+            highPriorityModuleNeeded = getHighPriorityModuleNeeded((IProcess2) process);
+        }
         List<ModuleNeeded> modulesUsedBefore = new ArrayList<ModuleNeeded>();
         Iterator<ModuleNeeded> iterator = jarList.iterator();
         while (iterator.hasNext()) {
@@ -264,8 +252,11 @@ public class UpdateLog4jJarUtils {
         return highPriorityModuleNeeded == null ? new LinkedHashSet<>() : highPriorityModuleNeeded;
     }
 
-    private static List<String> removeLog4jFromJarListAndGetUsedJarBefore(IProcess2 process, Collection<String> jarList) {
-        Set<ModuleNeeded> highPriorityModuleNeeded = getHighPriorityModuleNeeded(process);
+    private static List<String> removeLog4jFromJarListAndGetUsedJarBefore(IProcess process, Collection<String> jarList) {
+        Set<ModuleNeeded> highPriorityModuleNeeded = new LinkedHashSet<>();
+        if (process instanceof IProcess2) {
+            highPriorityModuleNeeded = getHighPriorityModuleNeeded((IProcess2) process);
+        }
         List<String> jarsUsedBefore = new ArrayList<String>();
         Iterator<String> iterator = jarList.iterator();
         while (iterator.hasNext()) {
