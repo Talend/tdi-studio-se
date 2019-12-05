@@ -37,13 +37,6 @@
 	
 	String passwordFieldName = "";
 	
-	%>
-	//check connections
-	//<%=node.getUniqueName()%>
-	//<%=node.getUniqueShortName()%>
-	//<%=node.getIncomingConnections().get(0).getSource().getIncomingConnections().get(0).getName()%>
-	<%
-	
 	IConnection incomingConnection = null;
 	if(node.getUniqueName().startsWith("tBigQueryOutput_")) {
 		List< ? extends IConnection> conns = node.getIncomingConnections();
@@ -269,7 +262,7 @@
 	<%
 	if(isLog4jEnabled){
 	%>
-	int currIndex = 0;
+	int currIndex_<%=cid%> = 0;
 	<%
 	}
     if (authMode.equals("OAUTH")) {
@@ -370,15 +363,15 @@
 									<%
 									if(isLog4jEnabled){
 									%>
-										log.debug("<%=cid%> - Field index[" + currIndex + "] {\"name\":\"<%=columnName%>\",\"type\":\"<%=typeToGenerate%>\",\"mode\":\"<%=modeType%>\"}");
-										currIndex++;
+										log.debug("<%=cid%> - Field index[" + currIndex_<%=cid%> + "] {\"name\":\"<%=columnName%>\",\"type\":\"<%=typeToGenerate%>\",\"mode\":\"<%=modeType%>\"}");
+										currIndex_<%=cid%>++;
 									<%
 									}
 								} else if(incomingConnection != null) {
 								%>
-									routines.system.Dynamic column = (routines.system.Dynamic)<%=incomingConnection.getName()%>.<%=column.getLabel()%>;
-									for (int i = 0; i < column.getColumnCount(); i++) {
-										routines.system.DynamicMetadata metadata = column.getColumnMetadata(i);
+									routines.system.Dynamic column_<%=cid%> = (routines.system.Dynamic)<%=incomingConnection.getName()%>.<%=column.getLabel()%>;
+									for (int i = 0; i < column_<%=cid%>.getColumnCount(); i++) {
+										routines.system.DynamicMetadata metadata = column_<%=cid%>.getColumnMetadata(i);
 										String dataType = routines.system.MetadataTalendType.getDefaultSelectedDbType("bigquery_id", metadata.getType(), -1, -1);
 										String orignalDBType = metadata.getDbType();
 										java.util.List<String> outputDBTypelist = routines.system.MetadataTalendType.getTalendToDBList("bigquery_id", metadata.getType());
@@ -402,8 +395,8 @@
 										<%
 										if(isLog4jEnabled){
 										%>
-											log.debug("<%=cid%> - Field index[" + currIndex + "] {\"name\":\"" + metadata.getName() + "\",\"type\":\"" + dataType + "\",\"mode\":\"" + modeType + "\"}");
-											currIndex++;
+											log.debug("<%=cid%> - Field index[" + currIndex_<%=cid%> + "] {\"name\":\"" + metadata.getName() + "\",\"type\":\"" + dataType + "\",\"mode\":\"" + modeType + "\"}");
+											currIndex_<%=cid%>++;
 										<%
 										}
 										%>
@@ -625,16 +618,16 @@
 								<%
 								if(isLog4jEnabled){
 								%>
-									log.debug("<%=cid%> - Field index[" + currIndex + "] {\"name\":\"<%=columnName%>\",\"type\":\"<%=typeToGenerate%>\"}");
-									currIndex++;
+									log.debug("<%=cid%> - Field index[" + currIndex_<%=cid%> + "] {\"name\":\"<%=columnName%>\",\"type\":\"<%=typeToGenerate%>\"}");
+									currIndex_<%=cid%>++;
 								<%
 								}
 							} else if(incomingConnection != null) {
 							%>
-								routines.system.Dynamic column = (routines.system.Dynamic)<%=incomingConnection.getName()%>.<%=column.getLabel()%>;
-								for (int i = 0; i < column.getColumnCount(); i++) {
+								routines.system.Dynamic column_<%=cid%> = (routines.system.Dynamic)<%=incomingConnection.getName()%>.<%=column.getLabel()%>;
+								for (int i = 0; i < column_<%=cid%>.getColumnCount(); i++) {
 									com.google.cloud.bigquery.LegacySQLTypeName typeToGenerate = com.google.cloud.bigquery.LegacySQLTypeName.STRING;
-									routines.system.DynamicMetadata metadata = column.getColumnMetadata(i);
+									routines.system.DynamicMetadata metadata = column_<%=cid%>.getColumnMetadata(i);
 									String dataType = routines.system.MetadataTalendType.getDefaultSelectedDbType("bigquery_id", metadata.getType(), -1, -1);
 									String orignalDBType = metadata.getDbType();
 									java.util.List<String> outputDBTypelist = routines.system.MetadataTalendType.getTalendToDBList("bigquery_id", metadata.getType());
@@ -692,8 +685,8 @@
 									<%
 									if(isLog4jEnabled){
 									%>
-										log.debug("<%=cid%> - Field index[" + currIndex + "] {\"name\":\"" + metadata.getName() + "\",\"type\":\"" + typeToGenerate + "\",\"mode\":\"" + modeType + "\"}");
-										currIndex++;
+										log.debug("<%=cid%> - Field index[" + currIndex_<%=cid%> + "] {\"name\":\"" + metadata.getName() + "\",\"type\":\"" + typeToGenerate + "\",\"mode\":\"" + modeType + "\"}");
+										currIndex_<%=cid%>++;
 									<%
 									}
 									%>

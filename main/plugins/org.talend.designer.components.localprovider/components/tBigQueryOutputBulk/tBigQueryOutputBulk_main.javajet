@@ -44,7 +44,6 @@
             			%>
 						String[] row_<%=cid%>=new String[<%=sizeColumns%><%=hasDynamic?"+"+conn.getName()+".":"" %><%=dynamicCol==null?"":dynamicCol.getLabel()+".getColumnCount()-1" %>];
 						java.util.Arrays.fill(row_<%=cid%>, "\\N");
-                    	//String[] row_<%=cid%>=new String[]{<%for(int j=0;j<sizeColumns;j++){%>"\\N",<%}%>};		//empty value must be NULL('\N' in bulk file)
                     	<%
 						int dynamicColIndex = -1;
 						%>
@@ -56,19 +55,16 @@
                 			String pattern = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
 							if(dynamicColIndex != -1 && i > dynamicColIndex) {
 							%>
-							//<%=dynamicColIndex%>
 							curColumnIndex_<%=cid%> = <%=i-1%> + dynamic_column_count_<%=cid%>;
 							<%
 							} else {
 							%>
-							//<%=dynamicColIndex%>
 							curColumnIndex_<%=cid%> = <%=i%>;
 							<%
 							}
 							if(("id_Dynamic").equals(column.getTalendType())) {
 								dynamicColIndex = i;
                                 %>
-								//<%=dynamicColIndex%>
                                 dynamic_column_count_<%=cid%> = <%=conn.getName()%>.<%=column.getLabel()%>.getColumnCount();
 								if (<%=conn.getName()%>.<%=column.getLabel()%> != null) {
 									bigQueryHelper_<%=cid%>.writeData(<%=conn.getName()%>.<%=column.getLabel()%>, row_<%=cid%>, <%=dynamicColIndex%>);

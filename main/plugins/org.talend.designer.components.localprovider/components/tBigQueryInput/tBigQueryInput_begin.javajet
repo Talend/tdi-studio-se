@@ -240,14 +240,13 @@
 		%>
 		String pageToken_<%=cid%> = null;
 		//Dynamic start
-		//Dynamic start
 
 		<%
 		
 		if(isDynamic){
 		%>
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Input/BigQuery/BigQueryHelper_Oauth.javajet"%>
-		BigQueryHelper_<%=cid%> helper = new BigQueryHelper_<%=cid%>();
+		BigQueryHelper_<%=cid%> helper_<%=cid%> = new BigQueryHelper_<%=cid%>();
 		com.google.api.services.bigquery.model.TableSchema schema_<%=cid%> = bigqueryclient_<%=cid%>
 						.jobs().getQueryResults(PROJECT_ID_<%=cid%>, insert_<%=cid%>.getJobReference().getJobId()).execute().getSchema();
 		routines.system.Dynamic dcg_<%=cid%> =  new routines.system.Dynamic();
@@ -380,7 +379,7 @@
 		if(isDynamic){
 		%>
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Input/BigQuery/BigQueryHelper_ServiceAccount.javajet"%>
-		BigQueryHelper_<%=cid%> helper = new BigQueryHelper_<%=cid%>();
+		BigQueryHelper_<%=cid%> helper_<%=cid%> = new BigQueryHelper_<%=cid%>();
 		com.google.cloud.bigquery.Schema schema_<%=cid%> = result_<%=cid%>.getSchema();
 		routines.system.Dynamic dcg_<%=cid%> =  new routines.system.Dynamic();
 		
@@ -486,7 +485,7 @@
 								if(("Dynamic").equals(typeToGenerate)) {
 									%>
 									    <%=connName%>.<%=columnName%> = dcg_<%=cid%>;
-										helper.readColumnsFromBigQuery(<%=connName%>.<%=columnName%>, field_<%=cid %>, fixedColumnCount_<%=cid%>, true);
+										helper_<%=cid%>.readColumnsFromBigQuery(<%=connName%>.<%=columnName%>, field_<%=cid %>, fixedColumnCount_<%=cid%>, true);
 									<%
 								} else {
 								%>
