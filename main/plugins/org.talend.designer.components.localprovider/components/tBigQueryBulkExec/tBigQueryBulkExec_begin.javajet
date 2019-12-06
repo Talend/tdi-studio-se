@@ -574,15 +574,16 @@
 		loadJobBuilder_<%=cid%>.setDestinationTable(tableId_<%=cid%>);
                 com.google.cloud.bigquery.CsvOptions.Builder csvOptions_<%=cid%> = com.google.cloud.bigquery.CsvOptions.newBuilder();
 		csvOptions_<%=cid%>.setAllowQuotedNewLines(true);
-																				
+		csvOptions_<%=cid%>.setSkipLeadingRows(<%=ElementParameterParser.getValue(node, "__GS_FILE_HEADER__")%>);																		
 		<%if("true".equals(ElementParameterParser.getValue(node, "__SET_FIELD_DELIMITER__"))) {
         %>
-         	loadJobBuilder_<%=cid%>.setFormatOptions(csvOptions_<%=cid%>.setFieldDelimiter(<%=fieldDelimiter%>).build());
+         	csvOptions_<%=cid%>.setFieldDelimiter(<%=fieldDelimiter%>);
         <%
         }
         %>		
 		
-		loadJobBuilder_<%=cid%>.setNullMarker("\\N");																
+		loadJobBuilder_<%=cid%>.setNullMarker("\\N");
+		loadJobBuilder_<%=cid%>.setFormatOptions(csvOptions_<%=cid%>.build());															
 		com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(loadJobBuilder_<%=cid%>.build()));
 		job_<%=cid%> = job_<%=cid%>.waitFor(com.google.cloud.RetryOption.initialRetryDelay(org.threeten.bp.Duration.ofSeconds(1)));
 		if (job_<%=cid%> != null && job_<%=cid%>.getStatus().getError() == null) {
