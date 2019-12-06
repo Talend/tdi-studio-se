@@ -480,13 +480,6 @@ public class QueryGuessCommand extends Command {
         String newQuery = null;
         // Need update schema if table type as calculation view for SAP Hana Database
         updateSchema(dbType, newOutputMetadataTable);
-        if (node != null && node instanceof INode) {
-            process = ((INode) node).getProcess();
-            boolean isContextMode = ContextParameterUtils.containContextVariables(schema);
-            if (isContextMode) {
-                schema = JavaProcessUtil.getContextOriginalValue(process, schema);
-            }
-        }
         realTableName = QueryUtil.getTableName(node, newOutputMetadataTable, schema, dbType, realTableName);
 
         if (realTableName.startsWith(TalendTextUtils.QUOTATION_MARK) && realTableName.endsWith(TalendTextUtils.QUOTATION_MARK)
