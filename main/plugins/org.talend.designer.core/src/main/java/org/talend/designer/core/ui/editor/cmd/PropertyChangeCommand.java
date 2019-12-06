@@ -584,6 +584,24 @@ public class PropertyChangeCommand extends Command {
                     }
                 }
             }
+            String[] listItemsShowIf = testedParam.getListItemsShowIf();
+            if (listItemsShowIf != null && listItemsShowIf.length > 0) {
+                for (String itemShowIf : listItemsShowIf) {
+                    if (itemShowIf != null && itemShowIf.contains(currentParam.getName())) {
+                        toUpdate = true;
+                        break;
+                    }
+                }
+            }
+            String[] listItemsNotShowIf = testedParam.getListItemsNotShowIf();
+            if (listItemsNotShowIf != null && listItemsNotShowIf.length > 0) {
+                for (String itemNotShowIf : listItemsNotShowIf) {
+                    if (itemNotShowIf != null && itemNotShowIf.contains(currentParam.getName())) {
+                        toUpdate = true;
+                        break;
+                    }
+                }
+            }
             if (testedParam.getFieldType() == EParameterFieldType.TABLE) {
                 String[] tmpShowIfs = testedParam.getListItemsShowIf();
                 if (tmpShowIfs != null) {
