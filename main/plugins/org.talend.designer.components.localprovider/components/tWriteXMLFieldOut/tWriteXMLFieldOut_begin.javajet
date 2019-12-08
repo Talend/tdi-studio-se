@@ -119,6 +119,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 						%>
 						java.util.List<java.util.Map<String,String>> flows;
 						java.lang.Exception lastException;
+						java.lang.Error lastError;
 						String currentComponent;
 						
 						ThreadXMLField_<%=cid%>(java.util.Queue q) {
@@ -138,6 +139,11 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 						public java.lang.Exception getLastException() {
 							return this.lastException;
 						}
+						
+						public java.lang.Error getLastError() {
+							return this.lastError;
+						}
+						
 						public String getCurrentComponent() {
 							return this.currentComponent;
 						}
@@ -149,6 +155,8 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 							} catch (TalendException te) {
 								this.lastException = te.getException();
 								this.currentComponent = te.getCurrentComponent();
+							} catch (java.lang.Error error) {
+								this.lastError = error;
 							}
 						}
 					}

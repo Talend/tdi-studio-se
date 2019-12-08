@@ -220,7 +220,6 @@
       NAME="USE_HINT_OPTIONS"
       FIELD="CHECK"
       NUM_ROW="10"
-      SHOW_IF="DATA_ACTION != 'MERGE'"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -244,6 +243,7 @@
         		<ITEM NAME="INSERT"  VALUE="INSERT"/>
 				<ITEM NAME="UPDATE"  VALUE="UPDATE"/>
 				<ITEM NAME="DELETE"  VALUE="DELETE"/>
+				<ITEM NAME="MERGE"  VALUE="MERGE"/>
         	</ITEMS>
 		</ITEM>
       </ITEMS>

@@ -50,6 +50,7 @@ import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.repository.generic.ui.common.GenericWizardPage;
 import org.talend.repository.generic.ui.context.ContextComposite;
+import org.talend.repository.generic.ui.httpsProxy.HttpsProxyComposite;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IProxyRepositoryService;
 
@@ -95,11 +96,12 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
         dynamicComposite.setLayoutData(createMainFormData(addContextFields));
         dynamicComposite.setWizardPropertyChangeListener(this);
         addCheckListener(dynamicComposite.getChecker());
-
         if (addContextFields) {
             Composite contextParentComp = new Composite(container, SWT.NONE);
             contextParentComp.setLayoutData(createFooterFormData(dynamicComposite));
             contextParentComp.setLayout(new GridLayout());
+            HttpsProxyComposite httpsProxyComposite = new HttpsProxyComposite(contextParentComp, SWT.NONE);
+            httpsProxyComposite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
             ContextComposite contextComp = addContextFields(contextParentComp);
             contextComp.addPropertyChangeListener(dynamicComposite);
             contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));

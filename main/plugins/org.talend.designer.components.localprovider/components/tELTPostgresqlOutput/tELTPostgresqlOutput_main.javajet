@@ -30,7 +30,7 @@ imports="
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
 	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
 	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
-	
+	boolean useUpdateStatement="true".equals(ElementParameterParser.getValue(node, "__USE_UPDATE_STATEMENT__"));
 	%>
 	String select_query_<%=cid %> = null;	
 	String tableName_<%=cid%> = null;
@@ -263,7 +263,13 @@ for(Column colStmt:stmtStructure){
 		}else{
 			insertColName.append(colStmt.getName()+suffix);
 			insertValueStmt.append(colStmt.getValue()+suffix);
-			updateSetStmt.append(colStmt.getName()+"=(\"+select_query_"+ cid +".replaceFirst(java.util.regex.Pattern.quote(selectQueryColumnsName_"+ cid +"),routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "])+\")" +suffix);
+			if(useUpdateStatement){
+				if(!colStmt.getColumn().isKey()){
+					updateSetStmt.append(colStmt.getName()+"=\"+routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "]+\"" +suffix);
+				}
+			}else{
+				updateSetStmt.append(colStmt.getName()+"=(\"+select_query_"+ cid +".replaceFirst(java.util.regex.Pattern.quote(selectQueryColumnsName_"+ cid +"),routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "])+\")" +suffix);
+			}
 		}
 	}
 	counterOuter ++;
@@ -278,16 +284,34 @@ for(Column colStmt:stmtStructure){
 <%
 	}else if (("UPDATE").equals(dataAction)){
 %>
-	String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> "
 <%
-		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+		if(useUpdateStatement){
 %>
-		+"  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
+			String updateQuery_<%=cid %> = select_query_<%=cid %>;	
+<%
+		}else{
+%>
+			String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> ";
 <%
 		}
+		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
+			if(useUpdateStatement){
 %>
-	;
-	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
+				if(select_query_<%=cid %>.indexOf("WHERE")==-1){
+					updateQuery_<%=cid %> +="  WHERE ";
+				}else{
+					updateQuery_<%=cid %> +="  AND ";
+				} 
+				updateQuery_<%=cid %>+= <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>;
+<%
+			}else{
+%>
+				updateQuery_<%=cid %> += "  WHERE " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>;
+<%
+			}
+		}
+%>
+		pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
 
 <%		
 	}else if (("DELETE").equals(dataAction)){

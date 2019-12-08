@@ -1266,8 +1266,8 @@ public class Component extends AbstractBasicComponent {
         if(!CheckLogManamger.isSelectLog4j2()) {
             //TODO consider to let it works for all jobs, not only for tcompv0 components, mean move the code to ReplaceNodeInProcess and UpdateLog4jJarUtils when not log4j2
             moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-log4j12/1.7.25");
+            componentImportNeedsList.add(moduleNeeded);
         }
-        componentImportNeedsList.add(moduleNeeded);
         moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.28.0");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
