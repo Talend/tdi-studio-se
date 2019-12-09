@@ -3540,6 +3540,12 @@
       </page>
       <page
             category="general"
+            class="org.talend.repository.preference.ArtifactProxySettingPage"
+            id="org.talend.repository.preference.ArtifactProxySettingPage"
+            title="%projectSetting.ArtifactProxy">
+      </page>
+      <page
+            category="general"
             class="org.talend.repository.preference.MetadataTalendTypePreferencePage"
             id="org.talend.repository.preference.MetadataTalendTypePreferencePage"
             title="%projectSetting.talendType">
