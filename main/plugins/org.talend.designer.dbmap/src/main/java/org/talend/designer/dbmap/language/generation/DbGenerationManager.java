@@ -598,29 +598,27 @@ public abstract class DbGenerationManager {
         if (expression == null) {
             return null;
         }
-        if (DEFAULT_TAB_SPACE_STRING.equals(tabSpaceString)) {
-            List<String> contextList = getContextList(component);
-            boolean haveReplace = false;
-            for (String context : contextList) {
+        List<String> contextList = getContextList(component);
+        boolean haveReplace = false;
+        for (String context : contextList) {
+            if (expression.contains(context)) {
+                expression = expression.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                haveReplace = true;
+            }
+        }
+        if (!haveReplace) {
+            List<String> connContextList = getConnectionContextList(component);
+            for (String context : connContextList) {
                 if (expression.contains(context)) {
                     expression = expression.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    haveReplace = true;
                 }
             }
-            if (!haveReplace) {
-                List<String> connContextList = getConnectionContextList(component);
-                for (String context : connContextList) {
-                    if (expression.contains(context)) {
-                        expression = expression.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    }
-                }
-            }
-            Set<String> globalMapList = getGlobalMapList(component, expression);
-            for (String globalMapStr : globalMapList) {
-                String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
-                String replacement = parser.getGlobalMapReplacement(globalMapStr);
-                expression = expression.replaceAll(regex, "\" +" + replacement + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ 
-            }
+        }
+        Set<String> globalMapList = getGlobalMapList(component, expression);
+        for (String globalMapStr : globalMapList) {
+            String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
+            String replacement = parser.getGlobalMapReplacement(globalMapStr);
+            expression = expression.replaceAll(regex, "\" +" + replacement + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return expression;
     }
