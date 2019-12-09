@@ -35,6 +35,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.routines.RoutineLibraryMananger;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.repository.items.importexport.handlers.imports.IImportResourcesHandler;
 import org.talend.repository.items.importexport.handlers.imports.ImportRepTypeHandler;
@@ -228,13 +229,13 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
             if (librairesManagerService != null) {
                 try {
                     for(URL url : jarsToDeploy) {
-                        IPath path = new Path(url.getPath());
-                        boolean exist = librairesManagerService.retrieve(path.lastSegment(), path.removeLastSegments(1).toOSString(), new NullProgressMonitor());
-                        if(!exist) {
+                        if(RoutineLibraryMananger.getInstance().needDeploy(url)) {
                             libService.deployLibrary(url, false);
                         }
                     }
                 } catch (IOException e) {
+                    ExceptionHandler.process(e);
+                } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
             }else {
@@ -244,7 +245,7 @@ public class RoutineImportHandler extends ImportRepTypeHandler implements IImpor
                     ExceptionHandler.process(e);
                 }
             }
-            
+
         }
         jarsToDeploy.clear();
     }
