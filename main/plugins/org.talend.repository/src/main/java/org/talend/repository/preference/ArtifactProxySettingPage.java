@@ -14,11 +14,17 @@ package org.talend.repository.preference;
 
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
+import org.talend.core.ui.services.IHadoopUiService;
+import org.talend.core.ui.services.IPreferenceForm;
 import org.talend.repository.preference.AbstractArtifactProxySettingForm.ICheckListener;
 
 public class ArtifactProxySettingPage extends ProjectSettingPage {
+
+    private IPreferenceForm dynamicDistributionPrefForm;
 
     private AbstractArtifactProxySettingForm proxySettingForm;
 
@@ -58,9 +64,20 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
         };
          
 
-        ArtifactProxySettingForm existingConfigForm = new ArtifactProxySettingForm(parent, SWT.NONE, this);
+        ArtifactProxySettingForm existingConfigForm = new ArtifactProxySettingForm(parent, SWT.NONE);
         existingConfigForm.setCheckListener(checkListener);
         setCurrentForm(existingConfigForm);
+        // dynamic distribution group begin
+        IHadoopUiService hadoopUiService = IHadoopUiService.getInstance();
+        if (hadoopUiService != null) {
+            Group dynamicDistriutionGroup = new Group(parent, SWT.NONE);
+            dynamicDistriutionGroup.setText("Dynamic Distribution Proxy Settings");
+            dynamicDistriutionGroup.setLayout(new FillLayout());
+            IPreferenceForm dynamicDistributionPrefForm = hadoopUiService
+                    .createDynamicDistributionPrefForm(dynamicDistriutionGroup, this);
+
+        }
+
         boolean isValid = getCurrentForm().isComplete();
         setValid(isValid);
 

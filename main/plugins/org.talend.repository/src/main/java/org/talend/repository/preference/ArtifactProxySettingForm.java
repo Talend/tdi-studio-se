@@ -2,7 +2,6 @@ package org.talend.repository.preference;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -14,8 +13,6 @@ import org.eclipse.swt.widgets.Text;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.nexus.ArtifactRepositoryBean.NexusType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.ui.services.IHadoopUiService;
-import org.talend.core.ui.services.IPreferenceForm;
 import org.talend.repository.i18n.Messages;
 
 public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
@@ -38,11 +35,8 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
 
     private Text repositoryIdText;
 
-    private IPreferenceForm dynamicDistributionPrefForm;
-
-    public ArtifactProxySettingForm(Composite parent, int style, ProjectSettingPage page) {
+    public ArtifactProxySettingForm(Composite parent, int style) {
         super(parent, style);
-        this.page = page;
         createControl();
         addListeners();
     }
@@ -142,23 +136,6 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         repositoryIdText.setLayoutData(formData);
         // talend lib group end =============================
 
-        // dynamic distribution group begin
-        IHadoopUiService hadoopUiService = IHadoopUiService.getInstance();
-        if (hadoopUiService != null) {
-            Group dynamicDistriutionGroup = new Group(container, SWT.NONE);
-            dynamicDistriutionGroup.setText("Dynamic Distribution Proxy Settings");
-            formData = new FormData();
-            formData.top = new FormAttachment(talendLibgroup, 5, SWT.BOTTOM);
-            formData.left = new FormAttachment(talendLibgroup, 0, SWT.LEFT);
-            formData.right = new FormAttachment(talendLibgroup, 0, SWT.RIGHT);
-            formData.bottom = new FormAttachment(100);
-            dynamicDistriutionGroup.setLayoutData(formData);
-            dynamicDistriutionGroup.setLayout(new FillLayout());
-            IPreferenceForm dynamicDistributionPrefForm = hadoopUiService
-                    .createDynamicDistributionPrefForm(dynamicDistriutionGroup, page);
-            this.getCheckListener();
-
-        }
         // dynamic distribution group begin
     }
 
