@@ -24,6 +24,8 @@
 	String action = ElementParameterParser.getValue(node, "__ACTION__");
 	String version = ElementParameterParser.getValue(node, "__CLUSTER_VERSION__");
 	String zone = ElementParameterParser.getValue(node, "__ZONE__");
+	String region = ElementParameterParser.getValue(node, "__REGION__");
+
 	
 	String masterNumInstances = ElementParameterParser.getValue(node, "__MASTER_NUM_INSTANCES__");
 	String masterInstanceType = ElementParameterParser.getValue(node, "__MASTER_INSTANCE_TYPE__");
@@ -67,11 +69,17 @@
 <%
 		}
 %>
-		org.talend.bigdata.manage.google.dataproc.DataprocCreateCluster.newBuilder() //
+        final String region_<%=cid %> = <%=region%>;
+        final String zone_<%=cid %> = <%=zone%>;
+
+        if (!"global".equals(region_<%=cid %>) && !zone_<%=cid %>.startsWith(region_<%=cid %>)) {
+            throw new IllegalArgumentException("Selected zone should fit for the selected region");
+        }
+        org.talend.bigdata.manage.google.dataproc.DataprocCreateCluster.newBuilder() //
          .withProjectId(<%=projectId%>) //
-			.withClusterName(<%=clusterId%>) //
-         .withRegion("global") //
-         .withZone(<%=zone%>) //
+         .withClusterName(<%=clusterId%>) //
+         .withRegion(region_<%=cid %>) //
+         .withZone(zone_<%=cid %>) //
          .withVersion(<%=version%>) //
          .withMasterNumInstances(<%=masterNumInstances%>) //
          .withMasterBootDiskSizeGb(<%=masterDiskSize%>) //
