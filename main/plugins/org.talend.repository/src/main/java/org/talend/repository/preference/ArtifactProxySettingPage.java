@@ -107,11 +107,13 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
 
     @Override
     protected void performDefaults() {
+        if (!dynamicDistributionPrefForm.performDefaults()) {
+            return;
+        }
         AbstractArtifactProxySettingForm currentForm = getCurrentForm();
         if (currentForm != null) {
             currentForm.performDefaults();
         }
-        dynamicDistributionPrefForm.performDefaults();
         super.performDefaults();
     }
 

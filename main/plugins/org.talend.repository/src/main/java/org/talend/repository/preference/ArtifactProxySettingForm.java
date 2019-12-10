@@ -209,99 +209,34 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         if (isReadonly) {
             return super.performApply();
         }
-        /*
-         * try { IDynamicDistributionsGroup selectedSetupDynamicDistriGroup = getSelectedSetupDynamicDistriGroup(); if
-         * (selectedSetupDynamicDistriGroup != null) { IDynamicDistributionPreference dynamicDistributionPreference =
-         * selectedSetupDynamicDistriGroup
-         * .getDynamicDistributionPreference(ProjectManager.getInstance().getCurrentProject()); if
-         * (dynamicDistributionPreference != null) { boolean changed = false;
-         * 
-         * boolean isAnonymous = anonymousBtn.getSelection(); changed = changed ||
-         * dynamicDistributionPreference.isAnonymous() != isAnonymous;
-         * dynamicDistributionPreference.setAnonymous(isAnonymous);
-         * 
-         * boolean overrideDefaultSetup = overrideDefaultSetupBtn.getSelection(); changed = changed ||
-         * dynamicDistributionPreference.overrideDefaultSetup() != overrideDefaultSetup;
-         * dynamicDistributionPreference.setOverrideDefaultSetup(overrideDefaultSetup);
-         * 
-         * String password = passwordText.getText(); changed = changed ||
-         * !StringUtils.equals(dynamicDistributionPreference.getPassword(), password);
-         * dynamicDistributionPreference.setPassword(password);
-         * 
-         * String repository = repositoryText.getText(); changed = changed ||
-         * !StringUtils.equals(dynamicDistributionPreference.getRepository(), repository);
-         * dynamicDistributionPreference.setRepository(repository);
-         * 
-         * String username = userText.getText(); changed = changed ||
-         * !StringUtils.equals(dynamicDistributionPreference.getUsername(), username);
-         * dynamicDistributionPreference.setUsername(username);
-         * 
-         * dynamicDistributionPreference.save(); isComplete();
-         * 
-         * if (changed) { reloadDynamicDistributions(); } } } } catch (Throwable e) { ExceptionHandler.process(e);
-         * String message = e.getMessage(); if (StringUtils.isEmpty(message)) { message =
-         * Messages.getString("ExceptionDialog.message.empty"); //$NON-NLS-1$ }
-         * ExceptionMessageDialog.openError(getShell(), Messages.getString("ExceptionDialog.title"), message, e);
-         * //$NON-NLS-1$ }
-         */
         return super.performApply();
     }
 
     @Override
     public void performDefaults() {
-        /*
-         * boolean isReadonly = isReadonly(); if (isReadonly) { super.performDefaults(); return; } boolean agree =
-         * MessageDialog.openConfirm(getShell(),
-         * Messages.getString("DynamicDistributionPreferenceForm.performDefaults.confirm.title"), //$NON-NLS-1$
-         * Messages.getString("DynamicDistributionPreferenceForm.performDefaults.confirm.message")); //$NON-NLS-1$ if
-         * (!agree) { return; } try { IDynamicDistributionsGroup selectedSetupDynamicDistriGroup =
-         * getSelectedSetupDynamicDistriGroup(); if (selectedSetupDynamicDistriGroup != null) {
-         * IDynamicDistributionPreference dynamicDistributionPreference = selectedSetupDynamicDistriGroup
-         * .getDynamicDistributionPreference(ProjectManager.getInstance().getCurrentProject()); if
-         * (dynamicDistributionPreference != null) { boolean changed = false;
-         * 
-         * boolean isAnonymous = dynamicDistributionPreference.getDefaultIsAnonymous(); changed = changed ||
-         * dynamicDistributionPreference.isAnonymous() != isAnonymous;
-         * dynamicDistributionPreference.setAnonymous(isAnonymous);
-         * 
-         * boolean overrideDefaultSetup = dynamicDistributionPreference.getDefaultOverrideDefaultSetup(); changed =
-         * changed || dynamicDistributionPreference.overrideDefaultSetup() != overrideDefaultSetup;
-         * dynamicDistributionPreference.setOverrideDefaultSetup(overrideDefaultSetup);
-         * 
-         * String password = dynamicDistributionPreference.getDefaultPassword(); changed = changed ||
-         * !StringUtils.equals(dynamicDistributionPreference.getPassword(), password);
-         * dynamicDistributionPreference.setPassword(password);
-         * 
-         * String repository = dynamicDistributionPreference.getDefaultRepository(); changed = changed ||
-         * !StringUtils.equals(dynamicDistributionPreference.getRepository(), repository);
-         * dynamicDistributionPreference.setRepository(repository);
-         * 
-         * String username = dynamicDistributionPreference.getDefaultUsername(); changed = changed ||
-         * !StringUtils.equals(dynamicDistributionPreference.getUsername(), username);
-         * dynamicDistributionPreference.setUsername(username);
-         * 
-         * dynamicDistributionPreference.save(); loadRepositorySetupGroup(); isComplete();
-         * 
-         * if (changed) { reloadDynamicDistributions(); } } } } catch (Throwable e) { ExceptionHandler.process(e);
-         * String message = e.getMessage(); if (StringUtils.isEmpty(message)) { message =
-         * Messages.getString("ExceptionDialog.message.empty"); //$NON-NLS-1$ }
-         * ExceptionMessageDialog.openError(getShell(), Messages.getString("ExceptionDialog.title"), message, e);
-         * //$NON-NLS-1$ }
-         */
         super.performDefaults();
+        talendLibRestore();
     }
 
-    /*
-     * private void reloadDynamicDistributions() throws Throwable { final Throwable throwable[] = new Throwable[1];
-     * ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(getShell()); progressDialog.run(true, false, new
-     * IRunnableWithProgress() {
-     * 
-     * @Override public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-     * monitor.beginTask(Messages.getString("DynamicDistributionPreferenceForm.progress.reload"), //$NON-NLS-1$
-     * IProgressMonitor.UNKNOWN); try { BigDataBasicUtil.reloadAllDynamicDistributions(monitor); } catch (Exception e) {
-     * throwable[0] = e; } } }); if (throwable[0] != null) { throw throwable[0]; } }
-     */
-
+    private void talendLibRestore() {
+        urlText.setText("");
+        urlText.setEnabled(false);
+        usernameText.setText("");
+        usernameText.setEnabled(false);
+        talendLibPasswordText.setText("");
+        talendLibPasswordText.setEnabled(false);
+        repositoryIdText.setText("");
+        repositoryIdText.setEnabled(false);
+        artifactType.setText(ArtifactRepositoryBean.NexusType.NEXUS_3.name());
+        enableProxySettingBtn.setSelection(false);
+        prefManager.setValue(TalendLibsServerManager.ENABLE_PROXY_SETTING, false);
+        prefManager.setValue(TalendLibsServerManager.NEXUS_PROXY_URL, "");
+        prefManager.setValue(TalendLibsServerManager.NEXUS_PROXY_USERNAME, "");
+        prefManager.setValue(TalendLibsServerManager.NEXUS_PROXY_PASSWORD, "");
+        prefManager.setValue(TalendLibsServerManager.NEXUS_PROXY_REPOSITORY_ID, "");
+        prefManager.setValue(TalendLibsServerManager.NEXUS_PROXY_TYPE, "");
+        prefManager.save();
+    }
     private boolean isReadonly() {
         return ProxyRepositoryFactory.getInstance().isUserReadOnlyOnCurrentProject();
     }
@@ -354,18 +289,6 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         prefManager.setValue(TalendLibsServerManager.NEXUS_PROXY_REPOSITORY_ID, repositoryId);
         prefManager.setValue(TalendLibsServerManager.NEXUS_PROXY_TYPE, type);
         prefManager.save();
-        /*
-         * if (enableFlag) { System.setProperty(TalendLibsServerManager.NEXUS_PROXY_URL, url);
-         * System.setProperty(TalendLibsServerManager.NEXUS_PROXY_USERNAME, username);
-         * System.setProperty(TalendLibsServerManager.NEXUS_PROXY_PASSWORD, password);
-         * System.setProperty(TalendLibsServerManager.NEXUS_PROXY_REPOSITORY_ID, repositoryId);
-         * System.setProperty(TalendLibsServerManager.NEXUS_PROXY_TYPE, type); } else {
-         * System.clearProperty(TalendLibsServerManager.NEXUS_PROXY_URL);
-         * System.clearProperty(TalendLibsServerManager.NEXUS_PROXY_USERNAME);
-         * System.clearProperty(TalendLibsServerManager.NEXUS_PROXY_PASSWORD);
-         * System.clearProperty(TalendLibsServerManager.NEXUS_PROXY_REPOSITORY_ID);
-         * System.clearProperty(TalendLibsServerManager.NEXUS_PROXY_TYPE); }
-         */
     }
 
 }
