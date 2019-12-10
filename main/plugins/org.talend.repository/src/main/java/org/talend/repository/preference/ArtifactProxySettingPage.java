@@ -15,9 +15,10 @@ package org.talend.repository.preference;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
 import org.talend.core.ui.services.IHadoopUiService;
 import org.talend.core.ui.services.IPreferenceForm;
 import org.talend.repository.preference.AbstractArtifactProxySettingForm.ICheckListener;
@@ -36,8 +37,10 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
 
     @Override
     protected Control createContents(Composite parent) {
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayout(new GridLayout(1, true));
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-        
         AbstractArtifactProxySettingForm.ICheckListener checkListener = new ICheckListener() {
 
             @Override
@@ -64,22 +67,30 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
         };
          
 
-        ArtifactProxySettingForm existingConfigForm = new ArtifactProxySettingForm(parent, SWT.NONE);
+        ArtifactProxySettingForm existingConfigForm = new ArtifactProxySettingForm(container, SWT.NONE);
+        GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
+        existingConfigForm.setLayoutData(layoutData);
         existingConfigForm.setCheckListener(checkListener);
         setCurrentForm(existingConfigForm);
         // dynamic distribution group begin
         IHadoopUiService hadoopUiService = IHadoopUiService.getInstance();
         if (hadoopUiService != null) {
-            Group dynamicDistriutionGroup = new Group(parent, SWT.NONE);
-            dynamicDistriutionGroup.setText("Dynamic Distribution Proxy Settings");
+            Composite dynamicDistriutionGroup = new Composite(container, SWT.NONE);
+            // dynamicDistriutionGroup.setText("Dynamic Distribution Proxy Settings");
             dynamicDistriutionGroup.setLayout(new FillLayout());
-            IPreferenceForm dynamicDistributionPrefForm = hadoopUiService
-                    .createDynamicDistributionPrefForm(dynamicDistriutionGroup, this);
 
+            dynamicDistributionPrefForm = hadoopUiService
+                    .createDynamicDistributionPrefForm(dynamicDistriutionGroup, this);
+            layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
+            dynamicDistriutionGroup.setLayoutData(layoutData);
         }
 
         boolean isValid = getCurrentForm().isComplete();
         setValid(isValid);
+
+        Composite placeHolder = new Composite(parent, SWT.NONE);
+        layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        placeHolder.setLayoutData(layoutData);
 
         return existingConfigForm;
     }
@@ -90,6 +101,7 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
         if (currentForm != null) {
             currentForm.performApply();
         }
+        dynamicDistributionPrefForm.performApply();
         super.performApply();
     }
 
@@ -99,6 +111,7 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
         if (currentForm != null) {
             currentForm.performDefaults();
         }
+        dynamicDistributionPrefForm.performDefaults();
         super.performDefaults();
     }
 
