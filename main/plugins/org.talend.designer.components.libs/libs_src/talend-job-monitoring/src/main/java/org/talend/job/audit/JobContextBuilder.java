@@ -82,36 +82,6 @@ public class JobContextBuilder {
         builder.with("status", status);
         return this;
     }
-    
-    public JobContextBuilder connectorParameters(String connectorParameters) {
-        builder.with("connectorParameters", connectorParameters);
-        return this;
-    }
-    
-    public JobContextBuilder schema(String schema) {
-        builder.with("schema", schema);
-        return this;
-    }
-    
-    public JobContextBuilder sourceConnectorId(String sourceConnectorId) {
-        builder.with("sourceConnectorId", sourceConnectorId);
-        return this;
-    }
-    
-    public JobContextBuilder targetConnectorId(String targetConnectorId) {
-        builder.with("targetConnectorId", targetConnectorId);
-        return this;
-    }
-    
-    public JobContextBuilder sourceConnectorType(String sourceConnectorType) {
-        builder.with("sourceConnectorType", sourceConnectorType);
-        return this;
-    }
-    
-    public JobContextBuilder targetConnectorType(String targetConnectorType) {
-        builder.with("targetConnectorType", targetConnectorType);
-        return this;
-    }
 
     public Context build() {
         return builder.build();
