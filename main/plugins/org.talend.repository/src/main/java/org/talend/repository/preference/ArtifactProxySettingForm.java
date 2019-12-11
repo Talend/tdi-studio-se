@@ -3,6 +3,7 @@ package org.talend.repository.preference;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -177,12 +178,12 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         repositoryIdText.setLayoutData(formData);
         // check connection buttion
         checkConnectionBtn = new Button(talendLibgroup, SWT.NONE);
-        checkConnectionBtn.setText("Check Connection");
+        checkConnectionBtn.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.checkConnection"));
         formData = new FormData();
         formData.top = new FormAttachment(repositoryIdText, ALIGN_VERTICAL_INNER, SWT.BOTTOM);
         formData.right = new FormAttachment(100);
         checkConnectionBtn.setLayoutData(formData);
-        // talend lib group end =============================
+        // talend lib group end
     }
 
     private int getMaxLabelWidth(int... pointXs) {
@@ -207,9 +208,8 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
             public void widgetSelected(SelectionEvent e) {
                 ArtifactRepositoryBean serverBean = getServerBean();
                 IRepositoryArtifactHandler repHander = RepositoryArtifactHandlerManager.getRepositoryHandler(serverBean);
-                if (repHander.checkConnection()) {
-                }
-                showCheckConnectionInformation(false, null);
+                TypedReturnCode<HttpResponse> connectionResultAndCode = repHander.getConnectionResultAndCode();
+                showCheckConnectionInformation(true, connectionResultAndCode);
             }
         });
     }
@@ -354,12 +354,13 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         return serverBean;
     }
 
-    private void showCheckConnectionInformation(boolean show, TypedReturnCode<java.sql.Connection> result) {
+    private void showCheckConnectionInformation(boolean show, TypedReturnCode<HttpResponse> result) {
         if (!result.isOk()) {
-            String mainMsg = Messages.getString("AuditProjectSettingPage.DBConfig.CheckConnection.failed"); //$NON-NLS-1$
+            String mainMsg = Messages.getString("ProjectSettingPage.ArtifactProxySetting.connectionFailureMsg"); //$NON-NLS-1$
             new ErrorDialogWidthDetailArea(getShell(), RepositoryPlugin.PLUGIN_ID, mainMsg, result.getMessage());
         } else if (result.isOk() && show) {
-            MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.DBConfig.CheckButtonText"), //$NON-NLS-1$
+            MessageDialog.openInformation(getShell(),
+                    Messages.getString("ProjectSettingPage.ArtifactProxySetting.checkConnection"), //$NON-NLS-1$
                     result.getMessage());
         }
     }
