@@ -17,6 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.talend.core.ui.services.IHadoopUiService;
@@ -28,6 +29,8 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
     private IPreferenceForm dynamicDistributionPrefForm;
 
     private AbstractArtifactProxySettingForm proxySettingForm;
+
+    Button checkConnectionBtn;
 
     @Override
     public void refresh() {
@@ -91,7 +94,6 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
         Composite placeHolder = new Composite(parent, SWT.NONE);
         layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
         placeHolder.setLayoutData(layoutData);
-
         return existingConfigForm;
     }
 
@@ -136,5 +138,4 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
     private AbstractArtifactProxySettingForm getCurrentForm() {
         return this.proxySettingForm;
     }
-
 }

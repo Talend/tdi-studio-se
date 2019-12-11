@@ -124,4 +124,5 @@ public abstract class AbstractArtifactProxySettingForm extends Composite {
         public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable) throws Exception;
 
     }
+
 }

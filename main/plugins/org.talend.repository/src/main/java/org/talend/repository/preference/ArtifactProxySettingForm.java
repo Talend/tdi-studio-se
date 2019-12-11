@@ -1,10 +1,14 @@
 package org.talend.repository.preference;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -14,12 +18,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.core.nexus.ArtifactRepositoryBean;
 import org.talend.core.nexus.ArtifactRepositoryBean.NexusType;
+import org.talend.core.nexus.IRepositoryArtifactHandler;
+import org.talend.core.nexus.RepositoryArtifactHandlerManager;
 import org.talend.core.nexus.TalendLibsServerManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
+import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
+import org.talend.utils.sugars.TypedReturnCode;
 
 public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
 
@@ -34,6 +43,8 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
     private Text repositoryIdText;
 
     private Button enableProxySettingBtn;
+
+    private Button checkConnectionBtn;
 
     private ProjectPreferenceManager prefManager;
 
@@ -68,6 +79,31 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         formLayout.marginLeft = MARGIN_GROUP;
         formLayout.marginRight = MARGIN_GROUP;
         talendLibgroup.setLayout(formLayout);
+
+        // compute size
+        Label artifactTypeLabel = new Label(talendLibgroup, SWT.NONE);
+        artifactTypeLabel.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.artifactType"));
+        Point artifactTypeLabelSize = artifactTypeLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+
+        Label urlLabel = new Label(talendLibgroup, SWT.NONE);
+        urlLabel.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.url"));
+        Point urlLabelSize = urlLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+
+        Label usernameLabel = new Label(talendLibgroup, SWT.NONE);
+        usernameLabel.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.username"));
+        Point usernameLabelSize = usernameLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+
+        Label talendLibpasswordLabel = new Label(talendLibgroup, SWT.NONE);
+        talendLibpasswordLabel.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.password"));
+        Point talendLibpasswordLabelSize = talendLibpasswordLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+
+        Label repositoryIdLabel = new Label(talendLibgroup, SWT.NONE);
+        repositoryIdLabel.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.repositoryId"));
+        Point repositoryIdLabelSize = repositoryIdLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+
+        int maxLabelWidth = getMaxLabelWidth(artifactTypeLabelSize.x, urlLabelSize.x, usernameLabelSize.x,
+                talendLibpasswordLabelSize.x, repositoryIdLabelSize.x);
+
         // enable checkbox
         enableProxySettingBtn = new Button(talendLibgroup, SWT.CHECK);
         enableProxySettingBtn
@@ -77,11 +113,10 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         formData.left = new FormAttachment(0);
         enableProxySettingBtn.setLayoutData(formData);
         // artifact type
-        Label artifactTypeLabel = new Label(talendLibgroup, SWT.NONE);
-        artifactTypeLabel.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.artifactType"));
         formData = new FormData();
         formData.left = new FormAttachment(talendLibgroup, 0, SWT.LEFT);
         formData.top = new FormAttachment(enableProxySettingBtn, ALIGN_VERTICAL_INNER, SWT.BOTTOM);
+        formData.width = maxLabelWidth;
         artifactTypeLabel.setLayoutData(formData);
         artifactType = new Combo(talendLibgroup, SWT.PUSH);
         for (NexusType type : ArtifactRepositoryBean.NexusType.values()) {
@@ -93,11 +128,10 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         artifactType.setLayoutData(formData);
         artifactType.setText(ArtifactRepositoryBean.NexusType.NEXUS_3.name());
         // URL
-        Label urlLabel = new Label(talendLibgroup, SWT.NONE);
-        urlLabel.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.url"));
         formData = new FormData();
         formData.top = new FormAttachment(artifactType, ALIGN_VERTICAL_INNER, SWT.BOTTOM);
         formData.left = new FormAttachment(artifactTypeLabel, 0, SWT.LEFT);
+        formData.width = maxLabelWidth;
         urlLabel.setLayoutData(formData);
         urlText = new Text(talendLibgroup, SWT.BORDER);
         formData = new FormData();
@@ -106,12 +140,11 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         formData.right = new FormAttachment(100);
         urlText.setLayoutData(formData);
         // username
-        Label usernameLabel = new Label(talendLibgroup, SWT.NONE);
-        usernameLabel.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.username"));
         formData = new FormData();
         formData.top = new FormAttachment(urlText, ALIGN_VERTICAL_INNER, SWT.BOTTOM);
         formData.left = new FormAttachment(artifactTypeLabel, 0, SWT.LEFT);
         usernameLabel.setLayoutData(formData);
+        formData.width = maxLabelWidth;
         usernameText = new Text(talendLibgroup, SWT.BORDER);
         formData = new FormData();
         formData.top = new FormAttachment(usernameLabel, 0, SWT.CENTER);
@@ -119,11 +152,10 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         formData.right = new FormAttachment(100);
         usernameText.setLayoutData(formData);
         // password
-        Label talendLibpasswordLabel = new Label(talendLibgroup, SWT.NONE);
-        talendLibpasswordLabel.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.password"));
         formData = new FormData();
         formData.top = new FormAttachment(usernameText, ALIGN_VERTICAL_INNER, SWT.BOTTOM);
         formData.left = new FormAttachment(artifactTypeLabel, 0, SWT.LEFT);
+        formData.width = maxLabelWidth;
         talendLibpasswordLabel.setLayoutData(formData);
         talendLibPasswordText = new Text(talendLibgroup, SWT.BORDER | SWT.PASSWORD);
         formData = new FormData();
@@ -132,11 +164,10 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         formData.right = new FormAttachment(100);
         talendLibPasswordText.setLayoutData(formData);
         // repository id
-        Label repositoryIdLabel = new Label(talendLibgroup, SWT.NONE);
-        repositoryIdLabel.setText(Messages.getString("ProjectSettingPage.ArtifactProxySetting.repositoryId"));
         formData = new FormData();
         formData.top = new FormAttachment(talendLibPasswordText, ALIGN_VERTICAL_INNER, SWT.BOTTOM);
         formData.left = new FormAttachment(artifactTypeLabel, 0, SWT.LEFT);
+        formData.width = maxLabelWidth;
         repositoryIdLabel.setLayoutData(formData);
         repositoryIdText = new Text(talendLibgroup, SWT.BORDER);
         formData = new FormData();
@@ -144,9 +175,20 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         formData.left = new FormAttachment(repositoryIdLabel, ALIGN_HORIZON, SWT.RIGHT);
         formData.right = new FormAttachment(100);
         repositoryIdText.setLayoutData(formData);
+        // check connection buttion
+        checkConnectionBtn = new Button(talendLibgroup, SWT.NONE);
+        checkConnectionBtn.setText("Check Connection");
+        formData = new FormData();
+        formData.top = new FormAttachment(repositoryIdText, ALIGN_VERTICAL_INNER, SWT.BOTTOM);
+        formData.right = new FormAttachment(100);
+        checkConnectionBtn.setLayoutData(formData);
         // talend lib group end =============================
     }
 
+    private int getMaxLabelWidth(int... pointXs) {
+        Arrays.sort(pointXs);
+        return pointXs[pointXs.length - 1];
+    }
     private void addListeners() {
         enableProxySettingBtn.addSelectionListener(new SelectionAdapter() {
 
@@ -157,6 +199,17 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
                 } else {
                     disableAllText(false);
                 }
+            }
+        });
+        checkConnectionBtn.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                ArtifactRepositoryBean serverBean = getServerBean();
+                IRepositoryArtifactHandler repHander = RepositoryArtifactHandlerManager.getRepositoryHandler(serverBean);
+                if (repHander.checkConnection()) {
+                }
+                showCheckConnectionInformation(false, null);
             }
         });
     }
@@ -278,7 +331,7 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
     private void save() {
         boolean enableFlag = enableProxySettingBtn.getSelection();
         String url = urlText.getText();
-        String username = urlText.getText();
+        String username = usernameText.getText();
         String password = talendLibPasswordText.getText();
         String repositoryId = repositoryIdText.getText();
         String type = artifactType.getText();
@@ -291,4 +344,23 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         prefManager.save();
     }
 
+    private ArtifactRepositoryBean getServerBean() {
+        ArtifactRepositoryBean serverBean = new ArtifactRepositoryBean();
+        serverBean.setServer(urlText.getText());
+        serverBean.setRepositoryId(repositoryIdText.getText());
+        serverBean.setUserName(usernameText.getText());
+        serverBean.setPassword(talendLibPasswordText.getText());
+        serverBean.setType(artifactType.getText());
+        return serverBean;
+    }
+
+    private void showCheckConnectionInformation(boolean show, TypedReturnCode<java.sql.Connection> result) {
+        if (!result.isOk()) {
+            String mainMsg = Messages.getString("AuditProjectSettingPage.DBConfig.CheckConnection.failed"); //$NON-NLS-1$
+            new ErrorDialogWidthDetailArea(getShell(), RepositoryPlugin.PLUGIN_ID, mainMsg, result.getMessage());
+        } else if (result.isOk() && show) {
+            MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.DBConfig.CheckButtonText"), //$NON-NLS-1$
+                    result.getMessage());
+        }
+    }
 }
