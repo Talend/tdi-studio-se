@@ -3543,6 +3543,9 @@
             class="org.talend.repository.preference.ArtifactProxySettingPage"
             id="org.talend.repository.preference.ArtifactProxySettingPage"
             title="%projectSetting.ArtifactProxy">
+            <tester
+               class="org.talend.repository.preference.ArtifactProxySettingPageTester">
+         </tester>
       </page>
       <page
             category="general"
