@@ -51,6 +51,7 @@
 	List<Map<String, String>> tags = (List<Map<String, String>>) ElementParameterParser.getObjectValue(node, "__TAGS__");
 %>
 
+    final String region_<%=cid %> = <%=region%>;
 <%
 	if("START".equals(action)) {
 %>
@@ -69,7 +70,6 @@
 <%
 		}
 %>
-        final String region_<%=cid %> = <%=region%>;
         final String zone_<%=cid %> = <%=zone%>;
 
         if (!"global".equals(region_<%=cid %>) && !zone_<%=cid %>.startsWith(region_<%=cid %>)) {
@@ -117,8 +117,8 @@
 %>
 		org.talend.bigdata.manage.google.dataproc.DataprocDeleteCluster.newBuilder() //
          .withProjectId(<%=projectId%>) //
-			.withClusterName(<%=clusterId%>) //
-			.withRegion("global") //
+         .withClusterName(<%=clusterId%>) //
+         .withRegion(region_<%=cid %>) //
          .withTalendJobName(projectName + "_" + jobName + "_" + jobVersion.replace(".","_") + "_" + pid) //
 <%
 			if(useServiceAccount) {
