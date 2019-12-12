@@ -548,6 +548,11 @@
       <TEMPLATE_PARAM SOURCE="self.MQRFH2_USR_FIELD" TARGET="In.MQRFH2_USR_FIELD" />
       <!--MQRFH2 header end -->
     </TEMPLATES>
+
+    <IMPORTS>
+      <IMPORT NAME="JNP-CLIENT" MODULE="jnp-client.jar" MVN="mvn:org.talend.libraries/jnp-client/6.0.0" REQUIRED="true"/>
+    </IMPORTS>
+
   </CODEGENERATION>
 
   <RETURNS>

@@ -712,6 +712,10 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
+			<IMPORT NAME="talend-bigdata-launcher-1.1.0-20160405" MODULE="talend-bigdata-launcher-1.1.0-20160405.jar"
+			        MVN="mvn:org.talend.libraries/talend-bigdata-launcher-1.1.0-20160405/6.0.0"
+			        REQUIRED="true" />
+
 			<IMPORT NAME="hadoop-conf-kerberos" MODULE="hadoop-conf-kerberos.jar"
 				MVN="mvn:org.talend.libraries/hadoop-conf-kerberos/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.hadoop.mapr2/lib/hadoop-conf-kerberos.jar"
