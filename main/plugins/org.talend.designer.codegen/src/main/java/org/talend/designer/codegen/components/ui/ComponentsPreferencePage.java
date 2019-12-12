@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -240,7 +240,7 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
 
     protected void addFontAndColorFieldsForDataViewer(Composite composite) {
         IntegerFieldEditor rowLimit = new IntegerFieldEditor(IComponentPreferenceConstant.LIMIT,
-                Messages.getString("ComponentsPreferencePage.rowLimit"), composite);//$NON-NLS-1$ 
+                Messages.getString("ComponentsPreferencePage.rowLimit"), composite);//$NON-NLS-1$
         rowLimit.setValidRange(1, 1000);
         addField(rowLimit);
         Text textControl = rowLimit.getTextControl(composite);
@@ -345,7 +345,7 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#initialize()
      */
     @Override
@@ -359,7 +359,7 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performDefaults()
      */
     @Override

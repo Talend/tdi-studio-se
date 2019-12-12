@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,9 +27,9 @@ import org.talend.utils.network.FreePortFinder;
 
 /**
  * Manage all RunProcess contexts. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class RunProcessContextManager {
 
@@ -87,7 +87,7 @@ public class RunProcessContextManager {
 
     /**
      * Getter for activeContext.
-     * 
+     *
      * @return the activeContext
      */
     public RunProcessContext getActiveContext() {
@@ -96,7 +96,7 @@ public class RunProcessContextManager {
 
     /**
      * Sets the activeProcess.
-     * 
+     *
      * @param activeContext the activeContext to set
      */
     public void setActiveProcess(IProcess2 activeProcess) {
@@ -124,7 +124,7 @@ public class RunProcessContextManager {
 
     /**
      * DOC amaumont Comment method "getRunProcessContext".
-     * 
+     *
      * @param activeProcess
      * @return
      */
@@ -163,7 +163,7 @@ public class RunProcessContextManager {
 
     /**
      * Get a free TCP port to grab statistics on a process.
-     * 
+     *
      * @param context Process monitored.
      * @return A free TCP port, -1 if none is available.
      */
@@ -176,7 +176,7 @@ public class RunProcessContextManager {
 
     /**
      * Get a free TCP port to grab trace on a process.
-     * 
+     *
      * @param context Process monitored.
      * @return A free TCP port, -1 if none is available.
      */
@@ -190,7 +190,7 @@ public class RunProcessContextManager {
 
     /**
      * Get a free TCP port to grab watch on a process.
-     * 
+     *
      * @param context Process monitored.
      * @return A free TCP port, -1 if none is available.
      */

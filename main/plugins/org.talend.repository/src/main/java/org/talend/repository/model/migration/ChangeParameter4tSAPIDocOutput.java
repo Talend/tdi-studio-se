@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,24 +38,24 @@ public class ChangeParameter4tSAPIDocOutput extends
     @Override
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
-        String[] compNames = {"tSAPIDocOutput"};  //$NON-NLS-1$ 
-        
+        String[] compNames = {"tSAPIDocOutput"};  //$NON-NLS-1$
+
     	IComponentConversion conversion = new IComponentConversion() {
 
 	        public void transform(NodeType node) {
 	            if(node == null) {
 	                return;
 	            }
-	            
+
 	        	ElementParameterType parameter = ComponentUtilities.getNodeProperty(node, "FROM_XML"); //$NON-NLS-1$
 	        	if (parameter == null) {
 	        		ComponentUtilities.addNodeProperty(node, "FROM_XML", "CHECK"); //$NON-NLS-1$ $NON-NLS-2$
 	        		ComponentUtilities.setNodeValue(node, "FROM_XML", "true"); //$NON-NLS-1$ $NON-NLS-2$
 	        	}
 	        }
-        
+
     	};
-    	
+
     	for (String name : compNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 

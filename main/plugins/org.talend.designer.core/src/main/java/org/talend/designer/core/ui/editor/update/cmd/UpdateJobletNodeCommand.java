@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,7 +56,7 @@ import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
 
 /**
  * ggu class global comment. Detailled comment
- * 
+ *
  * this function is moved from the class AbstractTalendEditor.
  */
 public class UpdateJobletNodeCommand extends Command {
@@ -288,9 +288,9 @@ public class UpdateJobletNodeCommand extends Command {
 
     /**
      * qzhang Comment method "updateGraphicalNodesSchema".
-     * 
+     *
      * this method is moved from class AbstractTalendEditor.
-     * 
+     *
      * @param evt
      */
     @SuppressWarnings("unchecked")

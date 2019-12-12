@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,7 +29,7 @@ import org.eclipse.swt.graphics.RGB;
 
 /**
  * Detailled comment for this class. <br/> $Id: AbstractSQLScanner.java,v 1.2 2006/10/31 09:54:18 peiqin.hou Exp $
- * 
+ *
  */
 
 public abstract class AbstractSQLScanner extends BufferedRuleBasedScanner {
@@ -46,14 +46,14 @@ public abstract class AbstractSQLScanner extends BufferedRuleBasedScanner {
 
     /**
      * Returns the list of preference keys which define the tokens used in the rules of this scanner.
-     * 
+     *
      * @return String[]
      */
     protected abstract String[] getTokenProperties();
 
     /**
      * Creates the list of rules controlling this scanner.
-     * 
+     *
      * @return List
      */
     protected abstract List createRules();

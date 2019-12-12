@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,9 @@ import org.talend.repository.ui.wizards.ConfigExternalLib.ConfigExternalLibWizar
 
 /**
  * An action used to import external jar. <br/>
- * 
+ *
  * $Id: ImportExternalJARAction.java Mar 16, 20074:20:34 PM bqian $
- * 
+ *
  */
 public class ConfigRoutineLibraryAction extends AContextualAction {
 
@@ -44,7 +44,7 @@ public class ConfigRoutineLibraryAction extends AContextualAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.actions.ITreeContextualAction#init(org.eclipse.jface.viewers.TreeViewer,
      * org.eclipse.jface.viewers.IStructuredSelection)
      */
@@ -100,7 +100,7 @@ public class ConfigRoutineLibraryAction extends AContextualAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.actions.AContextualAction#isVisible()
      */
     @Override
@@ -110,7 +110,7 @@ public class ConfigRoutineLibraryAction extends AContextualAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -68,9 +68,9 @@ import org.talend.repository.ui.dialog.UseDynamicJobSelectionDialog;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public class ProcessController extends AbstractElementPropertySectionController {
 
@@ -208,7 +208,7 @@ public class ProcessController extends AbstractElementPropertySectionController 
 
     /**
      * ftang Comment method "addContextCombo".
-     * 
+     *
      * @param subComposite
      * @param param
      * @param lastControl
@@ -406,7 +406,7 @@ public class ProcessController extends AbstractElementPropertySectionController 
 
     /**
      * DOC nrousseau Comment method "createComboCommand".
-     * 
+     *
      * @param source
      * @return
      */
@@ -431,7 +431,7 @@ public class ProcessController extends AbstractElementPropertySectionController 
 
     /**
      * DOC nrousseau Comment method "createButtonCommand".
-     * 
+     *
      * @param source
      * @return
      */
@@ -508,7 +508,7 @@ public class ProcessController extends AbstractElementPropertySectionController 
     /**
      * see feature 0003664: tRunJob: When opening the tree dialog to select the job target, it could be useful to open
      * it on previous selected job if exists.
-     * 
+     *
      * @param button
      * @param dialog
      */
@@ -535,7 +535,7 @@ public class ProcessController extends AbstractElementPropertySectionController 
 
     /**
      * DOC yhch Comment method "selectJobNodeIfChecked".
-     * 
+     *
      * @param button
      * @param dialog
      */
@@ -557,7 +557,7 @@ public class ProcessController extends AbstractElementPropertySectionController 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -590,7 +590,7 @@ public class ProcessController extends AbstractElementPropertySectionController 
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.lang.Thread#run()
              */
             @Override
@@ -600,7 +600,7 @@ public class ProcessController extends AbstractElementPropertySectionController 
 
                     /*
                      * (non-Javadoc)
-                     * 
+                     *
                      * @see java.lang.Runnable#run()
                      */
                     @Override
@@ -637,9 +637,9 @@ public class ProcessController extends AbstractElementPropertySectionController 
     }
 
     /**
-     * 
+     *
      * ggu Comment method "refreshCombo".
-     * 
+     *
      */
     private void refreshCombo(IElementParameter parentParam, final String childParamName) {
         if (parentParam == null || childParamName == null) {
@@ -676,9 +676,9 @@ public class ProcessController extends AbstractElementPropertySectionController 
     }
 
     /**
-     * 
+     *
      * ggu Comment method "updateContextList".
-     * 
+     *
      * @param processParam
      */
     private void updateContextList(IElementParameter processParam) {
@@ -768,10 +768,10 @@ public class ProcessController extends AbstractElementPropertySectionController 
     }
 
     /**
-     * 
+     *
      * ggu Comment method "setProcessTypeRelatedValues".
-     * 
-     * 
+     *
+     *
      */
     private void setProcessTypeRelatedValues(IElementParameter parentParam, List<String> nameList, List<String> valueList,
             final String childName, final String defaultValue) {

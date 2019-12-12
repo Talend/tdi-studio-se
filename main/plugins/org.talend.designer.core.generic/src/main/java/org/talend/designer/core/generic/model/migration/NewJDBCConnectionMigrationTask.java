@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,6 +36,7 @@ import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.utils.security.CryptoMigrationUtil;
 
 /**
  * DOC hwang  class global comment. Detailled comment
@@ -46,20 +47,21 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
     public Date getOrder() {
         return new GregorianCalendar(2017, 12, 19, 15, 0, 0).getTime();
     }
-    
+
     @Override
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
         toReturn.add(ERepositoryObjectType.METADATA_CONNECTIONS);
         return toReturn;
     }
-    
+
     @Override
     public ExecutionResult execute(Item item) {
         if (item instanceof DatabaseConnectionItem) {
             ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
             DatabaseConnectionItem connectionItem = (DatabaseConnectionItem) item;
             DatabaseConnection connection = (DatabaseConnection) connectionItem.getConnection();
+            connection.setEncryptAndDecryptFuncPair(CryptoMigrationUtil.encryptFunc(), CryptoMigrationUtil.decryptFunc());
             if (connection instanceof DatabaseConnection) {
                 DatabaseConnection dbConnection = connection;
                 String dbType = dbConnection.getDatabaseType();
@@ -75,7 +77,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
                             IGenericDBService.class);
                 }
                 if(dbService == null){
-                    return  ExecutionResult.NOTHING_TO_DO; 
+                    return  ExecutionResult.NOTHING_TO_DO;
                 }
                 boolean isContextMode = connection.isContextMode();
                 Properties properties = dbService.getComponentProperties(jdbcType, dbConnection.getId());
@@ -103,8 +105,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
                 if(pass != null){
                     pass.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
                     pass.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, pass.getName());
-                    String password = connection.getValue(connection.getRawPassword(), false);
-                    pass.setValue(password);
+                    pass.setValue(connection.getRawPassword());
                 }
                 if(mappingFile != null){
                     mappingFile.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
@@ -133,7 +134,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
         }
         return ExecutionResult.NOTHING_TO_DO;
     }
-    
+
     private void setDrivers(Property dirJar, String jars, boolean isContextMode){
         if(dirJar == null){
             return;

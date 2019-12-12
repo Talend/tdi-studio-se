@@ -3154,14 +3154,144 @@
               name="ResetAdditionalJDBCParamsForCreateTable"
               version="7.2.1">
         </projecttask>
+       <projecttask
+	       class="org.talend.repository.model.migration.SafelyCreateTemporaryFileMigrationTask"
+               description="Force old behaviour for existing jobs, for create temporary files"
+               id="org.talend.repository.model.migration.SafelyCreateTemporaryFileMigrationTask"
+               name="SafelyCreateTemporaryFileMigrationTask"
+               version="7.2.1">
+       </projecttask>
         <projecttask
               beforeLogon="false"
-              breaks="6.5.1"
               class="org.talend.repository.model.migration.RedshiftLogFileMigrationTask"
               description="If Redshift in 6.5.1 or 7.0.1 using log file, check the useLogFile option"
               id="org.talend.repository.model.migration.RedshiftLogFileMigrationTask"
               name="RedshiftLogFileMigrationTask"
               version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.SetTrustAllCertsLdapComponentsTDI41648"
+              id="org.talend.repository.model.migration.SetTrustAllCertsLdapComponentsTDI41648"
+              name="SetTrustAllCertsLdapComponentsTDI41648"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.MigrateTDataMaskingGuiTDQ16376"
+              description="migrate tDataMasking UI with function categories"
+              id="org.talend.repository.model.migration.MigrateTDataMaskingGuiTDQ16376"
+              name="MigrateTDataMaskingGuiTDQ16376"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.CleanCustomerMatcherField"
+              description="make sure the field of customer matcher is valid"
+              id="org.talend.repository.model.migration.CleanCustomerMatcherField"
+              name="CleanCustomerMatcherField"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.RenameSalesforceWaveMigrationTask"
+              description="rename salesforce wave to salesforce einstein"
+              id="org.talend.repository.model.migration.RenameSalesforceWaveMigrationTask"
+              name="RenameSalesforceWaveMigrationTask"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.2.0"
+              class="org.talend.repository.model.migration.RenameTCOMPCouchbaseMigrationTask"
+              description="rename couchbase to couchbaseDCP"
+              id="org.talend.repository.model.migration.RenameTCOMPCouchbaseMigrationTask"
+              name="RenameTCOMPCouchbaseMigrationTask"
+              version="7.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.AddEncodingTypeForDQComponentsTask"
+              description="Add the encoding type for some dq components"
+              id="org.talend.repository.model.migration.AddEncodingTypeForDQComponentsTask"
+              name="AddEncodingTypeForDQComponentsTask"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.AddRAWFlowMaskingComponents"
+              description="Add the check box to seperate the output"
+              id="org.talend.repository.model.migration.AddRAWFlowMaskingComponents"
+              name="AddRAWFlowTPatternMasking"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.0"
+              class="org.talend.repository.model.migration.changeDBVersionForMapROJAIOutputMigrationTask"
+              description="Changed DB version in MapROJAI output component"
+              id="org.talend.repository.model.migration.changeDBVersionForMapROJAIOutputMigrationTask"
+              name="changeDBVersionForMapROJAIOutputMigrationTask"
+              version="7.0.1">
+        </projecttask>
+         <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.UpgradePasswordEncryptionAlg4ItemMigrationTask"
+              description="Upgrade password encryption Alg 4 item migration task"
+              id="org.talend.repository.model.migration.UpgradePasswordEncryptionAlg4ItemMigrationTask"
+              name="UpgradePasswordEncryptionAlg4ItemMigrationTask"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.AddMissingContextMigrationTask"
+              description="add missing context variable to make sure every context group has the same list of variable"
+              id="org.talend.repository.model.migration.AddMissingContextMigrationTask"
+              name="AddMissingContextMigrationTask"
+              version="7.3.1">
+        </projecttask>
+	    <projecttask
+	          beforeLogon="false"
+	          breaks="7.3.0"
+	          class="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
+	          id="org.talend.repository.model.migration.UseDefaultJSONWrappingStandard"
+	          name="UseDefaultJSONWrappingStandard"
+	          version="7.3.1">
+	    </projecttask>
+        <projecttask
+               beforeLogon="false"
+               breaks="7.3.0"
+               class="org.talend.repository.model.migration.OracleSPAutomappingDateToTimestampTask"
+               description="Modify automapping for input date to timestamp"
+               id="org.talend.repository.model.migration.OracleSPAutomappingDateToTimestampTask"
+               name="oracleSPAutomappingDateToTimestampTask"
+               version="7.3.1">
+       </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.2.1"
+               class="org.talend.repository.model.migration.CleanLoginAndPasswordForRedshiftSqlForSSO"
+               description="Set login and password as empty strings if connection use SSO"
+               id="org.talend.repository.model.migration.CleanLoginAndPasswordForRedshiftSqlForSSO"
+               name="cleanLoginAndPasswordForRedshiftSqlForSSO"
+               version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.SAPBAPIParameterTypeMigrationTask"
+              description="adjust the tsapbapi ui"
+              id="org.talend.repository.model.migration.SAPBAPIParameterTypeMigrationTask"
+              name="SAPBAPIParameterTypeMigrationTask"
+              version="7.3.1">
         </projecttask>
    </extension>
 
@@ -3173,6 +3303,93 @@
           message="Library needed to export to JBoss ESB"
           name="jbossesb-rosetta.jar"  mvn_uri="mvn:org.talend.libraries/jbossesb-rosetta/6.0.0"
           required="true"/>
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-1.2.17.jar"
+        name="log4j-1.2.17.jar"
+        mvn_uri="mvn:log4j/log4j/1.2.17"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="slf4j-log4j12-1.7.25.jar"
+        name="slf4j-log4j12-1.7.25.jar"
+        mvn_uri="mvn:org.slf4j/slf4j-log4j12/1.7.25"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/slf4j-log4j12-1.7.25.jar">
+      </libraryNeeded>
+    
+       <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-to-slf4j-2.12.1.jar"
+        name="log4j-to-slf4j-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-to-slf4j/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-to-slf4j-2.12.1.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="jul-to-slf4j-1.7.25.jar"
+        name="jul-to-slf4j-1.7.25.jar"
+        mvn_uri="mvn:org.slf4j/jul-to-slf4j/1.7.25"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/jul-to-slf4j-1.7.25.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="jcl-over-slf4j-1.7.25.jar"
+        name="jcl-over-slf4j-1.7.25.jar"
+        mvn_uri="mvn:org.slf4j/jcl-over-slf4j/1.7.25"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/jcl-over-slf4j-1.7.25.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-core-2.12.1.jar"
+        name="log4j-core-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-core/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-core-2.12.1.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-api-2.12.1.jar"
+        name="log4j-api-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-api/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-api-2.12.1.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-slf4j-impl-2.12.1.jar"
+        name="log4j-slf4j-impl-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-slf4j-impl/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-slf4j-impl-2.12.1.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-jul-2.12.1.jar"
+        name="log4j-jul-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-jul/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-jul-2.12.1.jar">
+      </libraryNeeded>
+    
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-jcl-2.12.1.jar"
+        name="log4j-jcl-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-jcl/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-jcl-2.12.1.jar">
+      </libraryNeeded>  
+      
+      <libraryNeeded
+        context="plugin:org.talend.libraries.apache"
+        id="log4j-1.2-api-2.12.1.jar"
+        name="log4j-1.2-api-2.12.1.jar"
+        mvn_uri="mvn:org.apache.logging.log4j/log4j-1.2-api/2.12.1"
+        uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2-api-2.12.1.jar">
+      </libraryNeeded>         
    </extension>
    <!--
    <extension
@@ -3251,9 +3468,6 @@
       </initializer>
       <initializer
             class="org.talend.repository.preference.initializer.MavenVersionManagementProjectSettingPageInitializer">
-      </initializer>
-      <initializer
-            class="org.talend.repository.preference.initializer.ArtifactRepositoryShareSettingPageInitializer">
       </initializer>
    </extension>
    <extension
@@ -3375,14 +3589,6 @@
             title="%projectSetting.deploymentConfiguration">
          <tester
                class="org.talend.repository.preference.MavenDeploymentConfigurationProjectSettingPageTester">
-         </tester>
-      </page>
-      <page
-            class="org.talend.repository.preference.ArtifactRepositoryShareSettingPage"
-            id="projectsetting.RepositoryShare"
-            title="%projectsetting.RepositoryShare">
-         <tester
-               class="org.talend.repository.preference.ArtifactRepositoryShareSettingPageTester">
          </tester>
       </page>
    </extension>

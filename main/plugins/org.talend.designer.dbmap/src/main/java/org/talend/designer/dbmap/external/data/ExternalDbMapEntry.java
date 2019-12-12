@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,14 +18,14 @@ import org.talend.core.model.process.node.IExternalMapEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExternalMapperTableEntry.java 2010 2007-02-12 13:18:38Z amaumont $
- * 
+ *
  */
 public class ExternalDbMapEntry implements IExternalMapEntry, Serializable, Cloneable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -6108773358595740424L;
 
@@ -54,7 +54,7 @@ public class ExternalDbMapEntry implements IExternalMapEntry, Serializable, Clon
 
     /**
      * DOC amaumont ExternalDbMapEntry constructor comment.
-     * 
+     *
      * @param name
      * @param expression
      * @param operator
@@ -84,7 +84,7 @@ public class ExternalDbMapEntry implements IExternalMapEntry, Serializable, Clon
 
     /**
      * Talend types, used for var entries only.
-     * 
+     *
      * @return
      */
     public String getOperator() {
@@ -93,7 +93,7 @@ public class ExternalDbMapEntry implements IExternalMapEntry, Serializable, Clon
 
     /**
      * Talend types, used for var entries only.
-     * 
+     *
      * @param type the type to set
      */
     public void setOperator(String type) {
@@ -102,7 +102,7 @@ public class ExternalDbMapEntry implements IExternalMapEntry, Serializable, Clon
 
     /**
      * Getter for join.
-     * 
+     *
      * @return the join
      */
     public boolean isJoin() {
@@ -111,7 +111,7 @@ public class ExternalDbMapEntry implements IExternalMapEntry, Serializable, Clon
 
     /**
      * Sets the join.
-     * 
+     *
      * @param join the join to set
      */
     public void setJoin(boolean join) {
@@ -120,17 +120,17 @@ public class ExternalDbMapEntry implements IExternalMapEntry, Serializable, Clon
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

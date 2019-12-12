@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,7 @@ public class JSONToJsonPathLinker extends JSONToXPathLinker {
 
     /**
      * DOC cmeng JSONToJsonPathLinker constructor comment.
-     * 
+     *
      * @param commonParent
      */
     public JSONToJsonPathLinker(Composite commonParent) {
@@ -54,7 +54,7 @@ public class JSONToJsonPathLinker extends JSONToXPathLinker {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.json.ui.wizards.extraction.JSONToXPathLinker#validateXPathExpression(java.lang.String)
      */
     @Override
@@ -109,7 +109,7 @@ public class JSONToJsonPathLinker extends JSONToXPathLinker {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.json.ui.wizards.extraction.JSONToXPathLinker#createFieldLinks(java.lang.String,
      * org.eclipse.swt.widgets.TableItem, org.eclipse.core.runtime.IProgressMonitor,
      * org.talend.repository.model.json.SchemaTarget)

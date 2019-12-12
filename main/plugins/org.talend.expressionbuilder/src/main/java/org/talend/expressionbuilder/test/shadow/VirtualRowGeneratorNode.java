@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.expressionbuilder.test.shadow;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,9 +44,9 @@ import org.talend.expressionbuilder.ui.ExpressionBuilderDialog;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: VirtualRowGeneratorNode.java 下午05:26:21 2007-7-19 +0000 (2007-7-19) yzhang $
- * 
+ *
  */
 public class VirtualRowGeneratorNode extends RowGeneratorComponent {
 
@@ -89,6 +90,14 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
 
     }
 
+    protected List<Variable> getVariableList() {
+        return ExpressionBuilderDialog.getTestComposite().getVariableList();
+    }
+
+    protected String getExpression() {
+        return ExpressionBuilderDialog.getExpressionComposite().getExpression();
+    }
+
     /**
      * yzhang Comment method "initArray".
      */
@@ -99,8 +108,8 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
             VirtualMetadataColumn ext = (VirtualMetadataColumn) col;
             Map<String, String> value = new HashMap<String, String>();
             value.put(RowGeneratorComponent.COLUMN_NAME, ext.getLabel());
-            List<Variable> variables = ExpressionBuilderDialog.getTestComposite().getVariableList();
-            String expression = ExpressionBuilderDialog.getExpressionComposite().getExpression();
+            List<Variable> variables = getVariableList();
+            String expression = getExpression();
             // modify for bug 9471
             try {
                 for (Variable varible : variables) {
@@ -111,7 +120,7 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
                     }
                     String currentValue = varible.getValue();
                     String newValue = renameVaribleValue(currentValue, type);
-                    if (valueContains(expression, varible.getName())) {
+                    if (valueContains(expression, varible.getName()) && !newValue.equals("null")) {
                         if (currentValue != null && !currentValue.equals(newValue)) {
                             expression = renameValues(expression, varible.getName(), newValue);
                         } else {
@@ -182,12 +191,17 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
     }
 
     private String renameVaribleValue(String newValue, String type) {
+        if (newValue == null || newValue.equals("null")) {
+            return newValue;
+        }
         if (JavaTypesManager.BIGDECIMAL.getLabel().equals(type)) {
             newValue = " new " + JavaTypesManager.BIGDECIMAL.getNullableClass().getName() + "(" + newValue + ")";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         } else if (JavaTypesManager.CHARACTER.getLabel().contains(type)) {
             if (newValue.length() == 1) {
                 newValue = " new " + JavaTypesManager.CHARACTER.getNullableClass().getName() + "('" + newValue.charAt(0) + "')";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
+        } else if (JavaTypesManager.DATE.getLabel().equals(type)) {
+            newValue = " ParserUtils.parseTo_Date(" + (newValue.equals("") ? "\"\"" : newValue) + ", \"dd-MM-yyyy\")";
         }
         return newValue;
     }

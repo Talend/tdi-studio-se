@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,7 +26,7 @@ import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
  * Label provider for database structure outline.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public class DBTreeLabelProvider extends LabelProvider implements ITableLabelProvider, ITreeContentProvider,
@@ -50,7 +50,7 @@ public class DBTreeLabelProvider extends LabelProvider implements ITableLabelPro
 
     /**
      * Return the image used for the given INode. If the INode does not have an image, default images are returned.
-     * 
+     *
      * @param element Node.
      * @return Image
      * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
@@ -81,7 +81,7 @@ public class DBTreeLabelProvider extends LabelProvider implements ITableLabelPro
 
     /**
      * Return the text to display the INode.
-     * 
+     *
      * @param element Node.
      * @return Text.
      * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
@@ -130,7 +130,7 @@ public class DBTreeLabelProvider extends LabelProvider implements ITableLabelPro
 
     /**
      * Return all the children of an INode element.
-     * 
+     *
      * @param parentElement parent node
      * @return children.
      * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
@@ -143,7 +143,7 @@ public class DBTreeLabelProvider extends LabelProvider implements ITableLabelPro
 
     /**
      * Return all the children of an INode element.
-     * 
+     *
      * @param inputElement inputElement.
      * @return elements
      * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
@@ -155,7 +155,7 @@ public class DBTreeLabelProvider extends LabelProvider implements ITableLabelPro
 
     /**
      * Return the parent of an INode element.
-     * 
+     *
      * @param element element.
      * @return Parent.
      * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
@@ -168,7 +168,7 @@ public class DBTreeLabelProvider extends LabelProvider implements ITableLabelPro
 
     /**
      * Returns true if the INode has children.
-     * 
+     *
      * @param element element.
      * @return hasChildren.
      * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
@@ -180,7 +180,7 @@ public class DBTreeLabelProvider extends LabelProvider implements ITableLabelPro
 
     /**
      * We don't do anything here..
-     * 
+     *
      * @param viewer Viewer.
      * @param oldInput oldInput
      * @param newInput newInput

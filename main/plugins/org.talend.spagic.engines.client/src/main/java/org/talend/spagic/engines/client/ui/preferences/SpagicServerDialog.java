@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,9 +32,9 @@ import org.talend.spagic.engines.client.i18n.Messages;
 
 /**
  * DOC cantoine class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SpagoBiServerDialog.java 2738 2007-03-28 13:12:27Z cantoine $
- * 
+ *
  */
 public class SpagicServerDialog extends Dialog {
 
@@ -334,7 +334,7 @@ public class SpagicServerDialog extends Dialog {
 
     /**
      * Getter for engineName.
-     * 
+     *
      * @return the engineName
      */
     public String getEngineName() {
@@ -343,7 +343,7 @@ public class SpagicServerDialog extends Dialog {
 
     /**
      * Getter for shortDescription.
-     * 
+     *
      * @return the shortDescription
      */
     public String getShortDescription() {
@@ -352,7 +352,7 @@ public class SpagicServerDialog extends Dialog {
 
     /**
      * Getter for host.
-     * 
+     *
      * @return the host
      */
     public String getHost() {
@@ -361,7 +361,7 @@ public class SpagicServerDialog extends Dialog {
 
     /**
      * Getter for port.
-     * 
+     *
      * @return the port
      */
     public String getPort() {
@@ -370,7 +370,7 @@ public class SpagicServerDialog extends Dialog {
 
     /**
      * Getter for login.
-     * 
+     *
      * @return the login
      */
     public String getLogin() {
@@ -379,7 +379,7 @@ public class SpagicServerDialog extends Dialog {
 
     /**
      * Getter for password.
-     * 
+     *
      * @return the password
      */
     public String getPassword() {
@@ -388,7 +388,7 @@ public class SpagicServerDialog extends Dialog {
 
     /**
      * Getter for applicationContext.
-     * 
+     *
      * @return the applicationContext
      */
     // public String getApplicationContext() {

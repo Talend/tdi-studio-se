@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,9 +53,9 @@ import org.talend.designer.rowgenerator.ui.tabs.TabFolderEditors;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: RowGeneratorUI.java,v 1.23 2007/01/31 05:20:52 pub Exp $
- * 
+ *
  */
 public class RowGeneratorUI {
 
@@ -103,7 +103,7 @@ public class RowGeneratorUI {
 
     /**
      * yzhang Comment method "init".
-     * 
+     *
      * @param fromDialog
      */
     public void init(boolean fromDialog) {
@@ -146,7 +146,7 @@ public class RowGeneratorUI {
 
             /*
              * (non-Java)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
             @SuppressWarnings("unchecked")
@@ -174,7 +174,7 @@ public class RowGeneratorUI {
 
     /**
      * qzhang Comment method "updateFunParameter".
-     * 
+     *
      * @param table
      */
     public void updateFunParameter(Table table) {
@@ -248,7 +248,7 @@ public class RowGeneratorUI {
 
     /**
      * qzhang Comment method "addKeyListener".
-     * 
+     *
      * @param uiManager
      * @param display
      */
@@ -287,7 +287,7 @@ public class RowGeneratorUI {
 
     /**
      * qzhang Comment method "addParentListeners".
-     * 
+     *
      * @param uiManager
      * @param uiProperties
      */
@@ -336,7 +336,7 @@ public class RowGeneratorUI {
 
     /**
      * qzhang Comment method "updateBackground".
-     * 
+     *
      * @param b
      * @param c
      */
@@ -381,7 +381,7 @@ public class RowGeneratorUI {
         return this.mainSashForm;
     }
 
-    
+
     /**
      * Getter for functionManager.
      * @return the functionManager

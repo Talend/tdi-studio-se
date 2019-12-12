@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,8 @@ public class ElementParameterCreator {
      */
     private void addSettings() {
         if (!properties.isEmpty()) {
-            final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper()).createPropertyTree(properties);
+            final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper())
+                    .createPropertyTree(properties);
             final SettingVisitor settingVisitor = new SettingVisitor(node, updateComponentsParameter, detail);
             root.accept(settingVisitor.withCategory(BASIC), Metadatas.MAIN_FORM);
             root.accept(settingVisitor.withCategory(ADVANCED), Metadatas.ADVANCED_FORM);
@@ -111,7 +112,8 @@ public class ElementParameterCreator {
             // create config type version param
             properties.stream().filter(p -> p.getConfigurationType() != null && p.getConfigurationTypeName() != null)
                     .forEach(p -> parameters.add(new VersionParameter(node, p.getPath(),
-                            String.valueOf(getConfigTypeVersion(p, component.getConfigTypeNodes(), component.getId().getFamilyId())))));
+                            String.valueOf(
+                                    getConfigTypeVersion(p, component.getConfigTypeNodes(), component.getId().getFamilyId())))));
         }
 
         checkSchemaProperties(new SettingVisitor(node, updateComponentsParameter, detail).withCategory(BASIC));
@@ -485,7 +487,7 @@ public class ElementParameterCreator {
             if (configNode == null) {
                 return "";
             }
-            return TaCoKitUtil.getConfigTypePath(configNode).replaceAll("/", ".");
+            return TaCoKitUtil.getTaCoKitRepositoryKey(configNode);
         }).collect(Collectors.joining("|"));
     }
 

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,7 +29,7 @@ import org.talend.daikon.avro.converter.AbstractAvroConverter;
  * <li>Logical Time</li>
  * <li>...</li>
  * </ol>
- * 
+ *
  */
 public class IdentityConverter extends AbstractAvroConverter<Object, Object> {
 
@@ -50,7 +50,7 @@ public class IdentityConverter extends AbstractAvroConverter<Object, Object> {
 
     /**
      * Returns instance of this class
-     * 
+     *
      * @return instance of this class
      */
     public static IdentityConverter getInstance() {
@@ -63,7 +63,7 @@ public class IdentityConverter extends AbstractAvroConverter<Object, Object> {
     /**
      * It is supposed this method won't be called.
      * If client code will require this method, this class may be extended
-     * 
+     *
      * @throws {@link UnsupportedOperationException}
      */
     @Override
@@ -74,7 +74,7 @@ public class IdentityConverter extends AbstractAvroConverter<Object, Object> {
     /**
      * It is supposed this method won't be called.
      * If client code will require this method, this class may be extended
-     * 
+     *
      * @throws {@link UnsupportedOperationException}
      */
     @Override
@@ -84,7 +84,7 @@ public class IdentityConverter extends AbstractAvroConverter<Object, Object> {
 
     /**
      * Returns data value unchanged
-     * 
+     *
      * @param value Avro data value
      * @return unchanged data
      */
@@ -95,7 +95,7 @@ public class IdentityConverter extends AbstractAvroConverter<Object, Object> {
 
     /**
      * Returns data value unchanged
-     * 
+     *
      * @param value DI data value
      * @return unchanged data
      */

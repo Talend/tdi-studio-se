@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.sqlbuilder.sqlcontrol.AbstractSQLExecution;
 
 /**
  * DOC qianbing class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: IResultDisplayer.java,v 1.2 2006/10/25 21:05:23 qiang.zhang Exp $
- * 
+ *
  */
 public interface IResultDisplayer {
 

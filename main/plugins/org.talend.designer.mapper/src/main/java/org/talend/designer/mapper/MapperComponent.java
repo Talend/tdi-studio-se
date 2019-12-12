@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -80,9 +80,9 @@ import org.talend.designer.mapper.utils.problems.ProblemsAnalyser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MapperComponent extends AbstractMapComponent implements IHashableInputConnections {
 
@@ -93,6 +93,8 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
     private ExternalMapperData externalData;
 
     private GenerationManager generationManager;
+    
+    private boolean shouldGenerateDatasetCode;
 
     /**
      * DOC amaumont MapperComponent constructor comment.
@@ -103,7 +105,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#initialize()
      */
     @Override
@@ -120,7 +122,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#getPersistentData()
      */
     @Override
@@ -139,7 +141,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#open(org.eclipse.swt.widgets.Display)
      */
     public int open(final Display display) {
@@ -223,7 +225,6 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         mapperMain.loadModelFromInternalData();
         metadataListOut = mapperMain.getMetadataListOut();
         externalData = mapperMain.buildExternalData();
-        // System.out.println("refreshMapperConnectorData");
         sortOutputsConnectionsLikeVisualOrder();
     }
 
@@ -262,7 +263,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#open()
      */
     public int open(final Composite parent) {
@@ -275,7 +276,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#setPersistentData(java.lang.Object)
      */
     public void setExternalData(IExternalData externalData) {
@@ -284,7 +285,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getGeneratedCode()
      */
     public String getGeneratedCode() {
@@ -300,7 +301,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getMetadataList()
      */
     @Override
@@ -310,83 +311,13 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#setMetadataList(java.util.List)
      */
     @Override
     public void setMetadataList(List<IMetadataTable> metadataTablesOut) {
         this.metadataListOut = metadataTablesOut;
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.core.model.process.AbstractExternalNode#setExternalXmlData(java.io.InputStream)
-     */
-    // public void loadDataIn(InputStream in, Reader stringReader) throws IOException, ClassNotFoundException {
-    //
-    // if (stringReader != null) {
-    // Unmarshaller unmarshaller = new Unmarshaller(ExternalMapperData.class);
-    // unmarshaller.setWhitespacePreserve(true);
-    // try {
-    // externalData = (ExternalMapperData) unmarshaller.unmarshal(stringReader);
-    // } catch (MarshalException e) {
-    // ExceptionHandler.process(e);
-    // } catch (ValidationException e) {
-    // ExceptionHandler.process(e);
-    // } finally {
-    // if (stringReader != null) {
-    // stringReader.close();
-    // }
-    // }
-    // }
-    //
-    // }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.core.model.process.IExternalNode#loadDataOut(java.io.OutputStream, java.io.Writer)
-     */
-    // public void loadDataOut(final OutputStream out, Writer writer) throws IOException {
-    // // System.out.println("loadDataOut");
-    //
-    // initMapperMain(false);
-    //
-    // mapperMain.createModelFromExternalData(getIncomingConnections(), getOutgoingConnections(), externalData,
-    // getMetadataList(), false);
-    // ExternalMapperData data = mapperMain.buildExternalData();
-    // if (mapperMain != null && data != null) {
-    //
-    // try {
-    // Marshaller marshaller = new Marshaller(writer);
-    // marshaller.marshal(externalData);
-    //
-    // } catch (MarshalException e) {
-    // ExceptionHandler.process(e);
-    // } catch (ValidationException e) {
-    // ExceptionHandler.process(e);
-    // } catch (IOException e) {
-    // ExceptionHandler.process(e);
-    // } finally {
-    // if (writer != null) {
-    // writer.close();
-    // }
-    // }
-    //
-    // // ObjectOutputStream objectOut = null;
-    // // try {
-    // // objectOut = new ObjectOutputStream(out);
-    // // objectOut.writeObject(data);
-    // // } catch (IOException e) {
-    // // ExceptionHandler.process(e);
-    // // } finally {
-    // // if (objectOut != null) {
-    // // objectOut.close();
-    // // }
-    // // }
-    // }
-    // }
 
     @Override
     public void buildExternalData(AbstractExternalData abstractData) {
@@ -480,11 +411,17 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         ExternalMapperData data = mapperMain.buildExternalData();
         if (mapperMain != null && data != null) {
             if (externalData != null) {
-                this.externalData = data;// fwang fixed bug TDI-8027
+                if(!isConnectionEmpty()) {
+                    this.externalData = data;// fwang fixed bug TDI-8027
+                }
                 MapperHelper.saveDataToEmf(data, emfMapperData);
             }
         }
         return emfMapperData;
+    }
+
+    private boolean isConnectionEmpty() {
+        return getIncomingConnections().isEmpty() && getOutgoingConnections().isEmpty();
     }
 
     public void renameInputConnection(String oldConnectionName, String newConnectionName) {
@@ -557,7 +494,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /**
      * DOC amaumont Comment method "replaceLocations".
-     * 
+     *
      * @param oldLocation
      * @param newLocation
      * @param tableRenamed TODO
@@ -634,7 +571,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#getProblems()
      */
     @Override
@@ -646,7 +583,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /**
      * Getter for mapperMain.
-     * 
+     *
      * @return the mapperMain
      */
     public MapperMain getMapperMain() {
@@ -655,7 +592,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getComponentDocumentation(java.lang.String, java.lang.String)
      */
     public IComponentDocumentation getComponentDocumentation(String componentLabel, String tempFolderPath) {
@@ -689,7 +626,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IHashableInputConnections#getHashConfiguration(java.lang.String)
      */
     public IHashConfiguration getHashConfiguration(String connectionName) {
@@ -747,9 +684,9 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "hasOrRenameData".
-     * 
+     *
      * @param oldName
      * @param newName can be null if <code>renameAction</code> is false
      * @param renameAction true to rename in all expressions, false to get boolean if present in one of the expressions
@@ -814,7 +751,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#isRunRefSubProcessAtStart(java.lang.String)
      */
     @Override
@@ -836,7 +773,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isUseLoopOnConditionalOutput(java.lang.String)
      */
     @Override
@@ -909,10 +846,10 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         return routinesToAdd;
 
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#getIODataComponents()
      */
     @Override
@@ -930,7 +867,46 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
                 }
             }
         }
-        // TODO Auto-generated method stub
         return super.getIODataComponents();
+    }
+
+    public void loadDatasetConditions(boolean isJobValidForDataset){
+    	this.shouldGenerateDatasetCode = isDatasetCompatible(isJobValidForDataset);
+    }
+    
+    public boolean isDatasetCompatible(boolean isJobValidForDataset) {
+    	boolean res = true;
+    	//spark 2.0 and batch
+    	if (!isJobValidForDataset) {
+    		res = false;
+    	}
+    	//only two input connections
+
+        if (this.externalData.getInputTables().size() != 2) {
+        	res = false;
+        } // one connection must be all matches
+        else if (!isAtLeastOneInputTableAllMatch(this.externalData)) {
+        	res = false;
+        }              
+
+        //only one output, can be equal to 0 when graphically adding component so we avoid NPE
+        if (this.externalData.getOutputTables().size() != 1) {
+        	res = false;
+        } //no rejects
+        else if (this.externalData.getOutputTables().get(0).isRejectInnerJoin()
+        		|| this.externalData.getOutputTables().get(0).isReject()) {
+        	res = false;
+        }
+        return res;
+    }
+    
+
+    private boolean isAtLeastOneInputTableAllMatch(ExternalMapperData data) {
+    	return "ALL_MATCHES".equals(data.getInputTables().get(0).getMatchingMode()) || "ALL_MATCHES".equals(data.getInputTables().get(1).getMatchingMode());
+    }
+    
+    @Override
+    public boolean getShouldGenerateDataset() {
+    	return this.shouldGenerateDatasetCode;
     }
 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -45,7 +45,7 @@ public class XmlMapDataLayout extends AbstractHintLayout {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.LayoutManager#layout(org.eclipse.draw2d.IFigure)
      */
     @Override
@@ -184,7 +184,7 @@ public class XmlMapDataLayout extends AbstractHintLayout {
 
     /**
      * Sets the layout constraint of the given figure. The constraints can only be of type {@link Rectangle}.
-     * 
+     *
      * @see LayoutManager#setConstraint(IFigure, Object)
      * @since 2.0
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,9 +14,9 @@ package org.talend.repository.ui.utils;
 
 /**
  * DataConnection describe the data need to make a connection of a DataBase.
- * 
+ *
  * $Id$
- * 
+ *
  * @Deprecated by 7052
  */
 public class DataConnection {
@@ -31,7 +31,7 @@ public class DataConnection {
 
     /**
      * DOC ocarbone DataConnection constructor comment.
-     * 
+     *
      * @param label
      * @param string
      * @param regex
@@ -47,7 +47,7 @@ public class DataConnection {
 
     /**
      * DOC ocarbone DataConnection constructor comment.
-     * 
+     *
      * @param label
      * @param string
      * @param regex
@@ -58,7 +58,7 @@ public class DataConnection {
 
     /**
      * Getter for label.
-     * 
+     *
      * @return the label
      */
     public String getLabel() {
@@ -67,7 +67,7 @@ public class DataConnection {
 
     /**
      * Sets the label.
-     * 
+     *
      * @param label the label to set
      */
     public void setLabel(final String label) {
@@ -76,7 +76,7 @@ public class DataConnection {
 
     /**
      * Getter for regex.
-     * 
+     *
      * @return the regex
      */
     public String getRegex() {
@@ -85,7 +85,7 @@ public class DataConnection {
 
     /**
      * Sets the regex.
-     * 
+     *
      * @param regex the regex to set
      */
     public void setRegex(final String regex) {
@@ -94,7 +94,7 @@ public class DataConnection {
 
     /**
      * Getter for string.
-     * 
+     *
      * @return the string
      */
     public String getString() {
@@ -103,7 +103,7 @@ public class DataConnection {
 
     /**
      * Sets the string.
-     * 
+     *
      * @param string the string to set
      */
     public void setString(final String string) {
@@ -112,7 +112,7 @@ public class DataConnection {
 
     /**
      * Getter for defaultPort.
-     * 
+     *
      * @return the defaultPort
      */
     public String getDefaultPort() {
@@ -121,7 +121,7 @@ public class DataConnection {
 
     /**
      * Sets the defaultPort.
-     * 
+     *
      * @param defaultPort the defaultPort to set
      */
     public void setDefaultPort(final String defaultPort) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,9 +44,9 @@ import org.talend.designer.core.utils.ResourceDisposeUtil;
 /**
  * This class create a figure with the given image. <br/>
  * eh
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeContainerFigure extends Figure {
 
@@ -202,7 +202,7 @@ public class NodeContainerFigure extends Figure {
                                 .getElementParameter("SLIDE_DURATION").getValue()); //$NON-NLS-1$
             }
 
-            windowFigure.setText("Length: " + NodeContainerUtils.formatTime((String) windowDuration.getValue()) + slideDuration); //$NON-NLS-1$ 
+            windowFigure.setText("Length: " + NodeContainerUtils.formatTime((String) windowDuration.getValue()) + slideDuration); //$NON-NLS-1$
             windowFigure.setVisible(visible);
             windowFigure.setSize(windowFigure.getPreferredSize());
             this.add(windowFigure);
@@ -268,7 +268,7 @@ public class NodeContainerFigure extends Figure {
                     text += "\t- " + str + "<br>"; //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
-            htmlStatusHint.setText(text);
+            htmlStatusHint.setText(text, true);
             if (errorFigure.isVisible()) {
                 warningFigure.setToolTip(null);
                 errorFigure.setToolTip(htmlStatusHint);
@@ -297,7 +297,7 @@ public class NodeContainerFigure extends Figure {
 
     /**
      * DOC YeXiaowei Comment method "updateParallelFigure".
-     * 
+     *
      * @param status
      */
     private void updateParallelFigure(int status) {
@@ -324,7 +324,7 @@ public class NodeContainerFigure extends Figure {
 
     /**
      * DOC YeXiaowei Comment method "updateParallelFigure".
-     * 
+     *
      * @param status
      */
     private void updateWindowFigure(int status) {
@@ -354,7 +354,7 @@ public class NodeContainerFigure extends Figure {
                 }
 
                 windowFigure
-                        .setText("Length: " + NodeContainerUtils.formatTime((String) windowDuration.getValue()) + slideDuration); //$NON-NLS-1$ 
+                        .setText("Length: " + NodeContainerUtils.formatTime((String) windowDuration.getValue()) + slideDuration); //$NON-NLS-1$
                 windowFigure.setVisible(visible);
             }
         } else {

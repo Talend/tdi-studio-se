@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,13 +16,13 @@ import org.talend.designer.abstractmap.model.table.IDataMapTable;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class ExpressionFilterEntry extends DataMapTableEntry {
 
     /**
      * DOC amaumont ExpressionFilterEntry constructor comment.
-     * 
+     *
      * @param abstractDataMapTable
      * @param name
      * @param expression
@@ -33,7 +33,7 @@ public class ExpressionFilterEntry extends DataMapTableEntry {
 
     /**
      * DOC amaumont ExpressionFilterEntry constructor comment.
-     * 
+     *
      * @param abstractDataMapTable
      * @param expression
      */
@@ -43,7 +43,7 @@ public class ExpressionFilterEntry extends DataMapTableEntry {
 
     /**
      * DOC amaumont ExpressionFilterEntry constructor comment.
-     * 
+     *
      * @param abstractDataMapTable
      */
     public ExpressionFilterEntry(IDataMapTable abstractDataMapTable) {
@@ -52,7 +52,7 @@ public class ExpressionFilterEntry extends DataMapTableEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.tableentry.IDataMapTableEntry#isTableEntry()
      */
     public boolean isTableEntry() {
@@ -61,7 +61,7 @@ public class ExpressionFilterEntry extends DataMapTableEntry {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.tableentry.IDataMapTableEntry#isColumnEntry()
      */
     public boolean isColumnEntry() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,15 +17,15 @@ import org.talend.designer.runprocess.ui.JobJvmComposite;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40Z nrousseau $
- * 
+ *
  */
 public interface IProcessViewHelper {
 
     /**
      * DOC amaumont Comment method "getProcessComposite".
-     * 
+     *
      * @param container
      * @return
      */
@@ -33,7 +33,7 @@ public interface IProcessViewHelper {
 
     /*
      * public JobTargetExecutionComposite getTargetComposite(final Composite container);
-     * 
+     *
      * public JvmArgumentsComposite getJvmArgumentsComposite(final Composite container);
      */
 

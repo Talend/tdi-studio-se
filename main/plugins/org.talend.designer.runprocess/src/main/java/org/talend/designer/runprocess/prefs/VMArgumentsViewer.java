@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,7 +38,7 @@ import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class VMArgumentsViewer extends TableEditor {
 
@@ -46,7 +46,7 @@ public class VMArgumentsViewer extends TableEditor {
 
     /**
      * qzhang VMArgumentsViewer constructor comment.
-     * 
+     *
      * @param name
      * @param labelText
      * @param parent
@@ -57,7 +57,7 @@ public class VMArgumentsViewer extends TableEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.preferences.TableEditor#createContentProvider()
      */
     @Override
@@ -79,7 +79,7 @@ public class VMArgumentsViewer extends TableEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.preferences.TableEditor#createLabelProvider()
      */
     @Override
@@ -116,7 +116,7 @@ public class VMArgumentsViewer extends TableEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.preferences.TableEditor#createTable(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -133,7 +133,7 @@ public class VMArgumentsViewer extends TableEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.preferences.TableEditor#getExistingInputObject(java.lang.String)
      */
     @Override
@@ -147,7 +147,7 @@ public class VMArgumentsViewer extends TableEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.preferences.TableEditor#getNewInputObject()
      */
     @Override
@@ -161,7 +161,7 @@ public class VMArgumentsViewer extends TableEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.preferences.TableEditor#readString(java.lang.String)
      */
     @Override
@@ -171,7 +171,7 @@ public class VMArgumentsViewer extends TableEditor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.preferences.TableEditor#writeString(java.util.List)
      */
     @Override
@@ -181,7 +181,7 @@ public class VMArgumentsViewer extends TableEditor {
 
     /**
      * qzhang VMArgumentsViewer class global comment. Detailled comment. <br/>
-     * 
+     *
      */
     class VMArgumentDialog extends Dialog {
 
@@ -193,7 +193,7 @@ public class VMArgumentsViewer extends TableEditor {
 
         /**
          * DOC qzhang VMArgumentDialog constructor comment.
-         * 
+         *
          * @param parentShell
          */
         protected VMArgumentDialog(Shell parentShell, String item) {
@@ -208,7 +208,7 @@ public class VMArgumentsViewer extends TableEditor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
          */
         @Override
@@ -219,7 +219,7 @@ public class VMArgumentsViewer extends TableEditor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
          */
         @Override
@@ -240,7 +240,7 @@ public class VMArgumentsViewer extends TableEditor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.dialogs.Dialog#okPressed()
          */
         @Override

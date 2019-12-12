@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.designer.core.i18n.Messages;
 
 /**
  * DOC bqian class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class ProblemCategory extends Problem {
 
@@ -32,7 +32,7 @@ public class ProblemCategory extends Problem {
 
     /**
      * Getter for problems.
-     * 
+     *
      * @return the problems
      */
     public ProblemList getProblems() {
@@ -41,7 +41,7 @@ public class ProblemCategory extends Problem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.Problem#isConcrete()
      */
     @Override
@@ -53,7 +53,7 @@ public class ProblemCategory extends Problem {
 
     /**
      * Getter for name.
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -62,7 +62,7 @@ public class ProblemCategory extends Problem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.Problem#getProblemName()
      */
     @Override
@@ -72,7 +72,7 @@ public class ProblemCategory extends Problem {
 
     /**
      * Sets the name.
-     * 
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -81,7 +81,7 @@ public class ProblemCategory extends Problem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.Problem#getDescription()
      */
     @Override

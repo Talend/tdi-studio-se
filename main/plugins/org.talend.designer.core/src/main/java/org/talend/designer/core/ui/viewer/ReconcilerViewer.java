@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -80,7 +80,7 @@ import org.talend.core.model.process.INode;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public abstract class ReconcilerViewer extends ProjectionViewer {
 
@@ -244,7 +244,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
 
     /**
      * Check if there is any new snippet or if some has been deleted.
-     * 
+     *
      * @return
      */
     private boolean hasSnippetsModifications() {
@@ -405,7 +405,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
 
         getTextWidget().setKeyBinding('A' | SWT.MOD1, ST.SELECT_ALL);
     }
-    
+
     /**
      * Example: configure(new TalendPerlSourceViewerConfiguration(PerlEditorPlugin .getDefault().getPreferenceStore(),
      * this));.
@@ -527,7 +527,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
 
     /**
      * Getter for file.
-     * 
+     *
      * @return the file
      */
     public IFile getFile() {
@@ -536,7 +536,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
 
     /**
      * Adds support for dropping items into this viewer via a user drag-and-drop operation.
-     * 
+     *
      * @param operations a bitwise OR of the supported drag and drop operation types ( <code>DROP_COPY</code>,
      * <code>DROP_LINK</code>, and <code>DROP_MOVE</code>)
      * @param transferTypes the transfer types that are supported by the drop operation
@@ -552,7 +552,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.text.source.projection.ProjectionViewer#handleDispose()
      */
     @Override
@@ -579,7 +579,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.text.source.projection.ProjectionViewer#setVisibleRegion (int, int)
      */
     @Override
@@ -598,7 +598,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.text.TextViewer#createTextWidget(org.eclipse.swt.widgets .Composite, int)
      */
     @Override
@@ -607,7 +607,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "updateVisibleRegion".
      */
     protected void updateVisibleRegion() {
@@ -632,7 +632,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
 
     /**
      * Getter for hostNode.
-     * 
+     *
      * @return the hostNode
      */
     public INode getHostNode() {
@@ -641,7 +641,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
 
     /**
      * Sets the hostNode.
-     * 
+     *
      * @param hostNode the hostNode to set
      */
     public void setHostNode(INode hostNode) {

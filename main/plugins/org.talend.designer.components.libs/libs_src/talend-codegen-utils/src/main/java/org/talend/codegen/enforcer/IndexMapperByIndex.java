@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,7 +26,7 @@ class IndexMapperByIndex implements IndexMapper {
 
     /**
      * Constructor sets design schema size
-     * 
+     *
      * @param designSchema design schema
      */
     IndexMapperByIndex(Schema designSchema) {
@@ -35,7 +35,7 @@ class IndexMapperByIndex implements IndexMapper {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * If there is no dynamic fields runtime indexes equal design indexes
      * <code>runtimeSchema</code> parameter is not used here
      */

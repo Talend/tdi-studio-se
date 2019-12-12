@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,9 +47,9 @@ import org.talend.designer.core.utils.ResourceDisposeUtil;
 
 /**
  * Figure corresponding the the connection. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
 
@@ -77,7 +77,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
 
     /**
      * Used for standard connections.
-     * 
+     *
      * @param connection
      * @param connectionProperty
      * @param node
@@ -235,7 +235,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
 
     /**
      * Only used for partial connections used for dummy state.
-     * 
+     *
      * @param connectionProperty
      * @param node
      */
@@ -352,7 +352,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
 
     /**
      * Getter for connectionProperty.
-     * 
+     *
      * @return the connectionProperty
      */
     public IConnectionProperty getConnectionProperty() {
@@ -361,7 +361,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
 
     /**
      * Getter for connection.
-     * 
+     *
      * @return the connection
      */
     public IConnection getConnection() {
@@ -375,7 +375,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode#LPtoDP(int)
      */
     @Override
@@ -385,7 +385,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode#DPtoLP(int)
      */
     @Override
@@ -395,7 +395,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode#LPtoDP(org.eclipse.draw2d.geometry.Translatable)
      */
     @Override
@@ -406,7 +406,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode#DPtoLP(org.eclipse.draw2d.geometry.Translatable)
      */
     @Override
@@ -417,7 +417,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx#setLineWidth(int)
      */
     @Override
@@ -428,7 +428,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
             super.setLineWidth(2);
         }
     }
-    
+
     @Override
     public Rectangle getBounds() {
         if (bounds == null) {
@@ -464,7 +464,7 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
         }
         return false;
     }
-    
-    
+
+
 
 }

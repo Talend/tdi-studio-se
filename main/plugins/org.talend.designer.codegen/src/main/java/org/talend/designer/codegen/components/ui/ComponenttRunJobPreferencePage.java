@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,11 +21,11 @@ import org.talend.designer.codegen.i18n.Messages;
 
 /**
  * DOC Administrator class global comment. Detailled comment
- * 
+ *
  * @author ftang, 17/08, 2007<br/>
- * 
+ *
  * @deprecated moved to ComponentsPreferencePage
- * 
+ *
  */
 public class ComponenttRunJobPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -52,7 +52,7 @@ public class ComponenttRunJobPreferencePage extends FieldEditorPreferencePage im
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
      */
     public void init(IWorkbench workbench) {
@@ -61,7 +61,7 @@ public class ComponenttRunJobPreferencePage extends FieldEditorPreferencePage im
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performDefaults()
      */
     @Override
@@ -71,7 +71,7 @@ public class ComponenttRunJobPreferencePage extends FieldEditorPreferencePage im
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.IPreferencePage#performOk()
      */
     public boolean performOk() {

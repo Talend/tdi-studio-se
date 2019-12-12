@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -68,13 +68,13 @@ public class PostgresqlDefaultDBVersion extends AbstractJobMigrationTask{
         IComponentConversion defaultDBVersion = new IComponentConversion() {
 
             @Override
-            public void transform(NodeType node) {        
+            public void transform(NodeType node) {
                 boolean useExistConnection = "true".equals(ComponentUtilities.getNodePropertyValue(node, "USE_EXISTING_CONNECTION"));
                 if (useExistConnection) return;
-                
+
                 String componentName = node.getComponentName();
                 String dbVersion = "";
-                
+
                 if ("tCreateTable".equals(componentName)) {
                     String dbType = ComponentUtilities.getNodePropertyValue(node, "DBTYPE");
                     if (!"POSTGRE".equals(dbType) || !"POSTGREPLUS".equals(dbType)) return;
@@ -89,7 +89,7 @@ public class PostgresqlDefaultDBVersion extends AbstractJobMigrationTask{
                 }
             }
         };
-        
+
         for (String componentName : componentsNameToAffect) {
             IComponentFilter componentFilter = new NameComponentFilter(componentName);
             try {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -75,7 +75,7 @@ import org.talend.repository.ui.views.IRepositoryView;
 
 /**
  * Generate grammar java source files and store them to routines for tStandardizeRow. see feature 18851
- * 
+ *
  * DOC ytao class global comment. Detailled comment
  */
 public class GenerateGrammarController extends AbstractElementPropertySectionController {
@@ -252,7 +252,7 @@ public class GenerateGrammarController extends AbstractElementPropertySectionCon
 
     /**
      * Generate java source file
-     * 
+     *
      * DOC ytao Comment method "generateJavaFile".
      */
     private void generateJavaFile() {
@@ -299,9 +299,9 @@ public class GenerateGrammarController extends AbstractElementPropertySectionCon
 
     /**
      * Persist item in routines
-     * 
+     *
      * DOC ytao Comment method "persistInRoutine".
-     * 
+     *
      * @param path, sub folder named with job id
      * @param label, java file name without suffix
      * @param initFile, File handler
@@ -370,7 +370,7 @@ public class GenerateGrammarController extends AbstractElementPropertySectionCon
 
     /**
      * Store file to file system. Actually, it locates src/routines/xx DOC ytao Comment method "addReferenceJavaFile".
-     * 
+     *
      * @param routineItem
      * @param copyToTemp
      * @return
@@ -419,7 +419,7 @@ public class GenerateGrammarController extends AbstractElementPropertySectionCon
 
     /**
      * refresh the project
-     * 
+     *
      * DOC ytao Comment method "refreshProject".
      */
     private void refreshProject() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,7 +27,7 @@ import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
  * Abstract implementation of INode. Extend this class to create your own node types.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public abstract class AbstractNode implements INode {
@@ -56,7 +56,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * DOC dev Comment method "addChildNode".
-     * 
+     *
      * @param childNode ChildNode
      */
     @SuppressWarnings("unchecked")//$NON-NLS-1$
@@ -67,7 +67,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * getRepositoryName.
-     * 
+     *
      * @param
      * @return the repository name.
      * @exception
@@ -78,7 +78,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * setRepositoryName.
-     * 
+     *
      * @param repositoryName repositoryName.
      * @return
      * @exception
@@ -95,7 +95,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Get an iterator to all child nodes. If child nodes haven't been loaded yet, loading is triggered.
-     * 
+     *
      * @return Iterator of child elements
      */
     public final Iterator getChildIterator() {
@@ -109,7 +109,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Get all the children of this node. If child nodes haven't been loaded yet, loading is triggered.
-     * 
+     *
      * @return All child nodes of this node.
      * @see net.sourceforge.sqlexplorer.db.INode#getChildren()
      */
@@ -133,7 +133,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Override this method to implement custom sorting of child nodes.
-     * 
+     *
      * @return Comparator.
      */
     public Comparator getComparator() {
@@ -160,7 +160,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Override this method to change the image that is displayed for this node in the database structure outline.
-     * 
+     *
      * @return Image
      */
     public final Image getExpandedImage() {
@@ -173,7 +173,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Override this method to change the image that is displayed for this node in the database structure outline.
-     * 
+     *
      * @return Image
      */
     public Image getImage() {
@@ -197,7 +197,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Override this method to change the text that is displayed in the database structure outline for this node.
-     * 
+     *
      * @return LabelText.
      */
     public String getLabelText() {
@@ -218,7 +218,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Get the parent of this node.
-     * 
+     *
      * @return Parent node of this node.
      * @see net.sourceforge.sqlexplorer.db.INode#getParent()
      */
@@ -269,7 +269,7 @@ public abstract class AbstractNode implements INode {
     /**
      * Implement this method to return a unique identifier for this node. It is used to identify the node in the detail
      * cache.
-     * 
+     *
      * @return UniqueIdentifier
      * @see org.talend.sqlbuilder.dbstructure.nodes.INode#getUniqueIdentifier()
      */
@@ -281,7 +281,7 @@ public abstract class AbstractNode implements INode {
     /**
      * Checks if this node has children. If child nodes haven't been loaded yet, this method always returns true. This
      * defers the loading of metadata used in the database structure outline until it is actually required.
-     * 
+     *
      * @return true if this node has children.
      */
     public final boolean hasChildNodes() {
@@ -299,7 +299,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Initialize this node.
-     * 
+     *
      * @param parent the parent INode of this node.
      * @param name the name of this node.
      * @param sessionNode the session this node belongs too.
@@ -314,7 +314,7 @@ public abstract class AbstractNode implements INode {
     /**
      * Returns true. Override this method to return false if your node cannot have any children. This will avoid the
      * twistie being displayed in the database structure outline for nodes that cannot have children.
-     * 
+     *
      * @return isEndNode
      * @see org.talend.sqlbuilder.dbstructure.nodes.INode#isEndNode()
      */
@@ -394,7 +394,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Set parent node for this node.
-     * 
+     *
      * @param parent parent.
      */
     public final void setParent(INode parent) {
@@ -404,7 +404,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Set sessiontreenode for this node.
-     * 
+     *
      * @param session SessionTreeNode.
      */
     public final void setSession(SessionTreeNode session) {
@@ -414,7 +414,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * set the type.
-     * 
+     *
      * @param type type.
      */
     public void setType(String type) {
@@ -424,7 +424,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * override the toString().
-     * 
+     *
      * @return String.
      */
     public String toString() {
@@ -434,7 +434,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Default label text is "".
-     * 
+     *
      * @param columnIndex column index.
      * @return the column label.
      */
@@ -456,7 +456,7 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Get the image of the column.
-     * 
+     *
      * @param columnIndex columnIndex.
      * @return Image.
      */

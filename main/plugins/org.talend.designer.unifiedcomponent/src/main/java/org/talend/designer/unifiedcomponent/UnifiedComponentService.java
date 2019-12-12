@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ import org.talend.designer.unifiedcomponent.manager.UnifiedComponentsManager;
 
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -70,7 +70,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.IUnifiedComponentService#isUnifiedComponent(org.talend.core.model.components.IComponent)
      */
@@ -134,7 +134,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IUnifiedComponentService#getDelegateComponents()
      */
     @Override
@@ -185,7 +185,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.IUnifiedComponentService#isDelegateComponent(org.talend.core.model.components.IComponent
      * )
@@ -418,7 +418,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.IUnifiedComponentService#createParameters(java.util.List,
      * org.talend.core.model.components.IComponent, org.talend.core.model.components.IComponent)
      */
@@ -447,7 +447,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.IUnifiedComponentService#getUnifiedCompDisplayName(org.talend.core.model.components.
      * IComponent, java.lang.String)

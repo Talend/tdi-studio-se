@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -97,10 +97,10 @@ public class ExportTreeViewer {
 
         GridLayout layout = new GridLayout();
         sash.setLayout(layout);
-        
+
         // create tree
         createItemList(sash);
-        
+
         // create button
         Composite buttonComposite = new Composite(sash, SWT.ERROR);
         buttonComposite.setLayout(new GridLayout());
@@ -142,11 +142,11 @@ public class ExportTreeViewer {
      * @param workArea
      */
     public Composite createItemList(Composite workArea) {
-        
+
         Composite itemComposite = new Composite(workArea, SWT.BORDER);
         GridLayout gdlItemComposite = new GridLayout(2, false);
         itemComposite.setLayout(gdlItemComposite);
-        
+
         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(itemComposite);
 
         Label label = new Label(itemComposite, SWT.NONE);
@@ -229,7 +229,7 @@ public class ExportTreeViewer {
     }
 
     private void createTreeViewer(Composite itemComposite) {
-        
+
         filteredCheckboxTree = new FilteredCheckboxTree(itemComposite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI) {
 
             @Override
@@ -350,7 +350,7 @@ public class ExportTreeViewer {
      */
     private void createSelectionButton(Composite itemComposite) {
         Composite buttonComposite = new Composite(itemComposite, SWT.NONE);
-        
+
         GridLayout gdlButtonComposite = new GridLayout();
         gdlButtonComposite.marginHeight = 0;
         gdlButtonComposite.marginWidth = 0;
@@ -361,7 +361,7 @@ public class ExportTreeViewer {
 
         Button selectAll = new Button(buttonComposite, SWT.PUSH);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(selectAll);
-        
+
         // selectAll.setText(DataTransferMessages.DataTransfer_selectAll);
         selectAll.setText(Messages.getString("DataTransferMessages.DataTransfer_selectAll")); //$NON-NLS-1$
         selectAll.addSelectionListener(new SelectionAdapter() {

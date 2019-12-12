@@ -43,7 +43,8 @@ if(columnList != null && columnList.size() > 0) {
         String schema_<%=cid%> = (String)globalMap.get("<%=schema%>");
         <%
     } else {
-        String dbname = ElementParameterParser.getValue(node, "__DBNAME__");    
+        String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+        String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
         String schema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");    
         String dbhost = ElementParameterParser.getValue(node, "__HOST__");    
         String dbport = ElementParameterParser.getValue(node, "__PORT__");  
@@ -51,7 +52,18 @@ if(columnList != null && columnList.size() > 0) {
 
         %>
         java.lang.Class.forName("org.postgresql.Driver");
-        String url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+        
+        <%
+        if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+            %>
+            String url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+            <%
+        } else {
+            %>
+            String url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+            <%
+        }       
+        %>
         String dbUser_<%=cid %> = <%=dbuser%>;
 
         <%

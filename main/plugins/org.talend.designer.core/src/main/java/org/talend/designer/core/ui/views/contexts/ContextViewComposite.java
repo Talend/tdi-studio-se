@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,13 +29,13 @@ import org.talend.designer.core.ui.views.properties.ComponentSettings;
 
 /**
  * A concrete class of ContextComposite for the context view. <br/>
- * 
+ *
  */
 public class ContextViewComposite extends ContextComposite {
 
     /**
      * bqian ContextComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -100,7 +100,7 @@ public class ContextViewComposite extends ContextComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.context.ContextComposite#switchSettingsView()
      */
     @Override

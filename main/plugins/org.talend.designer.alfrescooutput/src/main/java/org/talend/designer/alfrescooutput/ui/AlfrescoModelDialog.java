@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,11 +53,11 @@ import org.talend.designer.alfrescooutput.util.AlfrescoOutputException;
 
 /**
  * Dialog allowing to choose typing, i.e. an Alfresco type and Alfresco aspects within Alfresco model definitions.
- * 
+ *
  * @author Marc Dutoo - Open Wide SA
- * 
+ *
  * $Id: AlfrescoModelDialog.java,v 1.1 2008/10/07 21:27:31 mdutoo Exp $
- * 
+ *
  */
 public class AlfrescoModelDialog extends Dialog {
 

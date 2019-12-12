@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -157,7 +157,7 @@ import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 
 /**
- * 
+ *
  * Component manager that read each information in a xml file with Emf. <br/>
  * $Id$
  */
@@ -439,7 +439,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * DOC nrousseau Comment method "checkSchemaParameter".
-     * 
+     *
      * @param listParam
      */
     private void checkSchemaParameter(List<ElementParameter> listParam, INode node) {
@@ -601,7 +601,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * DOC ycbai Comment method "addValidationRulesParameters".
-     * 
+     *
      * @param listParam
      * @param node
      */
@@ -772,7 +772,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * yzhang Comment method "getSQLPatternItem".
-     * 
+     *
      * @param sqlpatternName
      * @param eltNodeName
      * @return
@@ -801,7 +801,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * DOC bqian Comment method "getSqlPatternsByDB".
-     * 
+     *
      * @param db
      * @return
      */
@@ -829,7 +829,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * yzhang Comment method "getNodeFormatId".
-     * 
+     *
      * @param nodeLabel
      * @param nodeFamily
      * @return
@@ -2152,7 +2152,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * yzhang Comment method "getColor".
-     * 
+     *
      * @param param
      * @param color
      */
@@ -2248,6 +2248,9 @@ public class EmfComponent extends AbstractBasicComponent {
                 readOnlyColumnPosition = EReadOnlyComlumnPosition.BOTTOM.toString();
             }
             defaultTable.setReadOnlyColumnPosition(readOnlyColumnPosition);
+
+            List<String> originalColumns = new ArrayList<>();
+
             int nbCustom = 0;
             for (int i = 0; i < xmlColumnList.size(); i++) {
                 xmlColumn = (COLUMNType) xmlColumnList.get(i);
@@ -2283,9 +2286,11 @@ public class EmfComponent extends AbstractBasicComponent {
                     talendColumn.setCustomId(-1);
                 }
                 talendColumnList.add(talendColumn);
+                originalColumns.add(talendColumn.getLabel());
             }
 
             defaultTable.setListColumns(talendColumnList);
+            defaultTable.setOriginalColumns(originalColumns);
 
             // store the default table in default value
             IElementParameterDefaultValue defaultValue = new ElementParameterDefaultValue();
@@ -2300,7 +2305,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * DOC nrousseau Comment method "initializePropertyParameters".
-     * 
+     *
      * @param listParam
      */
     private void initializePropertyParameters(List<ElementParameter> listParam) {
@@ -2394,7 +2399,7 @@ public class EmfComponent extends AbstractBasicComponent {
     /**
      * Sometimes the property parameters of schema are base on other parameters,but they might be initialized after the
      * schema. So there need to initialize the schema's again.
-     * 
+     *
      * @param listParam
      */
     private void initializePropertyParametersForSchema(List<ElementParameter> listParam) {
@@ -2651,7 +2656,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getTranslatedFamilyName()
      */
     @Override
@@ -2727,7 +2732,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#hasConditionalOutputs()
      */
     @Override
@@ -2810,7 +2815,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IComponent#createConnectors()
      */
     @Override
@@ -3049,7 +3054,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisible()
      */
     @Override
@@ -3111,7 +3116,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getModulesNeeded()
      */
     @Override
@@ -3324,7 +3329,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * DOC nrousseau Comment method "createMultipleComponentManagers".
-     * 
+     *
      * @return
      */
     @Override
@@ -3421,7 +3426,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isLoaded()
      */
     @Override
@@ -3441,7 +3446,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * Getter for icon16.
-     * 
+     *
      * @return the icon16
      */
     @Override
@@ -3461,7 +3466,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * Getter for icon24.
-     * 
+     *
      * @return the icon24
      */
     @Override
@@ -3481,7 +3486,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * Getter for icon32.
-     * 
+     *
      * @return the icon32
      */
     @Override
@@ -3669,7 +3674,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getComponentType()
      */
     @Override
@@ -3748,7 +3753,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useLookup()
      */
     @Override
@@ -3781,7 +3786,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * there only search in the <ADVANCEDPARAMETERS/> node, it can be a little faster.
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useImport()
      */
     @Override
@@ -3817,7 +3822,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getComponentType()
      */
     @Override
@@ -3827,7 +3832,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isHashComponent()
      */
     @Override
@@ -3846,7 +3851,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isTechnical()
      */
     @Override
@@ -3871,7 +3876,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isSingleton()
      */
     @Override
@@ -3890,7 +3895,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isMainCodeCalled()
      */
     @Override
@@ -3910,7 +3915,7 @@ public class EmfComponent extends AbstractBasicComponent {
     /**
      * get this component's repository type <br>
      * see <PARAMETER NAME="PROPERTY" ...> in the component's xml definition.
-     * 
+     *
      * @return
      */
     @Override
@@ -3953,7 +3958,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * return the common ComponentResourceFactoryImpl to retreive component resource from URI
-     * 
+     *
      * @return factoryImpl
      */
     // here we are using soft references so that whenever the GC runs it can collect the ComponentResourceFactoryImpl
@@ -3969,7 +3974,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * return the common ComponentResourceFactoryImpl to retreive component resource from URI
-     * 
+     *
      * @return factoryImpl
      */
     // here we are using soft references so that whenever the GC runs it can collect the ComponentResourceFactoryImpl
@@ -3990,7 +3995,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * Sets the visible.
-     * 
+     *
      * @param visible the visible to set
      */
     public void setVisible(Boolean visible) {
@@ -3999,7 +4004,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * Sets the technical.
-     * 
+     *
      * @param technical the technical to set
      */
     public void setTechnical(Boolean technical) {
@@ -4034,7 +4039,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * Getter for type.
-     * 
+     *
      * @return the type
      */
     @Override
@@ -4062,7 +4067,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getInputType()
      */
     @Override
@@ -4072,7 +4077,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getOutputType()
      */
     @Override
@@ -4082,7 +4087,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * Getter for reduce.
-     * 
+     *
      * @return the reduce
      */
     @Override
@@ -4092,7 +4097,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isSparkAction()
      */
     @Override
@@ -4102,7 +4107,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.AbstractComponent#setPaletteType(java.lang.String)
      */
     @Override
@@ -4115,7 +4120,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPartitioning()
      */
     @Override
@@ -4125,7 +4130,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * Getter for provider.
-     * 
+     *
      * @return the provider
      */
     public AbstractComponentsProvider getProvider() {
@@ -4134,7 +4139,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /**
      * Sets the provider.
-     * 
+     *
      * @param provider the provider to set
      */
     public void setProvider(AbstractComponentsProvider provider) {
@@ -4148,7 +4153,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -4162,7 +4167,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -4196,7 +4201,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isLog4JEnabled()
      */
     @Override
@@ -4226,7 +4231,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getCONNECTORList()
      */
     @Override

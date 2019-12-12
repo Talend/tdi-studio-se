@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.designer.dbmap.managers.MapperManager;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: InputColumnTableEntry.java 898 2006-12-07 11:06:17Z amaumont $
- * 
+ *
  */
 public class InputColumnTableEntry extends AbstractInOutTableEntry {
 
@@ -43,7 +43,7 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
 
     /**
      * Getter for operator.
-     * 
+     *
      * @return the operator
      */
     public String getOperator() {
@@ -52,7 +52,7 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
 
     /**
      * Sets the operator.
-     * 
+     *
      * @param operator the operator to set
      */
     public void setOperator(String operator) {
@@ -61,7 +61,7 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
 
     /**
      * Getter for join.
-     * 
+     *
      * @return the join
      */
     public boolean isJoin() {
@@ -70,7 +70,7 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
 
     /**
      * Sets the join.
-     * 
+     *
      * @param join the join to set
      */
     public void setJoin(boolean join) {
@@ -79,7 +79,7 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
 
     /**
      * Getter for originalExpression.
-     * 
+     *
      * @return the originalExpression
      */
     public String getOriginalExpression() {
@@ -89,7 +89,7 @@ public class InputColumnTableEntry extends AbstractInOutTableEntry {
     /**
      * Sets the originalExpression. Used to save the original expression while operator is not accepted, so expression
      * will be restored if operator has not changed.
-     * 
+     *
      * @param expressionBackup the originalExpression to set
      */
     public void setOriginalExpression(String originalExpression) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import java.io.Serializable;
 
 /**
  * DOC mhirt class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class LightJetBean implements Serializable {
 
@@ -38,7 +38,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * DOC mhirt LightJetBean constructor comment.
-     * 
+     *
      * @param templateRelativeUri
      * @param className
      * @param methodName
@@ -63,7 +63,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Getter for className.
-     * 
+     *
      * @return the className
      */
     public String getClassName() {
@@ -72,7 +72,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Sets the className.
-     * 
+     *
      * @param className the className to set
      */
     public void setClassName(String className) {
@@ -81,7 +81,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Getter for methodName.
-     * 
+     *
      * @return the methodName
      */
     public String getMethodName() {
@@ -90,7 +90,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Sets the methodName.
-     * 
+     *
      * @param methodName the methodName to set
      */
     public void setMethodName(String methodName) {
@@ -99,7 +99,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Getter for templateRelativeUri.
-     * 
+     *
      * @return the templateRelativeUri
      */
     public String getTemplateRelativeUri() {
@@ -108,7 +108,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Sets the templateRelativeUri.
-     * 
+     *
      * @param templateRelativeUri the templateRelativeUri to set
      */
     public void setTemplateRelativeUri(String templateRelativeUri) {
@@ -117,7 +117,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Getter for version.
-     * 
+     *
      * @return the version
      */
     public String getVersion() {
@@ -126,7 +126,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Sets the version.
-     * 
+     *
      * @param version the version to set
      */
     public void setVersion(String version) {
@@ -135,7 +135,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Getter for crc.
-     * 
+     *
      * @return the crc
      */
     public long getCrc() {
@@ -144,7 +144,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Sets the crc.
-     * 
+     *
      * @param crc the crc to set
      */
     public void setCrc(long crc) {
@@ -153,7 +153,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Getter for language.
-     * 
+     *
      * @return the language
      */
     public String getLanguage() {
@@ -162,7 +162,7 @@ public class LightJetBean implements Serializable {
 
     /**
      * Sets the language.
-     * 
+     *
      * @param language the language to set
      */
     public void setLanguage(String language) {
@@ -171,7 +171,7 @@ public class LightJetBean implements Serializable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -200,7 +200,7 @@ public class LightJetBean implements Serializable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override

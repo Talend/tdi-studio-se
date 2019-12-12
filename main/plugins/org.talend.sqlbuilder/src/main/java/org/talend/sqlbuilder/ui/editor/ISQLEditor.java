@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,15 +20,15 @@ import org.talend.sqlbuilder.ui.ISQLBuilderDialog;
 
 /**
  * This interface is responsible for defining methods for SQLBuilderEditorComposite class.
- * 
+ *
  * @author ftang
- * 
+ *
  */
 public interface ISQLEditor {
 
     /**
      * Gets Shell.
-     * 
+     *
      * @return an instance of Shell.
      */
     Shell getShell();
@@ -40,22 +40,22 @@ public interface ISQLEditor {
 
     /**
      * Gets the allowed max result length .
-     * 
+     *
      * @return
      */
     String getMaxResult();
 
     /**
      * Gets repository node.
-     * 
+     *
      * @return an instance of RepositoryNode
      */
     RepositoryNode getRepositoryNode();
 
     /**
-     * 
+     *
      * Gets sql query.
-     * 
+     *
      * @return
      */
     String getSQLToBeExecuted();
@@ -71,14 +71,14 @@ public interface ISQLEditor {
     void clearText();
 
     /**
-     * 
+     *
      * Refresh actions availability on the toolbar.
      */
     void refresh(boolean b);
 
     /**
      * Gets repository name.
-     * 
+     *
      * @return a string
      */
     String getRepositoryName();
@@ -100,7 +100,7 @@ public interface ISQLEditor {
 
     /**
      * Sets repository node.
-     * 
+     *
      * @param node
      */
     void setRepositoryNode(RepositoryNode node);
@@ -109,7 +109,7 @@ public interface ISQLEditor {
 
     /**
      * Getter for dialog.
-     * 
+     *
      * @return the dialog
      */
     public ISQLBuilderDialog getDialog();

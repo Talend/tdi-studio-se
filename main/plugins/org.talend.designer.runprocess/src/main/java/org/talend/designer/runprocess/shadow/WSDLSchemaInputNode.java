@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,7 @@ public class WSDLSchemaInputNode extends FileInputNode {
 
     /**
      * DOC qwei WSDLSchemaInputNode constructor comment.
-     * 
+     *
      * @param nodeType
      */
     private List<IMetadataTable> metadatas = null;
@@ -42,7 +42,7 @@ public class WSDLSchemaInputNode extends FileInputNode {
 
     /**
      * Constructs a new WSDLSchemaInputNode.
-     * 
+     *
      * @param schemaBean
      * @param string
      */
@@ -56,7 +56,7 @@ public class WSDLSchemaInputNode extends FileInputNode {
 
     /**
      * DOC qwei Comment method "addParameters".
-     * 
+     *
      * @param schemaBean
      * @param parameters
      */
@@ -141,7 +141,7 @@ public class WSDLSchemaInputNode extends FileInputNode {
 
     /**
      * Getter for metadatas.
-     * 
+     *
      * @return the metadatas
      */
     public List<IMetadataTable> getMetadatas() {
@@ -150,7 +150,7 @@ public class WSDLSchemaInputNode extends FileInputNode {
 
     /**
      * Sets the metadatas.
-     * 
+     *
      * @param metadatas the metadatas to set
      */
     public void setMetadatas(List<IMetadataTable> metadatas) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,17 +25,17 @@ import org.talend.commons.utils.workbench.preferences.GlobalConstant;
 
 /**
  * Edit part of connection performance.
- * 
+ *
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ConnectionPerformanceEditPart.java 下午02:24:35 2007-6-8 +0000 (2007-6-8) yzhang $
- * 
+ *
  */
 public class ConnectionPerformanceEditPart extends AbstractGraphicalEditPart implements PropertyChangeListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#getLayer(java.lang.Object)
      */
     @Override
@@ -46,7 +46,7 @@ public class ConnectionPerformanceEditPart extends AbstractGraphicalEditPart imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractConnectionEditPart#createFigure()
      */
     @Override
@@ -55,7 +55,7 @@ public class ConnectionPerformanceEditPart extends AbstractGraphicalEditPart imp
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.talend.commons.utils.workbench.gef.SimpleHtmlFigure#paint(org.eclipse.draw2d.Graphics)
              */
             @Override
@@ -75,7 +75,7 @@ public class ConnectionPerformanceEditPart extends AbstractGraphicalEditPart imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#activate()
      */
     @Override
@@ -86,7 +86,7 @@ public class ConnectionPerformanceEditPart extends AbstractGraphicalEditPart imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#deactivate()
      */
     @Override
@@ -97,7 +97,7 @@ public class ConnectionPerformanceEditPart extends AbstractGraphicalEditPart imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {
@@ -108,7 +108,7 @@ public class ConnectionPerformanceEditPart extends AbstractGraphicalEditPart imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#createEditPolicies()
      */
     @Override
@@ -118,7 +118,7 @@ public class ConnectionPerformanceEditPart extends AbstractGraphicalEditPart imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
      */
     @Override

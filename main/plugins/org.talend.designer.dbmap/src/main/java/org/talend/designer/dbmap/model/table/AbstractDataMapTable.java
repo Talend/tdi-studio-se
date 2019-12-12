@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,9 +23,9 @@ import org.talend.designer.dbmap.managers.MapperManager;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: IDataMapTable.java 1782 2007-02-03 07:57:38Z bqian $
- * 
+ *
  */
 public abstract class AbstractDataMapTable implements IDataMapTable {
 
@@ -41,9 +41,9 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * DOC amaumont DataMapTable constructor comment.
-     * 
+     *
      * @param persistentTable
-     * 
+     *
      * @param metadataTable
      * @param externalMapperTable
      */
@@ -68,7 +68,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
     }
 
     /**
-     * 
+     *
      * @return a <code>List</code> of entries.
      */
     public List<IColumnEntry> getColumnEntries() {
@@ -101,7 +101,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * Getter for columnsEntriesModel.
-     * 
+     *
      * @return the columnsEntriesModel
      */
     public ExtendedTableModel<IColumnEntry> getTableColumnsEntriesModel() {
@@ -110,7 +110,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * DOC amaumont Comment method "swapElements".
-     * 
+     *
      * @param indicesOrigin
      * @param listIndexTarget
      */
@@ -120,7 +120,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /**
      * Getter for mapperManager.
-     * 
+     *
      * @return the mapperManager
      */
     public MapperManager getMapperManager() {
@@ -133,7 +133,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.abstractmap.model.table.IDataMapTable#getSizeState()
      */
     public SIZE_STATE getSizeState() {
@@ -143,7 +143,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.abstractmap.model.table.IDataMapTable#isReadOnly()
      */
     public boolean isReadOnly() {
@@ -153,7 +153,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.abstractmap.model.table.IDataMapTable#setReadOnly(boolean)
      */
     public void setReadOnly(boolean readOnly) {
@@ -163,7 +163,7 @@ public abstract class AbstractDataMapTable implements IDataMapTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.abstractmap.model.table.IDataMapTable#setSizeState(org.talend.designer.abstractmap.model.table.IDataMapTable.SIZE_STATE)
      */
     public void setSizeState(SIZE_STATE sizeState) {

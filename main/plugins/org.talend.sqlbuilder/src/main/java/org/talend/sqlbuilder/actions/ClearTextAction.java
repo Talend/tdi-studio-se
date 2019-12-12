@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,11 +17,11 @@ import org.talend.sqlbuilder.Messages;
 import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
- * 
+ *
  * This class is used for clearing the text in Text component. <br/>
- * 
+ *
  * @author ftang
- * 
+ *
  */
 public class ClearTextAction extends AbstractEditorAction {
 
@@ -29,7 +29,7 @@ public class ClearTextAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getText()
      */
     public String getText() {
@@ -38,7 +38,7 @@ public class ClearTextAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#run()
      */
     public void run() {
@@ -52,7 +52,7 @@ public class ClearTextAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getToolTipText()
      */
     public String getToolTipText() {
@@ -61,7 +61,7 @@ public class ClearTextAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#getHoverImageDescriptor()
      */
     public ImageDescriptor getHoverImageDescriptor() {
@@ -70,7 +70,7 @@ public class ClearTextAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#getImageDescriptor()
      */
     public ImageDescriptor getImageDescriptor() {

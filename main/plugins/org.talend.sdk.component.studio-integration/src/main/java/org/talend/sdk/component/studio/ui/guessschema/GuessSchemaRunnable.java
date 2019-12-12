@@ -11,6 +11,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.Property;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractGuessSchemaProcess;
+import org.talend.sdk.component.studio.ui.guessschema.TaCoKitGuessSchemaProcess.GuessSchemaResult;
 
 public class GuessSchemaRunnable implements IRunnableWithProgress {
 
@@ -18,7 +19,7 @@ public class GuessSchemaRunnable implements IRunnableWithProgress {
 
     private IElementParameter elementParameter;
 
-    private String schema = null;
+    private GuessSchemaResult schema = null;
 
     private boolean canceled = false;
 
@@ -36,7 +37,7 @@ public class GuessSchemaRunnable implements IRunnableWithProgress {
             TaCoKitGuessSchemaProcess gsp = new TaCoKitGuessSchemaProcess(newmockProperty, node, context,
                     discoverSchemaActionName(), elementParameter.getContext());
 
-            final Future<String> result = gsp.run();
+            final Future<GuessSchemaResult> result = gsp.run();
             while (!result.isDone()) {
                 if (monitor.isCanceled()) {
                     result.cancel(true);
@@ -60,7 +61,7 @@ public class GuessSchemaRunnable implements IRunnableWithProgress {
                 : String.valueOf(elementParameter.getValue());
     }
 
-    public synchronized String getSchema() {
+    public synchronized GuessSchemaResult getSchema() {
         return schema;
     }
 

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,7 +42,7 @@ public class MapperHelperTest {
         Node sparkTMap = new Node(sparkComponent, process);
         assertFalse("Spark tMap should not be a virtual component", MapperHelper.isGeneratedAsVirtualComponent(sparkTMap));
 
-    
+
         IComponent sparkStreamingComponent = ComponentsFactoryProvider.getInstance().get("tMap",
                 ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName());
         Node sparkStreamingTMap = new Node(sparkStreamingComponent, process);

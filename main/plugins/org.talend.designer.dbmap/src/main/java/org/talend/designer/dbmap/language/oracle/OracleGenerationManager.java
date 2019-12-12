@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 import org.talend.designer.dbmap.utils.DataMapExpressionParser;
 
 /**
- * 
+ *
  * wzhang class global comment. Detailled comment
  */
 public class OracleGenerationManager extends DbGenerationManager {
@@ -52,9 +52,9 @@ public class OracleGenerationManager extends DbGenerationManager {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "buildSqlSelect".
-     * 
+     *
      * @param component
      * @param outputTableName
      * @param tabSpaceString

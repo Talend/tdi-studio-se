@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.designer.webservice.ws.wsdlinfo.ParameterInfo;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TableEntriesTransfer.java 24712 2009-05-13 12:22:19Z amaumont $
- * 
+ *
  */
 public class TableEntriesTransfer extends ByteArrayTransfer {
 
@@ -41,7 +41,7 @@ public class TableEntriesTransfer extends ByteArrayTransfer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.Transfer#getTypeIds()
      */
     @Override
@@ -51,7 +51,7 @@ public class TableEntriesTransfer extends ByteArrayTransfer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.Transfer#getTypeNames()
      */
     @Override

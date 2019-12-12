@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,7 +60,7 @@ public class ConnectionResuming extends Element {
 
     /**
      * Get the connection parent of the label.
-     * 
+     *
      * @return Connection
      */
     public Connection getConnection() {
@@ -74,7 +74,7 @@ public class ConnectionResuming extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#setPropertyValue(java.lang.Object, java.lang.Object)
      */
     public void setPropertyValue(String id, Object value) {
@@ -91,7 +91,7 @@ public class ConnectionResuming extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getPropertyValue(java.lang.Object)
      */
     public Object getPropertyValue(String id) {
@@ -100,7 +100,7 @@ public class ConnectionResuming extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getElementName()
      */
     @Override
@@ -113,7 +113,7 @@ public class ConnectionResuming extends Element {
     /**
      * Set the offset for the label. The offset is linked to the position of the label. The offset will be limited to a
      * distance maximum to avoid to have a label too far away from the connection.
-     * 
+     *
      * @param offset Point
      */
     public void setOffset(Point offset) {
@@ -124,7 +124,7 @@ public class ConnectionResuming extends Element {
 
     /**
      * Return the offset of the label.
-     * 
+     *
      * @return
      */
     public Point getOffset() {
@@ -151,7 +151,7 @@ public class ConnectionResuming extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getElementParameters()
      */
     @Override

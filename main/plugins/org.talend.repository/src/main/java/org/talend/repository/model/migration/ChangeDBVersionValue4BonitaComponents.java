@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,22 +39,22 @@ public class ChangeDBVersionValue4BonitaComponents extends
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
         String[] compNames = {"tBonitaDeploy" ,"tBonitaInstantiateProcess"};
-        
+
     	IComponentConversion conversion = new IComponentConversion() {
 
 	        public void transform(NodeType node) {
 	            if(node == null) {
 	                return;
 	            }
-	            
+
 	        	ElementParameterType parameter = ComponentUtilities.getNodeProperty(node, "DB_VERSION");
-	        	
+
 	        	if (parameter != null) {
 	        		String value = parameter.getValue();
 	        		if(value == null) {
 	        		    return;
 	        		}
-	        		
+
 	        		String oldValueFor531 = "novaBpmIdentity-1.0.jar;novaBpmPerf-1.0.jar;novaBpmUtil-1.0.jar;hibernate-core-3.5.6-Final.jar;commons-collections-3.1.jar;ehcache-core-2.2.0.jar;hibernate-commons-annotations-3.2.0.Final.jar;hibernate-search-3.2.1.Final.jar;javassist-3.8.0.GA.jar;lucene-core-2.9.3.jar;slf4j-api-1.6.1.jar;dom4j-1.6.1.jar;h2-1.2.132.jar;jta-1.1.jar;antlr-2.7.6.jar;commons-logging-1.1.1.jar";
 	        		if(oldValueFor531.equals(value)) {
 	        			String newValue = "novaBpmIdentity-1.0.jar;novaBpmPerf-1.0.jar;novaBpmUtil-1.0.jar;hibernate-core-3.5.6-Final.jar;commons-collections-3.2.2.jar;ehcache-core-2.2.0.jar;hibernate-commons-annotations-3.2.0.Final.jar;hibernate-search-3.2.1.Final.jar;javassist-3.8.0.GA.jar;lucene-core-2.9.3.jar;slf4j-api-1.6.1.jar;dom4j-1.6.1.jar;h2-1.2.132.jar;jta-1.1.jar;antlr-2.7.6.jar;commons-logging-1.1.1.jar";
@@ -62,9 +62,9 @@ public class ChangeDBVersionValue4BonitaComponents extends
 	        		}
 	        	}
 	        }
-        
+
     	};
-    	
+
     	for (String name : compNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 

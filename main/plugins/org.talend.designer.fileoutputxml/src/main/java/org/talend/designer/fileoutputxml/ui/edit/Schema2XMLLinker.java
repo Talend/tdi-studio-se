@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,9 +60,9 @@ import org.talend.repository.i18n.Messages;
 
 /**
  * bqian This is the linker for connecting schema instructure to xml's. <br/>
- * 
+ *
  * $Id: Schema2XMLLinker.java,v 1.1 2007/06/12 07:20:38 gke Exp $
- * 
+ *
  */
 public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
@@ -80,7 +80,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * amaumont XmlToMetadataTableLinker constructor comment.
-     * 
+     *
      * @param commonParent common main parent of tree and table, it and its children should have backgoundMode
      * configured with SWT.INHERIT_FORCE, same configuration for parents of tree and table.
      * @param tree
@@ -107,7 +107,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * Comment method "init".
-     * 
+     *
      * @param tree
      */
     private void init() {
@@ -127,7 +127,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * amaumont Comment method "initColors".
-     * 
+     *
      * @param display
      */
     private void initColors(Display display) {
@@ -190,7 +190,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.linking.TreeToTableLinker#drawBackground(org.eclipse.swt.graphics.GC)
      */
     @Override
@@ -200,7 +200,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * amaumont Comment method "addLink".
-     * 
+     *
      * @param tableItem
      * @param dataItem1
      * @param tree
@@ -212,7 +212,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * amaumont Comment method "addLink".
-     * 
+     *
      * @param tableItem
      * @param dataItem1
      * @param tree
@@ -245,7 +245,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "onXPathValueChanged".
-     * 
+     *
      * @param table
      * @param widget
      */
@@ -256,7 +256,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * DOC ke Comment method "linkSize".
-     * 
+     *
      * @return
      */
     public int linkSize() {
@@ -325,7 +325,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * DOC nrousseau Comment method "containsTreeNode".
-     * 
+     *
      * @param data
      * @param treeNode
      * @return
@@ -353,7 +353,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * Getter for loopTableEditorView.
-     * 
+     *
      * @return the loopTableEditorView
      */
     public TreeViewer getXMLViewer() {
@@ -461,7 +461,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "getSelectedRelativeStyleLink".
-     * 
+     *
      * @param selectedLoopLinkColor
      */
     private void getSelectedRelativeStyleLink() {
@@ -470,7 +470,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "validateXPathExpression".
-     * 
+     *
      * @param newValue
      * @return null if expression is valid, else return the error message.
      */
@@ -495,7 +495,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.linking.TreeToTablesLinker#getDrawingLinksComparator()
      */
     @Override
@@ -530,7 +530,7 @@ public class Schema2XMLLinker extends TableToTreeLinker<Object, Object> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.linking.TableToTreeLinker#getFirstVisibleTreeItemOfPath(java.lang.Object)
      */
     @Override

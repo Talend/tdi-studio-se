@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,7 +34,7 @@ public class RenametWindowKeyTotGenKey extends AbstractJobMigrationTask {
             return ExecutionResult.NOTHING_TO_DO;
         }
         try {
-            ModifyComponentsAction.searchAndRename(item, processType, "tWindowKey", "tGenKey"); //$NON-NLS-1$ //$NON-NLS-2$           
+            ModifyComponentsAction.searchAndRename(item, processType, "tWindowKey", "tGenKey"); //$NON-NLS-1$ //$NON-NLS-2$
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
             ExceptionHandler.process(e);

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -67,7 +67,7 @@ public class MessageMemoController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#createControl
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -236,7 +236,7 @@ public class MessageMemoController extends AbstractElementPropertySectionControl
 
     /**
      * DOC zli Comment method "createCommand".
-     * 
+     *
      * @param showMessageDialog
      * @return
      */
@@ -251,7 +251,7 @@ public class MessageMemoController extends AbstractElementPropertySectionControl
     }
 
     /**
-     * 
+     *
      * zli ShowMessageDialog class global comment. Detailled comment
      */
     class ShowMessageDialog extends Dialog {
@@ -308,7 +308,7 @@ public class MessageMemoController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -342,7 +342,7 @@ public class MessageMemoController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#refresh(org
      * .talend.core.model.process.IElementParameter, boolean)
@@ -372,7 +372,7 @@ public class MessageMemoController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

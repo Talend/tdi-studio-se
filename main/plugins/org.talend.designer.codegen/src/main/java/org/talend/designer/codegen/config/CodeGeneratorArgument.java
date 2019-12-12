@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,9 +20,9 @@ import org.talend.core.model.temp.ECodePart;
 
 /**
  * Shared Object to use as Template Argument in Code Generation.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class CodeGeneratorArgument {
 
@@ -68,7 +68,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Getter for codePart.
-     * 
+     *
      * @return the codePart
      */
     public ECodePart getCodePart() {
@@ -77,7 +77,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Sets the codePart.
-     * 
+     *
      * @param codePart the codePart to set
      */
     public void setCodePart(ECodePart codePart) {
@@ -86,7 +86,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Getter for node.
-     * 
+     *
      * @return the node
      */
     public Object getArgument() {
@@ -95,7 +95,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Sets the node.
-     * 
+     *
      * @param node the node to set
      */
     public void setNode(Object node) {
@@ -104,7 +104,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Getter for statistics.
-     * 
+     *
      * @return the statistics
      */
     public boolean isStatistics() {
@@ -113,7 +113,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Sets the statistics.
-     * 
+     *
      * @param statistics the statistics to set
      */
     public void setStatistics(boolean statistics) {
@@ -122,7 +122,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Getter for trace.
-     * 
+     *
      * @return the trace
      */
     public boolean isTrace() {
@@ -131,7 +131,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Sets the trace.
-     * 
+     *
      * @param trace the trace to set
      */
     public void setTrace(boolean trace) {
@@ -212,7 +212,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Getter for pauseTime.
-     * 
+     *
      * @return the pauseTime
      */
     public int getPauseTime() {
@@ -221,7 +221,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Sets the pauseTime.
-     * 
+     *
      * @param pauseTime the pauseTime to set
      */
     public void setPauseTime(int pauseTime) {
@@ -238,7 +238,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Getter for allMainSubTreeConnections.
-     * 
+     *
      * @return the allMainSubTreeConnections
      */
     public List<IConnection> getAllMainSubTreeConnections() {
@@ -250,7 +250,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Sets the allMainSubTreeConnections.
-     * 
+     *
      * @param allMainSubTreeConnections the allMainSubTreeConnections to set
      */
     public void setAllMainSubTreeConnections(List<IConnection> allMainSubTreeConnections) {
@@ -259,7 +259,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Getter for subTree.
-     * 
+     *
      * @return the subTree
      */
     public NodesSubTree getSubTree() {
@@ -268,7 +268,7 @@ public class CodeGeneratorArgument {
 
     /**
      * Sets the subTree.
-     * 
+     *
      * @param subTree the subTree to set
      */
     public void setSubTree(NodesSubTree subTree) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -55,7 +55,7 @@ public class TalendExportPage extends ExportPage {
 
     /**
      * DOC guanglong.du TalendExportPage constructor comment.
-     * 
+     *
      * @param aWorkbench
      * @param currentSelection
      */
@@ -120,7 +120,7 @@ public class TalendExportPage extends ExportPage {
 
         /**
          * Constructor for CategorizedWizardSelectionTree
-         * 
+         *
          * @param categories root wizard category for the wizard type
          * @param msg message describing what the user should choose from the tree.
          */
@@ -132,7 +132,7 @@ public class TalendExportPage extends ExportPage {
 
         /**
          * Create the tree viewer and a message describing what the user should choose from the tree.
-         * 
+         *
          * @param parent Composite on which the tree viewer is to be created
          * @return Comoposite with all widgets
          */
@@ -159,7 +159,7 @@ public class TalendExportPage extends ExportPage {
 
         /**
          * Create the categorized tree viewer.
-         * 
+         *
          * @param parent
          */
         private void createFilteredTree(Composite parent) {
@@ -202,7 +202,7 @@ public class TalendExportPage extends ExportPage {
         }
 
         /**
-         * 
+         *
          * @return the categorized tree viewer
          */
         protected TreeViewer getViewer() {
@@ -211,7 +211,7 @@ public class TalendExportPage extends ExportPage {
 
         /**
          * Layout for the given control.
-         * 
+         *
          * @param control
          */
         private void layoutTopControl(Control control) {
@@ -234,7 +234,7 @@ public class TalendExportPage extends ExportPage {
 
     /**
      * Return the number of rows available in the current display using the current font.
-     * 
+     *
      * @param parent The Composite whose Font will be queried.
      * @return int The result of the display size divided by the font size.
      */
@@ -247,7 +247,7 @@ public class TalendExportPage extends ExportPage {
     }
 
     /**
-     * 
+     *
      * DOC guanglong.du TalendExportPage class global comment. Detailled comment
      */
     private class TalendWizardContentProvider extends WizardContentProvider {

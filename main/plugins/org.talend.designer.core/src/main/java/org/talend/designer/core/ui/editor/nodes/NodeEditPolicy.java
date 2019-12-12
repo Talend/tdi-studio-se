@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,15 +25,15 @@ import org.talend.designer.core.ui.editor.cmd.DeleteNodeContainerCommand;
 
 /**
  * Edit policy that will manage the deletion of a node and the changement of status. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeEditPolicy extends ComponentEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.ComponentEditPolicy#getCommand(org.eclipse.gef.Request)
      */
     @Override
@@ -43,7 +43,7 @@ public class NodeEditPolicy extends ComponentEditPolicy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.ComponentEditPolicy#createDeleteCommand(org.eclipse.gef.requests.GroupRequest)
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,9 +17,9 @@ import org.talend.core.model.runprocess.IJavaProcessorStates;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: RuntimeJavaStatus.java RuntimeJavaStatus 2007-1-23 下午05:17:59 +0000 (下午05:17:59, 2007-1-23 2007) yzhang $
- * 
+ *
  */
 public class JavaProcessorRuntimeStates implements IJavaProcessorStates {
 
@@ -35,7 +35,7 @@ public class JavaProcessorRuntimeStates implements IJavaProcessorStates {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.java.IJavaStatus#getCodePath()
      */
     @Override
@@ -46,7 +46,7 @@ public class JavaProcessorRuntimeStates implements IJavaProcessorStates {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.java.IJavaStatus#getContextPath()
      */
     @Override
@@ -57,7 +57,7 @@ public class JavaProcessorRuntimeStates implements IJavaProcessorStates {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.runprocess.IJavaProcessorStates#getDataSetPath()
      */
     @Override

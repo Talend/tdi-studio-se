@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -65,7 +65,7 @@ public class ChangeJavaAPIAsDefault4SqoopMigrationTask extends
 	}
 
 	/**
-	 * 
+	 *
 	 * rdubois AddConnectionMode class global comment. Detailled comment
 	 */
 	private class AddExecuteMode implements IComponentConversion {
@@ -73,7 +73,7 @@ public class ChangeJavaAPIAsDefault4SqoopMigrationTask extends
 		private String field = "RADIO"; //$NON-NLS-1$
 
 		private String commandline_name = "USE_COMMANDLINE"; //$NON-NLS-1$
-		
+
 		private String name_api = "USE_JAVAAPI"; //$NON-NLS-1$
 
 		public AddExecuteMode() {

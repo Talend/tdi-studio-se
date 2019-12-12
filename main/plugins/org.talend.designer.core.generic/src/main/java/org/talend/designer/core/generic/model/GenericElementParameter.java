@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -94,7 +94,7 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
     private Boolean askPropagate;
 
     private InvocationTargetException exceptionResult;
-    
+
     public GenericElementParameter(IElement element, ComponentProperties rootProperties, Form form, Widget widget,
             ComponentService componentService) {
         super(element);
@@ -141,7 +141,7 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
             /*
              * Prevent Salesforce and Snowflake from performing API calls to retrieve table metadata.
              * Possible values is going to be a marker that shows that method was called from RepositoryChangeMetadataCommand.
-             * Otherwise method was called to perform "validate" and "after" operations. 
+             * Otherwise method was called to perform "validate" and "after" operations.
              */
             if ((!"table.tableName".equals(getName()) && !"module.moduleName".equals(getName())) || !possibleValues.isEmpty()) {
 	            boolean calledValidate = callValidate();
@@ -294,7 +294,7 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
         }
         return false;
     }
-    
+
     private RuntimeContext prepareRuntimeContextForTriggerMethod() {
         //in future, we can pass all studio vars here to the trigger method in tcomp
         RuntimeContext context = new RuntimeContext() {
@@ -304,15 +304,15 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
                 if("MAPPING_LOCATION".equals(key)) {
                     return System.getProperty("talend.mappings.url");
                 }
-                
+
                 return null;
             }
-            
+
         };
-        
+
         return context;
     }
-    
+
     private boolean callAfter() {
         if (widget.isCallAfter()
                 && (hasPropertyChangeListener() || Widget.SCHEMA_REFERENCE_WIDGET_TYPE.equals(widget.getWidgetType()))) {
@@ -575,7 +575,7 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
         }
         return null;
     }
-    
+
     public Properties getProperties() {
         NamedThing content = widget.getContent();
         if (content instanceof Properties) {

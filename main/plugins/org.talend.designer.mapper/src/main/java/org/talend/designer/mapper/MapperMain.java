@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,9 +34,9 @@ import org.talend.designer.mapper.model.table.OutputTable;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MapperMain {
 
@@ -56,7 +56,7 @@ public class MapperMain {
 
     /**
      * Create a shell and init the mapper into it.
-     * 
+     *
      * @param display
      * @return the created shell
      */
@@ -67,7 +67,7 @@ public class MapperMain {
 
     /**
      * Init the mapper into the passed parent <code>Component</code>.
-     * 
+     *
      * @param parent
      */
     public void createUI(Composite parent) {
@@ -85,9 +85,9 @@ public class MapperMain {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "getExternalData".
-     * 
+     *
      * @param refresh
      * @param loadFromInternalData else load from external data
      * @return
@@ -106,7 +106,7 @@ public class MapperMain {
 
     /**
      * DOC amaumont Comment method "loadFromExternalData".
-     * 
+     *
      * @param incomingConnections
      * @param outgoingConnections
      * @param externalData
@@ -123,7 +123,7 @@ public class MapperMain {
 
     /**
      * DOC amaumont Comment method "createIOConnections".
-     * 
+     *
      * @param connections
      * @return
      */
@@ -163,7 +163,7 @@ public class MapperMain {
 
     /**
      * DOC amaumont Comment method "getResponse".
-     * 
+     *
      * @return
      */
     public int getMapperDialogResponse() {
@@ -184,7 +184,7 @@ public class MapperMain {
 
     /**
      * DOC amaumont Comment method "getMetadataListOut".
-     * 
+     *
      * @return
      */
     public List<IMetadataTable> getMetadataListOut() {

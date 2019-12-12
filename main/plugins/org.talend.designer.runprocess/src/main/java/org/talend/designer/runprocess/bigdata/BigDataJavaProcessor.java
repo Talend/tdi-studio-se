@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,11 +15,13 @@ package org.talend.designer.runprocess.bigdata;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -51,6 +53,7 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessorUtilities;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.designer.runprocess.maven.MavenJavaProcessor;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 
@@ -60,7 +63,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
     /**
      * DOC rdubois BigDataJavaProcessor constructor comment.
-     * 
+     *
      * @param process
      * @param property
      * @param filenameFromLabel
@@ -74,7 +77,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
     /**
      * A Big Data job requires the PACKAGE Maven goal to be executed.
-     * 
+     *
      * @return true
      */
     @Override
@@ -109,26 +112,42 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         List<String> commandList = makeUpCommandSegments();
         return commandList.toArray(new String[commandList.size()]);
     }
+    
+    @Override
+    public String[] getCommandLine(boolean ignoreCustomJVMSetting) throws ProcessorException {
+        List<String> commandList = makeUpCommandSegments(ignoreCustomJVMSetting);
+        return commandList.toArray(new String[commandList.size()]);
+    }
 
     /**
      * <pre>
      * Makes all command segments up, like ahead commands, jvm commands, cp commands, main-class command, and others.
      * This method should be invoked by {@link #getCommandLine()}. The following is about some methods invoked by this
-     * method. 
+     * method.
      * <li>{@link #extractAheadCommandSegments()} to extract ahead command segments like "cd `dirname $0`\n".
-     * <li>{@link #extractJavaCommandSegments()} to extract java command segments like "java -Xms256M ". 
-     * <li>{@link #extractCPCommandSegments()} to extract cp command segments like "cp ../a.jar:../b.jar..". 
-     * <li>{@link #extractMainClassSegments()} to extract the main-class command segment. 
+     * <li>{@link #extractJavaCommandSegments()} to extract java command segments like "java -Xms256M ".
+     * <li>{@link #extractCPCommandSegments()} to extract cp command segments like "cp ../a.jar:../b.jar..".
+     * <li>{@link #extractMainClassSegments()} to extract the main-class command segment.
      * <li>{@link #extractArgumentSegments()} to extract other arguments for commands.
      * </pre>
-     * 
+     *
      * Added by Marvin Wang on Mar 22, 2013.
-     * 
+     *
      * @return
      */
     @Override
     protected List<String> makeUpCommandSegments() {
         return super.makeUpCommandSegments();
+    }
+    
+    private List<String> makeUpCommandSegments(boolean ignoreCustomJVMSetting) {
+    	List<String> commands = new ArrayList<String>();
+        commands.addAll(extractAheadCommandSegments());
+        commands.addAll(extractJavaCommandSegments(ignoreCustomJVMSetting));
+        commands.addAll(extractCPCommandSegments());
+        commands.add(extractMainClassSegments() == null ? "" : extractMainClassSegments()); //$NON-NLS-1$
+        commands.addAll(extractArgumentSegments());
+        return commands;
     }
 
     @Override
@@ -141,6 +160,10 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
     @Override
     public List<String> extractJavaCommandSegments() {
+        return extractJavaCommandSegments(false);
+    }
+    
+    private List<String> extractJavaCommandSegments(boolean ignoreCustomJVMSetting) {
         List<String> commandSegments = new ArrayList<>();
         String command = ProcessorConstants.CMD_KEY_WORD_JAVA;
         try {
@@ -150,14 +173,16 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         }
 
         commandSegments.add(command);
-        commandSegments.addAll(extractJavaVMArguments());
+        if(!ignoreCustomJVMSetting) {
+        	commandSegments.addAll(extractJavaVMArguments());
+        }
         return commandSegments;
     }
 
     /**
      * Extracts all JVM arguments from job or preference store. It invokes by {@link #extractJavaCommandSegments()}.
      * Added by Marvin Wang on Mar 20, 2013.
-     * 
+     *
      * @return
      */
     protected List<String> extractJavaVMArguments() {
@@ -185,18 +210,19 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         List<String> list = new ArrayList<>();
         list.add(ProcessorConstants.CMD_KEY_WORD_LIBJAR);
         StringBuffer libJars = new StringBuffer();
-        Set<String> libNames = new HashSet<>();
+        Set<String> libNamesUnsorted = new HashSet<>();
         boolean isExport = isExportConfig() || isRunAsExport();
         if (process instanceof IProcess2) {
             if (isExport) {
                 // In an export mode, all the dependencies and the routines/beans/udfs are packaged in the lib folder.
-                libNames = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducer((IProcess2) process);
+                libNamesUnsorted = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducer((IProcess2) process);
             } else {
                 // In the local mode, all the dependencies are packaged in the lib folder. The routines/beans/udfs are
                 // not.
                 // We will
                 // handle them separetely.
-                libNames = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducerWithoutRoutines((IProcess2) process);
+                libNamesUnsorted = JavaProcessorUtilities
+                        .extractLibNamesOnlyForMapperAndReducerWithoutRoutines((IProcess2) process);
             }
         }
         Set<ModuleNeeded> modulesNeeded = LastGenerationInfo.getInstance().getModulesNeededWithSubjobPerJob(process.getId(),
@@ -205,6 +231,19 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         for (ModuleNeeded module : modulesNeeded) {
             allNeededLibsAfterAdjuster.add(MavenUrlHelper.generateModuleNameByMavenURI(module.getMavenUri()));
         }
+        Set<String> libNames = new TreeSet<String>(new Comparator<String>() {
+
+            @Override
+            public int compare(String o1, String o2) {
+                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_ADDED_BACK) {
+                    if (StringUtils.equals(moduleName, o2)) {
+                        return -1;
+                    }
+                }
+                return 1;
+            }
+        });
+        libNames.addAll(libNamesUnsorted);
         Iterator<String> it = libNames.iterator();
         while (it.hasNext()) {
             String jarName = it.next();
@@ -296,14 +335,14 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
     /**
      * Returns all libs required by classpath, refer to this method {@link #extractCPCommandSegments()}. Added by Marvin
      * Wang on Mar 20, 2013.
-     * 
+     *
      * @return
      */
     protected Set<String> extractAllLibs() {
         Set<String> libsRequiredByJob = new HashSet<>();
         Set<ModuleNeeded> neededModules = JavaProcessorUtilities.getNeededModulesForProcess(process);
         if (!ProcessorUtilities.isExportConfig()) {
-            JavaProcessorUtilities.addLog4jToModuleList(neededModules);
+            JavaProcessorUtilities.addLog4jToModuleList(neededModules, process);
         }
         JavaProcessorUtilities.checkJavaProjectLib(neededModules);
 
@@ -316,7 +355,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
     /**
      * Makes up a job jar name that should be like "Test-0.1.jar" or "Test.jar". Added by Marvin Wang on Mar 21, 2013.
-     * 
+     *
      * @return
      */
     protected String makeupJobJarName() {
@@ -405,7 +444,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IBigDataProcessor#needsShade()
      */
     @Override
@@ -418,7 +457,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IBigDataProcessor#getShadedModules()
      */
     @Override

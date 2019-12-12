@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,7 +56,7 @@ import org.talend.designer.core.ui.editor.properties.controllers.AbstractElement
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class ConfigureConnParamDialog extends Dialog {
 
@@ -78,7 +78,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
     /**
      * qzhang ConfigureConnParamDialog constructor comment.
-     * 
+     *
      * @param parentShell
      * @param parameters
      * @param contextManager
@@ -107,7 +107,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
      */
     @Override
@@ -125,7 +125,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -180,7 +180,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
     /**
      * qzhang Comment method "addComponents".
-     * 
+     *
      * @param defaultContext
      */
     private void addComponents(IContext defaultContext) {
@@ -200,7 +200,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
     /**
      * qiang.zhang Comment method "createDirectoryComponent".
-     * 
+     *
      * @param key
      * @param defaultContext
      */
@@ -256,7 +256,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
              */
@@ -267,7 +267,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
             @Override
@@ -297,7 +297,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
              */
             @Override
@@ -320,7 +320,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
     /**
      * qiang.zhang Comment method "createFileComponent".
-     * 
+     *
      * @param key
      * @param defaultContext
      */
@@ -376,7 +376,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
              */
@@ -387,7 +387,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
             @Override
@@ -417,7 +417,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
              */
             @Override
@@ -517,7 +517,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
             /*
              * c (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.KeyAdapter#keyReleased(org.eclipse.swt.events.KeyEvent)
              */
             @Override
@@ -537,7 +537,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
     /**
      * qzhang Comment method "createContextComposite".
-     * 
+     *
      * @return
      */
     private IContext createContextComposite(Composite parent) {
@@ -559,7 +559,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
     /**
      * qzhang Comment method "getContextNames".
-     * 
+     *
      * @return
      */
     private String[] getContextNames() {
@@ -581,7 +581,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     @Override
@@ -629,7 +629,7 @@ public class ConfigureConnParamDialog extends Dialog {
 
     /**
      * qzhang Comment method "resetValues".
-     * 
+     *
      * @param host
      */
     private void resetValues(final Text key, final Text value) {

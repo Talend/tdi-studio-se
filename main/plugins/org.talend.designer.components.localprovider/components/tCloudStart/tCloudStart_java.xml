@@ -188,6 +188,7 @@ COMPATIBILITY="ALL"
 		<IMPORT NAME="sshj-0_8_1" MODULE="sshj-0.8.1.jar" MVN="mvn:org.talend.libraries/sshj-0.8.1/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		
 		<IMPORT NAME="sts-2.0.2" MODULE="sts-2.0.2.jar" MVN="mvn:org.talend.libraries/sts-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="jaxb-api-2.3.1" MODULE="jaxb-api-2.3.1.jar" MVN="mvn:javax.xml.bind/jaxb-api/2.3.1" REQUIRED="true"/>
 	</IMPORTS>
    </CODEGENERATION>
 

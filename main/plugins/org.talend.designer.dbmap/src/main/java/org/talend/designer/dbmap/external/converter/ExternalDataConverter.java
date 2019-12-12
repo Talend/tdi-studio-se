@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,9 +39,9 @@ import org.talend.designer.dbmap.model.tableentry.InputColumnTableEntry;
 
 /**
  * Convert external data to internal data and conversely.
- * 
+ *
  * $Id: ExternalDataConverter.java 1744 2007-01-31 13:05:30Z amaumont $
- * 
+ *
  */
 public class ExternalDataConverter {
 
@@ -55,7 +55,7 @@ public class ExternalDataConverter {
 
     /**
      * DOC amaumont ExternalDataConverter constructor comment.
-     * 
+     *
      * @param main
      */
     public ExternalDataConverter(MapperManager mapperManager) {
@@ -65,7 +65,7 @@ public class ExternalDataConverter {
 
     /**
      * Prepare internal data from connections and external data.
-     * 
+     *
      * @param inputConnections
      * @param outputConnections
      * @param outputMetadataTables
@@ -193,9 +193,9 @@ public class ExternalDataConverter {
     }
 
     /**
-     * 
+     *
      * Prepare ExternalMapperData object from internal data.
-     * 
+     *
      * @param mapperModel
      * @return
      */
@@ -236,7 +236,7 @@ public class ExternalDataConverter {
 
     /**
      * DOC amaumont Comment method "processToExternal".
-     * 
+     *
      * @param table
      * @param externalMapperTable
      */
@@ -251,9 +251,9 @@ public class ExternalDataConverter {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "fillExternalTable".
-     * 
+     *
      * @param table
      * @param externalMapperTable
      */
@@ -267,7 +267,7 @@ public class ExternalDataConverter {
 
     /**
      * DOC amaumont Comment method "fillCommonsDataForExternalTable".
-     * 
+     *
      * @param table
      * @param externalMapperTable
      */
@@ -278,7 +278,7 @@ public class ExternalDataConverter {
 
     /**
      * DOC amaumont Comment method "process".
-     * 
+     *
      * @param externalMapperTable
      * @param table
      */
@@ -315,9 +315,9 @@ public class ExternalDataConverter {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "fillExternalTable".
-     * 
+     *
      * @param table
      * @param externalMapperTable
      */

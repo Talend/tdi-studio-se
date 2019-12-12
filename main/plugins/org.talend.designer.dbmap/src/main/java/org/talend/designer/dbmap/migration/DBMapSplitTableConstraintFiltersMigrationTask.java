@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ public class DBMapSplitTableConstraintFiltersMigrationTask extends AbstractJobMi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @Override
@@ -96,7 +96,7 @@ public class DBMapSplitTableConstraintFiltersMigrationTask extends AbstractJobMi
                                 } else {
                                     String whereClause = expression.substring(0, splitIndex);
                                     if (!DbGenerationManager.containWith(expression, DbMapSqlConstants.OR + "\\b", true) //$NON-NLS-1$
-                                            && !DbGenerationManager.containWith(expression, DbMapSqlConstants.AND + "\\b", true)) { //$NON-NLS-1$ 
+                                            && !DbGenerationManager.containWith(expression, DbMapSqlConstants.AND + "\\b", true)) { //$NON-NLS-1$
                                         whereClause = DbMapSqlConstants.AND + " " + whereClause; //$NON-NLS-1$
                                     }
                                     pFilter.setExpression(whereClause);
@@ -143,7 +143,7 @@ public class DBMapSplitTableConstraintFiltersMigrationTask extends AbstractJobMi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#getOrder()
      */
     @Override

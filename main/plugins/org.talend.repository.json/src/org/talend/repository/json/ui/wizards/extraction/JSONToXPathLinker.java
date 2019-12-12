@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -71,6 +71,7 @@ import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
 import org.talend.commons.utils.data.list.ListenableListEvent.TYPE;
 import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.datatools.xml.utils.ATreeNode;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.XmlExtractorBgRefresher;
@@ -83,9 +84,9 @@ import org.w3c.dom.Node;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
@@ -117,7 +118,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont JSONToMetadataTableLinker constructor comment.
-     * 
+     *
      * @param commonParent common main parent of tree and table, it and its children should have backgoundMode
      * configured with SWT.INHERIT_FORCE, same configuration for parents of tree and table.
      * @param tree
@@ -166,7 +167,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "init".
-     * 
+     *
      * @param tree
      */
     private void init() {
@@ -195,7 +196,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "initColors".
-     * 
+     *
      * @param display
      */
     private void initColors(Display display) {
@@ -274,6 +275,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
                     }
 
                     if (originalValue != null) {
+                        loadItemDataForLazyLoad(loopTableEditorView);
                         createLoopLinks(originalValue, tableItem, monitorWrap);
                     }
 
@@ -303,7 +305,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "createFieldsLinkWithProgressDialog".
-     * 
+     *
      * @param monitorWrap
      * @param fieldsTableItems
      * @param totalWork
@@ -313,6 +315,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
             List<SchemaTarget> schemaTargetList, int startTableItem, int tableItemLength) {
         monitorWrap.beginTask("Fields links creation ...", totalWork);
 
+        loadItemDataForLazyLoad(fieldsTableEditorView);
         TableItem[] fieldsTableItems = fieldsTableEditorView.getTable().getItems();
         for (int i = startTableItem, indexShemaTarget = 0; i < startTableItem + tableItemLength; i++, indexShemaTarget++) {
 
@@ -329,9 +332,12 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
             TableItem tableItem = fieldsTableItems[i];
             SchemaTarget schemaTarget = schemaTargetList.get(indexShemaTarget);
             String relativeXpathQuery = schemaTarget.getRelativeXPathQuery();
-            createFieldLinks(relativeXpathQuery, tableItem, monitorWrap, schemaTarget);
+            if(fieldToExtract(jsonDndHandler.extractTagName(relativeXpathQuery, jsonDndHandler.getReadbyMode()), treePopulator.getAllNodes())) {
+            	createFieldLinks(relativeXpathQuery, tableItem, monitorWrap, schemaTarget);
+            }
             monitorWrap.worked(1);
         }
+        fieldsTableEditorView.getTableViewerCreator().getTableViewer().refresh();
         getLinksManager().sortLinks(getDrawingLinksComparator());
         getBackgroundRefresher().refreshBackground();
     }
@@ -341,6 +347,15 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
     private IExtendedControlListener loopTableExtendedControlListener;
 
     private ILineSelectionListener afterLineSelectionListener;
+    
+    public boolean fieldToExtract(String relativeXpathQuery, List<ATreeNode> nodes) {
+    	for(ATreeNode node : nodes) {
+    		if(relativeXpathQuery.equals(node.getLabel())) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
     /**
      * DOC amaumont Comment method "initListeners".
@@ -475,7 +490,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.linking.TreeToTableLinker#drawBackground(org.eclipse.swt.graphics.GC)
      */
     @Override
@@ -609,7 +624,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "addLink".
-     * 
+     *
      * @param treeItem
      * @param dataItem1
      * @param table
@@ -622,7 +637,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "addLink".
-     * 
+     *
      * @param treeItem
      * @param dataItem1
      * @param table
@@ -641,7 +656,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "addLink".
-     * 
+     *
      * @param treeItem
      * @param dataItem1
      * @param table
@@ -665,7 +680,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "onXPathValueChanged".
-     * 
+     *
      * @param table
      * @param newValue
      * @param itemIndex
@@ -687,7 +702,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "isLoopTable".
-     * 
+     *
      * @param table
      * @return
      */
@@ -697,9 +712,9 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "createLoopLinks".
-     * 
+     *
      * @param monitorWrap
-     * 
+     *
      * @param pathQuery
      * @param tableItem
      */
@@ -731,7 +746,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "addLinks".
-     * 
+     *
      * @param relativeXpath
      * @param tableItemTarget
      * @param progressMonitor
@@ -797,7 +812,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * Getter for tableEditorView.
-     * 
+     *
      * @return the tableEditorView
      */
     public ExtractionFieldsWithJSONXPathEditorView getFieldsTableEditorView() {
@@ -806,7 +821,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * Getter for loopTableEditorView.
-     * 
+     *
      * @return the loopTableEditorView
      */
     public ExtractionLoopWithJSONXPathEditorView getLoopTableEditorView() {
@@ -931,7 +946,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "isFieldsTable".
-     * 
+     *
      * @param table
      * @return
      */
@@ -955,7 +970,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "getSelectedRelativeStyleLink".
-     * 
+     *
      * @param selectedLoopLinkColor
      */
     private void getSelectedRelativeStyleLink() {
@@ -989,7 +1004,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * Getter for loopXpathNodes.
-     * 
+     *
      * @return the loopXpathNodes
      */
     public ArrayList<String> getLoopXpathNodes() {
@@ -998,7 +1013,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * DOC amaumont Comment method "validateXPathExpression".
-     * 
+     *
      * @param newValue
      * @return null if expression is valid, else return the error message.
      */
@@ -1023,7 +1038,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.linking.TreeToTablesLinker#getDrawingLinksComparator()
      */
     @Override
@@ -1058,7 +1073,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * Getter for allLoopNodes.
-     * 
+     *
      * @return the allLoopNodes
      */
     public ArrayList<Node> getAllLoopNodes() {
@@ -1067,7 +1082,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * Getter for uniqueLoopNodes.
-     * 
+     *
      * @return the uniqueLoopNodes
      */
     public ArrayList<Node> getUniqueLoopNodes() {
@@ -1076,7 +1091,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /**
      * Getter for nodeRetriever.
-     * 
+     *
      * @return the nodeRetriever
      */
     public XmlNodeRetriever getNodeRetriever() {
@@ -1097,7 +1112,7 @@ public class JSONToXPathLinker extends TreeToTablesLinker<Object, Object> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.linking.TreeToTablesLinker#dispose()
      */
     @Override

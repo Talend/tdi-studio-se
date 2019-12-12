@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -13,9 +13,9 @@
 package org.talend.ms.crm.odata;
 
 public final class ClientConfiguration {
-    
+
     /*
-     * Implemented authentication strategies for OData/MS CRM. 
+     * Implemented authentication strategies for OData/MS CRM.
      */
     public static enum AuthStrategyEnum {NTLM, OAUTH};
 
@@ -58,12 +58,12 @@ public final class ClientConfiguration {
      * Workstation for NTLM authentication.
      */
     private String workstation;
-    
+
     /*
      * Domain for NTLM authentication.
      */
     private String domain;
-    
+
     /*
      * The URL of the authenticating authority
      */
@@ -82,12 +82,12 @@ public final class ClientConfiguration {
     private int timeout = 60;
 
     private boolean reuseHttpClient;
-    
+
     private AuthStrategyEnum authStrategy = AuthStrategyEnum.OAUTH;
     private AppRegisteredType appRegisteredType = AppRegisteredType.NATIVE_APP;
     private WebAppPermission webAppPermission = WebAppPermission.DELEGATED;
 
-    
+
     ClientConfiguration(AuthStrategyEnum authStrategy) {
         this.authStrategy = authStrategy;
     }
@@ -172,7 +172,7 @@ public final class ClientConfiguration {
 
     }
 
-    
+
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
@@ -188,31 +188,31 @@ public final class ClientConfiguration {
     public void setReuseHttpClient(boolean reuseHttpClient) {
         this.reuseHttpClient = reuseHttpClient;
     }
-    
-    
+
+
     public AuthStrategyEnum getAuthStrategy() {
         return authStrategy;
     }
-    
+
     public void setAuthStrategy(AuthStrategyEnum authStrategy) {
         this.authStrategy = authStrategy;
     }
-    
+
     public String getWorkstation() {
         return workstation;
     }
 
-    
+
     public void setWorkstation(String workstation) {
         this.workstation = workstation;
     }
 
-    
+
     public String getDomain() {
         return domain;
     }
 
-    
+
     public void setDomain(String domain) {
         this.domain = domain;
     }

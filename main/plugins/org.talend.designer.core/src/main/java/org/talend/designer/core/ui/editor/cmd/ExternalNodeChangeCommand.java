@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,9 +56,9 @@ import org.talend.designer.core.ui.views.properties.ComponentSettings;
 
 /**
  * Command that will change the datas stored for an external node.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ExternalNodeChangeCommand extends Command {
 
@@ -142,6 +142,9 @@ public class ExternalNodeChangeCommand extends Command {
         }
 
         for (Connection connection : (List<Connection>) node.getIncomingConnections()) {
+            if (!connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+                continue;
+            }
             String schemaType = (String) connection.getSource().getPropertyValue(EParameterName.SCHEMA_TYPE.getName());
             if (schemaType != null) {
                 if (schemaType.equals(EmfComponent.REPOSITORY)) {

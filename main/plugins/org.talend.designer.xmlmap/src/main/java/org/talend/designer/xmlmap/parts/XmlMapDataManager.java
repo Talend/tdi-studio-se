@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,13 +20,13 @@ import org.talend.designer.xmlmap.model.emf.xmlmap.XmlMapData;
 
 /**
  * created by Administrator on 2013-1-15 Detailled comment
- * 
+ *
  */
 public class XmlMapDataManager extends RootModelManager {
 
     /**
      * DOC Administrator XmlMapDataManager constructor comment.
-     * 
+     *
      * @param model
      * @param editPart
      */
@@ -46,7 +46,7 @@ public class XmlMapDataManager extends RootModelManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.manager.RootModelManager#getInputTables()
      */
     @Override
@@ -56,7 +56,7 @@ public class XmlMapDataManager extends RootModelManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.manager.RootModelManager#getOutputTables()
      */
     @Override
@@ -66,7 +66,7 @@ public class XmlMapDataManager extends RootModelManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.manager.RootModelManager#getVarTables()
      */
     @Override

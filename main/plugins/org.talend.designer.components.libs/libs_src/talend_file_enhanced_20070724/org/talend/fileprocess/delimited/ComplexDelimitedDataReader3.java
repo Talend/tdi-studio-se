@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,9 +30,9 @@ import java.text.NumberFormat;
  * class works when the record delimiter and field delimiter are both a String
  * which length is > 1, and the record delimiter's length equals to the field
  * delimiter's.<br/>
- * 
+ *
  * @author gke
- * 
+ *
  */
 final class ComplexDelimitedDataReader3 extends DelimitedDataReader {
 
@@ -332,7 +332,7 @@ final class ComplexDelimitedDataReader3 extends DelimitedDataReader {
 
 	/**
 	 * A buffer structure that used to load data from stream for processing.
-	 * 
+	 *
 	 * @author gke
 	 */
 	private class StreamBuffer {

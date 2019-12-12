@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.core.language.ICodeProblemsChecker;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public abstract class AbstractLanguage implements ILanguage {
 
@@ -34,7 +34,7 @@ public abstract class AbstractLanguage implements ILanguage {
 
     /**
      * DOC amaumont AbstractLanguage constructor comment.
-     * 
+     *
      * @param perl
      */
     public AbstractLanguage(ECodeLanguage codeLanguage) {
@@ -43,7 +43,7 @@ public abstract class AbstractLanguage implements ILanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getLocation(org.talend.designer.mapper.model.tableentry.TableEntryLocation)
      */
     public String getLocation(String tableName, String columnName) {
@@ -53,7 +53,7 @@ public abstract class AbstractLanguage implements ILanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getLocation(java.lang.String)
      */
     public String getLocation(String tableName) {
@@ -62,7 +62,7 @@ public abstract class AbstractLanguage implements ILanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getCodeLanguage()
      */
     public ECodeLanguage getCodeLanguage() {
@@ -71,7 +71,7 @@ public abstract class AbstractLanguage implements ILanguage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.language.ILanguage#getCodeChecker()
      */
     public ICodeProblemsChecker getCodeChecker() {

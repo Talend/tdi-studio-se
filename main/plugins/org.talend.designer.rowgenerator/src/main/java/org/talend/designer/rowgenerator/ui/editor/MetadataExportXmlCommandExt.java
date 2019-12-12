@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.talend.core.ui.metadata.editor.MetadataTableEditor;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2007-3-27 上午11:00:36 (星期五, 29 九月 2006) qzhang $
- * 
+ *
  */
 public class MetadataExportXmlCommandExt extends Command {
 
@@ -36,7 +36,7 @@ public class MetadataExportXmlCommandExt extends Command {
 
     /**
      * amaumont MetadataPasteCommand constructor comment.
-     * 
+     *
      * @param extendedTableModel
      * @param extendedTable
      * @param validAssignableType
@@ -50,7 +50,7 @@ public class MetadataExportXmlCommandExt extends Command {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.commons.ui.command.CommonCommand#execute()
      */
     @Override

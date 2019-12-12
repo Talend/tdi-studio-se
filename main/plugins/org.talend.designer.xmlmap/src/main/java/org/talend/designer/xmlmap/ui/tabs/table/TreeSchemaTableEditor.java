@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,7 @@ import org.talend.designer.xmlmap.util.XmlMapUtil;
 
 /**
  * created by wchen on 2013-1-23 Detailled comment
- * 
+ *
  */
 public class TreeSchemaTableEditor extends ExtendedTableModel<TreeNode> {
 
@@ -128,7 +128,7 @@ public class TreeSchemaTableEditor extends ExtendedTableModel<TreeNode> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.extended.table.AbstractExtendedControlModel#getName()
      */
     @Override
@@ -146,7 +146,7 @@ public class TreeSchemaTableEditor extends ExtendedTableModel<TreeNode> {
 
     /**
      * Sets the currentPage.
-     * 
+     *
      * @param currentPage the currentPage to set
      */
     public void setCurrentPage(int page) {
@@ -166,7 +166,7 @@ public class TreeSchemaTableEditor extends ExtendedTableModel<TreeNode> {
 
     /**
      * Getter for currentPage.
-     * 
+     *
      * @return the currentPage
      */
     public int getCurrentPage() {
@@ -175,7 +175,7 @@ public class TreeSchemaTableEditor extends ExtendedTableModel<TreeNode> {
 
     /**
      * Getter for pageCount.
-     * 
+     *
      * @return the pageCount
      */
     public int getPageCount() {

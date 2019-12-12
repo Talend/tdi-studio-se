@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,15 +26,15 @@ import org.talend.designer.business.diagram.custom.util.GmfPropertiesViewHelper;
 
 /**
  * DOC mhelleboid class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class BusinessDiagramDropTargetListener extends DiagramDropTargetListener {
 
     /**
      * DOC mhelleboid BusinessDiagramDropTargetListener constructor comment.
-     * 
+     *
      * @param viewer
      */
     public BusinessDiagramDropTargetListener(EditPartViewer viewer) {
@@ -43,7 +43,7 @@ public class BusinessDiagramDropTargetListener extends DiagramDropTargetListener
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.diagram.ui.parts.DiagramDropTargetListener#getObjectsBeingDropped()
      */
     @Override
@@ -60,7 +60,7 @@ public class BusinessDiagramDropTargetListener extends DiagramDropTargetListener
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.diagram.ui.parts.DiagramDropTargetListener#handleDrop()
      */
     @Override

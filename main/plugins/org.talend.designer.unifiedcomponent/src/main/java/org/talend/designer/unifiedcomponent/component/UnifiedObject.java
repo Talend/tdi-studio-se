@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,7 +39,7 @@ public class UnifiedObject {
 
     /**
      * Getter for database.
-     * 
+     *
      * @return the database
      */
     public String getDatabase() {
@@ -48,7 +48,7 @@ public class UnifiedObject {
 
     /**
      * Sets the database.
-     * 
+     *
      * @param database the database to set
      */
     public void setDatabase(String database) {
@@ -57,7 +57,7 @@ public class UnifiedObject {
 
     /**
      * Getter for componentName.
-     * 
+     *
      * @return the componentName
      */
     public String getComponentName() {
@@ -66,7 +66,7 @@ public class UnifiedObject {
 
     /**
      * Sets the componentName.
-     * 
+     *
      * @param componentName the componentName to set
      */
     public void setComponentName(String componentName) {
@@ -75,7 +75,7 @@ public class UnifiedObject {
 
     /**
      * Getter for supportedCategories.
-     * 
+     *
      * @return the supportedCategories
      */
     public Set<String> getSupportedCategories() {
@@ -84,7 +84,7 @@ public class UnifiedObject {
 
     /**
      * Getter for parameterMapping.
-     * 
+     *
      * @return the parameterMapping
      */
     public Map<String, String> getParameterMapping() {
@@ -93,7 +93,7 @@ public class UnifiedObject {
 
     /**
      * Getter for paramMappingExclude.
-     * 
+     *
      * @return the paramMappingExclude
      */
     public Set<String> getParamMappingExclude() {
@@ -102,7 +102,7 @@ public class UnifiedObject {
 
     /**
      * Getter for connectorMapping.
-     * 
+     *
      * @return the connectorMapping
      */
     public Map<String, String> getConnectorMapping() {
@@ -111,7 +111,7 @@ public class UnifiedObject {
 
     /**
      * Getter for hideFamilies.
-     * 
+     *
      * @return the hideFamilies
      */
     public Set<String> getHideFamilies() {

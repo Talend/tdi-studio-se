@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants;
 
 /**
  * This class is used for storing the same variable name of JAVA and Perl.
- * 
+ *
  * @author ftang <br/>
- * 
+ *
  */
 public class StatsAndLogsConstants {
 
@@ -65,23 +65,23 @@ public class StatsAndLogsConstants {
     public static final String JDBC_OUTPUT = "tJDBCOutput";
 
     public static final String[] DB_OUTPUT_COMPONENTS = new String[] {
-            "tJDBCOutput", "tMysqlOutput", "tMSSqlOutput", ORACLE_WITH_SID_CONN_TYPE, ORACLE_WITH_SERVICE_CONN_TYPE, ORACLE_OCI,//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
+            "tJDBCOutput", "tMysqlOutput", "tMSSqlOutput", ORACLE_WITH_SID_CONN_TYPE, ORACLE_WITH_SERVICE_CONN_TYPE, ORACLE_OCI,//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             "tPostgresPlusOutput", "tPostgresqlOutput", "tDB2Output", "tSybaseOutput", "tIngresOutput", "tInterbaseOutput", "tSQLiteOutput", "tFirebirdOutput", "tInformixOutput", "tAccessOutput", "tTeradataOutput" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 
     private static final String[] PERL_DISPLAY_DBNAMES = new String[] {
-            "MySQL", "Oracle with SID", "Oracle with service name", "Oracle OCI",//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ 
-            "PostgresPlus", "PostgreSQL", "IBM DB2", "Sybase", "SQLite", "FireBird" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ 
+            "MySQL", "Oracle with SID", "Oracle with service name", "Oracle OCI",//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            "PostgresPlus", "PostgreSQL", "IBM DB2", "Sybase", "SQLite", "FireBird" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
     private static final String[] JAVA_DISPLAY_DBNAMES = new String[] {
             "JDBC", "MySQL", "Microsoft SQL Server", "Oracle with SID", "Oracle with service name", "Oracle OCI",//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$
             "PostgresPlus", "PostgreSQL", "IBM DB2", "Sybase", "Ingres", "Interbase", "SQLite", "FireBird", "Informix", "Access", "Teradata" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 
     private static final String[] PERL_DB_COMPONENTS = new String[] {
-            "tMysqlOutput", ORACLE_SID_ALIAS, ORACLE_SN_ALIAS, ORACLE_OCI_ALIAS,//$NON-NLS-1$ 
-            "tPostgresPlusOutput", "tPostgresqlOutput", "tDB2Output", "tSybaseOutput", "tSQLiteOutput", "tFirebirdOutput" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ 
+            "tMysqlOutput", ORACLE_SID_ALIAS, ORACLE_SN_ALIAS, ORACLE_OCI_ALIAS,//$NON-NLS-1$
+            "tPostgresPlusOutput", "tPostgresqlOutput", "tDB2Output", "tSybaseOutput", "tSQLiteOutput", "tFirebirdOutput" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
     private static final String[] JAVA_DB_COMPONENTS = new String[] {
-            "tJDBCOutput", "tMysqlOutput", "tMSSqlOutput", ORACLE_SID_ALIAS, ORACLE_SN_ALIAS, ORACLE_OCI_ALIAS,//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
+            "tJDBCOutput", "tMysqlOutput", "tMSSqlOutput", ORACLE_SID_ALIAS, ORACLE_SN_ALIAS, ORACLE_OCI_ALIAS,//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             "tPostgresPlusOutput", "tPostgresqlOutput", "tDB2Output", "tSybaseOutput", "tIngresOutput", "tInterbaseOutput", "tSQLiteOutput", "tFirebirdOutput", "tInformixOutput", "tAccessOutput", "tTeradataOutput" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 
     private static final String[] PERL_REPOSITORY_ITEMS = new String[] { MYSQL, ORACLE_WITH_SID_CONN_TYPE,
@@ -115,13 +115,13 @@ public class StatsAndLogsConstants {
 
     public static final String[] MYSQL_VERSION_DRIVER = new String[] { "mysql-connector-java-8.0.12.jar", //$NON-NLS-1$
             "mysql-connector-java-5.1.30-bin.jar", "mysql-connector-java-3.1.14-bin.jar", "mariadb-java-client-1.1.7.jar" };//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-    
-    public static final String[] MSSQL_VERSION_DISPLAY = new String[] { "Open source JTDS", "Microsoft" }; //$NON-NLS-1$ //$NON-NLS-2$ 
 
-    public static final String[] MSSQL_VERSION_CODE = new String[] { "JTDS", "MSSQL_PROP" }; //$NON-NLS-1$ //$NON-NLS-2$ 
+    public static final String[] MSSQL_VERSION_DISPLAY = new String[] { "Open source JTDS", "Microsoft" }; //$NON-NLS-1$ //$NON-NLS-2$
+
+    public static final String[] MSSQL_VERSION_CODE = new String[] { "JTDS", "MSSQL_PROP" }; //$NON-NLS-1$ //$NON-NLS-2$
 
     public static final String[] MSSQL_VERSION_DRIVER = new String[] {
-            "jtds-1.3.1-patch.jar", "mssql-jdbc.jar"};//$NON-NLS-1$  //$NON-NLS-2$
+            "jtds-1.3.1-patch-20190523.jar", "mssql-jdbc.jar"};//$NON-NLS-1$  //$NON-NLS-2$
 
 
     public static final String[] DB_VERSION_DISPLAY = new String[] {"Oracle 18", "Oracle 12", "Oracle 11", "Oracle 10", "Oracle 9",
@@ -130,33 +130,33 @@ public class StatsAndLogsConstants {
 
     public static final String[] DB_VERSION_CODE = new String[] {"ORACLE_18", "ORACLE_12", "ORACLE_11", "ORACLE_10", "ORACLE_9", "ORACLE_8",
             "MYSQL_8", "MYSQL_5", "MYSQL_4", "MariaDB", "JTDS", "MSSQL_PROP", "ACCESS_2003", "ACCESS_2007", "PRIOR_TO_V9","V9_X","SYBSEIQ_16_SA", "SYBSEIQ_16","SYBSEIQ_12_15" };
-            
+
 
 
     public static final String[] DB_VERSION_DRIVER = new String[] {  "ORACLE_18","ORACLE_12", "ORACLE_11", "ORACLE_10", "ORACLE_9",
             "ORACLE_8", "MYSQL_8", "MYSQL_5", "MYSQL_4", "MARIADB", "JTDS", "MSSQL_PROP", "ACCESS_2003", "ACCESS_2007", "PRIOR_TO_V9", "V9_X","SYBSEIQ_16_SA", "SYBSEIQ_16","SYBSEIQ_12_15" };
-           
+
 
     public static final String[] ACCESS_VERSION_DISPLAY = new String[] { "Access 2003", "Access 2007" }; //$NON-NLS-1$ //$NON-NLS-2$
 
-    public static final String[] ACCESS_VERSION_CODE = new String[] { "Access_2003", "Access_2007" }; //$NON-NLS-1$ //$NON-NLS-2$ 
+    public static final String[] ACCESS_VERSION_CODE = new String[] { "Access_2003", "Access_2007" }; //$NON-NLS-1$ //$NON-NLS-2$
 
-    public static final String[] ACCESS_VERSION_DRIVER = new String[] { "ACCESS_2003", "ACCESS_2007" }; //$NON-NLS-1$ 
+    public static final String[] ACCESS_VERSION_DRIVER = new String[] { "ACCESS_2003", "ACCESS_2007" }; //$NON-NLS-1$
 
-    public static final String[] AS400_VERSION_DISPLAY = new String[] { "V6R1 to V7R2", "V5R3 to V6R1", "V5R2 to V5R4" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    public static final String[] AS400_VERSION_DISPLAY = new String[] { "V7R1 to V7R3", "V6R1 to V7R2", "V5R3 to V6R1", "V5R2 to V5R4" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-    public static final String[] AS400_VERSION_CODE = new String[] { "AS400_V6R1_V7R2", "AS400_V5R3_V6R1", "AS400_V5R2_V5R4" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
+    public static final String[] AS400_VERSION_CODE = new String[] { "AS400_V7R1_V7R3", "AS400_V6R1_V7R2", "AS400_V5R3_V6R1", "AS400_V5R2_V5R4" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-    public static final String[] AS400_VERSION_DRIVER = new String[] { "jt400_V6R1.jar", "jt400_V5R3.jar", "jt400_V5R2.jar" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    public static final String[] AS400_VERSION_DRIVER = new String[] { "jt400-9.8.jar", "jt400_V6R1.jar", "jt400_V5R3.jar", "jt400_V5R2.jar" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
     public static final String[] PSQL_VERSION_DISPLAY = new String[] {"v9 and later","Prior to v9" }; //$NON-NLS-1$ //$NON-NLS-2$
-    
+
     public static final String[] SYBASE_VERSION_DISPLAY = new String[] {"Sybase 16 (SQL Anywhere)", "Sybase 16", "Sybase 12/15" }; //$NON-NLS-1$ //$NON-NLS-2$
     public static final String[] SYBASE_VERSION_CODE = new String[] {"SYBSEIQ_16_SA", "SYBSEIQ_16", "SYBSEIQ_12_15" };
-    public static final String[] PSQL_VERSION_CODE = new String[] {  "V9_X","PRIOR_TO_V9" }; //$NON-NLS-1$ //$NON-NLS-2$ 
+    public static final String[] PSQL_VERSION_CODE = new String[] {  "V9_X","PRIOR_TO_V9" }; //$NON-NLS-1$ //$NON-NLS-2$
 
     public static final String[] PSQL_VERSION_DRIVER = new String[] {
-    		"postgresql-42.2.5.jar", "postgresql-8.3-603.jdbc3.jar"}; //$NON-NLS-1$ //$NON-NLS-2$ 
+    		"postgresql-42.2.5.jar", "postgresql-8.3-603.jdbc3.jar"}; //$NON-NLS-1$ //$NON-NLS-2$
 
     public static final String[][] DISPLAY_DBNAMES = new String[][] { PERL_DISPLAY_DBNAMES, JAVA_DISPLAY_DBNAMES };
 

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,9 +48,9 @@ import org.talend.designer.core.ui.projectsetting.StatsAndLogsElement;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TextController.java 1 2006-12-12 下午01:53:53 +0000 (下午01:53:53) yzhang $
- * 
+ *
  */
 public class TextController extends AbstractElementPropertySectionController {
 
@@ -62,7 +62,7 @@ public class TextController extends AbstractElementPropertySectionController {
 
     /**
      * DOC yzhang TextController constructor comment.
-     * 
+     *
      * @param dtp
      */
     public TextController(IDynamicProperty dp) {
@@ -71,7 +71,7 @@ public class TextController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -195,7 +195,7 @@ public class TextController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -214,7 +214,7 @@ public class TextController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -260,12 +260,15 @@ public class TextController extends AbstractElementPropertySectionController {
 
     /**
      * ggu Comment method "checkTextError".
-     * 
+     *
      * @param param
      * @param labelText
      * @param value
      */
     private void checkTextError(IElementParameter param, Text labelText, Object value) {
+        if (elem instanceof Node) {
+            labelText.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
+        }
         // Only for job settings View.
         // job settings extra (feature 2710)
         if (param.getCategory() == EComponentCategory.STATSANDLOGS || param.getCategory() == EComponentCategory.EXTRA) {
@@ -293,7 +296,7 @@ public class TextController extends AbstractElementPropertySectionController {
 
     /**
      * DOC Administrator Comment method "setTextErrorInfo".
-     * 
+     *
      * @param labelText
      * @param red
      */
@@ -303,9 +306,9 @@ public class TextController extends AbstractElementPropertySectionController {
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "isPasswordParam".
-     * 
+     *
      * @param parameter
      * @return
      */

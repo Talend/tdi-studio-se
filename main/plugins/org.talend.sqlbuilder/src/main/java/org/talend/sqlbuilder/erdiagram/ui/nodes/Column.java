@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,14 +20,14 @@ import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 
 /**
  *  qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: Column.java 2006-12-25 下午03:03:20 +0000 (2006-12-25) qzhang $
- * 
+ *
  */
 public class Column extends Element {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 0L;
 
@@ -63,7 +63,7 @@ public class Column extends Element {
 
     /**
      *  yzhang Comment method "setSelected".
-     * 
+     *
      * @param selected
      */
     public void setSelected(boolean selected) {
@@ -80,7 +80,7 @@ public class Column extends Element {
 
     /**
      *  yzhang Comment method "getTable".
-     * 
+     *
      * @return
      */
     public Table getTable() {
@@ -89,7 +89,7 @@ public class Column extends Element {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuider.erdiagram.model.Element#getElementName()
      */
     @Override
@@ -100,7 +100,7 @@ public class Column extends Element {
     public void setElementName(String name) {
         this.columnName = name;
         size.height = 23;
-        
+
         size.width = Math.round(columnName.length() * 5.2f) + 45;
     }
 

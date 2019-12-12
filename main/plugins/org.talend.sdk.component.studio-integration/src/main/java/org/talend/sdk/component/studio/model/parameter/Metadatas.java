@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public final class Metadatas {
     public static final String CONFIG_TYPE = "configurationtype::type";
 
     public static final String CONFIG_NAME = "configurationtype::name";
-    
+
     public static final String PARAMETER_INDEX = "definition::parameter::index";
 
     public static final String UI_CODE = "ui::code::value";

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,7 +36,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(IConstants.COMMENT_DELIMITER, "#"); //$NON-NLS-1$
 
 		store.setDefault(IConstants.ALTERNATE_DELIMITER, ""); //$NON-NLS-1$
-		
+
 		store.setDefault(IConstants.QUERY_DELIMITER, ";"); //$NON-NLS-1$
 
 		store.setDefault(IConstants.WARN_RESEULTS, 5000);

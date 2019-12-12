@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -87,7 +87,7 @@ public class PropertySetDialog extends Dialog {
 
     /**
      * Create the dialog
-     * 
+     *
      * @param parentShell
      */
     public PropertySetDialog(Shell parentShell, MapperManager mapperManager) {
@@ -98,7 +98,7 @@ public class PropertySetDialog extends Dialog {
 
     /**
      * Create contents of the dialog
-     * 
+     *
      * @param parent
      */
     @Override
@@ -412,7 +412,7 @@ public class PropertySetDialog extends Dialog {
 
     /**
      * Create contents of the button bar
-     * 
+     *
      * @param parent
      */
     @Override
@@ -451,8 +451,10 @@ public class PropertySetDialog extends Dialog {
         currentModel.setEnableAutoConvertType(enableAutoConvertTypeBtn.getSelection());
         currentModel.setTempDataDir(directory);
         currentModel.setRowBufferSize(sizeField.getText());
-        currentModel.setLevenshteinWeight(Integer.valueOf(levenshteinSlider.getSelection()));
-        currentModel.setJaccardWeight(Integer.valueOf(jaccardSlider.getSelection()));
+        if (PluginChecker.isTIS()) {
+            currentModel.setLevenshteinWeight(Integer.valueOf(levenshteinSlider.getSelection()));
+            currentModel.setJaccardWeight(Integer.valueOf(jaccardSlider.getSelection()));
+        }
 
         if (dieOnErrorButton.getSelection()) {
             mapperManager.removeRejectOutput();

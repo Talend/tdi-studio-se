@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,9 +20,9 @@ import org.talend.designer.core.ui.editor.connections.ConnectionResuming;
 
 /**
  * Command that moves the label of a connection. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MoveConnTextCommand extends Command {
 
@@ -39,7 +39,7 @@ public class MoveConnTextCommand extends Command {
     /**
      * Initialisation of the command. ConnectionLabel, Figure that will be the parent to calculate the position of the
      * label, delta of the move of the label after drag it
-     * 
+     *
      * @param label
      * @param parent
      * @param delta

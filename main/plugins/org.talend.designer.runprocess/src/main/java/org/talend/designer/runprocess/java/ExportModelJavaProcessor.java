@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ public class ExportModelJavaProcessor extends MavenJavaProcessor {
 
     /**
      * DOC wchen ExportModelJavaProcessor constructor comment.
-     * 
+     *
      * @param process
      * @param property
      * @param filenameFromLabel
@@ -51,7 +51,7 @@ public class ExportModelJavaProcessor extends MavenJavaProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.runprocess.Processor#run(java.lang.String[], int, int,
      * org.eclipse.core.runtime.IProgressMonitor, org.talend.designer.runprocess.IProcessMessageManager)
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,7 +16,7 @@ import org.talend.core.model.metadata.MetadataToolHelper;
 
 /**
  * This class is used for column name validation.
- * 
+ *
  * @author ftang, 2007-06-13 <br/>
  * @deprecated use MetadataToolHelper
  */
@@ -25,9 +25,9 @@ public class ColumnNameValidator {
 
     /**
      * Validates column name to avoid special characters.
-     * 
+     *
      * qli modified to fix the bug 4456.
-     * 
+     *
      * @param columnName
      * @param index
      */

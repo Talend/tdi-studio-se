@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,9 +40,9 @@ import org.talend.designer.runprocess.IRunProcessService;
 
 /**
  * Track the active Process being edited. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ActiveProcessTracker implements IPartListener {
 
@@ -98,7 +98,7 @@ public class ActiveProcessTracker implements IPartListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IPartListener#partActivated(org.eclipse.ui.IWorkbenchPart)
      */
     @Override
@@ -117,7 +117,7 @@ public class ActiveProcessTracker implements IPartListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IPartListener#partBroughtToTop(org.eclipse.ui.IWorkbenchPart)
      */
     @Override
@@ -153,7 +153,7 @@ public class ActiveProcessTracker implements IPartListener {
 
     /**
      * ftang Comment method "setStatsAndLogsView".
-     * 
+     *
      * @param process
      */
     // private void setStatsAndLogsView(IProcess process) {
@@ -162,7 +162,7 @@ public class ActiveProcessTracker implements IPartListener {
     // }
     /**
      * qzhang Comment method "setProblemsView".
-     * 
+     *
      * @param process
      */
     private void addJobInProblemView(IProcess2 process) {
@@ -174,7 +174,7 @@ public class ActiveProcessTracker implements IPartListener {
 
     /**
      * qzhang Comment method "setProblemsView".
-     * 
+     *
      * @param process
      */
     private void setContextsView(IProcess2 process, IWorkbenchPart part) {
@@ -188,7 +188,7 @@ public class ActiveProcessTracker implements IPartListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IPartListener#partClosed(org.eclipse.ui.IWorkbenchPart)
      */
     @Override
@@ -247,7 +247,7 @@ public class ActiveProcessTracker implements IPartListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IPartListener#partDeactivated(org.eclipse.ui.IWorkbenchPart)
      */
     @Override
@@ -261,7 +261,7 @@ public class ActiveProcessTracker implements IPartListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IPartListener#partOpened(org.eclipse.ui.IWorkbenchPart)
      */
     @Override
@@ -302,7 +302,7 @@ public class ActiveProcessTracker implements IPartListener {
 
     /**
      * Getter for currentProcess.
-     * 
+     *
      * @return the currentProcess
      */
     public static Process getCurrentProcess() {

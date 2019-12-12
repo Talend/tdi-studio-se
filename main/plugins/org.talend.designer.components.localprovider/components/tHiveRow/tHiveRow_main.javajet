@@ -266,7 +266,9 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 			}
 		}
 		%>
-		log.info("Query sent to HiveServer2 to be executed with [Application Name(MapReduce)/DAG Name(Tez): " + queryIdentifier_<%=cid %> + "]");
+		<%if(isLog4jEnabled){%>
+			log.info("Query sent to HiveServer2 to be executed with [Application Name(MapReduce)/DAG Name(Tez): " + queryIdentifier_<%=cid%> + "]");
+		<%}%>
 	    } catch (java.lang.Exception e) {
 	        whetherReject_<%=cid%> = true;
 	        <%

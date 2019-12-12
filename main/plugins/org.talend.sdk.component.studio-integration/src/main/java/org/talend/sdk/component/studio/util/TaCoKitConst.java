@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -22,10 +22,7 @@ public class TaCoKitConst {
 
     public static final String METADATA_TACOKIT_PATH = METADATA_TACOKIT.getFolder();
 
-    /**
-     * Prefix used in repository node type for TaCoKit components
-     */
-    public static final String METADATA_TACOKIT_PREFIX = "metadata.tacokit.";
+    public static final String METADATA_PREFIX = "repository."; //$NON-NLS-1$
 
     public static final String IMAGE_TACOKIT_REPOSITORY_PATH = "/icon/connection.png"; //$NON-NLS-1$
 
@@ -61,6 +58,11 @@ public class TaCoKitConst {
 
     public static final String PROP_COMPONENT = "component.java.coordinates"; //$NON-NLS-1$
 
+    public static final String PROP_COMPONENT_SEPARATOR = ","; //$NON-NLS-1$
+
     public static final String PROP_REGISTRY = "component.java.registry"; //$NON-NLS-1$
 
+    public static final String COMPONENT_NAME_PREFIX = "t"; //$NON-NLS-1$
+
+    public static final String BASE_HELP_LINK = "org.talend.help."; //$NON-NLS-1$
 }

@@ -143,41 +143,53 @@ if(hasDynamic) {
 }
 %>
 
-//Query paramiter builder
+//Query parameter builder
 String <%=cid%>_conditions = "";
 String <%=cid%>_conditionValues = "";
 int <%=cid%>_obj_line = 0;
+
 <%
-List<Map<String, String>> keyColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__CONDITIONS__");
-if(keyColumns.size() > 0 ) {
-  for(Map<String, String> keyColumn:keyColumns) {
-    %>
-    <%
-    if(!("").equals(keyColumn.get("RVALUE"))) {
-      %>
-      <%=cid%>_obj_line ++;
-      if(<%=cid%>_obj_line == 1) {
-        <%=cid%>_conditions += "&sysparm_query=";
-      }
-      if(<%=cid%>_obj_line > 1) {
-        <%=cid%>_conditions += java.net.URLEncoder.encode("^","utf-8");
-      }
-      <%=cid%>_conditions += "<%=keyColumn.get("INPUT_COLUMN")%>";
-      if (!"=".equals("<%=keyColumn.get("OPERATOR")%>")) {
-        <%=cid%>_conditions += java.net.URLEncoder.encode("<%=keyColumn.get("OPERATOR")%>","utf-8");
-      } else {
-        <%=cid%>_conditions += "<%=keyColumn.get("OPERATOR")%>";
-      }
-      <%=cid%>_conditionValues = "\"" + <%=keyColumn.get("RVALUE")%> + "\"";
-      <%=cid%>_conditionValues = <%=cid%>_conditionValues.replaceAll("\"", "");
-      if (!<%=cid%>_conditionValues.contains(" ")) {
-        <%=cid%>_conditionValues = <%=cid%>_conditionValues.replaceAll(" ", "+");
-      }
-      <%=cid%>_conditions += java.net.URLEncoder.encode(<%=cid%>_conditionValues,"utf-8");
-      <%
+  String advCondition = ElementParameterParser.getValue(node, "__ENABLE_ADVANCED_CONDITIONS__");
+    if ("true".equals(advCondition)){
+%>
+
+        <%=cid%>_conditions += "&sysparm_query=" + java.net.URLEncoder.encode(<%= ElementParameterParser.getValue(node, "__ADVANCED_CONDITIONS__") %>, "utf-8" ) ;
+<%
+    } else {
+        List<Map<String, String>> keyColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__CONDITIONS__");
+        if(keyColumns.size() > 0 ) {
+          for(Map<String, String> keyColumn:keyColumns) {
+            %>
+            <%
+            if(!("").equals(keyColumn.get("RVALUE"))) {
+              %>
+              <%=cid%>_obj_line ++;
+              if(<%=cid%>_obj_line == 1) {
+                <%=cid%>_conditions += "&sysparm_query=";
+              }
+              if(<%=cid%>_obj_line > 1) {
+                <%=cid%>_conditions += java.net.URLEncoder.encode("^","utf-8");
+              }
+              <%=cid%>_conditions += "<%=keyColumn.get("INPUT_COLUMN")%>";
+              if (!"=".equals("<%=keyColumn.get("OPERATOR")%>")) {
+                <%=cid%>_conditions += java.net.URLEncoder.encode("<%=keyColumn.get("OPERATOR")%>","utf-8");
+              } else {
+                <%=cid%>_conditions += "<%=keyColumn.get("OPERATOR")%>";
+              }
+              <%=cid%>_conditionValues = "\"" + <%=keyColumn.get("RVALUE")%> + "\"";
+              <%=cid%>_conditionValues = <%=cid%>_conditionValues.replaceAll("\"", "");
+              if (!<%=cid%>_conditionValues.contains(" ")) {
+                <%=cid%>_conditionValues = <%=cid%>_conditionValues.replaceAll(" ", "+");
+              }
+              <%=cid%>_conditions += java.net.URLEncoder.encode(<%=cid%>_conditionValues,"utf-8");
+              <%
+            }
+          }
+        }
     }
-  }
-}
+%>
+
+<%
 //Return Field builder
 if(!hasDynamic) {
 %>

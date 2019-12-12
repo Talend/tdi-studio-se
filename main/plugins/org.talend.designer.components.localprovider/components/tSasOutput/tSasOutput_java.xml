@@ -13,12 +13,13 @@
     HAS_CONDITIONAL_OUTPUTS="true"
     PARTITIONING="AUTO"
     LOG4J_ENABLED="true"
+    VISIBLE="false"
   >
     <SIGNATURE/>
   </HEADER>
   
   <FAMILIES>
-    <FAMILY>Databases/DB Specifics/Sas</FAMILY>
+    <FAMILY>Deprecated</FAMILY>
   </FAMILIES>
   
   <DOCUMENTATION>

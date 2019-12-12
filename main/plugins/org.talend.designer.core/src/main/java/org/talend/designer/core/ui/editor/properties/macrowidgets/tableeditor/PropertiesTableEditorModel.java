@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,9 +41,9 @@ import org.talend.designer.core.ui.editor.properties.controllers.TableController
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: MetadataTableEditor.java 801 2006-11-30 16:28:36Z amaumont $
- * 
+ *
  * @param <B>
  */
 public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
@@ -51,6 +51,8 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
     private IElement element;
 
     private IElementParameter elemParameter;
+
+    private List<B> beforeChangeBeansList = new ArrayList<B>();
 
     private IProcess process;
 
@@ -101,7 +103,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for dynamicData.
-     * 
+     *
      * @return the dynamicData
      */
     public boolean isDynamicData() {
@@ -110,7 +112,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for element.
-     * 
+     *
      * @return the element
      */
     public IElement getElement() {
@@ -119,7 +121,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for elemParameter.
-     * 
+     *
      * @return the elemParameter
      */
     public IElementParameter getElemParameter() {
@@ -128,7 +130,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for items.
-     * 
+     *
      * @return the items
      */
     public String[] getItems() {
@@ -137,7 +139,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for itemsNotShowIf.
-     * 
+     *
      * @return the itemsNotShowIf
      */
     public String[] getItemsNotShowIf() {
@@ -146,7 +148,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for itemsShowIf.
-     * 
+     *
      * @return the itemsShowIf
      */
     public String[] getItemsShowIf() {
@@ -155,7 +157,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for itemsValue.
-     * 
+     *
      * @return the itemsValue
      */
     public Object[] getItemsValue() {
@@ -164,7 +166,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for process.
-     * 
+     *
      * @return the process
      */
     public IProcess getProcess() {
@@ -173,7 +175,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /**
      * Getter for titles.
-     * 
+     *
      * @return the titles
      */
     public String[] getTitles() {
@@ -182,11 +184,12 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.extended.table.ExtendedTableModel#remove(java.lang.Object)
      */
     @Override
     public boolean remove(B bean) {
+        initBeforeChangeBeansList();
         boolean result = super.remove(bean);
         refreshMR();
         return result;
@@ -194,7 +197,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.extended.table.ExtendedTableModel#removeAll(java.util.Collection)
      */
     @Override
@@ -225,7 +228,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
                 IMetadataTable metadata = MetadataToolHelper.getMetadataTableFromNodeTableName(node, schemaName);
                 if (metadata != null) {
                     metadatasToRemove.add(metadata);
-                    IDesignerCoreService service = (IDesignerCoreService) GlobalServiceRegister.getDefault().getService(
+                    IDesignerCoreService service = GlobalServiceRegister.getDefault().getService(
                             IDesignerCoreService.class);
                     if (service != null) {
                         service.removeConnection(node, metadata.getTableName());
@@ -234,6 +237,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
             }
             node.getMetadataList().removeAll(metadatasToRemove);
         }
+        initBeforeChangeBeansList();
         boolean result = super.removeAll(c);
         refreshMR();
         return result;
@@ -247,9 +251,9 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
     }
 
     /**
-     * 
+     *
      * DOC Added for featerue TDI-7284
-     * 
+     *
      * @return
      */
     public boolean isButtonEnabled() {
@@ -319,18 +323,21 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     @Override
     public void addAll(final Integer index, List<B> beans, boolean fireBefore, boolean fireAfter) {
+        initBeforeChangeBeansList();
         super.addAll(index, beans, fireBefore, fireAfter);
         refreshMR();
     }
 
     @Override
     public void addAll(List<Integer> indicesWhereAdd, List<B> beans) {
+        initBeforeChangeBeansList();
         super.addAll(indicesWhereAdd, beans);
         refreshMR();
     }
 
     @Override
     public B remove(int index) {
+        initBeforeChangeBeansList();
         B b = super.remove(index);
         refreshMR();
         return b;
@@ -338,6 +345,7 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
 
     @Override
     public List<B> remove(int[] indexArray) {
+        initBeforeChangeBeansList();
         List<B> list = super.remove(indexArray);
         return list;
     }
@@ -359,5 +367,14 @@ public class PropertiesTableEditorModel<B> extends ExtendedTableModel<B> {
             ((IProcess2) node.getProcess()).setMRData();
             node.refreshNodeContainer();
         }
+    }
+
+    private void initBeforeChangeBeansList() {
+        beforeChangeBeansList.clear();
+        beforeChangeBeansList.addAll(getBeansList());
+    }
+
+    public List<B> getBeforeChangeBeansList() {
+        return this.beforeChangeBeansList;
     }
 }

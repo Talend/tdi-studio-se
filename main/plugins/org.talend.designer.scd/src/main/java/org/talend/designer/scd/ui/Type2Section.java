@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -308,7 +308,7 @@ public class Type2Section extends FieldSection {
 
     /**
      * DOC hcw Comment method "onEndCreationChange".
-     * 
+     *
      * @param value
      * @param versioning
      * @param endItem
@@ -328,7 +328,7 @@ public class Type2Section extends FieldSection {
 
     /**
      * DOC hcw Comment method "createEndComplement".
-     * 
+     *
      * @param versioning
      * @param item
      * @param editor
@@ -346,7 +346,7 @@ public class Type2Section extends FieldSection {
 
     /**
      * DOC hcw Comment method "onStartCreationChange".
-     * 
+     *
      * @param value
      * @param versioning
      * @param startItem
@@ -366,7 +366,7 @@ public class Type2Section extends FieldSection {
 
     /**
      * DOC hcw Comment method "createStartComplement".
-     * 
+     *
      * @param versioning
      * @param item
      * @param editor
@@ -412,7 +412,7 @@ public class Type2Section extends FieldSection {
 
     /**
      * DOC chuang Comment method "createDragDropDelegate".
-     * 
+     *
      * @param versioning
      * @param text
      * @return

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,8 +30,8 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
- * Change activemq-all-5.1.0.jar to activemq-all-5.7.0.jar in jobs where 
- * tMOM components are used. 
+ * Change activemq-all-5.1.0.jar to activemq-all-5.7.0.jar in jobs where
+ * tMOM components are used.
  */
 public class ChangeActiveMqJarName4MOMComponents extends AbstractJobMigrationTask {
 	private static final String PROPERTY_TO_REMOVE = "MQ_DERVIERS";
@@ -40,7 +40,7 @@ public class ChangeActiveMqJarName4MOMComponents extends AbstractJobMigrationTas
     public ExecutionResult execute(Item item) {
         ProcessType processType = getProcessType(item);
         String[] tmomCompNames = {"tMomInput","tMomInputLoop","tMomOutput"}; //$NON-NLS-1$
-        	
+
     	IComponentConversion changeActiveMqDriverJarType = new IComponentConversion() {
 	        public void transform(NodeType node) {
 	        	ElementParameterType mq_drivers = ComponentUtilities.getNodeProperty(node, PROPERTY_TO_REMOVE); //$NON-NLS-2$
@@ -49,11 +49,11 @@ public class ChangeActiveMqJarName4MOMComponents extends AbstractJobMigrationTas
 	        	}
 	        }
     	};
-    	
+
     	for (String name : tmomCompNames) {
             IComponentFilter filter = new NameComponentFilter(name); //$NON-NLS-4$
             try {
-                ModifyComponentsAction.searchAndModify(item, processType, filter, 
+                ModifyComponentsAction.searchAndModify(item, processType, filter,
                 		Arrays.<IComponentConversion> asList(changeActiveMqDriverJarType));
             } catch (PersistenceException e) {
                 ExceptionHandler.process(e);

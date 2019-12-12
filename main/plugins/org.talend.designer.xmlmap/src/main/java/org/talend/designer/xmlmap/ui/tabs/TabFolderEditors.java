@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,9 +51,9 @@ import org.talend.designer.xmlmap.util.XmlMapUtil;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TabFolderEditors.java 39333 2010-03-30 03:02:10Z wchen $
- * 
+ *
  */
 public class TabFolderEditors extends CTabFolder {
 
@@ -260,7 +260,7 @@ public class TabFolderEditors extends CTabFolder {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.DisposeListener#widgetDisposed(org.eclipse.swt.events.DisposeEvent)
              */
             @Override
@@ -325,7 +325,7 @@ public class TabFolderEditors extends CTabFolder {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.DisposeListener#widgetDisposed(org.eclipse.swt.events.DisposeEvent)
              */
             @Override

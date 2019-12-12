@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,9 +26,9 @@ import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 /**
  * Used to avoid to have a undo for each character typed and to check too much the process. This class avoids to send
  * too much commands when the text is typed. The commands are sent only when the time is up.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class TextPropertyChangeUtil {
 
@@ -84,9 +84,9 @@ public class TextPropertyChangeUtil {
 
     /**
      * This thread will store each new value of the current text and apply the properties when the timer is up.
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     class TextPropertyChangeThread extends Thread {
 
@@ -146,9 +146,9 @@ public class TextPropertyChangeUtil {
 
     /**
      * This class stores the element and the property used in a thread.
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     class TextElement {
 

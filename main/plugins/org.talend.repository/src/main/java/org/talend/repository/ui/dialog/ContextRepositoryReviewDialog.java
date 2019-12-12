@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -58,9 +58,9 @@ import org.talend.repository.model.RepositoryNode;
 
 /**
  * DOC xye class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class ContextRepositoryReviewDialog extends RepositoryReviewDialog {
 
@@ -85,7 +85,7 @@ public class ContextRepositoryReviewDialog extends RepositoryReviewDialog {
 
     /**
      * DOC xye ContextRepositoryReviewDialog constructor comment.
-     * 
+     *
      * @param parentShell
      * @param type
      */
@@ -99,7 +99,7 @@ public class ContextRepositoryReviewDialog extends RepositoryReviewDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.dialog.RepositoryReviewDialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -140,7 +140,7 @@ public class ContextRepositoryReviewDialog extends RepositoryReviewDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.dialog.RepositoryReviewDialog#okPressed()
      */
     @SuppressWarnings("unchecked")
@@ -234,7 +234,7 @@ public class ContextRepositoryReviewDialog extends RepositoryReviewDialog {
 
     /**
      * Getter for item.
-     * 
+     *
      * @return the item
      */
     public ContextItem getItem() {

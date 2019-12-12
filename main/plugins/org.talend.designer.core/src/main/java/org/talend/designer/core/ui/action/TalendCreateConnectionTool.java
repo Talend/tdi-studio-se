@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,7 +32,7 @@ public class TalendCreateConnectionTool extends TalendConnectionCreationTool imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#handleButtonUp(int)
      */
     @Override
@@ -59,7 +59,7 @@ public class TalendCreateConnectionTool extends TalendConnectionCreationTool imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.action.TalendConnectionCreationTool#handleCreateConnection()
      */
     @Override
@@ -95,7 +95,7 @@ public class TalendCreateConnectionTool extends TalendConnectionCreationTool imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.TargetingTool#getCommand()
      */
     @Override
@@ -108,7 +108,7 @@ public class TalendCreateConnectionTool extends TalendConnectionCreationTool imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#deactivate()
      */
     @Override
@@ -121,7 +121,7 @@ public class TalendCreateConnectionTool extends TalendConnectionCreationTool imp
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.AbstractConnectionCreationTool#eraseSourceFeedback()
      */
     @Override

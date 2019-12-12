@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.core.model.metadata.IMetadataTable;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FileOutputCSVForLDIF.java 下午03:30:59 2007-8-15 +0000 (2007-8-15) yzhang $
- * 
+ *
  */
 public class FileOutputDelimitedForLDIF extends FileOutputDelimitedNode {
 
@@ -28,7 +28,7 @@ public class FileOutputDelimitedForLDIF extends FileOutputDelimitedNode {
 
     /**
      * yzhang FileOutputCSVForLDIF constructor comment.
-     * 
+     *
      * @param filename
      * @param encoding
      */
@@ -38,7 +38,7 @@ public class FileOutputDelimitedForLDIF extends FileOutputDelimitedNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.shadow.ShadowNode#getMetadataList()
      */
     @Override
@@ -48,7 +48,7 @@ public class FileOutputDelimitedForLDIF extends FileOutputDelimitedNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.shadow.ShadowNode#setMetadataList(java.util.List)
      */
     @Override

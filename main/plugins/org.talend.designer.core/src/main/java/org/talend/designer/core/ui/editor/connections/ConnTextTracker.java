@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,9 +17,9 @@ import org.eclipse.gef.tools.DragEditPartsTracker;
 
 /**
  * Tracker that allow to move the connection's label. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnTextTracker extends DragEditPartsTracker {
 
@@ -27,7 +27,7 @@ public class ConnTextTracker extends DragEditPartsTracker {
 
     /**
      * Gives the Connection Part and the ConnectionLabelEditPart to the tracker.
-     * 
+     *
      * @param source
      * @param connection
      */
@@ -38,7 +38,7 @@ public class ConnTextTracker extends DragEditPartsTracker {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.tools.TargetingTool#getTargetEditPart()
      */
     protected EditPart getTargetEditPart() {

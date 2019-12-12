@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,9 +38,9 @@ import org.talend.designer.codegen.persistence.util.EmittersPoolResourceImpl;
 
 /**
  * DOC mhirt class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class EmfEmittersPersistence {
 
@@ -52,9 +52,9 @@ public class EmfEmittersPersistence {
 
     /**
      * DOC mhirt EmfEmittersPersistance constructor comment.
-     * 
+     *
      * @param language
-     * 
+     *
      * @param persistantFile
      */
     public EmfEmittersPersistence(ECodeLanguage language, File persistantFile) {
@@ -64,7 +64,7 @@ public class EmfEmittersPersistence {
 
     /**
      * DOC mhirt Comment method "saveEmittersPool".
-     * 
+     *
      * @param pool
      * @throws BusinessException
      */
@@ -95,7 +95,7 @@ public class EmfEmittersPersistence {
 
     /**
      * DOC mhirt Comment method "loadEmittersPool".
-     * 
+     *
      * @return
      * @throws IOException
      * @throws ClassNotFoundException
@@ -132,7 +132,7 @@ public class EmfEmittersPersistence {
 
     /**
      * DOC mhirt Comment method "loadEmfPoolFactory".
-     * 
+     *
      * @param file
      * @return
      * @throws IOException
@@ -151,7 +151,7 @@ public class EmfEmittersPersistence {
 
     /**
      * DOC mhirt Comment method "saveEmfPoolFactory".
-     * 
+     *
      * @param file
      * @param currentPool
      * @throws IOException

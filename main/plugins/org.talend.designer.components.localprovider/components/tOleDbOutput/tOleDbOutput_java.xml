@@ -14,12 +14,13 @@
     PARALLELIZE="true"
     PARTITIONING="AUTO"
     LOG4J_ENABLED="true"
+    VISIBLE="false"
   >
     <SIGNATURE/>
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/DB Specifics/OleDb</FAMILY>
+    <FAMILY>Deprecated</FAMILY>
   </FAMILIES>
 
   <DOCUMENTATION>
@@ -178,7 +179,7 @@
   </ADVANCED_PARAMETERS>
 
   <CODEGENERATION><IMPORTS>
-			<IMPORT MODULE="janet-java-1.1.jar" MVN="mvn:org.talend.libraries/janet-java-1.1/6.0.0"  NAME="janet-java-1.1"
+			<IMPORT MODULE="janet-java-1.2.jar" MVN="mvn:org.talend.libraries/janet-java-1.2/6.0.0"  NAME="janet-java-1.2"
 				REQUIRED="true" />
 		</IMPORTS></CODEGENERATION>
    

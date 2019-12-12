@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,9 +44,9 @@ import org.talend.sqlbuilder.util.UIUtils;
 
 /**
  * Open SqlBuilderDialog Job.
- * 
+ *
  * @author qzhang
- * 
+ *
  */
 public class OpenSQLBuilderDialogJob extends Job {
 
@@ -70,7 +70,7 @@ public class OpenSQLBuilderDialogJob extends Job {
 
     /**
      * DOC dev OpenDialogJob constructor comment.
-     * 
+     *
      * @param connectionParameters
      * @param composite
      * @param elem
@@ -100,7 +100,7 @@ public class OpenSQLBuilderDialogJob extends Job {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,7 +23,7 @@ import org.talend.designer.runprocess.shadow.ShadowNode;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class PerlRowNode extends ShadowNode {
 
@@ -31,7 +31,7 @@ public class PerlRowNode extends ShadowNode {
 
     /**
      * yzhang PerlRowNode constructor comment.
-     * 
+     *
      * @param componentName
      */
     public PerlRowNode(String expression) {
@@ -52,7 +52,7 @@ public class PerlRowNode extends ShadowNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.shadow.ShadowNode#getMetadataList()
      */
     @Override
@@ -62,7 +62,7 @@ public class PerlRowNode extends ShadowNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.shadow.ShadowNode#setMetadataList(java.util.List)
      */
     @Override
@@ -72,7 +72,7 @@ public class PerlRowNode extends ShadowNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.shadow.ShadowNode#isStart()
      */
     @Override

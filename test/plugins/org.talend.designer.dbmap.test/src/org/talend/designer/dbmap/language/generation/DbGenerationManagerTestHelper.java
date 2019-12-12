@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,7 +46,7 @@ import org.talend.designer.dbmap.external.data.ExternalDbMapTable;
 public class DbGenerationManagerTestHelper {
 
     protected DbMapComponent dbMapComponent;
-    
+
     protected Process process;
 
     protected void init(String schema, String main_table, String main_alias, String lookup_table, String lookup_alias) {
@@ -132,7 +132,7 @@ public class DbGenerationManagerTestHelper {
     protected IConnection mockConnection(String schemaName, String tableName, String[] columns) {
         return mockConnection(null, schemaName, tableName, columns);
     }
-    
+
     protected IConnection mockConnection(Node node, String schemaName, String tableName, String[] columns) {
         Connection connection = mock(Connection.class);
         if(node == null){
@@ -151,6 +151,8 @@ public class DbGenerationManagerTestHelper {
         tName = TalendTextUtils.removeQuotes(tName);
         when(connection.getName()).thenReturn(tName);
         when(connection.getSource()).thenReturn(node);
+        when(connection.getMetaName()).thenReturn(tName);
+        when(connection.getUniqueName()).thenReturn(tName);
         IMetadataTable table = new MetadataTable();
         table.setLabel(tableName);
         table.setTableName(tableName);
@@ -166,7 +168,7 @@ public class DbGenerationManagerTestHelper {
 
         return connection;
     }
-    
+
     protected Node mockNode(DbMapComponent mapCom) {
         Node node = mock(Node.class);
         when(node.isELTComponent()).thenReturn(true);

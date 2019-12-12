@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -61,7 +61,7 @@ public class ReplaceSpaceCharForItemNameMigrationTask extends AbstractItemMigrat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @Override
@@ -89,9 +89,9 @@ public class ReplaceSpaceCharForItemNameMigrationTask extends AbstractItemMigrat
     }
 
     /**
-     * 
+     *
      * ggu Comment method "fakeFunction".
-     * 
+     *
      * nothing to do, but if there is nothing to do, the item will be empty.
      */
     private void fakeFunction(Item item) {

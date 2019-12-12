@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,9 +46,9 @@ import org.talend.designer.core.utils.ResourceDisposeUtil;
 /**
  * This class create a figure with the given image. <br/>
  * eh
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeFigure extends Figure {
 
@@ -269,7 +269,7 @@ public class NodeFigure extends Figure {
 
     /**
      * DOC nrousseau NodeFigure class global comment. Detailled comment <br/>
-     * 
+     *
      */
     class NodeBorder extends AbstractBorder {
 
@@ -306,7 +306,7 @@ public class NodeFigure extends Figure {
 
     /**
      * Sets the startConnection.
-     * 
+     *
      * @param startConnection the startConnection to set
      */
     DummyConnectionFigure connection = null;
@@ -333,7 +333,7 @@ public class NodeFigure extends Figure {
 
     /**
      * Sets the endConnection.
-     * 
+     *
      * @param endConnection the endConnection to set
      */
     public void setTargetConnection(ConnectionFigure targetConnection) {

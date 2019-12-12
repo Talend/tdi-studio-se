@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.sqlbuilder.ui.editor.ISQLEditor;
 
 /**
  * This class is responsible for representing repository name as items into combo component. <br/>
- * 
+ *
  * @author ftang
- * 
+ *
  */
 public class SQLEditorSessionSwitcher extends ControlContribution {
 
@@ -42,7 +42,7 @@ public class SQLEditorSessionSwitcher extends ControlContribution {
 
     /**
      * SQLEditorSessionSwitcher constructor.
-     * 
+     *
      * @param editor
      */
     public SQLEditorSessionSwitcher(ISQLEditor editor) {
@@ -56,7 +56,7 @@ public class SQLEditorSessionSwitcher extends ControlContribution {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.ControlContribution#createControl(org.eclipse.swt.widgets.Composite)
      */
     protected Control createControl(Composite parent) {

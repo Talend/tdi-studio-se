@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,7 +20,7 @@ class MainDataProcessor extends DataProcessor {
 
     /**
      * Processes incoming <code>data</code> as Main data, thus returns it without any changes
-     * 
+     *
      * @param data data object retrieved from component runtime classes
      * @return data without any changes
      */
@@ -31,7 +31,7 @@ class MainDataProcessor extends DataProcessor {
     /**
      * Processes incoming <code>dataIterable</code> as Main data {@link Iterable}, thus returns it without
      * any changes
-     * 
+     *
      * @param dataIterable data {@link Iterable} object retrieved from component runtime classes
      * @return data {@link Iterable} without any changes
      */

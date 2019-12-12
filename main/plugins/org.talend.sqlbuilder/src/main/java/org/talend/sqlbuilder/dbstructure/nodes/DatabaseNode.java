@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,7 +27,7 @@ import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 
 /**
  * Root node for a database. ChildNodes can be filtered based on expressions in the alias.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public class DatabaseNode extends AbstractNode {
@@ -44,7 +44,7 @@ public class DatabaseNode extends AbstractNode {
 
     /**
      * Create a new database node with the given name.
-     * 
+     *
      * @param name name
      * @param session session
      */
@@ -123,7 +123,7 @@ public class DatabaseNode extends AbstractNode {
 
     /**
      * Returns "database" as the type for this node.
-     * 
+     *
      * @return Type.
      * @see org.talend.sqlbuilder.dbstructure.nodes.INode#getType()
      */

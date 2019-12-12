@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,9 +35,9 @@ import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class StyleLinkFactory {
 
@@ -141,7 +141,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSelectedFilterStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getSelectedFilterStyle() {
@@ -159,7 +159,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSelectedFilterStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getUnselectedFilterStyle() {
@@ -190,7 +190,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getNotSelectedSameZoneStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getUnselectedZoneToZoneStyle() {
@@ -206,7 +206,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getNotSelectedSameZoneStyle".
-     * 
+     *
      * @return
      */
     private IStyleLink getUnselectedSameZoneStyle() {
@@ -222,7 +222,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSelectedSameZoneStyle".
-     * 
+     *
      * @param foregroundColor
      * @return
      */
@@ -242,7 +242,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "setCommonsStyleProperties".
-     * 
+     *
      * @param style
      */
     private void setCommonsStyleProperties(StyleLink style) {
@@ -255,7 +255,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getSameZoneLink".
-     * 
+     *
      * @param style
      * @return
      */
@@ -265,7 +265,7 @@ public class StyleLinkFactory {
 
     /**
      * DOC amaumont Comment method "getZoneToZoneLink".
-     * 
+     *
      * @return
      */
     private IDrawableLink getZoneToZoneLink(StyleLink style) {

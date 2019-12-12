@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,14 +34,14 @@ import org.talend.designer.mapper.model.emf.mapper.VarTable;
 
 /**
  * DOC YeXiaowei class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class MapperHelper {
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "isGeneratedAsVirtualComponent".
-     * 
+     *
      * @param mapperNode
      * @return
      */
@@ -152,9 +152,9 @@ public class MapperHelper {
     }
 
     /**
-     * 
+     *
      * set common attributes for in and output table
-     * 
+     *
      * @param persistentTable
      * @param table
      */

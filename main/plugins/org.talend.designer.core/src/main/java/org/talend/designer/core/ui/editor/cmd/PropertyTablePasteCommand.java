@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,16 +28,16 @@ import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.Pr
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  * @param <B> bean
  */
 public class PropertyTablePasteCommand<B> extends ExtendedTablePasteCommand {
 
     /**
      * DOC amaumont MetadataPasteCommand constructor comment.
-     * 
+     *
      * @param extendedTable
      * @param validAssignableType
      * @param indexStartAdd
@@ -48,7 +48,7 @@ public class PropertyTablePasteCommand<B> extends ExtendedTablePasteCommand {
 
     /**
      * DOC amaumont MetadataPasteCommand constructor comment.
-     * 
+     *
      * @param extendedTable
      * @param instanceOfType
      */
@@ -58,7 +58,7 @@ public class PropertyTablePasteCommand<B> extends ExtendedTablePasteCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.advanced.dataeditor.commands.ExtendedTablePasteCommand#createPastableBeansList(java
      * .util.List)

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -88,9 +88,9 @@ import org.talend.repository.viewer.ui.provider.RepositoryContentProvider;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DynamicComposite.java 6579 2007-10-26 10:33:01Z ftang $
- * 
+ *
  * @deprecated use MultipleThreadDynamicComposite instead.
  */
 public class DynamicComposite extends ScrolledComposite implements IDynamicProperty {
@@ -214,7 +214,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Sort the element order of the inputed list.
-     * 
+     *
      * @param compareList
      */
     private void sortList(List<String> compareList) {
@@ -491,7 +491,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * DOC qzhang Comment method "getConnectionItems".
-     * 
+     *
      * @return
      * @throws PersistenceException
      */
@@ -519,10 +519,10 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * DOC qzhang Comment method "addConnectionItem".
-     * 
+     *
      * @param provider
      * @param viewer
-     * 
+     *
      * @param list
      * @param repositoryNode3
      */
@@ -550,7 +550,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * for job settings extra (feature 2710).
-     * 
+     *
      */
     private void updateRepositoryListExtra(IElementParameter param, List<String> repositoryConnectionNameList,
             List<String> repositoryConnectionValueList, boolean extra) {
@@ -640,7 +640,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * qzhang Comment method "addOrderDisplayNames".
-     * 
+     *
      * @param connectionValuesList
      * @param connectionStringList
      * @param key
@@ -666,7 +666,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * ftang Comment method "getElement".
-     * 
+     *
      * @return an instance of Element
      */
     public Element getElement() {
@@ -674,7 +674,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
     }
 
     /**
-     * 
+     *
      */
     private boolean checkErrorsWhenViewRefreshed;
 
@@ -684,7 +684,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * yzhang Comment method "addcomponents".
-     * 
+     *
      * @param forceRedraw
      * @param reInitialize
      */
@@ -940,7 +940,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * DOC Administrator Comment method "isNeedRedraw".
-     * 
+     *
      * @return
      */
     protected boolean isNeedRedraw() {
@@ -971,7 +971,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * DOC nrousseau Comment method "estimatePropertyHeightSize".
-     * 
+     *
      * @param maxRow
      * @param listParam
      * @param tabbedPropertyComposite
@@ -1128,7 +1128,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Set the section of the tabbed property.
-     * 
+     *
      * @param section
      */
     public DynamicComposite(Composite parentComposite, int styles, final EComponentCategory section, Element element,
@@ -1216,7 +1216,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.widgets.Widget#dispose()
      */
     @Override
@@ -1261,7 +1261,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * yzhang Comment method "setCurRowSize" Sets the curRowSize.
-     * 
+     *
      * @param curRowSize int
      */
     public void setCurRowSize(int curRowSize) {
@@ -1270,7 +1270,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * dev Comment method "getRepositoryTableMap".
-     * 
+     *
      * @return Map
      */
     public Map<String, IMetadataTable> getRepositoryTableMap() {
@@ -1282,7 +1282,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * dev Comment method "getRepositoryConnectionItemMap".
-     * 
+     *
      * @return Map
      */
     public Map<String, ConnectionItem> getRepositoryConnectionItemMap() {
@@ -1294,7 +1294,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for currentComponent.
-     * 
+     *
      * @return the currentComponent
      */
     public String getCurrentComponent() {
@@ -1303,7 +1303,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for curRowSize.
-     * 
+     *
      * @return the curRowSize
      */
     public int getCurRowSize() {
@@ -1312,7 +1312,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for hashCurControls.
-     * 
+     *
      * @return the hashCurControls
      */
     public BidiMap getHashCurControls() {
@@ -1321,7 +1321,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for part.
-     * 
+     *
      * @return the part
      */
     public AbstractMultiPageTalendEditor getPart() {
@@ -1330,7 +1330,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for section.
-     * 
+     *
      * @return the section
      */
     public EComponentCategory getSection() {
@@ -1339,7 +1339,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for repositoryQueryStoreMap.
-     * 
+     *
      * @return the repositoryQueryStoreMap
      */
     public Map<String, Query> getRepositoryQueryStoreMap() {
@@ -1351,7 +1351,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Get the command stack of the Gef editor.
-     * 
+     *
      * @return
      */
     protected CommandStack getCommandStack() {
@@ -1365,7 +1365,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * qzhang Comment method "getDefaultRepository".
-     * 
+     *
      * @return
      */
     private String getDefaultRepository(IElementParameter baseParam, boolean istable, String defaultPropertyValue) {
@@ -1431,7 +1431,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for tablesMap.
-     * 
+     *
      * @return the tablesMap
      */
     public Map<String, List<String>> getTablesMap() {
@@ -1441,7 +1441,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for queriesMap.
-     * 
+     *
      * @return the queriesMap
      */
     public Map<String, List<String>> getQueriesMap() {
@@ -1451,7 +1451,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for tableIdAndDbTypeMap.
-     * 
+     *
      * @return the tableIdAndDbTypeMap
      */
     public Map<String, String> getTableIdAndDbTypeMap() {
@@ -1460,7 +1460,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for tableIdAndDbSchemaMap.
-     * 
+     *
      * @return the tableIdAndDbSchemaMap
      */
     public Map<String, String> getTableIdAndDbSchemaMap() {
@@ -1469,7 +1469,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for lastCompositeSize.
-     * 
+     *
      * @return the lastCompositeSize
      */
     public int getLastCompositeSize() {
@@ -1478,7 +1478,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getComposite()
      */
     public Composite getComposite() {
@@ -1487,7 +1487,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Getter for isCompactView.
-     * 
+     *
      * @return the isCompactView
      */
     public boolean isCompactView() {
@@ -1496,7 +1496,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     /**
      * Sets the isCompactView.
-     * 
+     *
      * @param isCompactView the isCompactView to set
      */
     public void setCompactView(boolean isCompactView) {

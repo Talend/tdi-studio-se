@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,9 +43,9 @@ import org.talend.repository.ui.views.IRepositoryView;
  */
 /**
  * DOC Administrator class global comment. Detailed comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public final class ExportItemAction extends AContextualAction implements IWorkbenchWindowActionDelegate {
 
@@ -55,7 +55,7 @@ public final class ExportItemAction extends AContextualAction implements IWorkbe
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.actions.ITreeContextualAction#init(org.eclipse.jface.viewers.TreeViewer,
      * org.eclipse.jface.viewers.IStructuredSelection)
      */
@@ -85,7 +85,7 @@ public final class ExportItemAction extends AContextualAction implements IWorkbe
                                 && !nodProperty.equals(ERepositoryObjectType.METADATA_CON_TABLE)
                                 && !nodProperty.equals(ERepositoryObjectType.METADATA_CON_QUERY)
                                 && !nodProperty.equals(ERepositoryObjectType.SVN_ROOT)
-                                && !nodProperty.equals(ERepositoryObjectType.SERVICESOPERATION) 
+                                && !nodProperty.equals(ERepositoryObjectType.SERVICESOPERATION)
                                 && !nodProperty.equals(ERepositoryObjectType.SERVICESPORT)
                                 && !nodProperty.equals(ERepositoryObjectType.REFERENCED_PROJECTS))) {
                     visible = true;

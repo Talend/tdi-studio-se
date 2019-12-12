@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -87,11 +87,11 @@ public class SparkStreamingSubjobContainerFigure extends SubjobContainerFigure {
         statsFigureText = new SimpleHtmlFigure();
         statsFigureText.setOpaque(false);
 
-        String text = "<b>Batch started</b>: <br>"; //$NON-NLS-1$ 
+        String text = "<b>Batch started</b>: <br>"; //$NON-NLS-1$
         text += "<b>Batch completed</b>: <br><br><br>"; //$NON-NLS-1$
-        text += "<b>Last scheduling delay</b>: <br>"; //$NON-NLS-1$ 
-        text += "<b>Last processing delay</b>: <br>"; //$NON-NLS-1$ 
-        text += "<b>Last total delay</b>: <br>"; //$NON-NLS-1$ 
+        text += "<b>Last scheduling delay</b>: <br>"; //$NON-NLS-1$
+        text += "<b>Last processing delay</b>: <br>"; //$NON-NLS-1$
+        text += "<b>Last total delay</b>: <br>"; //$NON-NLS-1$
 
         statsFigureText.setText(text);
     }

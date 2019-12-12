@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -255,7 +255,7 @@ public class JobHierarchyViewPart extends ViewPart implements IJobHierarchyViewP
 
     /**
      * bqian Comment method "createTypeViewerControl".
-     * 
+     *
      * @param typeViewerViewForm
      * @return
      */
@@ -409,7 +409,7 @@ public class JobHierarchyViewPart extends ViewPart implements IJobHierarchyViewP
 
     /*
      * Changes the input to a new type
-     * 
+     *
      * @param inputElement
      */
     private void updateInput(IProcess2 newProcess) {
@@ -654,7 +654,7 @@ public class JobHierarchyViewPart extends ViewPart implements IJobHierarchyViewP
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jdt.ui.ITypeHierarchyViewPart#getViewLayout()
      */
     public int getViewLayout() {

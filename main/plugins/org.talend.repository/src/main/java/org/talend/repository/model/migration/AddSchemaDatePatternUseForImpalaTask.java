@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,14 +38,14 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.migration.IMigrationTask.ExecutionResult;
 
 /**
- * 
+ *
  * @author kcoepeau
- * 
+ *
  * Migrate tImpalaOutput schema date pattern to use "yyyy-MM-dd"
  *
  */
 public class AddSchemaDatePatternUseForImpalaTask extends AbstractJobMigrationTask {
-    
+
     @Override
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
@@ -59,15 +59,15 @@ public class AddSchemaDatePatternUseForImpalaTask extends AbstractJobMigrationTa
         if(processType == null){
             return ExecutionResult.NOTHING_TO_DO;
         }
-        
+
         String componentName = "tImpalaOutput";
-        
+
         try {
             ModifyComponentsAction.searchAndModify(item, processType, new NameComponentFilter(componentName), Arrays
                     .<IComponentConversion> asList(new IComponentConversion() {
 
                         public void transform(NodeType node) {
-                            
+
                             for(Object om : node.getMetadata()){
                                 MetadataType metadata = (MetadataType) om;
                                 for(Object oc : metadata.getColumn()){
@@ -78,14 +78,14 @@ public class AddSchemaDatePatternUseForImpalaTask extends AbstractJobMigrationTa
                                 }
                             }
                         }
-                        
+
                     }));
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
             return ExecutionResult.FAILURE;
         }
     }
-    
+
     @Override
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2018, 1, 18, 18, 0, 0);

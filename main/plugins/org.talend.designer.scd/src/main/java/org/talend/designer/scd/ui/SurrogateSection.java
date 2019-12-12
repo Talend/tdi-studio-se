@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -69,7 +69,7 @@ public class SurrogateSection extends ScdSection {
 
     /**
      * DOC hcw SurrogateSection constructor comment.
-     * 
+     *
      * @param parent
      * @param width
      * @param height
@@ -241,7 +241,7 @@ public class SurrogateSection extends ScdSection {
                     routineText.setText(""); //$NON-NLS-1$
                     inputFieldLabel.setText(""); //$NON-NLS-1$
                     // if (enableOracle) {
-                    dbSequenceText.setText("");//$NON-NLS-1$     
+                    dbSequenceText.setText("");//$NON-NLS-1$
                     // }
                     key.setComplement(""); //$NON-NLS-1$
                 }
@@ -294,7 +294,7 @@ public class SurrogateSection extends ScdSection {
 
     /**
      * Get the index for creation combo by <code>SurrogateCreationType</code>. Created by Marvin Wang on May 16, 2012.
-     * 
+     *
      * @param type
      * @return
      */
@@ -359,7 +359,7 @@ public class SurrogateSection extends ScdSection {
 
     /**
      * DOC chuang Comment method "addContextHelp".
-     * 
+     *
      * @param scdDialog
      */
     public void addContextHelp(AbstractScdDialog scdDialog) {

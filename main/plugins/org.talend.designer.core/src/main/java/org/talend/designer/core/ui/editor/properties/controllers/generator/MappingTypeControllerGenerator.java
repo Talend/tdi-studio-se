@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,7 +18,7 @@ import org.talend.designer.core.ui.editor.properties.controllers.MappingTypeCont
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class MappingTypeControllerGenerator implements IControllerGenerator {
 
@@ -26,7 +26,7 @@ public class MappingTypeControllerGenerator implements IControllerGenerator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IControllerGenerator#generate()
      */
     public AbstractElementPropertySectionController generate() {
@@ -35,7 +35,7 @@ public class MappingTypeControllerGenerator implements IControllerGenerator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IControllerGenerator#setDynamicProperty(org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty)
      */
     public void setDynamicProperty(IDynamicProperty dp) {

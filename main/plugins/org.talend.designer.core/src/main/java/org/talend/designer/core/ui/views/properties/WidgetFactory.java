@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/> adapted from the TabbedPropertySheetWidgetFactory
- * 
+ *
  */
 public class WidgetFactory extends FormToolkit {
 
@@ -48,7 +48,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates the tab folder as a part of the form.
-     * 
+     *
      * @param parent the composite parent.
      * @param style the tab folder style.
      * @return the tab folder
@@ -60,7 +60,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates the tab item as a part of the tab folder.
-     * 
+     *
      * @param tabFolder the parent.
      * @param style the tab folder style.
      * @return the tab item.
@@ -72,7 +72,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates the list as a part of the form.
-     * 
+     *
      * @param parent the composite parent.
      * @param style the list style.
      * @return the list.
@@ -139,7 +139,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates a plain composite as a part of the form.
-     * 
+     *
      * @param parent the composite parent.
      * @param style the composite style.
      * @return the composite.
@@ -153,7 +153,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates a scrolled composite as a part of the form.
-     * 
+     *
      * @param parent the composite parent.
      * @param style the composite style.
      * @return the composite.
@@ -165,7 +165,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates a combo box as a part of the form.
-     * 
+     *
      * @param parent the combo box parent.
      * @param comboStyle the combo box style.
      * @return the combo box.
@@ -182,7 +182,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates a combo box as a part of the form.
-     * 
+     *
      * @param parent the combo box parent.
      * @return the combo box.
      */
@@ -192,7 +192,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates a group as a part of the form.
-     * 
+     *
      * @param parent the group parent.
      * @param text the group title.
      * @return the composite.
@@ -207,7 +207,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates a flat form composite as a part of the form.
-     * 
+     *
      * @param parent the composite parent.
      * @return the composite.
      */
@@ -223,7 +223,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates a label as a part of the form.
-     * 
+     *
      * @param parent the label parent.
      * @param text the label text.
      * @return the label.
@@ -234,7 +234,7 @@ public class WidgetFactory extends FormToolkit {
 
     /**
      * Creates a label as a part of the form.
-     * 
+     *
      * @param parent the label parent.
      * @param text the label text.
      * @param style the label style.

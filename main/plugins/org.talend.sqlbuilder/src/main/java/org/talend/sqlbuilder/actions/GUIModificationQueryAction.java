@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,9 +37,9 @@ import org.talend.sqlbuilder.util.QueryTokenizer;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2007-2-9 下午01:06:55 (星期五, 29 九月 2006) qzhang $
- * 
+ *
  */
 public class GUIModificationQueryAction extends AbstractEditorAction {
 
@@ -71,7 +71,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getToolTipText()
      */
     @Override
@@ -84,7 +84,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#getImageDescriptor()
      */
     @Override
@@ -94,7 +94,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#getText()
      */
     @Override
@@ -107,7 +107,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.actions.AbstractEditorAction#run()
      */
     @Override

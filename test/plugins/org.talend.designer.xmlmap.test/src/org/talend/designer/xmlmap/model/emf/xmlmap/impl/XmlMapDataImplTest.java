@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,7 +31,7 @@ import org.talend.designer.xmlmap.model.emf.xmlmap.XmlmapFactory;
  * DOC hwang  class global comment. Detailled comment
  */
 public class XmlMapDataImplTest {
-    
+
     @Test
     public void testEquals() {
         XmlMapData data1 = XmlmapFactory.eINSTANCE.createXmlMapData();
@@ -42,31 +42,31 @@ public class XmlMapDataImplTest {
         test3();
         test4();
     }
-    
+
     private void test1(){
         XmlMapData data1 = createSparkData("diff","diff", "diff");
         XmlMapData data2 = createSparkData("diff","diff", "diff");
         assertTrue(data1.equals(data2));
     }
-    
+
     private void test2(){
         XmlMapData data1 = createSparkData("diff","diff", "diff");
         XmlMapData data2 = createSparkData("diff1","diff", "diff");
         assertFalse(data1.equals(data2));
     }
-    
+
     private void test3(){
         XmlMapData data1 = createSparkData("diff","diff", "diff");
         XmlMapData data2 = createSparkData("diff","diff1", "diff");
         assertFalse(data1.equals(data2));
     }
-    
+
     private void test4(){
         XmlMapData data1 = createSparkData("diff","diff", "diff");
         XmlMapData data2 = createSparkData("diff","diff", "diff1");
         assertFalse(data1.equals(data2));
     }
-    
+
     private XmlMapData createSparkData(String inputDiff,String outputDiff, String varDiff){
         XmlMapData data = XmlmapFactory.eINSTANCE.createXmlMapData();
         //

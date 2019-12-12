@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.eclipse.swt.widgets.Button;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: UndoRecorder.java 上午11:12:22 2007-9-13 +0000 (2007-9-13) yzhang $
- * 
+ *
  */
 
 public class ExpressionRecorder {
@@ -46,7 +46,7 @@ public class ExpressionRecorder {
 
     /**
      * yzhang Comment method "addRecored".
-     * 
+     *
      * @param expression
      */
     public void pushRecored(String expression) {
@@ -80,7 +80,7 @@ public class ExpressionRecorder {
 
     /**
      * yzhang Comment method "popRecored".
-     * 
+     *
      * @return
      */
     public String popRecored() {
@@ -101,7 +101,7 @@ public class ExpressionRecorder {
 
     /**
      * Getter for cursorPosition.
-     * 
+     *
      * @return the cursorPosition
      */
     public Point getCursorPosition() {
@@ -110,7 +110,7 @@ public class ExpressionRecorder {
 
     /**
      * Sets the cursorPosition.
-     * 
+     *
      * @param cursorPosition the cursorPosition to set
      */
     public void setCursorPosition(Point cursorPosition) {

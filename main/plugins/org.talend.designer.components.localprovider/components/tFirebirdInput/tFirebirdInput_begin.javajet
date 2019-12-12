@@ -17,13 +17,25 @@ imports="
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
 	    
+	    public void beforeComponentProcess(INode node){
+			super.beforeComponentProcess(node);
+			cid = node.getUniqueName();
+		}
+	    
 		public void setURL(INode node) {
 			
 			String db = ElementParameterParser.getValue(node, "__DB__");
 			String dbjnilib = ElementParameterParser.getValue(node, "__JNI_LIB__");
+			
+			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
-			String url_<%=cid %> ="jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=db%>;
+				String url_<%=cid %> ="jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=db%>;
 <%
+			} else {
+%>
+				String url_<%=cid %> ="jdbc:firebirdsql:" + <%=dbhost%> + <%if(!"".equals(dbport) && !"\"\"".equals(dbport)){%> "/" + <%=dbport%> + <%}%>":" +  <%=db%> + "?" + <%=dbproperties%>;
+<%
+			}
 		}
 		
 		public String getDirverClassName(INode node){

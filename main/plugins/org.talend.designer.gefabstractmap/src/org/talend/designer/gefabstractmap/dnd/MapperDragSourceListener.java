@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,7 +20,7 @@ import org.eclipse.swt.dnd.Transfer;
 
 /**
  * created by Administrator on 2013-1-16 Detailled comment
- * 
+ *
  */
 public abstract class MapperDragSourceListener extends AbstractTransferDragSourceListener {
 
@@ -35,9 +35,9 @@ public abstract class MapperDragSourceListener extends AbstractTransferDragSourc
     }
 
     /**
-     * 
+     *
      * DOC talend Comment method "getTemplate".
-     * 
+     *
      * @param event
      * @return the validate drag able node list
      */

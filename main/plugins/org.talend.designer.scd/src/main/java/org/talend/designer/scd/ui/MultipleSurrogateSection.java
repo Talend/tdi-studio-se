@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -67,7 +67,7 @@ public class MultipleSurrogateSection extends ScdSection {
 
     /**
      * DOC hcw MultipleSurrogateSection constructor comment.
-     * 
+     *
      * @param parent
      * @param width
      * @param height
@@ -112,7 +112,7 @@ public class MultipleSurrogateSection extends ScdSection {
 
     /**
      * DOC hcw Comment method "createToolbar".
-     * 
+     *
      * @param composite
      */
     private void createToolbarActions(Composite composite) {
@@ -277,7 +277,7 @@ public class MultipleSurrogateSection extends ScdSection {
 
     /**
      * DOC hcw Comment method "initTableItem".
-     * 
+     *
      * @param key
      * @param item
      */
@@ -322,7 +322,7 @@ public class MultipleSurrogateSection extends ScdSection {
 
     /**
      * DOC hcw Comment method "markItemAsSelected".
-     * 
+     *
      * @param item
      * @param checked
      */
@@ -343,7 +343,7 @@ public class MultipleSurrogateSection extends ScdSection {
 
     /**
      * DOC hcw Comment method "remove".
-     * 
+     *
      * @param selectionIndices
      * @param i
      * @return
@@ -370,7 +370,7 @@ public class MultipleSurrogateSection extends ScdSection {
 
     /**
      * DOC hcw Comment method "add".
-     * 
+     *
      * @param selectionIndices
      * @param i
      * @return
@@ -389,7 +389,7 @@ public class MultipleSurrogateSection extends ScdSection {
 
     /**
      * DOC hcw Comment method "find".
-     * 
+     *
      * @param arr
      * @param value
      * @return
@@ -405,7 +405,7 @@ public class MultipleSurrogateSection extends ScdSection {
 
     /**
      * DOC hcw Comment method "isItemSelected".
-     * 
+     *
      * @param item
      * @return
      */
@@ -420,7 +420,7 @@ public class MultipleSurrogateSection extends ScdSection {
 
     /**
      * DOC hcw Comment method "onCreationChange".
-     * 
+     *
      * @param value
      * @param key
      * @param item
@@ -521,7 +521,7 @@ public class MultipleSurrogateSection extends ScdSection {
 
     /**
      * DOC chuang Comment method "addContextHelp".
-     * 
+     *
      * @param scdDialog
      */
     public void addContextHelp(AbstractScdDialog scdDialog) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,14 +18,14 @@ import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExternalRowGeneratorUiProperties.java,v 1.2 2007/01/31 05:20:52 pub Exp $
- * 
+ *
  */
 public class ExternalRowGeneratorUiProperties implements Serializable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 145468748235L;
 
@@ -57,37 +57,37 @@ public class ExternalRowGeneratorUiProperties implements Serializable {
         return showColumnsList;
     }
 
-    
+
     public static void setShowColumnsList(String[] showColumnsList) {
         ExternalRowGeneratorUiProperties.showColumnsList = showColumnsList;
     }
 
-    
+
     public static Rectangle getBoundsRowGen() {
         return boundsRowGen;
     }
 
-    
+
     public static void setBoundsRowGen(Rectangle boundsRowGen) {
         ExternalRowGeneratorUiProperties.boundsRowGen = boundsRowGen;
     }
 
-    
+
     public static int[] getWeightsDatasFlowViewSashForm() {
         return weightsDatasFlowViewSashForm;
     }
 
-    
+
     public static void setWeightsDatasFlowViewSashForm(int[] weightsDatasFlowViewSashForm) {
         ExternalRowGeneratorUiProperties.weightsDatasFlowViewSashForm = weightsDatasFlowViewSashForm;
     }
 
-    
+
     public static int[] getWeightsMainSashForm() {
         return weightsMainSashForm;
     }
 
-    
+
     public static void setWeightsMainSashForm(int[] weightsMainSashForm) {
         ExternalRowGeneratorUiProperties.weightsMainSashForm = weightsMainSashForm;
     }

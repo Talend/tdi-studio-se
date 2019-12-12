@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ import org.talend.designer.gefabstractmap.resource.ImageProviderMapper;
 
 /**
  * created by Administrator on 2013-1-14 Detailled comment
- * 
+ *
  */
 public abstract class MapperRootEditPart extends BaseEditPart implements MouseWheelHelper {
 
@@ -164,7 +164,7 @@ public abstract class MapperRootEditPart extends BaseEditPart implements MouseWh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.MouseWheelHelper#handleMouseWheelScrolled(org.eclipse.swt.widgets.Event)
      */
     @Override
@@ -322,7 +322,7 @@ public abstract class MapperRootEditPart extends BaseEditPart implements MouseWh
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.draw2d.AbstractHintLayout#invalidate()
          */
         @Override
@@ -338,7 +338,7 @@ public abstract class MapperRootEditPart extends BaseEditPart implements MouseWh
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.draw2d.ToolbarLayout#calculateMinimumSize(org.eclipse.draw2d.IFigure, int, int)
          */
         @Override

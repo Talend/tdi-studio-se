@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -75,7 +75,7 @@ public class ValidationRulesUtil {
 
     /**
      * DOC ycbai Comment method "getRelatedValidationRuleObjs". get the validation rules object related to the element.
-     * 
+     *
      * @param node
      * @return
      */
@@ -154,7 +154,7 @@ public class ValidationRulesUtil {
     /**
      * DOC ycbai Comment method "getComponentsFromItemId". modify from method getAppropriateComponent() of
      * TalendEditorDropTargetListener.
-     * 
+     *
      * @param itemId
      * @param type
      * @param quickCreateInput
@@ -356,7 +356,7 @@ public class ValidationRulesUtil {
 
     private static boolean isSpecialTop(Item item, ERepositoryObjectType type, IComponent component) {
         // for MPx component
-        if (component.getName().startsWith("tFS")) { //$NON-NLS-1$ 
+        if (component.getName().startsWith("tFS")) { //$NON-NLS-1$
             return true;
         }
         return false;

@@ -103,7 +103,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                     <% if(compress){%>
                        //encoding
                         for(int i =0;i<row<%=cid%>.length;i++){
-                            row<%=cid%>[i]=new sun.misc.BASE64Encoder().encode(com<%=cid%>.zip(row<%=cid%>[i].getBytes(<%=encoding%>)));//encodeing!!!!!!!!!!!!!!!!!!!
+                            row<%=cid%>[i]=java.util.Base64.getMimeEncoder().encodeToString(com<%=cid%>.zip(row<%=cid%>[i].getBytes(<%=encoding%>)));//encodeing!!!!!!!!!!!!!!!!!!!
                         }
                     <% } %>    
                         CsvWriter<%=cid%>.writeNext(row<%=cid%>); 

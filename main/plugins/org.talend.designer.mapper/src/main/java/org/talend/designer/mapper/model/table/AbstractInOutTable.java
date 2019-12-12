@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,9 +32,9 @@ import org.talend.designer.mapper.model.tableentry.InputColumnTableEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
@@ -61,9 +61,9 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
     private String id; // used for saving schema id of table.
 
     /**
-     * 
+     *
      * DOC amaumont AbstractInOutTable constructor comment.
-     * 
+     *
      * @param metadataTable
      * @param externalMapperTable can be null
      * @param name
@@ -75,7 +75,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     /**
      * DOC amaumont AbstractInOutTable constructor comment.
-     * 
+     *
      * @param mapperManager
      * @param connection2
      * @param name
@@ -86,9 +86,9 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
     }
 
     /**
-     * 
+     *
      * DOC wchen AbstractInOutTable constructor comment.
-     * 
+     *
      * @param metadataTable
      * @param externalMapperTable can be null
      * @param name
@@ -170,7 +170,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     /**
      * Getter for connection.
-     * 
+     *
      * @return the connection
      */
     public IOConnection getConnection() {
@@ -179,7 +179,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     /**
      * Getter for expressionFilter.
-     * 
+     *
      * @return the expressionFilter
      */
     public ExpressionFilterEntry getExpressionFilter() {
@@ -192,7 +192,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     /**
      * Getter for activateExpressionFilter.
-     * 
+     *
      * @return the activateExpressionFilter
      */
     public boolean isActivateExpressionFilter() {
@@ -201,7 +201,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     /**
      * Sets the activateExpressionFilter.
-     * 
+     *
      * @param activateExpressionFilter the activateExpressionFilter to set
      */
     public void setActivateExpressionFilter(boolean activateExpressionFilter) {
@@ -234,7 +234,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     /**
      * Getter for id.
-     * 
+     *
      * @return the id
      */
     public String getId() {
@@ -243,7 +243,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     /**
      * Sets the id.
-     * 
+     *
      * @param id the id to set
      */
     public void setId(String id) {
@@ -252,7 +252,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     /**
      * Getter for isRepository.
-     * 
+     *
      * @return the isRepository
      */
     public boolean isRepository() {
@@ -261,7 +261,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
 
     /**
      * Sets the isRepository.
-     * 
+     *
      * @param isRepository the isRepository to set
      */
     public void setRepository(boolean isRepository) {

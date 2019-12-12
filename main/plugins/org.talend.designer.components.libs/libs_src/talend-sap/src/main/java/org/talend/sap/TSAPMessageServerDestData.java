@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,7 +18,7 @@ import com.sap.conn.jco.ext.DestinationDataProvider;
 
 /**
  * created by bchen on Sep 11, 2014 Detailled comment
- * 
+ *
  */
 public class TSAPMessageServerDestData implements TSAPDestinationData {
 
@@ -37,7 +37,7 @@ public class TSAPMessageServerDestData implements TSAPDestinationData {
     private final String groupName;
 
     private final String sapGUI;
-    
+
     private final Properties customProp;
 
     private TSAPMessageServerDestData() throws Exception {
@@ -58,7 +58,7 @@ public class TSAPMessageServerDestData implements TSAPDestinationData {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sap.TSAPDestinationData#toProperties()
      */
     @Override
@@ -98,7 +98,7 @@ public class TSAPMessageServerDestData implements TSAPDestinationData {
         private final String groupName;
 
         private String sapGUI = null;
-        
+
         private Properties customProp = null;
 
         public Builder(String client, String user, String password, String language, String host, String systemID,
@@ -116,7 +116,7 @@ public class TSAPMessageServerDestData implements TSAPDestinationData {
             this.sapGUI = sapGUI;
             return this;
         }
-        
+
         public Builder setCustomProp(Properties customProp){
             this.customProp = customProp;
             return this;

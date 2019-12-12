@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public final class ValueConverter {
      * Converts String to List of Maps (table element parameter representation)
      * It assumes {@code str} has correct format (it doesn't check it)
      * TODO: quick implementation. May have bugs
-     * 
+     *
      * @param str String value to be converted to list
      * @return list value
      */
@@ -74,12 +74,12 @@ public final class ValueConverter {
 
     /**
      * Checks whether String representation of the list is empty or not
-     * 
+     *
      * @param list String representation of the list
      * @return true, if it is empty
      */
     private static boolean isListEmpty(final String list) {
-        return list == null || list.isEmpty() || "[]".equals(list);
+        return list == null || list.isEmpty() || "[]".equals(list) || "[{}]".equals(list);
     }
 
     /**

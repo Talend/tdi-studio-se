@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,7 +41,7 @@ import org.talend.repository.generic.ui.context.ContextComposite;
 import org.talend.repository.generic.ui.context.handler.GenericContextHandler;
 
 /**
- * 
+ *
  * created by ycbai on 2015年9月29日 Detailled comment
  *
  */
@@ -66,7 +66,7 @@ public abstract class GenericWizardPage extends AbstractNamedWizardPage {
     protected boolean addContextFields;
 
     private IContextHandler contextHandler;
-    
+
     protected IStatus genericStatus;
 
 
@@ -142,7 +142,7 @@ public abstract class GenericWizardPage extends AbstractNamedWizardPage {
     public Form getForm() {
         return this.form;
     }
-    
+
     @Override
     protected IStatus[] getStatuses() {
         return new IStatus[] { nameStatus, genericStatus };
@@ -203,7 +203,7 @@ public abstract class GenericWizardPage extends AbstractNamedWizardPage {
     @Override
     public void createControl(Composite parent) {
         // TODO Auto-generated method stub
-        
+
     }
 
     /* (non-Javadoc)

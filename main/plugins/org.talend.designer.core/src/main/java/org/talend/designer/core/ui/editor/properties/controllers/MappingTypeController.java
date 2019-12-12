@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,15 +46,15 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ComboController.java 1 2006-12-12 涓嬪崍01:58:48 +0000 (涓嬪崍01:58:48) yzhang $
- * 
+ *
  */
 public class MappingTypeController extends AbstractElementPropertySectionController {
 
     /**
      * DOC dev ColumnListController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public MappingTypeController(IDynamicProperty dp) {
@@ -63,7 +63,7 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
@@ -129,7 +129,7 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -228,7 +228,7 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org. eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -244,7 +244,7 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

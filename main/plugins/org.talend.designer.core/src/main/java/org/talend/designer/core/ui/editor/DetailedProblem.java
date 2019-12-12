@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.eclipse.jdt.core.compiler.IProblem;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class DetailedProblem {
 
@@ -30,7 +30,7 @@ public class DetailedProblem {
 
     /**
      * DOC amaumont ProblemWithLine constructor comment.
-     * 
+     *
      * @param problem
      * @param line
      * @param source
@@ -43,7 +43,7 @@ public class DetailedProblem {
 
     /**
      * Getter for line.
-     * 
+     *
      * @return the line
      */
     public String getKey() {
@@ -52,7 +52,7 @@ public class DetailedProblem {
 
     /**
      * Getter for problem.
-     * 
+     *
      * @return the problem
      */
     public IProblem getJdtProblem() {
@@ -61,7 +61,7 @@ public class DetailedProblem {
 
     /**
      * Getter for source.
-     * 
+     *
      * @return the source
      */
     public String getSource() {

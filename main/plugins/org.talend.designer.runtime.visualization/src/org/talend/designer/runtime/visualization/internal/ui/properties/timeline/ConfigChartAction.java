@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ public class ConfigChartAction extends Action {
 
     /**
      * The constructor.
-     * 
+     *
      * @param chart The chart
      * @param section The property section
      */
@@ -81,7 +81,7 @@ public class ConfigChartAction extends Action {
 
     /**
      * Performs the configuration.
-     * 
+     *
      * @param chartTitle The chart title
      * @param axisUnit The axis unit
      * @param attributes The attributes
@@ -118,7 +118,7 @@ public class ConfigChartAction extends Action {
 
     /**
      * Gets the attributes.
-     * 
+     *
      * @return The attributes
      */
     private List<MBeanAttribute> getAttributes() {

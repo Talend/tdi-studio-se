@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -121,7 +121,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /**
      * DOC Administrator DebugProcessComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -374,7 +374,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
             /**
              * DOC yexiaowei Comment method "callViewToDisplayMsg".
-             * 
+             *
              * @param message
              */
             private void callViewToDisplayMsg(final IProcessMessage message) {
@@ -508,7 +508,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getComposite()
      */
     @Override
@@ -519,7 +519,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getCurRowSize()
      */
     @Override
@@ -530,7 +530,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getElement()
      */
     @Override
@@ -541,7 +541,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getHashCurControls()
      */
     @Override
@@ -552,7 +552,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getPart()
      */
     @Override
@@ -563,7 +563,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.core.properties.tab.IDynamicProperty#getRepositoryAliasName(org.talend.core.model.properties.
      * ConnectionItem)
      */
@@ -596,7 +596,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getRepositoryTableMap()
      */
     // public Map<String, IMetadataTable> getRepositoryTableMap() {
@@ -606,7 +606,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getSection()
      */
     @Override
@@ -617,7 +617,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getTableIdAndDbSchemaMap()
      */
     @Override
@@ -628,7 +628,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getTableIdAndDbTypeMap()
      */
     @Override
@@ -639,7 +639,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#refresh()
      */
     @Override
@@ -652,7 +652,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#setCurRowSize(int)
      */
     @Override
@@ -807,7 +807,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
             }
 
             Double extentPro = new Double(0);
-            if ((!"".equals(mess)) && mess != null) { //$NON-NLS-1$  
+            if ((!"".equals(mess)) && mess != null) { //$NON-NLS-1$
                 extentPro = Double.parseDouble(mess);
             }
 
@@ -852,7 +852,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
                 matchContent = m.group();
 
-                if ((!("".equals(path)) && path != null) && lineNo > 0) {//$NON-NLS-1$ 
+                if ((!("".equals(path)) && path != null) && lineNo > 0) {//$NON-NLS-1$
                     uniName = Problems.setErrorMark(path, lineNo);
                 }
 
@@ -880,7 +880,7 @@ public class TraceDebugProcessComposite extends ScrolledComposite implements IDy
 
     /**
      * DOC gldu Comment method "hasProcess".
-     * 
+     *
      * @return
      */
     public boolean hasProcess() {

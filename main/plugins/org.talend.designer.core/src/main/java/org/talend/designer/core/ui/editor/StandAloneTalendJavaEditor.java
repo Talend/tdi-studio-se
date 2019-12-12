@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -116,7 +116,7 @@ import org.talend.repository.ui.views.IRepositoryView;
 
 /**
  * Stand alone Perl editor.<br/>
- * 
+ *
  */
 public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements IUIRefresher, ILastVersionChecker {
 
@@ -304,7 +304,7 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#getTitleImage()
      */
     @Override
@@ -332,7 +332,7 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#getPartName()
      */
     @Override
@@ -603,7 +603,7 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#getCorrespondingElement(org.eclipse.jdt.core.IJavaElement)
      */
     @Override
@@ -613,7 +613,7 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#getElementAt(int)
      */
     @Override
@@ -623,7 +623,7 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IUIRefresher#refreshName()
      */
     @Override
@@ -719,7 +719,7 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.ILastVersionChecker#setLastVersion(java.lang.Boolean)
      */
     @Override

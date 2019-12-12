@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -80,7 +80,7 @@ public class Type3Section extends ScdSection implements IDragDropDelegate {
 
     /**
      * DOC hcw Type3Section constructor comment.
-     * 
+     *
      * @param parent
      * @param width
      * @param height
@@ -231,7 +231,7 @@ public class Type3Section extends ScdSection implements IDragDropDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.scd.ui.IDragDropDelegate#getDragItemsAsText()
      */
     public String getDragItemsAsText() {
@@ -249,7 +249,7 @@ public class Type3Section extends ScdSection implements IDragDropDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.scd.ui.IDragDropDelegate#onDropItems(java.lang.String, org.eclipse.swt.graphics.Point)
      */
     public void onDropItems(String data, Point position) {
@@ -274,7 +274,7 @@ public class Type3Section extends ScdSection implements IDragDropDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.scd.ui.IDragDropDelegate#isDropAllowed(java.lang.String)
      */
     public boolean isDropAllowed(String data) {
@@ -305,7 +305,7 @@ public class Type3Section extends ScdSection implements IDragDropDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.scd.ui.IDragDropDelegate#removeDragItems()
      */
     public void removeDragItems(String data) {
@@ -391,7 +391,7 @@ public class Type3Section extends ScdSection implements IDragDropDelegate {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.EditingSupport#canEdit(java.lang.Object)
          */
         @Override
@@ -401,7 +401,7 @@ public class Type3Section extends ScdSection implements IDragDropDelegate {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.EditingSupport#getCellEditor(java.lang.Object)
          */
         @Override
@@ -411,7 +411,7 @@ public class Type3Section extends ScdSection implements IDragDropDelegate {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.EditingSupport#getValue(java.lang.Object)
          */
         @Override
@@ -428,7 +428,7 @@ public class Type3Section extends ScdSection implements IDragDropDelegate {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.EditingSupport#setValue(java.lang.Object, java.lang.Object)
          */
         @Override

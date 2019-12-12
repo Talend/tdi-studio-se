@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -45,7 +45,7 @@ import org.talend.designer.core.ui.viewer.proposal.TalendCompletionProposal;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
@@ -55,7 +55,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jdt.internal.ui.text.java.JavaCompletionProcessor#filterAndSortProposals(java.util.List,
      * org.eclipse.core.runtime.IProgressMonitor, org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext)
      */
@@ -118,7 +118,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
     /*
      * @see ContentAssistProcessor#checkDefaultEnablement(CompletionProposalCategory)
-     * 
+     *
      * @since 3.8
      */
     @Override
@@ -128,7 +128,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
     /*
      * @see ContentAssistProcessor#checkSeparateEnablement(CompletionProposalCategory)
-     * 
+     *
      * @since 3.8
      */
     @Override
@@ -138,7 +138,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jdt.internal.ui.text.java.JavaCompletionProcessor#createContext(org.eclipse.jface.text.ITextViewer,
      * int)
@@ -170,7 +170,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IEditorPart#getEditorInput()
          */
         @Override
@@ -180,7 +180,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IEditorPart#getEditorSite()
          */
         @Override
@@ -190,7 +190,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IEditorPart#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
          */
         @Override
@@ -199,7 +199,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IWorkbenchPart#addPropertyListener(org.eclipse.ui.IPropertyListener)
          */
         @Override
@@ -208,7 +208,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
          */
         @Override
@@ -217,7 +217,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IWorkbenchPart#dispose()
          */
         @Override
@@ -226,7 +226,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IWorkbenchPart#getSite()
          */
         @Override
@@ -236,7 +236,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IWorkbenchPart#getTitle()
          */
         @Override
@@ -246,7 +246,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IWorkbenchPart#getTitleImage()
          */
         @Override
@@ -256,7 +256,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IWorkbenchPart#getTitleToolTip()
          */
         @Override
@@ -266,7 +266,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IWorkbenchPart#removePropertyListener(org.eclipse.ui.IPropertyListener)
          */
         @Override
@@ -275,7 +275,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.IWorkbenchPart#setFocus()
          */
         @Override
@@ -284,7 +284,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
          */
         @Override
@@ -294,7 +294,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.ISaveablePart#doSave(org.eclipse.core.runtime.IProgressMonitor)
          */
         @Override
@@ -303,7 +303,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.ISaveablePart#doSaveAs()
          */
         @Override
@@ -312,7 +312,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.ISaveablePart#isDirty()
          */
         @Override
@@ -322,7 +322,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.ISaveablePart#isSaveAsAllowed()
          */
         @Override
@@ -332,7 +332,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.ui.ISaveablePart#isSaveOnCloseNeeded()
          */
         @Override
@@ -344,7 +344,7 @@ public class TalendJavaCompletionProcessor extends JavaCompletionProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jdt.internal.ui.text.java.ContentAssistProcessor#computeContextInformation(org.eclipse.jface.text
      * .ITextViewer, int)

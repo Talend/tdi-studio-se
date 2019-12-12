@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,7 +27,7 @@ import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
  * Copy an entire datasettable to the clipboard.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public class CopyTableAction extends AbstractDataSetTableContextAction {
@@ -36,7 +36,7 @@ public class CopyTableAction extends AbstractDataSetTableContextAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.IAction#getText()
      */
     public String getText() {
@@ -45,7 +45,7 @@ public class CopyTableAction extends AbstractDataSetTableContextAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.IAction#getImageDescriptor()
      */
     public ImageDescriptor getImageDescriptor() {
@@ -54,7 +54,7 @@ public class CopyTableAction extends AbstractDataSetTableContextAction {
 
     /**
      * Copy all table data to clipboard.
-     * 
+     *
      * @see org.eclipse.jface.action.IAction#run()
      */
     public void run() {

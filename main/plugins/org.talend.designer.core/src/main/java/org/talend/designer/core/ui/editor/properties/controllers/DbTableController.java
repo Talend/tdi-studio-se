@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -91,9 +91,9 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TextController.java 1 2006-12-12 下午01:53:53 +0000 (下午01:53:53) yzhang $
- * 
+ *
  */
 public class DbTableController extends AbstractElementPropertySectionController {
 
@@ -103,7 +103,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * DOC yzhang TextController constructor comment.
-     * 
+     *
      * @param dtp
      */
     public DbTableController(IDynamicProperty dp) {
@@ -147,7 +147,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -287,7 +287,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * qzhang Comment method "createOpenSQLCommand".
-     * 
+     *
      * @param button
      */
     protected void createOpenSQLCommand(Button button, IContextManager contextManager) {
@@ -357,7 +357,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * DOC zli Comment method "getExistConnection".
-     * 
+     *
      * @return
      */
     private DatabaseConnection getExistConnection() {
@@ -394,7 +394,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * DOC yexiaowei Comment method "openSQLBuilderWithParamer".
-     * 
+     *
      * @param button
      */
     private void openSQLBuilderWithParamer(Button button) {
@@ -415,7 +415,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * qzhang Comment method "isContainSqlMemo".
-     * 
+     *
      * @return
      */
     private boolean isContainSqlMemo() {
@@ -425,7 +425,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * qzhang Comment method "addOpenSqlBulderButton".
-     * 
+     *
      * @param subComposite
      * @param param
      * @param top
@@ -461,7 +461,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * qzhang Comment method "addListTablesButton".
-     * 
+     *
      * @param subComposite
      * @param param
      * @param top
@@ -478,9 +478,9 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * qzhang Comment method "createCommand".
-     * 
+     *
      * @param button
-     * 
+     *
      * @return
      */
     protected void createListTablesCommand(Button button, IContextManager manager) {
@@ -504,7 +504,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * qzhang Comment method "openDbTableSelectorJob".
-     * 
+     *
      * @param openListTable
      */
     private void openDbTableSelectorJob(final Button openListTable) {
@@ -710,7 +710,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * nma Comment method "checkConnection".
-     * 
+     *
      * @param metadataConnection, IContextManager
      */
     protected boolean checkConnection(IMetadataConnection metadataConnection, IContextManager contextManager) {
@@ -761,7 +761,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /**
      * qzhang Comment method "checkConnection".
-     * 
+     *
      * @param metadataConnection
      */
     protected boolean checkConnection(IMetadataConnection metadataConnection) {
@@ -785,7 +785,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -800,7 +800,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,7 +18,7 @@ import com.sap.conn.jco.ext.DestinationDataProvider;
 
 /**
  * created by bchen on Sep 11, 2014 Detailled comment
- * 
+ *
  */
 public class TSAPApplicationServerDestData implements TSAPDestinationData {
 
@@ -55,7 +55,7 @@ public class TSAPApplicationServerDestData implements TSAPDestinationData {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sap.TSAPDestinationData#toProperties()
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.build;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#cleanBeforeGenerate(int)
      */
     @Override
@@ -46,7 +47,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#generateCode(boolean, boolean, boolean)
      */
     @Override
@@ -56,7 +57,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#generateCode(boolean, boolean, boolean, int)
      */
     @Override
@@ -66,7 +67,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#generateContextCode()
      */
     @Override
@@ -76,7 +77,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#generateEsbFiles()
      */
     @Override
@@ -86,7 +87,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#run(int, int, java.lang.String)
      */
     @Override
@@ -97,7 +98,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#run(int, int, java.lang.String, java.lang.String,
      * org.eclipse.core.runtime.IProgressMonitor, org.talend.designer.runprocess.IProcessMessageManager)
      */
@@ -110,7 +111,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#run(java.lang.String[], int, int)
      */
     @Override
@@ -121,7 +122,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#run(java.lang.String[], int, int,
      * org.eclipse.core.runtime.IProgressMonitor, org.talend.designer.runprocess.IProcessMessageManager)
      */
@@ -134,7 +135,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getCodeContext()
      */
     @Override
@@ -145,7 +146,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getCodePath()
      */
     @Override
@@ -156,7 +157,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getContextPath()
      */
     @Override
@@ -167,7 +168,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getDataSetPath()
      */
     @Override
@@ -178,7 +179,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getCodeProject()
      */
     @Override
@@ -189,7 +190,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getTalendJavaProject()
      */
     @Override
@@ -200,7 +201,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getLineNumber(java.lang.String)
      */
     @Override
@@ -211,7 +212,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getInterpreter()
      */
     @Override
@@ -222,7 +223,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setInterpreter(java.lang.String)
      */
     @Override
@@ -232,7 +233,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setLibraryPath(java.lang.String)
      */
     @Override
@@ -242,7 +243,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getCodeLocation()
      */
     @Override
@@ -253,7 +254,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setCodeLocation(java.lang.String)
      */
     @Override
@@ -263,7 +264,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getProcessorType()
      */
     @Override
@@ -274,7 +275,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setProcessorStates(int)
      */
     @Override
@@ -284,7 +285,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setSyntaxCheckableEditor(org.talend.designer.core.
      * ISyntaxCheckableEditor )
      */
@@ -295,7 +296,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getTypeName()
      */
     @Override
@@ -306,7 +307,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#saveLaunchConfiguration()
      */
     @Override
@@ -317,7 +318,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getCommandLine(boolean, boolean, int, int, java.lang.String[])
      */
     @Override
@@ -326,10 +327,17 @@ public class TestProcessor implements IProcessor {
 
         return null;
     }
+    
+    @Override
+    public String[] getCommandLine(boolean needContext, boolean externalUse, int statOption, int traceOption, boolean ignoreCustomJVMSetting,
+            String... codeOptions) {
+
+        return null;
+    }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setContext(org.talend.core.model.process.IContext)
      */
     @Override
@@ -339,7 +347,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getTargetPlatform()
      */
     @Override
@@ -350,7 +358,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setTargetPlatform(java.lang.String)
      */
     @Override
@@ -360,7 +368,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#initPath()
      */
     @Override
@@ -370,7 +378,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getProcess()
      */
     @Override
@@ -381,7 +389,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getContext()
      */
     @Override
@@ -392,7 +400,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getProperty()
      */
     @Override
@@ -403,7 +411,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#isCodeGenerated()
      */
     @Override
@@ -414,7 +422,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setCodeGenerated(boolean)
      */
     @Override
@@ -424,7 +432,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getProxyParameters()
      */
     @Override
@@ -435,7 +443,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setProxyParameters(java.lang.String[])
      */
     @Override
@@ -445,7 +453,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#syntaxCheck()
      */
     @Override
@@ -455,7 +463,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getMainClass()
      */
     @Override
@@ -466,7 +474,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getJVMArgs()
      */
     @Override
@@ -477,7 +485,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getBuildChildrenJobs()
      */
     @Override
@@ -488,7 +496,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setOldBuildJob(boolean)
      */
     @Override
@@ -498,7 +506,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#build(org.eclipse.core.runtime.IProgressMonitor)
      */
     @Override
@@ -508,7 +516,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getArguments()
      */
     @Override
@@ -519,7 +527,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#setArguments(java.util.Map)
      */
     @Override
@@ -529,7 +537,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#cleanWorkingDirectory()
      */
     @Override
@@ -549,7 +557,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getNeededModules(boolean)
      */
     @Override
@@ -560,7 +568,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getBuildChildrenJobs(boolean)
      */
     @Override
@@ -571,7 +579,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#getSrcCodePath()
      */
     @Override
@@ -582,7 +590,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#unloadProcess()
      */
     @Override
@@ -593,7 +601,7 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#isProcessUnloaded()
      */
     @Override
@@ -604,11 +612,17 @@ public class TestProcessor implements IProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.IProcessor#reloadProcess()
      */
     @Override
     public void reloadProcess() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void updateModulesAfterSetLog4j(Collection<ModuleNeeded> modulesNeeded) {
         // TODO Auto-generated method stub
 
     }

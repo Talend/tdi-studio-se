@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ import org.talend.designer.core.ui.editor.connections.Connection;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class MergeOrderDialog extends Dialog {
 
@@ -55,7 +55,7 @@ public class MergeOrderDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
      */
     @Override
@@ -66,7 +66,7 @@ public class MergeOrderDialog extends Dialog {
 
     /**
      * yzhang Comment method "configureSizeAndTitle".
-     * 
+     *
      * @param shell
      */
     protected void configureSizeAndTitle(Shell shell) {
@@ -86,7 +86,7 @@ public class MergeOrderDialog extends Dialog {
 
     /**
      * DOC nrousseau MergeOrderDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     public MergeOrderDialog(Shell parentShell, INode mergeNode) {
@@ -99,7 +99,7 @@ public class MergeOrderDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -214,7 +214,7 @@ public class MergeOrderDialog extends Dialog {
 
     /**
      * yzhang Comment method "getConnectionQty".
-     * 
+     *
      * @return
      */
     protected int getConnectionQty() {
@@ -223,7 +223,7 @@ public class MergeOrderDialog extends Dialog {
 
     /**
      * Getter for connectionList.
-     * 
+     *
      * @return the connectionList
      */
     public List<IConnection> getConnectionList() {

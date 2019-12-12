@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -91,7 +91,7 @@ public class JobLaunchShortcutManager {
     // }
     // }
     /**
-     * 
+     *
      * cli Comment method "removeJobLaunch".
      */
     public static void removeJobLaunch(IRepositoryViewObject objToDelete) {
@@ -141,7 +141,7 @@ public class JobLaunchShortcutManager {
     }
 
     /**
-     * 
+     *
      * cli Comment method "renameJobLaunch".
      */
     public static void renameJobLaunch(IRepositoryViewObject obj, String oldLabel) {
@@ -200,7 +200,7 @@ public class JobLaunchShortcutManager {
     }
 
     /**
-     * 
+     *
      * ldong Comment method "resetJobProblemList".
      */
     public static void resetJobProblemList(IRepositoryViewObject obj, String oldLabel) {

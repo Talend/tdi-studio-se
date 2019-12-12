@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.talend.studio</groupId>
 		<artifactId>tdi-studio-se</artifactId>
-		<version>7.2.1-SNAPSHOT</version>
+		<version>7.3.1-SNAPSHOT</version>
 		<relativePath>../../../</relativePath>
 	</parent>
 	<artifactId>org.talend.designer.components.localprovider</artifactId>
@@ -16,9 +16,16 @@
 		<webservice.dir>${project.basedir}/components/tWebServiceInput</webservice.dir>
 		<webservicecore.dir>${project.basedir}/components/tWebService</webservicecore.dir>
 		<thashfile.dir>${project.basedir}/components/tHashInput</thashfile.dir>
-		<thashfile.version>3.0-20170711</thashfile.version>
+		<thashfile.version>3.1-20190910</thashfile.version>
 		<ftpProxy.dir>${project.basedir}/components/tFTPConnection</ftpProxy.dir>
-		<ftpProxy.version>3.6.1-talend-20190128</ftpProxy.version>
+		<ftpProxy.version>3.6.1-talend-20190819</ftpProxy.version>
+		<talendMQRFH2.dir>${project.basedir}/components/tMomInput</talendMQRFH2.dir>
+		<talendMQRFH2.version>1.0.1-20190206</talendMQRFH2.version>
+		<talendMQConnectionUtil.dir>${project.basedir}/components/tMomConnection</talendMQConnectionUtil.dir>
+		<talendMQConnectionUtil.version>1.0.1-20190215</talendMQConnectionUtil.version>
+		<tldapinput.dir>${project.basedir}/components/tLDAPInput</tldapinput.dir>
+		<tproxy.dir>${project.basedir}/components/tSetProxy</tproxy.dir>
+		<tproxy.version>1.0.0</tproxy.version>
 	</properties>
 
 	<build>
@@ -53,6 +60,24 @@
 								<include>talend-ws*.jar</include>
 							</includes>
 						</fileset>
+						<fileset>
+							<directory>${talendMQRFH2.dir}</directory>
+							<includes>
+								<include>talendMQRFH2*.jar</include>
+							</includes>
+						</fileset>
+						<fileset>
+							<directory>${talendMQConnectionUtil.dir}</directory>
+							<includes>
+								<include>talendMQConnectionUtil*.jar</include>
+							</includes>
+						</fileset>
+						<fileset>
+							<directory>${tldapinput.dir}</directory>
+							<includes>
+								<include>talendssl*.jar</include>
+							</includes>
+						</fileset>
 					</filesets>
 				</configuration>
 			</plugin>
@@ -72,7 +97,7 @@
 								<artifactItem>
 									<groupId>org.talend.libraries</groupId>
 									<artifactId>talend-soap</artifactId>
-									<version>2.0-20160927</version>
+									<version>2.1-20190716</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${soap.dir}</outputDirectory>
@@ -88,13 +113,13 @@
 								<artifactItem>
 									<groupId>org.talend.libraries</groupId>
 									<artifactId>talend-ws</artifactId>
-									<version>1.0.1-20190117</version>
+									<version>1.0.1-20191112</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${webservicecore.dir}</outputDirectory>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.talend.libraries</groupId>
+									<groupId>org.talend.components.lib</groupId>
 									<artifactId>thashfile</artifactId>
 									<version>${thashfile.version}</version>
 									<type>jar</type>
@@ -102,12 +127,44 @@
 									<outputDirectory>${thashfile.dir}</outputDirectory>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.talend.libraries</groupId>
+									<groupId>org.talend.components.lib</groupId>
 									<artifactId>commons-net-ftps-proxy</artifactId>
 									<version>${ftpProxy.version}</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${ftpProxy.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend</groupId>
+									<artifactId>talendMQRFH2</artifactId>
+									<version>${talendMQRFH2.version}</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${talendMQRFH2.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend</groupId>
+									<artifactId>talendMQConnectionUtil</artifactId>
+									<version>${talendMQConnectionUtil.version}</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${talendMQConnectionUtil.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.libraries</groupId>
+									<artifactId>talendssl</artifactId>
+									<version>1.0-20190118</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${tldapinput.dir}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.talend.components.lib</groupId>
+									<artifactId>talend-proxy</artifactId>
+									<version>${tproxy.version}</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${tproxy.dir}</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>

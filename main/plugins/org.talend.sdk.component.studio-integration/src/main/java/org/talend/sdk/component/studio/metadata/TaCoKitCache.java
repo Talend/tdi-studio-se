@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.Lookups;
@@ -41,8 +42,14 @@ public class TaCoKitCache {
      */
     private Map<String, ConfigTypeNode> familyConfigTypes;
 
+    private Map<ERepositoryObjectType, ConfigTypeNode> repTypeNodeMap;
+
     public TaCoKitCache() {
-        // nothing to do
+        repTypeNodeMap = new HashMap<>();
+    }
+
+    public Map<ERepositoryObjectType, ConfigTypeNode> getRepositoryObjectType2ConfigTypeNodeMap() {
+        return repTypeNodeMap;
     }
 
     public ConfigTypeNode getFamilyNode(final ConfigTypeNode configNode) {
@@ -58,7 +65,7 @@ public class TaCoKitCache {
 
     /**
      * Retrieves ConfigTypeNode from cache for specified parameters
-     * 
+     *
      * @param familyName ConfigTypeNode family name
      * @param nodeName ConfigTypeNode name
      * @param configurationType ConfigTypeNode type, either dataset or datastore
@@ -78,10 +85,10 @@ public class TaCoKitCache {
         }
         return findConfigTypeNode(familyConfigTypes.get(familyName), nodeName, configurationType);
     }
-    
+
     /**
      * Retrieves ConfigTypeNode from cache for specified {@code id}
-     * 
+     *
      * @param id ConfigTypeNode id
      * @return ConfigTypeNode for specified id
      */
@@ -108,7 +115,7 @@ public class TaCoKitCache {
 
     /**
      * Finds required ConfigTypeNode by its name and configuration types (dataset or datastore) in ConfigTypeNode tree.
-     * 
+     *
      * @param current a node which is visited
      * @param nodeName a node name of required ConfigTypeNode
      * @param configurationType configuration type of required ConfigTypeNode. It makes sense,

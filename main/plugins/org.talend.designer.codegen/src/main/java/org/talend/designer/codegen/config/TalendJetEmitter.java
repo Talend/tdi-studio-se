@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -69,9 +69,9 @@ import org.talend.designer.core.model.components.ComponentBundleToPath;
 
 /**
  * DOC mhirt class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class TalendJetEmitter extends JETEmitter {
 
@@ -93,7 +93,7 @@ public class TalendJetEmitter extends JETEmitter {
 
     /**
      * DOC mhirt TalendJetEmitter constructor comment.
-     * 
+     *
      * @param arg0
      * @param arg1
      * @param globalClasspath
@@ -132,7 +132,7 @@ public class TalendJetEmitter extends JETEmitter {
 
     /**
      * Compiles the template to {@link #setMethod set} the method will be invoked to generate template results.
-     * 
+     *
      * @param progressMonitor the progress monitor for tracking progress.
      */
     @Override
@@ -142,7 +142,7 @@ public class TalendJetEmitter extends JETEmitter {
 
     /**
      * Compiles the template to {@link #setMethod set} the method will be invoked to generate template results.
-     * 
+     *
      * @param progressMonitor the progress monitor for tracking progress.
      */
     @Override
@@ -321,8 +321,8 @@ public class TalendJetEmitter extends JETEmitter {
                     // since the build is done on linux, if use windows, it will use different rules for \r + \n
                     // so compare without \r, at least to see if original string is the same
                     // if yes, consider all is ok, no need to replace the content and recompile
-                    currentContent = currentContent.replace("\r", ""); //$NON-NLS-1$//$NON-NLS-2$ 
-                    newContent = newContent.replace("\r", ""); //$NON-NLS-1$//$NON-NLS-2$ 
+                    currentContent = currentContent.replace("\r", ""); //$NON-NLS-1$//$NON-NLS-2$
+                    newContent = newContent.replace("\r", ""); //$NON-NLS-1$//$NON-NLS-2$
                     if (!newContent.equals(currentContent)) {
                         subProgressMonitor.subTask(CodeGenPlugin.getPlugin().getString("_UI_JETUpdating_message", //$NON-NLS-1$
                                 new Object[] { targetFile.getFullPath() }));
@@ -423,7 +423,7 @@ public class TalendJetEmitter extends JETEmitter {
      * DOC ycbai Comment method "compileSingleClass".
      * <p>
      * Compile one class directly.
-     * 
+     *
      * @param project
      * @param javaFile
      * @param standardMsgStream
@@ -446,7 +446,7 @@ public class TalendJetEmitter extends JETEmitter {
 
     /**
      * DOC ycbai Comment method "getBatchCompilerCmd".
-     * 
+     *
      * @param project
      * @param javaFile
      * @return
@@ -473,7 +473,7 @@ public class TalendJetEmitter extends JETEmitter {
      * DOC ycbai Comment method "getClassOutputPath".
      * <p>
      * Get class output folder of project.
-     * 
+     *
      * @param project
      * @param javaFile
      * @return
@@ -487,7 +487,7 @@ public class TalendJetEmitter extends JETEmitter {
      * DOC ycbai Comment method "getClasspathStr".
      * <p>
      * Get character string of classpath with separator.
-     * 
+     *
      * @return
      */
     private String getClasspathStr() {
@@ -509,7 +509,7 @@ public class TalendJetEmitter extends JETEmitter {
      * DOC ycbai Comment method "getClasspathFromEntry".
      * <p>
      * Get the absolute classpath.
-     * 
+     *
      * @param entry
      * @return
      */
@@ -550,7 +550,7 @@ public class TalendJetEmitter extends JETEmitter {
      * DOC ycbai Comment method "getIdeOutputSubDir".
      * <p>
      * Get class folder path of bundle. Just use for development environment.
-     * 
+     *
      * @param bundle
      * @return
      * @throws IOException
@@ -574,7 +574,7 @@ public class TalendJetEmitter extends JETEmitter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.emf.codegen.jet.JETEmitter#getMethod()
      */
     @Override
@@ -607,7 +607,7 @@ public class TalendJetEmitter extends JETEmitter {
 
     /**
      * DOC mhirt Comment method "loadMethod".
-     * 
+     *
      * @param methodName
      * @return
      * @throws MalformedURLException
@@ -651,7 +651,7 @@ public class TalendJetEmitter extends JETEmitter {
 
     /**
      * Getter for classAvailable.
-     * 
+     *
      * @return the classAvailable
      */
     public boolean isClassAvailable() {
@@ -664,7 +664,7 @@ public class TalendJetEmitter extends JETEmitter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.emf.codegen.jet.JETEmitter#generate(org.eclipse.emf.common.util.Monitor, java.lang.Object[],
      * java.lang.String)
      */

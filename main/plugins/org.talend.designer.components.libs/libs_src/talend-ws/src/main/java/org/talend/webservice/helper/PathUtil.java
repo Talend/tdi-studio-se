@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.apache.commons.lang.ArrayUtils;
  *
  */
 public class PathUtil {
-    
+
     /**
-     * 
+     *
      * It is like String.indexOf(String),but not process the :anytype{*} part
      * @param path
      * @param sep
@@ -36,32 +36,32 @@ public class PathUtil {
         if(path == null || sep == null || sep.length() == 0) {
             return -1;
         }
-        
+
         if(sep.contains(":") || sep.contains("{") || sep.contains("}")) {
             throw new RuntimeException("separator can't contain :,{,}");
         }
-        
+
         char first = sep.charAt(0);
-        
+
         boolean isTypeDefine = false;
-        
+
         for(int i=0;i<path.length();i++) {
             char c = path.charAt(i);
-            
+
             if(c == '{') {
                 isTypeDefine = true;
             } else if(c == '}') {
                 isTypeDefine = false;
             }
-            
+
             if(c != first) {
                 while (++i < path.length()) {
                     char ch = path.charAt(i);
-                    
+
                     if(!isTypeDefine && (ch == first)) {//look for the first char that is not in type define substring.
                         break;
                     }
-                    
+
                     if(ch == '{') {
                         isTypeDefine = true;
                     } else if(ch == '}') {
@@ -70,7 +70,7 @@ public class PathUtil {
 
                 };
             }
-            
+
             if (i < path.length()) {//look for the rest that is not in type define substring.
                 int j = i + 1;
                 int end = j + sep.length() - 1;
@@ -82,12 +82,12 @@ public class PathUtil {
                 }
             }
         }
-        
+
         return -1;
     }
-    
+
     /**
-     * 
+     *
      * It is like org.apache.commons.lang.StringUtils.split(String,String),but not process the :anytype{*} part
      * @param path
      * @param sep
@@ -105,20 +105,20 @@ public class PathUtil {
         int i = 0, start = 0;
         boolean match = false;
         boolean lastMatch = false;
-        
+
         boolean isTypeDefine = false;
-        
+
         if (separatorChars == null) {
             // Null separator means use whitespace
             while (i < len) {
                 char c = path.charAt(i);
-                        
+
                 if(c == '{') {
                     isTypeDefine = true;
                 } else if(c == '}') {
                     isTypeDefine = false;
                 }
-                
+
                 if (Character.isWhitespace(c) && !isTypeDefine) {
                     if (match) {
                         lastMatch = true;
@@ -137,13 +137,13 @@ public class PathUtil {
             char sep = separatorChars.charAt(0);
             while (i < len) {
                 char c = path.charAt(i);
-                
+
                 if(c == '{') {
                     isTypeDefine = true;
                 } else if(c == '}') {
                     isTypeDefine = false;
                 }
-                
+
                 if ((c == sep) && !isTypeDefine) {
                     if (match) {
                         lastMatch = true;
@@ -161,13 +161,13 @@ public class PathUtil {
             // standard case
             while (i < len) {
                 char c = path.charAt(i);
-                
+
                 if(c == '{') {
                     isTypeDefine = true;
                 } else if(c == '}') {
                     isTypeDefine = false;
                 }
-                
+
                 if ((separatorChars.indexOf(c) >= 0) && !isTypeDefine) {
                     if (match) {
                         lastMatch = true;

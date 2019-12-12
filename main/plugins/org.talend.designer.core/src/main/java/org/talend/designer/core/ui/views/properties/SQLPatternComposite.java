@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -130,7 +130,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /**
      * yzhang AdvancedContextComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -430,7 +430,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.widgets.Widget#dispose()
      */
     @Override
@@ -441,7 +441,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /**
      * DOC bqian Comment method "addTableSorter".
-     * 
+     *
      * @param tableViewer2
      * @param columnName
      */
@@ -523,7 +523,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /**
      * DOC bqian Comment method "createCodeControl".
-     * 
+     *
      * @param panel
      * @param
      */
@@ -602,7 +602,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /**
      * DOC bqian Comment method "addSelectionChangeListener".
-     * 
+     *
      * @param tableViewer
      */
     private void addSelectionChangeListener(final TableViewer tableViewer) {
@@ -618,7 +618,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /**
      * bqian Comment method "getTableInput".
-     * 
+     *
      * @param element
      * @return
      */
@@ -631,7 +631,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /**
      * yzhang Comment method "refreshCode".
-     * 
+     *
      * @param element
      * @return
      */
@@ -670,7 +670,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
         /**
          * yzhang ComboBoxCellEditor constructor comment.
-         * 
+         *
          * @param composite
          * @param list
          * @param labelProvider
@@ -687,7 +687,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /**
      * yzhang Comment method "executeCommand".
-     * 
+     *
      * @param cmd
      */
     private void executeCommand(Command cmd) {
@@ -706,7 +706,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /**
      * yzhang Comment method "refreshComboContent".
-     * 
+     *
      * @param tableViewer
      * @param legalParameters
      */
@@ -715,7 +715,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.lang.Runnable#run()
              */
             @Override
@@ -889,7 +889,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
          */
         @Override
@@ -902,7 +902,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
          * java.lang.Object, java.lang.Object)
          */
@@ -913,7 +913,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
          */
         public Image getColumnImage(Object element, int columnIndex) {
@@ -922,7 +922,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
          */
         @Override
@@ -952,7 +952,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getComposite()
      */
     @Override
@@ -962,7 +962,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getCurRowSize()
      */
     @Override
@@ -972,7 +972,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getElement()
      */
     @Override
@@ -982,7 +982,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getHashCurControls()
      */
     @Override
@@ -992,7 +992,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getPart()
      */
     @Override
@@ -1002,7 +1002,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getQueriesMap()
      */
     public Map<String, List<String>> getQueriesMap() {
@@ -1011,7 +1011,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getRepositoryAliasName(org
      * .talend.core.model.properties.ConnectionItem)
@@ -1057,7 +1057,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getSection()
      */
     @Override
@@ -1067,7 +1067,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getTableIdAndDbSchemaMap()
      */
@@ -1078,7 +1078,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getTableIdAndDbTypeMap()
      */
@@ -1089,7 +1089,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getTablesMap()
      */
     public Map<String, List<String>> getTablesMap() {
@@ -1099,7 +1099,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#refresh()
      */
     @Override
@@ -1111,7 +1111,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.lang.Runnable#run()
              */
             @Override
@@ -1123,7 +1123,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#setCurRowSize(int)
      */
     @Override
@@ -1140,7 +1140,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see java.lang.Runnable#run()
              */
             @Override
@@ -1170,7 +1170,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent
      * )
@@ -1248,7 +1248,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
         /**
          * Getter for label.
-         * 
+         *
          * @return the label
          */
         public String getLabel() {
@@ -1257,7 +1257,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
         /**
          * Sets the label.
-         * 
+         *
          * @param label the label to set
          */
         public void setLabel(String label) {
@@ -1266,7 +1266,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
         /**
          * Sets the id.
-         * 
+         *
          * @param id the id to set
          */
         public void setId(String id) {
@@ -1275,7 +1275,7 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
 
         /**
          * yzhang Comment method "getCompoundId".
-         * 
+         *
          * @return
          */
         public String getCompoundId() {

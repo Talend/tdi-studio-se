@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,35 +39,35 @@ public class ChangeDBName4Hive extends
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
         String[] compNames = {"tHiveConnection", "tHiveRow", "tHiveInput", "tHiveLoad", "tHiveCreateTable", "tELTHiveMap"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-        
+
     	IComponentConversion changeDBName4Hive = new IComponentConversion() {
 
 	        public void transform(NodeType node) {
 	            if(node == null) {
 	                return;
 	            }
-	            
+
 	        	ElementParameterType database = ComponentUtilities.getNodeProperty(node, "DBNAME"); //$NON-NLS-1$
-	        	
+
 	        	if (database == null) {
 	        	    return;
 	        	}
-	        	
+
         	    String dbname = database.getValue();
         	    if(dbname == null) {
         	        return;
         	    }
-        	    
+
         	    String value = dbname.trim();
         	    if("".equals(value) || "\"\"".equals(value) || "\"default\"".equals(value)) {//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
         	        return;
         	    }
-        	    
+
         	    database.setValue("\"\"");//$NON-NLS-1$
 	        }
-        
+
     	};
-    	
+
     	for (String name : compNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 

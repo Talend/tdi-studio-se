@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * Add the property "ASSOCIATED_PIG_LOAD" to all tPigStoreResult components.
- * 
+ *
  */
 public class SetTPigStoreResultAssociatedTPigLoad extends AbstractJobMigrationTask {
 

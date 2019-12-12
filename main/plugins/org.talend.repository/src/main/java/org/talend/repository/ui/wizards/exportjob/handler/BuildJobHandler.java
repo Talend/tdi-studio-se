@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,6 +39,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.CommonUIPlugin;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
@@ -105,6 +108,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         //
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_STATS, isOptionChoosed(ExportChoice.addStatistics));
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_TRACS, isOptionChoosed(ExportChoice.addTracs));
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_AVOID_BRANCH_NAME, isOptionChoosed(ExportChoice.avoidBranchName));
         Properties prop = (Properties) exportChoice.get(ExportChoice.properties);
         if (prop != null) { // add all properties for arugment map.
             Enumeration<Object> keys = prop.keys();
@@ -125,7 +129,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 talendProcessJavaProject.cleanFolder(monitor, resFolder);
             }
         }
-        
+
         // context
         boolean needContext = isOptionChoosed(ExportChoice.needContext);
         if (needContext) {
@@ -156,7 +160,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 argumentsMap.put(TalendProcessArgumentConstant.ARG_LOG4J_LEVEL, this.exportChoice.get(ExportChoice.log4jLevel));
             }
         }
-        
+
         //launcher
         boolean needLauncher = isOptionChoosed(ExportChoice.needLauncher);
         if(needLauncher){
@@ -252,7 +256,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
 
     /**
      * DOC nrousseau Comment method "addTDMDependencies".
-     * 
+     *
      * @param items
      * @param itemsFolder
      */
@@ -372,7 +376,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                     if (imageFolder.exists()) {
                         FilesUtils.copyDirectory(imageFolder, itemsFolderDir);
                     }
-                    File templateFolder = new File(reportingBundlePath + PATH_SEPARATOR + "reports"); //$NON-NLS-1$ 
+                    File templateFolder = new File(reportingBundlePath + PATH_SEPARATOR + "reports"); //$NON-NLS-1$
                     if (templateFolder.exists() && templateFolder.isDirectory()) {
                         FilesUtils.copyDirectory(templateFolder, itemsFolderDir);
                     }
@@ -411,7 +415,20 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                     buildDelegate(monitor);
                 } catch (Exception e) {
                     if (!CommonUIPlugin.isFullyHeadless() && isOptionChoosed(ExportChoice.buildImage)) {
-                        MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                        Display.getDefault().syncExec(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                Shell shell = null;
+                                IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+
+                                if (activeWorkbenchWindow != null) {
+                                    shell = activeWorkbenchWindow.getShell();
+                                }
+
+                                MessageBoxExceptionHandler.process(e, shell);
+                            }
+                        });
                     } else {
                         ExceptionHandler.process(e);
                     }

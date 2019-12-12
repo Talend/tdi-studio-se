@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,9 +31,9 @@ import org.talend.designer.abstractmap.i18n.Messages;
 import org.talend.designer.abstractmap.ui.properties.LINK_STYLE;
 
 /**
- * 
+ *
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * @deprecated moved to ComponentsPreferencePage
  */
 public class MapPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
@@ -41,8 +41,8 @@ public class MapPreferencePage extends FieldEditorPreferencePage implements IWor
     /**
      * This class exists to provide visibility to the <code>refreshValidState</code> method and to perform more
      * intelligent clearing of the error message.
-     * 
-     * 
+     *
+     *
      */
     protected class ConsoleIntegerFieldEditor extends IntegerFieldEditor {
 
@@ -99,7 +99,7 @@ public class MapPreferencePage extends FieldEditorPreferencePage implements IWor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#createControl(Composite)
      */
     public void createControl(Composite parent) {
@@ -144,7 +144,7 @@ public class MapPreferencePage extends FieldEditorPreferencePage implements IWor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.IPreferencePage#performOk()
      */
     public boolean performOk() {

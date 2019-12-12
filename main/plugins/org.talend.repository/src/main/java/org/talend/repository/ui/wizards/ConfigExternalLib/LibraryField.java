@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,9 +33,9 @@ import org.talend.repository.i18n.Messages;
 
 /**
  * DOC tguiu class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: StatusEditor.java 1937 2007-02-09 06:34:36 +0000 (Fri, 09 Feb 2007) bqian $
- * 
+ *
  */
 public class LibraryField extends TableField {
 
@@ -43,7 +43,7 @@ public class LibraryField extends TableField {
 
     /**
      * DOC tguiu StatusEditor constructor comment.
-     * 
+     *
      * @param name
      * @param labelText
      * @param parent
@@ -84,7 +84,8 @@ public class LibraryField extends TableField {
                     final TableItem item = contextTable.getSelection()[0];
                     if (item.getBounds(1).contains(event.x, event.y)) {
                         IMPORTType it = (IMPORTType) getList().get(contextTable.getSelectionIndex());
-                        if ("BeanItem".equals(it.eContainer().eClass().getName())) {
+                        if ("BeanItem".equals(it.eContainer().eClass().getName())
+                                || "RoutineItem".equals(it.eContainer().eClass().getName())) {
                             it.setREQUIRED(!it.isREQUIRED());
                             setInput(getList());
                         }

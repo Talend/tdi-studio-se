@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -52,7 +52,7 @@ public class MetadataTypeLengthPreferencePage extends FieldEditorPreferencePage 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
      */
     @Override
@@ -107,7 +107,7 @@ public class MetadataTypeLengthPreferencePage extends FieldEditorPreferencePage 
 
         /**
          * set Fields
-         * 
+         *
          */
         fieldGroup = new Group(parent, SWT.NONE);
         fieldGroup.setText(Messages.getString("MetadataTypeLengthPreferencePage.FIELD")); //$NON-NLS-1$
@@ -182,7 +182,7 @@ public class MetadataTypeLengthPreferencePage extends FieldEditorPreferencePage 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
      */
     @Override
@@ -193,7 +193,7 @@ public class MetadataTypeLengthPreferencePage extends FieldEditorPreferencePage 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performOk()
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -243,7 +243,7 @@ public class LoginFirstTimeStartupActionPage extends AbstractLoginActionPage {
                     validateNewProjectName();
                     finishButtonAction = FINISH_BUTTON_ACTION_CREATE_NEW_PROJECT;
                 } else {
-                    createNewProject.setText(Messages.getString("LoginFirstTimeStartupActionPage.createNewProject")); //$NON-NLS-1$                    
+                    createNewProject.setText(Messages.getString("LoginFirstTimeStartupActionPage.createNewProject")); //$NON-NLS-1$
                     getErrorManager().clearCreateNewProjectError();
                     newProjectName.setVisible(false);
                     newProjectName.setBackground(null);
@@ -458,7 +458,7 @@ public class LoginFirstTimeStartupActionPage extends AbstractLoginActionPage {
             project = repositoryFactory.createProject(projectInfor);
         } catch (PersistenceException e) {
             MessageDialog.openError(getShell(), Messages.getString("NewProjectWizard.failureTitle"), Messages //$NON-NLS-1$
-                    .getString("NewProjectWizard.failureText")); //$NON-NLS-1$ 
+                    .getString("NewProjectWizard.failureText")); //$NON-NLS-1$
             MessageBoxExceptionHandler.process(e);
         }
         if (project == null) {

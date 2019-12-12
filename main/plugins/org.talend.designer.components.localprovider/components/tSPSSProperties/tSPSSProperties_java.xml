@@ -13,12 +13,13 @@
     DATA_AUTO_PROPAGATE="false"
     SCHEMA_AUTO_PROPAGATE="false"
     LOG4J_ENABLED="true"
+    VISIBLE="false"
   >
     <SIGNATURE/>
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Business_Intelligence/SPSS</FAMILY>
+    <FAMILY>Deprecated</FAMILY>
   </FAMILIES>
 
   <DOCUMENTATION>

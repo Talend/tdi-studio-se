@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -63,7 +63,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#canParallelize()
      */
     @Override
@@ -74,7 +74,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#createConnectors(org.talend.core.model.process.INode)
      */
     @Override
@@ -121,7 +121,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#createElementParameters(org.talend.core.model.process.INode)
      */
     @Override
@@ -165,7 +165,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#createReturns()
      */
     @Override
@@ -175,7 +175,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getAvailableCodeParts()
      */
     @Override
@@ -185,7 +185,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getComponentType()
      */
     @Override
@@ -195,7 +195,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getIcon16()
      */
     @Override
@@ -206,7 +206,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getIcon24()
      */
     @Override
@@ -217,7 +217,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getIcon32()
      */
     @Override
@@ -227,7 +227,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getLongName()
      */
     @Override
@@ -237,7 +237,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getModulesNeeded(INode node)
      */
     @Override
@@ -247,7 +247,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getMultipleComponentManagers()
      */
     @Override
@@ -257,7 +257,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getName()
      */
     @Override
@@ -267,7 +267,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getOriginalFamilyName()
      */
     @Override
@@ -277,7 +277,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPathSource()
      */
     @Override
@@ -288,7 +288,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPluginDependencies()
      */
     @Override
@@ -299,7 +299,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPluginFullName()
      */
     @Override
@@ -309,7 +309,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getTranslatedFamilyName()
      */
     @Override
@@ -319,7 +319,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getVersion()
      */
     @Override
@@ -330,7 +330,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#hasConditionalOutputs()
      */
     @Override
@@ -340,7 +340,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isDataAutoPropagated()
      */
     @Override
@@ -351,7 +351,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isHashComponent()
      */
     @Override
@@ -362,7 +362,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isLoaded()
      */
     @Override
@@ -373,7 +373,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isMainCodeCalled()
      */
     @Override
@@ -384,7 +384,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isMultipleOutput()
      */
     @Override
@@ -395,7 +395,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isMultiplyingOutputs()
      */
     @Override
@@ -405,7 +405,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isSchemaAutoPropagated()
      */
     @Override
@@ -416,7 +416,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isSingleton()
      */
     @Override
@@ -427,7 +427,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isTechnical()
      */
     @Override
@@ -438,7 +438,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisible()
      */
     @Override
@@ -449,7 +449,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisible(java.lang.String)
      */
     @Override
@@ -460,7 +460,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisibleInComponentDefinition()
      */
     @Override
@@ -471,7 +471,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#setIcon16(org.eclipse.jface.resource.ImageDescriptor)
      */
     public void setIcon16(ImageDescriptor icon16) {
@@ -481,7 +481,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#setIcon24(org.eclipse.jface.resource.ImageDescriptor)
      */
     public void setIcon24(ImageDescriptor icon24) {
@@ -491,7 +491,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#setIcon32(org.eclipse.jface.resource.ImageDescriptor)
      */
     public void setIcon32(ImageDescriptor icon32) {
@@ -501,7 +501,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useImport()
      */
     @Override
@@ -512,7 +512,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useLookup()
      */
     @Override
@@ -523,7 +523,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useMerge()
      */
     @Override
@@ -534,7 +534,7 @@ public class DummyComponent extends AbstractComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getShortName()
      */
     @Override

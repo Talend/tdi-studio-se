@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -54,15 +54,15 @@ import org.talend.utils.io.FilesUtils;
 public class TalendProcessJavaProject implements ITalendProcessJavaProject {
 
     private IJavaProject javaProject;
-    
+
     private final MavenPomSynchronizer synchronizer;
 
     private boolean useTempPom;
-    
+
     private String projectTechName;
-    
+
     private String id;
-    
+
     private String version;
 
     public TalendProcessJavaProject(IJavaProject javaProject) {
@@ -71,7 +71,7 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
         this.synchronizer = new MavenPomSynchronizer(this);
 
     }
-    
+
     public TalendProcessJavaProject(IJavaProject javaProject, Property property) {
         this(javaProject);
         this.id = property.getId();
@@ -216,7 +216,7 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     }
 
     /**
-     * 
+     *
      * will try to create the sub folders which under the base folder.
      */
     @Override
@@ -235,7 +235,7 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     }
 
     /**
-     * 
+     *
      * will try to create the sub folders hierarchically.
      */
     private void createSubFolder(IProgressMonitor monitor, IFolder subFolder) throws CoreException {
@@ -272,7 +272,7 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     }
 
     /**
-     * 
+     *
      * try to open the container's project.
      */
     private void tryOpenProject(IProgressMonitor monitor, IContainer container) throws CoreException {
@@ -284,7 +284,7 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.runtime.process.ITalendProcessJavaProject#addChildModule(java.lang.String[])
      */
     @Override

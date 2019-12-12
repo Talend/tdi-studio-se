@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,9 +31,9 @@ import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DataMapExpressionParser.java 1782 2007-02-03 07:57:38Z bqian $
- * 
+ *
  */
 public class DataMapExpressionParser {
 
@@ -63,8 +63,10 @@ public class DataMapExpressionParser {
     // ((String)globalMap.get("tableName")).columnName
     private final static String GLOBALMAP_EXPRESSION4 = "(" + GLOBALMAP_PATTERN + COLUMN_PATTERN + ")";
 
+    private final static String GLOBALMAP_EXPRESSION5 = "\\s*(\\s*(\\w+)\\s*\\.\\\\\"\\s*(.+?)\\s*\\\\\")\\s*";
+
     private final static String GLOBALMAP_EXPRESSION = GLOBALMAP_EXPRESSION1 + "|" + GLOBALMAP_EXPRESSION2 + "|"//$NON-NLS-1$//$NON-NLS-2$
-            + GLOBALMAP_EXPRESSION3 + "|" + GLOBALMAP_EXPRESSION4;//$NON-NLS-1$
+            + GLOBALMAP_EXPRESSION3 + "|" + GLOBALMAP_EXPRESSION4 + "|" + GLOBALMAP_EXPRESSION5;//$NON-NLS-1$
 
     private final static String EXPRESSION_PATTERN = "(\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*)" //$NON-NLS-1$
             + "|(\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*)" //$NON-NLS-1$
@@ -93,7 +95,7 @@ public class DataMapExpressionParser {
 
     /**
      * DOC amaumont Comment method "setRegexpPattern".
-     * 
+     *
      * @param regexpPattern
      */
     private void setLocationPattern(String locationPattern) {
@@ -143,6 +145,10 @@ public class DataMapExpressionParser {
                 } else if (matchResult.group(35) != null) {
                     // ((String)globalMap.get("tableName")).columnName
                     location = new TableEntryLocation(matchResult.group(36), matchResult.group(38));
+                }else if (matchResult.group(39) != null) {
+                 // table.\"column\"
+                	// Case NVL(Keys.\"ORG_SCD_ID\",-99) When -99 Then 'N' Else 'Y' End
+                    location = new TableEntryLocation(matchResult.group(40), matchResult.group(41));
                 }
                 if (location != null) {
                     resultList.add(location);

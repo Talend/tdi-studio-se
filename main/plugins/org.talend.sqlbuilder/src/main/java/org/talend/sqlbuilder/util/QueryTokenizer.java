@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,10 +17,10 @@ import java.util.StringTokenizer;
 /**
  * QueryTokenizer based on original SquirreL SQL tokenizer, but adds the
  * possibility to use multiple characters as the sql delimeter.
- * 
+ *
  * This is used for splitting the input text in the editor into
  * multiple executable sql statements.
- * 
+ *
  * @author qzhang
  */
 public class QueryTokenizer {
@@ -50,12 +50,12 @@ public class QueryTokenizer {
             // failsave..
             pquerySeparator = ";"; //$NON-NLS-1$
         }
-        
+
         if (alternateSeparator != null && alternateSeparator.trim().length() > 0) {
-            palternateQuerySeparator = alternateSeparator;    
+            palternateQuerySeparator = alternateSeparator;
         } else {
             palternateQuerySeparator = null;
-        }        
+        }
 
         if (solComment != null && solComment.trim().length() > 0) {
             psolComment = solComment;
@@ -87,9 +87,9 @@ public class QueryTokenizer {
         int separatorLength = pquerySeparator.length();
         int iQuoteCount = 1;
         int iIndex1 = 0 - separatorLength;
-        
+
         while (iQuoteCount % 2 != 0) {
-            
+
             iQuoteCount = 0;
             iIndex1 = psQuerys.indexOf(separator, iIndex1 + separatorLength);
 
@@ -105,7 +105,7 @@ public class QueryTokenizer {
                 return -1;
             }
         }
-        
+
         return iIndex1;
     }
 
@@ -119,9 +119,9 @@ public class QueryTokenizer {
         int separatorLength = palternateQuerySeparator.length();
         int iQuoteCount = 1;
         int iIndex1 = 0 - separatorLength;
-        
+
         while (iQuoteCount % 2 != 0) {
-            
+
             iQuoteCount = 0;
             iIndex1 = psQuerys.indexOf(separator, iIndex1 + separatorLength);
 
@@ -137,34 +137,34 @@ public class QueryTokenizer {
                 return -1;
             }
         }
-        
+
         return iIndex1;
     }
 
     public String parse() {
-        
+
         if (psQuerys.length() == 0) {
             return null;
         }
-        
+
         String separator = pquerySeparator;
-                
+
         int indexSep = findFirstSeparator();
         int indexAltSep = findFirstAlternateSeparator();
-        
+
         if (indexAltSep > -1) {
             if (indexSep < 0 || indexAltSep < indexSep) {
                 // use alternate separator
                 separator = palternateQuerySeparator;
             }
         }
-        
+
         int separatorLength = separator.length();
         int iQuoteCount = 1;
         int iIndex1 = 0 - separatorLength;
-        
+
         while (iQuoteCount % 2 != 0) {
-            
+
             iQuoteCount = 0;
             iIndex1 = psQuerys.indexOf(separator, iIndex1 + separatorLength);
 

@@ -16,13 +16,24 @@ imports="
 <%
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
+	
+		public void beforeComponentProcess(INode node){
+			super.beforeComponentProcess(node);
+			cid = node.getUniqueName();
+		}
 	    
 		public void setURL(INode node) {
 			
 			String dbServer = ElementParameterParser.getValue(node, "__SERVER__");
+			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
-			String url_<%=cid %> = "jdbc:ingres://" + <%=dbServer%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+				String url_<%=cid %> = "jdbc:ingres://" + <%=dbServer%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
 <%
+			} else {
+%>
+				String url_<%=cid %> = "jdbc:ingres://" + <%=dbServer%> + ":" + <%=dbport%> + "/" + <%=dbname%> + ";" + <%=dbproperties%>;
+<%
+			}
 		}
 		
 		public String getDirverClassName(INode node){

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,13 +17,13 @@ import org.talend.designer.xmlmap.model.emf.xmlmap.TreeNode;
 
 /**
  * created by talend2 on 2012-8-8 Detailled comment
- * 
+ *
  */
 public class OutputXmlTreeSchemaTableView extends XmlTreeSchemaTableView {
 
     /**
      * DOC talend2 OutputXmlTreeSchemaTableView constructor comment.
-     * 
+     *
      * @param extendedTableModel
      * @param parent
      */

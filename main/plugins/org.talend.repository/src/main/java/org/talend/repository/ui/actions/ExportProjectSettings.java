@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,6 +30,7 @@ import org.talend.core.model.properties.Status;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.repository.ProjectManager;
 import org.talend.utils.files.FileUtils;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -61,7 +62,7 @@ public class ExportProjectSettings {
         org.talend.core.model.properties.Project project = pro.getEmfProject();
 
         try {
-            final DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
+            final DocumentBuilderFactory fabrique = XmlUtils.getSecureDocumentBuilderFactory();
 
             DocumentBuilder analyseur = fabrique.newDocumentBuilder();
             analyseur.setErrorHandler(new ErrorHandler() {
@@ -135,7 +136,7 @@ public class ExportProjectSettings {
 
     /**
      * record the version for studio.
-     * 
+     *
      */
     private void createVersionAttr(Document document, Element root) {
         String studioVersion = VersionUtils.getVersion();
@@ -160,7 +161,7 @@ public class ExportProjectSettings {
 
     /**
      * wchen Comment method "saveParameters".
-     * 
+     *
      * @param document
      * @param root
      * @param list
@@ -189,7 +190,7 @@ public class ExportProjectSettings {
 
     /**
      * wchen Comment method "saveParameters".
-     * 
+     *
      * @param document
      * @param root
      * @param list
@@ -213,7 +214,7 @@ public class ExportProjectSettings {
 
     /**
      * wchen Comment method "createStatus".
-     * 
+     *
      * @param technicals
      * @param document
      * @param root
@@ -237,7 +238,7 @@ public class ExportProjectSettings {
 
     /**
      * wchen Comment method "createStatsLogsSettings".
-     * 
+     *
      * @param list
      * @param document
      * @param element

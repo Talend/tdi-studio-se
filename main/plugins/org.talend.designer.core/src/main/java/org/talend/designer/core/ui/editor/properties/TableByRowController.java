@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -76,7 +76,7 @@ import org.talend.designer.runprocess.ItemCacheManager;
 public class TableByRowController extends AbstractElementPropertySectionController {
 
     /**
-     * 
+     *
      */
     private static final int MIN_NUMBER_ROWS = 1;
 
@@ -86,7 +86,7 @@ public class TableByRowController extends AbstractElementPropertySectionControll
 
     /**
      * DOC yzhang TableController constructor comment.
-     * 
+     *
      * @param dtp
      */
     public TableByRowController(IDynamicProperty dp) {
@@ -95,7 +95,7 @@ public class TableByRowController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#
      * createControl(org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
      * org.eclipse.swt.widgets.Control)
@@ -231,7 +231,7 @@ public class TableByRowController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -270,7 +270,7 @@ public class TableByRowController extends AbstractElementPropertySectionControll
 
     /**
      * ftang Comment method "getNumberRows".
-     * 
+     *
      * @param param
      * @return
      */
@@ -281,7 +281,7 @@ public class TableByRowController extends AbstractElementPropertySectionControll
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -350,7 +350,7 @@ public class TableByRowController extends AbstractElementPropertySectionControll
 
     /**
      * Overide default pattern list value by them which comes from DQ repository view
-     * 
+     *
      * @param param the element parameter
      * @param dqPatternService extended service for DQ pattern retrievement.
      * @return
@@ -417,7 +417,7 @@ public class TableByRowController extends AbstractElementPropertySectionControll
 
     /**
      * DOC nrousseau Comment method "updateSubjobStarts".
-     * 
+     *
      * @param param
      */
     public static void updateSubjobStarts(IElement element, IElementParameter param) {
@@ -812,9 +812,9 @@ public class TableByRowController extends AbstractElementPropertySectionControll
     }
 
     /**
-     * 
+     *
      * ggu Comment method "revertAllButton".
-     * 
+     *
      * if flag is false, will set the button for unenabled state. (bug 3740)
      */
     private void revertToolBarButtonState(boolean flag) {
@@ -832,9 +832,9 @@ public class TableByRowController extends AbstractElementPropertySectionControll
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "isNeedAddAllButton".
-     * 
+     *
      * @param param
      * @return
      */

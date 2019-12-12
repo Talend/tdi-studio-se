@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,9 @@ import org.talend.designer.core.ui.MultiPageTalendEditor;
 
 /**
  * bqian Save the job if it is refered by a tRunJob. <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class SaveJobBeforeRunAction extends Action {
 
@@ -40,7 +40,7 @@ public class SaveJobBeforeRunAction extends Action {
 
     /**
      * DOC bqian SaveJobBeforeRunAction constructor comment.
-     * 
+     *
      * @param activeProcess
      */
     public SaveJobBeforeRunAction(IProcess activeProcess) {
@@ -67,7 +67,7 @@ public class SaveJobBeforeRunAction extends Action {
 
     /**
      * DOC bqian Comment method "saveJob".
-     * 
+     *
      * @param nodes
      * @param editor
      */

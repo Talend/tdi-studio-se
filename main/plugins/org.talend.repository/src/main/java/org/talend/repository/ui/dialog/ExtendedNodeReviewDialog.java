@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,7 +41,7 @@ import org.talend.repository.viewer.ui.provider.RepoCommonViewerProvider;
 
 /**
  * created by wchen on 2013-9-16 Detailled comment
- * 
+ *
  */
 public abstract class ExtendedNodeReviewDialog extends Dialog {
 
@@ -59,7 +59,7 @@ public abstract class ExtendedNodeReviewDialog extends Dialog {
 
     /**
      * DOC wchen RepCommonReviewDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     protected ExtendedNodeReviewDialog(Shell parentShell, ERepositoryObjectType rootType, ERepositoryObjectType typeToShow) {
@@ -83,7 +83,7 @@ public abstract class ExtendedNodeReviewDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
      */
     @Override
@@ -114,7 +114,7 @@ public abstract class ExtendedNodeReviewDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     protected Control createDialogArea(Composite parent) {

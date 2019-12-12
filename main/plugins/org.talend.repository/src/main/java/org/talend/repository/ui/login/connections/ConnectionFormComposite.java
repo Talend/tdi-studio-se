@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -75,9 +75,9 @@ import org.talend.repository.ui.login.LoginHelper;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public class ConnectionFormComposite extends Composite {
 
@@ -138,7 +138,7 @@ public class ConnectionFormComposite extends Composite {
     Label passwordLabel = null;
     /**
      * DOC smallet ConnectionsComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -710,7 +710,7 @@ public class ConnectionFormComposite extends Composite {
                 if (path == null || "".equals(path)) { //$NON-NLS-1$
                     workSpaceText.setText(getRecentWorkSpace());
                 } else {
-                    //                    String cPath = path.replaceAll("\\\\", File.separator); //$NON-NLS-1$ //$NON-NLS-2$                   
+                    //                    String cPath = path.replaceAll("\\\\", File.separator); //$NON-NLS-1$ //$NON-NLS-2$
                     workSpaceText.setText(path);
 
                 }
@@ -955,7 +955,7 @@ public class ConnectionFormComposite extends Composite {
 
     /**
      * DOC smallet Comment method "setConnection".
-     * 
+     *
      * @param selected
      */
     public void setConnection(ConnectionBean selected) {
@@ -996,9 +996,9 @@ public class ConnectionFormComposite extends Composite {
 
     /**
      * DOC smallet LoginComposite class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: LoginComposite.java 1380 2007-01-10 11:18:55Z smallet $
-     * 
+     *
      */
     private class RepositoryFactoryLabelProvider extends LabelProvider {
 

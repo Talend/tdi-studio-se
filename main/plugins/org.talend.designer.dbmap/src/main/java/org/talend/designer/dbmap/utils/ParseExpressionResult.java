@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,9 +14,9 @@ package org.talend.designer.dbmap.utils;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ParseExpressionResult.java 968 2006-12-12 10:59:26Z amaumont $
- * 
+ *
  */
 public class ParseExpressionResult {
 
@@ -26,7 +26,7 @@ public class ParseExpressionResult {
 
     /**
      * DOC amaumont ProcessExpressionResult constructor comment.
-     * 
+     *
      * @param atLeastOneLinkAdded
      * @param atLeastOneLinkRemoved
      */

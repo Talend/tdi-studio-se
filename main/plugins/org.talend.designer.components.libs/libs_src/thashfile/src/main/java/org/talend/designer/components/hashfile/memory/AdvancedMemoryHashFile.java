@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,7 +47,7 @@ public class AdvancedMemoryHashFile<V> {
      * <li> MATCHING_MODE.KEEP_FIRST: if several records have the same key, then only first record is stored</li>
      * <li> MATCHING_MODE.KEEP_LAST: if several records have the same key, then only last record is stored</li>
      * </ul>
-     * 
+     *
      * @param value to be stored in Cache.
      * @return stored value or null if value shouldn't be placed in Cache.
      */

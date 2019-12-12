@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -121,7 +121,7 @@ public class ChangeMetadataCommandTest extends AbstractMetadataCommandTest {
         Node node = new Node(component, new Process(new FakePropertyImpl()));
         ccc.setTarget(node);
         ccc.execute();
-        
+
         IElementParameter schemaParam = null;
         for (IElementParameter param : node.getElementParameters()) {
             if (EParameterFieldType.SCHEMA_REFERENCE.equals(param.getFieldType()) && param.getContext().equals("MAIN")) {
@@ -136,7 +136,7 @@ public class ChangeMetadataCommandTest extends AbstractMetadataCommandTest {
         String avroSchemaStr = inputProps.schema.schema.getStringValue();
         assertNotNull(avroSchemaStr);
         Schema avroSchema = new Schema.Parser().parse(avroSchemaStr);
-        
+
         assertEquals(3, avroSchema.getFields().size());
         assertNotNull(avroSchema.getField("C1")); //$NON-NLS-1$
         assertNotNull(avroSchema.getField("C2")); //$NON-NLS-1$

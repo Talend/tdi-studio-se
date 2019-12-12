@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,14 +29,14 @@ import org.talend.designer.mapper.utils.DataMapExpressionParser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ExternalMapperData implements IExternalData {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 4877887839142463534L;
 
@@ -82,7 +82,7 @@ public class ExternalMapperData implements IExternalData {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
     @SuppressWarnings("unchecked")
@@ -110,7 +110,7 @@ public class ExternalMapperData implements IExternalData {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -125,7 +125,7 @@ public class ExternalMapperData implements IExternalData {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -149,7 +149,7 @@ public class ExternalMapperData implements IExternalData {
         if(this.varsTables.size() != other.varsTables.size()){
             return false;
         }
-        
+
         for(ExternalMapperTable inTable:inputTables){
             boolean found = false;
             for(ExternalMapperTable otherTable:other.inputTables){
@@ -165,7 +165,7 @@ public class ExternalMapperData implements IExternalData {
                 return false;
             }
         }
-        
+
         for(ExternalMapperTable outTable:outputTables){
             boolean found = false;
             for(ExternalMapperTable otherTable:other.outputTables){
@@ -181,7 +181,7 @@ public class ExternalMapperData implements IExternalData {
                 return false;
             }
         }
-        
+
         for(ExternalMapperTable varTable:varsTables){
             boolean found = false;
             for(ExternalMapperTable var:other.varsTables){
@@ -207,7 +207,7 @@ public class ExternalMapperData implements IExternalData {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalData#getJoinTableNames(java.lang.String)
      */
     public List<String> getJoinedTableNames(String mainTable) {

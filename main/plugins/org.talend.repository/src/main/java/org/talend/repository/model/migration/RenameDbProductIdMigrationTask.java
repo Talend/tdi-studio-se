@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,9 +26,9 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40Z nrousseau $
- * 
+ *
  */
 public class RenameDbProductIdMigrationTask extends AbstractItemMigrationTask {
 
@@ -40,7 +40,7 @@ public class RenameDbProductIdMigrationTask extends AbstractItemMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#getTypes()
      */
     @Override
@@ -52,7 +52,7 @@ public class RenameDbProductIdMigrationTask extends AbstractItemMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @Override
@@ -75,7 +75,7 @@ public class RenameDbProductIdMigrationTask extends AbstractItemMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
      */
     public Date getOrder() {

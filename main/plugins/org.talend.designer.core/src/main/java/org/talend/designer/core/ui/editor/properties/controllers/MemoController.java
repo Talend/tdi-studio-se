@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,9 +40,9 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: MemoController.java 1 2006-12-12 下午02:44:27 +0000 (下午02:44:27) yzhang $
- * 
+ *
  */
 public class MemoController extends AbstractElementPropertySectionController {
 
@@ -54,7 +54,7 @@ public class MemoController extends AbstractElementPropertySectionController {
 
     /**
      * DOC dev MemoController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public MemoController(IDynamicProperty dp) {
@@ -64,7 +64,7 @@ public class MemoController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -159,7 +159,7 @@ public class MemoController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -185,7 +185,7 @@ public class MemoController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#hasDynamicRowSize
      * ()
@@ -197,7 +197,7 @@ public class MemoController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {

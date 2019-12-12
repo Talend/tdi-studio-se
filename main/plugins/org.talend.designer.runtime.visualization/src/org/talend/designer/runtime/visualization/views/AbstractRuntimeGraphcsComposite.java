@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,8 +44,8 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     private boolean suspendRefresh;
 
-    protected boolean isSectionActivated;    
-    
+    protected boolean isSectionActivated;
+
     protected static boolean isMonitoring = false;
 
     /* the current activate job */
@@ -149,7 +149,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     /**
      * Gets the active JVM.
-     * 
+     *
      * @return The active JVM
      */
     public IActiveJvm getJvm() {
@@ -158,7 +158,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     /**
      * Gets the state indicating if refresh is suspended.
-     * 
+     *
      * @return True if refresh is suspended
      */
     public boolean isRefreshSuspended() {
@@ -167,7 +167,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     /**
      * Refreshes the background of given control with given color.
-     * 
+     *
      * @param control The control
      * @param jvmConnected The state indicating if JVM is connected
      */
@@ -186,7 +186,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     /**
      * Refreshes the background of given controls and its child controls with given color.
-     * 
+     *
      * @param controls The controls
      * @param jvmConnected The state indicating if JVM is connected
      */
@@ -201,7 +201,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
             }
         }
     }
-    
+
     public static boolean isMonitoring() {
 		return isMonitoring;
 	}
@@ -212,7 +212,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     /**
      * Adds the tool bar actions.
-     * 
+     *
      * @param manager The toolbar manager
      */
     protected void addToolBarActions(IToolBarManager manager) {
@@ -221,7 +221,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     /**
      * Removes the tool bar actions.
-     * 
+     *
      * @param manager The toolbar manager
      */
     protected void removeToolBarActions(IToolBarManager manager) {
@@ -230,7 +230,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     /**
      * Adds the local menus.
-     * 
+     *
      * @param manager The menu manager
      */
     protected void addLocalMenus(IMenuManager manager) {
@@ -239,7 +239,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     /**
      * Removes the local menus.
-     * 
+     *
      * @param manager The menu manager
      */
     protected void removeLocalMenus(IMenuManager manager) {
@@ -257,7 +257,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     /**
      * Sets the input.
-     * 
+     *
      * @param selection The selection
      * @param newJvm The active JVM
      * @param oldJvm The old active JVM
@@ -266,7 +266,7 @@ public abstract class AbstractRuntimeGraphcsComposite extends Composite implemen
 
     /**
      * Creates the controls.
-     * 
+     *
      * @param parent The parent
      */
     abstract protected void createControls(Composite parent);

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,9 +44,9 @@ import org.talend.designer.mapper.model.tableentry.InputColumnTableEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ProblemsAnalyser {
 
@@ -117,7 +117,7 @@ public class ProblemsAnalyser {
 
     /**
      * DOC amaumont Comment method "checkOutputTablesProblems".
-     * 
+     *
      * @param extOutputTables
      */
     private void checkOutputTablesProblems(List<ExternalMapperTable> extOutputTables) {
@@ -179,7 +179,7 @@ public class ProblemsAnalyser {
                         atLeastOneExpressionFilled = true;
                         break;
                     }
-                }  
+                }
             }
 
             if (!atLeastOneExpressionFilled) {
@@ -203,7 +203,7 @@ public class ProblemsAnalyser {
 
     /**
      * DOC amaumont Comment method "checkKeysProblems".
-     * 
+     *
      * @param incomingConnections
      * @param inputTables
      */
@@ -238,7 +238,7 @@ public class ProblemsAnalyser {
 
     /**
      * DOC amaumont Comment method "checkExpressionSyntaxProblems".
-     * 
+     *
      * @param tables
      * @param codeChecker
      */
@@ -307,7 +307,7 @@ public class ProblemsAnalyser {
 
     /**
      * DOC amaumont Comment method "checkFilterEntry".
-     * 
+     *
      * @param codeChecker
      * @param keyIsUsed
      * @param table
@@ -337,7 +337,7 @@ public class ProblemsAnalyser {
 
     /**
      * DOC amaumont Comment method "getProblems".
-     * 
+     *
      * @return
      */
     public List<Problem> getProblems() {
@@ -346,7 +346,7 @@ public class ProblemsAnalyser {
 
     /**
      * DOC amaumont Comment method "addProblem".
-     * 
+     *
      * @param problem
      */
     private void addProblem(Problem problem) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -52,6 +53,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.ui.command.CommandStackForComposite;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
@@ -99,7 +101,7 @@ import org.talend.repository.ui.wizards.metadata.connection.files.xml.TreePopula
 
 /**
  * @author ocarbone
- * 
+ *
  */
 public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefreshable {
 
@@ -174,7 +176,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /**
      * Constructor to use by RCP Wizard.
-     * 
+     *
      * @param Composite
      * @param Wizard
      * @param Style
@@ -186,7 +188,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
     }
 
     /**
-     * 
+     *
      * Initialize value, forceFocus first field.
      */
     @Override
@@ -222,6 +224,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
             jsonXPathLoopDescriptor.setLimitBoucle(XmlArray.getRowLimit());
 
         }
+        treePopulator.setEncoding(getConnectionEncoding());
         treePopulator.populateTree(wizard.getTempJsonPath(), treeNode);
         fieldsModel.setJSONXPathLoopDescriptor(jsonXPathLoopDescriptor.getSchemaTargets());
         fieldsTableEditorView.getTableViewerCreator().layout();
@@ -313,7 +316,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /**
      * add Field to Group JSON File Settings.
-     * 
+     *
      * @param mainComposite
      * @param form
      * @param width
@@ -413,7 +416,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /**
      * add Field to Group File Viewer.
-     * 
+     *
      * @param parent
      * @param form
      * @param width
@@ -480,7 +483,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /**
      * add Field to Group File Viewer.
-     * 
+     *
      * @param parent
      * @param form
      * @param width
@@ -504,11 +507,11 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /**
      * create ProcessDescription and set it.
-     * 
+     *
      * WARNING ::field FieldSeparator, RowSeparator, EscapeChar and TextEnclosure are surround by double quote.
-     * 
+     *
      * @param getConnection()
-     * 
+     *
      * @return processDescription
      */
     private ProcessDescription getProcessDescription(boolean defaultContext) {
@@ -570,7 +573,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.talend.repository.ui.wizards.metadata.connection.files.JSON.StoppablePreviewLoader#previewEnded(java
              * .lang.Object)
@@ -608,13 +611,28 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
             }
         };
 
-        previewLoader.load(getProcessDescription(false));
+        ProcessDescription processDescription = getProcessDescription(false);
+        EJsonReadbyMode mode = null;
+        String readbyMode = getConnection().getReadbyMode();
+        if (StringUtils.isNotBlank(readbyMode)) {
+            mode = EJsonReadbyMode.getEJsonReadbyModeByValue(readbyMode);
+        }
+        if (EJsonReadbyMode.XPATH.equals(mode)) {
+            /**
+             * JSON XPATH mode uses the temp generated xml file to execute the preview, the generated xml file is
+             * encoded using UTF-8. <br/>
+             * (The generated xml file can't be encoded using other charset, otherwise the converted xml file will be
+             * empty)
+             */
+            processDescription.setEncoding(TalendQuoteUtils.addQuotes("UTF-8"));
+        }
+        previewLoader.load(processDescription);
 
     }
 
     /**
      * DOC amaumont Comment method "previewInFileError".
-     * 
+     *
      * @param e
      */
     protected void previewInError(CoreException e) {
@@ -667,7 +685,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /**
      * get the standby XPath expression.
-     * 
+     *
      * @return
      */
     protected List getSelectedXPath(TreeItem selected) {
@@ -693,7 +711,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /**
      * Ensures that fields are set. Update checkEnable / use to checkConnection().
-     * 
+     *
      * @return
      */
     @Override
@@ -742,7 +760,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /**
      * addButtonControls.
-     * 
+     *
      * @param cancelButton
      */
     @Override
@@ -827,7 +845,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /**
      * checkFileFieldsValue active fileViewer if file exist.
-     * 
+     *
      * @throws IOException
      */
     private void checkFilePathAndManageIt() {
@@ -871,10 +889,20 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
                     }
                 }
 
-                Charset guessedCharset = CharsetToolkit.guessEncoding(file, 4096);
+                Charset guessedCharset = null;
+                try {
+                    guessedCharset = Charset.forName(getConnectionEncoding());
+                } catch (Exception e) {
+                    if (CommonsPlugin.isDebugMode()) {
+                        ExceptionHandler.process(e, Priority.WARN);
+                    }
+                }
+                if (guessedCharset == null) {
+                    guessedCharset = CharsetToolkit.guessEncoding(file, 4096);
+                }
 
                 String str;
-                in = new BufferedReader(new InputStreamReader(new FileInputStream(pathStr), guessedCharset.displayName()));
+                in = new BufferedReader(new InputStreamReader(new FileInputStream(pathStr), guessedCharset));
 
                 while ((str = in.readLine()) != null) {
                     previewRows.append(str + "\n"); //$NON-NLS-1$
@@ -916,7 +944,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.widgets.Control#setVisible(boolean)
      */
     @Override
@@ -947,6 +975,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
             // fix bug: when the JSON file is changed, the linker doesn't work.
             resetStatusIfNecessary();
             String tempJson = this.wizard.getTempJsonPath();
+            this.treePopulator.setEncoding(getConnectionEncoding());
             this.treePopulator.populateTree(tempJson, treeNode);
 
             ScrollBar verticalBar = availableJSONTree.getVerticalBar();
@@ -1034,7 +1063,7 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.swt.utils.IRefreshable#refresh()
      */
     @Override

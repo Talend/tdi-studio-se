@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,7 +19,7 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 
 /**
  * ftang class global comment. Detailed comment <br/>
- * 
+ *
  */
 public class StatsAndLogs {
 
@@ -62,7 +62,7 @@ public class StatsAndLogs {
 
     /**
      * ftang Comment method "refreshView".
-     * 
+     *
      * @param view
      */
     private static void refreshView(StatsAndLogsView view) {
@@ -74,10 +74,10 @@ public class StatsAndLogs {
             view.createStatsAndLogsView();
         }
     }
-    
+
     /**
      * ftang Comment method "refreshView".
-     * 
+     *
      * @param view
      */
     private static void emptyView(StatsAndLogsView view) {

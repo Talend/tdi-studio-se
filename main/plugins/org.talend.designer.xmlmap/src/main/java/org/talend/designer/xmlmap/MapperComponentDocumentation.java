@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,7 +51,7 @@ import org.talend.designer.xmlmap.model.emf.xmlmap.VarTable;
 import org.talend.designer.xmlmap.model.emf.xmlmap.XmlMapData;
 
 /**
- * 
+ *
  * created by wchen on Aug 17, 2018 Detailled comment
  *
  */
@@ -70,7 +70,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#getHTMLFile()
      */
     @Override
@@ -110,7 +110,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#setComponentLabel(java.lang.String)
      */
     @Override
@@ -120,7 +120,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#setPath(java.lang.String)
      */
     @Override
@@ -269,7 +269,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /**
      * Generates metadata tables entries information.
-     * 
+     *
      * @param metadataTableEntriesElement
      * @param entry
      */
@@ -321,7 +321,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
 
     /**
      * Generates the summary information for table.
-     * 
+     *
      * @param mapperTableElement
      * @param tableElement
      * @param table

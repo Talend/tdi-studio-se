@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,14 +16,14 @@ import org.talend.designer.core.i18n.Messages;
 
 /**
  * Enumeration that describes all the standard name used in the properties.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public enum EParameterName {
     PROJECT_TECHNICAL_NAME(Messages.getString("EParameterName.Project_Technical_Name")), //$NON-NLS-1$
     NAME(Messages.getString("EParameterName.Name")), //$NON-NLS-1$
-    UNIQUE_NAME(Messages.getString("EParameterName.uniqueName")), //$NON-NLS-1$    
+    UNIQUE_NAME(Messages.getString("EParameterName.uniqueName")), //$NON-NLS-1$
     TRANSLATED_UNIQUE_NAME("Translated Unique Name"), //$NON-NLS-1$
     AUTHOR(Messages.getString("EParameterName.Author")), //$NON-NLS-1$
     PURPOSE(Messages.getString("EParameterName.Purpose")), //$NON-NLS-1$
@@ -221,11 +221,14 @@ public enum EParameterName {
      * For Job Settings extra parameters.
      */
     MULTI_THREAD_EXECATION(Messages.getString("EParameterName.MultiThread")), //$NON-NLS-1$
-    IMPLICIT_TCONTEXTLOAD(Messages.getString("EParameterName.ImplicitContextLoad")), //$NON-NLS-1$    
+    IMPLICIT_TCONTEXTLOAD(Messages.getString("EParameterName.ImplicitContextLoad")), //$NON-NLS-1$
     IMPLICIT_TCONTEXTLOAD_FILE(Messages.getString("EParameterName.FromFile")), //$NON-NLS-1$
     FIELDSEPARATOR(Messages.getString("EParameterName.FieldSeparator")), //$NON-NLS-1$
     ROWSEPARATOR(Messages.getString("EParameterName.RowSeparator")), //$NON-NLS-1$
     FROM_FILE_FLAG(Messages.getString("EParameterName.fromFileFlag")), //$NON-NLS-1$
+    OVERRIDE_ENCODING_FLAG(Messages.getString("EParameterName.OverrideEncodingFlag")), //$NON-NLS-1$
+    // for override encoding (name should be diff from the encoding of Stats&Logs)
+    OVERRIDE_ENCODING_IN_EXTRA("OVERRIDE_ENCODING_IN_EXTRA"), //$NON-NLS-1$
     FROM_DATABASE_FLAG(Messages.getString("EParameterName.fromDatabaseFlag")), //$NON-NLS-1$
     // implict tConextLoad parameters.
     LOAD_NEW_VARIABLE(Messages.getString("EParameterName.LoadNewVariableLabel")), //$NON-NLS-1$
@@ -260,7 +263,7 @@ public enum EParameterName {
      * PERL_CATCH_USER_ERRORS(Messages.getString("EParameterName.catchUserErrors")), //$NON-NLS-1$
      * PERL_CATCH_USER_WARNING(Messages.getString("EParameterName.catchUserWarning")), //$NON-NLS-1$
      * PERL_CATCH_REALTIME_STATS(Messages.getString("EParameterName.catchRealtimeStats")), //$NON-NLS-1$
-     * 
+     *
      * JAVA_ON_FILES_FLAG(Messages.getString("EParameterName.onFileFlag")), //$NON-NLS-1$
      * JAVA_FILE_PATH(Messages.getString("EParameterName.filePath")), //$NON-NLS-1$
      * JAVA_FILENAME_STATS(Messages.getString("EParameterName.fileNameStats")), //$NON-NLS-1$
@@ -361,6 +364,8 @@ public enum EParameterName {
 
     // Added for log4j.xml
     LOG4J_ACTIVATE("LOG4J_ACTIVATE"), //$NON-NLS-1$
+    // corresponds to whether log4j2 version is chosen or not
+    LOG4J2_ACTIVATE("LOG4J2_ACTIVATE"), //$NON-NLS-1$
     HMAP_PATH("HMAP_PATH"), //$NON-NLS-1$
 
     WINDOW_DURATION("WINDOW_DURATION"), //$NON-NLS-1$

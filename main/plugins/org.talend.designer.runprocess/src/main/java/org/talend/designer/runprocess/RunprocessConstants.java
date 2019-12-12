@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,6 +20,6 @@ public class RunprocessConstants {
     public final static String ENABLE_CONSOLE_LINE_LIMIT = "ENABLE_CONSOLE_LINE_LIMIT"; //$NON-NLS-1$
 
     public final static String CONSOLE_LINE_LIMIT_COUNT = "CONSOLE_LINE_LIMIT_COUNT"; //$NON-NLS-1$
-    
+
     public final static String CONSOLE_WRAP = "CONSOLE_WRAP"; //$NON-NLS-1$
 }

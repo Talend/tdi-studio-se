@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,13 +21,13 @@ import org.talend.repository.model.json.JSONFileConnection;
 
 /**
  * created by wchen on 2013-6-5 Detailled comment
- * 
+ *
  */
 public class JsonFileService implements IJsonFileService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.core.service.IJsonFileService#getFilePathFromRepository(org.talend.core.model.metadata.builder.connection
      * .Connection, java.lang.String, org.talend.core.model.process.IElement)

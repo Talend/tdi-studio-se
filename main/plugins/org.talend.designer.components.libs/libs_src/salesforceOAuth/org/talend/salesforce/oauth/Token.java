@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,7 +14,7 @@ package org.talend.salesforce.oauth;
 
 /**
  * created by bchen on Aug 28, 2013 Detailled comment
- * 
+ *
  */
 public class Token {
 
@@ -32,7 +32,7 @@ public class Token {
 
     /**
      * Getter for access_token.
-     * 
+     *
      * @return the access_token
      */
     public String getAccess_token() {
@@ -41,7 +41,7 @@ public class Token {
 
     /**
      * Sets the access_token.
-     * 
+     *
      * @param access_token the access_token to set
      */
     public void setAccess_token(String access_token) {
@@ -50,7 +50,7 @@ public class Token {
 
     /**
      * Getter for refresh_token.
-     * 
+     *
      * @return the refresh_token
      */
     public String getRefresh_token() {
@@ -59,7 +59,7 @@ public class Token {
 
     /**
      * Sets the refresh_token.
-     * 
+     *
      * @param refresh_token the refresh_token to set
      */
     public void setRefresh_token(String refresh_token) {
@@ -68,7 +68,7 @@ public class Token {
 
     /**
      * Getter for instance_url.
-     * 
+     *
      * @return the instance_url
      */
     public String getInstance_url() {
@@ -77,7 +77,7 @@ public class Token {
 
     /**
      * Sets the instance_url.
-     * 
+     *
      * @param instance_url the instance_url to set
      */
     public void setInstance_url(String instance_url) {
@@ -86,7 +86,7 @@ public class Token {
 
     /**
      * Getter for id.
-     * 
+     *
      * @return the id
      */
     public String getId() {
@@ -95,7 +95,7 @@ public class Token {
 
     /**
      * Sets the id.
-     * 
+     *
      * @param id the id to set
      */
     public void setId(String id) {
@@ -104,7 +104,7 @@ public class Token {
 
     /**
      * Getter for issued_at.
-     * 
+     *
      * @return the issued_at
      */
     public long getIssued_at() {
@@ -113,7 +113,7 @@ public class Token {
 
     /**
      * Sets the issued_at.
-     * 
+     *
      * @param issued_at the issued_at to set
      */
     public void setIssued_at(long issued_at) {
@@ -122,7 +122,7 @@ public class Token {
 
     /**
      * Getter for signature.
-     * 
+     *
      * @return the signature
      */
     public String getSignature() {
@@ -131,7 +131,7 @@ public class Token {
 
     /**
      * Sets the signature.
-     * 
+     *
      * @param signature the signature to set
      */
     public void setSignature(String signature) {

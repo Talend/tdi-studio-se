@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -82,9 +82,9 @@ import org.talend.designer.core.ui.event.CheckColumnSelectionListener;
 
 /**
  * MetadataTableEditorView2 must be used.
- * 
+ *
  * $Id: MetadataTableEditorView.java 801 2006-11-30 16:28:36Z amaumont $
- * 
+ *
  * @param <B>
  */
 public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B> {
@@ -95,7 +95,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
     /**
      * DOC amaumont MetadataTableEditorView constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param model
@@ -106,7 +106,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
     /**
      * DOC amaumont MetadataTableEditorView constructor comment.
-     * 
+     *
      * @param parentComposite
      * @param mainCompositeStyle
      * @param readOnly
@@ -121,7 +121,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
     /**
      * DOC amaumont MetadataTableEditorView constructor comment.
-     * 
+     *
      * @param parentComposite
      * @param mainCompositeStyle
      */
@@ -135,7 +135,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView#initToolBar()
      */
     @Override
@@ -146,7 +146,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView#setTableViewerCreatorOptions(org.talend
      * .commons.ui.swt.tableviewer.TableViewerCreator)
@@ -155,12 +155,12 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
     protected void setTableViewerCreatorOptions(TableViewerCreator<B> newTableViewerCreator) {
         super.setTableViewerCreatorOptions(newTableViewerCreator);
         newTableViewerCreator.setLayoutMode(LAYOUT_MODE.DEFAULT);
-        newTableViewerCreator.setLazyLoad(true);
+        newTableViewerCreator.setLazyLoad(TableViewerCreator.getRecommandLazyLoad());
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.extended.macrotable.AbstractExtendedTableViewer#createColumns(org.talend.commons.ui
      * .swt.tableviewer.TableViewerCreator, org.eclipse.swt.widgets.Table)
@@ -541,14 +541,14 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     patternEditor.setTableEditorView(this);
                     column.setCellEditor(patternEditor);
                     break;
-                    
+
                 case PATTERN_PROPERTY:
                     column.setModifiable(true);
                     PatternPropertyCellEditor patternPropertyEditor = new PatternPropertyCellEditor(table,element);
                     patternPropertyEditor.setTableEditorView(this);
                     column.setCellEditor(patternPropertyEditor);
                     break;
-                    
+
                 default: // TEXT
                     TextCellEditor tcEditor = null;
                     if (((i == 0) && (param.isBasedOnSchema() || param.isBasedOnSubjobStarts()))
@@ -989,7 +989,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
     /**
      * DOC nrousseau Comment method "getItemsToDisplay".
-     * 
+     *
      * @param element
      * @param param
      * @param rowNumber

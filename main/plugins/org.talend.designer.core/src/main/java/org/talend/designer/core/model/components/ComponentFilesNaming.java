@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,9 +23,9 @@ import org.talend.core.model.temp.ECodePart;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public final class ComponentFilesNaming implements IComponentFileNaming {
 
@@ -51,7 +51,7 @@ public final class ComponentFilesNaming implements IComponentFileNaming {
     }
 
     public String getMainXMLFileName(String componentName, String languageSuffix) {
-        return componentName + "_" + languageSuffix + XmlUtil.FILE_XML_SUFFIX; //$NON-NLS-1$ 
+        return componentName + "_" + languageSuffix + XmlUtil.FILE_XML_SUFFIX; //$NON-NLS-1$
     }
 
     public String getPropertiesFileName(String componentName) {

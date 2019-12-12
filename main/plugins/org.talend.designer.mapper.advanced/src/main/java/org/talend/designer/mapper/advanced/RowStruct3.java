@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,23 +14,23 @@ package org.talend.designer.mapper.advanced;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 /**
- * 
+ *
  * DOC amaumont THashStartJavajet class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class RowStruct3 {
 
     private static final int DEFAULT_HASHCODE = 1;
 
     private static final int PRIME = 31;
-    
+
     public static boolean endRangeIsKey;
     public static boolean startRangeIsKey;
     public static boolean stringKeyIsKey;
@@ -38,11 +38,11 @@ public class RowStruct3 {
     public static boolean nameIsKey;
 
     private int hashCode = DEFAULT_HASHCODE;
-    
+
     public boolean hashCodeDirty = true;
 
-    
-    
+
+
     public int endRange;
     public Integer startRange;
     public String stringKey;
@@ -51,7 +51,7 @@ public class RowStruct3 {
 
     /**
      * DOC amaumont BeanStruct constructor comment.
-     * 
+     *
      * @param id1
      * @param name
      * @param id2
@@ -71,7 +71,7 @@ public class RowStruct3 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -103,7 +103,7 @@ public class RowStruct3 {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -149,9 +149,9 @@ public class RowStruct3 {
     }
 
     /**
-         * 
-         * @return 
-         * @author 
+         *
+         * @return
+         * @author
          */
         public String toString() {
             StringBuffer buffer = new StringBuffer();
@@ -166,6 +166,6 @@ public class RowStruct3 {
             return buffer.toString();
         }
 
-    
-    
+
+
 }

@@ -16,7 +16,8 @@ import javax.wsdl.WSDLException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -25,7 +26,7 @@ import org.xml.sax.SAXException;
  */
 public final class OnlineAuthenticationPolicy {
 
-    static Logger logger = Logger.getLogger(OnlineAuthenticationPolicy.class.getName());
+    static Logger logger = LoggerFactory.getLogger(OnlineAuthenticationPolicy.class.getName());
 
     /**
      * Construct an Instance of the OnlineAuthenticationPolicy class.

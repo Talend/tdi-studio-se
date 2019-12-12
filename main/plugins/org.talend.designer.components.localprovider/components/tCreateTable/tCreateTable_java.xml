@@ -53,6 +53,7 @@
 
   <PARAMETER
       NAME="DBTYPE"
+      REPOSITORY_VALUE="DBTYPE"
       FIELD="CLOSED_LIST"
       NUM_ROW="10"
     >
@@ -254,10 +255,11 @@
 	<!--AS400 configuration start-->
 	<PARAMETER NAME="DB_AS400_VERSION" FIELD="CLOSED_LIST" NUM_ROW="50"
 			REPOSITORY_VALUE="DB_VERSION" SHOW_IF="(DBTYPE=='AS400' and USE_EXISTING_CONNECTION=='FALSE')">
-			<ITEMS DEFAULT="V6R1_V7R2">
+			<ITEMS DEFAULT="V7R1_V7R3">
 				<ITEM NAME="V5R2_V5R4" VALUE="jt400_V5R2.jar"/>
 				<ITEM NAME="V5R3_V6R1" VALUE="jt400_V5R3.jar"/>
                 <ITEM NAME="V6R1_V7R2" VALUE="jt400_V6R1.jar"/>
+                <ITEM NAME="V7R1_V7R3" VALUE="jt400-9.8.jar" />
 			</ITEMS>
 	</PARAMETER>
 
@@ -846,11 +848,12 @@
         <IMPORT NAME="Driver-V5R2_V5R4" MODULE="jt400_V5R2.jar" MVN="mvn:org.talend.libraries/jt400_V5R2/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='AS400') and (DB_AS400_VERSION=='jt400_V5R2.jar')"/>
         <IMPORT NAME="Driver-V5R3_V6R1" MODULE="jt400_V5R3.jar" MVN="mvn:org.talend.libraries/jt400_V5R3/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='AS400') and (DB_AS400_VERSION=='jt400_V5R3.jar')"/>
         <IMPORT NAME="Driver-V6R1_V7R2" MODULE="jt400_V6R1.jar" MVN="mvn:org.talend.libraries/jt400_V6R1/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='AS400') and (DB_AS400_VERSION=='jt400_V6R1.jar')" />
+        <IMPORT NAME="Driver-V7R1_V7R3" MODULE="jt400-9.8.jar" MVN="mvn:net.sf.jt400/jt400/9.8"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='AS400') and (DB_AS400_VERSION=='jt400-9.8.jar')" />
 		<IMPORT NAME="Driver-DB2" MODULE="db2jcc4.jar" MVN="mvn:org.talend.libraries/db2jcc4/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='DB2')" />
 		<IMPORT NAME="Driver-DB2-LICENSE-CISUZ" MODULE="db2jcc_license_cisuz.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cisuz/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='DB2')" />
 		<IMPORT NAME="Driver-DB2-LICENSE-CU" MODULE="db2jcc_license_cu.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cu/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='DB2')" />
 		<IMPORT NAME="Driver_MaxDB" MODULE="sapdbc.jar" MVN="mvn:org.talend.libraries/sapdbc/6.0.0"  REQUIRED_IF="DBTYPE=='MAXDB'" />
-		<IMPORT NAME="Driver-MSSQL" MODULE="jtds-1.3.1-patch.jar" MVN="mvn:org.talend.libraries/jtds-1.3.1-patch/6.1.1" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='JTDS')" />
+		<IMPORT NAME="Driver-MSSQL" MODULE="jtds-1.3.1-patch-20190523.jar" MVN="mvn:net.sourceforge.jtds/jtds/1.3.1-patch-20190523" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='JTDS')" />
 		<IMPORT NAME="Driver-MSSQL-prop" MODULE="mssql-jdbc.jar" MVN="mvn:org.talend.libraries/mssql-jdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP')" />
 		<IMPORT NAME="Driver-MYSQL4" MODULE="mysql-connector-java-3.1.14-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-3.1.14-bin/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MYSQL_4')"/>
 		<IMPORT NAME="Driver-MYSQL5" MODULE="mysql-connector-java-5.1.30-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MYSQL_5')"/>
@@ -895,8 +898,8 @@
 		<IMPORT NAME="Driver-VERTICA_7.0.1" MODULE="vertica-jdbc-7.0.1-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.0.1-0/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_7_0_X')" />
   		<IMPORT NAME="Driver-VERTICA_7.1.2" MODULE="vertica-jdbc-7.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.1.2-0/6.0.0" REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_7_1_X')" />
   		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9302.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9302/6.3.0"  REQUIRED_IF="(DBTYPE=='EXASOL') and (USE_EXISTING_CONNECTION == 'false')" />
-		<IMPORT NAME="Driver-Redshift" MODULE="redshiftJDBC42-no-awssdk-1.2.16.1027.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.16.1027" REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
-		<IMPORT NAME="Driver-Snowflake" MODULE="snowflake-jdbc-3.5.3.jar" MVN="mvn:net.snowflake/snowflake-jdbc/3.5.3"  REQUIRED_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')" />
+		<IMPORT NAME="Driver-Redshift" MODULE="redshift-jdbc42-no-awssdk-1.2.32.1056.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.32.1056" REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
+		<IMPORT NAME="Driver-Snowflake" MODULE="snowflake-jdbc-3.9.0.jar" MVN="mvn:net.snowflake/snowflake-jdbc/3.9.0"  REQUIRED_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')" />
 		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.0.0-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-9.0.0-0/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_9_0')"/>
      </IMPORTS>
    </CODEGENERATION>

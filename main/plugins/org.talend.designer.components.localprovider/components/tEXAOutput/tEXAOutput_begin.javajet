@@ -105,8 +105,12 @@ if(("true").equals(useExistingConn)) {
     <%
 }
 %>
-// schema is mandatory
-String tableName_<%=cid%> = dbschema_<%=cid%> + "." + <%=table%>;
+String tableName_<%=cid%> = null;
+if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
+    tableName_<%=cid%> = <%=table%>;
+} else {
+    tableName_<%=cid%> = dbschema_<%=cid%> + "." + <%=table%>;
+}
 <%
 if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
     int updateKeyCount = 0;

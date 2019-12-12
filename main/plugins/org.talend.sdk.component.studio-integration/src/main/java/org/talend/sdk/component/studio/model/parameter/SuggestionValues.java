@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Response from Suggestions action server request. 
+ * Response from Suggestions action server request.
  * This class is used to store deserialized response value from json
  */
 public class SuggestionValues implements Cloneable {
@@ -34,11 +34,11 @@ public class SuggestionValues implements Cloneable {
      * List of pairs to show in the suggestions in the UI.
      */
     private Collection<Item> items;
-    
+
     public SuggestionValues() {
         // no-op
     }
-    
+
     public boolean isCacheable() {
         return cacheable;
     }
@@ -54,12 +54,12 @@ public class SuggestionValues implements Cloneable {
     public void setItems(Collection<Item> items) {
         this.items = items;
     }
-    
+
     @Override
     public String toString() {
         return "SuggestionValues(cacheable=" + this.isCacheable() + ", items=" + this.getItems() + ")";
     }
-    
+
     @Override
     public SuggestionValues clone() {
         try {
@@ -72,13 +72,13 @@ public class SuggestionValues implements Cloneable {
             throw new AssertionError();
         }
     }
-    
+
     public static class Item implements Cloneable {
 
         private String id;
 
         private String label;
-        
+
         public Item() {
             // no-op
         }
@@ -98,12 +98,12 @@ public class SuggestionValues implements Cloneable {
         public void setLabel(String label) {
             this.label = label;
         }
-        
+
         @Override
         public String toString() {
             return "Item(id=" + this.getId() + ", label=" + this.getLabel() + ")";
         }
-        
+
         @Override
         public Item clone() {
             try {

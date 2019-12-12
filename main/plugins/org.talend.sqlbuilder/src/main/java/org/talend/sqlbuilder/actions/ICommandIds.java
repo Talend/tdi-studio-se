@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,7 +15,7 @@ package org.talend.sqlbuilder.actions;
 /**
  * Interface defining the application's command IDs. Key bindings can be defined for specific commands. To associate an
  * action with a command, use IAction.setActionDefinitionId(commandId).
- * 
+ *
  * @see org.eclipse.jface.action.IAction#setActionDefinitionId(String)
  */
 public interface ICommandIds {

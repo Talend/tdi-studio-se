@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,14 +18,14 @@ import org.talend.core.model.process.node.IExternalMapEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ExternalMapperTableEntry implements Serializable, Cloneable, IExternalMapEntry {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -6108773358595740424L;
 
@@ -78,7 +78,7 @@ public class ExternalMapperTableEntry implements Serializable, Cloneable, IExter
 
     /**
      * Talend types, used for var entries only.
-     * 
+     *
      * @return
      */
     public String getType() {
@@ -87,7 +87,7 @@ public class ExternalMapperTableEntry implements Serializable, Cloneable, IExter
 
     /**
      * Talend types, used for var entries only.
-     * 
+     *
      * @param type the type to set
      */
     public void setType(String type) {
@@ -96,7 +96,7 @@ public class ExternalMapperTableEntry implements Serializable, Cloneable, IExter
 
     /**
      * Getter for nullable.
-     * 
+     *
      * @return the nullable
      */
     public boolean isNullable() {
@@ -105,7 +105,7 @@ public class ExternalMapperTableEntry implements Serializable, Cloneable, IExter
 
     /**
      * Sets the nullable.
-     * 
+     *
      * @param nullable the nullable to set
      */
     public void setNullable(boolean nullable) {
@@ -114,7 +114,7 @@ public class ExternalMapperTableEntry implements Serializable, Cloneable, IExter
 
     /**
      * Getter for operator.
-     * 
+     *
      * @return the operator
      */
     public String getOperator() {
@@ -123,7 +123,7 @@ public class ExternalMapperTableEntry implements Serializable, Cloneable, IExter
 
     /**
      * Sets the operator.
-     * 
+     *
      * @param operator the operator to set
      */
     public void setOperator(String operator) {
@@ -132,7 +132,7 @@ public class ExternalMapperTableEntry implements Serializable, Cloneable, IExter
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
     @Override
@@ -142,7 +142,7 @@ public class ExternalMapperTableEntry implements Serializable, Cloneable, IExter
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

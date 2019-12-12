@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -63,11 +63,11 @@ public final class MultiDefaultValuesUtils {
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "convertDefaultValues".
-     * 
+     *
      * Convert the default values to string sequence.
-     * 
+     *
      * example: "abc";"def"
      */
     public static String convertDefaultValues(final IElementParameter param) {
@@ -122,9 +122,9 @@ public final class MultiDefaultValuesUtils {
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "getCurSystemCommandsList".
-     * 
+     *
      * this is only for COMMAND
      */
     private static List<String> getCurSystemCommandsList(final IElementParameter param) {

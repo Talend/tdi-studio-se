@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,7 +47,7 @@ import org.talend.designer.rowgenerator.ui.editor.MetadataColumnExt;
 /**
  * This class is used for generating HTML file for Component 'tRowGenerator'. <br/>
  * <br/>
- * 
+ *
  */
 public class RowGeneratorComponentDocumentation implements IComponentDocumentation {
 
@@ -65,7 +65,7 @@ public class RowGeneratorComponentDocumentation implements IComponentDocumentati
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#getHTMLFile()
      */
     @Override
@@ -106,7 +106,7 @@ public class RowGeneratorComponentDocumentation implements IComponentDocumentati
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#setComponentName(java.lang.String)
      */
     @Override
@@ -116,7 +116,7 @@ public class RowGeneratorComponentDocumentation implements IComponentDocumentati
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IComponentDocumentation#setTempFolderPath(java.lang.String)
      */
     @Override
@@ -126,7 +126,7 @@ public class RowGeneratorComponentDocumentation implements IComponentDocumentati
 
     /**
      * Sets an instanceof <code>List<IMetadataTable></code>
-     * 
+     *
      * @param metadataListOut
      */
     public void setMetadataListOut(List<IMetadataTable> metadataListOut) {
@@ -201,7 +201,7 @@ public class RowGeneratorComponentDocumentation implements IComponentDocumentati
 
     /**
      * Administrator Comment method "generateColumnInfo".
-     * 
+     *
      * @param externalNodeElement
      */
     private void generateColumnInfo(Element externalNodeElement) {
@@ -254,7 +254,7 @@ public class RowGeneratorComponentDocumentation implements IComponentDocumentati
 
     /**
      * Sets the preview picture path of component.
-     * 
+     *
      * @param previewPicPath
      */
     public void setPreviewPicPath(String previewPicPath) {

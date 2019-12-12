@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -72,9 +72,9 @@ import orgomg.cwm.resource.relational.Schema;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class ErDiagramComposite extends SashForm {
 
@@ -90,7 +90,7 @@ public class ErDiagramComposite extends SashForm {
 
     /**
      * admin ErDiagramComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -145,7 +145,7 @@ public class ErDiagramComposite extends SashForm {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
              */
             public void modifyText(ModifyEvent e) {
@@ -158,7 +158,7 @@ public class ErDiagramComposite extends SashForm {
 
     /**
      * Getter for sqlText.
-     * 
+     *
      * @return the sqlText
      */
     public String getSqlText() {
@@ -176,7 +176,7 @@ public class ErDiagramComposite extends SashForm {
 
     /**
      * Sets the sqlText.
-     * 
+     *
      * @param sqlText the sqlText to set
      */
     public void setSqlText(String sqlText) {
@@ -191,7 +191,7 @@ public class ErDiagramComposite extends SashForm {
 
     /**
      * admin Comment method "createErDiagram".
-     * 
+     *
      * @return
      */
     private ErDiagram createErDiagram(boolean isShowDesignerPage) {
@@ -274,7 +274,7 @@ public class ErDiagramComposite extends SashForm {
         } else {
             schema = connection.getUiSchema();
         }
-       
+
         if (connection.isContextMode() && !isCalculationView) {
             schema = DatabaseConnectionParameterUtil.getContextTrueValue(connection, schema);
         }
@@ -433,17 +433,17 @@ public class ErDiagramComposite extends SashForm {
         }
         return realTableName;
     }
-    
+
     /**
      * admin Comment method "getSelectStatement".
-     * 
+     *
      * @param tables
      * @param columns
      * @param wheres
      * @return
      */
     private String getSelectStatement(List<String> tables, List<String> columns, List<String> wheres) {
-    
+
         String sql = ""; //$NON-NLS-1$
         if (tables.isEmpty() || columns.isEmpty()) {
             return sql;
@@ -495,7 +495,7 @@ public class ErDiagramComposite extends SashForm {
 
     /**
      * Getter for isModified.
-     * 
+     *
      * @return the isModified
      */
     public boolean isModified() {
@@ -504,7 +504,7 @@ public class ErDiagramComposite extends SashForm {
 
     /**
      * Sets the isModified.
-     * 
+     *
      * @param isModified the isModified to set
      */
     public void setModified(boolean isModified) {

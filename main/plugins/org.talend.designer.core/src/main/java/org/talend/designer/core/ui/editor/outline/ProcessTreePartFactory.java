@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,15 +20,15 @@ import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * This class is the main factory of the Tree in the Outline View. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ProcessTreePartFactory implements EditPartFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.EditPartFactory#createEditPart(org.eclipse.gef.EditPart, java.lang.Object)
      */
     public EditPart createEditPart(EditPart context, Object model) {

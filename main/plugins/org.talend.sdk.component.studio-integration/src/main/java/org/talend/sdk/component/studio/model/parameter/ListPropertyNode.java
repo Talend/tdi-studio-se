@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class ListPropertyNode extends PropertyNode {
      * Adds child as nested property
      * {@link ListPropertyNode} can't have children nodes. It is leaf node.
      * But it may have nested properties, which represent table columns
-     * 
+     *
      * @param column {@link PropertyNode} to be added as table column
      */
     @Override

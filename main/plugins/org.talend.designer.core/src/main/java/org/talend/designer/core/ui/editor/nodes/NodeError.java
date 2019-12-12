@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ public class NodeError extends Element {
 
     /**
      * Create a new label for a node with a given label and node.
-     * 
+     *
      * @param labelText
      * @param nodeParent
      */
@@ -50,7 +50,7 @@ public class NodeError extends Element {
 
     /**
      * Set the location of the label.
-     * 
+     *
      * @param location
      */
     public void setLocation(Point location) {
@@ -64,7 +64,7 @@ public class NodeError extends Element {
 
     /**
      * Gives the location of the label (must add the offset to have the correct position).
-     * 
+     *
      * @return Point
      */
     public Point getLocation() {
@@ -73,7 +73,7 @@ public class NodeError extends Element {
 
     /**
      * Gives the node parent of this label.
-     * 
+     *
      * @return
      */
     public Node getNode() {
@@ -82,7 +82,7 @@ public class NodeError extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#setPropertyValue(java.lang.Object, java.lang.Object)
      */
     public void setPropertyValue(String id, Object value) {
@@ -91,7 +91,7 @@ public class NodeError extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getPropertyValue(java.lang.Object)
      */
     public Object getPropertyValue(String id) {
@@ -100,7 +100,7 @@ public class NodeError extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getElementName()
      */
     @Override
@@ -110,7 +110,7 @@ public class NodeError extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.Element#getElementParameters()
      */
     @Override

@@ -44,8 +44,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -56,7 +56,7 @@ import org.xml.sax.SAXException;
  */
 public final class WsdlTokenManager {
 
-    static Logger logger = Logger.getLogger(WsdlTokenManager.class.getName());
+    static Logger logger = LoggerFactory.getLogger(WsdlTokenManager.class.getName());
 
     private final String DeviceTokenTemplate = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + " <s:Envelope "
             + " xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\""
@@ -214,7 +214,16 @@ public final class WsdlTokenManager {
             throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
         DocumentBuilder builder;
         try {
-            builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            
+            try {
+	            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+	            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            } catch (Exception e) {
+            	logger.warn("failed to enable xml safe feature");
+            }
+            
+            builder = factory.newDocumentBuilder();
 
             Document document = builder.parse(new ByteArrayInputStream(inputXML.getBytes()));
 
@@ -222,7 +231,7 @@ public final class WsdlTokenManager {
             try {
                 xpf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             } catch (XPathFactoryConfigurationException ex) {
-                ExceptionHandler.process(ex);
+            	logger.warn("failed to enable xpath safe feature");
             }
             XPath xpath = xpf.newXPath();
             String expression = xPathQuery;

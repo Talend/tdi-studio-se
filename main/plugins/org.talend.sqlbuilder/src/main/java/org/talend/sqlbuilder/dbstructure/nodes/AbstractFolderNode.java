@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,9 +20,9 @@ import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: AbstractFolderNode.java,v 1.3 2006/11/01 05:40:59 peiqin.hou Exp $
- * 
+ *
  */
 public abstract class AbstractFolderNode extends AbstractNode {
 
@@ -36,7 +36,7 @@ public abstract class AbstractFolderNode extends AbstractNode {
 
     /**
      * Override this method to change the image that is displayed for this node in the database structure outline.
-     * 
+     *
      * @return Image
      */
     public Image getImage() {
@@ -62,7 +62,7 @@ public abstract class AbstractFolderNode extends AbstractNode {
 
     /**
      * Checks if a node name should be filtered.
-     * 
+     *
      * @param name to check for filtering
      * @return true if the name should be filtered
      */

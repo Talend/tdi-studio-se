@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -117,15 +117,16 @@ import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
 import org.talend.resources.util.EMavenBuildScriptProperties;
 
 /**
  * Manages the job scripts to be exported. <br/>
- * 
+ *
  * $Id: JobScriptsManager.java 1 2006-12-14 下�?�05:06:49 bqian
- * 
+ *
  */
 public class JobJavaScriptsManager extends JobScriptsManager {
 
@@ -165,7 +166,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Getter for compiledModules.
-     * 
+     *
      * @return the compiledModules
      */
     protected MultiKeyMap getCompiledModules() {
@@ -174,7 +175,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Getter for excludedModules.
-     * 
+     *
      * @return the excludedModules
      */
     protected MultiKeyMap getExcludedModules() {
@@ -266,7 +267,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * DOC informix Comment method "posExportResource".
-     * 
+     *
      * @param process
      * @param exportChoice
      * @param contextName
@@ -370,9 +371,9 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "getMavenPropertiesMap".
-     * 
+     *
      * @param item
      * @param privatePackage
      * @param exportService
@@ -559,7 +560,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * DOC informix Comment method "preExportResource".
-     * 
+     *
      * @param process
      * @param i
      * @param selectedJobVersion
@@ -580,7 +581,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.ui.wizards.exportjob.JobScriptsManager#getExportResources(org.talend.core.model.properties
      * .ProcessItem[], boolean, boolean, boolean, boolean, boolean, boolean, boolean, java.lang.String)
@@ -722,7 +723,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * DOC acer Comment method "addContextScripts".
-     * 
+     *
      * @param resource
      * @param boolean1
      */
@@ -733,7 +734,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * ftang Comment method "addContextScripts".
-     * 
+     *
      * @param resource
      * @param boolean1
      */
@@ -744,7 +745,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * DOC acer Comment method "addContextScripts".
-     * 
+     *
      * @param resource
      * @param boolean1
      */
@@ -783,7 +784,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     /**
      * User may delete some contexts after generating the context files. So we will only export those files that match
      * any existing context name. See bug 0003568: Three contexts file exported, while only two contexts in the job.
-     * 
+     *
      * @param listFiles The generated context files.
      * @param processItem The current process item that will be exported.
      * @return An url list of context files.
@@ -815,7 +816,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager#getSource(org.talend.core.model.
      * properties.ProcessItem, boolean)
      */
@@ -1103,7 +1104,12 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                 ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendJobJavaProject(resource.getItem().getProperty());
                 if (talendProcessJavaProject != null) {
                     IFolder resourcesFolder = talendProcessJavaProject.getExternalResourcesFolder();
-                    IFile log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    IFile log4jFile = null;
+                    if (Log4jPrefsSettingManager.getInstance().isSelectLog4j2()) {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+                    } else {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    }
                     if (log4jFile.exists()) {
                         List<URL> log4jFileUrls = new ArrayList<URL>();
                         log4jFileUrls.add(FileLocator.toFileURL(log4jFile.getLocationURI().toURL()));
@@ -1179,7 +1185,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
      * It's preferable to use the function with additional parameter neededLibraries. <br>
      * Right now all the needed librairies in jobs can be retrieved just after the code generation with the method
      * ProcessorUtilities.getNeededModules(), which will be really faster and memory used will be much lower.
-     * 
+     *
      * @deprecated
      */
     @Deprecated
@@ -1189,9 +1195,9 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Gets required java jars.
-     * 
+     *
      * @param process
-     * 
+     *
      * @param boolean1
      * @return
      */
@@ -1298,9 +1304,9 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Gets required java jars.
-     * 
+     *
      * @param process
-     * 
+     *
      * @param boolean1
      * @return
      */
@@ -1316,7 +1322,12 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                 ITalendProcessJavaProject talendProcessJavaProject = processService.getTempJavaProject();
                 if (talendProcessJavaProject != null) {
                     IFolder resourcesFolder = talendProcessJavaProject.getExternalResourcesFolder();
-                    IFile log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    IFile log4jFile = null;
+                    if (Log4jPrefsSettingManager.getInstance().isSelectLog4j2()) {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+                    } else {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    }
                     if (log4jFile.exists()) {
                         list.add(FileLocator.toFileURL(log4jFile.getLocationURI().toURL()));
                     }
@@ -1340,7 +1351,12 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                 ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendJobJavaProject(libResource.getItem().getProperty());
                 if (talendProcessJavaProject != null) {
                     IFolder resourcesFolder = talendProcessJavaProject.getExternalResourcesFolder();
-                    IFile log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    IFile log4jFile = null;
+                    if (Log4jPrefsSettingManager.getInstance().isSelectLog4j2()) {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J2_FILE_NAME);
+                    } else {
+                        log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
+                    }
                     if (log4jFile.exists()) {
                         list.add(log4jFile.getLocationURI().toURL());
                     }
@@ -1354,25 +1370,13 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         libResource.addResources(list);
     }
 
-    protected boolean addLog4jToJarList(Collection<String> jarList) {
-        boolean added = false;
-        boolean foundLog4jJar = false;
-        for (String jar : jarList) {
-            if (jar.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                foundLog4jJar = true;
-            }
-        }
-        if (!foundLog4jJar) {
-            jarList.add("log4j-1.2.17.jar"); //$NON-NLS-1$
-            added = true;
-        }
-
-        return added;
+    protected void addLog4jToJarList(Collection<String> jarList) {
+        UpdateLog4jJarUtils.addLog4jToJarList(jarList, Log4jPrefsSettingManager.getInstance().isSelectLog4j2());
     }
 
     /**
      * Gets Job Scripts.
-     * 
+     *
      * @param process
      * @param needJob
      * @param needContext
@@ -1386,7 +1390,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Gets JobInfo properties.
-     * 
+     *
      * @param process
      * @return
      */
@@ -1414,7 +1418,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Gets Job Scripts.
-     * 
+     *
      * @param process
      * @param version
      * @param needJob
@@ -1438,12 +1442,12 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Gets Job Scripts.
-     * 
+     *
      * @param projectName TODO
      * @param needJob
      * @param process
      * @param needContext
-     * 
+     *
      * @return
      */
     protected List<URL> getJobScripts(ProcessItem process, String projectName, String jobName, String jobVersion, boolean needJob) {
@@ -1504,10 +1508,10 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Gets all the perl files in the project .Perl.
-     * 
+     *
      * @param name
      * @param projectName
-     * 
+     *
      * @return
      */
     protected String getJobClassRootLocation(Property property) throws Exception {
@@ -1525,7 +1529,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         }
         return classRootFileLocation.toURI().toURL().getPath();
     }
-    
+
     protected File getCodeClassRootFileLocation(ERepositoryObjectType type) {
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
                 .getTalendCodeJavaProject(type);
@@ -1535,7 +1539,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         IFolder outputFolder = talendProcessJavaProject.getOutputFolder();
         return outputFolder.getLocation().toFile();
     }
-    
+
     protected File getJobClassRootFileLocation(Property property) {
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
                 .getTalendJobJavaProject(property);
@@ -1545,7 +1549,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         IFolder outputFolder = talendProcessJavaProject.getOutputFolder();
         return outputFolder.getLocation().toFile();
     }
-    
+
     @Deprecated
     protected File getClassRootFileLocation() {
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService().getTempJavaProject();
@@ -1558,7 +1562,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Get the path of .JAVA/src
-     * 
+     *
      * @throws Exception
      */
     protected IPath getSrcRootLocation(ProcessItem processItem) throws Exception {
@@ -1585,7 +1589,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Gets system routine.
-     * 
+     *
      * @param needSystemRoutine
      * @return
      */
@@ -1618,7 +1622,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * Gets user routine.
-     * 
+     *
      * @param needUserRoutine
      * @return
      */
@@ -1716,7 +1720,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                     Item item = object.getProperty().getItem();
                     /*
                      * only support like "ABC.class", "ABC$1.class" and "ABC$XYZ.class",
-                     * 
+                     *
                      * Do not support the class in one routine file.
                      */
                     String pattern = item.getProperty().getLabel() + "(\\$.+)*\\.class"; //$NON-NLS-1$
@@ -1856,7 +1860,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager#getCurrentProjectName()
      */
     @Override
@@ -1916,7 +1920,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /**
      * DOC hywang Comment method "initUrlForDrlFiles".
-     * 
+     *
      * @param process
      * @param talendDrlFiles
      * @throws PersistenceException
@@ -1945,7 +1949,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                     urlList = new ArrayList<URL>();
                 }
                 item = (proces).getItem();
-                
+
                 if (item instanceof ProcessItem) {
                     pi = (ProcessItem) item;
                     processLabelAndVersion = JavaResourcesHelper.getJobFolderName(pi.getProperty().getLabel(), pi.getProperty()
@@ -2019,9 +2023,9 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "isCompiledLib".
-     * 
+     *
      * The modudle will be use to compile and run the job.
      */
     protected boolean isCompiledLib(ModuleNeeded module) {
@@ -2034,7 +2038,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager#getExportPigudfResources(org.talend
      * .repository.documentation.ExportFileResource[])

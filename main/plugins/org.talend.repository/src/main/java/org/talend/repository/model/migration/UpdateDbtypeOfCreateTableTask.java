@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,21 +32,21 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40Z nrousseau $
- * 
+ *
  */
 public class UpdateDbtypeOfCreateTableTask extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractJobMigrationTask#executeOnProcess(org.talend.core.model.properties.ProcessItem)
      */
     @Override
     public ExecutionResult execute(Item item) {
     	ProcessType processType = getProcessType(item);
-		
+
         if (getProject().getLanguage().equals(ECodeLanguage.JAVA) && processType != null) {
             final Map<String, String> dbtypes = new HashMap<String, String>();
             dbtypes.put("Access", "ACCESS"); //$NON-NLS-1$ //$NON-NLS-2$

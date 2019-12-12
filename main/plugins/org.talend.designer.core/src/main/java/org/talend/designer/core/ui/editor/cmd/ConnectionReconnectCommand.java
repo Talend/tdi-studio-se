@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,9 +40,9 @@ import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * Command that allows to change a connection to a new source or a new target. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnectionReconnectCommand extends Command {
 
@@ -73,7 +73,7 @@ public class ConnectionReconnectCommand extends Command {
     /**
      * Initialisation of the command with the given connection. This will initialize the source and target before change
      * them.
-     * 
+     *
      * @param connection
      */
     public ConnectionReconnectCommand(IConnection connection) {
@@ -93,7 +93,7 @@ public class ConnectionReconnectCommand extends Command {
 
     /**
      * Set a new source for the connection.
-     * 
+     *
      * @param nodeSource
      */
     public void setNewSource(Node nodeSource) {
@@ -104,7 +104,7 @@ public class ConnectionReconnectCommand extends Command {
 
     /**
      * Set a new target for the connection.
-     * 
+     *
      * @param connectionTarget
      */
     public void setNewTarget(Node nodeTarget) {
@@ -140,7 +140,7 @@ public class ConnectionReconnectCommand extends Command {
 
     /**
      * Check if a new connection on the selected source is allowed.
-     * 
+     *
      * @return true / false
      */
     private boolean checkSourceReconnection() {
@@ -155,7 +155,7 @@ public class ConnectionReconnectCommand extends Command {
 
     /**
      * Check if a new connection on the selected target is allowed.
-     * 
+     *
      * @return true / false
      */
     private boolean checkTargetReconnection() {
@@ -185,7 +185,7 @@ public class ConnectionReconnectCommand extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#execute()
      */
     @Override

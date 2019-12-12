@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,7 +24,7 @@ public interface NodeProblem {
      * prerequisite is not fullfilled. For example, if a {@link NodeProblem} implementation is made for the tLogRow in
      * Spark only, the validate method could check the component name and its category and return true only if both
      * conditions are true.
-     * 
+     *
      * @param node the @{link Node} to validate.
      * @return true if the @{link Node} needs to be checked.
      */
@@ -32,7 +32,7 @@ public interface NodeProblem {
 
     /**
      * This method displays a @{link org.talend.core.model.process.Problem} on the given node.
-     * 
+     *
      * @param node the @{link Node} to check.
      */
     void check(Node node);

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,7 +23,7 @@ public class BlankProjectSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -35,7 +35,7 @@ public class BlankProjectSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.preference.ProjectSettingPage#refresh()
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.talend.repository.navigator.TalendRepositoryRoot;
 
 /**
  * DOC ggu class global comment. Detailled comment
- * 
+ *
  * this content provider only test the root type of node so far.
- * 
+ *
  * make sure, the node can be display via CNF in repository view.
  */
 public abstract class AbstractRootNodeContentProviderTest extends AbstractContentProviderTest {

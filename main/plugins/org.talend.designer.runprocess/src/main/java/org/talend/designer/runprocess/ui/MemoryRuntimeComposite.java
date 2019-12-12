@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -98,9 +98,9 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
     private Button runtimeButton;
 
     private Combo periodCombo;
-    
+
     private ComboViewer contextCombo;
-    
+
     private Button gcCheckButton;
 
     private RunProcessContext processContext;
@@ -114,25 +114,25 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
     private AbstractRuntimeGraphcsComposite chartComposite;
 
     private PropertyChangeListener propertyChangeListener;
-    
+
     private ProcessManager processManager;
-    
+
     private  ReportMessageManager messageManager;
-    
+
     private static boolean isGCSelected = false;
-    
+
     private static int periodComboSelectionIndex = 0;
-    
+
     private static Timer timer = new Timer();
-    
+
     private static boolean lock = false;
-    
+
     private boolean isRemoteRun = false;
-    
+
     private boolean isCommandlineRun = false;
-    
+
     private boolean isRemoteMonitoring = false;
-    
+
 	private boolean isReadyToStart = false;
 
     public MemoryRuntimeComposite(ProcessView viewPart, Composite parent, RunProcessContext processContext, int style) {
@@ -166,7 +166,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /**
      * DOC ldong Comment method "initGraphicComponents".
-     * 
+     *
      * @param parent
      */
     private void initGraphicComponents(Composite parent) {
@@ -246,13 +246,13 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         	periodCombo.select(0);
         	periodComboSelectionIndex = 0;
         }
-        
+
         contextCombo = new ComboViewer(topGroup, SWT.BORDER | SWT.READ_ONLY);
         contextCombo.getCombo().setLayout(new FormLayout());
         GridData contextComboData = new GridData();
         contextComboData.grabExcessHorizontalSpace = true;
         contextComboData.horizontalAlignment = GridData.END;
-        execSize = computeSize("Default"); 
+        execSize = computeSize("Default");
         contextComboData.minimumWidth = execSize.x;
         contextCombo.getCombo().setLayoutData(contextComboData);
         contextCombo.setContentProvider(ArrayContentProvider.getInstance());
@@ -353,7 +353,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
                     MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.commandlineForbidden"));   //$NON-NLS-1$ //$NON-NLS-2$
                     return;
                 }
-                
+
                 if (isRemoteRun && !isRemoteMonitoring) {
                     MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.remoteMonitoringUnavailable"));    //$NON-NLS-1$ //$NON-NLS-2$
                     return;
@@ -421,7 +421,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
                 runtimeButton.setEnabled(true);
             }
         });
-        
+
         gcCheckButton.addSelectionListener(new SelectionAdapter() {
 
 			@Override
@@ -439,14 +439,14 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 		});
 
         periodCombo.addSelectionListener(new SelectionAdapter() {
-        	
+
         	@Override
 			public void widgetSelected(SelectionEvent e) {
         		startCustomerGCSchedule();
 			}
-			
+
 		});
-        
+
         propertyChangeListener = new PropertyChangeListener() {
 
             @Override
@@ -456,7 +456,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         };
 
     }
-    
+
     private void startCustomerGCSchedule() {
     	periodComboSelectionIndex =  periodCombo.getSelectionIndex();
     	if(processContext != null && processContext.isRunning()){
@@ -468,7 +468,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
     		}
     	}
 	}
-    
+
 	protected void doScheduledGc(int interval) {
 		timer.cancel();
 		if(interval == 0){
@@ -493,15 +493,21 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 					System.out.println("timer cancelled at " + TalendDate.getDate("HH:mm:ss")); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
-		}; 
+		};
 		timer.schedule(gcTask, interval*1000, interval*1000);
 	}
-	
+
 	private boolean acquireJVM() {
 		long startTime = System.currentTimeMillis();
 		long endTime;
-		String remoteHost = processContext.getSelectedTargetExecutionConfig().getHost();
-		int remotePort = processContext.getSelectedTargetExecutionConfig().getRemotePort();
+        String remoteHost = null;
+        int remotePort = -1;
+        ITargetExecutionConfig targExecConfig = processContext.getSelectedTargetExecutionConfig();
+        // normally this value is always null in TOS
+        if (targExecConfig != null) {
+            remoteHost = targExecConfig.getHost();
+            remotePort = targExecConfig.getRemotePort();
+        }
 		while(true){
 			if ((processContext != null && !processContext.isRunning()) && !isReadyToStart) {
 				return false;
@@ -521,34 +527,34 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 			}
 		}
 	}
-	
+
 	private boolean initCurrentActiveJobJvm(String remoteHost, int remotePort) {
 		boolean isJvmFound = false;
 		JvmModel jvmModel = JvmModel.getInstance();
 		if (isRemoteRun) {
 			if (isRemoteMonitoring && remotePort != -1) {
 				try {
-					
+
 					if (currentJvm == null) {
 						currentJvm = jvmModel.addRemoteHostAndJvm(remoteHost, remotePort);
 						return true;
 					}
-					
+
 					if(remotePort == currentJvm.getPort() && currentJvm.isConnected()) {
 						return true;
 					}
-					
+
 					if(currentJvm.isConnected()) {
 						currentJvm.disconnect();
 					}
-					
+
 					currentJvm = jvmModel.addRemoteHostAndJvm(remoteHost, remotePort);
 					return true;
 				} catch (JvmCoreException e) {
 					ExceptionHandler.process(e);
 					return false;
 				}
-	    	} 
+	    	}
 		} else {
             String jobClassName = JavaResourcesHelper.getJobClassName(processContext.getProcess());
             IActiveJvm activeJvm = null;
@@ -582,7 +588,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         initGraphicComponents(this);
         monitorComposite.layout();
     }
-    
+
     private String getExecutionInfo(String prefix){
     	return prefix + " time : "+ TalendDate.getDate("hh:mm:ss a MM/dd/YYYY") + System.getProperty("line.separator"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
@@ -663,8 +669,8 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         if (periodCombo != null && !periodCombo.isDisposed()) {
             periodCombo.setEnabled(processContext != null && gcCheckButton.getSelection());
         }
-        
-        
+
+
         if (contextCombo !=null && !contextCombo.getCombo().isDisposed()){
         	if(processContext == null){
         		contextCombo.setInput(null);
@@ -682,7 +688,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getComposite()
      */
     @Override
@@ -692,7 +698,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getCurRowSize()
      */
     @Override
@@ -702,7 +708,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getElement()
      */
     @Override
@@ -712,7 +718,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getHashCurControls()
      */
     @Override
@@ -722,7 +728,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getPart()
      */
     @Override
@@ -732,7 +738,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.core.properties.tab.IDynamicProperty#getRepositoryAliasName(org.talend.core.model.properties.
      * ConnectionItem)
      */
@@ -743,7 +749,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getSection()
      */
     @Override
@@ -753,7 +759,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getTableIdAndDbSchemaMap()
      */
     @Override
@@ -763,7 +769,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#getTableIdAndDbTypeMap()
      */
     @Override
@@ -773,7 +779,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#refresh()
      */
     @Override
@@ -785,19 +791,19 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.properties.tab.IDynamicProperty#setCurRowSize(int)
      */
     @Override
     public void setCurRowSize(int i) {
 
     }
-    
+
     /**
      * LabelProvider for a context combo. <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private static class ContextNameLabelProvider extends LabelProvider {
 
@@ -810,7 +816,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
             return context.getName();
         }
     }
-    
+
     private void setRuntimeButtonByStatus(boolean isRunning){
     	if(isRunning){
     		runtimeButton.setText(Messages.getString("ProcessComposite.exec")); //$NON-NLS-1$
@@ -820,7 +826,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
     		runtimeButton.setImage(ImageProvider.getImage(ERunprocessImages.KILL_PROCESS_ACTION));
     	}
     }
-    
+
     private void exec() {
 
         if (processContext instanceof IProcess2) {
@@ -833,12 +839,12 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         processContext.setMonitorTrace(false);
         processContext.setWatchAllowed(processManager.getExecTime());
         processContext.setMonitorPerf(processManager.getStat());
-        
+
         if (processContext.isSaveBeforeRun()) {
             SaveJobBeforeRunAction action = new SaveJobBeforeRunAction(processContext.getProcess());
             action.run();
         }
-        
+
         processContext.setSelectedContext(processManager.getSelectContext());
         processContext.setMemoryRunning(true);
         processContext.exec(processManager.getProcessShell());
@@ -848,9 +854,9 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         manager.removeLaunches(launches);
 
     }
-    
+
     private void disconnectJVM () {
-    	
+
     	final Job disconnectJVM = new Job("disconnect JVM") { //$NON-NLS-1$
 
             @Override
@@ -865,5 +871,5 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         };
         disconnectJVM.schedule();
     }
-    
+
 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -93,7 +93,7 @@ public class MultiSchemaDialog extends Dialog implements MultiSchemaEventListene
 
     /**
      * Sets the title.
-     * 
+     *
      * @param title the title to set
      */
     public void setTitle(String title) {
@@ -102,7 +102,7 @@ public class MultiSchemaDialog extends Dialog implements MultiSchemaEventListene
 
     /**
      * Sets the size.
-     * 
+     *
      * @param size the size to set
      */
     public void setSize(Rectangle size) {
@@ -111,7 +111,7 @@ public class MultiSchemaDialog extends Dialog implements MultiSchemaEventListene
 
     /**
      * Sets the icon.
-     * 
+     *
      * @param icon the icon to set
      */
     public void setIcon(Image icon) {
@@ -120,7 +120,7 @@ public class MultiSchemaDialog extends Dialog implements MultiSchemaEventListene
 
     /**
      * Sets the maximizedSize.
-     * 
+     *
      * @param maximizedSize the maxmimizedSize to set
      */
     public void setMaximized(boolean maximized) {
@@ -133,7 +133,7 @@ public class MultiSchemaDialog extends Dialog implements MultiSchemaEventListene
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -159,7 +159,7 @@ public class MultiSchemaDialog extends Dialog implements MultiSchemaEventListene
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.designer.filemultischemas.ui.dialog.MultiSchemaEventListener#checkPerformed(org.talend.designer.
      * filemultischemas.ui.dialog.MultiSchemaDialog)
      */

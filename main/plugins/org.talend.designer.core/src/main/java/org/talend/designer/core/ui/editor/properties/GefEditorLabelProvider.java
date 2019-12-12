@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,9 +44,9 @@ import org.talend.designer.core.ui.editor.process.ProcessPart;
 
 /**
  * Label provider for the title bar for the tabbed property sheet page. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class GefEditorLabelProvider extends LabelProvider {
 
@@ -61,7 +61,7 @@ public class GefEditorLabelProvider extends LabelProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.LabelProvider#getImage(java.lang.Object)
      */
     public Image getImage(Object objects) {
@@ -115,7 +115,7 @@ public class GefEditorLabelProvider extends LabelProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
      */
     public String getText(Object objects) {
@@ -185,7 +185,7 @@ public class GefEditorLabelProvider extends LabelProvider {
      * Determine if a multiple object selection has been passed to the label provider. If the objects is a
      * IStructuredSelection, see if all the objects in the selection are the same and if so, we want to provide labels
      * for the common selected element.
-     * 
+     *
      * @param objects a single object or a IStructuredSelection.
      * @param multiple first element in the array is true if there is multiple unequal selected elements in a
      * IStructuredSelection.

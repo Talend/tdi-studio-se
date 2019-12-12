@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,6 +23,7 @@ import org.talend.core.model.properties.FTPConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.repository.model.migration.UnifyPasswordEncryption4ItemMigrationTask;
+import org.talend.utils.security.CryptoMigrationUtil;
 
 /**
  * created by ggu on Sep 1, 2014 Detailled comment
@@ -39,13 +40,14 @@ public class UnifyPasswordEncryption4FtpConnectionMigrationTask extends UnifyPas
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org .talend.core.model.properties.Item)
      */
     @Override
     public ExecutionResult execute(Item item) {
         if (item instanceof FTPConnectionItem) {
             Connection connection = ((FTPConnectionItem) item).getConnection();
+            connection.setEncryptAndDecryptFuncPair(CryptoMigrationUtil.encryptFunc(), CryptoMigrationUtil.decryptFunc());
             if (connection instanceof FTPConnection) {
                 FTPConnection ftpConn = (FTPConnection) connection;
                 try {

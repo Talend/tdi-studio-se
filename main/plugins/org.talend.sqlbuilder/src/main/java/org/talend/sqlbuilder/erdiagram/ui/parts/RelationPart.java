@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,9 +31,9 @@ import org.talend.sqlbuilder.erdiagram.ui.nodes.Relation;
 
 /**
  * DOC qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class RelationPart extends AbstractConnectionEditPart implements PropertyChangeListener {
 
@@ -41,7 +41,7 @@ public class RelationPart extends AbstractConnectionEditPart implements Property
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
      */
     @Override
@@ -52,7 +52,7 @@ public class RelationPart extends AbstractConnectionEditPart implements Property
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#createEditPolicies()
      */
     @Override
@@ -60,7 +60,7 @@ public class RelationPart extends AbstractConnectionEditPart implements Property
         // Selection handle edit policy.
         // Makes the connection show a feedback, when selected by the user.
         installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new ConnectionEndpointEditPolicy());
-        
+
         // Allows the removal of the connection model element
         installEditPolicy(EditPolicy.CONNECTION_ROLE, new ConnectionEditPolicy() {
 
@@ -78,7 +78,7 @@ public class RelationPart extends AbstractConnectionEditPart implements Property
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {
@@ -93,7 +93,7 @@ public class RelationPart extends AbstractConnectionEditPart implements Property
 
 //    /*
 //     * (non-Javadoc)
-//     * 
+//     *
 //     * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
 //     */
 //    @Override
@@ -108,9 +108,9 @@ public class RelationPart extends AbstractConnectionEditPart implements Property
 
     /**
      * DOC admin RelationPart class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
-     * 
+     *
      */
     public class RelationFigure extends PolylineConnection {
 

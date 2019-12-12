@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,24 +49,26 @@ import org.talend.designer.core.ui.editor.nodes.Node;
  * This class is desinged for inheritance. Selection dialog should be implemented in sub-classes
  */
 public abstract class AbstractValueSelectionController extends AbstractElementPropertySectionController {
-    
+
     /**
      * Offset for text field decoration
      */
     private static int DECORATION_OFFSET = -7;
-    
+
     /**
      * Specify whether Text controll should be editable. It is false by default
      */
     private boolean editableText = false;
-    
+
+    private Text text;
+
     public AbstractValueSelectionController(IDynamicProperty dp) {
         super(dp);
     }
-    
+
     /**
      * Allows to configure whether Text should be editable
-     * 
+     *
      * @param editable true if Text control should be editable
      */
     public void setEditableText(final boolean editable) {
@@ -86,10 +88,10 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
      * Selection dialog is designed for inheritance.
      * </p>
      * <p>
-     * This implementation sets button SelectionListener by calling overridable {@link #createOnButtonClickedListener(IElementParameter)} 
+     * This implementation sets button SelectionListener by calling overridable {@link #createOnButtonClickedListener(IElementParameter)}
      * method.
      * </p>
-     * 
+     *
      * @param subComposite composite which will contain created control
      * @param param ElementParameter instance
      * @param numInRow number of created controls in the current row
@@ -104,21 +106,21 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
             final int nbInRow, final int top, final Control lastControl) {
         final CLabel label = createLabel(subComposite, param.getDisplayName());
         setupLabelLayout(label, numInRow, nbInRow, top, lastControl);
-        
+
         final Button button = createEditButton(subComposite, param);
         setupButtonLayout(button, numInRow, nbInRow, label);
-        
-        final Text text = createTextField(subComposite, param);
+
+        text = createTextField(subComposite, param);
         final int labelWidth = computeLabelWidth(label, param);
         setupTextLayout(text, labelWidth, label, button, numInRow, lastControl);
         setupText(text, param);
 
         Point initialSize = text.computeSize(SWT.DEFAULT, SWT.DEFAULT);
         dynamicProperty.setCurRowSize(initialSize.y + ITabbedPropertyConstants.VSPACE);
-        
+
         return button;
     }
-    
+
     @Override
     public void refresh(IElementParameter param, boolean checkErrorsWhenViewRefreshed) {
         final String name = param.getName();
@@ -142,22 +144,22 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
         }
         fixedCursorPosition(param, labelText, value, valueChanged);
     }
-    
+
     /**
      * Creates SelectionListener for button.
      * This method is designed for overriding. It is called in {@link #createControl(Composite, IElementParameter, int, int, int, Control)}
      * during button creation.
-     * 
+     *
      * The recommended way for overriding is implementing a listener, which creates and opens dialog which helps to choose paramer value.
-     * 
+     *
      * @param parameter IElementParameter to which this widget is binded
      * @return SelectionListener for button
      */
     protected abstract SelectionListener createOnButtonClickedListener(final IElementParameter parameter);
-    
+
     /**
      * Creates Parameter label
-     * 
+     *
      * @param displayName label value
      * @return Parameter label
      */
@@ -165,7 +167,7 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
         final CLabel label = getWidgetFactory().createCLabel(parent, displayName);
         return label;
     }
-    
+
     private void setupLabelLayout(final CLabel label, final int numInRow, final int nbInRow, final int top, final Control lastControl) {
         final FormData data = new FormData();
         if (lastControl != null) {
@@ -179,7 +181,7 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
             label.setAlignment(SWT.RIGHT);
         }
     }
-    
+
     private Button createEditButton(final Composite parent, final IElementParameter param) {
         final Button editButton = getWidgetFactory().createButton(parent, "", SWT.PUSH);
         editButton.setImage(ImageProvider.getImage(CoreUIPlugin.getImageDescriptor(DOTS_BUTTON)));
@@ -187,7 +189,7 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
         editButton.addSelectionListener(createOnButtonClickedListener(param));
         return editButton;
     }
-    
+
     private void setupButtonLayout(final Button button, final int numInRow, final int nbInRow, final CLabel label) {
         final FormData data = new FormData();
         data.left = new FormAttachment(((numInRow * MAX_PERCENT) / nbInRow), -STANDARD_BUTTON_WIDTH);
@@ -196,7 +198,7 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
         data.height = STANDARD_HEIGHT - 2;
         button.setLayoutData(data);
     }
-    
+
     private int computeLabelWidth(final CLabel label, final IElementParameter param) {
         int currentLabelWidth = STANDARD_LABEL_WIDTH;
         GC gc = new GC(label);
@@ -207,7 +209,7 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
         }
         return currentLabelWidth;
     }
-    
+
     private Text createTextField(final Composite parent, final IElementParameter param) {
         Text text = new Text(parent, SWT.BORDER);
         if (param.isRequired()) {
@@ -224,10 +226,10 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
                     FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
             controlDecoration.setImage(fieldDecoration.getImage());
         }
-        
+
         return text;
     }
-    
+
     private void setupTextLayout(final Text text, final int labelWidth, final CLabel label, final Button button, final int numInRow, final Control lastControl) {
         final FormData data = new FormData();
         if (numInRow == 1) {
@@ -243,17 +245,18 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
         data.top = new FormAttachment(label, 0, SWT.TOP);
         text.setLayoutData(data);
     }
-    
+
     private void setupText(final Text text, final IElementParameter param) {
         text.setData(PARAMETER_NAME, param.getName());
         text.setEditable(editableText);
+        editionControlHelper.register(param.getName(), text);
         addDragAndDropTarget(text);
         if (elem instanceof Node) {
             text.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
         }
         hashCurControls.put(param.getName(), text);
     }
-    
+
     @Override
     public int estimateRowSize(final Composite subComposite, final IElementParameter param) {
         return 0;

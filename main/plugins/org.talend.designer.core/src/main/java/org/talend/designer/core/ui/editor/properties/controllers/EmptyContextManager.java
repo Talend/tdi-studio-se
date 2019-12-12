@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,15 +22,15 @@ import org.talend.core.model.process.IContextManager;
 
 /**
  * DOC nrousseau FileinDelimitedToXmlProcess class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FileinToXmlProcess.java 3737 2007-06-09 08:19:35 +0000 (星期六, 09 六月 2007) nrousseau $
- * 
+ *
  */
 public class EmptyContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.core.model.process.IContextManager#addContextListener(org.talend.core.model.process.IContextListener)
      */
@@ -39,7 +39,7 @@ public class EmptyContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContextManager#fireContextsChangedEvent()
      */
     public void fireContextsChangedEvent() {
@@ -47,7 +47,7 @@ public class EmptyContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContextManager#getDefaultContext()
      */
     public IContext getDefaultContext() {
@@ -56,7 +56,7 @@ public class EmptyContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContextManager#getListContext()
      */
     public List<IContext> getListContext() {
@@ -65,7 +65,7 @@ public class EmptyContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.core.model.process.IContextManager#removeContextListener(org.talend.core.model.process.IContextListener
      * )
@@ -75,7 +75,7 @@ public class EmptyContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContextManager#setDefaultContext(org.talend.core.model.process.IContext)
      */
     public void setDefaultContext(IContext context) {
@@ -83,7 +83,7 @@ public class EmptyContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IContextManager#setListContext(java.util.List)
      */
     public void setListContext(List<IContext> listContext) {

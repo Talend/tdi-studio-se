@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,7 @@ import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 
 /**
  * DOC qwei class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class ShowComponentSettingViewerAction extends SelectionAction {
 
@@ -45,7 +45,7 @@ public class ShowComponentSettingViewerAction extends SelectionAction {
 
     /**
      * Constructs a new PropertiesContextAction.
-     * 
+     *
      * @param part
      */
     public ShowComponentSettingViewerAction(IWorkbenchPart part) {
@@ -57,7 +57,7 @@ public class ShowComponentSettingViewerAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
     @Override
@@ -74,7 +74,7 @@ public class ShowComponentSettingViewerAction extends SelectionAction {
 
     /**
      * Test if the selected item is a node.
-     * 
+     *
      * @return true / false
      */
     private boolean canPerformAction() {
@@ -110,7 +110,7 @@ public class ShowComponentSettingViewerAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     public void run() {

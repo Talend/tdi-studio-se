@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -58,7 +58,7 @@ public class AddQuotesForStatLogsPreference extends AbstractMigrationTask implem
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
      */
     public Date getOrder() {
@@ -68,7 +68,7 @@ public class AddQuotesForStatLogsPreference extends AbstractMigrationTask implem
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IWorkspaceMigrationTask#execute()
      */
     public boolean execute() {

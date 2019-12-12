@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,9 +43,9 @@ import org.talend.core.model.utils.IComponentName;
 
 /**
  * DOC bqian TalendEditor class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  * @deprecated use extension point in class RepositoryComponentManager
  */
 public enum EDatabaseComponentName implements IComponentName {
@@ -56,7 +56,7 @@ public enum EDatabaseComponentName implements IComponentName {
 
     // SAS(DatabaseConnectionItem.class, EDatabaseTypeName.SAS, "tSASInput", "tSASOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
     HSQLDB_IN_PROGRESS(DatabaseConnectionItem.class, EDatabaseTypeName.HSQLDB_IN_PROGRESS, "tHSQLDbInput", "tHSQLDbOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
-    HSQLDB_WEBSERVER(DatabaseConnectionItem.class, EDatabaseTypeName.HSQLDB_WEBSERVER, "tHSQLDbInput", "tHSQLDbOutput", true), //$NON-NLS-1$ //$NON-NLS-2$    
+    HSQLDB_WEBSERVER(DatabaseConnectionItem.class, EDatabaseTypeName.HSQLDB_WEBSERVER, "tHSQLDbInput", "tHSQLDbOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
 
     HSQLDB_SERVER(DatabaseConnectionItem.class, EDatabaseTypeName.HSQLDB_SERVER, "tHSQLDbInput", "tHSQLDbOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
     JAVADB_DERBYCLIENT(DatabaseConnectionItem.class, EDatabaseTypeName.JAVADB_DERBYCLIENT, "tJavaDBInput", "tJavaDBOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
@@ -139,16 +139,16 @@ public enum EDatabaseComponentName implements IComponentName {
     GENERICSCHEMA(GenericSchemaConnectionItem.class, (String) null, null, "GENERICSCHEMA"), //$NON-NLS-1$
 
     FILEEBCDIC(EbcdicConnectionItem.class, "tFileInputEBCDIC", "tFileOutputEBCDIC", "EBCDIC"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    FILEHL7(HL7ConnectionItem.class, "tHL7Input", null, "HL7"), //$NON-NLS-1$ //$NON-NLS-2$ 
+    FILEHL7(HL7ConnectionItem.class, "tHL7Input", null, "HL7"), //$NON-NLS-1$ //$NON-NLS-2$
     EDIFACT(EDIFACTConnectionItem.class, "tUN/EDIFACT", null, "UN/EDIFACT"),
     FILEMDM(MDMConnectionItem.class, "tMDMInput", "tMDMOutput", "MDM"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-    FTP(FTPConnectionItem.class, "", null, "FTP"), //$NON-NLS-1$ //$NON-NLS-2$ 
+    FTP(FTPConnectionItem.class, "", null, "FTP"), //$NON-NLS-1$ //$NON-NLS-2$
     BRMS(BRMSConnectionItem.class, "tBRMS", "tBRMS", "BRMS"),
     LDAP(LDAPSchemaConnectionItem.class, "tLDAPInput", "tLDAPOutput", "LDAP"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-    WSDL(WSDLSchemaConnectionItem.class, "tWebServiceInput", null, "WSDL"), //$NON-NLS-1$ //$NON-NLS-2$    
-    WEBSERVICE(WSDLSchemaConnectionItem.class, (String) null, "tWebService", "WEBSERVICE"), //$NON-NLS-1$ //$NON-NLS-2$ 
+    WSDL(WSDLSchemaConnectionItem.class, "tWebServiceInput", null, "WSDL"), //$NON-NLS-1$ //$NON-NLS-2$
+    WEBSERVICE(WSDLSchemaConnectionItem.class, (String) null, "tWebService", "WEBSERVICE"), //$NON-NLS-1$ //$NON-NLS-2$
     SALESFORCE(SalesforceSchemaConnectionItem.class, "tSalesforceInput", "tSalesforceOutput", "SALESFORCE"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     // hywang add for Rule
@@ -198,7 +198,7 @@ public enum EDatabaseComponentName implements IComponentName {
 
     /**
      * Getter for clazz.
-     * 
+     *
      * @return the clazz
      */
     public Class getMappingKey() {
@@ -231,7 +231,7 @@ public enum EDatabaseComponentName implements IComponentName {
 
     /**
      * Getter for inputComponentName.
-     * 
+     *
      * @return the inputComponentName
      */
     @Override
@@ -241,7 +241,7 @@ public enum EDatabaseComponentName implements IComponentName {
 
     /**
      * Getter for outPutComponentName.
-     * 
+     *
      * @return the outPutComponentName
      */
     @Override
@@ -267,7 +267,7 @@ public enum EDatabaseComponentName implements IComponentName {
 
     /**
      * Contructor for files.
-     * 
+     *
      * @param clazz
      * @param dbTypeName
      * @param inputComponentName
@@ -279,7 +279,7 @@ public enum EDatabaseComponentName implements IComponentName {
 
     /**
      * Contructor for databases.
-     * 
+     *
      * @param clazz
      * @param type
      * @param inputComponentName
@@ -355,7 +355,7 @@ public enum EDatabaseComponentName implements IComponentName {
     }
 
     /*******************************************************************************************************************
-     * 
+     *
      * DOC xye EDatabaseComponentName class global comment. Detailled comment
      */
     class FakeFileConnectionItem extends ConnectionItemImpl {

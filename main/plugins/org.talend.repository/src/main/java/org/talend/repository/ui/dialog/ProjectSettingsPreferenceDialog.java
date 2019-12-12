@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -68,12 +68,12 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
     public static final int IMPORT = 97;
 
     public static final int EXPORT = 98;
-    
+
     private static boolean isInReopen = false;
 
     /**
      * wchen ProjectSettingsPreferenceDialog constructor comment.
-     * 
+     *
      * @param parentShell
      * @param manager
      */
@@ -144,7 +144,7 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
 
     /**
      * roll back if click cancel button and delete temp file.
-     * 
+     *
      * @param rollback
      */
     private void rollBack(boolean rollback) {
@@ -271,7 +271,7 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
                 String message = JFaceResources.getString("SafeRunnable.errorMessage"); //$NON-NLS-1$
 
                 Policy.getStatusHandler().show(new Status(IStatus.ERROR, Policy.JFACE, message, e),
-                        JFaceResources.getString("Error")); //$NON-NLS-1$ 
+                        JFaceResources.getString("Error")); //$NON-NLS-1$
 
             }
         });

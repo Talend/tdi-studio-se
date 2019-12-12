@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -229,6 +229,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     private ConnectionPart selectedConnectionPart = null;
 
+    private boolean sqlChange = false;
     /**
      * TalendEditorDropTargetListener constructor comment.
      *
@@ -246,7 +247,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         if (obj instanceof RepositoryNode) {
             RepositoryNode sourceNode = (RepositoryNode) obj;
             if (PluginChecker.isCDCPluginLoaded()) {
-                ICDCProviderService service = (ICDCProviderService) GlobalServiceRegister.getDefault().getService(
+                ICDCProviderService service = GlobalServiceRegister.getDefault().getService(
                         ICDCProviderService.class);
 
                 if (service != null && (service.isSubscriberTableNode(sourceNode) || service.isSystemSubscriberTable(sourceNode))) {
@@ -259,7 +260,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             }
             IOozieService oozieService = null;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IOozieService.class)) {
-                oozieService = (IOozieService) GlobalServiceRegister.getDefault().getService(IOozieService.class);
+                oozieService = GlobalServiceRegister.getDefault().getService(IOozieService.class);
             }
             if (oozieService != null && oozieService.isOozieNode(sourceNode)) {
                 return false;
@@ -267,7 +268,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
             ISAPProviderService sapService = null;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ISAPProviderService.class)) {
-                sapService = (ISAPProviderService) GlobalServiceRegister.getDefault().getService(ISAPProviderService.class);
+                sapService = GlobalServiceRegister.getDefault().getService(ISAPProviderService.class);
             }
             if (sapService != null && sapService.isSAPNode(sourceNode)) {
                 return false;
@@ -294,7 +295,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.dnd.TemplateTransferDropTargetListener#handleDragOver()
      */
     @Override
@@ -490,7 +491,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.dnd.TemplateTransferDropTargetListener#handleDrop()
      */
     @Override
@@ -1050,7 +1051,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 Item item = sourceNode.getObject().getProperty().getItem();
 
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-                    ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                    ITestContainerProviderService testContainerService = GlobalServiceRegister
                             .getDefault().getService(ITestContainerProviderService.class);
                     if (testContainerService != null && testContainerService.isTestContainerItem(item)) {
                         continue;
@@ -1503,6 +1504,11 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
                 QueryRepositoryObject object = (QueryRepositoryObject) selectedNode.getObject();
                 Query query = object.getQuery();
+                if (!sqlChange) {
+                    String sql = query.getValue();
+                    query.setValue(TalendTextUtils.addStrInQuery(sql));
+                    sqlChange = true;
+                }
                 String value = originalConnectionItem.getProperty().getId() + " - " + query.getLabel(); //$NON-NLS-1$
                 if (queryParam != null) {
                     RepositoryChangeQueryCommand command3 = new RepositoryChangeQueryCommand(node, query, queryParam.getName()
@@ -1534,10 +1540,10 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             String value = null;
             if (ProcessorUtilities.isNeedProjectProcessId(node.getComponent().getName())) {
                 org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
-                value = ProcessUtils.getProjectProcessId(project.getTechnicalLabel(), processItem.getProperty().getId());     
+                value = ProcessUtils.getProjectProcessId(project.getTechnicalLabel(), processItem.getProperty().getId());
             } else {
                 value = processItem.getProperty().getId();
-            }         
+            }
             PropertyChangeCommand command4 = new PropertyChangeCommand(node, EParameterName.PROCESS_TYPE_PROCESS.getName(), value);
             cc.add(command4);
             PropertyChangeCommand command5 = new PropertyChangeCommand(node, EParameterName.PROCESS_TYPE_CONTEXT.getName(),
@@ -1910,8 +1916,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         String value = processItem.getProperty().getId();
         if (ProcessorUtilities.isNeedProjectProcessId(node.getComponent().getName())) {
             org.talend.core.model.properties.Project project = ProjectManager.getInstance().getProject(processItem.getProperty());
-            value = ProcessUtils.getProjectProcessId(project.getTechnicalLabel(), processItem.getProperty().getId());     
-        } 
+            value = ProcessUtils.getProjectProcessId(project.getTechnicalLabel(), processItem.getProperty().getId());
+        }
         IElementParameter processParam = node.getElementParameterFromField(EParameterFieldType.PROCESS_TYPE);
         if (processParam != null) {
             PropertyChangeCommand command2 = new PropertyChangeCommand(node, EParameterName.PROCESS_TYPE_PROCESS.getName(), value);
@@ -1965,7 +1971,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         // special handle hbase to support tpigLoad
         String hbaseName = EDatabaseTypeName.HBASE.getDisplayName().toUpperCase();
         if (rcSetting != null && (hbaseName).equals(rcSetting.toString())) {
-            IComponentsService service = (IComponentsService) GlobalServiceRegister.getDefault().getService(
+            IComponentsService service = GlobalServiceRegister.getDefault().getService(
                     IComponentsService.class);
             String componentProductname = null;
             Collection<IComponent> components = service.getComponentsFactory().readComponents();
@@ -2119,7 +2125,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
                 EConnectionType connectionType = EConnectionType.FLOW_MAIN;
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-                    ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
+                    ICamelDesignerCoreService camelService = GlobalServiceRegister.getDefault()
                             .getService(ICamelDesignerCoreService.class);
                     if (camelService.isRouteBuilderNode(node)) {
                         connectionType = camelService.getTargetConnectionType(node);
@@ -2137,7 +2143,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 // FIXME perhaps, this is not good fix, need check it later
                 // bug 21411
                 if (PluginChecker.isJobLetPluginLoaded()) {
-                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                    IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                             IJobletProviderService.class);
                     if (service != null && service.isJobletComponent(targetConnection.getTarget())) {
                         if (targetConnection.getTarget() instanceof Node) {
@@ -2271,7 +2277,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
     private boolean isLock(JobletContainerPart part) {
         INode jobletNode = ((JobletContainer) part.getModel()).getNode();
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+            IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                     IJobletProviderService.class);
             if (service != null) {
                 return service.isLock(jobletNode);
@@ -2286,7 +2292,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         Node jobletNode = ((JobletContainer) part.getModel()).getNode();
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+            IJobletProviderService service = GlobalServiceRegister.getDefault().getService(
                     IJobletProviderService.class);
             if (service != null) {
                 openEditor = (AbstractMultiPageTalendEditor) service.openJobletEditor(jobletNode, page);
@@ -2326,12 +2332,12 @@ class ComponentChooseDialog extends ListDialog {
                 if (UnifiedComponentUtil.isDelegateComponent(component) && typeName != null) {
                     return component.getName() + "(" + typeName + ")";
                 }
-                return component.getName();
+                return component.getDisplayName();
             }
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.jface.viewers.BaseLabelProvider#dispose()
              */
             @Override

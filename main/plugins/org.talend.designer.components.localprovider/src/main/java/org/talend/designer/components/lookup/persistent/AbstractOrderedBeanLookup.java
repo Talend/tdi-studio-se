@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,14 +26,14 @@ import org.talend.designer.components.persistent.IRowProvider;
 import routines.system.IPersistableLookupRow;
 
 /**
- * 
+ *
  * Abstract class for ordered beans used in lookups with "Store on disk".
- * 
+ *
  * JBoss library is used to avoid memory leaks noticed with Sun ObjectInputStream class.
- * 
+ *
  * Warning: JBossObjectInputStream may not deserialize any objects such as for example java.io.File, you could encounter
  * the following error:
- * 
+ *
  * <pre>
  * Caused by: java.lang.reflect.InvocationTargetException
  *     at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -54,9 +54,9 @@ import routines.system.IPersistableLookupRow;
  *     at java.io.File.readObject(File.java:1927)
  *     ... 37 more
  *</pre>
- * 
+ *
  * @see http://www.talendforge.org/bugs/view.php?id=6780#bugnotes
- * 
+ *
  * @param <B> bean
  */
 public abstract class AbstractOrderedBeanLookup<B extends Comparable<B> & IPersistableLookupRow<B>> implements
@@ -119,9 +119,9 @@ public abstract class AbstractOrderedBeanLookup<B extends Comparable<B> & IPersi
     private boolean skipBytesEnabled;
 
     /**
-     * 
+     *
      * DOC amaumont OrderedBeanLookup constructor comment.
-     * 
+     *
      * @param keysFilePath
      * @param valuesFilePath
      * @param fileIndex
@@ -173,21 +173,21 @@ public abstract class AbstractOrderedBeanLookup<B extends Comparable<B> & IPersi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.persistent.ILookupManager#lookup(B)
      */
     public abstract void lookup(B key) throws IOException;
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.persistent.ILookupManager#hasNext()
      */
     public abstract boolean hasNext() throws IOException;
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.persistent.ILookupManager#next()
      */
     public abstract B next() throws IOException;
@@ -228,7 +228,7 @@ public abstract class AbstractOrderedBeanLookup<B extends Comparable<B> & IPersi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.persistent.ILookupManager#close()
      */
     public void close() throws IOException {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.sqlbuilder.sessiontree.model.utility;
 
-/** Implementation of ternary search tree. A Ternary Search Tree is a data structure that behaves 
+/** Implementation of ternary search tree. A Ternary Search Tree is a data structure that behaves
 *   in a manner that is very similar to a HashMap.
 */
 class TernarySearchTree {
@@ -21,7 +21,7 @@ class TernarySearchTree {
     private TSTNode rootNode;
 	private int defaultNumReturnValues = -1;
 	private int lastNumberOfReturnValues;			// convenience variable for matchPrefix and sortKeys methods
-	
+
 	/** Stores value in the TernarySearchTree. The value may be retrieved using key.
 	*   @param key A string that indexes the object to be stored.
 	*   @param value The object to be stored in the tree.
@@ -29,7 +29,7 @@ class TernarySearchTree {
 	public void put(String key, Object value) {
 		getOrCreateNode(key).data = value;
 	}
-	
+
 	/**
 	* Retrieve the object indexed by key.
 	* @param       key A String index.
@@ -49,18 +49,18 @@ class TernarySearchTree {
 	public void remove(String key) {
 		deleteNode(getNode(key));
 	}
-	
+
 	/** Sets default maximum number of values returned from matchPrefix, matchPrefixString,
 	*   matchAlmost, and matchAlmostString methods.
-	*   @param num The number of values that will be returned when calling the methods above. Set 
-	*   this to -1 to get an unlimited number of return values. Note that 
+	*   @param num The number of values that will be returned when calling the methods above. Set
+	*   this to -1 to get an unlimited number of return values. Note that
 	*   the methods mentioned above provide overloaded versions that allow you to specify the maximum number of
 	*   return values, in which case this value is temporarily overridden.
 	*/
 	public void setNumReturnValues(int num) {
 		defaultNumReturnValues = (num < 0) ? -1 : num;
 	}
-	
+
     /**
      * @param numReturnValues numReturnValues
      * @return int
@@ -68,7 +68,7 @@ class TernarySearchTree {
 	private int checkNumberOfReturnValues(int numReturnValues) {
 		return ((numReturnValues < 0) ? -1 : numReturnValues);
 	}
-	
+
 	/** Returns the number of values returned by the last call to matchAlmostString or matchPrefixString methods.
 	*   (This is really just for the purposes of the demo applet.)
     *   @return LastNumReturnValues
@@ -76,7 +76,7 @@ class TernarySearchTree {
 	public int getLastNumReturnValues() {
 		return lastNumberOfReturnValues;
 	}
-	
+
 	/** Returns the Node indexed by key, or null if that node doesn't exist. Search begins at root node.
 	*   @param key An index that points to the desired node.
 	*   @return TSTNode The node object indexed by key. This object is an instance of an inner class
@@ -85,7 +85,7 @@ class TernarySearchTree {
 	public TSTNode getNode(String key) {
 		return getNode(key, rootNode);
 	}
-	
+
 	/** Returns the Node indexed by key, or null if that node doesn't exist. Search begins at root node.
 	*   @param key An index that points to the desired node.
 	*   @param startNode The top node defining the subtree to be searched.
@@ -111,14 +111,14 @@ class TernarySearchTree {
 				currentNode = currentNode.relatives[TSTNode.EQKID];
 			} else if (charComp < 0) {
 				currentNode = currentNode.relatives[TSTNode.LOKID];
-			} else {                
+			} else {
 				// charComp must be greater than zero
 				currentNode = currentNode.relatives[TSTNode.HIKID];
 			}
 		}
 	}
-	
-	/** Returns alphabetical list of all keys in the tree that begin with prefix. Only keys for nodes having non-null data 
+
+	/** Returns alphabetical list of all keys in the tree that begin with prefix. Only keys for nodes having non-null data
 	*   are included in the list.
 	*   @param prefix Each key returned from this method will begin with the characters in prefix.
 	*   @return DoublyLinkedList An implementation of a LinkedList that is java 1.1 compatible.
@@ -126,8 +126,8 @@ class TernarySearchTree {
 	public DoublyLinkedList matchPrefix(String prefix) {
 		return matchPrefix(prefix, defaultNumReturnValues);
 	}
-	
-	/** Returns alphabetical list of all keys in the tree that begin with prefix. Only keys for nodes having non-null data 
+
+	/** Returns alphabetical list of all keys in the tree that begin with prefix. Only keys for nodes having non-null data
 	*   are included in the list.
 	*   @param prefix Each key returned from this method will begin with the characters in prefix.
 	*   @param numReturnValues The maximum number of values returned from this method.
@@ -148,8 +148,8 @@ class TernarySearchTree {
 		sortKeysRecursion(startNode.relatives[TSTNode.EQKID]);
 		return sortKeysResult;
 	}
-	
-	/** Returns alphabetical list of all keys in the tree that begin with prefix. Only keys for nodes having non-null data 
+
+	/** Returns alphabetical list of all keys in the tree that begin with prefix. Only keys for nodes having non-null data
 	*   are included in the list.
 	*   @param prefix Each key returned from this method will begin with the characters in prefix.
 	*   @return String A string representation of all keys matching the argument prefix. Keys are delimited with the newline
@@ -158,8 +158,8 @@ class TernarySearchTree {
 	public String matchPrefixString(String prefix) {
 		return matchPrefixString(prefix, defaultNumReturnValues);
 	}
-	
-	/** Returns alphabetical list of all keys in the tree that begin with prefix. Only keys for nodes having non-null data 
+
+	/** Returns alphabetical list of all keys in the tree that begin with prefix. Only keys for nodes having non-null data
 	*   are included in the list.
 	*   @param prefix Each key returned from this method will begin with the characters in prefix.
 	*   @param numReturnValues The maximum number of values returned from this method.
@@ -187,15 +187,15 @@ class TernarySearchTree {
 		lastNumberOfReturnValues = lastNumberOfReturnValues - sortKeysNumReturnValues;
 		return sortKeysBuffer.toString();
 	}
-	
+
 	private DoublyLinkedList sortKeysResult;		// convenience variable for matchPrefix and sortKeys methods
 	private boolean sortKeysList;		// convenience variable for matchPrefix, matchPrefixString and sortKeys methods
 	private StringBuffer sortKeysBuffer;		// convenience variable for matchPrefixString and sortKeys methods
 	private int sortKeysNumReturnValues;			// convenience variable for matchPrefix and sortKeys methods
-		
-	/** 
+
+	/**
      * Returns keys sorted in alphabetical order. Includes currentNode and all nodes connected to currentNode. Sorted keys will
-	 *  be appended to end of result list. (result may be empty when this method is invoked, but may not be null.) 
+	 *  be appended to end of result list. (result may be empty when this method is invoked, but may not be null.)
      *  @param currentNode TSTNode
 	 */
 	private void sortKeysRecursion(TSTNode currentNode) {
@@ -218,7 +218,7 @@ class TernarySearchTree {
 		sortKeysRecursion(currentNode.relatives[TSTNode.HIKID]);
 	}
 
-	/** 
+	/**
      * Returns keys sorted in alphabetical order. Includes startNode and all nodes connected to startNode.
 	 *   Number of keys returned is limited to numReturnValues. To get a list that isn't limited in size,
 	 *   set numReturnValues to -1.
@@ -241,16 +241,16 @@ class TernarySearchTree {
 	public String sortKeysString(int numReturnValues) {
 		return sortKeysString(rootNode, numReturnValues);
 	}
-	
+
     /**
      * @return keysString
      */
 	public String sortKeysString() {
 		return sortKeysString(rootNode, defaultNumReturnValues);
 	}
-	
-	/** Returns keys sorted in alphabetical order, returning a result of type String. Includes startNode 
-	*   and all nodes connected to startNode. Number of keys returned is limited to numReturnValues. To get 
+
+	/** Returns keys sorted in alphabetical order, returning a result of type String. Includes startNode
+	*   and all nodes connected to startNode. Number of keys returned is limited to numReturnValues. To get
 	*   a list that isn't limited in size, set numReturnValues to -1.
 	*   @param startNode The top node defining the subtree to be searched.
 	*   @param numReturnValues The maximum number of values returned from this method.
@@ -287,7 +287,7 @@ class TernarySearchTree {
 
 	/** Returns a list of keys that almost match argument key.
 	*   Keys returned will have exactly diff characters that do not match the target key,
-	*   where diff is equal to the last value passed in as an argument to the setMatchAlmostDiff 
+	*   where diff is equal to the last value passed in as an argument to the setMatchAlmostDiff
 	*   method. If the matchAlmost method is called before the setMatchAlmostDiff method has been
 	*   called for the first time, then diff = 0.
 	*   @param key The target key.
@@ -296,10 +296,10 @@ class TernarySearchTree {
 	public DoublyLinkedList matchAlmost(String key) {
 		return matchAlmost(key, defaultNumReturnValues);
 	}
-	
+
 	/** Returns a list of keys that almost match argument key.
 	*   Keys returned will have exactly diff characters that do not match the target key,
-	*   where diff is equal to the last value passed in as an argument to the setMatchAlmostDiff 
+	*   where diff is equal to the last value passed in as an argument to the setMatchAlmostDiff
 	*   method. If the matchAlmost method is called before the setMatchAlmostDiff method has been
 	*   called for the first time, then diff = 0.
 	*   @param key The target key.
@@ -314,10 +314,10 @@ class TernarySearchTree {
 		matchAlmostRecursion(rootNode, 0, matchAlmostDiff);
 		return matchAlmostResult;
 	}
-	
+
 	/** Returns a String representation of keys that almost match argument key.
 	*   Keys returned will have exactly diff characters that do not match the target key,
-	*   where diff is equal to the last value passed in as an argument to the setMatchAlmostDiff 
+	*   where diff is equal to the last value passed in as an argument to the setMatchAlmostDiff
 	*   method. If the matchAlmost method is called before the setMatchAlmostDiff method has been
 	*   called for the first time, then diff = 0.
 	*   @param key The target key.
@@ -330,7 +330,7 @@ class TernarySearchTree {
 
 	/** Returns a String representation of keys that almost match argument key.
 	*   Keys returned will have exactly diff characters that do not match the target key,
-	*   where diff is equal to the last value passed in as an argument to the setMatchAlmostDiff 
+	*   where diff is equal to the last value passed in as an argument to the setMatchAlmostDiff
 	*   method. If the matchAlmost method is called before the setMatchAlmostDiff method has been
 	*   called for the first time, then diff = 0.
 	*   @param key The target key.
@@ -352,7 +352,7 @@ class TernarySearchTree {
 		lastNumberOfReturnValues = lastNumberOfReturnValues - matchAlmostNumReturnValues;
 		return matchAlmostBuffer.toString();
 	}
-	
+
     /**
      * @param currentNode currentNode
      * @param charIndex charIndex
@@ -362,18 +362,18 @@ class TernarySearchTree {
 		if ((currentNode == null) || (d < 0) || (matchAlmostNumReturnValues == 0) || (charIndex >= matchAlmostKey.length())) {
             return;
         }
-		
+
 		int charComp = CharUtility.compareCharsAlphabetically(matchAlmostKey.charAt(charIndex), currentNode.splitchar);
-		
+
 		// low branch
 		if ((d > 0) || (charComp < 0)) {
             matchAlmostRecursion(currentNode.relatives[TSTNode.LOKID], charIndex, d);
         }
-		
+
 		//equal branch
 		int nextD = (charComp == 0) ? d : d - 1;
 		if ((matchAlmostKey.length() == charIndex + 1) && (nextD == 0) && (currentNode.data != null)) {
-			// Note: the condition nextD == 0 causes keys to be included in the result only if they have exactly matchAlmostDiff number 
+			// Note: the condition nextD == 0 causes keys to be included in the result only if they have exactly matchAlmostDiff number
 			// of mismatched letters
 			// If instead the condition nextD >= 0 is used, then all keys having up to and including matchAlmostDiff mismatched letters
 			// will be included in the result (including a key that is exactly the same as the target string).
@@ -391,10 +391,10 @@ class TernarySearchTree {
             matchAlmostRecursion(currentNode.relatives[TSTNode.HIKID], charIndex, d);
         }
 	}
-	
-	/** Sets the number of characters by which words can differ from target word when 
-	*   calling matchAlmost or matchAlmostString methods. Arguments 
-	*   less than 1 will set the char difference to 1, and arguments greater than 4 
+
+	/** Sets the number of characters by which words can differ from target word when
+	*   calling matchAlmost or matchAlmostString methods. Arguments
+	*   less than 1 will set the char difference to 1, and arguments greater than 4
 	*   will set the char difference to 4.
 	*   @param diff The number of characters by which words can differ from target word.
 	*/
@@ -407,7 +407,7 @@ class TernarySearchTree {
 			matchAlmostDiff = diff;
 		}
 	}
-	
+
 	/** Returns the Node indexed by key, creating that node if it doesn't exist, and creating any required.
 	*   intermediate nodes if they don't exist.
 	*   @param key A string that indexes the node that is returned.
@@ -442,7 +442,7 @@ class TernarySearchTree {
                     currentNode.relatives[TSTNode.LOKID] = new TSTNode(key.charAt(charIndex), currentNode);
                 }
 				currentNode = currentNode.relatives[TSTNode.LOKID];
-			} else {                
+			} else {
 				// charComp must be greater than zero
 				if (currentNode.relatives[TSTNode.HIKID] == null) {
                     currentNode.relatives[TSTNode.HIKID] = new TSTNode(key.charAt(charIndex), currentNode);
@@ -451,11 +451,11 @@ class TernarySearchTree {
 			}
 		}
 	}
-	
-	/**  
-     * Deletes the node passed in as an argument to this method. If this node has non-null data, 
+
+	/**
+     * Deletes the node passed in as an argument to this method. If this node has non-null data,
      * then both the node and the data will be deleted.
-	 *   Also deletes any other nodes in the tree that are no longer needed after the deletion of 
+	 *   Also deletes any other nodes in the tree that are no longer needed after the deletion of
      *   the node first passed in as an argument to this method.
      *   @param nodeToDelete TSTNode
 	 */
@@ -468,7 +468,7 @@ class TernarySearchTree {
 			nodeToDelete = deleteNodeRecursion(nodeToDelete);
 		}
 	}
-	
+
     /**
      * @param currentNode TSTNode
      * @return TSTNode
@@ -480,9 +480,9 @@ class TernarySearchTree {
 		if (currentNode.relatives[TSTNode.EQKID] != null || currentNode.data != null) {
             return null;  // can't delete this node if it has a non-null eq kid or data
         }
-		
+
 		TSTNode currentParent = currentNode.relatives[TSTNode.PARENT];
-		
+
 		boolean lokidNull = currentNode.relatives[TSTNode.LOKID] == null;
 		boolean hikidNull = currentNode.relatives[TSTNode.HIKID] == null;
 
@@ -499,7 +499,7 @@ class TernarySearchTree {
 			rootNode = null;
 			return null;
 		}
-	
+
 		if (lokidNull && hikidNull) {
 			// if we make it to here, all three kids are null and we can just delete this node
 			currentParent.relatives[childType] = null;
@@ -516,7 +516,7 @@ class TernarySearchTree {
 			currentNode.relatives[TSTNode.LOKID].relatives[TSTNode.PARENT] = currentParent;
 			return currentParent;
 		}
-		
+
 		int deltaHi = currentNode.relatives[TSTNode.HIKID].splitchar - currentNode.splitchar;
 		int deltaLo = currentNode.splitchar - currentNode.relatives[TSTNode.LOKID].splitchar;
 		int movingKid;
@@ -529,7 +529,7 @@ class TernarySearchTree {
 				deltaLo++;
 			}
 		}
-		
+
 		if (deltaHi > deltaLo) {
 			movingKid = TSTNode.HIKID;
 			targetNode = currentNode.relatives[TSTNode.LOKID];
@@ -537,29 +537,29 @@ class TernarySearchTree {
 			movingKid = TSTNode.LOKID;
 			targetNode = currentNode.relatives[TSTNode.HIKID];
 		}
-		
+
 		while (targetNode.relatives[movingKid] != null) {
             targetNode = targetNode.relatives[movingKid];
         }
 		// now targetNode.relatives[movingKid] is null, and we can put the moving kid into it.
 		targetNode.relatives[movingKid] = currentNode.relatives[movingKid];
-		
+
 		// now we need to put the target node where the current node used to be
 		currentParent.relatives[childType] = targetNode;
 		targetNode.relatives[TSTNode.PARENT] = currentParent;
-		
+
 		if (!lokidNull) {
             currentNode.relatives[TSTNode.LOKID] = null;
         }
 		if (!hikidNull) {
             currentNode.relatives[TSTNode.HIKID] = null;
         }
-		
+
 		// note that the statements above ensure currentNode is completely dereferenced, and so it will be garbage collected
-		
+
 		return currentParent;
 	}
-	
+
 	/** An inner class of TernarySearchTree that represents a node in the tree.
 	*/
 	protected class TSTNode {
@@ -567,7 +567,7 @@ class TernarySearchTree {
 		protected char splitchar;
 		protected TSTNode[] relatives = new TSTNode[4];
 		protected Object data;
-		
+
 		protected TSTNode(char splitchar, TSTNode parent) {
 			this.splitchar = splitchar;
 			relatives[PARENT] = parent;
@@ -624,8 +624,8 @@ class TernarySearchTree {
 	public int numDataNodes() {
 		return numDataNodes(rootNode);
 	}
-	
-	
+
+
 	/** Returns the number of nodes in the subtree below and including startingNode. Counts only nodes that have non-null data.
 	*   @param startingNode The top node of the subtree. The node that defines the subtree.
 	*   @return int The total number of nodes in the subtree.
@@ -636,7 +636,7 @@ class TernarySearchTree {
 		recursiveNodeCalculator(startingNode);
 		return numNodes;
 	}
-	
+
 	private void recursiveNodeCalculator(TSTNode currentNode) {
 		if (currentNode == null) {
             return;
@@ -652,7 +652,7 @@ class TernarySearchTree {
 			numNodes++;
 		}
 	}
-	
+
 //	/** Prints entire tree structure to standard output, beginning with the root node and workind down.
 //	*/
 //	protected void printTree() {
@@ -664,7 +664,7 @@ class TernarySearchTree {
 //		System.out.println("Here's the entire tree structure:"); //$NON-NLS-1$
 //		printNodeRecursion(rootNode);
 //	}
-//	
+//
 //	/** Prints subtree structure to standard output, beginning with startingNode and workind down.
 //	*/
 //	protected void printTree(TSTNode startingNode) {
@@ -676,7 +676,7 @@ class TernarySearchTree {
 //		System.out.println("Here's the entire subtree structure:"); //$NON-NLS-1$
 //		printNodeRecursion(startingNode);
 //	}
-//	
+//
 //	/** Recursive method used to print out tree or subtree structure.
 //	*/
 //	private void printNodeRecursion(TSTNode currentNode) {
@@ -685,12 +685,12 @@ class TernarySearchTree {
 //        }
 //		System.out.println(""); //$NON-NLS-1$
 //		System.out.println("( keys are delimited by vertical lines: |example key| )"); //$NON-NLS-1$
-//		System.out.println("info for node   |" + getKey(currentNode) 
+//		System.out.println("info for node   |" + getKey(currentNode)
 //                + "|         node data: " + currentNode.data); //$NON-NLS-1$ //$NON-NLS-2$
 //		if (currentNode.relatives[TSTNode.PARENT] == null) {
 //			System.out.println("parent null"); //$NON-NLS-1$
 //		} else {
-//			System.out.println("parent key   |" + getKey(currentNode.relatives[TSTNode.PARENT])  
+//			System.out.println("parent key   |" + getKey(currentNode.relatives[TSTNode.PARENT])
 //                 +   "|       parent data: " + currentNode.relatives[TSTNode.PARENT].data); //$NON-NLS-1$ //$NON-NLS-2$
 //		}
 //		if (currentNode.relatives[TSTNode.LOKID] == null) {
@@ -702,18 +702,18 @@ class TernarySearchTree {
 //		if (currentNode.relatives[TSTNode.EQKID] == null) {
 //			System.out.println("eqkid null"); //$NON-NLS-1$
 //		} else {
-//			System.out.println("eqkid key   |" + getKey(currentNode.relatives[TSTNode.EQKID])  
+//			System.out.println("eqkid key   |" + getKey(currentNode.relatives[TSTNode.EQKID])
 //                    + "|       equal kid data: " + currentNode.relatives[TSTNode.EQKID].data); //$NON-NLS-1$ //$NON-NLS-2$
 //		}
 //		if (currentNode.relatives[TSTNode.HIKID] == null) {
 //			System.out.println("hikid null"); //$NON-NLS-1$
 //		} else {
-//			System.out.println("hikid key   |" + getKey(currentNode.relatives[TSTNode.HIKID]) 
+//			System.out.println("hikid key   |" + getKey(currentNode.relatives[TSTNode.HIKID])
 //                    + "|       hi kid data: " + currentNode.relatives[TSTNode.HIKID].data); //$NON-NLS-1$ //$NON-NLS-2$
 //		}
 //		printNodeRecursion(currentNode.relatives[TSTNode.LOKID]);
 //		printNodeRecursion(currentNode.relatives[TSTNode.EQKID]);
 //		printNodeRecursion(currentNode.relatives[TSTNode.HIKID]);
 //	}
-	
+
 }

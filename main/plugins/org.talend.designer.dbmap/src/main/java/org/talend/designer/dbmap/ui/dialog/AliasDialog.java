@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,9 +38,9 @@ import org.talend.designer.dbmap.utils.problems.ProblemsAnalyser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class AliasDialog {
 
@@ -62,7 +62,7 @@ public class AliasDialog {
 
     /**
      * DOC amaumont AliasDialog constructor comment.
-     * 
+     *
      * @param manager
      */
     public AliasDialog(MapperManager manager, String[] physicalTables, String[] aliases, String[] visibleTables) {
@@ -128,7 +128,7 @@ public class AliasDialog {
 
     /**
      * Getter for tableName.
-     * 
+     *
      * @return the tableName
      */
     public String getTableName() {
@@ -137,7 +137,7 @@ public class AliasDialog {
 
     /**
      * Sets the tableName.
-     * 
+     *
      * @param tableName the tableName to set
      */
     public void setTableName(String tableName) {
@@ -145,11 +145,11 @@ public class AliasDialog {
     }
 
     /**
-     * 
+     *
      * DOC amaumont AliasDialog class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     class AliasInternalDialog extends Dialog {
 
@@ -205,7 +205,7 @@ public class AliasDialog {
          * <p>
          * Note that the <code>open</code> method blocks for input dialogs.
          * </p>
-         * 
+         *
          * @param parentShell the parent shell, or <code>null</code> to create a top-level shell
          * @param dialogTitle the dialog title, or <code>null</code> if none
          * @param dialogMessage the dialog message, or <code>null</code> if none
@@ -241,7 +241,7 @@ public class AliasDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
          */
         @Override
@@ -255,7 +255,7 @@ public class AliasDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
          */
         @Override
@@ -335,7 +335,7 @@ public class AliasDialog {
 
         /**
          * Returns the error message label.
-         * 
+         *
          * @return the error message label
          * @deprecated use setErrorMessage(String) instead
          */
@@ -346,7 +346,7 @@ public class AliasDialog {
 
         /**
          * Returns the ok button.
-         * 
+         *
          * @return the ok button
          */
         protected Button getOkButton() {
@@ -355,7 +355,7 @@ public class AliasDialog {
 
         /**
          * Returns the text area.
-         * 
+         *
          * @return the text area
          */
         protected Text getText() {
@@ -364,7 +364,7 @@ public class AliasDialog {
 
         /**
          * Returns the validator.
-         * 
+         *
          * @return the validator
          */
         protected IInputValidator getValidator() {
@@ -373,7 +373,7 @@ public class AliasDialog {
 
         /**
          * Returns the string typed into this input dialog.
-         * 
+         *
          * @return the input string
          */
         public String getValue() {
@@ -407,7 +407,7 @@ public class AliasDialog {
 
         /**
          * Sets or clears the error message. If not <code>null</code>, the OK button is disabled.
-         * 
+         *
          * @param errorMessage the error message, or <code>null</code> to clear
          * @since 3.0
          */
@@ -524,7 +524,7 @@ public class AliasDialog {
 
     /**
      * DOC amaumont Comment method "isNotAlreadyExist".
-     * 
+     *
      * @param tableName
      * @return
      */
@@ -541,7 +541,7 @@ public class AliasDialog {
 
     /**
      * DOC amaumont Comment method "isSameAsPhysicalTable".
-     * 
+     *
      * @param name
      */
     public boolean isSameAsPhysicalTable(String name) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,9 +31,9 @@ import org.talend.sqlbuilder.repository.utility.EMFRepositoryNodeManager;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class TableAddAction extends SelectionAction {
 
@@ -43,7 +43,7 @@ public class TableAddAction extends SelectionAction {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#getId()
      */
     @Override
@@ -54,7 +54,7 @@ public class TableAddAction extends SelectionAction {
 
     /**
      * admin TableAddAction constructor comment.
-     * 
+     *
      * @param part
      */
     public TableAddAction(IWorkbenchPart part) {
@@ -65,7 +65,7 @@ public class TableAddAction extends SelectionAction {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
     @Override
@@ -75,7 +75,7 @@ public class TableAddAction extends SelectionAction {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @SuppressWarnings("unchecked")//$NON-NLS-1$

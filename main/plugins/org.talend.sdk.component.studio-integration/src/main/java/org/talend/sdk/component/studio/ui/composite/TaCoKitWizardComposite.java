@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -14,6 +14,7 @@ package org.talend.sdk.component.studio.ui.composite;
 
 import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.exception.ExceptionHandler;
@@ -25,6 +26,7 @@ import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.ValueModel;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.IValueChangedListener;
+import org.talend.sdk.component.studio.ui.composite.problemmanager.IProblemManager;
 
 /**
  * Stores {@link TaCoKitConfigurationModel} and sets Configuration Model Updater listener for each
@@ -40,8 +42,8 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
 
     public TaCoKitWizardComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
             final Element element, final TaCoKitConfigurationModel model, final boolean isCompactView,
-            final Color backgroundColor, final boolean isNew) {
-        super(parentComposite, styles, section, element, isCompactView, backgroundColor);
+            final Color backgroundColor, final boolean isNew, final IProblemManager problemManager) {
+        super(parentComposite, styles, section, element, isCompactView, backgroundColor, problemManager);
         this.configurationModel = model;
         this.isNew = isNew;
         configurationUpdater = new ConfigurationModelUpdater();
@@ -78,15 +80,18 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
                 .filter(p -> !EParameterFieldType.SCHEMA_TYPE.equals(p.getFieldType()))
                 .forEach(parameter -> {
                     parameter.addValueChangeListener(configurationUpdater);
-                    if (isNew) {
-                        parameter.setValue(parameter.getValue());
-                        return;
-                    }
                     try {
-                        ValueModel valueModel = configurationModel.getValue(parameter.getName());
+                        String key = parameter.getName();
+                        if (isNew) {
+                            parameter.setValue(parameter.getValue());
+                        }
+                        ValueModel valueModel = configurationModel.getValue(key);
                         if (valueModel != null) {
                             if (valueModel.getConfigurationModel() != configurationModel) {
                                 parameter.setReadOnly(true);
+                            }
+                            if (StringUtils.isEmpty(valueModel.getValue())) {
+                                return;
                             }
                             parameter.setValue(valueModel.getValue());
                         }

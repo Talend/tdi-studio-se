@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ public class CorrectBatchModeForJDBCOutput extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override
@@ -45,22 +45,22 @@ public class CorrectBatchModeForJDBCOutput extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @Override
     public ExecutionResult execute(Item item) {
         ProcessType processType = getProcessType(item);
-        
+
         if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
             return ExecutionResult.NOTHING_TO_DO;
         }
-        
+
         //groupx
         List<String> filterList = Arrays.asList(
         		 "tJDBCOutput"
         		);
-        
+
         IComponentConversion correctBatchModeForDBComponents = new IComponentConversion() {
 			public void transform(NodeType node) {
 				ElementParameterType useExistingConnPara = ComponentUtilities.getNodeProperty(node, "USE_EXISTING_CONNECTION");
@@ -68,13 +68,13 @@ public class CorrectBatchModeForJDBCOutput extends AbstractJobMigrationTask {
                     ComponentUtilities.addNodeProperty(node, "USE_EXISTING_CONNECTION", "CHECK");
                     ComponentUtilities.getNodeProperty(node, "USE_EXISTING_CONNECTION").setValue("false");
 				}
-                
+
 				ElementParameterType useBatchSizePara = ComponentUtilities.getNodeProperty(node, "USE_BATCH_SIZE");
 				if(useBatchSizePara == null){
                     ComponentUtilities.addNodeProperty(node, "USE_BATCH_SIZE", "CHECK");
                     ComponentUtilities.getNodeProperty(node, "USE_BATCH_SIZE").setValue("false");
 				}
-				
+
                 ElementParameterType useBatchAndUseConnPara = ComponentUtilities.getNodeProperty(node, "USE_BATCH_AND_USE_CONN");
                 if (useBatchAndUseConnPara == null) {
                     ComponentUtilities.addNodeProperty(node, "USE_BATCH_AND_USE_CONN", "CHECK");
@@ -82,7 +82,7 @@ public class CorrectBatchModeForJDBCOutput extends AbstractJobMigrationTask {
                 }
 			}
 		};
-		
+
 		for(String componentName: filterList){
 			IComponentFilter filter = new NameComponentFilter(componentName);
 			try {
@@ -97,7 +97,7 @@ public class CorrectBatchModeForJDBCOutput extends AbstractJobMigrationTask {
 				return ExecutionResult.FAILURE;
 			}
 		}
-		
+
         return ExecutionResult.SUCCESS_NO_ALERT;
     }
 }

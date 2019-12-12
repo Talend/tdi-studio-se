@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,9 +25,9 @@ import org.talend.designer.mapper.model.tableentry.VarTableEntry;
 
 /**
  * Content proposal based on a IContextParameter. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class EntryContentProposal implements IContentProposal {
 
@@ -41,7 +41,7 @@ public class EntryContentProposal implements IContentProposal {
 
     /**
      * Constructs a new ContextParameterProposal.
-     * 
+     *
      * @param language
      * @param control
      */
@@ -53,7 +53,7 @@ public class EntryContentProposal implements IContentProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposal#getContent()
      */
     public String getContent() {
@@ -67,7 +67,7 @@ public class EntryContentProposal implements IContentProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposal#getCursorPosition()
      */
     public int getCursorPosition() {
@@ -76,7 +76,7 @@ public class EntryContentProposal implements IContentProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposal#getDescription()
      */
     public String getDescription() {
@@ -132,7 +132,7 @@ public class EntryContentProposal implements IContentProposal {
         } else if (entry instanceof GlobalMapEntry) {
             sb.append(AbstractLanguage.CARRIAGE_RETURN);
             sb.append("GlobalMap ");
-            sb.append(Messages.getString("EntryContentProposal.properties")); //$NON-NLS-1$ 
+            sb.append(Messages.getString("EntryContentProposal.properties")); //$NON-NLS-1$
             sb.append(AbstractLanguage.CARRIAGE_RETURN);
             sb.append(separator).append(Messages.getString("EntryContentProposal.columnTitle.globalMapKey")).append("' :"); //$NON-NLS-1$
             sb.append(entry.getName());
@@ -152,7 +152,7 @@ public class EntryContentProposal implements IContentProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposal#getLabel()
      */
     public String getLabel() {

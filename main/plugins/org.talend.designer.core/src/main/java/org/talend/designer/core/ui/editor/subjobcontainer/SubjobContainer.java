@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -186,7 +186,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.Element#getElementName()
      */
     @Override
@@ -196,7 +196,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#isReadOnly()
      */
     @Override
@@ -206,7 +206,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#setReadOnly(boolean)
      */
     @Override
@@ -217,7 +217,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /**
      * Getter for nodeContainers.
-     * 
+     *
      * @return the nodeContainers
      */
     public List<NodeContainer> getNodeContainers() {
@@ -235,7 +235,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /**
      * DOC ycbai Comment method "deleteNodeContainer".
-     * 
+     *
      * @param nodeUniqueName
      * @return
      */
@@ -261,7 +261,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /**
      * DOC nrousseau Comment method "getSubjobContainerRectangle".
-     * 
+     *
      * @return
      */
     public Rectangle getSubjobContainerRectangle() {
@@ -487,7 +487,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /**
      * Getter for collapsed.
-     * 
+     *
      * @return the collapsed
      */
     public boolean isCollapsed() {
@@ -496,7 +496,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /**
      * Sets the collapsed.
-     * 
+     *
      * @param collapsed the collapsed to set
      */
     public void setCollapsed(boolean collapsed) {
@@ -544,7 +544,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /**
      * Getter for process.
-     * 
+     *
      * @return the process
      */
     public IProcess2 getProcess() {
@@ -553,7 +553,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.Element#setPropertyValue(java.lang.String, java.lang.Object)
      */
     @Override
@@ -629,7 +629,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -661,7 +661,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.ISubjobContainer#isDisplayed()
      */
     @Override

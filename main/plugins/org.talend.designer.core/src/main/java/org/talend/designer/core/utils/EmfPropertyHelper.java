@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,15 +23,15 @@ import org.eclipse.emf.edit.provider.IItemPropertySource;
 
 /**
  * DOC mhelleboid class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: EmfPropertyHelper.java 21728 2009-02-09 10:23:23Z plegall $
- * 
+ *
  */
 public class EmfPropertyHelper {
 
     /**
      * DOC mhelleboid Comment method "getItemPropertyDescriptor".
-     * 
+     *
      * @param itemPropertySource
      * @param eObject TODO
      * @param structuralFeature TODO
@@ -53,10 +53,10 @@ public class EmfPropertyHelper {
 
     /**
      * DOC mhelleboid Comment method "getItemPropertySource".
-     * 
+     *
      * @param adapterFactory TODO
      * @param eObject TODO
-     * 
+     *
      * @return
      */
     public static IItemPropertySource getItemPropertySource(AdapterFactory adapterFactory, EObject eObject) {
@@ -65,7 +65,7 @@ public class EmfPropertyHelper {
 
     /**
      * DOC mhelleboid Comment method "getValue".
-     * 
+     *
      * @param itemPropertyDescriptor TODO
      * @param eObject TODO
      * @return

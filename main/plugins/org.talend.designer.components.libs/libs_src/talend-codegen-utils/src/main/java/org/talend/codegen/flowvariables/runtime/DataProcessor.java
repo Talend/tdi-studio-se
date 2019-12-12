@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,7 +21,7 @@ abstract class DataProcessor {
 
     /**
      * Processes single data object
-     * 
+     *
      * @param data data object retrieved from component runtime class
      * @return data object after processing
      */
@@ -29,7 +29,7 @@ abstract class DataProcessor {
 
     /**
      * Processes {@link Iterable} of data objects
-     * 
+     *
      * @param dataIterable data {@link Iterable} object retrieved from component runtime classes
      * @return data {@link Iterable} object after processing
      */

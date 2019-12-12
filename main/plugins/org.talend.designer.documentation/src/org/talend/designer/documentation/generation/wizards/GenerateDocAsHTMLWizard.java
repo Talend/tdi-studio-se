@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,9 @@ import org.talend.repository.i18n.Messages;
 
 /**
  * This is a wizard for generating job information as HTML file.
- * 
+ *
  * $Id: GenerateDocAsHTMLWizard.java 2007-3-7,下午02:26:29 ftang $
- * 
+ *
  */
 public class GenerateDocAsHTMLWizard extends Wizard implements IExportWizard {
 

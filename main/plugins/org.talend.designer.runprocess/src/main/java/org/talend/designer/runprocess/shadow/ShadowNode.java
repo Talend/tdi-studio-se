@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,9 +36,9 @@ import org.talend.designer.runprocess.RunProcessPlugin;
 
 /**
  * DOC chuger class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public abstract class ShadowNode extends AbstractNode {
 
@@ -81,7 +81,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getComponentName()
      */
     @Override
@@ -95,7 +95,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getGeneratedCode()
      */
     public String getGeneratedCode() {
@@ -111,7 +111,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getIncomingConnections()
      */
     @Override
@@ -121,7 +121,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getMetaDataList()
      */
     @Override
@@ -148,7 +148,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getMappingList()
      */
     public List<Map<String, String>> getMappingList() {
@@ -157,7 +157,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getOutgoingConnections()
      */
     @Override
@@ -167,7 +167,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getPluginFullName()
      */
     public String getPluginFullName() {
@@ -177,7 +177,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getPluginFullName()
      */
     public void setPluginFullName(String pluginFullName) {
@@ -186,7 +186,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getUniqueName()
      */
     @Override
@@ -196,7 +196,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isActivate()
      */
     @Override
@@ -206,7 +206,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isSubProcessStart()
      */
     @Override
@@ -216,7 +216,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /**
      * Getter for inCnx.
-     * 
+     *
      * @return the inCnx
      */
     public IConnection getInCnx() {
@@ -225,7 +225,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /**
      * Sets the inCnx.
-     * 
+     *
      * @param inCnx the inCnx to set
      */
     public void setInCnx(IConnection inCnx) {
@@ -234,7 +234,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /**
      * Getter for outCnx.
-     * 
+     *
      * @return the outCnx
      */
     public IConnection getOutCnx() {
@@ -243,7 +243,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /**
      * Sets the outCnx.
-     * 
+     *
      * @param outCnx the outCnx to set
      */
     public void setOutCnx(IConnection outCnx) {
@@ -252,7 +252,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#setMappingList(java.util.List)
      */
     public void setMappingList(List<Map<String, String>> mapping) {
@@ -266,7 +266,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#isMultiplyingOutputs()
      */
     @Override
@@ -286,7 +286,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getReturns()
      */
     @Override
@@ -296,7 +296,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /**
      * Getter for process.
-     * 
+     *
      * @return the process
      */
     @Override
@@ -306,7 +306,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /**
      * Sets the process.
-     * 
+     *
      * @param process the process to set
      */
     @Override
@@ -316,7 +316,7 @@ public abstract class ShadowNode extends AbstractNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#renameMetadataColumnName(java.lang.String, java.lang.String,
      * java.lang.String)
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.xml.XMLFileUtil;
 import org.talend.commons.utils.io.FilesUtils;
@@ -65,9 +66,9 @@ import org.w3c.dom.Node;
 
 /**
  * Page for new project details. <br/>
- * 
+ *
  * $Id: NewProjectWizardPage.java 1877 2007-02-06 17:16:43Z amaumont $
- * 
+ *
  */
 public class ImportProjectAsWizardPage extends WizardPage {
 
@@ -104,13 +105,15 @@ public class ImportProjectAsWizardPage extends WizardPage {
     private String previouslyBrowsedArchive = ""; //$NON-NLS-1$
 
     private String lastPath;
-    
+
+    private List<File> tempFolders = new ArrayList<>();
+
     // constant from WizardArchiveFileResourceImportPage1
     private static final String[] FILE_IMPORT_MASK = { "*.jar;*.zip;*.tar;*.tar.gz;*.tgz", "*.*" }; //$NON-NLS-1$ //$NON-NLS-2$
 
     /**
      * Constructs a new NewProjectWizardPage.
-     * 
+     *
      * @param server
      * @param password
      * @param author
@@ -121,7 +124,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
         IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         setTitle(Messages.getString("ImportProjectAsWizardPage.title")); //$NON-NLS-1$
-        setDescription(Messages.getString("ImportProjectAsWizardPage.description", brandingService.getShortProductName())); //$NON-NLS-1$
+        setDescription(Messages.getString("ImportProjectAsWizardPage.importDescription", brandingService.getShortProductName())); //$NON-NLS-1$
 
         nameStatus = createOkStatus();
         fileNameStatus = createOkStatus();
@@ -206,7 +209,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
     /**
      * Create the area where you select the root directory for the projects.
-     * 
+     *
      * @param workArea Composite
      */
     private void createProjectsRoot(Composite workArea) {
@@ -257,7 +260,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionAdapter#widgetS elected(org.eclipse.swt.events.SelectionEvent)
              */
             @Override
@@ -271,7 +274,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse .swt.events.SelectionEvent)
              */
             @Override
@@ -285,7 +288,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse .swt.events.SelectionEvent)
              */
             @Override
@@ -298,7 +301,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse .swt.events.SelectionEvent)
              */
             @Override
@@ -421,6 +424,14 @@ public class ImportProjectAsWizardPage extends WizardPage {
             ZipFile sourceFile = getSpecifiedZipSourceFile(path);
             if (sourceFile == null) {
                 return;
+            } else {
+                try {
+                    sourceFile.close();
+                } catch (IOException e) {
+                    if (CommonsPlugin.isDebugMode()) {
+                        ExceptionHandler.process(e);
+                    }
+                }
             }
         }
         lastPath = path;
@@ -450,15 +461,16 @@ public class ImportProjectAsWizardPage extends WizardPage {
     }
 
     /**
-     * 
+     *
      * DOC xlwang Comment method "createProjectFile".
-     * 
+     *
      * @param path
      */
     public String checkPackageIsCompressed(String path) {
         if (ArchiveFileManipulations.isZipFile(path)) {
             File tmpPath = FileUtils.createTmpFolder("talendImportTmp", null);
             String tmpPathStr = tmpPath.getPath();
+            tempFolders.add(tmpPath);
             try {
                 FilesUtils.unzip(path, tmpPathStr);
             } catch (Exception e) {
@@ -470,9 +482,9 @@ public class ImportProjectAsWizardPage extends WizardPage {
     }
 
     /**
-     * 
+     *
      * DOC xlwang Comment method "items2Projects".
-     * 
+     *
      * @param sourcePath
      * @return
      * @throws Exception
@@ -483,6 +495,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
         // find the talend.project file
         tp.collectProjectFilesFromDirectory(files, new File(sourcePath), null);
         File tmpPath = FileUtils.createTmpFolder("talendImportTmp", null);
+        tempFolders.add(tmpPath);
         Iterator filesIterator = files.iterator();
         String tepPath = "";
         while (filesIterator.hasNext()) {
@@ -520,9 +533,9 @@ public class ImportProjectAsWizardPage extends WizardPage {
     }
 
     /**
-     * 
+     *
      * DOC xlwang Comment method "getFinalDir".
-     * 
+     *
      * @param path
      * @return
      */
@@ -544,7 +557,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
         return finalPath;
     }
 
-    
+
     /**
      * Answer a handle to the zip file currently specified as being the source. Return null if this file does not exist
      * or is not of valid format.
@@ -589,7 +602,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
     /**
      * Display an error dialog with the specified message.
-     * 
+     *
      * @param message the error message
      */
     protected void displayErrorDialog(String message) {
@@ -701,6 +714,10 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
     public String getSourcePath() {
         return lastPath;
+    }
+
+    public List<File> getTempFolders() {
+        return tempFolders;
     }
 
     public boolean isArchive() {

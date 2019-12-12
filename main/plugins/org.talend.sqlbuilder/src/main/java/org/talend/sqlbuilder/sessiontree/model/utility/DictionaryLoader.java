@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,9 +21,9 @@ import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 
 /**
  * DOC qianbing class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DictionaryLoader.java,v 1.3 2006/11/01 07:49:10 peiqin.hou Exp $
- * 
+ *
  */
 public class DictionaryLoader extends Job {
 
@@ -38,7 +38,7 @@ public class DictionaryLoader extends Job {
 
     /**
      * Default constructor.
-     * 
+     *
      * @param sessionNode SessionTreeNode
      */
     public DictionaryLoader(SessionTreeNode sessionNode) {
@@ -47,7 +47,7 @@ public class DictionaryLoader extends Job {
 
     /**
      * Load dictionary in background process.
-     * 
+     *
      * @param monitor IProgressMonitor
      * @return IStatus
      */

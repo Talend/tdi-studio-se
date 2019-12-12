@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -104,7 +104,7 @@ public abstract class AbstractLoginActionPage extends AbstractActionPage {
     /**
      * This method can keep the tab orders for all the controls, and normally should call this method at the end when
      * override it
-     * 
+     *
      * @param container
      */
     protected void instantiateControl(Composite container) {

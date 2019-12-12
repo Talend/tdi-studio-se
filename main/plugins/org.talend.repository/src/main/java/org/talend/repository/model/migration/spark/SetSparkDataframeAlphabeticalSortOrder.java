@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,10 +31,10 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
- * 
+ *
  * Set the Spark Dataframe Alphabatical sort order in tHiveOutput & tFileParquet. If the component doesn't have the
  * checkbox then we want to maintain the legacy (alphabatical) order.
- * 
+ *
  */
 @SuppressWarnings("deprecation")
 public class SetSparkDataframeAlphabeticalSortOrder extends AbstractJobMigrationTask {
@@ -65,8 +65,8 @@ public class SetSparkDataframeAlphabeticalSortOrder extends AbstractJobMigration
                             @Override
                             public void transform(NodeType node) {
                                 if (ComponentUtilities.getNodeProperty(node, propertyName) == null) {
-                                    ComponentUtilities.addNodeProperty(node, propertyName, "CHECK"); //$NON-NLS-1$ 
-                                    ComponentUtilities.getNodeProperty(node, propertyName).setValue("true"); //$NON-NLS-1$ 
+                                    ComponentUtilities.addNodeProperty(node, propertyName, "CHECK"); //$NON-NLS-1$
+                                    ComponentUtilities.getNodeProperty(node, propertyName).setValue("true"); //$NON-NLS-1$
                                 }
                             }
 

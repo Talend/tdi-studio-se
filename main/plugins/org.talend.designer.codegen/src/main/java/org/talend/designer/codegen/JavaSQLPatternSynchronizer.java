@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,18 +27,18 @@ import org.talend.designer.runprocess.IRunProcessService;
 
 /**
  * SQLPattern synchronizer of java project.
- * 
+ *
  * bqian class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: JavaRoutineSynchronizer.java JavaRoutineSynchronizer 2007-2-2 下午03:29:12 +0000 (下午03:29:12, 2007-2-2 2007)
  * yzhang $
- * 
+ *
  */
 public class JavaSQLPatternSynchronizer extends AbstractSQLPatternSynchronizer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.codegen.ISQLPatternSynchronizer#getSQLPattern(org.talend.core.model.properties.SQLPatternItem
      * )
@@ -63,7 +63,7 @@ public class JavaSQLPatternSynchronizer extends AbstractSQLPatternSynchronizer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.codegen.ISQLPatternSynchronizer#syncSQLPattern(org.talend.core.model.properties.SQLPatternItem
      * , boolean)

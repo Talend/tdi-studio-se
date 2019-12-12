@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -58,9 +58,9 @@ import org.talend.designer.runprocess.java.JavaProcessorUtilities;
 
 /**
  * Check syntax of Java expressions.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class JavaCodeProblemsChecker extends CodeProblemsChecker {
 
@@ -73,7 +73,7 @@ public class JavaCodeProblemsChecker extends CodeProblemsChecker {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.language.perl.CodeSyntaxChecker#checkSyntax(java.lang.String)
      */
     public List<Problem> checkProblemsForExpression(String code) {
@@ -82,7 +82,7 @@ public class JavaCodeProblemsChecker extends CodeProblemsChecker {
 
     /**
      * DOC amaumont Comment method "retrieveCode".
-     * 
+     *
      * @param process
      * @param selectedNodeName
      * @param externalData optional data, can be null
@@ -108,7 +108,7 @@ public class JavaCodeProblemsChecker extends CodeProblemsChecker {
 
     /**
      * DOC amaumont Comment method "retrieveDetailedProblems".
-     * 
+     *
      * @return
      */
     private List<DetailedProblem> retrieveDetailedProblems(final IAloneProcessNodeConfigurer nodeConfigurer) {
@@ -201,7 +201,7 @@ public class JavaCodeProblemsChecker extends CodeProblemsChecker {
 
     /**
      * DOC amaumont Comment method "processDetailedProblems".
-     * 
+     *
      * @param list
      * @return
      */
@@ -224,7 +224,7 @@ public class JavaCodeProblemsChecker extends CodeProblemsChecker {
     }
 
     /**
-     * 
+     *
      */
     class MyProblemRequestor implements IProblemRequestor {
 
@@ -240,7 +240,7 @@ public class JavaCodeProblemsChecker extends CodeProblemsChecker {
 
         /**
          * DOC amaumont MyProblemRequestor constructor comment.
-         * 
+         *
          * @param code
          * @param iproblems
          */
@@ -381,7 +381,7 @@ public class JavaCodeProblemsChecker extends CodeProblemsChecker {
 
         /**
          * Sets the reportProblems.
-         * 
+         *
          * @param reportProblems the reportProblems to set
          */
         public void setReportProblems(boolean reportProblems) {

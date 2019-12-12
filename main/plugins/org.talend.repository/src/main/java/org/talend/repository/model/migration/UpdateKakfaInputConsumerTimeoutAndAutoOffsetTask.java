@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,10 +30,10 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * With the improvements from TBD-2639:
- * 
+ *
  * The consumer timeout is no longer directly set from component UI, but calculated depending on whether the user is
  * timing out from the first message or from the last received message (or using both stop conditions).
- * 
+ *
  * The old default behaviour when reading "From beginning" was to delete any existing offsets. This now needs to be
  * explicitly set using the RESET_OFFSET parameter to true.
  */
@@ -68,7 +68,7 @@ public class UpdateKakfaInputConsumerTimeoutAndAutoOffsetTask extends AbstractJo
             if (consumerTimeout != null && consumerTimeout.getValue() != null) {
                 if (!"\"-1\"".equals(consumerTimeout.getValue()) && !"-1".equals(consumerTimeout.getValue())) { //$NON-NLS-1$ //$NON-NLS-2$
                     ComponentUtilities.addNodeProperty(node, "USE_BATCH_MESSAGE_TIMEOUT", "CHECK"); //$NON-NLS-1$ //$NON-NLS-2$
-                    ComponentUtilities.setNodeValue(node, "USE_BATCH_MESSAGE_TIMEOUT", "true"); //$NON-NLS-1$ //$NON-NLS-2$ 
+                    ComponentUtilities.setNodeValue(node, "USE_BATCH_MESSAGE_TIMEOUT", "true"); //$NON-NLS-1$ //$NON-NLS-2$
                     ComponentUtilities.addNodeProperty(node, "BATCH_MESSAGE_TIMEOUT", "TEXT"); //$NON-NLS-1$ //$NON-NLS-2$
                     ComponentUtilities.setNodeValue(node, "BATCH_MESSAGE_TIMEOUT", consumerTimeout.getValue()); //$NON-NLS-1$
                 }

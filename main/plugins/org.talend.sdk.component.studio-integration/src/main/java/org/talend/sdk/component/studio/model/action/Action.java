@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +41,12 @@ public class Action<T> {
     private final String family;
 
     private final String type;
-    
+
     /**
-     * Action parameters map. Key is an ElementParameter path. Value is a list of action parameters associated with the ElementParameter 
+     * Action parameters map. Key is an ElementParameter path. Value is a list of action parameters associated with the ElementParameter
      */
     private final Map<String, List<IActionParameter>> parameters = new HashMap<>();
-    
+
     public Action(final String actionName, final String family, final Type type) {
         this.actionName = actionName;
         this.family = family;
@@ -56,7 +56,7 @@ public class Action<T> {
     /**
      * Adds specified {@code parameter} to this Action.
      * ActionParameter passed should be unique action parameter.
-     * 
+     *
      * @param parameter ActionParameter to be added
      */
     public void addParameter(final IActionParameter parameter) {
@@ -65,7 +65,7 @@ public class Action<T> {
         List<IActionParameter> list = parameters.computeIfAbsent(elementParameter, k -> new ArrayList<>());
 
         if (list.contains(parameter)) {
-            throw new IllegalArgumentException("action already contains parameter " + parameter); 
+            throw new IllegalArgumentException("action already contains parameter " + parameter);
         }
         list.add(parameter);
     }
@@ -86,7 +86,7 @@ public class Action<T> {
     protected final String getType() {
         return this.type;
     }
-    
+
     protected final Map<String, String> payload() {
         final Map<String, String> payload = new HashMap<>();
         parameters.values().stream()
@@ -97,7 +97,7 @@ public class Action<T> {
                  });
         return payload;
     }
-    
+
     public enum Type {
         HEALTHCHECK,
         SUGGESTIONS,

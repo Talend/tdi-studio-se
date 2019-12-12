@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,7 +29,7 @@ import java.text.NumberFormat;
  * A stream based parser for parsing delimited text data from a file or a
  * stream. This works only when the field and record delimiter are both single
  * character<br/>
- * 
+ *
  * @author gke
  */
 public class SimpleDelimitedDataReader extends DelimitedDataReader {
@@ -329,7 +329,7 @@ public class SimpleDelimitedDataReader extends DelimitedDataReader {
 
 	/**
 	 * A buffer structure that used to load data from stream for processing.
-	 * 
+	 *
 	 * @author gke
 	 */
 	class StreamBuffer {

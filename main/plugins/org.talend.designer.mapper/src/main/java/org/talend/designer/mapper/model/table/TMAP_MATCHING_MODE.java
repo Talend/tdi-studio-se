@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,15 +17,15 @@ import org.talend.designer.mapper.i18n.Messages;
 import org.talend.designer.mapper.ui.image.ImageInfo;
 
 /**
- * 
+ *
  * Matching modes.
- * 
+ *
  */
 public enum TMAP_MATCHING_MODE implements IUIMatchingMode {
     ALL_ROWS(
              MATCHING_MODE.ALL_ROWS,
              "TMAP_MATCHING_MODE.ALL_ROWS.label", //$NON-NLS-1$
-             "TMAP_MATCHING_MODE.ALL_ROWS.tooltip", ImageInfo.ALL_MATCHES), //$NON-NLS-1$ 
+             "TMAP_MATCHING_MODE.ALL_ROWS.tooltip", ImageInfo.ALL_MATCHES), //$NON-NLS-1$
     UNIQUE_MATCH(
                  MATCHING_MODE.UNIQUE_MATCH,
                  "TMAP_MATCHING_MODE.UNIQUE_MATCH.label", //$NON-NLS-1$
@@ -40,7 +40,7 @@ public enum TMAP_MATCHING_MODE implements IUIMatchingMode {
                "TMAP_MATCHING_MODE.LAST_MATCH.tooltip", ImageInfo.LAST_MATCH), //$NON-NLS-1$
     ALL_MATCHES(
                 MATCHING_MODE.ALL_MATCHES,
-                "TMAP_MATCHING_MODE.ALL_MATCHES.label", //$NON-NLS-1$ 
+                "TMAP_MATCHING_MODE.ALL_MATCHES.label", //$NON-NLS-1$
                 "TMAP_MATCHING_MODE.ALL_MATCHES.tooltip", ImageInfo.ALL_MATCHES), ; //$NON-NLS-1$
 
     private String label;
@@ -55,7 +55,7 @@ public enum TMAP_MATCHING_MODE implements IUIMatchingMode {
 
     /**
      * Getter for menuType.
-     * 
+     *
      * @return the menuType
      */
     public MENU_TYPE getMenuType() {
@@ -63,9 +63,9 @@ public enum TMAP_MATCHING_MODE implements IUIMatchingMode {
     }
 
     /**
-     * 
+     *
      * DOC amaumont LOOKUP_TYPE constructor comment.
-     * 
+     *
      * @param labelKey
      */
     TMAP_MATCHING_MODE(MATCHING_MODE multipleMatchingMode, String labelKey, String tooltipKey, ImageInfo imageInfo) {
@@ -78,7 +78,7 @@ public enum TMAP_MATCHING_MODE implements IUIMatchingMode {
 
     /**
      * Getter for label.
-     * 
+     *
      * @return the label
      */
     public String getLabel() {
@@ -87,7 +87,7 @@ public enum TMAP_MATCHING_MODE implements IUIMatchingMode {
 
     /**
      * Getter for multipleMatchingMode.
-     * 
+     *
      * @return the multipleMatchingMode
      */
     public MATCHING_MODE getMatchingMode() {
@@ -112,7 +112,7 @@ public enum TMAP_MATCHING_MODE implements IUIMatchingMode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.table.IUITest#getImageInfo()
      */
     public ImageInfo getImageInfo() {

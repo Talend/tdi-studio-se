@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,13 +26,13 @@ import org.talend.designer.xmlmap.XmlMapPlugin;
 
 /**
  * created by Administrator on 2012-12-7 Detailled comment
- * 
+ *
  */
 public class MetadataImportXmlCommand extends org.talend.core.ui.metadata.extended.command.MetadataImportXmlCommand {
 
     /**
      * DOC Administrator MetadataImportXmlCommand constructor comment.
-     * 
+     *
      * @param extendedTableModel
      * @param file
      */
@@ -42,7 +42,7 @@ public class MetadataImportXmlCommand extends org.talend.core.ui.metadata.extend
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.metadata.extended.command.MetadataImportXmlCommand#execute()
      */
     @Override

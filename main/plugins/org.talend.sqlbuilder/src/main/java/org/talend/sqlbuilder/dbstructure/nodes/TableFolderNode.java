@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,9 +20,9 @@ import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 
 /**
  * TableTypeNode can represents a parent node for VIEW, TABLE, .. depending on what the database supports.
- * 
+ *
  * @author Davy Vanherbergen
- * 
+ *
  */
 public class TableFolderNode extends AbstractFolderNode {
 
@@ -32,7 +32,7 @@ public class TableFolderNode extends AbstractFolderNode {
 
     /**
      * Create new database table object type node (view, table, etc...).
-     * 
+     *
      * @param parent node
      * @param name of this node
      * @param sessionNode session for this node
@@ -81,7 +81,7 @@ public class TableFolderNode extends AbstractFolderNode {
 
     /**
      * Returns the type for this node. The type is always suffixed with "_FOLDER".
-     * 
+     *
      * @return Type.
      * @see org.talend.sqlbuilder.dbstructure.nodes.INode#getType()
      */
@@ -92,7 +92,7 @@ public class TableFolderNode extends AbstractFolderNode {
 
     /**
      * Load all the children of this table type.
-     * 
+     *
      * @see org.talend.sqlbuilder.dbstructure.nodes.AbstractNode#loadChildren()
      */
     public void loadChildren() {
@@ -122,16 +122,16 @@ public class TableFolderNode extends AbstractFolderNode {
     // return nodesInDB;
     // }
     // List<RepositoryNode> repositoryNodes = root.getChildren();
-    //        
+    //
     // Map<String, INode> allNodes = new HashMap<String, INode>();
-    //        
+    //
     // //add db nodes.
     // if (nodesInDB != null) {
     // for (INode node : nodesInDB) {
     // allNodes.put(node.getLabelText(), node);
     // }
     // }
-    //        
+    //
     // // Set<String> repositoryTableNames = new HashSet<String>();
     // for (RepositoryNode repositoryNode : repositoryNodes) {
     // String repositoryName = repositoryNode.getProperties(EProperties.LABEL).toString();
@@ -150,7 +150,7 @@ public class TableFolderNode extends AbstractFolderNode {
     // SessionTreeNodeUtils.getTableNodes().add(tNode);
     // }
     // }
-    //        
+    //
     // return allNodes.values().toArray(new INode[]{});
     // }
 

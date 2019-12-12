@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,9 +41,9 @@ import org.talend.designer.mapper.model.table.OutputTable;
 
 /**
  * DOC wchen class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class OutputAddDialog extends Dialog {
 
@@ -123,7 +123,7 @@ public class OutputAddDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
      */
     protected void configureShell(Shell shell) {
@@ -134,7 +134,7 @@ public class OutputAddDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
      */
     protected void createButtonsForButtonBar(Composite parent) {
@@ -294,7 +294,7 @@ public class OutputAddDialog extends Dialog {
 
     /**
      * Sets or clears the error message. If not <code>null</code>, the OK button is disabled.
-     * 
+     *
      * @param errorMessage the error message, or <code>null</code> to clear
      * @since 3.0
      */
@@ -322,7 +322,7 @@ public class OutputAddDialog extends Dialog {
 
     /**
      * DOC amaumont Comment method "isSameAsPhysicalTable".
-     * 
+     *
      * @param name
      */
     public boolean isSameAsPhysicalTable(String name) {

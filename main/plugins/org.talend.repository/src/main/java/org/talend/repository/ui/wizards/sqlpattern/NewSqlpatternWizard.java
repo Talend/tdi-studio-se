@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,9 +39,9 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * Wizard for the creation of a new project. <br/>
- * 
+ *
  * $Id: NewProcessWizard.java 914 2006-12-08 08:28:53 +0000 (ven., 08 déc. 2006) bqian $
- * 
+ *
  */
 public class NewSqlpatternWizard extends Wizard {
 
@@ -57,7 +57,7 @@ public class NewSqlpatternWizard extends Wizard {
 
     /**
      * Constructs a new NewProjectWizard.
-     * 
+     *
      * @param author Project author.
      * @param server
      * @param password
@@ -125,7 +125,7 @@ public class NewSqlpatternWizard extends Wizard {
 
     /**
      * Getter for project.
-     * 
+     *
      * @return the project
      */
     public SQLPatternItem getSQLPattern() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.core.model.temp.ETypeGen;
 
 /**
  * A process is cut out in a list of NodesSubTree. Each Subtrees are traversed to generate code.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodesSubTree {
 
@@ -81,7 +81,7 @@ public class NodesSubTree {
 
     /**
      * Constructor for a NodesSubTree.
-     * 
+     *
      * @param NodesSubTree Root Node
      */
     public NodesSubTree(INode node, List<? extends INode> nodes) {
@@ -147,7 +147,7 @@ public class NodesSubTree {
 
     /**
      * unite all the relative merge nodes to this subTree
-     * 
+     *
      * @param node
      */
     public void uniteMergeSubTree(List<? extends INode> nodes) {
@@ -173,7 +173,7 @@ public class NodesSubTree {
 
     /**
      * Build the SubSubTrees..
-     * 
+     *
      * @param nodes
      */
 
@@ -319,7 +319,7 @@ public class NodesSubTree {
 
     /**
      * Tells if this Node is marked for this specific code part in this SubTree.
-     * 
+     *
      * @param node
      * @return
      */
@@ -362,7 +362,7 @@ public class NodesSubTree {
 
     /**
      * Mark a Node of this SubTree as Visited for this specific code part.
-     * 
+     *
      * @param node
      */
     public void markNode(INode node, ECodePart part) {
@@ -385,7 +385,7 @@ public class NodesSubTree {
 
     /**
      * Getter for rootNode.
-     * 
+     *
      * @return the rootNode
      */
     public INode getRootNode() {
@@ -394,7 +394,7 @@ public class NodesSubTree {
 
     /**
      * Getter for name.
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -403,7 +403,7 @@ public class NodesSubTree {
 
     /**
      * Sets the name.
-     * 
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -412,7 +412,7 @@ public class NodesSubTree {
 
     /**
      * Getter for afterSubProcesses.
-     * 
+     *
      * @return the afterSubProcesses
      */
     public List<String> getAfterSubProcesses() {
@@ -421,7 +421,7 @@ public class NodesSubTree {
 
     /**
      * Getter for beforeSubProcesses.
-     * 
+     *
      * @return the beforeSubProcesses
      */
     public List<String> getBeforeSubProcesses() {
@@ -430,7 +430,7 @@ public class NodesSubTree {
 
     /**
      * Getter for nodes.
-     * 
+     *
      * @return the nodes
      */
     public List<INode> getNodes() {
@@ -439,7 +439,7 @@ public class NodesSubTree {
 
     /**
      * Sets the nodes.
-     * 
+     *
      * @param nodes the nodes to set
      */
     public void setNodes(List<INode> nodes) {
@@ -448,7 +448,7 @@ public class NodesSubTree {
 
     /**
      * Return true if this subtree contains the node node.
-     * 
+     *
      * @param node the node to search
      * @return true if the node exists , false otherwise
      */
@@ -463,7 +463,7 @@ public class NodesSubTree {
 
     /**
      * Return node from uniqueNameNode.
-     * 
+     *
      * @param uniqueNameNode
      * @return node if exists, null otherwise
      */
@@ -478,7 +478,7 @@ public class NodesSubTree {
 
     /**
      * sort method, make sure the first one is the real start of the merge job
-     * 
+     *
      * @return
      */
     public List<INode> getSortedMergeBranchStarts() {
@@ -529,7 +529,7 @@ public class NodesSubTree {
 
     /**
      * Getter for allMainSubTreeConnections.
-     * 
+     *
      * @return the allMainSubTreeConnections
      */
     public List<IConnection> getAllMainSubTreeConnections() {
@@ -538,7 +538,7 @@ public class NodesSubTree {
 
     /**
      * Sets the allMainSubTreeConnections.
-     * 
+     *
      * @param allMainSubTreeConnections the allMainSubTreeConnections to set
      */
     public void setAllMainSubTreeConnections(List<IConnection> allMainSubTreeConnections) {
@@ -547,7 +547,7 @@ public class NodesSubTree {
 
     /**
      * Getter for isRefSubTree.
-     * 
+     *
      * @return the isRefSubTree
      */
     public boolean isRefSubTree() {
@@ -556,7 +556,7 @@ public class NodesSubTree {
 
     /**
      * Sets the isRefSubTree.
-     * 
+     *
      * @param isRefSubTree the isRefSubTree to set
      */
     public void setRefSubTree(boolean isRefSubTree) {
@@ -565,7 +565,7 @@ public class NodesSubTree {
 
     /**
      * Getter for refNodes.
-     * 
+     *
      * @return the refNodes
      */
     public List<INode> getRefNodes() {
@@ -574,7 +574,7 @@ public class NodesSubTree {
 
     /**
      * Sets the refNodes.
-     * 
+     *
      * @param refNodes the refNodes to set
      */
     public void setRefNodes(List<INode> refNodes) {

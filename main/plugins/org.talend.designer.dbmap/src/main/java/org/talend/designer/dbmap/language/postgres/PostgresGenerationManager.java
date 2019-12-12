@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,7 @@ import org.talend.designer.dbmap.language.generation.DbGenerationManager;
 import org.talend.designer.dbmap.language.generation.DbMapSqlConstants;
 
 /**
- * 
+ *
  * add for bug TDI-20733,user elt,the query is generated wrong in tPostgresqlMap
  */
 public class PostgresGenerationManager extends DbGenerationManager {
@@ -290,32 +290,30 @@ public class PostgresGenerationManager extends DbGenerationManager {
         if (expression == null) {
             return null;
         }
-        if (DEFAULT_TAB_SPACE_STRING.equals(tabSpaceString)) {
-            List<String> contextList = getContextList(component);
-            boolean haveReplace = false;
-            for (String context : contextList) {
+        List<String> contextList = getContextList(component);
+        boolean haveReplace = false;
+        for (String context : contextList) {
+            if (expression.contains(context)) {
+                expression = expression.replaceAll("\\b" + context + "\\b", "\\\\\"\"+" + context + "+\"\\\\\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                haveReplace = true;
+            }
+        }
+        if (!haveReplace) {
+            List<String> connContextList = getConnectionContextList(component);
+            for (String context : connContextList) {
                 if (expression.contains(context)) {
                     expression = expression.replaceAll("\\b" + context + "\\b", "\\\\\"\"+" + context + "+\"\\\\\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    haveReplace = true;
                 }
             }
-            if (!haveReplace) {
-                List<String> connContextList = getConnectionContextList(component);
-                for (String context : connContextList) {
-                    if (expression.contains(context)) {
-                        expression = expression.replaceAll("\\b" + context + "\\b", "\\\\\"\"+" + context + "+\"\\\\\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    }
-                }
+        }
+        Set<String> globalMapList = getGlobalMapList(component, expression);
+        for (String globalMapStr : globalMapList) {
+            String replacement = globalMapStr;
+            if (globalMapStr.contains("\\\\")) {
+                replacement = globalMapStr.replaceAll("\\\\", "\\\\\\\\");
             }
-            Set<String> globalMapList = getGlobalMapList(component, expression);
-            for (String globalMapStr : globalMapList) {
-                String replacement = globalMapStr;
-                if (globalMapStr.contains("\\\\")) {
-                    replacement = globalMapStr.replaceAll("\\\\", "\\\\\\\\");
-                }
-                String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
-                expression = expression.replaceAll(regex, "\\\\\"\"+" + replacement + "+\"\\\\\""); //$NON-NLS-1$ //$NON-NLS-2$ 
-            }
+            String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
+            expression = expression.replaceAll(regex, "\\\\\"\"+" + replacement + "+\"\\\\\""); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return expression;
     }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.designer.core.ui.editor.connections.ConnectionPart;
 
 /**
  * Action to set a connection to main or to ref.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnectionSetAsMainRef extends SelectionAction {
 
@@ -51,7 +51,7 @@ public class ConnectionSetAsMainRef extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
     @Override

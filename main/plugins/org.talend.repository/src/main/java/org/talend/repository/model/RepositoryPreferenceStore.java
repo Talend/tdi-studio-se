@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,9 +23,9 @@ import org.talend.core.model.properties.helper.StatusHelper;
 /**
  * DOC tguiu class global comment. Detailled comment Implementation for local repository remote implementation will
  * save/load content using methods on RepositoryFactory <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class RepositoryPreferenceStore implements IPersistentPreferenceStore {
 

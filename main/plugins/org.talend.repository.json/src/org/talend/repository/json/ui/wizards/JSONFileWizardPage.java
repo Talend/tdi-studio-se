@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,7 +43,7 @@ public class JSONFileWizardPage extends WizardPage {
 
     /**
      * DOC ocarbone JSONFileWizardPage constructor comment.
-     * 
+     *
      * @param step
      * @param connection
      * @param isRepositoryObjectEditable
@@ -73,7 +73,7 @@ public class JSONFileWizardPage extends WizardPage {
     }
 
     /**
-     * 
+     *
      * @see IDialogPage#createControl(Composite)
      */
     public void createControl(final Composite parent) {
@@ -114,7 +114,7 @@ public class JSONFileWizardPage extends WizardPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.DialogPage#dispose()
      */
     @Override
@@ -125,7 +125,7 @@ public class JSONFileWizardPage extends WizardPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.DialogPage#setVisible(boolean)
      */
     @Override

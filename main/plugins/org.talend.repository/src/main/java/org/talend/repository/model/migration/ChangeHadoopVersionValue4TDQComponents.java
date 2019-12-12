@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,7 +38,7 @@ public class ChangeHadoopVersionValue4TDQComponents extends AbstractJobMigration
     public ExecutionResult execute(Item item) {
         ProcessType processType = getProcessType(item);
         String[] tdqHadoopCompNames = { "tGenKeyHadoop", "tMatchGroupHadoop"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                
+
 
         IComponentConversion changeHDFSVersionValue = new IComponentConversion() {
 

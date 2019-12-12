@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,10 @@ public final class ConnectorCreatorFactory {
     public static ConnectorCreator create(final ComponentDetail component, final INode node) {
         if (isStandAlone(component)) {
             return new StandAloneConnectorCreator(component, node);
-        } 
+        }
         if (isInput(component)) {
             return new PartitionMapperConnectorCreator(component, node);
-        } 
+        }
         if (isOutput(component)) {
             return new OutputConnectorCreator(component, node);
         }
@@ -47,11 +47,11 @@ public final class ConnectorCreatorFactory {
         }
         throw new AssertionError();
     }
-    
+
     /**
-     * Checks whether the component is StandAlone component. 
+     * Checks whether the component is StandAlone component.
      * StandAlone component is a component, which has no input and output connections.
-     * 
+     *
      * @param detail ComponentDetail - a description of a component
      * @return true, it the component is StandAlone
      */
@@ -59,11 +59,11 @@ public final class ConnectorCreatorFactory {
         Objects.requireNonNull(detail);
         return !hasInputs(detail) && !hasOutputs(detail);
     }
-    
+
     /**
-     * Checks whether the component is an Input component. 
+     * Checks whether the component is an Input component.
      * Input component is a component, which has only input connections.
-     * 
+     *
      * @param detail ComponentDetail - a description of a component
      * @return true, it the component is an Input
      */
@@ -71,11 +71,11 @@ public final class ConnectorCreatorFactory {
         Objects.requireNonNull(detail);
         return !hasInputs(detail) && hasOutputs(detail);
     }
-    
+
     /**
-     * Checks whether the component is an Output component. 
+     * Checks whether the component is an Output component.
      * Output component is a component, which has only output connections.
-     * 
+     *
      * @param detail ComponentDetail - a description of a component
      * @return true, it the component is an Output
      */
@@ -83,11 +83,11 @@ public final class ConnectorCreatorFactory {
         Objects.requireNonNull(detail);
         return hasInputs(detail) && !hasOutputs(detail);
     }
-    
+
     /**
-     * Checks whether the component is a Processor component. 
+     * Checks whether the component is a Processor component.
      * Processor component is a component, which has both input and output connections.
-     * 
+     *
      * @param detail ComponentDetail - a description of a component
      * @return true, it the component is a Processor
      */

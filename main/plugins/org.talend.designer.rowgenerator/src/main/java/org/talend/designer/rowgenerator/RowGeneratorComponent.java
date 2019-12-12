@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,9 +51,9 @@ import org.talend.designer.rowgenerator.utils.problems.ProblemsAnalyser;
 
 /**
  * This is the external component of rowGenerator component. <br/>
- * 
+ *
  * $Id: RowGeneratorComponent.java,v 1.12 2007/02/02 03:34:13 pub Exp $
- * 
+ *
  */
 public class RowGeneratorComponent extends AbstractExternalNode {
 
@@ -73,7 +73,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#initialize()
      */
     @Override
@@ -85,7 +85,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#getPersistentData()
      */
     @Override
@@ -99,7 +99,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#open(org.eclipse.swt.widgets.Display)
      */
     @Override
@@ -129,7 +129,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#open()
      */
     @Override
@@ -143,7 +143,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IExternalComponent#setPersistentData(java.lang.Object)
      */
     @Override
@@ -153,7 +153,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getGeneratedCode()
      */
     public String getGeneratedCode() {
@@ -168,7 +168,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#getMetadataList()
      */
     @Override
@@ -199,7 +199,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.INode#setMetadataList(java.util.List)
      */
     @Override
@@ -230,12 +230,14 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#getProblems()
      */
     @Override
     public List<Problem> getProblems() {
-        initRowGeneratorMain();
+        if (rowGeneratorMain == null) {
+            initRowGeneratorMain();
+        }
         ProblemsAnalyser problemsAnalyser = new ProblemsAnalyser(rowGeneratorMain.getRowGenManager());
         return problemsAnalyser.checkProblems(externalData);
     }
@@ -253,7 +255,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#renameMetadataColumnName(java.lang.String,
      * java.lang.String, java.lang.String)
      */
@@ -263,7 +265,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#renameInputConnection(java.lang.String, java.lang.String)
      */
     @Override
@@ -273,7 +275,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#renameOutputConnection(java.lang.String, java.lang.String)
      */
     @Override
@@ -428,7 +430,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.core.model.process.AbstractExternalNode#metadataOutputChanged(org.talend.core.model.components.
      * IODataComponent, java.lang.String)
      */
@@ -490,7 +492,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getComponentDocumentation(java.lang.String, java.lang.String)
      */
     @Override
@@ -518,7 +520,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /**
      * Coverts <code>MetadataColumn</code> to <code>MetadataColumnExt</code>
-     * 
+     *
      * @param metadataTable
      * @return
      */
@@ -548,7 +550,7 @@ public class RowGeneratorComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getTMapExternalData()
      */
     @Override

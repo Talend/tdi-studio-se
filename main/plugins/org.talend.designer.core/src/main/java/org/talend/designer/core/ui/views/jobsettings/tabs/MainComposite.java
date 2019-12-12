@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -587,6 +587,7 @@ public class MainComposite extends AbstractTabComposite {
                                 || property == null) {
                             return;
                         }
+                        String oldVersion = repositoryObject.getVersion();
                         String originalName = nameText.getText();
                         String originalJobType = jobTypeCCombo.getText();
                         String originalFramework = ConvertJobsUtil.convertFrameworkByJobType(originalJobType,
@@ -779,6 +780,9 @@ public class MainComposite extends AbstractTabComposite {
                                         public void run(final IProgressMonitor monitor) throws CoreException {
                                             try {
                                                 if (repositoryObject.getProperty() != null) {
+                                                	if (!originalversion.equals(StringUtils.trimToEmpty(oldVersion))) {
+                                                        RelationshipItemBuilder.getInstance().addOrUpdateItem(repositoryObject.getProperty().getItem());
+                                                    }
                                                     proxyRepositoryFactory.save(ProjectManager.getInstance().getCurrentProject(),
                                                             repositoryObject.getProperty().getItem(), false);
                                                     if (needjobletRelateUpdate && GlobalServiceRegister.getDefault()
@@ -798,7 +802,7 @@ public class MainComposite extends AbstractTabComposite {
                                     };
                                     // unlockObject();
                                     // alreadyEditedByUser = true; // to avoid 2 calls of unlock
-                                    
+
                                     IWorkspace workspace = ResourcesPlugin.getWorkspace();
                                     try {
                                         ISchedulingRule schedulingRule = workspace.getRoot();

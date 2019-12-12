@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,22 +24,22 @@ import org.talend.sqlbuilder.SqlBuilderPlugin;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: AbstractSQLFolderNode.java,v 1.4 2006/11/01 05:40:59 peiqin.hou Exp $
- * 
+ *
  */
 public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
 
     /**
      * Get childType.
-     * 
+     *
      * @return Child type.
      */
     public abstract String getChildType();
 
     /**
      * Get name.
-     * 
+     *
      * @return name.
      */
     public abstract String getName();

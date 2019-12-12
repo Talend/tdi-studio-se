@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,22 +39,22 @@ public class ChangeValue4BonitaComponents extends
     public ExecutionResult execute(Item item) {
         final ProcessType processType = getProcessType(item);
         String[] compNames = {"tBonitaDeploy" ,"tBonitaInstantiateProcess"};
-        
+
     	IComponentConversion conversion = new IComponentConversion() {
 
 	        public void transform(NodeType node) {
 	            if(node == null) {
 	                return;
 	            }
-	            
+
 	        	ElementParameterType parameter = ComponentUtilities.getNodeProperty(node, "DB_VERSION");
-	        	
+
 	        	if (parameter != null) {
 	        		String value = parameter.getValue();
 	        		if(value == null) {
 	        		    return;
 	        		}
-	        		
+
 	        		String oldValue523Prefix = "bonita-client-5.2.3.jar";
 	        		String oldValue531Prefix = "bonita-client-5.3.jar";
 	        		if(value.startsWith(oldValue523Prefix)) {
@@ -66,9 +66,9 @@ public class ChangeValue4BonitaComponents extends
 	        		}
 	        	}
 	        }
-        
+
     	};
-    	
+
     	for (String name : compNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 

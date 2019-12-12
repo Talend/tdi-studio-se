@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,9 +17,9 @@ import org.eclipse.ui.views.properties.tabbed.ITypeMapper;
 
 /**
  * Type of mapper returned by this function. It will select a basic EditPart. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class GefEditorTypeMapper implements ITypeMapper {
 

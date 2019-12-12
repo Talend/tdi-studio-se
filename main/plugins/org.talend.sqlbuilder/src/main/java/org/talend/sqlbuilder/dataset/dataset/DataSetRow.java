@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,7 +14,7 @@ package org.talend.sqlbuilder.dataset.dataset;
 
 /**
  * DataSetRow, represents one row in a dataSet.
- * 
+ *
  * @author Davy Vanherbergen
  */
 public class DataSetRow {
@@ -23,7 +23,7 @@ public class DataSetRow {
 
     /**
      * Create new DataSetRow with columnCount values.
-     * 
+     *
      * @param columnCount number of columns
      */
     public DataSetRow(int columnCount) {
@@ -32,7 +32,7 @@ public class DataSetRow {
 
     /**
      * Create initialized dataSetRow.
-     * 
+     *
      * @param values
      */
     public DataSetRow(String[] values) {
@@ -41,7 +41,7 @@ public class DataSetRow {
 
     /**
      * Returns value of given column.
-     * 
+     *
      * @param column first column is 0
      */
     public Object getObjectValue(int column) {
@@ -55,7 +55,7 @@ public class DataSetRow {
 
     /**
      * Set the value for a given column.
-     * 
+     *
      * @param column first column is 0
      * @param value
      */

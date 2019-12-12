@@ -10,12 +10,13 @@
     AUTHOR="Talend"
     RELEASE_DATE="20070312A"
     STARTABLE="true"
+    VISIBLE="false"
   >
     <SIGNATURE/>
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Business/CentricCRM</FAMILY>
+    <FAMILY>Deprecated</FAMILY>
   </FAMILIES>
 
   <DOCUMENTATION>

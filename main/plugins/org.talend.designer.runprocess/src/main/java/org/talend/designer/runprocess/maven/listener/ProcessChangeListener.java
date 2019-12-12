@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -126,6 +126,8 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     // version change, will create new item
                     // create new job project.
                     TalendJavaProjectManager.generatePom(property.getItem());
+                    AggregatorPomsHelper helper = new AggregatorPomsHelper();
+                    helper.syncParentJobPomsForPropertyChange(property);
                 }
             }
         }
@@ -191,7 +193,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
     }
 
     /**
-     * 
+     *
      * DOC jding Comment method "checkRoutinesAfterDeleteForever". After delete routines forever, need to check if
      * ref-project exist same routines, need to rebuild routines when next job build.
      */
@@ -219,8 +221,10 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     IContainer parent = sourceFolder.getParent();
                     sourceFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
                     removeFromParentSourceFolder(sourceFolder);
-                    RenameResourceChange change = new RenameResourceChange(sourceFolder.getFullPath(), newName);
-                    change.perform(monitor);
+                    if(sourceFolder.exists()) {
+                    	RenameResourceChange change = new RenameResourceChange(sourceFolder.getFullPath(), newName);
+                        change.perform(monitor);
+                    }
                     IFolder newFolder = parent.getFolder(new Path(newName));
                     updatePomsInNewFolder(newFolder);
                 } catch (CoreException e) {
@@ -233,11 +237,14 @@ public class ProcessChangeListener implements PropertyChangeListener {
     /**
      * DOC nrousseau Comment method "updatePomsInNewFolder". update all jobs' relative path and groupId add job to
      * parent modules
-     * 
+     *
      * @param newFolder
      * @throws CoreException
      */
     private void updatePomsInNewFolder(IFolder newFolder) throws CoreException {
+    	if(!newFolder.exists()) {
+    		return;
+    	}
         for (IResource res : newFolder.members()) {
             if (res instanceof IFolder) {
                 IFolder currentFolder = (IFolder) res;
@@ -258,11 +265,14 @@ public class ProcessChangeListener implements PropertyChangeListener {
 
     /**
      * DOC nrousseau Comment method "removeFromParentSourceFolder".
-     * 
+     *
      * @param sourceFolder
      * @throws CoreException
      */
     private void removeFromParentSourceFolder(IFolder sourceFolder) throws CoreException {
+    	if(!sourceFolder.exists()) {
+    		return;
+    	}
         for (IResource res : sourceFolder.members()) {
             if (res instanceof IFolder) {
                 IFolder currentFolder = (IFolder) res;

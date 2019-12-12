@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -50,11 +50,12 @@ import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.repository.generic.ui.common.GenericWizardPage;
 import org.talend.repository.generic.ui.context.ContextComposite;
+import org.talend.repository.generic.ui.httpsProxy.HttpsProxyComposite;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IProxyRepositoryService;
 
 /**
- * 
+ *
  * created by ycbai on 2015年9月21日 Detailled comment
  *
  */
@@ -95,11 +96,12 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
         dynamicComposite.setLayoutData(createMainFormData(addContextFields));
         dynamicComposite.setWizardPropertyChangeListener(this);
         addCheckListener(dynamicComposite.getChecker());
-
         if (addContextFields) {
             Composite contextParentComp = new Composite(container, SWT.NONE);
             contextParentComp.setLayoutData(createFooterFormData(dynamicComposite));
             contextParentComp.setLayout(new GridLayout());
+            HttpsProxyComposite httpsProxyComposite = new HttpsProxyComposite(contextParentComp, SWT.NONE);
+            httpsProxyComposite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
             ContextComposite contextComp = addContextFields(contextParentComp);
             contextComp.addPropertyChangeListener(dynamicComposite);
             contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -173,7 +175,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
     /**
      * Loads the repository view objects that are used to check if the name of job(Opened in the current properties
      * wizard dialog) can be found. Added by Marvin Wang on Feb 22, 2013.
-     * 
+     *
      * @return a list includes the instance of <code>IRepositoryViewObject</code>, which are used to check if a given
      * job name is present in the list.
      * @throws PersistenceException
@@ -192,7 +194,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
     /**
      * Loads the repository view objects, which have the same repository type as the current job that are opened in
      * properties wizard dialog. Added by Marvin Wang on Feb 22, 2013.
-     * 
+     *
      * @return
      * @throws PersistenceException
      */
@@ -228,7 +230,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

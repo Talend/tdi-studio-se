@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,9 +44,9 @@ import org.talend.repository.resource.i18n.Messages;
 
 /**
  * Wizard for the creation of a new Route Resource. <br/>
- * 
+ *
  * @author xpli
- * 
+ *
  */
 public class NewRouteResourceWizard extends Wizard {
 
@@ -67,7 +67,7 @@ public class NewRouteResourceWizard extends Wizard {
 
 	/**
 	 * Constructs a new NewProjectWizard.
-	 * 
+	 *
 	 * @param author
 	 *            Project author.
 	 * @param server
@@ -106,7 +106,7 @@ public class NewRouteResourceWizard extends Wizard {
 
 	/**
 	 * Getter for docFilePath.
-	 * 
+	 *
 	 * @return the docFilePath
 	 */
 	public IPath getFilePath() {
@@ -115,7 +115,7 @@ public class NewRouteResourceWizard extends Wizard {
 
 	/**
 	 * Getter for project.
-	 * 
+	 *
 	 * @return the project
 	 */
     public ResourceItem getItem() {
@@ -129,7 +129,7 @@ public class NewRouteResourceWizard extends Wizard {
 	public boolean performFinish() {
 		property.setId(repositoryFactory.getNextId());
 		property.setLabel(property.getDisplayName());
-		
+
 		URL url = mainPage.getUrl();
 		Path p = new Path(property.getLabel());
 		String itemName = p.removeFileExtension().lastSegment();

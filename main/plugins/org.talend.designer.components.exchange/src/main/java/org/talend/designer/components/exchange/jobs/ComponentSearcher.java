@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ import us.monoid.json.JSONArray;
 import us.monoid.json.JSONObject;
 
 /**
- * 
+ *
  * DOC hcyi class global comment. Detailled comment
  */
 public class ComponentSearcher {
@@ -46,7 +46,7 @@ public class ComponentSearcher {
 
     /**
      * Find available components.
-     * 
+     *
      * @param version The tos version.
      * @param language The project language.
      * @return
@@ -191,7 +191,7 @@ public class ComponentSearcher {
 
     /**
      * Find Contributed components.
-     * 
+     *
      * @param version The tos version.
      * @param language The project language.
      * @return
@@ -235,7 +235,7 @@ public class ComponentSearcher {
 
     /**
      * Find Installed components.
-     * 
+     *
      * @param version The tos version.
      * @param language The project language.
      * @return
@@ -275,7 +275,7 @@ public class ComponentSearcher {
 
     /**
      * Search components according to user input.
-     * 
+     *
      * @param components All available components.
      * @param query The user input.
      * @param featureIds The field to search, e.g. name or description.
@@ -289,7 +289,7 @@ public class ComponentSearcher {
 
     /**
      * Find the components that have been installed.
-     * 
+     *
      * @param components
      * @return
      */
@@ -303,7 +303,7 @@ public class ComponentSearcher {
 
     /**
      * Convert the project language to id.
-     * 
+     *
      * @param language
      * @return
      */

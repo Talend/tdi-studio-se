@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,7 +34,7 @@ import org.talend.designer.dbmap.language.generation.DbGenerationManagerTestHelp
 
 /**
  * created by ggu on Jun 25, 2012 Detailled comment
- * 
+ *
  */
 
 public class OracleGenerationManagerTest extends DbGenerationManagerTestHelper {
@@ -69,9 +69,9 @@ public class OracleGenerationManagerTest extends DbGenerationManagerTestHelper {
     }
 
     /**
-     * 
+     *
      * for TDI-21413
-     * 
+     *
      */
     @Test
     public void testAddQuoteForSpecialChar_NPE() throws Exception {
@@ -80,9 +80,9 @@ public class OracleGenerationManagerTest extends DbGenerationManagerTestHelper {
     }
 
     /**
-     * 
+     *
      * for TDI-21413
-     * 
+     *
      */
     @Test
     public void testAddQuoteForSpecialChar_Order1() throws Exception {

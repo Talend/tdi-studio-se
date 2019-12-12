@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,7 +37,7 @@ public class TalendConnectionHandleLocator implements Locator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.Locator#relocate(org.eclipse.draw2d.IFigure)
      */
     @Override

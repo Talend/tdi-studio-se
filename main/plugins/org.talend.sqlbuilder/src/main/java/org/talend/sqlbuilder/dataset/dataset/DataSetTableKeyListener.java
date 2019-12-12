@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,7 +49,7 @@ import org.talend.sqlbuilder.dbdetail.IDetailTab;
  * <li>CTRL-C: copy active cell</li>
  * <li>CTRL-F: column name finder assistant (use F3 to skip to next match) </li>
  * </ul>
- * 
+ *
  * @author Davy Vanherbergen
  */
 public class DataSetTableKeyListener implements KeyListener {
@@ -71,13 +71,13 @@ public class DataSetTableKeyListener implements KeyListener {
     private static final int ENTER = 13;
 
     private String plastNameSearched = null;
-    
+
     private int plastColumnIndex = 0;
 
-   
+
     /**
      * Create new keylistener.
-     * 
+     *
      * @param parent
      * @param table
      * @param cursor
@@ -88,18 +88,18 @@ public class DataSetTableKeyListener implements KeyListener {
         ptable = table;
         pparent = parent;
         pcursor = cursor;
-        
+
         Object o = pparent.getData("IDetailTab"); //$NON-NLS-1$
         if (o != null) {
             ptab = (IDetailTab) o;
-        }        
+        }
 
     }
 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.events.KeyListener#keyPressed(org.eclipse.swt.events.KeyEvent)
      */
     public void keyPressed(KeyEvent e) {
@@ -142,7 +142,7 @@ public class DataSetTableKeyListener implements KeyListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.events.KeyListener#keyReleased(org.eclipse.swt.events.KeyEvent)
      */
     public void keyReleased(KeyEvent e) {
@@ -189,7 +189,7 @@ public class DataSetTableKeyListener implements KeyListener {
     private void createPopup() {
 
         plastNameSearched = null;
-        
+
         // recycle old popup
         if (ppopup != null && !ppopup.isDisposed()) {
             if (!ppopup.isVisible()) {
@@ -200,7 +200,7 @@ public class DataSetTableKeyListener implements KeyListener {
 
         // find out where to put the popup on screen
         Point popupLocation = ptable.toDisplay(10, 40);
-        
+
         // create new shell
         ppopup = new Shell(pparent.getShell(), SWT.BORDER | SWT.ON_TOP);
         ppopup.setBackground(pparent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
@@ -217,13 +217,13 @@ public class DataSetTableKeyListener implements KeyListener {
         Label label = new Label(ppopup, SWT.NULL);
         label.setText(Messages.getString("DataSetTable.PopUp.Find")); //$NON-NLS-1$
         label.setBackground(pparent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-        
+
         // add input field for search text
         final Text input = new Text(ppopup, SWT.SINGLE | SWT.FILL);
         input.setLayoutData(gridData);
         input.setBackground(pparent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 
-        
+
         // scroll columns whenever something is typed in input field.
         input.addModifyListener(new ModifyListener() {
 
@@ -237,40 +237,40 @@ public class DataSetTableKeyListener implements KeyListener {
                     input.setForeground(pparent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
                 } else {
                     // give some subtle feedback to user that column doesn't exist..
-                    input.setForeground(pparent.getDisplay().getSystemColor(SWT.COLOR_RED));                    
+                    input.setForeground(pparent.getDisplay().getSystemColor(SWT.COLOR_RED));
                 }
             }
 
         });
-        
+
 
         // add listener so that we can jump to next column match when
         // user hits enter..
         input.addKeyListener(new KeyAdapter() {
 
-            public void keyPressed(KeyEvent e) {       
-                                
+            public void keyPressed(KeyEvent e) {
+
                 if (e.character == ENTER) {
                     // scroll to next match
                     if (jumpToColumn(null)) {
                         input.setForeground(pparent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
                     } else {
                         // give some subtle feedback to user that column doesn't exist..
-                        input.setForeground(pparent.getDisplay().getSystemColor(SWT.COLOR_RED));                    
+                        input.setForeground(pparent.getDisplay().getSystemColor(SWT.COLOR_RED));
                     }
-                }                
-            }            
+                }
+            }
         });
-        
+
         // close popup when user is no longer in inputfield
         input.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
                 disposePopup();
             }
-            
+
         });
 
-        
+
         // activate popup
         ppopup.open();
         ppopup.forceActive();
@@ -289,52 +289,52 @@ public class DataSetTableKeyListener implements KeyListener {
             ppopup = null;
         }
     }
-    
-    
+
+
     /**
      * Jump to next availabel column with header name.
      * If the same name is processed again, we jump to
      * the next column with the same name.  If no further columns
      * are available, we jump to first available column again.
-     *  
+     *
      * @param name of column to jump to.
      * @return true if a matching column was found
      */
     private boolean jumpToColumn(String name) {
-        
+
         String text = null;
-        
-        if (name != null) {            
+
+        if (name != null) {
             // use input to find column
             text = name.toLowerCase().trim();
             plastNameSearched = text;
             plastColumnIndex = 0;
-            
+
         } else {
             // use previous name to search
             text = plastNameSearched;
             plastColumnIndex += 1;
-                        
+
         }
-        
+
         if (text == null) {
             text = ""; //$NON-NLS-1$
         }
-        
-        
-        TableColumn[] columns = ptable.getColumns();        
+
+
+        TableColumn[] columns = ptable.getColumns();
         if (columns == null || plastColumnIndex >= columns.length) {
-                       
+
             // no columns or we searched them all..
             plastColumnIndex = 0;
             return false;
         }
-        
+
         boolean columnFound = false;
-        
+
         // find column
         for (int i = plastColumnIndex; i < columns.length; i++) {
-                       
+
             TableColumn column = columns[i];
 
             if (column.getText().toLowerCase().startsWith(text)) {
@@ -347,7 +347,7 @@ public class DataSetTableKeyListener implements KeyListener {
                 // now back to the column we want, this way it should be
                 // the first column visible in most cases
                 ptable.showColumn(column);
-                
+
                 // move cursor to found column
                 if (ptable.getItemCount() > 0) {
                     pcursor.setSelection(0, i);
@@ -357,18 +357,18 @@ public class DataSetTableKeyListener implements KeyListener {
                 // store column index so we can pickup where we left of
                 // in case of repeated search
                 plastColumnIndex = i;
-                
+
                 break;
 
             }
         }
-        
+
         // reset search to start from start again
         if (!columnFound) {
             plastColumnIndex = 0;
         }
-        
-        
+
+
         return columnFound;
     }
 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -202,7 +202,7 @@ public class MergeTosMetadataMigrationTask extends AbstractItemMigrationTask {
 
     /**
      * compute the schema name.
-     * 
+     *
      * @param schema the schema to compute the name from
      * @param databaseConnection the DB connection caus some of the name are issued from the DB connection
      * @param curSchema, the type of name for the schema
@@ -242,7 +242,7 @@ public class MergeTosMetadataMigrationTask extends AbstractItemMigrationTask {
 
     /**
      * compute the catalog name.
-     * 
+     *
      * @param databaseConnection the DB connection caus some of the name are issued from the DB connection
      * @param catalogNameType, the type of name for the catalog
      * @return the string corresponding to the naming convention of catalogNameType

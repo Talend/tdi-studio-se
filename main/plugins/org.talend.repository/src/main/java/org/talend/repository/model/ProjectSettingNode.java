@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,7 +27,7 @@ public class ProjectSettingNode extends PreferenceNode {
 
     /**
      * DOC aimingchen ProjectSettingNode constructor comment.
-     * 
+     *
      * @param id
      */
     public ProjectSettingNode(String id) {
@@ -62,7 +62,7 @@ public class ProjectSettingNode extends PreferenceNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

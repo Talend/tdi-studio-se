@@ -109,12 +109,11 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    <PARAMETER NAME="CREATE_TABLE_IF_NOT_EXIST" FIELD="CHECK" NUM_ROW="50" REQUIRED="true" SHOW_IF="AUTH_MODE == 'OAUTH'">
+    <PARAMETER NAME="CREATE_TABLE_IF_NOT_EXIST" FIELD="CHECK" NUM_ROW="50" REQUIRED="true">
 	<DEFAULT>true</DEFAULT>
     </PARAMETER>
     <PARAMETER
-      NAME="ACTION_ON_DATA"
-      SHOW_IF="AUTH_MODE == 'OAUTH'"
+      NAME="ACTION_ON_DATA"      
       FIELD="CLOSED_LIST"
       NUM_ROW="51"
       REQUIRED="true"
@@ -174,7 +173,7 @@
 		SHOW_IF="(SET_FIELD_DELIMITER == 'true')">
 		<DEFAULT>","</DEFAULT>
 	</PARAMETER>
-    <PARAMETER NAME="DROP" FIELD="CHECK" REQUIRED="true" NUM_ROW="25" SHOW_IF="AUTH_MODE == 'SERVICEACCOUNT'">
+    <PARAMETER NAME="DROP" FIELD="CHECK" REQUIRED="true" NUM_ROW="25">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
 	<PARAMETER NAME="ENCODING" FIELD="ENCODING_TYPE" NUM_ROW="30"
@@ -191,7 +190,7 @@
 		<IMPORT NAME="google-oauth-client-1.19.0.jar" MODULE="google-oauth-client-1.19.0.jar" MVN="mvn:org.talend.libraries/google-oauth-client-1.19.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.google/lib/google-oauth-client-1.19.0.jar" REQUIRED="true" />
 		<IMPORT NAME="google-http-client-jackson2-1.19.0.jar" MODULE="google-http-client-jackson2-1.19.0.jar" MVN="mvn:org.talend.libraries/google-http-client-jackson2-1.19.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.google/lib/google-http-client-jackson2-1.19.0.jar" REQUIRED="true" />
 		<IMPORT NAME="guava-jdk5-13.0.jar" MODULE="guava-jdk5-13.0.jar" MVN="mvn:org.talend.libraries/guava-jdk5-13.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.guava/lib/guava-jdk5-13.0.jar" REQUIRED="true" />
-		<IMPORT NAME="jackson-core-2.9.5.jar" MODULE="jackson-core-2.9.5.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.5" REQUIRED="true" />
+		<IMPORT NAME="jackson-core-2.10.1.jar" MODULE="jackson-core-2.10.1.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.10.1" REQUIRED="true" />
 		<!-- REQUIRED FOR GOOGLE STORAGE -->
 		<IMPORT NAME="jets3t-0.9.1" MODULE="jets3t-0.9.1.jar" MVN="mvn:org.talend.libraries/jets3t-0.9.1/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="commons-logging-1.1.1" MODULE="commons-logging-1.1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0"  UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar" REQUIRED="true" />

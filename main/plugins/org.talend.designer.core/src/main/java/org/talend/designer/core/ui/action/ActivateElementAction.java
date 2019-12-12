@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,9 +29,9 @@ import org.talend.designer.core.ui.editor.nodes.NodePart;
 
 /**
  * Action used to set the start status on a node with the context menu. <br/>
- * 
+ *
  * $Id: NodeSetActivateAction.java 3351 2007-05-04 12:14:00 +0000 (ven., 04 mai 2007) plegall $
- * 
+ *
  */
 public class ActivateElementAction extends SelectionAction {
 
@@ -59,7 +59,7 @@ public class ActivateElementAction extends SelectionAction {
 
     /**
      * Test if the selected item is a node.
-     * 
+     *
      * @return true / false
      */
     private boolean canPerformAction() {
@@ -150,7 +150,7 @@ public class ActivateElementAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     public void run() {

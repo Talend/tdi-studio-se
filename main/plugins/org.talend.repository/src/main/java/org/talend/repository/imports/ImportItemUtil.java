@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -138,9 +138,9 @@ import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
 
 /**
- * 
+ *
  * @deprecated won't use this class, and shouldn't do any modification in this class too.
- * 
+ *
  * it had moved to new import system (IImportHandler) with extension point
  * "org.talend.repository.items.importexport.handler".
  */
@@ -369,7 +369,7 @@ public class ImportItemUtil {
 
     /**
      * DOC hcw Comment method "checkIfLocked".
-     * 
+     *
      * @param itemRecord
      * @return
      * @throws PersistenceException
@@ -1006,7 +1006,7 @@ public class ImportItemUtil {
 
     /**
      * DOC ycbai Comment method "applyMigrationTasks".
-     * 
+     *
      * @param itemRecord
      * @param monitor
      */
@@ -1314,9 +1314,9 @@ public class ImportItemUtil {
 
     /**
      * DOC ycbai Comment method "checkHadoopSubitem".
-     * 
+     *
      * Check whether or not the itemRecord is a subitem record of a hadoop cluster item record.
-     * 
+     *
      * @param itemRecord
      * @return
      */
@@ -1336,9 +1336,9 @@ public class ImportItemUtil {
 
     /**
      * DOC ycbai Comment method "collectHadoopSubrecords".
-     * 
+     *
      * Collect all subitem records belong to a hadoop cluster.
-     * 
+     *
      * @param totalItemRecords
      * @param itemRecord
      * @return
@@ -1374,13 +1374,13 @@ public class ImportItemUtil {
         // old task, added for an old version of TOS, not used anymore.
         toReturn.add("org.talend.repository.migration.ReplaceOldContextScriptCodeMigrationTask"); //$NON-NLS-1$
         toReturn.add("org.talend.designer.core.model.process.migration.SynchronizeSchemaOnlyForPerlDemo"); //$NON-NLS-1$
-        toReturn.add("org.talend.repository.model.migration.RenametFSFilterRow"); //$NON-NLS-1$        
+        toReturn.add("org.talend.repository.model.migration.RenametFSFilterRow"); //$NON-NLS-1$
         return toReturn;
     }
 
     /**
      * DOC ycbai Comment method "checkMigrationTasks".
-     * 
+     *
      * @param currentProject
      * @param importedProject
      * @param itemRecord
@@ -1505,7 +1505,7 @@ public class ImportItemUtil {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl#createInputStream(org.eclipse.
                  * emf.common.util.URI, java.util.Map)
                  */
@@ -1620,11 +1620,11 @@ public class ImportItemUtil {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "resetItemReference".
-     * 
+     *
      * resolve the encode some special character(bug 6252), maybe, It's not better to resolve this by manually.
-     * 
+     *
      * such as, "[" is "%5B", "]" is "%5D", etc.
      */
     @SuppressWarnings("unchecked")
@@ -1788,7 +1788,7 @@ public class ImportItemUtil {
     }
 
     /**
-     * 
+     *
      * DOC hcw ImportItemUtil class global comment. Detailled comment
      */
     static class RepositoryObjectCache {
@@ -1913,7 +1913,7 @@ public class ImportItemUtil {
         if (extRoutines.isEmpty()) {
             return;
         }
-        IPath tmpDir = new Path(System.getProperty("user.dir") + File.separatorChar + "tmpJar"); //$NON-NLS-1$  
+        IPath tmpDir = new Path(System.getProperty("user.dir") + File.separatorChar + "tmpJar"); //$NON-NLS-1$
         Set<URL> jarsToDeploy = new HashSet<URL>();
         File dirFile = tmpDir.toFile();
         for (IPath path : manager.getPaths()) {

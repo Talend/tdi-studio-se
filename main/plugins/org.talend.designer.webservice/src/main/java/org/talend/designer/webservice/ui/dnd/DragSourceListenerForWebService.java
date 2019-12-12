@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,7 +36,7 @@ public class DragSourceListenerForWebService implements TransferDragSourceListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.util.TransferDragSourceListener#getTransfer()
      */
 
@@ -46,7 +46,7 @@ public class DragSourceListenerForWebService implements TransferDragSourceListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.DragSourceListener#dragFinished(org.eclipse.swt.dnd.DragSourceEvent)
      */
 
@@ -56,7 +56,7 @@ public class DragSourceListenerForWebService implements TransferDragSourceListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.DragSourceListener#dragSetData(org.eclipse.swt.dnd.DragSourceEvent)
      */
 
@@ -72,7 +72,7 @@ public class DragSourceListenerForWebService implements TransferDragSourceListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.DragSourceListener#dragStart(org.eclipse.swt.dnd.DragSourceEvent)
      */
 

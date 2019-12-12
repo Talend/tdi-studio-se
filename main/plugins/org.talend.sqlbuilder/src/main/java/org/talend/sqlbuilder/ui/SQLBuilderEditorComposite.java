@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -61,15 +61,15 @@ import org.talend.sqlbuilder.ui.proposal.SQLEditorProposalProvider;
 
 /**
  * This class is responsible for creating editor composite.<br/>
- * 
+ *
  * $Id: SQLBuilderEditorComposite.java,v 1.51 2006/11/09 08:40:43 ftang Exp $
- * 
+ *
  */
 /**
  * dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml,v 1.3 2006/11/01 05:38:28 nicolas Exp $
- * 
+ *
  */
 public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
@@ -91,7 +91,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /**
      * SQLBuilderEditorComposite constructor.
-     * 
+     *
      * @param parent
      * @param tabItem
      * @param isDefaultEditor
@@ -113,7 +113,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /**
      * Initializes UI compoents.
-     * 
+     *
      * @param parent
      */
     private void initialContent(Composite parent) {
@@ -135,7 +135,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /**
      * Creates UI for editor.
-     * 
+     *
      * @param parent
      */
     private void createEditorArea(Composite parent) {
@@ -193,7 +193,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
     }
 
     /**
-     * 
+     *
      * When dispose the control, dispose resource at the same time. (bug 6916)
      */
     protected void addResourceDisposeListener(final Control parent, final Resource res) {
@@ -237,7 +237,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /**
      * Creates UI for status bar.
-     * 
+     *
      * @param parent
      */
     private void createStatusArea(Composite parent) {
@@ -311,7 +311,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /**
      * Adds resize listener.
-     * 
+     *
      * @param listener
      */
     public void addResizeListener(ControlListener listener) {
@@ -348,7 +348,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getSessionTreeNode()
      */
     @Override
@@ -358,7 +358,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getIfLimit()
      */
     @Override
@@ -368,7 +368,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getMaxResult()
      */
     @Override
@@ -378,7 +378,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#setRepositoryNode(org.talend.repository.model.RepositoryNode)
      */
     @Override
@@ -395,13 +395,13 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /**
      * Sets tab title.
-     * 
+     *
      * @param node
      */
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getRepositoryName()
      */
     @Override
@@ -415,7 +415,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getSQLToBeExecuted()
      */
     @Override
@@ -425,7 +425,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#setEditorContent(org.talend.sqlbuilder.util.ConnectionParameters)
      */
     public void setEditorContent(ConnectionParameters connectionParameters) {
@@ -437,7 +437,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#clearText()
      */
     @Override
@@ -447,7 +447,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#setEditorContent(java.lang.String)
      */
     @Override
@@ -461,7 +461,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getSessionTreeNode()
      */
     public SessionTreeNode getSessionTreeNode() {
@@ -479,7 +479,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /**
      * Getter for connParam.
-     * 
+     *
      * @return the connParam
      */
     @Override
@@ -501,7 +501,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /**
      * Sets the isModified.
-     * 
+     *
      * @param isModified the isModified to set
      */
     public void setModified(boolean isModified) {
@@ -512,7 +512,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /**
      * Sets the multiPageEditor.
-     * 
+     *
      * @param multiPageEditor the multiPageEditor to set
      */
     public void setMultiPageEditor(MultiPageSqlBuilderEditor multiPageEditor) {
@@ -521,7 +521,7 @@ public class SQLBuilderEditorComposite extends AbstractSQLEditorComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getMultiPageEditor()
      */
     @Override

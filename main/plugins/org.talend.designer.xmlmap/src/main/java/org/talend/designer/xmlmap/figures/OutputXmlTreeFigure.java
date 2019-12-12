@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,7 +31,7 @@ public class OutputXmlTreeFigure extends XmlmapInOutTreeFigure {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.xmlmap.figures.AbstractInOutTreeFigure#getTreeDisplayName()
      */
     @Override
@@ -41,7 +41,7 @@ public class OutputXmlTreeFigure extends XmlmapInOutTreeFigure {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.xmlmap.figures.AbstractInOutTreeFigure#createTreeSettings(org.eclipse.draw2d.Figure)
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.designer.components.thash.io.IMapHashFile;
 import org.talend.designer.components.thash.io.beans.ILightSerializable;
 
 /**
- * 
+ *
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class SortedMultipleHashFile implements IMapHashFile {
 
@@ -88,7 +88,7 @@ public class SortedMultipleHashFile implements IMapHashFile {
 
     /**
      * DOC amaumont Comment method "getFileNumber".
-     * 
+     *
      * @param hashcode
      * @return
      */
@@ -98,7 +98,7 @@ public class SortedMultipleHashFile implements IMapHashFile {
 
     /**
      * DOC amaumont Comment method "getFilePath".
-     * 
+     *
      * @param container
      * @param i
      * @param j
@@ -160,7 +160,7 @@ public class SortedMultipleHashFile implements IMapHashFile {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.thash.io.IMapHashFile#endPut()
      */
     public void endPut() throws IOException {
@@ -196,7 +196,7 @@ public class SortedMultipleHashFile implements IMapHashFile {
 
     /**
      * DOC amaumont Comment method "mergeFiles".
-     * 
+     *
      * @throws FileNotFoundException
      * @throws IOException
      */
@@ -307,7 +307,7 @@ public class SortedMultipleHashFile implements IMapHashFile {
 
     /**
      * DOC amaumont Comment method "processData".
-     * 
+     *
      * @param cursorPosition
      * @param min
      */
@@ -398,7 +398,7 @@ public class SortedMultipleHashFile implements IMapHashFile {
 
     /**
      * DOC amaumont Comment method "next".
-     * 
+     *
      * @param hashcode
      * @throws IOException
      */
@@ -483,7 +483,7 @@ public class SortedMultipleHashFile implements IMapHashFile {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.thash.io.MapHashFile#getTotalSize()
      */
     public long getTotalSize() {
@@ -505,7 +505,7 @@ public class SortedMultipleHashFile implements IMapHashFile {
 
     /**
      * get number of objects already put.
-     * 
+     *
      * @return
      */
     public int getObjectsCount() {

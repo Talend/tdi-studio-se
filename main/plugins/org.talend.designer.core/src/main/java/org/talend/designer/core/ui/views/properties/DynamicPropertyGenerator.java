@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,9 +29,9 @@ import org.talend.designer.core.ui.editor.properties.controllers.generator.ICont
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DynamicTabbedPropertyGenerator.java 1 2006-12-22 上午11:24:10 +0000 (上午11:24:10) yzhang $
- * 
+ *
  */
 public class DynamicPropertyGenerator {
 
@@ -81,7 +81,7 @@ public class DynamicPropertyGenerator {
 
     /**
      * DOC yzhang Comment method "getController".
-     * 
+     *
      * @param controllerName
      * @param dtp
      * @return

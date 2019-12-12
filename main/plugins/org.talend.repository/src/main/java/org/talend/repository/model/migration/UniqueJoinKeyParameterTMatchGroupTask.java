@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -52,7 +52,7 @@ public class UniqueJoinKeyParameterTMatchGroupTask extends AbstractJobMigrationT
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     public Date getOrder() {
@@ -62,7 +62,7 @@ public class UniqueJoinKeyParameterTMatchGroupTask extends AbstractJobMigrationT
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org.talend.core.model.properties.Item)
      */
     @Override
@@ -97,16 +97,16 @@ public class UniqueJoinKeyParameterTMatchGroupTask extends AbstractJobMigrationT
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * the column of HANDLE_NULL is a new column for tmatchGroup
-     * 
+     *
      */
     private class AddHandleNullColumn implements IComponentConversion {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.talend.core.model.components.conversions.IComponentConversion#transform(org.talend.designer.core.model
          * .utils.emf.talendfile.NodeType)

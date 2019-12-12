@@ -12,8 +12,8 @@ import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.apache.poi.hsmf.datatypes.StringChunk;
 import org.apache.poi.hsmf.datatypes.Types;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MsgMailUtil {
 
@@ -24,6 +24,15 @@ public class MsgMailUtil {
 
 	public MsgMailUtil() {
 	}
+	
+	private enum Level {
+		DEBUG,
+		INFO,
+		TRACE,
+		FATAL,
+		WARN,
+		ERROR
+	}
 
 	public MsgMailUtil(String fileName, String outAttachmentPath)
 			throws IOException {
@@ -31,8 +40,8 @@ public class MsgMailUtil {
 		this.outAttachmentPath = outAttachmentPath;
 	}
 
-	public void activeLog(Logger log, String position) {
-		this.log = log;
+	public void activeLog(String logger_name, String position) {
+		this.log = LoggerFactory.getLogger(logger_name);
 		this.position = position;
 	}
 
@@ -113,23 +122,20 @@ public class MsgMailUtil {
 		}
 	}
 
-	public void processLog(Level level, String message) {
+	private void processLog(Level level, String message) {
 		message = position + " - " + message;
 		if (this.log != null) {
-			switch (level.toInt()) {
-			case Level.TRACE_INT:
+			switch (level) {
+			case TRACE:
 				log.trace(message);
 				break;
-			case Level.ERROR_INT:
+			case ERROR:
 				log.error(message);
 				break;
-			case Level.FATAL_INT:
-				log.fatal(message);
-				break;
-			case Level.INFO_INT:
+			case INFO:
 				log.info(message);
 				break;
-			case Level.WARN_INT:
+			case WARN:
 				log.warn(message);
 				break;
 			default:

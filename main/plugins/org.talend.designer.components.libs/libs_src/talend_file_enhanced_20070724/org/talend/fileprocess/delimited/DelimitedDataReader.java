@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * DelimitedDataReader is a stream based API for reading any size of delimited data whith any type of field and record
  * delimiters. If you want to get an instance of this type please use the DelimitedDataReaderFactory<br/>
- * 
+ *
  * @author gke
  */
 public abstract class DelimitedDataReader {
@@ -65,7 +65,7 @@ public abstract class DelimitedDataReader {
 
     /**
      * DOC ke Comment method "checkClosed". This will be call before read new record or get content of the column
-     * 
+     *
      * @throws IOException Thrown if this object has already been closed.
      */
     protected void checkClosed() throws IOException {
@@ -76,7 +76,7 @@ public abstract class DelimitedDataReader {
 
     /**
      * Reads another record. If this returns true, a new row data will be available using get(columnIndex)
-     * 
+     *
      * @return Whether another record was successfully read or not.
      * @throws IOException Thrown if an error occurs while reading data from the source stream.
      */
@@ -84,7 +84,7 @@ public abstract class DelimitedDataReader {
 
     /**
      * Returns the current columns value for a given column index.
-     * 
+     *
      * @param columnIndex The index of the column.
      * @return The current column value.
      * @throws IOException Thrown if this object has already been closed.
@@ -101,7 +101,7 @@ public abstract class DelimitedDataReader {
 
     /**
      * Gets the count of the records that have been read.
-     * 
+     *
      * @throws the count of the records that have been read.
      */
     public long getProcessedRecordCount() {
@@ -120,14 +120,14 @@ public abstract class DelimitedDataReader {
 
     /**
      * If closing is true, close and release all related resources.
-     * 
+     *
      * @param closing
      */
     protected abstract void close(boolean closing);
 
     /**
      * DOC ke Comment method "getAvailableRowCount".
-     * 
+     *
      * @param footer the record count that will not used, just as footer for the delimited data. It will also be skipped
      * @return the count of Available row count
      * @throws IOException
@@ -147,7 +147,7 @@ public abstract class DelimitedDataReader {
 
     /**
      * DOC ke Comment method "skipHeaders". This is used to skip headers in the delimited data
-     * 
+     *
      * @param header rows count that will be skipped as header
      * @throws IOException
      */
@@ -165,7 +165,7 @@ public abstract class DelimitedDataReader {
 
     /**
      * DOC ke Comment method "isSafetySwitch".
-     * 
+     *
      * @return the state of the safetySwitch
      */
     public boolean isSafetySwitch() {
@@ -176,7 +176,7 @@ public abstract class DelimitedDataReader {
      * DOC ke Comment method "setSafetySwitch". When reading a delmited text, if safetySwitch is true, and if a column's
      * content length is larger than 100,000 or a row's column count is larger than 100,000, an Exception will be
      * thrown, and the process of reading delimited data will be terminated.
-     * 
+     *
      * @param safetySwitch
      */
     public void setSafetySwitch(boolean safetySwitch) {
@@ -217,9 +217,9 @@ public abstract class DelimitedDataReader {
     /**
      * This is data buffer for storing the contents of a column. this is used in case that the size of a column's
      * content is bigger than MAX_BUFFER_SIZE
-     * 
+     *
      * @author Administrator
-     * 
+     *
      */
     class ColumnBuffer {
 

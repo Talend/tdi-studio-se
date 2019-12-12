@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ import org.talend.daikon.avro.SchemaConstants;
 
 /**
  * <b>You should almost certainly not be using this class.</b>
- * 
+ *
  * This class acts as a wrapper around arbitrary values to coerce the Talend 6 Studio types in a generated POJO to a
  * {@link IndexedRecord} object that can be processed in the next component..
  * <p>
@@ -109,7 +109,7 @@ public class IncomingSchemaEnforcer {
 
     /**
      * Constructor
-     * 
+     *
      * @param incoming design schema retrieved from downstream component properties
      */
     public IncomingSchemaEnforcer(Schema incoming) {
@@ -135,7 +135,7 @@ public class IncomingSchemaEnforcer {
 
     /**
      * Take all of the parameters from the dynamic metadata and adapt it to a field for the runtime Schema.
-     * 
+     *
      * @deprecated because it was renamed. Use {@link this#addDynamicField(String, String, String, String, boolean)} instead
      */
     @Deprecated
@@ -146,7 +146,7 @@ public class IncomingSchemaEnforcer {
 
     /**
      * Recreates dynamic field from parameters retrieved from DI dynamic metadata
-     * 
+     *
      * @param name dynamic field name
      * @param diType di column type
      * @param logicalType dynamic field logical type; could be null
@@ -216,7 +216,7 @@ public class IncomingSchemaEnforcer {
 
     /**
      * Converts DI type to Avro field schema
-     * 
+     *
      * @param diType data integration native type
      * @param logicalType avro logical type
      * @return field schema
@@ -259,7 +259,7 @@ public class IncomingSchemaEnforcer {
     /**
      * Called when dynamic columns have finished being initialized. After this call, the {@link #getDesignSchema()} can be
      * used to get the runtime schema.
-     * 
+     *
      * @deprecated because it was renamed. Use {@link this#recreateRuntimeSchema()} instead
      */
     @Deprecated
@@ -317,7 +317,7 @@ public class IncomingSchemaEnforcer {
     /**
      * Creates copy of Avro schema field
      * Field from one schema can't be reused in another
-     * 
+     *
      * @param original original field
      * @return field copy
      */
@@ -344,7 +344,7 @@ public class IncomingSchemaEnforcer {
      * Dynamic fields are initialized using parameters from the first incoming data object.
      * Thus, this method returns <code>false</code>, if dynamic fields were not initialized yet (before first data object).
      * It returns <code>true</code>, if dynamic fields were initialized (after first data object)
-     * 
+     *
      * @return true, if dynamic fields were initialized; false - otherwise
      */
     public boolean areDynamicFieldsInitialized() {
@@ -353,7 +353,7 @@ public class IncomingSchemaEnforcer {
 
     /**
      * Return runtime schema
-     * 
+     *
      * @return runtime schema
      */
     public Schema getRuntimeSchema() {
@@ -362,7 +362,7 @@ public class IncomingSchemaEnforcer {
 
     /**
      * Returns design schema
-     * 
+     *
      * @return design schema
      */
     public Schema getDesignSchema() {
@@ -371,7 +371,7 @@ public class IncomingSchemaEnforcer {
 
     /**
      * Converts DI data value to Avro format and put it into record by field name
-     * 
+     *
      * @param name field name
      * @param diValue data value
      */
@@ -381,7 +381,7 @@ public class IncomingSchemaEnforcer {
 
     /**
      * Converts DI data value to Avro format and put it into record by field index
-     * 
+     *
      * @param index field index to put in
      * @param diValue data value in DI format
      */
@@ -552,7 +552,7 @@ public class IncomingSchemaEnforcer {
 
     /**
      * Returns current {@link IndexedRecord}
-     * 
+     *
      * @return current {@link IndexedRecord}
      */
     public IndexedRecord getCurrentRecord() {

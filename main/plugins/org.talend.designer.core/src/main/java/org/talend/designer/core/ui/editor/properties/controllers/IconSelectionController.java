@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -71,7 +71,7 @@ public class IconSelectionController extends AbstractElementPropertySectionContr
 
     /**
      * yzhang FileController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public IconSelectionController(IDynamicProperty dp) {
@@ -80,7 +80,7 @@ public class IconSelectionController extends AbstractElementPropertySectionContr
 
     /*
      * This method will never be called.
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#createCommand
      * ()
@@ -91,7 +91,7 @@ public class IconSelectionController extends AbstractElementPropertySectionContr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
@@ -116,8 +116,8 @@ public class IconSelectionController extends AbstractElementPropertySectionContr
                                 }
                             } else {
                                 MessageDialog.openError(composite.getShell(),
-                                        Messages.getString("IconSelectionController.MessageTitle"), //$NON-NLS-1$ 
-                                        Messages.getString("IconSelectionController.Messages")); //$NON-NLS-1$ 
+                                        Messages.getString("IconSelectionController.MessageTitle"), //$NON-NLS-1$
+                                        Messages.getString("IconSelectionController.Messages")); //$NON-NLS-1$
                             }
                         }
 
@@ -147,7 +147,7 @@ public class IconSelectionController extends AbstractElementPropertySectionContr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -156,7 +156,7 @@ public class IconSelectionController extends AbstractElementPropertySectionContr
             final int nbInRow, final int top, final Control lastControl) {
         this.curParameter = param;
         FormData data;
-        Button btnEdit = getWidgetFactory().createButton(subComposite, "", SWT.PUSH); //$NON-NLS-1$        
+        Button btnEdit = getWidgetFactory().createButton(subComposite, "", SWT.PUSH); //$NON-NLS-1$
 
         btnEdit.setImage(ImageProvider.getImage(CoreUIPlugin.getImageDescriptor(DOTS_BUTTON)));
 
@@ -259,7 +259,7 @@ public class IconSelectionController extends AbstractElementPropertySectionContr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -283,7 +283,7 @@ public class IconSelectionController extends AbstractElementPropertySectionContr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

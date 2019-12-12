@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ import org.talend.designer.xmlmap.ui.expressionutil.TableEntryLocation;
 import org.talend.designer.xmlmap.ui.expressionutil.XmlMapExpressionManager;
 
 /**
- * 
+ *
  * DOC wchen Utils class to deal with connections inside xmlmap ui
  */
 public class XmlMapConnectionBuilder {
@@ -232,7 +232,7 @@ public class XmlMapConnectionBuilder {
 
     /**
      * Sets the checkRootNodePrefix.
-     * 
+     *
      * @param checkRootNodePrefix the checkRootNodePrefix to set
      */
     public void setCheckRootNodePrefix(boolean checkRootNodePrefix) {

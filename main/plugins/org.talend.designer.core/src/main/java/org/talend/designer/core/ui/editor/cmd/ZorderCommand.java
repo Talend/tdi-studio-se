@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,22 +20,22 @@ import org.talend.designer.core.ui.editor.process.Process;
 /**
  */
 public abstract class ZorderCommand extends Command {
-    
+
     private EditPart editPart;
 
     protected Element element;
     protected Process process;
     protected int oldIndex = -1;
     protected int size;
-    
+
     public ZorderCommand(EditPart editPart) {
         this.editPart = editPart;
-        
+
         element = (Element) editPart.getModel();
         process = (Process) editPart.getParent().getModel();
         oldIndex = process.getElements().indexOf(element);
         size = process.getElements().size();
-        
+
         if (oldIndex == -1) {
             throw new IllegalStateException();
         }
@@ -45,7 +45,7 @@ public abstract class ZorderCommand extends Command {
     public void execute() {
         process.getElements().remove(element);
         process.getElements().add(getNewIndex(), element);
-        
+
         editPart.getParent().refresh();
     }
 
@@ -53,13 +53,13 @@ public abstract class ZorderCommand extends Command {
     public void undo() {
         Element element = (Element) editPart.getModel();
         Process process = (Process) editPart.getParent().getModel();
-        
+
         process.getElements().remove(element);
         process.getElements().add(oldIndex, element);
-        
+
         editPart.getParent().refresh();
     }
-    
+
     protected abstract int getNewIndex();
 
     @Override
@@ -68,5 +68,5 @@ public abstract class ZorderCommand extends Command {
     }
 
     protected abstract boolean subCanExecute();
-    
+
 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,7 +37,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.preference.palettesettings.IPaletteItem#getImageDesc()
      */
     @Override
@@ -47,7 +47,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.preference.palettesettings.IPaletteItem#getLabel()
      */
     @Override
@@ -57,7 +57,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.preference.palettesettings.IPaletteItem#getChildren()
      */
     @Override
@@ -67,7 +67,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.preference.palettesettings.IPaletteItem#getPaletteType()
      */
     @Override
@@ -77,7 +77,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /**
      * Getter for category.
-     * 
+     *
      * @return the category
      */
     public ComponentCategory getCategory() {
@@ -86,7 +86,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /**
      * Sets the category.
-     * 
+     *
      * @param category the category to set
      */
     public void setCategory(ComponentCategory category) {
@@ -95,7 +95,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /**
      * Sets the imageDesc.
-     * 
+     *
      * @param imageDesc the imageDesc to set
      */
     public void setImageDesc(ImageDescriptor imageDesc) {
@@ -104,7 +104,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /**
      * Sets the label.
-     * 
+     *
      * @param label the label to set
      */
     public void setLabel(String label) {
@@ -113,7 +113,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.preference.provider.IPaletteItem#getFamily()
      */
     @Override
@@ -123,7 +123,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /**
      * Getter for parent.
-     * 
+     *
      * @return the parent
      */
     @Override
@@ -133,7 +133,7 @@ public abstract class AbstractPaletteItem implements IPaletteItem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.components.preference.provider.IPaletteItem#setParent(org.talend.designer.components.preference
      * .provider.IPaletteItem)

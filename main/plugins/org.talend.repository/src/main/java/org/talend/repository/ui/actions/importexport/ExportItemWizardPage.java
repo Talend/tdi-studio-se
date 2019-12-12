@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -199,7 +199,7 @@ public class ExportItemWizardPage extends WizardPage {
 
     /**
      * DOC hcw Comment method "createItemList".
-     * 
+     *
      * @param workArea
      */
     private void createItemList(Composite workArea) {
@@ -207,7 +207,7 @@ public class ExportItemWizardPage extends WizardPage {
         GridLayout gdlItemComposite = new GridLayout(2, false);
         gdlItemComposite.marginWidth = 0;
         itemComposite.setLayout(gdlItemComposite);
-        
+
         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).hint(500, 300).applyTo(itemComposite);
 
         Label label = new Label(itemComposite, SWT.NONE);
@@ -560,7 +560,7 @@ public class ExportItemWizardPage extends WizardPage {
 
     /**
      * DOC hcw Comment method "createSelectionButton".
-     * 
+     *
      * @param itemComposite
      */
     private void createSelectionButton(Composite itemComposite) {
@@ -1132,7 +1132,7 @@ public class ExportItemWizardPage extends WizardPage {
 
     /**
      * Get all selected items to export.
-     * 
+     *
      * @return
      */
     @SuppressWarnings("unchecked")

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,11 +19,11 @@ import org.osgi.framework.Bundle;
 import org.talend.sqlbuilder.SqlBuilderPlugin;
 
 /**
- * 
+ *
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: URLUtil.java,v 1.2 2006/10/26 21:39:06 qiang.zhang Exp $
- * 
+ *
  */
 public final class URLUtil {
 
@@ -32,7 +32,7 @@ public final class URLUtil {
 
     /**
      * DOC dev Comment method "getResourceURL".
-     * 
+     *
      * @param s
      * @return
      */
@@ -65,7 +65,7 @@ public final class URLUtil {
 
     /**
      * Return a URL to a file located in your plugin fragment.
-     * 
+     *
      * @param yourPluginId e.g net.sourceforge.sqlexplorer.oracle
      * @param filePath path to file within your fragment e.g. icons/test.gif
      * @return URL to the file.

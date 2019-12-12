@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.eclipse.gef.requests.CreationFactory;
 
 /**
  * Factory used to create elements in the diagram. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ElementFactory implements CreationFactory {
 
@@ -30,7 +30,7 @@ public class ElementFactory implements CreationFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.requests.CreationFactory#getNewObject()
      */
     public Object getNewObject() {
@@ -43,7 +43,7 @@ public class ElementFactory implements CreationFactory {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.requests.CreationFactory#getObjectType()
      */
     public Object getObjectType() {

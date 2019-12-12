@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -195,9 +195,9 @@ public class ExchangeManager {
     }
 
     /**
-     * 
+     *
      * DOC talend Comment method "generateXHTMLPage".
-     * 
+     *
      * @param ulToShow the id of
      * <ul>
      * to show
@@ -227,9 +227,9 @@ public class ExchangeManager {
     }
 
     /**
-     * 
+     *
      * DOC talend Comment method "resolveDynamicContent".
-     * 
+     *
      * @param dom
      * @param nodes original contentProvider nods parsed from html file
      * @return

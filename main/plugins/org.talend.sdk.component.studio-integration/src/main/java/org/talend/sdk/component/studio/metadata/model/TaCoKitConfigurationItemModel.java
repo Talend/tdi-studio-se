@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -30,11 +30,11 @@ public class TaCoKitConfigurationItemModel {
     public String getDisplayLabel() {
         return connectionItem.getProperty().getDisplayName();
     }
-    
+
     public ConfigTypeNode getConfigTypeNode() {
         return Lookups.taCoKitCache().getConfigTypeNodeMap().get(getConfigId());
     }
-    
+
     private String getConfigId() {
         return connectionItem.getTypeName();
     }

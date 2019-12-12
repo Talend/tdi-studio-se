@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,7 +44,7 @@ public class TaskLoadClient {
 
 	/**
 	 * DOC Starkey Comment method "doLoad".
-	 * 
+	 *
 	 * @param inputXmlFile
 	 */
 	public boolean doLoad(Reader inputXmlFile) throws Exception {
@@ -72,7 +72,7 @@ public class TaskLoadClient {
 
 	/**
 	 * DOC Starkey Comment method "doLoad".
-	 * 
+	 *
 	 * @param inputTasks
 	 * @return
 	 * @throws Exception
@@ -103,8 +103,8 @@ public class TaskLoadClient {
 			  str = null;
 			}
 			localStringBuilder.setLength(0);
-			localStringBuilder.append("Basic ").append(str);			
-			
+			localStringBuilder.append("Basic ").append(str);
+
 			urlc.setRequestProperty ("Authorization", localStringBuilder.toString());
 
 			urlc.connect();

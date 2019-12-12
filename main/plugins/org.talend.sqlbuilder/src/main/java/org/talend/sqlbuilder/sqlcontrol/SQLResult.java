@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.sqlbuilder.dataset.dataset.DataSet;
 
 /**
  * Store SQL Result. <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  */
 public class SQLResult {
 
@@ -51,7 +51,7 @@ public class SQLResult {
 
     /**
      * Sets the dataSet.
-     * 
+     *
      * @param dataSet the dataSet to set
      */
     public void setDataSet(DataSet dataSet) {
@@ -60,7 +60,7 @@ public class SQLResult {
 
     /**
      * Sets the executionTimeMillis.
-     * 
+     *
      * @param executionTimeMillis the executionTimeMillis to set
      */
     public void setExecutionTimeMillis(long executionTimeMillis) {
@@ -69,7 +69,7 @@ public class SQLResult {
 
     /**
      * Sets the sqlStatement.
-     * 
+     *
      * @param sqlStatement the sqlStatement to set
      */
     public void setSqlStatement(String sqlStatement) {

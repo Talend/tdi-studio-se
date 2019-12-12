@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.repository.model.RepositoryNode;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SQLEditorProposalProvider.java,v 1.1 2006/11/06 11:41:16 qiang.zhang Exp $
- * 
+ *
  */
 public class SQLEditorProposalProvider implements IContentProposalProvider {
 
@@ -39,7 +39,7 @@ public class SQLEditorProposalProvider implements IContentProposalProvider {
 
     /**
      * Get IContentProposal[] will showed in PopupDialog.
-     * 
+     *
      * @param contents colorText's all Content
      * @param cousor current position
      * @return contentProposal[]

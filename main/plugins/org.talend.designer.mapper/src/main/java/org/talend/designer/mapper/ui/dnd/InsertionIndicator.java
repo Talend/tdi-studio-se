@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,10 +43,10 @@ import org.talend.designer.mapper.ui.visualmap.zone.scrollable.TablesZoneView;
  * Only one instance by ZoneView should be necessary. This class create 2 arrows which follow cursor when dragging on a
  * <code>DataMapTableView</code>. Arrows are adjusted at left and right on the limit between two
  * <code>TableItem</code>.
- * 
- * 
+ *
+ *
  * $Id$
- * 
+ *
  */
 public class InsertionIndicator {
 
@@ -81,8 +81,8 @@ public class InsertionIndicator {
     private int lastNPixelsCovered;
 
     /**
-     * 
-     * 
+     *
+     *
      * @param tablesZoneViewParent
      * @param mapperManager
      */
@@ -179,7 +179,7 @@ public class InsertionIndicator {
     /**
      * Update position of the indicator at top of <code>itemIndexTarget</code> position of the
      * <code>draggableTable</code>.
-     * 
+     *
      * @param currentTable
      * @param itemIndexTarget
      */
@@ -233,11 +233,11 @@ public class InsertionIndicator {
             } else {
                 indicYPositionRefTable = itemIndexTarget * currentTable.getItemHeight() - 1 + offsetVerticalBar;
             }
-            
+
             Point point = currentTable.getDisplay().map(currentTable, tablesZoneViewParent, new Point(0, indicYPositionRefTable));
-            
+
             indicYPositionRefZone = point.y + 5;
-            
+
         }
 
         Rectangle boundsTableView = dataMapTableView.getBounds();
@@ -331,7 +331,7 @@ public class InsertionIndicator {
 
     /**
      * DOC amaumont Comment method "isIntersect".
-     * 
+     *
      * @param boundsPopupFromMapperShellOrigin
      * @return
      */

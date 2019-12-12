@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -73,7 +73,7 @@ public class XmlMapSearchZoneToolBar extends SearchZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.gefabstractmap.figures.treetools.zone.ZoneToolBar#moveDown()
      */
     @Override
@@ -100,7 +100,7 @@ public class XmlMapSearchZoneToolBar extends SearchZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.gefabstractmap.figures.treetools.zone.ZoneToolBar#moveUp()
      */
     @Override
@@ -127,7 +127,7 @@ public class XmlMapSearchZoneToolBar extends SearchZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.gefabstractmap.figures.treetools.zone.ZoneToolBar#moveDown()
      */
     @Override
@@ -152,7 +152,7 @@ public class XmlMapSearchZoneToolBar extends SearchZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.gefabstractmap.figures.treetools.zone.ZoneToolBar#getMinSizeStatus()
      */
     @Override
@@ -163,7 +163,7 @@ public class XmlMapSearchZoneToolBar extends SearchZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.gefabstractmap.figures.treetools.zone.ZoneToolBar#isMinSizeEnable()
      */
     @Override
@@ -174,7 +174,7 @@ public class XmlMapSearchZoneToolBar extends SearchZoneToolBar {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.gefabstractmap.figures.treetools.zone.ZoneToolBar#minSize()
      */
     @Override

@@ -17,8 +17,6 @@ imports="
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
 
-        private boolean needUserAndPassword = true;
-
 		public void setURL(INode node) {
 			
 			boolean useLogFile= "true".equals(ElementParameterParser.getValue(node, "__USE_LOG_FILE__"));
@@ -76,8 +74,7 @@ imports="
 		
 		public void createConnection(INode node) {
 			String jdbcUrl = ElementParameterParser.getValue(node, "__JDBC_URL__");
-			if ("SSO".equals(jdbcUrl)) needUserAndPassword = false;
-			super.createConnection(node, needUserAndPassword);
+			super.createConnection(node);
 			String useCursor= ElementParameterParser.getValue(node, "__USE_CURSOR__");
 			if(("true").equals(useCursor)) {
 				log4jCodeGenerateUtil.autoCommit(node,false);

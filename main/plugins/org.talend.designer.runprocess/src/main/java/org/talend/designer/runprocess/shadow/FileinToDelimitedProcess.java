@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,9 +46,9 @@ import org.talend.designer.runprocess.IProcessor;
 
 /**
  * DOC mhirt class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FileinToXmlProcess.java 3737 2007-06-09 08:19:35 +0000 (星期六, 09 六月 2007) nrousseau $
- * 
+ *
  * @param <K>
  */
 public class FileinToDelimitedProcess<K extends FileInputNode> extends RepositoryObject implements IProcess {
@@ -114,7 +114,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getContextManager()
      */
     @Override
@@ -124,7 +124,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getNodes()
      */
     @Override
@@ -137,7 +137,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryProcess#getAuthor()
      */
     @Override
@@ -149,7 +149,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryProcess#getId()
      */
     @Override
@@ -159,7 +159,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryProcess#getLabel()
      */
     @Override
@@ -169,7 +169,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /**
      * Getter for name.
-     * 
+     *
      * @return the name
      */
     @Override
@@ -179,7 +179,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /**
      * Sets the name.
-     * 
+     *
      * @param name the name to set
      */
     public void setName(String name) {
@@ -188,7 +188,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryProcess#getStatus()
      */
     public Status getStatus() {
@@ -197,7 +197,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryProcess#getVersion()
      */
     @Override
@@ -207,7 +207,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryProcess#setAuthor(org.talend.core.model.general.User)
      */
     @Override
@@ -217,7 +217,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryProcess#setId(int)
      */
     public void setId(int id) {
@@ -226,7 +226,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryProcess#setLabel(java.lang.String)
      */
     @Override
@@ -236,7 +236,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryProcess#setStatus(org.talend.core.model.process.EProcessStatus)
      */
     public void setStatus(Status status) {
@@ -245,7 +245,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryProcess#setVersion(org.talend.core.model.version.Version)
      */
     @Override
@@ -255,7 +255,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.temp.IXmlSerializable#getXmlStream()
      */
     public InputStream getXmlStream() {
@@ -264,7 +264,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.temp.IXmlSerializable#setXmlStream(java.io.InputStream)
      */
     public void setXmlStream(InputStream xmlStream) {
@@ -273,7 +273,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getGeneratingNodes()
      */
     @Override
@@ -283,7 +283,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getComment()
      */
     public String getComment() {
@@ -292,7 +292,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setComment(java.lang.String)
      */
     public void setComment(String comment) {
@@ -301,7 +301,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getType()
      */
     @Override
@@ -311,7 +311,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#addUniqueConnectionName(java.lang.String)
      */
     @Override
@@ -320,7 +320,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#checkValidConnectionName(java.lang.String)
      */
     @Override
@@ -330,7 +330,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#generateUniqueConnectionName()
      */
     @Override
@@ -340,7 +340,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#removeUniqueConnectionName(java.lang.String)
      */
     @Override
@@ -349,7 +349,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#getElementParameters()
      */
     @Override
@@ -359,7 +359,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#setElementParameters(java.util.List)
      */
     @Override
@@ -368,15 +368,15 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /**
      * Empty IContext implementation. <br/>
-     * 
+     *
      * $Id: FileinToXmlProcess.java 3737 2007-06-09 08:19:35 +0000 (星期六, 09 六月 2007) nrousseau $
-     * 
+     *
      */
     private static class EmptyContext implements IContext, Cloneable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#getContextParameterList()
          */
         @Override
@@ -386,7 +386,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#getName()
          */
         @Override
@@ -396,7 +396,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#isConfirmationNeeded()
          */
         @Override
@@ -406,7 +406,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#setConfirmationNeeded(boolean)
          */
         @Override
@@ -416,7 +416,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#setContextParameterList(java.util.List)
          */
         @Override
@@ -426,7 +426,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#setName(java.lang.String)
          */
         @Override
@@ -453,7 +453,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#getContextParameter(java.lang.String, java.lang.String)
          */
 
@@ -462,19 +462,25 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
             // TODO Auto-generated method stub
             return null;
         }
+
+        @Override
+        public boolean containsSameParameterIgnoreCase(String parameterName) {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     /**
      * DOC nrousseau FileinDelimitedToXmlProcess class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: FileinToXmlProcess.java 3737 2007-06-09 08:19:35 +0000 (星期六, 09 六月 2007) nrousseau $
-     * 
+     *
      */
     private static class EmptyContextManager implements IContextManager, Cloneable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.talend.core.model.process.IContextManager#addContextListener(org.talend.core.model.process.IContextListener
          * )
@@ -485,7 +491,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContextManager#fireContextsChangedEvent()
          */
         @Override
@@ -494,7 +500,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContextManager#getDefaultContext()
          */
         @Override
@@ -504,7 +510,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContextManager#getListContext()
          */
         @Override
@@ -514,7 +520,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.talend.core.model.process.IContextManager#removeContextListener(org.talend.core.model.process.
          * IContextListener)
          */
@@ -524,7 +530,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContextManager#setDefaultContext(org.talend.core.model.process.IContext)
          */
         @Override
@@ -533,7 +539,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContextManager#setListContext(java.util.List)
          */
         @Override
@@ -579,7 +585,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /**
      * Return all Nodes of Component type componentName.
-     * 
+     *
      * @param componentName the component name
      * @return all the activated matching nodes in the process
      */
@@ -626,7 +632,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getAllConnections(java.lang.String)
      */
     @Override
@@ -659,7 +665,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getMergelinkOrder(org.talend.core.model.process.INode)
      */
     @Override
@@ -670,7 +676,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#isThereLinkWithHash(org.talend.core.model.process.INode)
      */
     @Override
@@ -681,7 +687,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#disableRunJobView()
      */
     public boolean disableRunJobView() {
@@ -691,7 +697,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getNodesWithImport()
      */
     @Override
@@ -707,7 +713,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getLastRunContext()
      */
     public IContext getLastRunContext() {
@@ -717,7 +723,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#setLastRunContext(org.talend.core.model.process.IContext)
      */
     public void setLastRunContext(IContext context) {
@@ -727,7 +733,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#isProcessModified()
      */
     public boolean isProcessModified() {
@@ -736,7 +742,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#isNeedRegenerateCode()
      */
     @Override
@@ -747,7 +753,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#setNeedRegenerateCode(boolean)
      */
     @Override
@@ -758,7 +764,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getOutputMetadataTable()
      */
     @Override
@@ -769,7 +775,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#getElementName()
      */
     @Override
@@ -855,7 +861,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getComponentsType()
      */
     @Override
@@ -865,7 +871,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#isForceReadOnly()
      */
     @Override
@@ -876,7 +882,7 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#setForceReadOnly(boolean)
      */
     @Override

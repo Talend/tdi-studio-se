@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -100,15 +100,20 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
                                 for (int j = 0; j < param.getListItemsValue().length; j++) {
                                     if (((CCombo) ctrl).getText().equals(param.getListItemsDisplayName()[j])) {
                                         value = (String) param.getListItemsValue()[j];
-                                        if (j == 0 && (boolean) ((ElementParameter) propertyParameter)
-                                                .getTaggedValue(IGenericConstants.IS_PROPERTY_SHOW)) {
+                                        if (j == 0) {
                                             // The first item in the combo is
                                             // this component
                                             props.referenceType
                                                     .setValue(ComponentReferenceProperties.ReferenceType.THIS_COMPONENT);
                                             props.componentInstanceId.setValue(null);
                                             props.setReference(null);
-                                            propertyParameter.setShow(true);
+                                            boolean isPropertyShow = true;
+                                            Object isPropertyShowObj = ((ElementParameter) propertyParameter)
+                                                    .getTaggedValue(IGenericConstants.IS_PROPERTY_SHOW);
+                                            if (isPropertyShowObj != null) {
+                                                isPropertyShow = Boolean.valueOf(isPropertyShowObj.toString());
+                                            }
+                                            propertyParameter.setShow(isPropertyShow);
                                         } else {
                                             props.referenceType
                                                     .setValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
@@ -318,7 +323,7 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
         for (int i = 0; i < itemsValue.size(); i++) {
             String iValue = itemsValue.get(i);
             if ((selectedValue == null && (((INode) elem).getUniqueName()).equals(iValue))
-                    || (selectedValue != null && selectedValue.equals(iValue))) {
+                    || (selectedValue != null && StringUtils.isNotEmpty(iValue) && iValue.endsWith(selectedValue))) {
                 iLabel = itemsLabel.get(i);
                 break;
             }

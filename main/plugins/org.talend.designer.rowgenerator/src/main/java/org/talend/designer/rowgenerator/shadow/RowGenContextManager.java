@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.talend.core.model.process.IContextParameter;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: RowGenContextManager.java,v 1.1 2007/02/02 07:47:01 pub Exp $
- * 
+ *
  */
 public class RowGenContextManager implements IContextManager, Cloneable {
 
@@ -34,7 +34,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see
      * org.talend.core.model.process.IContextManager#addContextListener(org.talend.core.model.process.IContextListener)
      */
@@ -43,7 +43,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IContextManager#fireContextsChangedEvent()
      */
     public void fireContextsChangedEvent() {
@@ -51,7 +51,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IContextManager#getDefaultContext()
      */
     public IContext getDefaultContext() {
@@ -60,7 +60,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IContextManager#getListContext()
      */
     public List<IContext> getListContext() {
@@ -69,7 +69,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see
      * org.talend.core.model.process.IContextManager#removeContextListener(org.talend.core.model.process.IContextListener
      * )
@@ -79,7 +79,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IContextManager#setDefaultContext(org.talend.core.model.process.IContext)
      */
     public void setDefaultContext(IContext context) {
@@ -92,7 +92,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.core.model.process.IContextManager#setListContext(java.util.List)
      */
     public void setListContext(List<IContext> listContext) {
@@ -105,9 +105,9 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
     /**
      * qzhang RowGenContextManager class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: RowGenContextManager.java,v 1.1 2007/02/02 07:47:01 pub Exp $
-     * 
+     *
      */
     private class EmptyContext implements IContext, Cloneable {
 
@@ -115,7 +115,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#getContextParameterList()
          */
         public List<IContextParameter> getContextParameterList() {
@@ -124,7 +124,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#getName()
          */
         public String getName() {
@@ -133,7 +133,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#isConfirmationNeeded()
          */
         public boolean isConfirmationNeeded() {
@@ -142,7 +142,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#setConfirmationNeeded(boolean)
          */
         public void setConfirmationNeeded(boolean confirmationNeeded) {
@@ -151,7 +151,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#setContextParameterList(java.util.List)
          */
         public void setContextParameterList(List<IContextParameter> contextParameterList) {
@@ -160,7 +160,7 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
         /*
          * (non-Java)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#setName(java.lang.String)
          */
         public void setName(String name) {
@@ -184,13 +184,19 @@ public class RowGenContextManager implements IContextManager, Cloneable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.core.model.process.IContext#getContextParameter(java.lang.String, java.lang.String)
          */
         @Override
         public IContextParameter getContextParameter(String sourceId, String paraName) {
             // TODO Auto-generated method stub
             return null;
+        }
+
+        @Override
+        public boolean containsSameParameterIgnoreCase(String parameterName) {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
 

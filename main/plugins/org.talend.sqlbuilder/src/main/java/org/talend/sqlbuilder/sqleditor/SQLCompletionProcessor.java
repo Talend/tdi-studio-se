@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,9 +38,9 @@ import org.talend.sqlbuilder.util.ImageUtil;
 
 /**
  * Extend CompletionProposal. <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  * @author qiang.zhang
  */
 class ExtendedCompletionProposal implements ICompletionProposal {
@@ -57,7 +57,7 @@ class ExtendedCompletionProposal implements ICompletionProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.text.contentassist.ICompletionProposal#apply(org.eclipse.jface.text.IDocument)
      */
     public void apply(IDocument document) {
@@ -67,7 +67,7 @@ class ExtendedCompletionProposal implements ICompletionProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.text.contentassist.ICompletionProposal#getAdditionalProposalInfo()
      */
     public String getAdditionalProposalInfo() {
@@ -77,13 +77,13 @@ class ExtendedCompletionProposal implements ICompletionProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.text.contentassist.ICompletionProposal#geString[] proposalsString =
      * dictionary.matchTablePrefix(lastPart .toLowerCase()); ArrayList propList = new ArrayList(); for (int i = 0; i <
      * proposalsString.length; i++) { ArrayList ls = dictionary .getTableObjectList(proposalsString[i]); for (int j = 0;
      * j < ls.size(); j++) { TableNode tbNode = (TableNode) ls.get(j); Image tmpImage = null; TableFolderNode totn =
      * (TableFolderNode) tbNode .getParent();
-     * 
+     *
      * INode catSchema = (INode) totn.getParent(); if (catSchema == node) { if (tbNode.isView()) { tmpImage = viewImage; }
      * else if (tbNode.isTable()) { tmpImage = tableImage; } ICompletionProposal cmp = new ExtendedCompletionProposal(
      * proposalsString[i], documentOffset - lastPart.length(), lastPart .length(), proposalsString[i] .length(),
@@ -97,7 +97,7 @@ class ExtendedCompletionProposal implements ICompletionProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.text.contentassist.ICompletionProposal#getDisplayString()
      */
     public String getDisplayString() {
@@ -106,7 +106,7 @@ class ExtendedCompletionProposal implements ICompletionProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.text.contentassist.ICompletionProposal#getImage()
      */
     public Image getImage() {
@@ -115,7 +115,7 @@ class ExtendedCompletionProposal implements ICompletionProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.text.contentassist.ICompletionProposal#getSelection(org.eclipse.jface.text.IDocument)
      */
     public Point getSelection(IDocument document) {
@@ -304,7 +304,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
 
     /**
      * DOC dev Comment method "getProposalsByNode2".
-     * 
+     *
      * @param documentOffset
      * @param lastPart
      * @param node
@@ -342,7 +342,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
 
     /**
      * DOC dev Comment method "getProposalsByNode".
-     * 
+     *
      * @param documentOffset
      * @param node
      * @return
@@ -384,7 +384,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
 
     /**
      * DOC dev Comment method "inputNotContainDot".
-     * 
+     *
      * @param documentOffset
      * @param string
      * @param length

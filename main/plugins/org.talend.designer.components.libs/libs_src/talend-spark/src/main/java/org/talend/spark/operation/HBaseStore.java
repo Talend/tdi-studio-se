@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,7 +41,7 @@ public class HBaseStore<T> {
 		conf.set("hbase.zookeeper.quorum", zookeeperHost);
 		conf.set("hbase.zookeeper.property.clientPort", zookeeperPort);
 		conf.set("hbase.mapred.tablecolumns", columns);
-		
+
 		for(Entry<String, String> e:properties.entrySet()) {
 			conf.set(e.getKey(), e.getValue());
 		}

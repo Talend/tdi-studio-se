@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,7 +49,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
     /**
      * DOC chuang ErrorDetailDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     public ErrorDetailDialog(Shell parentShell, List<IContainerEntry> errors) {
@@ -87,7 +87,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
     /**
      * DOC chuang Comment method "createTreeTableView".
-     * 
+     *
      * @param parent
      */
     private void createTreeTableViewer(Composite parent) {
@@ -118,14 +118,14 @@ public class ErrorDetailDialog extends SelectionDialog {
     }
 
     /**
-     * 
+     *
      * DOC chuang ErrorDetailDialog class global comment. Detailled comment
      */
     class ErrorDetailContentProvider implements ITreeContentProvider {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
          */
         @Override
@@ -138,7 +138,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
          */
         @Override
@@ -148,7 +148,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
          */
         @Override
@@ -161,7 +161,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
          */
         @Override
@@ -174,7 +174,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.IContentProvider#dispose()
          */
         @Override
@@ -183,7 +183,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
          * java.lang.Object, java.lang.Object)
          */
@@ -195,14 +195,14 @@ public class ErrorDetailDialog extends SelectionDialog {
     }
 
     /**
-     * 
+     *
      * DOC chuang ErrorDetailDialog class global comment. Detailled comment
      */
     class ErrorDetailLabelProvider implements ITableLabelProvider {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
          */
         @Override
@@ -221,7 +221,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
          */
         @Override
@@ -240,7 +240,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
          */
@@ -251,7 +251,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
          */
         @Override
@@ -261,7 +261,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
          */
         @Override
@@ -271,7 +271,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
          */
@@ -283,7 +283,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
     /**
      * Getter for isRunTestcase.
-     * 
+     *
      * @return the isRunTestcase
      */
     public boolean isTestcase() {
@@ -292,7 +292,7 @@ public class ErrorDetailDialog extends SelectionDialog {
 
     /**
      * Sets the isRunTestcase.
-     * 
+     *
      * @param isRunTestcase the isRunTestcase to set
      */
     public void setTestcase(boolean isTestcase) {

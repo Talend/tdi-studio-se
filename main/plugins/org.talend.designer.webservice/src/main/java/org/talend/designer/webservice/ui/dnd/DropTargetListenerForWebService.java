@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -57,7 +57,7 @@ public class DropTargetListenerForWebService implements TransferDropTargetListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.util.TransferDropTargetListener#getTransfer()
      */
 
@@ -67,7 +67,7 @@ public class DropTargetListenerForWebService implements TransferDropTargetListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.util.TransferDropTargetListener#isEnabled(org.eclipse.swt.dnd.DropTargetEvent)
      */
 
@@ -78,7 +78,7 @@ public class DropTargetListenerForWebService implements TransferDropTargetListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.DropTargetListener#dragEnter(org.eclipse.swt.dnd.DropTargetEvent)
      */
 
@@ -105,7 +105,7 @@ public class DropTargetListenerForWebService implements TransferDropTargetListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.DropTargetListener#dragLeave(org.eclipse.swt.dnd.DropTargetEvent)
      */
 
@@ -115,7 +115,7 @@ public class DropTargetListenerForWebService implements TransferDropTargetListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.DropTargetListener#dragOperationChanged(org.eclipse.swt.dnd.DropTargetEvent)
      */
 
@@ -125,7 +125,7 @@ public class DropTargetListenerForWebService implements TransferDropTargetListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.DropTargetListener#dragOver(org.eclipse.swt.dnd.DropTargetEvent)
      */
 
@@ -135,7 +135,7 @@ public class DropTargetListenerForWebService implements TransferDropTargetListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.DropTargetListener#drop(org.eclipse.swt.dnd.DropTargetEvent)
      */
 
@@ -275,7 +275,7 @@ public class DropTargetListenerForWebService implements TransferDropTargetListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.dnd.DropTargetListener#dropAccept(org.eclipse.swt.dnd.DropTargetEvent)
      */
 

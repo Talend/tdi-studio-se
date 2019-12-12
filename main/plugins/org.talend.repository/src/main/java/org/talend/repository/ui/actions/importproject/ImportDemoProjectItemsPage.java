@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -91,7 +91,7 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
 
     /**
      * ImportDemoProjectPage constructor.
-     * 
+     *
      * @param selection
      */
     public ImportDemoProjectItemsPage(IStructuredSelection selection) {
@@ -102,7 +102,7 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1#createControl(org.eclipse.swt
      * .widgets.Composite)
@@ -149,7 +149,7 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
 
     /**
      * DOC Administrator Comment method "createDescriptionIn".
-     * 
+     *
      * @param composite
      */
     public void createDescriptionIn(Composite composite) {
@@ -248,7 +248,7 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
 
     /**
      * getFullImagePath.
-     * 
+     *
      * @param languageName
      * @return
      */
@@ -278,7 +278,7 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
 
     /**
      * Sets import demo project list.
-     * 
+     *
      * @param demoProjectList
      */
     public void setImportDemoProjectList(List<DemoProjectBean> demoProjectList) {
@@ -290,7 +290,7 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
 
     /**
      * Gets the index of selected demo project.
-     * 
+     *
      * @return
      */
     public List<ResourcesManager> getSelectedDemoManagers() {
@@ -394,9 +394,9 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
                 }
             }
         } catch (ZipException e) {
-            displayErrorDialog(Messages.getString("ImportItemsWizardPage_ZipImport_badFormat")); //$NON-NLS-1$ 
+            displayErrorDialog(Messages.getString("ImportItemsWizardPage_ZipImport_badFormat")); //$NON-NLS-1$
         } catch (TarException e) {
-            displayErrorDialog(Messages.getString("ImportItemsWizardPage_TarImport_badFormat")); //$NON-NLS-1$ 
+            displayErrorDialog(Messages.getString("ImportItemsWizardPage_TarImport_badFormat")); //$NON-NLS-1$
         } catch (FileNotFoundException e) {
             ExceptionHandler.process(e);
         } catch (IOException e) {
@@ -412,9 +412,9 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
         try {
             return new TarFile(srcFile);
         } catch (TarException e) {
-            displayErrorDialog(Messages.getString("ImportItemsWizardPage_TarImport_badFormat")); //$NON-NLS-1$ 
+            displayErrorDialog(Messages.getString("ImportItemsWizardPage_TarImport_badFormat")); //$NON-NLS-1$
         } catch (IOException e) {
-            displayErrorDialog(Messages.getString("ImportItemsWizardPage_couldNotRead")); //$NON-NLS-1$ 
+            displayErrorDialog(Messages.getString("ImportItemsWizardPage_couldNotRead")); //$NON-NLS-1$
         }
 
         return null;
@@ -427,9 +427,9 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
         try {
             return new ZipFile(srcFile);
         } catch (ZipException e) {
-            displayErrorDialog(Messages.getString("ImportItemsWizardPage_ZipImport_badFormat")); //$NON-NLS-1$ 
+            displayErrorDialog(Messages.getString("ImportItemsWizardPage_ZipImport_badFormat")); //$NON-NLS-1$
         } catch (IOException e) {
-            displayErrorDialog(Messages.getString("ImportItemsWizardPage_couldNotRead")); //$NON-NLS-1$ 
+            displayErrorDialog(Messages.getString("ImportItemsWizardPage_couldNotRead")); //$NON-NLS-1$
         }
 
         return null;

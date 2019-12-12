@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
@@ -203,7 +205,15 @@ public class SettingVisitor implements PropertyVisitor {
      */
     @Override
     public void visit(final PropertyNode node) {
-        if (node.isLeaf()) {
+        // skip 'configuration.dataSet.csvConfiguration.csvSchema' field in 'azure-dls-gen2' component
+        if (element != null && element instanceof Node && ((Node)element).getComponent() != null &&
+                (((Node)element).getComponent().getName().equals("AzureAdlsGen2Input") ||
+                ((Node)element).getComponent().getName().equals("AzureAdlsGen2Output")) &&
+                node.getProperty().getPath().equals("configuration.dataSet.csvConfiguration.csvSchema")) {
+            return;
+        }
+
+        if (node.isLeaf() && !PropertyTypes.OBJECT.equalsIgnoreCase(node.getProperty().getType())) {
             switch (node.getFieldType()) {
             case CHECK:
                 final CheckElementParameter check = visitCheck(node);
@@ -230,12 +240,16 @@ public class SettingVisitor implements PropertyVisitor {
                 settings.put(inSchema.getName(), inSchema);
                 break;
             case TACOKIT_VALUE_SELECTION:
-                final TaCoKitElementParameter valueSelection = visitValueSelection(node);
-                settings.put(valueSelection.getName(), valueSelection);
+                final TaCoKitElementParameter textAreaSelection = visitValueSelection(node);
+                settings.put(textAreaSelection.getName(), textAreaSelection);
                 break;
             case PREV_COLUMN_LIST:
                 final TaCoKitElementParameter prevColumnList = visitPrevColumnList(node);
                 settings.put(prevColumnList.getName(), prevColumnList);
+                break;
+            case TACOKIT_TEXT_AREA_SELECTION:
+                final TaCoKitElementParameter valueSelection = visitTextAreaSelection(node);
+                settings.put(valueSelection.getName(), valueSelection);
                 break;
             default:
                 final IElementParameter text;
@@ -252,7 +266,9 @@ public class SettingVisitor implements PropertyVisitor {
                 break;
             }
         } else {
-            buildHealthCheck(node);
+            if (Metadatas.MAIN_FORM.equalsIgnoreCase(form)) {
+                buildHealthCheck(node);
+            }
             buildUpdate(node);
         }
     }
@@ -304,13 +320,31 @@ public class SettingVisitor implements PropertyVisitor {
             if (buttonLayout.isPresent()) {
                 final int buttonPosition = buttonLayout.get().getPosition();
                 final UpdateAction action = new UpdateAction(updatable.getActionName(), family);
-                UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node,
-                        actions, redrawParameter, settings);
+                final UpdateResolver resolver = new UpdateResolver(element, category, buttonPosition, action, node,
+                        actions, redrawParameter, settings, () -> hasVisibleChild(formLayout.getPath()));
                 parameterResolvers.add(resolver);
             } else {
                 LOGGER.debug("Button layout {} not found for form {}", formLayout.getPath() + PropertyNode.UPDATE_BUTTON, form);
             }
         });
+    }
+
+    private boolean hasVisibleChild(final String root) { // TODO: to enhance to support object visibility and not fake it!
+        return ofNullable(settings.get(root))
+                .map(this::isVisible)
+                .orElseGet(() -> settings.entrySet().stream()
+                    .filter(it -> it.getKey().startsWith(root) && !it.getKey().equals(root) && !ButtonParameter.class.isInstance(it.getValue()))
+                    .map(Map.Entry::getValue)
+                    .anyMatch(this::isVisible));
+    }
+
+    private boolean isVisible(final IElementParameter parameter) {
+        try {
+            return parameter.isShow(Collections.emptyList());
+        } catch (final Exception e) {
+            // unlikely but call context is unsafe and we have internal params with showIf set, see buildUpdate
+            return false;
+        }
     }
 
     IElement getNode() {
@@ -461,6 +495,13 @@ public class SettingVisitor implements PropertyVisitor {
         return action;
     }
 
+    private TextAreaSelectionParameter visitTextAreaSelection(final PropertyNode node) {
+        final SuggestionsAction action = createSuggestionsAction(node);
+        final TextAreaSelectionParameter parameter = new TextAreaSelectionParameter(element, action);
+        commonSetup(parameter, node);
+        return parameter;
+    }
+
     protected TaCoKitElementParameter createSchemaParameter(final String connectionName, final String schemaName,
             final String discoverSchemaAction,
             final boolean show) {
@@ -491,7 +532,14 @@ public class SettingVisitor implements PropertyVisitor {
             final TaCoKitElementParameter taCoKitElementParameter = TaCoKitElementParameter.class.cast(parameter);
             taCoKitElementParameter.updateValueOnly(defaultValue);
             if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
-                createValidationLabel(node, taCoKitElementParameter);
+                taCoKitElementParameter.setRegistValidatorCallback(new Callable<Void>() {
+
+                    @Override
+                    public Void call() throws Exception {
+                        createValidationLabel(node, taCoKitElementParameter);
+                        return null;
+                    }
+                });
             }
             buildActivationCondition(node, node);
         } else {
@@ -527,13 +575,7 @@ public class SettingVisitor implements PropertyVisitor {
      * It is shown on the next row, but may be shown in the next
      */
     private void createValidationLabel(final PropertyNode node, final TaCoKitElementParameter target) {
-        final ValidationLabel label = new ValidationLabel(element);
-        label.setCategory(category);
-        label.setName(node.getProperty().getPath() + PropertyNode.VALIDATION);
-        label.setRedrawParameter(redrawParameter);
-        // it is shown on the next row by default, but may be changed
-        label.setNumRow(node.getLayout(form).getPosition() + 1);
-        settings.put(label.getName(), label);
+        final ValidationLabel label = new ValidationLabel(target);
 
         processConstraints(node, target, label);
         processValidations(node, target, label);

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,15 +46,15 @@ import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 
 /**
  * Graphical part of the connection of Gef. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ConnectionPart extends AbstractConnectionEditPart implements PropertyChangeListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#activate()
      */
     @Override
@@ -81,7 +81,7 @@ public class ConnectionPart extends AbstractConnectionEditPart implements Proper
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#deactivate()
      */
     @Override
@@ -94,7 +94,7 @@ public class ConnectionPart extends AbstractConnectionEditPart implements Proper
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractConnectionEditPart#deactivateFigure()
      */
     @Override
@@ -113,7 +113,7 @@ public class ConnectionPart extends AbstractConnectionEditPart implements Proper
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#setSelected(int)
      */
     @Override
@@ -146,7 +146,7 @@ public class ConnectionPart extends AbstractConnectionEditPart implements Proper
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#createEditPolicies()
      */
     @Override
@@ -175,7 +175,7 @@ public class ConnectionPart extends AbstractConnectionEditPart implements Proper
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractConnectionEditPart#createFigure()
      */
     @Override
@@ -205,7 +205,7 @@ public class ConnectionPart extends AbstractConnectionEditPart implements Proper
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -250,7 +250,7 @@ public class ConnectionPart extends AbstractConnectionEditPart implements Proper
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#getModelChildren()
      */
     @Override

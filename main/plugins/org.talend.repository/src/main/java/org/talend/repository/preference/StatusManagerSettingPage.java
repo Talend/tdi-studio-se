@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -148,7 +148,7 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -385,13 +385,13 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
     }
 
     private void addItemTableViewer(Composite rightComposite) {
-        
+
         Composite composite = new Composite(rightComposite, SWT.NONE);
         GridLayout gdlComposite = new GridLayout();
         gdlComposite.marginHeight = 0;
         gdlComposite.marginWidth = 0;
         composite.setLayout(gdlComposite);
-        
+
         GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
 
         addItemsOption(composite);
@@ -880,7 +880,7 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#performApply()
      */
     @Override
@@ -891,7 +891,7 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
@@ -1025,7 +1025,7 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.preference.ProjectSettingPage#refresh()
      */
     @Override

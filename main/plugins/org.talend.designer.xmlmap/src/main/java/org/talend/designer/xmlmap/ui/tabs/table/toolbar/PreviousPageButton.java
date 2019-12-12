@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,13 +23,13 @@ import org.talend.designer.xmlmap.ui.tabs.table.TreeSchemaTableEditor;
 
 /**
  * created by Administrator on 2013-1-25 Detailled comment
- * 
+ *
  */
 public class PreviousPageButton extends ExtendedPushButton {
 
     /**
      * DOC Administrator PreviousPageButton constructor comment.
-     * 
+     *
      * @param parent
      * @param extendedViewer
      * @param tooltip
@@ -53,7 +53,7 @@ public class PreviousPageButton extends ExtendedPushButton {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.advanced.dataeditor.control.ExtendedPushButton#handleSelectionEvent(org.eclipse.swt
      * .widgets.Event)
@@ -71,7 +71,7 @@ public class PreviousPageButton extends ExtendedPushButton {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.control.ExtendedPushButton#getEnabledState()
      */
     @Override
@@ -93,7 +93,7 @@ public class PreviousPageButton extends ExtendedPushButton {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.control.ExtendedPushButton#handleModelChange()
      */
     @Override

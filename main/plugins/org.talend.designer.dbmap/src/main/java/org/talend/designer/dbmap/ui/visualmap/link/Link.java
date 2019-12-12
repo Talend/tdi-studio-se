@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class Link implements IMapperLink {
 
@@ -137,7 +137,7 @@ public class Link implements IMapperLink {
 
     /**
      * Getter for linkState.
-     * 
+     *
      * @return the linkState
      */
     public ILinkState getState() {
@@ -146,7 +146,7 @@ public class Link implements IMapperLink {
 
     /**
      * Sets the linkState.
-     * 
+     *
      * @param state the linkState to set
      */
     public void setState(ILinkState state) {
@@ -155,7 +155,7 @@ public class Link implements IMapperLink {
 
     /**
      * Getter for point1.
-     * 
+     *
      * @return the point1
      */
     public Point getPoint1() {
@@ -164,7 +164,7 @@ public class Link implements IMapperLink {
 
     /**
      * Sets the point1.
-     * 
+     *
      * @param point1 the point1 to set
      */
     public void setPoint1(Point point1) {
@@ -173,7 +173,7 @@ public class Link implements IMapperLink {
 
     /**
      * Getter for point2.
-     * 
+     *
      * @return the point2
      */
     public Point getPoint2() {
@@ -182,7 +182,7 @@ public class Link implements IMapperLink {
 
     /**
      * Sets the point2.
-     * 
+     *
      * @param point2 the point2 to set
      */
     public void setPoint2(Point point2) {
@@ -191,7 +191,7 @@ public class Link implements IMapperLink {
 
     /**
      * Getter for pointDescriptor1.
-     * 
+     *
      * @return the pointDescriptor1
      */
     public PointLinkDescriptor getPointLinkDescriptor1() {
@@ -200,7 +200,7 @@ public class Link implements IMapperLink {
 
     /**
      * Sets the pointDescriptor1.
-     * 
+     *
      * @param pointDescriptor1 the pointDescriptor1 to set
      */
     public void setPointLinkDescriptor1(PointLinkDescriptor pointDescriptor1) {
@@ -209,7 +209,7 @@ public class Link implements IMapperLink {
 
     /**
      * Getter for pointDescriptor2.
-     * 
+     *
      * @return the pointDescriptor2
      */
     public PointLinkDescriptor getPointLinkDescriptor2() {
@@ -218,7 +218,7 @@ public class Link implements IMapperLink {
 
     /**
      * Sets the pointDescriptor2.
-     * 
+     *
      * @param pointDescriptor2 the pointDescriptor2 to set
      */
     public void setPointLinkDescriptor2(PointLinkDescriptor pointDescriptor2) {
@@ -227,7 +227,7 @@ public class Link implements IMapperLink {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.link.IMapperLink#getLevel()
      */
     public Integer getLevel() {
@@ -236,7 +236,7 @@ public class Link implements IMapperLink {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.link.IMapperLink#setLevel(java.lang.Integer)
      */
     public void setLevel(Integer level) {

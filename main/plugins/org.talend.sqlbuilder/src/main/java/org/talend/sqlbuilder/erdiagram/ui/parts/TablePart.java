@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,9 +41,9 @@ import org.talend.sqlbuilder.erdiagram.ui.nodes.Table;
 
 /**
  *  qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class TablePart extends AbstractGraphicalEditPart implements PropertyChangeListener {
 
@@ -51,7 +51,7 @@ public class TablePart extends AbstractGraphicalEditPart implements PropertyChan
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#getModelChildren()
      */
     @Override
@@ -61,7 +61,7 @@ public class TablePart extends AbstractGraphicalEditPart implements PropertyChan
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
      */
     @Override
@@ -73,7 +73,7 @@ public class TablePart extends AbstractGraphicalEditPart implements PropertyChan
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#addChildVisual(org.eclipse.gef.EditPart, int)
      */
     @Override
@@ -89,7 +89,7 @@ public class TablePart extends AbstractGraphicalEditPart implements PropertyChan
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#createEditPolicies()
      */
     @Override
@@ -122,7 +122,7 @@ public class TablePart extends AbstractGraphicalEditPart implements PropertyChan
 
     /*
      * (non-Java)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {
@@ -137,9 +137,9 @@ public class TablePart extends AbstractGraphicalEditPart implements PropertyChan
 
     /**
      *  admin TablePart class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
-     * 
+     *
      */
     public class CustomTableFigure extends org.talend.sqlbuilder.erdiagram.ui.figures.CustomTableFigure {
 
@@ -268,7 +268,7 @@ public class TablePart extends AbstractGraphicalEditPart implements PropertyChan
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#getContentPane()
      */
     @Override

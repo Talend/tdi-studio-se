@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -39,9 +39,9 @@ import org.talend.spagic.engines.client.i18n.Messages;
 
 /**
  * Job scripts export wizard. <br/>
- * 
+ *
  * $Id: JobScriptsExportWizard.java 1 2006-12-13 涓嬪�?3:13:18 bqian
- * 
+ *
  */
 public class SpagicDeployWizard extends Wizard implements IExportWizard {
 

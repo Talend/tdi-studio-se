@@ -32,9 +32,9 @@ imports="
           <%@ include file="@{org.talend.designer.components.localprovider}/components/tMicrosoftCrmOutput/tMicrosoftCrmOutput_begin_CXF.javajet"%>
        <%
     }else{
-        String crmOnlineVersion = ElementParameterParser.getValue(node, "__API_VERSION__");
-    	  boolean isOnline2016WithOdata="ONLINE".equals(authenticationType) && "API_2016_ODATA".equals(crmOnlineVersion);
-    	  boolean isMsCrm2016OnPremise = "ON_PREMISE".equals(authenticationType) && "CRM_2016".equals(crmVersion);    	  
+          String crmOnlineVersion = ElementParameterParser.getValue(node, "__API_VERSION__");
+    	  boolean isOnline2016WithOdata="ONLINE".equals(authenticationType) && ("API_2016_ODATA".equals(crmOnlineVersion) || "API_2018_ODATA".equals(crmOnlineVersion));
+    	  boolean isMsCrm2016OnPremise = "ON_PREMISE".equals(authenticationType) && ("CRM_2016".equals(crmVersion) || "CRM_2018".equals(crmVersion));    	  
     	  if(isOnline2016WithOdata || isMsCrm2016OnPremise){
     	  %>
            <%@ include file="./tMicrosoftCrmOutput_begin_odata.javajet"%>

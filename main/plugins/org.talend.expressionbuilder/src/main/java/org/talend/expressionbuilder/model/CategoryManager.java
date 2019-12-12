@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,9 +26,9 @@ import org.talend.expressionbuilder.i18n.Messages;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: CategoryManager.java 上午10:06:09 2007-7-24 +0000 (2007-7-24) yzhang $
- * 
+ *
  */
 public class CategoryManager {
 
@@ -82,7 +82,7 @@ public class CategoryManager {
 
     /**
      * Converts the structure of talendTypes to Categories.
-     * 
+     *
      * @param talendTypes
      * @return
      */
@@ -136,7 +136,7 @@ public class CategoryManager {
 
     /**
      * Getter for hasPigDataFuCategory.
-     * 
+     *
      * @return the hasPigDataFuCategory
      */
     public boolean isHasPigDataFuCategory() {
@@ -145,7 +145,7 @@ public class CategoryManager {
 
     /**
      * Sets the hasPigDataFuCategory.
-     * 
+     *
      * @param hasPigDataFuCategory the hasPigDataFuCategory to set
      */
     public void setHasPigDataFuCategory(boolean hasPigDataFuCategory) {

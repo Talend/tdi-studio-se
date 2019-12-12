@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -76,27 +76,33 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
 
     /**
      * Part of constructor
-     * 
+     *
      * Sets {@code pathToSave} if repository node has one of following types:
-     * 
+     *
      * <ul>
-     * 
+     *
      * <li>SIMPLE_FOLDER</li>
-     * 
+     *
      * <li>SYSTEM_FOLDER</li>
-     * 
+     *
      * <li>REPOSITORY_ELEMENT</li>
-     * 
+     *
      * </ul>
      */
     private void setPathToSave() {
         ITaCoKitRepositoryNode repositoryNode = runtimeData.getTaCoKitRepositoryNode();
         ENodeType nodeType = repositoryNode.getType();
         switch (nodeType) {
+        case STABLE_SYSTEM_FOLDER:
+
         case SIMPLE_FOLDER:
 
         case REPOSITORY_ELEMENT:
-            pathToSave = RepositoryNodeUtilities.getPath(repositoryNode);
+            if (repositoryNode.isLeafNode()) {
+                pathToSave = new Path(""); //$NON-NLS-1$
+            } else {
+                pathToSave = RepositoryNodeUtilities.getPath(repositoryNode);
+            }
             break;
 
         case SYSTEM_FOLDER:
@@ -110,9 +116,9 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
 
     /**
      * Part of constructor
-     * 
+     *
      * Initializes lock strategy if repository node type is REPOSITORY_ELEMENT
-     * 
+     *
      * If needed, locks the repository node
      */
     private void lockNode() {
@@ -135,8 +141,8 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
         wizardPropertiesPage = new Step0WizardPage(runtimeData.getConnectionItem().getProperty(), pathToSave,
                 TaCoKitConst.METADATA_TACOKIT, runtimeData.isReadonly(), creation);
         final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
-        wizardPropertiesPage.setTitle(Messages.getString("TaCoKitConfiguration.wizard.title", //$NON-NLS-1$
-                configTypeNode.getConfigurationType(), configTypeNode.getDisplayName()));
+        wizardPropertiesPage.setTitle(Messages.getString("TaCoKitConfiguration.wizard.title.str", //$NON-NLS-1$
+                configTypeNode.getDisplayName(), configTypeNode.getConfigurationType()));
         wizardPropertiesPage.setDescription(""); //$NON-NLS-1$
         addPage(wizardPropertiesPage);
         final PropertyNode root = new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);
@@ -149,7 +155,7 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
             addPage(advancedPage);
         }
     }
-    
+
     @Override
     public boolean performFinish() {
         // if both are null, then nothing to do and "perform finish" operation is always accepted
@@ -164,13 +170,14 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
             return advancedPage.isPageComplete() && doPerformFinish();
         }
     }
-    
+
     private boolean doPerformFinish() {
         try {
             IWorkspace workspace = ResourcesPlugin.getWorkspace();
             IWorkspaceRunnable operation = createFinishOperation();
             ISchedulingRule schedulingRule = workspace.getRoot();
             workspace.run(operation, schedulingRule, IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+            closeLockStrategy();
             return true;
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -186,11 +193,11 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
 
     /**
      * Creates operation, which is performed, when Finish button is pushed.
-     * 
+     *
      * Creates different operations depending on whether it is Create or Edit wizard
      *
-     * 
-     * 
+     *
+     *
      * @return operation to perform on finish
      */
     protected abstract IWorkspaceRunnable createFinishOperation();
@@ -204,10 +211,7 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
         if (currentPage instanceof Step0WizardPage) {
             return false;
         }
-        if (currentPage.isPageComplete()) {
-            return true;
-        }
-        return false;
+        return super.canFinish();
     }
 
     @Override
@@ -230,4 +234,5 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
     protected TaCoKitConfigurationWizardPage getAdvancedPage() {
         return this.advancedPage;
     }
+
 }

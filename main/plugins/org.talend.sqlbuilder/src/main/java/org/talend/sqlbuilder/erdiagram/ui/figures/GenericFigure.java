@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,7 +37,7 @@ public abstract class GenericFigure extends Shape {
     /**
      * Returns <code>true</code> if this figure uses local coordinates. This means its children are placed relative to
      * this figure's top-left corner.
-     * 
+     *
      * @since 2.0
      */
     protected boolean useLocalCoordinates() {
@@ -75,7 +75,7 @@ public abstract class GenericFigure extends Shape {
 
     /**
      * Returns a Color the same as the passed color in a lighter hue.
-     * 
+     *
      * @since 2.0
      */
     public static Color lighter(Color darker, int index, int total) {

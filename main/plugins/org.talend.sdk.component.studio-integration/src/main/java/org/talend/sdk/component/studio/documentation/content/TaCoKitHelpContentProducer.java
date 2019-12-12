@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class TaCoKitHelpContentProducer implements IHelpContentProducer {
 
     /**
      * @see org.eclipse.help.IHelpContentProducer#getInputStream(java.lang.String, java.lang.String, java.util.Locale)
-     * 
+     *
      * @param pluginId plugin(contributor) name.
      * @param href href is a component id + .html[?lang=en_US], which we can use to get the documentation
      * @param locale to be used

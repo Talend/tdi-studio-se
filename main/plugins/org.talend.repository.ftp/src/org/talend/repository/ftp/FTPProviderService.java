@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,7 @@ public class FTPProviderService implements IFTPProviderService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IFTPProviderService#getRepositoryItem(org.talend.core.model.process.INode)
      */
     public FTPConnectionItem getRepositoryItem(INode node) {
@@ -40,7 +40,7 @@ public class FTPProviderService implements IFTPProviderService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IFTPProviderService#isFTPNode(org.talend.core.model.process.INode)
      */
     public boolean isFTPNode(INode node) {
@@ -50,7 +50,7 @@ public class FTPProviderService implements IFTPProviderService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IFTPProviderService#isRepositorySchemaLine(org.talend.core.model.process.INode,
      * java.util.Map)
      */
@@ -61,7 +61,7 @@ public class FTPProviderService implements IFTPProviderService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.IFTPProviderService#newFTPWizard(org.talend.core.ui.IWorkbench, boolean,
      * org.talend.repository.model.RepositoryNode, java.lang.String[])
      */

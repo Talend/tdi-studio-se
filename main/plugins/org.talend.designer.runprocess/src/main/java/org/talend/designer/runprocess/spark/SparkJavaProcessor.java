@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,7 +37,7 @@ public class SparkJavaProcessor extends BigDataJavaProcessor {
 
     /**
      * DOC rdubois SparkJavaProcessor constructor comment.
-     * 
+     *
      * @param process
      * @param property
      * @param filenameFromLabel
@@ -48,7 +48,7 @@ public class SparkJavaProcessor extends BigDataJavaProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.runprocess.bigdata.BigDataJavaProcessor#createJobScriptsManager(org.talend.core.model.properties
      * .ProcessItem, java.util.Map)
@@ -72,7 +72,7 @@ public class SparkJavaProcessor extends BigDataJavaProcessor {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.bigdata.BigDataJavaProcessor#getFilePathPrefix()
      */
     @Override

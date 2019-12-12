@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -54,9 +54,9 @@ import org.talend.sqlbuilder.ui.SQLBuilderEditorComposite;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2007-2-9 上午10:33:48 (星期五, 29 九月 2006) qzhang $
- * 
+ *
  */
 public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
@@ -112,7 +112,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.ui.part.MultiPageEditorPart#createPages()
      */
     @Override
@@ -152,7 +152,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
         }
 
     }
-    
+
     public final void createPartControl2(Composite parent) {
     	//super.createPartControl(parent);
 		Composite pageContainer = createPageContainer(parent);
@@ -186,7 +186,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 				pageChange(newPageIndex);
 			}
 		});
-		newContainer.addTraverseListener(new TraverseListener() { 
+		newContainer.addTraverseListener(new TraverseListener() {
 			// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=199499 : Switching tabs by Ctrl+PageUp/PageDown must not be caught on the inner tab set
 			@Override
 			public void keyTraversed(TraverseEvent e) {
@@ -211,7 +211,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 		});
 		return newContainer;
 	}
-    
+
     private boolean isFirst = true;
 
     private boolean isFirst2 = true;
@@ -224,7 +224,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
              */
             public void modifyText(ModifyEvent e) {
@@ -240,7 +240,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
              */
             public void modifyText(ModifyEvent e) {
@@ -265,7 +265,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.MultiPageEditorPart#getActivePage()
      */
     @Override
@@ -327,7 +327,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
      */
     @Override
@@ -337,7 +337,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.MultiPageEditorPart#setFocus()
      */
     @Override
@@ -351,7 +351,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.ui.part.EditorPart#doSaveAs()
      */
     @Override
@@ -361,7 +361,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
      */
     @Override
@@ -378,7 +378,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.MultiPageEditorPart#pageChange(int)
      */
     @Override
@@ -415,7 +415,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.MultiPageEditorPart#getContainer()
      */
     @Override
@@ -437,7 +437,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#getTitle()
      */
     @Override
@@ -487,7 +487,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.MultiPageEditorPart#initializePageSwitching()
      */
 
@@ -495,7 +495,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
     protected void initializePageSwitching() {
 
     }
-    
+
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
@@ -513,12 +513,12 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
 		}
 		return 0;
 	}
-    
+
     //These methods are from MultiPageEditor mostly
     public void addPage(int index, Control control) {
 		createItem(index, control);
 	}
-    
+
     private CTabItem createItem(int index, Control control) {
 		CTabItem item = new CTabItem(getTabFolder(), SWT.NONE, index);
 		item.setControl(control);
@@ -527,11 +527,11 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
     private CTabFolder getTabFolder() {
 		return this.container;
 	}
-    
+
     private CTabItem getItem(int pageIndex) {
 		return getTabFolder().getItem(pageIndex);
 	}
-    
+
     protected void setActivePage(int pageIndex) {
 		Assert.isTrue(pageIndex >= 0 && pageIndex < getPageCount());
 		getTabFolder().setSelection(pageIndex);
@@ -557,7 +557,7 @@ public class MultiPageSqlBuilderEditor extends MultiPageEditorPart {
     protected Image getPageImage(int pageIndex) {
 		return getItem(pageIndex).getImage();
 	}
-    @Override   
+    @Override
     protected String getPageText(int pageIndex) {
 		return getItem(pageIndex).getText();
 	}

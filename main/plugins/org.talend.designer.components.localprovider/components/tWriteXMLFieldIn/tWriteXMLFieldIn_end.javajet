@@ -41,10 +41,16 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				if(nextMergeConn != null && nextMergeConn.getInputId()>1 && startNodeCid != null){
 	   			%>
 					txf_<%=cid%>.join();
+					
 					if(txf_<%=cid%>.getLastException()!=null) {
 						currentComponent = txf_<%=cid%>.getCurrentComponent();
 						throw txf_<%=cid%>.getLastException();
 					}
+					
+					if(txf_<%=cid%>.getLastError()!=null) {
+						throw txf_<%=cid%>.getLastError();
+					}
+					
 					globalMap.remove("queue_<%=virtualSourceCid%>");
     			<%
     			}else{

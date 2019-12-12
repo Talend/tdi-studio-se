@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,9 +25,9 @@ import org.talend.commons.ui.runtime.CommonUIPlugin;
 
 /**
  * DOC mhirt class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class CodeGeneratorProgressMonitor extends ProgressMonitorWrapper implements IProgressMonitorWithBlocking {
 
@@ -53,7 +53,7 @@ public class CodeGeneratorProgressMonitor extends ProgressMonitorWrapper impleme
 
     /**
      * Constructs a new instance of the receiver and forwards to monitor.
-     * 
+     *
      * @param monitor
      */
     public CodeGeneratorProgressMonitor(IProgressMonitor monitor) {
@@ -72,7 +72,7 @@ public class CodeGeneratorProgressMonitor extends ProgressMonitorWrapper impleme
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.core.runtime.IProgressMonitorWithBlocking#clearBlocked()
      */
     @Override
@@ -167,7 +167,7 @@ public class CodeGeneratorProgressMonitor extends ProgressMonitorWrapper impleme
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.core.runtime.IProgressMonitorWithBlocking#setBlocked(org.eclipse.core.runtime.IStatus)
      */
     @Override
@@ -233,7 +233,7 @@ public class CodeGeneratorProgressMonitor extends ProgressMonitorWrapper impleme
 
     /**
      * Return the name of the current task.
-     * 
+     *
      * @return Returns the taskName.
      */
     protected String getTaskName() {

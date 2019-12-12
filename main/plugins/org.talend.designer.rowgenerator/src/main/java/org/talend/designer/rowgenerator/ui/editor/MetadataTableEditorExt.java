@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,14 +21,14 @@ import org.talend.designer.rowgenerator.ui.RowGeneratorUI;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: MetadataTableEditorExt.java,v 1.3 2007/01/31 05:20:52 pub Exp $
- * 
+ *
  */
 public class MetadataTableEditorExt extends MetadataTableEditor {
 
     private RowGeneratorUI ui;
-    
+
     private FunctionManagerExt functionManagerExt;
 
     /**

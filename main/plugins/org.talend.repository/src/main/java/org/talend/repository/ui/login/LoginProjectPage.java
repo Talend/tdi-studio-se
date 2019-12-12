@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -74,6 +74,7 @@ import org.talend.commons.ui.runtime.exception.ExceptionMessageDialog;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.utils.network.TalendProxySelector;
 import org.talend.commons.utils.system.EclipseCommandLine;
 import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.CorePlugin;
@@ -186,7 +187,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     protected Job backgroundGUIUpdate;
 
     private String selectedProjectBeforeRefresh;
-    
+
     // protected ConnectionBean beforeConnBean;
 
     protected String finishButtonAction;
@@ -627,7 +628,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     public void check() {
         try {
             checkErrors();
-            log.info("validate updatesite..."); //$NON-NLS-1$ 
+            log.info("validate updatesite..."); //$NON-NLS-1$
             validateUpdate();
         } catch (PersistenceException e) {
             CommonExceptionHandler.process(e);
@@ -679,6 +680,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     CommonExceptionHandler.process(e);
                 } catch (JSONException e) {
                     CommonExceptionHandler.process(e);
+                } finally {
+                    TalendProxySelector.getInstance();
                 }
             }
 
@@ -1477,19 +1480,19 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     protected void changeFinishButtonAction(String newAction) {
         finishButtonAction = newAction;
         if (FINISH_ACTION_OPEN_PROJECT.equals(newAction)) {
-            finishButton.setText(Messages.getString("LoginProjectPage.finish")); //$NON-NLS-1$  
+            finishButton.setText(Messages.getString("LoginProjectPage.finish")); //$NON-NLS-1$
         } else if (FINISH_ACTION_UPDATE.equals(newAction)) {
-            finishButton.setText(Messages.getString("LoginProjectPage.update")); //$NON-NLS-1$              
+            finishButton.setText(Messages.getString("LoginProjectPage.update")); //$NON-NLS-1$
         } else if (FINISH_ACTION_UPDATE_DETAILS.equals(newAction)) {
-            finishButton.setText(Messages.getString("LoginProjectPage.details")); //$NON-NLS-1$                          
+            finishButton.setText(Messages.getString("LoginProjectPage.details")); //$NON-NLS-1$
         } else if (FINISH_ACTION_CREATE_SANDBOX.equals(newAction)) {
-            //            finishButton.setText(Messages.getString("LoginProjectPage.execute")); //$NON-NLS-1$                                      
+            //            finishButton.setText(Messages.getString("LoginProjectPage.execute")); //$NON-NLS-1$
         } else if (FINISH_ACTION_IMPORT_DEMO_PROJECT.equals(newAction)) {
-            //            finishButton.setText(Messages.getString("LoginProjectPage.execute")); //$NON-NLS-1$                                      
+            //            finishButton.setText(Messages.getString("LoginProjectPage.execute")); //$NON-NLS-1$
         } else if (FINISH_ACTION_IMPORT_LOCAL_PROJECT.equals(newAction)) {
-            //            finishButton.setText(Messages.getString("LoginProjectPage.execute")); //$NON-NLS-1$                                      
+            //            finishButton.setText(Messages.getString("LoginProjectPage.execute")); //$NON-NLS-1$
         } else if (FINISH_ACTION_CREATE_NEW_PROJECT.equals(newAction)) {
-            //            finishButton.setText(Messages.getString("LoginProjectPage.create")); //$NON-NLS-1$                                      
+            //            finishButton.setText(Messages.getString("LoginProjectPage.create")); //$NON-NLS-1$
         } else {
             finishButton.setText(Messages.getString("LoginProjectPage.restart")); //$NON-NLS-1$
             finishButtonAction = FINISH_ACTION_RESTART;
@@ -1738,7 +1741,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
     /**
      * svn provider plugin loaded && a remote connection
-     * 
+     *
      * @return
      */
     protected boolean isSVNProviderPluginLoadedRemote() {
@@ -1868,7 +1871,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                                             return;
                                         }
                                         branchesViewer.setInput(projectBranches);
-                                        //branchesViewer.setSelection(new StructuredSelection(new Object[] { projectBranches.get(0) })); //$NON-NLS-1$ 
+                                        //branchesViewer.setSelection(new StructuredSelection(new Object[] { projectBranches.get(0) })); //$NON-NLS-1$
                                         if ("svn".equals(storage) && projectBranches.size() != 0) {
                                             branchesViewer.setSelection(new StructuredSelection(new Object[] { projectBranches
                                                     .contains("trunk") ? "trunk" : projectBranches.get(0) }));
@@ -2056,7 +2059,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             newProjectName.setText(""); //$NON-NLS-1$
         } catch (PersistenceException e) {
             MessageDialog.openError(getShell(), Messages.getString("NewProjectWizard.failureTitle"), Messages //$NON-NLS-1$
-                    .getString("NewProjectWizard.failureText")); //$NON-NLS-1$ 
+                    .getString("NewProjectWizard.failureText")); //$NON-NLS-1$
             MessageBoxExceptionHandler.process(e);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -2088,18 +2091,20 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 }
                 connectionName = connectionName + " (" + remoteLabel; //$NON-NLS-1$
             } else if (LoginHelper.isCloudUSConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.us"); //$NON-NLS-1$//$NON-NLS-2$
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.aws_us"); //$NON-NLS-1$//$NON-NLS-2$
             } else if (LoginHelper.isCloudEUConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.eu"); //$NON-NLS-1$//$NON-NLS-2$
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.aws_eu"); //$NON-NLS-1$//$NON-NLS-2$
             } else if (LoginHelper.isCloudAPACConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.apac"); //$NON-NLS-1$//$NON-NLS-2$
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.aws_apac"); //$NON-NLS-1$//$NON-NLS-2$
+            } else if (LoginHelper.isCloudUSWestConnection(prj)) {
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.usa_west"); //$NON-NLS-1$//$NON-NLS-2$
             } else if (LoginHelper.isCloudCustomConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.custom"); //$NON-NLS-1$//$NON-NLS-2$
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.cloud_custom"); //$NON-NLS-1$//$NON-NLS-2$
             } else {
                 connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.local"); //$NON-NLS-1$//$NON-NLS-2$
             }
             if (!prj.isComplete()) {
-                connectionName = connectionName + ", " + Messages.getString("connections.form.field.imcomplete"); //$NON-NLS-1$ //$NON-NLS-2$ 
+                connectionName = connectionName + ", " + Messages.getString("connections.form.field.imcomplete"); //$NON-NLS-1$ //$NON-NLS-2$
             }
             connectionName = connectionName + ")"; //$NON-NLS-1$
             return connectionName;

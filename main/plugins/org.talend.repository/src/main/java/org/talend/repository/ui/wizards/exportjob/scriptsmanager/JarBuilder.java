@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -45,9 +45,9 @@ import org.talend.utils.io.FilesUtils;
 
 /**
  * This is a jar file builder. <br/>
- * 
+ *
  * $Id: MakeJarRunnable.java Mar 30, 200712:49:05 PM bqian $
- * 
+ *
  */
 public class JarBuilder {
 
@@ -75,7 +75,7 @@ public class JarBuilder {
 
     /**
      * Constructure.
-     * 
+     *
      * @param root
      * @param jarFile
      * @param jarName
@@ -104,7 +104,7 @@ public class JarBuilder {
 
     /**
      * Gets the files to zip in jar.
-     * 
+     *
      * @return
      */
     private Collection<File> getExportedFiles() {
@@ -166,7 +166,7 @@ public class JarBuilder {
 
     /**
      * Builds the jar file.
-     * 
+     *
      * @throws Exception
      */
     public void buildJar() throws IOException {
@@ -175,7 +175,7 @@ public class JarBuilder {
 
     /**
      * Create temp folder for zip files to jar file. Add by nma, order 12346
-     * 
+     *
      * @throws Exception
      */
     private void createTempSubFolder(String tempFolderPath, File srcFile) {
@@ -193,7 +193,7 @@ public class JarBuilder {
 
     /**
      * exports the jar to specific location.
-     * 
+     *
      * @param root
      * @param list
      * @param manifest
@@ -320,7 +320,7 @@ public class JarBuilder {
 
     /**
      * Getter for libPath.
-     * 
+     *
      * @return the libPath
      */
     public List<File> getLibPath() {
@@ -329,7 +329,7 @@ public class JarBuilder {
 
     /**
      * Sets the libPath.
-     * 
+     *
      * @param libPath the libPath to set
      */
     public void setLibPath(List<File> libPath) {
@@ -395,7 +395,7 @@ public class JarBuilder {
 
     /**
      * Getter for isStorm.
-     * 
+     *
      * @return the isStorm
      */
     public boolean isFatJar() {
@@ -404,7 +404,7 @@ public class JarBuilder {
 
     /**
      * Sets the isStorm.
-     * 
+     *
      * @param isStorm the isStorm to set
      */
     public void setFatJar(boolean isFatJar) {

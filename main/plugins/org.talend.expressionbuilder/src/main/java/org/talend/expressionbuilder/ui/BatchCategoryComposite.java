@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,7 +42,7 @@ import org.talend.expressionbuilder.model.CategoryManager;
 import org.talend.expressionbuilder.test.shadow.VirtualMetadataColumn;
 
 /**
- * 
+ *
  * created by hcyi on Feb 15, 2017 Detailled comment
  *
  */

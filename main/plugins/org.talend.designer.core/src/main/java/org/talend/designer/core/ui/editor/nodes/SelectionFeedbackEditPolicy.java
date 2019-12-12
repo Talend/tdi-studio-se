@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -163,7 +163,7 @@ public class SelectionFeedbackEditPolicy extends SelectionEditPolicy implements 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editpolicies.SelectionEditPolicy#addSelectionListener()
      */
     @Override
@@ -173,7 +173,7 @@ public class SelectionFeedbackEditPolicy extends SelectionEditPolicy implements 
 
     /**
      * Getter for hideHandle.
-     * 
+     *
      * @return the hideHandle
      */
     public boolean isHideHandle() {
@@ -182,7 +182,7 @@ public class SelectionFeedbackEditPolicy extends SelectionEditPolicy implements 
 
     /**
      * Sets the hideHandle.
-     * 
+     *
      * @param hideHandle the hideHandle to set
      */
     public void setHideHandle(boolean hideHandle) {

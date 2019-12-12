@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,9 +36,9 @@ public class StatusProjectSettingPage extends FieldEditorPreferencePage implemen
 
     /**
      * StatusListEditor.
-     * 
+     *
      * $Id: StatusPreferencePage.java 21728 2009-02-09 10:23:23Z plegall $
-     * 
+     *
      */
 
     public StatusProjectSettingPage() {

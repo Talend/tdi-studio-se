@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.designer.core.ui.editor.properties.controllers.TextController;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TextGenerator.java 1 2006-12-22 下午04:44:37 +0000 (下午04:44:37) yzhang $
- * 
+ *
  */
 public class TextGenerator implements IControllerGenerator {
 
@@ -28,7 +28,7 @@ public class TextGenerator implements IControllerGenerator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IControllerGenerator#generate()
      */
     public AbstractElementPropertySectionController generate() {
@@ -37,7 +37,7 @@ public class TextGenerator implements IControllerGenerator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IControllerGenerator#setDynamicProperty(org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty)
      */
     public void setDynamicProperty(IDynamicProperty dp) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,7 +32,7 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 public class UpdateViewerHelper {
 
     /**
-     * 
+     *
      */
     enum StateType {
         ALL,
@@ -54,7 +54,7 @@ public class UpdateViewerHelper {
     }
 
     /**
-     * 
+     *
      * init view state.
      */
     public void initViewerState() {
@@ -79,9 +79,9 @@ public class UpdateViewerHelper {
     }
 
     /**
-     * 
+     *
      * select all.
-     * 
+     *
      */
     public void selectAll(boolean state) {
         if (getViewer() == null) {
@@ -304,9 +304,9 @@ public class UpdateViewerHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "refreshSelectButton".
-     * 
+     *
      * refresh the label of select button.
      */
     @SuppressWarnings("restriction")

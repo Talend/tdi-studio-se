@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,7 +29,7 @@ public class Category {
 
     /**
      * Getter of the property <tt>name</tt>.
-     * 
+     *
      * @return Returns the name.
      * @uml.property name="name"
      */
@@ -39,7 +39,7 @@ public class Category {
 
     /**
      * Setter of the property <tt>name</tt>.
-     * 
+     *
      * @param name The name to set.
      * @uml.property name="name"
      */
@@ -56,7 +56,7 @@ public class Category {
 
     /**
      * Getter of the property <tt>functions</tt>.
-     * 
+     *
      * @return Returns the functions.
      * @uml.property name="functions"
      */
@@ -66,7 +66,7 @@ public class Category {
 
     /**
      * Returns the element at the specified position in this list.
-     * 
+     *
      * @param index index of element to return.
      * @return the element at the specified position in this list.
      * @see java.util.List#get(int)
@@ -78,7 +78,7 @@ public class Category {
 
     /**
      * Returns an array containing all of the elements in this list in proper sequence.
-     * 
+     *
      * @return an array containing all of the elements in this list in proper sequence.
      * @see java.util.List#toArray()
      * @uml.property name="functions"
@@ -90,7 +90,7 @@ public class Category {
 
     /**
      * Appends the specified element to the end of this list (optional operation).
-     * 
+     *
      * @param element element to be appended to this list.
      * @return <tt>true</tt> (as per the general contract of the <tt>Collection.add</tt> method).
      * @see java.util.List#add(Object)
@@ -107,7 +107,7 @@ public class Category {
 
     /**
      * Setter of the property <tt>functions</tt>.
-     * 
+     *
      * @param functions the functions to set.
      * @uml.property name="functions"
      */

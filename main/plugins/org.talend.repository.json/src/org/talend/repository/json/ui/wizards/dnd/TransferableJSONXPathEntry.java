@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,9 +14,9 @@ package org.talend.repository.json.ui.wizards.dnd;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class TransferableJSONXPathEntry {
 
@@ -24,7 +24,7 @@ public class TransferableJSONXPathEntry {
 
     /**
      * DOC amaumont TransferableXPathEntry constructor comment.
-     * 
+     *
      * @param absoluteXPath
      */
     public TransferableJSONXPathEntry(String absoluteXPath) {
@@ -33,7 +33,7 @@ public class TransferableJSONXPathEntry {
 
     /**
      * Getter for absoluteXPath.
-     * 
+     *
      * @return the absoluteXPath
      */
     public String getAbsoluteXPath() {
@@ -42,7 +42,7 @@ public class TransferableJSONXPathEntry {
 
     /**
      * Sets the absoluteXPath.
-     * 
+     *
      * @param absoluteXPath the absoluteXPath to set
      */
     public void setAbsoluteXPath(String absoluteXPath) {

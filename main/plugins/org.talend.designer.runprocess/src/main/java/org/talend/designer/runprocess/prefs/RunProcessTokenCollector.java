@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,14 +40,14 @@ public class RunProcessTokenCollector extends AbstractTokenCollector {
     @Override
     public JSONObject collect() throws Exception {
         JSONObject object = new JSONObject();
-        
+
         IPreferenceStore preferenceStore = RunProcessPlugin.getDefault().getPreferenceStore();
         int numRun = preferenceStore.getInt(TOS_COUNT_RUNS.getPrefKey());
         object.put(TOS_COUNT_RUNS.getKey(), numRun);
 
         int numDebugRun = preferenceStore.getInt(TOS_COUNT_DEBUG_RUNS.getPrefKey());
         object.put(TOS_COUNT_DEBUG_RUNS.getKey(), numDebugRun);
-        
+
         return object;
     }
 

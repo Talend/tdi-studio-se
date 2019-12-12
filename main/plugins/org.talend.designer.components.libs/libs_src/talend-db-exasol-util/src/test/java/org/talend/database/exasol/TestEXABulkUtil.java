@@ -39,7 +39,6 @@ public class TestEXABulkUtil {
 		truncateStat.execute("truncate table " + errorTable);
 		truncateStat.close();
 		EXABulkUtil u = new EXABulkUtil();
-		u.setDebug(true);
 		u.setTransferSecure(true);
 		u.setConnection(connection);
 		u.setTable(table);
@@ -83,7 +82,6 @@ public class TestEXABulkUtil {
 		}
 		truncateStat.close();
 		EXABulkUtil u = new EXABulkUtil();
-		u.setDebug(true);
 		u.setConnection(connection);
 		u.setTable(table);
 		u.setRemoteFileUrl("sftp://172.16.214.132/home/tisadmin/Downloads/");
@@ -130,7 +128,6 @@ public class TestEXABulkUtil {
 		}
 		truncateStat.close();
 		EXABulkUtil u = new EXABulkUtil();
-		u.setDebug(true);
 		u.setConnection(connection);
 		u.setTable(table);
 		u.setDbmsSourceType("JDBC");
@@ -170,7 +167,6 @@ public class TestEXABulkUtil {
 		}
 		truncateStat.close();
 		EXABulkUtil u = new EXABulkUtil();
-		u.setDebug(true);
 		u.setConnection(connection);
 		u.setTable(table);
 		u.setDbmsSourceType("ORA");
@@ -211,7 +207,6 @@ public class TestEXABulkUtil {
 		}
 		stat.close();
 		EXABulkUtil u = new EXABulkUtil();
-		u.setDebug(true);
 		u.setConnection(connection);
 		u.setTable(table);
 		u.setDbmsSourceType("JDBC");
@@ -250,7 +245,6 @@ public class TestEXABulkUtil {
 		}
 		stat.close();
 		EXABulkUtil u = new EXABulkUtil();
-		u.setDebug(true);
 		u.setConnection(connection);
 		u.setTable(table);
 		u.setDbmsSourceType("JDBC");
@@ -290,7 +284,6 @@ public class TestEXABulkUtil {
 		}
 		stat.close();
 		EXABulkUtil u = new EXABulkUtil();
-		u.setDebug(true);
 		u.setConnection(connection);
 		u.setTable(table);
 		u.setDbmsSourceType("EXA");

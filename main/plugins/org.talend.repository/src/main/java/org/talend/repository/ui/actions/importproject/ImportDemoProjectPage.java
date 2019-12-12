@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,9 +49,9 @@ import org.talend.repository.ui.login.NewImportProjectWizard;
 
 /**
  * This class is used for creating a page for importing demo project.<br/>
- * 
+ *
  * @author ftang
- * 
+ *
  */
 public class ImportDemoProjectPage extends WizardFileSystemResourceExportPage1 implements ISelectionChangedListener {
 
@@ -71,7 +71,7 @@ public class ImportDemoProjectPage extends WizardFileSystemResourceExportPage1 i
 
     /**
      * ImportDemoProjectPage constructor.
-     * 
+     *
      * @param selection
      */
     public ImportDemoProjectPage(IStructuredSelection selection) {
@@ -82,7 +82,7 @@ public class ImportDemoProjectPage extends WizardFileSystemResourceExportPage1 i
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1#createControl(org.eclipse.swt
      * .widgets.Composite)
@@ -115,7 +115,7 @@ public class ImportDemoProjectPage extends WizardFileSystemResourceExportPage1 i
 
     /**
      * DOC Administrator Comment method "createDescriptionIn".
-     * 
+     *
      * @param composite
      */
     public void createDescriptionIn(Composite composite) {
@@ -150,7 +150,7 @@ public class ImportDemoProjectPage extends WizardFileSystemResourceExportPage1 i
 
     /**
      * getFullImagePath.
-     * 
+     *
      * @param languageName
      * @return
      */
@@ -179,7 +179,7 @@ public class ImportDemoProjectPage extends WizardFileSystemResourceExportPage1 i
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.SelectionChangedEvent
      * )
@@ -208,7 +208,7 @@ public class ImportDemoProjectPage extends WizardFileSystemResourceExportPage1 i
 
     /**
      * Sets import demo project list.
-     * 
+     *
      * @param demoProjectList
      */
     public void setImportDemoProjectList(List<DemoProjectBean> demoProjectList) {
@@ -220,7 +220,7 @@ public class ImportDemoProjectPage extends WizardFileSystemResourceExportPage1 i
 
     /**
      * Gets the index of selected demo project.
-     * 
+     *
      * @return
      */
     public int getSelectedDemoProjectIndex() {

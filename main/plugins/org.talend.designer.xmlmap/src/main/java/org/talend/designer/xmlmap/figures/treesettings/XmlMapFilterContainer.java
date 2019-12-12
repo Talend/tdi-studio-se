@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,13 +30,13 @@ import org.talend.designer.xmlmap.ui.tabs.MapperManager;
 
 /**
  * created by Administrator on 2013-1-16 Detailled comment
- * 
+ *
  */
 public class XmlMapFilterContainer extends FilterContainer {
 
     /**
      * DOC Administrator XmlMapFilterContainer constructor comment.
-     * 
+     *
      * @param tableManager
      * @param parent
      */
@@ -46,7 +46,7 @@ public class XmlMapFilterContainer extends FilterContainer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.treesettings.FilterContainer#getFilterChangeCommand()
      */
     @Override

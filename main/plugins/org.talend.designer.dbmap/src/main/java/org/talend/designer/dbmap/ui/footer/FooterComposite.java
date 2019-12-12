@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,9 +27,9 @@ import org.talend.designer.dbmap.managers.UIManager;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FooterComposite.java 1782 2007-02-03 07:57:38Z bqian $
- * 
+ *
  */
 public class FooterComposite extends Composite {
 
@@ -37,7 +37,7 @@ public class FooterComposite extends Composite {
 
     /**
      * DOC amaumont FooterComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param mapperManager

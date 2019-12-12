@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ import org.talend.designer.gefabstractmap.resource.FontProviderMapper;
 
 /**
  * created by wchen on 2013-1-14 Detailled comment
- * 
+ *
  */
 public abstract class AbstractTableContainer extends GenericFigure {
 

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -83,9 +83,9 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DynamicTabbedPropertySection.java 6579 2007-10-26 10:33:01Z ftang $
- * 
+ *
  */
 public class MultipleThreadDynamicComposite extends ScrolledComposite implements IDynamicProperty {
 
@@ -144,9 +144,9 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
     }
 
     /**
-     * 
+     *
      * cli Comment method "getAllRepositoryMetadata".
-     * 
+     *
      * fixed for 8971
      */
     private List<IRepositoryViewObject> getAllRepositoryMetadata() {
@@ -164,9 +164,9 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
     }
 
     /**
-     * 
+     *
      * cli Comment method "getAllRepositoryMetadata".
-     * 
+     *
      * fixed for 8971
      */
     private List<IRepositoryViewObject> retrieveMetadataFromProject(IProxyRepositoryFactory factory, ProjectManager pManager,
@@ -288,7 +288,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * ftang Comment method "getElement".
-     * 
+     *
      * @return an instance of Element
      */
     @Override
@@ -297,7 +297,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
     }
 
     /**
-     * 
+     *
      */
     private boolean checkErrorsWhenViewRefreshed;
 
@@ -307,7 +307,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * yzhang Comment method "addcomponents".
-     * 
+     *
      * @param forceRedraw
      * @param reInitialize
      */
@@ -341,12 +341,12 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
     public synchronized void addComponents(boolean forceRedraw, boolean reInitialize, int height) {
         placeComponents(forceRedraw, reInitialize, height);
     }
-    
+
     /**
      * Initialize all SWT Controls for the defined section for this node.
      * This method allows to override Composite layout logic, but without loosing code, which is added in
      * MissingSettingsMultiThreadDynamicComposite.addComponents() and TopMessagesMultiThreadDynamicComposite.addComponents() child classes.
-     * Before MissingSettingsMultiThreadDynamicComposite child class should override addComponents() method, which leads to loosing features. 
+     * Before MissingSettingsMultiThreadDynamicComposite child class should override addComponents() method, which leads to loosing features.
      */
     protected synchronized void placeComponents(boolean forceRedraw, boolean reInitialize, int height) {
      // achen modifed to fix feature 0005991 if composite.isDisposed return
@@ -489,7 +489,15 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
                             groupPosition.put(groupName, heightSize);
                         }
                         subComposite = (Composite) hashCurControls.get(groupName);
-                        curTop = heightSize - groupPosition.get(groupName);
+
+                        Integer position = groupPosition.get(groupName);
+                        //position can be null: if (show-if="...") return false for all the items of a group,
+                        //then the group is not visible and then the groupPosition is null.
+                        if (position!=null) {
+                            curTop = heightSize - position;
+//                        } else {
+//                            System.out.println("curParam="+curParam+", numInRow="+numInRow+", nbInRow="+nbInRow+", "+"heightSize="+heightSize+", groupName="+groupName+", "+groupPosition.get(groupName));
+                        }
                     } else {
                         subComposite = composite;
                         curTop = DEFAULT_GROUP_HEIGHT * (groupPosition.size() > 0 ? 1 : 0) + heightSize;
@@ -529,9 +537,9 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * this method to special which control should display on the composite
-     * 
+     *
      * in use in tmatchGroup component
-     * 
+     *
      * @param curParam
      * @return
      */
@@ -540,11 +548,11 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
     }
 
     /**
-     * 
+     *
      * only need a convert for MatchRuleComposite, because we split old composite into two different composite
-     * 
+     *
      * in use in tmatchGroup component
-     * 
+     *
      * @param curParam
      */
     protected void updateParameter(IElementParameter curParam) {
@@ -553,7 +561,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * DOC Administrator Comment method "isNeedRedraw".
-     * 
+     *
      * @return
      */
     protected boolean isNeedRedraw() {
@@ -589,7 +597,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * DOC nrousseau Comment method "estimatePropertyHeightSize".
-     * 
+     *
      * @param maxRow
      * @param listParam
      * @param tabbedPropertyComposite
@@ -783,7 +791,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Getter for isCompactView.
-     * 
+     *
      * @return the isCompactView
      */
     public boolean isCompactView() {
@@ -792,7 +800,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Sets the isCompactView.
-     * 
+     *
      * @param isCompactView the isCompactView to set
      */
     public void setCompactView(boolean isCompactView) {
@@ -806,7 +814,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Set the section of the tabbed property.
-     * 
+     *
      * @param section
      */
     public MultipleThreadDynamicComposite(Composite parentComposite, int styles, final EComponentCategory section,
@@ -877,7 +885,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.widgets.Widget#dispose()
      */
     @Override
@@ -923,7 +931,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * yzhang Comment method "setCurRowSize" Sets the curRowSize.
-     * 
+     *
      * @param curRowSize int
      */
     @Override
@@ -933,7 +941,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Getter for currentComponent.
-     * 
+     *
      * @return the currentComponent
      */
     public String getCurrentComponent() {
@@ -942,7 +950,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Getter for curRowSize.
-     * 
+     *
      * @return the curRowSize
      */
     @Override
@@ -952,7 +960,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Getter for hashCurControls.
-     * 
+     *
      * @return the hashCurControls
      */
     @Override
@@ -962,7 +970,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Getter for part.
-     * 
+     *
      * @return the part
      */
     @Override
@@ -972,7 +980,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Getter for section.
-     * 
+     *
      * @return the section
      */
     @Override
@@ -982,7 +990,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Get the command stack of the Gef editor.
-     * 
+     *
      * @return
      */
     public CommandStack getCommandStack() {
@@ -996,7 +1004,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * qzhang Comment method "getDefaultRepository".
-     * 
+     *
      * @return
      */
     private String getDefaultRepository(IElementParameter baseParam, boolean istable, String defaultPropertyValue) {
@@ -1027,7 +1035,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Getter for tableIdAndDbTypeMap.
-     * 
+     *
      * @return the tableIdAndDbTypeMap
      */
     @Override
@@ -1040,7 +1048,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Getter for tableIdAndDbSchemaMap.
-     * 
+     *
      * @return the tableIdAndDbSchemaMap
      */
     @Override
@@ -1053,7 +1061,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * hywang Comment method "getRepositoryFileItemMap".
-     * 
+     *
      * @see org.talend.core.ui.properties.tab.IDynamicProperty#getRepositoryFileItemMap()
      */
     public Map<String, FileItem> getRepositoryFileItemMap() {
@@ -1073,7 +1081,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /**
      * Getter for lastCompositeSize.
-     * 
+     *
      * @return the lastCompositeSize
      */
     public int getLastCompositeSize() {
@@ -1082,7 +1090,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getComposite()
      */
     @Override

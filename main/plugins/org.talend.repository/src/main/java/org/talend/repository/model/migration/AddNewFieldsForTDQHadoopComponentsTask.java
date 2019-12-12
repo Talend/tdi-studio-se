@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,7 +38,7 @@ public class AddNewFieldsForTDQHadoopComponentsTask extends AbstractJobMigration
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractJobMigrationTask#executeOnProcess(org.talend.core.model.properties.
      * ProcessItem)
      */
@@ -70,15 +70,15 @@ public class AddNewFieldsForTDQHadoopComponentsTask extends AbstractJobMigration
                     ComponentUtilities.addNodeProperty(node, "DISTRIBUTION", "TEXT"); //$NON-NLS-1$ //$NON-NLS-2$
                     String dbVersionValue = dbVersion.getValue();
                     if (dbVersionValue.endsWith("_EMR")) { //$NON-NLS-1$
-                        ComponentUtilities.setNodeValue(node, "DISTRIBUTION", "AMAZON_EMR"); //$NON-NLS-1$ //$NON-NLS-2$ 
+                        ComponentUtilities.setNodeValue(node, "DISTRIBUTION", "AMAZON_EMR"); //$NON-NLS-1$ //$NON-NLS-2$
                     } else if (dbVersionValue.startsWith("HDP_")) { //$NON-NLS-1$
-                        ComponentUtilities.setNodeValue(node, "DISTRIBUTION", "HORTONWORKS"); //$NON-NLS-1$ //$NON-NLS-2$ 
+                        ComponentUtilities.setNodeValue(node, "DISTRIBUTION", "HORTONWORKS"); //$NON-NLS-1$ //$NON-NLS-2$
                     } else if (dbVersionValue.startsWith("Cloudera_")) { //$NON-NLS-1$
-                        ComponentUtilities.setNodeValue(node, "DISTRIBUTION", "CLOUDERA"); //$NON-NLS-1$ //$NON-NLS-2$ 
+                        ComponentUtilities.setNodeValue(node, "DISTRIBUTION", "CLOUDERA"); //$NON-NLS-1$ //$NON-NLS-2$
                     } else if (dbVersionValue.startsWith("MAPR")) { //$NON-NLS-1$
-                        ComponentUtilities.setNodeValue(node, "DISTRIBUTION", "MAPR"); //$NON-NLS-1$ //$NON-NLS-2$ 
+                        ComponentUtilities.setNodeValue(node, "DISTRIBUTION", "MAPR"); //$NON-NLS-1$ //$NON-NLS-2$
                     } else if (dbVersionValue.startsWith("APACHE_")) { //$NON-NLS-1$
-                        ComponentUtilities.setNodeValue(node, "DISTRIBUTION", "APACHE"); //$NON-NLS-1$ //$NON-NLS-2$ 
+                        ComponentUtilities.setNodeValue(node, "DISTRIBUTION", "APACHE"); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                 }
             }

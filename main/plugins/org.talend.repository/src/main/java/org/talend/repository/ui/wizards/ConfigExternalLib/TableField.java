@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,9 +42,9 @@ import org.eclipse.swt.widgets.Widget;
 
 /**
  * DOC tguiu class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TableEditor.java 1819 2007-02-05 09:09:15 +0000 (星期一, 05 二月 2007) yzhang $
- * 
+ *
  */
 public abstract class TableField {
 
@@ -106,9 +106,9 @@ public abstract class TableField {
 
     /**
      * Creates this field editor's main control containing all of its basic controls.
-     * 
+     *
      * @param name
-     * 
+     *
      * @param parent the parent control
      */
     protected void createControl(String name, Composite parent) {
@@ -140,7 +140,7 @@ public abstract class TableField {
 
     /**
      * Creates the Add, Remove, Up, and Down button in the given button box.
-     * 
+     *
      * @param box the box for the buttons
      */
     private void createButtons(Composite box) {
@@ -154,7 +154,7 @@ public abstract class TableField {
 
     /**
      * Helper method to create a push button.
-     * 
+     *
      * @param parent the parent control
      * @param key the resource name used to supply the button's label text
      * @return Button
@@ -223,7 +223,7 @@ public abstract class TableField {
 
     /**
      * Returns this field editor's button box containing the Add, Remove, Up, and Down button.
-     * 
+     *
      * @param parent the parent control
      * @return the button box
      */
@@ -252,7 +252,7 @@ public abstract class TableField {
 
     /**
      * Returns this field editor's list control.
-     * 
+     *
      * @param parent the parent control
      * @return the list control
      */
@@ -299,14 +299,14 @@ public abstract class TableField {
      * <p>
      * Subclasses must implement this method.
      * </p>
-     * 
+     *
      * @return a new item
      */
     protected abstract List getNewInputObject();
 
     /**
      * Returns this field editor's selection listener. The listener is created if nessessary.
-     * 
+     *
      * @return the selection listener
      */
     private SelectionListener getSelectionListener() {
@@ -321,7 +321,7 @@ public abstract class TableField {
      * <p>
      * This method is internal to the framework; subclassers should not call this method.
      * </p>
-     * 
+     *
      * @return the shell
      */
     protected Shell getShell() {
@@ -350,7 +350,7 @@ public abstract class TableField {
 
     /**
      * subclass can implements this to do it's own job.
-     * 
+     *
      * @param list2
      */
     protected void afterDeleteSelection(List list) {
@@ -381,7 +381,7 @@ public abstract class TableField {
 
     /**
      * Moves the currently selected item up or down.
-     * 
+     *
      * @param up <code>true</code> if the item should move up, and <code>false</code> if it should move down
      */
     private void swap(boolean up) {
@@ -416,7 +416,7 @@ public abstract class TableField {
 
     /**
      * Getter for list.
-     * 
+     *
      * @return the list
      */
     public List getList() {

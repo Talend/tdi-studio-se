@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,9 +31,9 @@ import org.talend.designer.mapper.model.tableentry.InputColumnTableEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class InputTable extends AbstractInOutTable {
 
@@ -54,9 +54,9 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * DOC amaumont InputTable constructor comment.
-     * 
+     *
      * @param mapperManager
-     * 
+     *
      * @param metadataTable
      * @param externalMapperTable can be null
      * @param mainConnection
@@ -72,7 +72,7 @@ public class InputTable extends AbstractInOutTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.mapper.model.table.AbstractInOutTable#initFromExternalData(org.talend.designer.mapper.external
      * .data.ExternalMapperTable)
@@ -134,7 +134,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Getter for tableFiltersEntriesModel.
-     * 
+     *
      * @return the tableFiltersEntriesModel
      */
     public ExtendedTableModel<GlobalMapEntry> getTableGlobalMapEntriesModel() {
@@ -143,7 +143,7 @@ public class InputTable extends AbstractInOutTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.mapper.model.table.DataMapTable#getNewTableEntry(org.talend.core.model.metadata.IMetadataColumn
      * )
@@ -164,7 +164,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Getter for innerJoin.
-     * 
+     *
      * @return the innerJoin
      */
     public boolean isInnerJoin() {
@@ -173,7 +173,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Sets the innerJoin.
-     * 
+     *
      * @param innerJoin the innerJoin to set
      */
     public void setInnerJoin(boolean innerJoin) {
@@ -190,7 +190,7 @@ public class InputTable extends AbstractInOutTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.mapper.model.table.AbstractInOutTable#hasReadOnlyMetadataColumns()
      */
     @Override
@@ -223,7 +223,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Getter for lookupType.
-     * 
+     *
      * @return the lookupType
      */
     public IUIMatchingMode getMatchingMode() {
@@ -232,7 +232,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Sets the lookupType.
-     * 
+     *
      * @param lookupType the lookupType to set
      */
     public void setMatchingMode(IUIMatchingMode lookupType) {
@@ -241,7 +241,7 @@ public class InputTable extends AbstractInOutTable {
 
     /**
      * Sets the lookupMode.
-     * 
+     *
      * @param lookupMode the lookupType to set
      */
     public void setLookupMode(IUILookupMode lookupMode) {

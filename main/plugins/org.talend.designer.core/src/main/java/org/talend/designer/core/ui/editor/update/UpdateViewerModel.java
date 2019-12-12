@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,7 +24,7 @@ import org.talend.core.model.update.UpdateResult;
  */
 
 /**
- * 
+ *
  * ggu Job class global comment. Detailled comment
  */
 class Job {
@@ -37,9 +37,9 @@ class Job {
      * only used for image.
      */
     private boolean isJoblet = true;
-    
+
     private boolean isSparkJoblet = false;
-    
+
     private boolean isSparkStreamingJoblet = false;
 
     private boolean isMR = true;
@@ -52,7 +52,7 @@ class Job {
 
     /**
      * Getter for readOnlyProcess.
-     * 
+     *
      * @return the readOnlyProcess
      */
     public boolean isReadOnlyProcess() {
@@ -97,7 +97,7 @@ class Job {
     public void setJoblet(boolean isJoblet) {
         this.isJoblet = isJoblet;
     }
-    
+
     public boolean isSparkJoblet() {
         return this.isSparkJoblet;
     }
@@ -105,7 +105,7 @@ class Job {
     public void setSparkJoblet(boolean isSparkJoblet) {
         this.isSparkJoblet = isSparkJoblet;
     }
-    
+
     public boolean isSparkStreamingJoblet() {
         return this.isSparkStreamingJoblet;
     }
@@ -132,7 +132,7 @@ class Job {
 
     /**
      * DOC Administrator Comment method "setReadOnlyProcess".
-     * 
+     *
      * @param readOnlyProcess
      */
     public void setReadOnlyProcess(boolean readOnlyProcess) {
@@ -151,9 +151,9 @@ class Job {
 }
 
 /**
- * 
+ *
  * ggu Item class global comment. Detailled comment.
- * 
+ *
  */
 class Category {
 
@@ -216,7 +216,7 @@ class Category {
 }
 
 /**
- * 
+ *
  * ggu Detail class global comment. Detailled comment.
  */
 class Item {

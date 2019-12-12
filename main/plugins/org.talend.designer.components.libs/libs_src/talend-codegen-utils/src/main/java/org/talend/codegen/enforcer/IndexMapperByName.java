@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,7 @@ class IndexMapperByName implements IndexMapper {
 
     /**
      * Constructor sets design schema
-     * 
+     *
      * @param designSchema design schema
      */
     IndexMapperByName(Schema designSchema) {
@@ -39,7 +39,7 @@ class IndexMapperByName implements IndexMapper {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * For each design field it finds corresponding runtime field by name and then uses runtime field's position
      */
     @Override

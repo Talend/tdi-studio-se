@@ -30,7 +30,9 @@ imports="
     }
     String serverType=ElementParameterParser.getValue(connectionNode, "__SERVER__");
 	
-	final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));//log4j enable
+	final boolean isLog4j2Enabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J2_ACTIVATE__"));//log4j2 enable
+	final boolean isLog4j1Enabled = !isLog4j2Enabled;//log4j1 enable
 	
 	if (("JBoss").equals(serverType) || ("ActiveMQ").equals(serverType)) {
 	%>
@@ -122,7 +124,7 @@ imports="
 					return gmo;
 				}
 			
-				public com.ibm.mq.MQQueue genBackOutQueue(com.ibm.mq.MQQueueManager qMgr,com.ibm.mq.MQQueue inQueue<%if(isLog4jEnabled){%>,org.apache.log4j.Logger log<%}%>){
+				public com.ibm.mq.MQQueue genBackOutQueue(com.ibm.mq.MQQueueManager qMgr,com.ibm.mq.MQQueue inQueue<%if(isLog4jEnabled){%>,<%if(isLog4j1Enabled){%>org.apache.log4j.Logger<%}%><%if(isLog4j2Enabled){%>org.apache.logging.log4j.Logger<%}%> log<%}%>){
 					int[] selectors = new int[2];
 					int[] intAttrs = new int[1];
 					String backoutQName = "";
@@ -171,7 +173,7 @@ imports="
 					return backoutQueue;
 				}
 				
-				public List<com.ibm.mq.MQMessage> getPoisonMsgs(com.ibm.mq.MQQueueManager qMgr,String inQueueName,com.ibm.mq.MQQueue backoutQueue<%if(isLog4jEnabled){%>,org.apache.log4j.Logger log<%}%>) throws com.ibm.mq.MQException{
+				public List<com.ibm.mq.MQMessage> getPoisonMsgs(com.ibm.mq.MQQueueManager qMgr,String inQueueName,com.ibm.mq.MQQueue backoutQueue<%if(isLog4jEnabled){%>,<%if(isLog4j1Enabled){%>org.apache.log4j.Logger<%}%><%if(isLog4j2Enabled){%>org.apache.logging.log4j.Logger<%}%> log<%}%>) throws com.ibm.mq.MQException{
 					com.ibm.mq.MQQueue inQueue = genInQueue(qMgr,inQueueName, true);
 					com.ibm.mq.MQGetMessageOptions gmo = genGetMsgOptions(true);
 					int browseCursor = 0;
@@ -215,7 +217,7 @@ imports="
 		     		return backoutMsgs;
 				}
 				
-				public void backoutMsg(com.ibm.mq.MQQueueManager qMgr,String inQueueName<%if(isLog4jEnabled){%>,org.apache.log4j.Logger log<%}%>) throws com.ibm.mq.MQException{
+				public void backoutMsg(com.ibm.mq.MQQueueManager qMgr,String inQueueName<%if(isLog4jEnabled){%>,<%if(isLog4j1Enabled){%>org.apache.log4j.Logger<%}%><%if(isLog4j2Enabled){%>org.apache.logging.log4j.Logger<%}%> log<%}%>) throws com.ibm.mq.MQException{
 
 					com.ibm.mq.MQQueue inQueue = genInQueue(qMgr,inQueueName,false);
 					com.ibm.mq.MQQueue backoutQueue = genBackOutQueue(qMgr,inQueue<%if(isLog4jEnabled){%>,log<%}%>);

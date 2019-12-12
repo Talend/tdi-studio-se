@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -45,7 +45,7 @@ public class AvailableCompositeProvider implements IIntroXHTMLContentProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.intro.config.IIntroContentProvider#init(org.eclipse.ui.intro.config.IIntroContentProviderSite)
      */
@@ -56,7 +56,7 @@ public class AvailableCompositeProvider implements IIntroXHTMLContentProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.intro.config.IIntroContentProvider#createContent(java.lang.String, java.io.PrintWriter)
      */
     public void createContent(String id, PrintWriter out) {
@@ -66,7 +66,7 @@ public class AvailableCompositeProvider implements IIntroXHTMLContentProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.intro.config.IIntroContentProvider#createContent(java.lang.String,
      * org.eclipse.swt.widgets.Composite, org.eclipse.ui.forms.widgets.FormToolkit)
      */
@@ -77,7 +77,7 @@ public class AvailableCompositeProvider implements IIntroXHTMLContentProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.intro.config.IIntroContentProvider#dispose()
      */
     public void dispose() {
@@ -87,7 +87,7 @@ public class AvailableCompositeProvider implements IIntroXHTMLContentProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.intro.config.IIntroXHTMLContentProvider#createContent(java.lang.String, org.w3c.dom.Element)
      */
     public void createContent(String id, Element parent) {

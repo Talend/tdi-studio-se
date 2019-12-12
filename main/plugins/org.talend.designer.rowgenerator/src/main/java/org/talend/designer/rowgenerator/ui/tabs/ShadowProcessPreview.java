@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,9 +27,9 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ShadowProcessPreview.java,v 1.10 2007/01/31 05:20:52 pub Exp $
- * 
+ *
  */
 public class ShadowProcessPreview {
 
@@ -46,7 +46,7 @@ public class ShadowProcessPreview {
 
     /**
      * Create Object to manage Preview and MetaData.
-     * 
+     *
      * @param compositeFileViewer
      * @param filepath (null or path)
      */
@@ -63,9 +63,9 @@ public class ShadowProcessPreview {
 
     /**
      * Create Table to show the content of run returns.
-     * 
+     *
      * @return
-     * 
+     *
      */
     public void newTablePreview() {
         table = new Table(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
@@ -77,7 +77,7 @@ public class ShadowProcessPreview {
 
     /**
      * refresh Header of table Preview.
-     * 
+     *
      * @param columns
      */
     private void refreshPreviewHeader(final String[] columns) {
@@ -140,7 +140,7 @@ public class ShadowProcessPreview {
 
     /**
      * qzhang Comment method "refreshPreviewItem".
-     * 
+     *
      * @param xmlRows
      */
     private void refreshPreviewItem(List<String[]> xmlRows) {
@@ -166,7 +166,7 @@ public class ShadowProcessPreview {
 
     /**
      * qzhang Comment method "refreshTablePreview".
-     * 
+     *
      * @param columns
      * @param items
      * @param isRefreshItems

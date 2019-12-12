@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,9 @@ import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
 
 /**
  * ContentProposalProvider which initialize valid locations of Mapper. <br/>
- * 
+ *
  * $Id: ExpressionProposalProvider.java 968 2006-12-12 10:59:26Z amaumont $
- * 
+ *
  */
 public class ExpressionProposalProvider implements IContentProposalProvider {
 
@@ -46,7 +46,7 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 
     /**
      * Constructs a new ProcessProposalProvider.
-     * 
+     *
      * @param tables
      * @param control
      */
@@ -73,7 +73,7 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposalProvider#getProposals(java.lang.String, int)
      */
     public IContentProposal[] getProposals(String contents, int position) {

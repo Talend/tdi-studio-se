@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,7 +28,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 
 /**
  * @author xpli
- * 
+ *
  */
 public class JobResourceDependencyModel {
 
@@ -64,7 +64,7 @@ public class JobResourceDependencyModel {
 
     /**
      * Get the relative context variable name DOC jding Comment method "getContextVar".
-     * 
+     *
      * @return
      */
     public String getContextVar() {
@@ -77,7 +77,7 @@ public class JobResourceDependencyModel {
 
     /**
      * Get the context relative variable source (built-in/repository id) DOC jding Comment method "getContextSource".
-     * 
+     *
      * @return
      */
     public String getContextSource() {
@@ -90,7 +90,7 @@ public class JobResourceDependencyModel {
 
     /**
      * Get the resource path DOC jding Comment method "getResourceDepPath".
-     * 
+     *
      * @return
      */
     public String getResourceDepPath() {

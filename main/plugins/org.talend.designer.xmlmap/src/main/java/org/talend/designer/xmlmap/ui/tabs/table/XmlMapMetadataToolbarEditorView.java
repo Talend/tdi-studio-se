@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,13 +24,13 @@ import org.talend.core.ui.metadata.editor.MetadataToolbarEditorView;
 
 /**
  * created by Administrator on 2012-12-7 Detailled comment
- * 
+ *
  */
 public class XmlMapMetadataToolbarEditorView extends MetadataToolbarEditorView {
 
     /**
      * DOC Administrator XmlMapMetadataToolbarEditorView constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param extendedTableViewer

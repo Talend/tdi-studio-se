@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -129,6 +129,7 @@ import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.RepositoryNodeUtilities;
+import org.talend.repository.navigator.RepoViewCommonNavigator;
 import org.talend.repository.plugin.integration.BindingActions;
 import org.talend.repository.plugin.integration.SwitchProjectAction;
 import org.talend.repository.ui.actions.AContextualAction;
@@ -154,9 +155,9 @@ import org.talend.utils.json.JSONObject;
 
 /**
  * DOC qian class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (星期五, 29 九月 2006) nrousseau $
- * 
+ *
  */
 
 public class RepositoryService implements IRepositoryService, IRepositoryContextService {
@@ -174,7 +175,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#getComponentsFactory()
      */
     @Override
@@ -184,7 +185,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#getPathFileName(java.lang.String, java.lang.String)
      */
     @Override
@@ -194,7 +195,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#getProxyRepositoryFactory()
      */
     @Override
@@ -209,7 +210,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.repository.model.IRepositoryService#registerRepositoryChangedListener(org.talend.repository.
      * IRepositoryChangedListener)
      */
@@ -220,7 +221,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.model.IRepositoryService#registerRepositoryChangedListenerAsFirst(org.talend.repository
      * .IRepositoryChangedListener)
@@ -232,7 +233,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.repository.model.IRepositoryService#removeRepositoryChangedListener(org.talend.repository.
      * IRepositoryChangedListener)
      */
@@ -243,7 +244,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.model.IRepositoryService#repositoryChanged(org.talend.repository.RepositoryElementDelta)
      */
@@ -270,7 +271,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#validateColumnName(java.lang.String, int)
      */
     @Override
@@ -280,7 +281,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#openLoginDialog()
      */
     @Override
@@ -320,7 +321,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#openLoginDialog(org.eclipse.swt.widgets.Shell, boolean)
      */
     @Override
@@ -519,7 +520,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                 ExceptionHandler.process(e);
                 LoginHelper.isAutoLogonFailed = true;
             }
-            
+
             if (LoginHelper.isAutoLogonFailed) {
                 LoginHelper.isRestart=true;
             }
@@ -542,7 +543,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#initializeForTalendStartupJob()
      */
     @Override
@@ -553,7 +554,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#initializeTalend()
      */
     @Override
@@ -567,7 +568,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#isRCPMode()
      */
     @Override
@@ -577,7 +578,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#setRCPMode()
      */
     @Override
@@ -626,7 +627,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#createSqlpattern()
      */
     @Override
@@ -636,7 +637,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#addRepositoryViewListener(org.eclipse.ui.ISelectionListener)
      */
     @Override
@@ -654,7 +655,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.repository.model.IRepositoryService#removeRepositoryTreeViewListener(org.eclipse.jface.viewers.
      * ISelectionChangedListener)
      */
@@ -681,7 +682,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.repository.model.IRepositoryService#openRepositoryReviewDialog(org.talend.core.model.repository.
      * ERepositoryObjectType, java.lang.String)
      */
@@ -699,7 +700,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /**
      * wzhang Comment method "getRootRepositoryNode".
-     * 
+     *
      * @param type
      * @return
      */
@@ -823,7 +824,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.model.IRepositoryService#exportPigudf(org.talend.designer.runprocess.IProcessor,
      * org.talend.core.model.properties.Property, int, int)
      */
@@ -911,7 +912,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
         }
         return branchesList;
     }
-    
+
     private void initProviderService() {
         if (PluginChecker.isSVNProviderPluginLoaded()) {
             try {
@@ -925,7 +926,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
         }
         isInitedProviderService = true;
     }
-    
+
     @Override
     public boolean askRetryForNetworkIssue(Throwable ex) {
         /**
@@ -974,9 +975,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
                             @Override
                             public void run() {
-                                Shell shell = DisplayUtils.getDefaultShell(false);
-                                retry.set(askRetryForNetworkIssueInDialog(shell, ex));
-                                shell.dispose();
+                                retry.set(askRetryForNetworkIssueInDialog(null, ex));
                             }
                         });
                     }
@@ -1025,5 +1024,14 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
             return gitProviderService.isProjectInGitMode();
         }
         return false;
+    }
+
+    @Override
+    public void setShouldCheckRepoViewCommonNavigatorDirty(IRepositoryView repView, boolean shouldFlag) {
+        if (repView instanceof RepoViewCommonNavigator) {
+            // RepoViewCommonNavigator.shouldCheckRepositoryDirty default is true
+            // If set to false, after execute, should set back to true
+            ((RepoViewCommonNavigator) repView).setShouldCheckRepositoryDirty(shouldFlag);
+        }
     }
 }

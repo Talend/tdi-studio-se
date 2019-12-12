@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -68,7 +68,7 @@ import org.talend.designer.core.utils.UpgradeElementHelper;
 
 /**
  * Command used to move all the components. $Id: NodesPasteCommand.java hwang class global comment. Detailled comment
- * 
+ *
  */
 public class NodesMoveCommond extends Command {
 
@@ -99,7 +99,7 @@ public class NodesMoveCommond extends Command {
 
     /**
      * Getter for cursorLocation.
-     * 
+     *
      * @return the cursorLocation
      */
     public Point getCursorLocation() {
@@ -108,7 +108,7 @@ public class NodesMoveCommond extends Command {
 
     /**
      * Sets the cursorLocation.
-     * 
+     *
      * @param cursorLocation the cursorLocation to set
      */
     public void setCursorLocation(Point cursorLocation) {
@@ -116,9 +116,9 @@ public class NodesMoveCommond extends Command {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "setJobletRefactor".
-     * 
+     *
      * feature 6131, refactor nodes to joblet.
      */
     public void setJobletRefactor(boolean isJobletRefactor) {
@@ -168,7 +168,7 @@ public class NodesMoveCommond extends Command {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.Command#canExecute()
      */
     @Override
@@ -239,9 +239,9 @@ public class NodesMoveCommond extends Command {
     }
 
     /**
-     * 
+     *
      * Will return a empty location for a component from a given point.
-     * 
+     *
      * @param location
      * @return
      */
@@ -719,7 +719,7 @@ public class NodesMoveCommond extends Command {
     /**
      * DOC bqian Comment method "makeCopyNodeAndSubjobMapping".<br>
      * see bug 0004882: Subjob title is not copied when copying/pasting subjobs from one job to another
-     * 
+     *
      * @param copiedNode
      * @param pastedNode
      */
@@ -833,7 +833,7 @@ public class NodesMoveCommond extends Command {
 
     /**
      * Getter for multipleCommand.
-     * 
+     *
      * @return the multipleCommand
      */
     public boolean isMultipleCommand() {
@@ -842,7 +842,7 @@ public class NodesMoveCommond extends Command {
 
     /**
      * Sets the multipleCommand.
-     * 
+     *
      * @param multipleCommand the multipleCommand to set
      */
     public void setMultipleCommand(boolean multipleCommand) {
@@ -851,7 +851,7 @@ public class NodesMoveCommond extends Command {
 
     /**
      * Getter for nodeContainerList.
-     * 
+     *
      * @return the nodeContainerList
      */
     public List<NodeContainer> getNodeContainerList() {
@@ -861,7 +861,7 @@ public class NodesMoveCommond extends Command {
     /**
      * bqian Comment method "setSelectedSubjobs". <br>
      * see bug 0004882: Subjob title is not copied when copying/pasting subjobs from one job to another
-     * 
+     *
      * @param subjobParts
      */
     public void setSelectedSubjobs(List<SubjobContainerPart> subjobParts) {

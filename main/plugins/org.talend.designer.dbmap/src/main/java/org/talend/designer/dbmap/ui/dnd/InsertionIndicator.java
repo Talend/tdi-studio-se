@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,10 +43,10 @@ import org.talend.designer.dbmap.ui.visualmap.zone.scrollable.TablesZoneView;
  * Only one instance by ZoneView should be necessary. This class create 2 arrows which follow cursor when dragging on a
  * <code>DataMapTableView</code>. Arrows are adjusted at left and right on the limit between two
  * <code>TableItem</code>.
- * 
- * 
+ *
+ *
  * $Id: InsertionIndicator.java 898 2006-12-07 11:06:17Z amaumont $
- * 
+ *
  */
 public class InsertionIndicator {
 
@@ -81,8 +81,8 @@ public class InsertionIndicator {
     private int lastNPixelsCovered;
 
     /**
-     * 
-     * 
+     *
+     *
      * @param tablesZoneViewParent
      * @param mapperManager
      */
@@ -179,7 +179,7 @@ public class InsertionIndicator {
     /**
      * Update position of the indicator at top of <code>itemIndexTarget</code> position of the
      * <code>draggableTable</code>.
-     * 
+     *
      * @param currentTable
      * @param itemIndexTarget
      */
@@ -323,7 +323,7 @@ public class InsertionIndicator {
 
     /**
      * DOC amaumont Comment method "isIntersect".
-     * 
+     *
      * @param boundsPopupFromMapperShellOrigin
      * @return
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,13 +31,13 @@ import org.talend.designer.core.utils.DesignerUtilities;
  * This action opens a job hierarchy on the selected job.
  * <p>
  * The action is applicable to selections containing elements of jobs <code>IProcess2</code>.
- * 
+ *
  * <p>
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
- * 
+ *
  * @since 2.0
- * 
+ *
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class OpenJobHierarchyAction extends SelectionAction {
@@ -48,7 +48,7 @@ public class OpenJobHierarchyAction extends SelectionAction {
      * Creates a new <code>OpenJobHierarchyAction</code>. The action requires that the selection provided by the site's
      * selection provider is of type <code>
      * org.eclipse.jface.viewers.IStructuredSelection</code>.
-     * 
+     *
      * @param site the site providing context information for this action
      */
     public OpenJobHierarchyAction(IWorkbenchPart part) {
@@ -80,7 +80,7 @@ public class OpenJobHierarchyAction extends SelectionAction {
 
     /**
      * retrieve the process from the NodePart or ProcessPart
-     * 
+     *
      * @param input
      * @return
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,9 +47,9 @@ import org.talend.designer.rowgenerator.ui.editor.MetadataTableEditorViewExt;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: RowGenMain.java,v 1.4 2007/01/31 05:20:52 pub Exp $
- * 
+ *
  */
 public class RowGenMain {
 
@@ -86,7 +86,7 @@ public class RowGenMain {
 
     /**
      * qzhang Comment method "createUI".
-     * 
+     *
      * @param parent
      * @return
      */
@@ -97,7 +97,7 @@ public class RowGenMain {
 
     /**
      * qzhang Comment method "getMapperDialogResponse".
-     * 
+     *
      * @return
      */
     public int getMapperDialogResponse() {
@@ -106,7 +106,7 @@ public class RowGenMain {
 
     /**
      * qzhang Comment method "getMetadataListOut".
-     * 
+     *
      * @return
      */
     public List<IMetadataTable> getMetadataListOut() {
@@ -115,7 +115,7 @@ public class RowGenMain {
 
     /**
      * yzhang Comment method "createRowGeneratorDialog".
-     * 
+     *
      * @param parentShell
      * @return
      */
@@ -148,7 +148,7 @@ public class RowGenMain {
 
     /**
      * qzhang Comment method "createUI".
-     * 
+     *
      * @param display
      * @return
      */
@@ -221,7 +221,7 @@ public class RowGenMain {
 
     /**
      * qzhang Comment method "addAllControlForKeyListener".
-     * 
+     *
      * @param parent
      * @param keyAdapter
      * @return
@@ -231,7 +231,7 @@ public class RowGenMain {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.KeyAdapter#keyReleased(org.eclipse.swt.events.KeyEvent)
              */
             @Override
@@ -256,7 +256,7 @@ public class RowGenMain {
 
     /**
      * qzhang Comment method "getRowGenManager".
-     * 
+     *
      * @return
      */
     public RowGeneratorManager getRowGenManager() {
@@ -265,7 +265,7 @@ public class RowGenMain {
 
     /**
      * qzhang Comment method "isStandAloneMode".
-     * 
+     *
      * @return
      */
     public static boolean isStandAloneMode() {
@@ -274,7 +274,7 @@ public class RowGenMain {
 
     /**
      * qzhang Comment method "buildExternalData".
-     * 
+     *
      * @return
      */
     public ExternalRowGeneratorData buildExternalData() {
@@ -287,7 +287,7 @@ public class RowGenMain {
 
     /**
      * amaumont Comment method "loadFromExternalData".
-     * 
+     *
      * @param incomingConnections
      * @param outgoingConnections
      * @param externalData
@@ -312,7 +312,7 @@ public class RowGenMain {
 
     /**
      * qzhang Comment method "createModelFromExternalData".
-     * 
+     *
      * @param dataComponents
      * @param metadataList
      * @param externalData
@@ -344,7 +344,7 @@ public class RowGenMain {
 
     /**
      * Gets the instance of <code>RowGeneratorUI</code>
-     * 
+     *
      * @return
      */
     public RowGeneratorUI getGeneratorUI() {

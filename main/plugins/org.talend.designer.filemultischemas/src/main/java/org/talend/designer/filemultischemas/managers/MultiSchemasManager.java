@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -177,9 +177,9 @@ public class MultiSchemasManager {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "createSchemasTree".
-     * 
+     *
      * @param csvArray
      * @return tree of data.
      */
@@ -230,9 +230,9 @@ public class MultiSchemasManager {
     }
 
     /**
-     * 
+     *
      * cli Comment method "generateUniqueRecordName".
-     * 
+     *
      */
     private String generateUniqueRecordName(String baseName, SchemasKeyData root) {
         if (baseName == null) {
@@ -294,9 +294,9 @@ public class MultiSchemasManager {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "createRowData".
-     * 
+     *
      * @param line
      * @return
      */
@@ -451,9 +451,9 @@ public class MultiSchemasManager {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "saveProperties".
-     * 
+     *
      */
     public void savePropertiesToComponent(SchemasKeyData data, DelimitedFileConnection connection, int selectedIndex) {
         if (data != null) {
@@ -464,9 +464,9 @@ public class MultiSchemasManager {
     }
 
     /**
-     * 
+     *
      * wchen Comment method "saveProperties".
-     * 
+     *
      */
     public void savePropertiesToComponent(SchemasKeyData data, Map<EParameterName, String> params, int selectedIndex) {
         if (data != null) {
@@ -476,9 +476,9 @@ public class MultiSchemasManager {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "retrievePropertiesFromNode".
-     * 
+     *
      */
     @SuppressWarnings("unchecked")
     public SchemasKeyData retrievePropertiesFromNode() {
@@ -626,9 +626,9 @@ public class MultiSchemasManager {
     }
 
     /**
-     * 
+     *
      * cLi Comment method "getOriginalValue".
-     * 
+     *
      * check the context or not.
      */
     public String getOriginalValue(String value) {
@@ -640,7 +640,7 @@ public class MultiSchemasManager {
                 String newValue = null;
                 if (value.contains("+")) {//$NON-NLS-1$
                     // not only use context variable .
-                    String[] split = value.split("\\+");//$NON-NLS-1$ 
+                    String[] split = value.split("\\+");//$NON-NLS-1$
                     for (int i = 0; i < split.length; i++) {
                         split[i] = split[i].trim();
                         if (split[i].startsWith(TalendTextUtils.getQuoteChar())

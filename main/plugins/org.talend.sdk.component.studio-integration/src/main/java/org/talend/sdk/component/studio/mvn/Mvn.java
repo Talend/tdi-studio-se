@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,9 @@ public final class Mvn {
     public static <T> T withDependencies(final File module, final String resource, final boolean acceptProvided,
             final Function<Stream<String>, T> fn) throws IOException {
         return withResource(module, resource, s -> {
+            if (s == null) {
+                return fn.apply(Stream.empty());
+            }
             try {
                 return fn.apply(toDependencies(s, acceptProvided).stream());
             } catch (final IOException e) {

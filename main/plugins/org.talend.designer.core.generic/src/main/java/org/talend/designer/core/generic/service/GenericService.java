@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -57,7 +57,7 @@ public class GenericService implements IGenericService {
         }
         return genericComponents;
     }
-    
+
     @Override
     public void resetReferenceValue(INode curNode, String oldConnectionName, String newConnectionName) {
         ComponentReferenceProperties comPro = null;
@@ -70,7 +70,7 @@ public class GenericService implements IGenericService {
             if (oldConnectionName.equals(sValue)) {
                 comPro.componentInstanceId.setValue(newConnectionName);
                 return;
-            } 
+            }
             if (sValue != null && ((String)sValue).startsWith(oldConnectionName + "_")) { //$NON-NLS-1$
                 comPro.componentInstanceId.setValue(((String)sValue).replaceFirst(oldConnectionName + "_", newConnectionName + "_")); //$NON-NLS-1$
                 return;
@@ -87,7 +87,7 @@ public class GenericService implements IGenericService {
             comPro.componentInstanceId.setValue(((String)sValue).replaceFirst(oldConnectionName + "_", newConnectionName + "_")); //$NON-NLS-1$
         }
     }
-    
+
     private ComponentReferenceProperties getComponentReferenceProperties(INode curNode){
         ComponentProperties pros = curNode.getComponentProperties();
         if(pros == null){

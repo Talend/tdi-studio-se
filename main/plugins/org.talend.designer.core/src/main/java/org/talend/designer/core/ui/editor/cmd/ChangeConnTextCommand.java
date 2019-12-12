@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,9 +25,9 @@ import org.talend.designer.core.utils.UpgradeElementHelper;
 
 /**
  * Command that change the label of a connection. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ChangeConnTextCommand extends Command {
 
@@ -42,7 +42,7 @@ public class ChangeConnTextCommand extends Command {
 
     /**
      * Initialisation of the command with the label of the connection and the new text.
-     * 
+     *
      * @param connectionLabel Gef object that contains the label of the connection.
      * @param newName new name of the connection label
      */

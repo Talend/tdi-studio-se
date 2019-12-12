@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -66,6 +66,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalData;
 import org.talend.core.model.process.IExternalNode;
+import org.talend.core.model.process.IGenericElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
@@ -89,6 +90,8 @@ import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesVisitor;
+import org.talend.daikon.properties.property.PropertyValueEvaluator;
+import org.talend.designer.core.CheckLogManamger;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
@@ -173,7 +176,7 @@ public class DataProcess implements IGeneratingProcess {
         shortUniqueNameList = new ArrayList<String>();
     }
 
-    private void copyElementParametersValue(IElement sourceElement, IElement targetElement) {
+    protected void copyElementParametersValue(IElement sourceElement, IElement targetElement) {
         if (IAdditionalInfo.class.isInstance(sourceElement) && IAdditionalInfo.class.isInstance(targetElement)) {
             IAdditionalInfo.class.cast(sourceElement).cloneAddionalInfoTo((IAdditionalInfo) targetElement);
         }
@@ -189,6 +192,20 @@ public class DataProcess implements IGeneratingProcess {
 
                 targetParam.setContextMode(sourceParam.isContextMode());
                 targetParam.setValue(sourceParam.getValue());
+                if (sourceElement instanceof INode && sourceParam instanceof IGenericElementParameter) {
+                    IComponent component = ((INode) sourceElement).getComponent();
+                    if (component instanceof AbstractBasicComponent
+                            && EComponentType.GENERIC.equals(component.getComponentType())) {
+                        org.talend.daikon.properties.property.Property property = ((IGenericElementParameter) sourceParam)
+                                .getProperty();
+                        if (sourceParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST) && property != null) {
+                            PropertyValueEvaluator evaluator = property.getValueEvaluator();
+                            if (evaluator != null) {
+                                targetParam.setValue(evaluator.evaluate(property, sourceParam.getValue()));
+                            }
+                        }
+                    }
+                }
                 if (sourceParam.getValue() instanceof List) {
                     List sourceList = (List) sourceParam.getValue();
                     List targetList = new ArrayList();
@@ -754,7 +771,7 @@ public class DataProcess implements IGeneratingProcess {
         		continue;
         	}
             for (IMultipleComponentConnection curConnec : curItem.getOutputConnections()) {
-                
+
                 AbstractNode nodeTarget;
 
                 nodeTarget = itemsMap.get(curConnec.getTarget());
@@ -1259,8 +1276,15 @@ public class DataProcess implements IGeneratingProcess {
                 String uniqueName = null;
                 IComponent component = null;
                 String hashComponent = null;
+
+                //TODO remove the two statements as we can call getTargetNodeConnector directly
                 String baseConnector = connection.getSource().getConnectorFromName(connection.getConnectorName()).getBaseSchema();
                 INodeConnector connector = connection.getTarget().getConnectorFromName(baseConnector);
+
+                if(connector == null) {
+                	connector = connection.getTargetNodeConnector();
+                }
+
                 if (connector != null) {
                     hashComponent = connector.getConnectionProperty(EConnectionType.FLOW_REF).getLinkedComponent();
                 }
@@ -1924,6 +1948,46 @@ public class DataProcess implements IGeneratingProcess {
                 tagSubProcessAfterParallelIterator(node);
             }
         }
+        
+        boolean isJoblet = false;
+        if(GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
+            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                    IJobletProviderService.class);
+            if (service != null && service.isJobletProcess(this.process)) {
+            	isJoblet = true;
+            }
+        }
+        
+        if (duplicatedProcess.getComponentsType().equals(ComponentCategory.CATEGORY_4_DI.getName()) 
+        		&& PluginChecker.isTIS() && !Boolean.getBoolean("deactivate_extended_component_log") && !isJoblet) {
+        	final String talendJobLogComponent = "tJobStructureCatcher";
+            final String uid4TalendJobLogComponent = "talendJobLog";
+        	IComponent jobStructComponent = ComponentsFactoryProvider.getInstance().get(talendJobLogComponent, ComponentCategory.CATEGORY_4_DI.getName());
+        	if (jobStructComponent != null) {
+	        	DataNode jobStructure = new DataNode(jobStructComponent, uid4TalendJobLogComponent);
+	        	jobStructure.setActivate(true);
+	        	jobStructure.setStart(true);
+	        	jobStructure.setSubProcessStart(true);
+	        	jobStructure.setProcess(duplicatedProcess);
+	        	if(!CheckLogManamger.isSelectLog4j2()) {
+	        		jobStructure.getElementParameter("LOG4J_VERSION").setValue("LOG4J1");
+	        	} else {
+	        		jobStructure.getElementParameter("LOG4J_VERSION").setValue("LOG4J2");
+	        	}
+	        	addDataNode(jobStructure);
+
+	        	//TODO consider to remove it as may not necessary
+	            shortUniqueNameList.clear();
+	            for (INode node : dataNodeList) {
+	                if (node.getComponent().getName().equals(talendJobLogComponent)
+	                        && node.getUniqueName().equals(uid4TalendJobLogComponent)) {
+	    	            ((AbstractNode) node).setUniqueShortName(UniqueNodeNameGenerator
+	    	                    .generateUniqueNodeName(((AbstractNode) node).getComponent().getShortName(), shortUniqueNameList));
+	    	            shortUniqueNameList.add(node.getUniqueShortName());
+	                }
+	            }
+        	}
+        }
 
         // IGenericDBService dbService = null;
         // if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
@@ -2450,12 +2514,13 @@ public class DataProcess implements IGeneratingProcess {
         List<? extends IConnection> mainConnections;
         IMetadataTable rejectMetadataTable = null;
         DataConnection dataConnection = null;
+        EConnectionType connectionType = connection.getLineStyle();
         if (isOutput) {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getIncomingConnections();
-            mainConnections = nodeUseValidationRule.getIncomingConnections(EConnectionType.FLOW_MAIN);
+            mainConnections = nodeUseValidationRule.getIncomingConnections(connectionType);
         } else {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getOutgoingConnections();
-            mainConnections = nodeUseValidationRule.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            mainConnections = nodeUseValidationRule.getOutgoingConnections(connectionType);
         }
 
         if (validRuleConnections == null || validRuleConnections.size() == 0) {
@@ -3065,6 +3130,10 @@ public class DataProcess implements IGeneratingProcess {
             return;
         }
         INode refNode = buildCheckMap.get(graphicalNode);
+        // for joblet node not active => not included in buildCheckMap
+        if (refNode == null) {
+            return;
+        }
         List<? extends IConnection> connections = refNode.getIncomingConnections(EConnectionType.FLOW_MAIN);
         if (connections.size() == 0) {
             return;
@@ -3184,7 +3253,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * Creates a hadoop configuration manager component
-     * 
+     *
      * @param hadoopClusterItemId the hadoop cluster metadata id
      * @param componentName the name of the component to instantiate
      * @param componentCategory the {@link ComponentCategory} of the component to instantiate
@@ -3678,7 +3747,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.process.IGeneratingProcess#generateAdditionalCode()
      */
     @Override

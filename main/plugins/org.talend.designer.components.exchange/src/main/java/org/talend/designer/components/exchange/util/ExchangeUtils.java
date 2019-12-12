@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -89,7 +89,7 @@ public class ExchangeUtils {
 
     /**
      * Make sure that the version match x.x.x or x.x.xMx or x.x.xRCx, where x are all digit.
-     * 
+     *
      * @param version
      * @return
      */
@@ -108,7 +108,7 @@ public class ExchangeUtils {
 
     /**
      * This method is used for generating current T.O.S version.
-     * 
+     *
      * @return
      */
     public static String getCurrentTosVersion(boolean normalize) {
@@ -192,7 +192,7 @@ public class ExchangeUtils {
 
     /**
      * Get the folder that will store downloaded component.
-     * 
+     *
      * @return
      */
     public static File getComponentFolder() {
@@ -201,7 +201,7 @@ public class ExchangeUtils {
 
     /**
      * Get the folder that will store downloaded component.
-     * 
+     *
      * @return
      */
     public static File getComponentFolder(String componentfolder) {
@@ -217,10 +217,10 @@ public class ExchangeUtils {
 
     /**
      * Displays the given preference page.
-     * 
+     *
      * @param pageId the fully qualified id of the preference page, e.g.
      * <code>org.eclipse.jdt.debug.ui.preferences.VMPreferencePage</code>
-     * 
+     *
      */
     public static void showPreferencePage(Shell shell, String pageId) {
         PreferencesUtil.createPreferenceDialogOn(shell, pageId, new String[] { pageId }, null).open();
@@ -250,7 +250,7 @@ public class ExchangeUtils {
 
     /**
      * Activate the user job.
-     * 
+     *
      * @param job
      */
     public static void scheduleUserJob(Job job) {
@@ -262,7 +262,7 @@ public class ExchangeUtils {
 
     /**
      * Return true if revision1 is newer than revision2.
-     * 
+     *
      * @param revision1
      * @param revision2
      * @return
@@ -280,7 +280,7 @@ public class ExchangeUtils {
 
     /**
      * Save the emf model of downloaded components to file.
-     * 
+     *
      * @param fileName
      * @param components
      * @throws IOException
@@ -292,7 +292,7 @@ public class ExchangeUtils {
 
     /**
      * Load the emf model of downloaded components from file.
-     * 
+     *
      * @param fileName
      * @return
      * @throws IOException
@@ -305,7 +305,7 @@ public class ExchangeUtils {
 
     /**
      * Save the emf model of installed components to file.
-     * 
+     *
      * @param fileName
      * @param components
      * @throws IOException
@@ -317,7 +317,7 @@ public class ExchangeUtils {
 
     /**
      * Load the emf model of installed components from file.
-     * 
+     *
      * @param fileName
      * @return
      * @throws IOException

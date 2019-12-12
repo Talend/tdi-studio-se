@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -248,9 +248,9 @@ public class TableLayout extends AbstractHintLayout {
     }
 
     /**
-     * 
+     *
      * DOC used for columnsash to change size of column
-     * 
+     *
      * @param key
      * @param value
      */
@@ -278,9 +278,9 @@ public class TableLayout extends AbstractHintLayout {
     }
 
     /**
-     * 
+     *
      * DOC used to init the weight compares to table container
-     * 
+     *
      * @param column
      * @param weight
      */
@@ -294,7 +294,7 @@ public class TableLayout extends AbstractHintLayout {
 
     /**
      * Sets the ajustToTableWidth.
-     * 
+     *
      * @param ajustToTableWidth the ajustToTableWidth to set
      */
     public void setAjustToTableWidth(boolean ajustToTableWidth) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class SuggestionsAction extends Action<String> {
     public SuggestionsAction(String actionName, String family) {
         super(actionName, family, Action.Type.SUGGESTIONS);
     }
-    
+
     private synchronized SuggestionValues callSuggestions() {
         final Map<String, String> newPayload = payload();
         if (responseNotCached() || payloadChanged(newPayload)) {
@@ -61,7 +61,7 @@ public class SuggestionsAction extends Action<String> {
         }
         return response;
     }
-    
+
     /**
      * Retrieves suggestion values and return a map of them, where label is a key and id is value
      */

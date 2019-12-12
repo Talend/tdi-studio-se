@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,15 +31,15 @@ import org.talend.designer.codegen.i18n.Messages;
 
 /**
  * DOC Administrator class global comment. Detailled comment <br/>
- * 
+ *
  * @author ftang, 17/08, 2007
- * 
+ *
  */
 public class ComponentsLocalProviderService implements IComponentsLocalProviderService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.IComponentsLocalProviderService#isAvoidToShowJobAfterDoubleClick()
      */
     public boolean isAvoidToShowJobAfterDoubleClick() {
@@ -52,7 +52,7 @@ public class ComponentsLocalProviderService implements IComponentsLocalProviderS
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.IComponentsLocalProviderService#getPreferenceStore()
      */
     public IPreferenceStore getPreferenceStore() {
@@ -75,7 +75,7 @@ public class ComponentsLocalProviderService implements IComponentsLocalProviderS
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.components.IComponentsLocalProviderService#getPlugin()
      */
     public AbstractUIPlugin getPlugin() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,13 +21,13 @@ import java.io.Serializable;
  */
 public class CompareCol implements Serializable {
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private Integer colId;
     private boolean ascending;
     private CompareType type = CompareType.LETTER;
-    
+
     public CompareCol(Integer colId, boolean ascending, CompareType type) {
         this.colId = colId;
         this.ascending = ascending;
@@ -41,7 +41,7 @@ public class CompareCol implements Serializable {
     public boolean isAscending() {
         return ascending;
     }
-    
+
     public CompareType getCompareType() {
         return type;
     }

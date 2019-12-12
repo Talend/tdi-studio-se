@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  * created by hcyi on Jun 20, 2018 Detailled comment
  *
  */
@@ -38,7 +38,7 @@ public enum SupportDBVersions {
     PSQL_V9_X(SupportDBUrlType.POSTGRESQLEFAULTURL, "v9 and later", "V9_X"),
     PSQL_PRIOR_TO_V9(SupportDBUrlType.POSTGRESQLEFAULTURL, "Prior to v9", "PRIOR_TO_V9"); //$NON-NLS-1$ //$NON-NLS-2$
     //$NON-NLS-1$ //$NON-NLS-2$
-	
+
 
     private String versionDisplayName;
 
@@ -54,7 +54,7 @@ public enum SupportDBVersions {
 
     /**
      * Getter for versionDisplayName.
-     * 
+     *
      * @return the versionDisplayName
      */
     public String getVersionDisplayName() {
@@ -63,7 +63,7 @@ public enum SupportDBVersions {
 
     /**
      * Sets the versionDisplayName.
-     * 
+     *
      * @param versionDisplayName the versionDisplayName to set
      */
     public void setVersionDisplayName(String versionDisplayName) {
@@ -72,7 +72,7 @@ public enum SupportDBVersions {
 
     /**
      * Getter for versionValue.
-     * 
+     *
      * @return the versionValue
      */
     public String getVersionValue() {
@@ -81,7 +81,7 @@ public enum SupportDBVersions {
 
     /**
      * Sets the versionValue.
-     * 
+     *
      * @param versionValue the versionValue to set
      */
     public void setVersionValue(String versionValue) {
@@ -90,7 +90,7 @@ public enum SupportDBVersions {
 
     /**
      * Getter for type.
-     * 
+     *
      * @return the type
      */
     public SupportDBUrlType getType() {
@@ -99,7 +99,7 @@ public enum SupportDBVersions {
 
     /**
      * Sets the type.
-     * 
+     *
      * @param type the type to set
      */
     public void setType(SupportDBUrlType type) {

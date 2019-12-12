@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -78,7 +78,7 @@ public class ImplicitContextLoadHelper {
 
     /**
      * DOC hcw Comment method "reloadValuesFromPreferencePage".
-     * 
+     *
      * @param elem
      * @param extraComposite
      */
@@ -105,7 +105,7 @@ public class ImplicitContextLoadHelper {
 
     /**
      * DOC hcw Comment method "reloadPropertyType".
-     * 
+     *
      * @param element
      * @param extraComposite
      * @param languagePrefix
@@ -175,7 +175,7 @@ public class ImplicitContextLoadHelper {
 
     /**
      * DOC hcw Comment method "loadPreferenceValues".
-     * 
+     *
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -207,7 +207,7 @@ public class ImplicitContextLoadHelper {
 
     /**
      * DOC hcw Comment method "putValuesToMap".
-     * 
+     *
      * @param values
      * @param languagePrefix
      * @param params
@@ -228,7 +228,7 @@ public class ImplicitContextLoadHelper {
 
     /**
      * DOC hcw Comment method "saveValuesToPreferencePage".
-     * 
+     *
      * @param elem
      * @param extraComposite
      */
@@ -268,7 +268,7 @@ public class ImplicitContextLoadHelper {
 
     /**
      * DOC hcw Comment method "savePropertyType".
-     * 
+     *
      * @param extraComposite
      * @param languagePrefix
      * @param elementParameter

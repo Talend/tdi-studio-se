@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,7 +32,8 @@ import org.talend.core.model.properties.impl.PropertiesFactoryImpl;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.repository.ProjectManager;
-import org.talend.utils.security.CryptoHelper;
+import org.talend.utils.security.StudioEncryption;
+import org.talend.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -63,7 +64,7 @@ public class ImportProjectSettings {
         File file = new File(path);
         org.talend.core.model.properties.Project project = pro.getEmfProject();
 
-        final DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory fabrique = XmlUtils.getSecureDocumentBuilderFactory();
         DocumentBuilder analyseur = fabrique.newDocumentBuilder();
         analyseur.setErrorHandler(new ErrorHandler() {
 
@@ -165,7 +166,7 @@ public class ImportProjectSettings {
 
     /**
      * wchen Comment method "updateParameters".
-     * 
+     *
      * @param node
      * @param attrMap
      * @param statAndLogs
@@ -190,13 +191,13 @@ public class ImportProjectSettings {
         }
         /*
          * FIXME, TDI-31303
-         * 
+         *
          * After 5.6.0, because have encrypted, so try to decrypt first, then encrypt again.
-         * 
+         *
          * If the value is raw (before 5.6.0), the decrypted value will be null.
          */
         if (PasswordEncryptUtil.isPasswordField(foundType.getField())) {
-            String decValue = CryptoHelper.getDefault().decrypt(value);
+            String decValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(value);
             if (decValue != null) {
                 value = decValue;
             }
@@ -206,7 +207,7 @@ public class ImportProjectSettings {
 
     /**
      * wchen Comment method "updateStatus".
-     * 
+     *
      * @param node
      * @param attrMap
      * @param status

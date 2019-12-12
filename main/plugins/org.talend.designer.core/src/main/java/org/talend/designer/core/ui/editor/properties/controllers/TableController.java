@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -66,14 +66,14 @@ import org.talend.designer.runprocess.ItemCacheManager;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TableController.java 1 2006-12-14 下午05:44:30 +0000 (下午05:44:30) yzhang $
- * 
+ *
  */
 public class TableController extends AbstractElementPropertySectionController {
 
     /**
-     * 
+     *
      */
     private static final int MIN_NUMBER_ROWS = 1;
 
@@ -83,7 +83,7 @@ public class TableController extends AbstractElementPropertySectionController {
 
     /**
      * DOC yzhang TableController constructor comment.
-     * 
+     *
      * @param dtp
      */
     public TableController(IDynamicProperty dp) {
@@ -92,7 +92,7 @@ public class TableController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#
      * createControl(org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
      * org.eclipse.swt.widgets.Control)
@@ -221,7 +221,7 @@ public class TableController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -256,7 +256,7 @@ public class TableController extends AbstractElementPropertySectionController {
 
     /**
      * ftang Comment method "getNumberRows".
-     * 
+     *
      * @param param
      * @return
      */
@@ -267,7 +267,7 @@ public class TableController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -336,7 +336,7 @@ public class TableController extends AbstractElementPropertySectionController {
 
     /**
      * Overide default pattern list value by them which comes from DQ repository view
-     * 
+     *
      * @param param the element parameter
      * @param dqPatternService extended service for DQ pattern retrievement.
      * @return
@@ -372,7 +372,7 @@ public class TableController extends AbstractElementPropertySectionController {
 
     /**
      * Adds all the elements of "b" arrays into "a" array without the duplicate one in "a", and return "a".
-     * 
+     *
      * @param a
      * @param b
      * @return
@@ -409,7 +409,7 @@ public class TableController extends AbstractElementPropertySectionController {
     private ITDQPatternService getDQPatternService() {
         ITDQPatternService service = null;
         try {
-            service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
+            service = GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
         } catch (RuntimeException e) {
             // nothing to do
         }
@@ -432,7 +432,7 @@ public class TableController extends AbstractElementPropertySectionController {
 
     /**
      * DOC nrousseau Comment method "updateSubjobStarts".
-     * 
+     *
      * @param param
      */
     public static void updateSubjobStarts(IElement element, IElementParameter param) {
@@ -475,7 +475,7 @@ public class TableController extends AbstractElementPropertySectionController {
         paramValues.addAll(newParamValues);
     }
 
-    private void updateColumnList(IElementParameter param) {
+    public void updateColumnList(IElementParameter param) {
         if (elem instanceof Node) {
             ColumnListController.updateColumnList((Node) elem, null);
         } else if (elem instanceof Connection) {
@@ -833,9 +833,9 @@ public class TableController extends AbstractElementPropertySectionController {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "revertAllButton".
-     * 
+     *
      * if flag is false, will set the button for unenabled state. (bug 3740)
      */
     private void revertToolBarButtonState(boolean flag) {
@@ -853,9 +853,9 @@ public class TableController extends AbstractElementPropertySectionController {
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "isNeedAddAllButton".
-     * 
+     *
      * @param param
      * @return
      */

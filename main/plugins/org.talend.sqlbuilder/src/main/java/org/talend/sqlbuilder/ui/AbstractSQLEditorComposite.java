@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,7 +53,7 @@ import org.talend.sqlbuilder.util.UIUtils;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  */
 public abstract class AbstractSQLEditorComposite extends Composite implements ISQLEditor {
 
@@ -72,7 +72,7 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
 
     /**
      * qzhang AbstractSQLEditorComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -132,7 +132,7 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#doSaveAs()
      */
     public void doSaveAs() {
@@ -177,7 +177,7 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#saveSQL()
      */
     public Query doSaveSQL(Query query2, boolean as) {
@@ -221,7 +221,7 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#getRepositoryName()
      */
 
@@ -341,7 +341,7 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
 
     /**
      * qzhang Comment method "addDefaultActions".
-     * 
+     *
      */
     protected void addDefaultActions() {
         // /addDefaultActions(defaultToolBarMgr);
@@ -374,7 +374,7 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
 
     /**
      * Getter for dialog.
-     * 
+     *
      * @return the dialog
      */
     public ISQLBuilderDialog getDialog() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 
 /**
- * 
+ *
  * DOC rdubois JavaGenerationManager class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class HashedMetadataTable {
 
@@ -49,7 +49,7 @@ public class HashedMetadataTable {
 
     /**
      * Getter for metadataTable.
-     * 
+     *
      * @return the metadataTable
      */
     public IMetadataTable getMetadataTable() {

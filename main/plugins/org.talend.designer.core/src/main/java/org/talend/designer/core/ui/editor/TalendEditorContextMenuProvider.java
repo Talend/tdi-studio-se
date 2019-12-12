@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -73,9 +73,9 @@ import org.talend.designer.core.ui.hierarchy.OpenJobHierarchyAction;
 
 /**
  * Class that manages the context menu in the Gef Editor. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class TalendEditorContextMenuProvider extends ContextMenuProvider {
 
@@ -104,7 +104,7 @@ public class TalendEditorContextMenuProvider extends ContextMenuProvider {
 
     /**
      * Called when the context menu is about to show. Actions, whose state is enabled, will appear in the context menu.
-     * 
+     *
      * @see org.eclipse.gef.ContextMenuProvider#buildContextMenu(org.eclipse.jface.action.IMenuManager)
      */
     @Override
@@ -457,7 +457,7 @@ public class TalendEditorContextMenuProvider extends ContextMenuProvider {
 
     /**
      * Getter for enableContextMenu.
-     * 
+     *
      * @return the enableContextMenu
      */
     public static boolean isEnableContextMenu() {
@@ -466,7 +466,7 @@ public class TalendEditorContextMenuProvider extends ContextMenuProvider {
 
     /**
      * Sets the enableContextMenu.
-     * 
+     *
      * @param enableContextMenu the enableContextMenu to set
      */
     public static void setEnableContextMenu(boolean enableContextMenu) {

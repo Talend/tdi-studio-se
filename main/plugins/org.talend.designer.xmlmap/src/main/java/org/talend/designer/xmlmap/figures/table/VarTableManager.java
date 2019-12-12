@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,7 +47,7 @@ public class VarTableManager extends TableManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.manager.TableManager#isActivateCondensedTool()
      */
     @Override
@@ -57,7 +57,7 @@ public class VarTableManager extends TableManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.manager.TableManager#isActivateExpressionFilter()
      */
     @Override
@@ -67,7 +67,7 @@ public class VarTableManager extends TableManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.manager.TableManager#getExpressionFilter()
      */
     @Override
@@ -77,7 +77,7 @@ public class VarTableManager extends TableManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.manager.TableManager#setExpressionFilter(java.lang.String)
      */
     @Override
@@ -88,7 +88,7 @@ public class VarTableManager extends TableManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.manager.TableManager#setActivateCondensedTool(boolean)
      */
     @Override
@@ -99,7 +99,7 @@ public class VarTableManager extends TableManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.newabstractmap.figures.manager.TableManager#setActivateExpressionFilter(boolean)
      */
     @Override
@@ -110,7 +110,7 @@ public class VarTableManager extends TableManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.gefabstractmap.figures.manager.TableManager#isActivateGlobalMap()
      */
     @Override
@@ -121,7 +121,7 @@ public class VarTableManager extends TableManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.gefabstractmap.figures.manager.TableManager#setActivateGlobalMap(boolean)
      */
     @Override

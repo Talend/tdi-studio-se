@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,7 +39,7 @@ public class StormJobJavaScriptsManager extends JobJavaScriptsManager {
 
     /**
      * DOC marvin MapReduceJobJavaScriptsManager constructor comment.
-     * 
+     *
      * @param exportChoiceMap
      * @param contextName
      * @param launcher
@@ -53,7 +53,7 @@ public class StormJobJavaScriptsManager extends JobJavaScriptsManager {
 
     /**
      * Overrides the parent method to do a special handling, that is to include "context" file in job.jar.
-     * 
+     *
      * @return
      */
     @Override

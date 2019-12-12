@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.eclipse.swt.graphics.Image;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ObjectNode.java,v 1.3 2006/11/01 05:40:59 peiqin.hou Exp $
- * 
+ *
  */
 public class ObjectNode extends AbstractNode {
 
@@ -41,7 +41,7 @@ public class ObjectNode extends AbstractNode {
 
     /**
      * This node cannot have childnodes.
-     * 
+     *
      * @return isEndNode.
      */
     public boolean isEndNode() {

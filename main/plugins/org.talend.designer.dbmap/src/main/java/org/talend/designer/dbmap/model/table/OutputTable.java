@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.designer.dbmap.model.tableentry.OutputColumnTableEntry;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: OutputTable.java 1795 2007-02-04 04:15:56Z bqian $
- * 
+ *
  */
 public class OutputTable extends AbstractInOutTable {
 
@@ -146,7 +146,7 @@ public class OutputTable extends AbstractInOutTable {
 
     /**
      * Getter for tableWhereFiltersEntriesModel.
-     * 
+     *
      * @return the tableWhereFiltersEntriesModel
      */
     public ExtendedTableModel<FilterTableEntry> getWhereTableFiltersEntriesModel() {
@@ -155,7 +155,7 @@ public class OutputTable extends AbstractInOutTable {
 
     /**
      * Getter for tableOtherFiltersEntriesModel.
-     * 
+     *
      * @return the tableOtherFiltersEntriesModel
      */
     public ExtendedTableModel<FilterTableEntry> getOtherTableFiltersEntriesModel() {
@@ -164,7 +164,7 @@ public class OutputTable extends AbstractInOutTable {
 
     /**
      * Getter for uniqueName.
-     * 
+     *
      * @return the uniqueName
      */
     public String getUniqueName() {
@@ -173,7 +173,7 @@ public class OutputTable extends AbstractInOutTable {
 
     /**
      * Getter for tableName.
-     * 
+     *
      * @return the tableName
      */
     public String getTableName() {
@@ -182,7 +182,7 @@ public class OutputTable extends AbstractInOutTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.table.IDataMapTable#getName()
      */
     @Override
@@ -192,7 +192,7 @@ public class OutputTable extends AbstractInOutTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.model.table.IDataMapTable#getTitle()
      */
     @Override

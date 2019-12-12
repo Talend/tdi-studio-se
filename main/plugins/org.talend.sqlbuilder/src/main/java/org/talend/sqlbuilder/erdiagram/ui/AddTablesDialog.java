@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,9 +34,9 @@ import org.talend.sqlbuilder.repository.utility.SQLBuilderRepositoryNodeManager;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class AddTablesDialog extends Dialog {
 
@@ -50,7 +50,7 @@ public class AddTablesDialog extends Dialog {
 
     /**
      * admin AddTablesDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     public AddTablesDialog(Shell parentShell) {
@@ -61,7 +61,7 @@ public class AddTablesDialog extends Dialog {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
      */
     @Override
@@ -72,7 +72,7 @@ public class AddTablesDialog extends Dialog {
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -114,7 +114,7 @@ public class AddTablesDialog extends Dialog {
 
     /*
      * （非 Java）
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     @Override

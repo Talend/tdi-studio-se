@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,9 +39,9 @@ import org.talend.repository.i18n.Messages;
 
 /**
  * Page of the Job Scripts Export Wizard. <br/>
- * 
+ *
  * @referto WizardArchiveFileResourceExportPage1 $Id: JobScriptsExportWizardPage.java 1 2006-12-13 下午03:09:07 bqian
- * 
+ *
  */
 public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
@@ -49,7 +49,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
     /**
      * ConfigExternalPerlModulePage.
-     * 
+     *
      * @param pageName
      * @param title
      * @param titleImage
@@ -61,7 +61,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -87,7 +87,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.wizards.importExternalLib.ImportExternalLibPage#finish()
      */
     @Override
@@ -109,7 +109,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.wizards.ConfigExternalLib.ConfigExternalLibPage#cancel()
      */
     @Override
@@ -119,14 +119,14 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
     /**
      * subclass of the LibraryField. <br/>
-     * 
+     *
      * $Id: ImportExternalJarPage.java Mar 20, 20074:15:28 PM bqian $
-     * 
+     *
      */
     class EditPerlRoutineExternalModuleField extends LibraryField {
 
         /**
-         * 
+         *
          * @param name
          * @param parent
          */
@@ -136,7 +136,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.repository.ui.wizards.importExternalLib.TableField#afterDeleteSelection(java.util.List)
          */
         @Override
@@ -146,7 +146,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.talend.repository.ui.wizards.importExternalLib.LibraryField#getNewInputObject()
          */
         @Override
@@ -165,15 +165,15 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
     /**
      * ConfigExternalPerlModulePage class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: ConfigExternalPerlModulePage.java Mar 21, 20074:07:54 PM bqian $
-     * 
+     *
      */
     class ModulePropertyDialog extends Dialog {
 
         /**
          * DOC acer ModulePropertyDialog constructor comment.
-         * 
+         *
          * @param parentShell
          */
         public ModulePropertyDialog(Shell parentShell) {
@@ -191,7 +191,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.dialogs.Dialog#okPressed()
          */
         @Override
@@ -207,7 +207,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
         /**
          * Getter for importType.
-         * 
+         *
          * @return the importType
          */
         public IMPORTType getImportType() {
@@ -216,7 +216,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
          */
         @Override
@@ -229,7 +229,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
          */
         @Override

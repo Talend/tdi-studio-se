@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -70,14 +70,14 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 
 /**
  * DOC Administrator class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2007-05-21 17:06:40 +0000 (ææäº, 29 ä¹æ 2006) nrousseau $
- * 
+ *
  */
 public class TestComponentsAction extends Action {
 
     /**
-     * 
+     *
      */
     private static final String EXECUTION_OK = "##EXECUTION_OK##"; //$NON-NLS-1$
 
@@ -294,7 +294,7 @@ public class TestComponentsAction extends Action {
 
     /**
      * DOC qwei Comment method "setDefaultProperties".
-     * 
+     *
      * @param process
      */
     private void setDefaultProperties(IProcess process, String componentPath) {
@@ -310,7 +310,7 @@ public class TestComponentsAction extends Action {
 
     /**
      * DOC qwei Comment method "fillParameter".
-     * 
+     *
      * @param parameter
      */
     private void fillParameter(IContextParameter parameter, String componentPath) {

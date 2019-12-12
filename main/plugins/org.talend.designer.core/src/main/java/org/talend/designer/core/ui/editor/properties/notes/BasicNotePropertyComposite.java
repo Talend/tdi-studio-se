@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -91,7 +91,7 @@ public class BasicNotePropertyComposite extends AbstractNotePropertyComposite {
 
     /**
      * DOC yzhang BasicNotePropertyComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param note
      * @param tabFactory
@@ -102,7 +102,7 @@ public class BasicNotePropertyComposite extends AbstractNotePropertyComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.notes.AbstractNotePropertyComposite#createControl(org.eclipse.swt
      * .widgets.Composite)
@@ -258,7 +258,7 @@ public class BasicNotePropertyComposite extends AbstractNotePropertyComposite {
 
     /**
      * Create font tool bar group
-     * 
+     *
      * @param parent - parent composite
      * @return - font tool bar
      */
@@ -466,7 +466,7 @@ public class BasicNotePropertyComposite extends AbstractNotePropertyComposite {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.notes.AbstractNotePropertyComposite#getComposite()
      */
     @Override
@@ -656,7 +656,7 @@ public class BasicNotePropertyComposite extends AbstractNotePropertyComposite {
 
         /**
          * Creates a new color menu image descriptor
-         * 
+         *
          * @param basicIcon The basic Image data
          * @param rgb The color bar RGB value
          */

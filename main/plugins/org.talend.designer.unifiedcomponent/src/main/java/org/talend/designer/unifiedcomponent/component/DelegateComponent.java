@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -65,7 +65,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getName()
      */
     @Override
@@ -75,7 +75,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getLongName()
      */
     @Override
@@ -85,7 +85,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getShortName()
      */
     @Override
@@ -95,7 +95,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getOriginalName()
      */
     @Override
@@ -105,7 +105,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getOriginalFamilyName()
      */
     @Override
@@ -115,7 +115,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getTranslatedFamilyName()
      */
     @Override
@@ -145,7 +145,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getIcon32()
      */
     @Override
@@ -162,7 +162,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getIcon24()
      */
     @Override
@@ -181,7 +181,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getIcon16()
      */
     @Override
@@ -226,7 +226,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
             param = new ElementParameter(node);
             param.setName(EParameterName.VERSION.getName());
-            param.setValue(""); //$NON-NLS-1$ 
+            param.setValue(""); //$NON-NLS-1$
             //$NON-NLS-1$ //$NON-NLS-2$
             param.setDisplayName(EParameterName.VERSION.getDisplayName());
             param.setFieldType(EParameterFieldType.TEXT);
@@ -352,7 +352,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#createElementParameters(org.talend.core.model.process.INode)
      */
     @Override
@@ -362,7 +362,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#createReturns(org.talend.core.model.process.INode)
      */
     @Override
@@ -373,7 +373,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#createConnectors(org.talend.core.model.process.INode)
      */
     @Override
@@ -412,7 +412,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#hasConditionalOutputs()
      */
     @Override
@@ -423,7 +423,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isMultiplyingOutputs()
      */
     @Override
@@ -434,7 +434,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPluginExtension()
      */
     @Override
@@ -444,7 +444,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isSchemaAutoPropagated()
      */
     @Override
@@ -455,7 +455,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isDataAutoPropagated()
      */
     @Override
@@ -466,7 +466,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isHashComponent()
      */
     @Override
@@ -477,7 +477,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useMerge()
      */
     @Override
@@ -488,7 +488,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useLookup()
      */
     @Override
@@ -499,7 +499,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getVersion()
      */
     @Override
@@ -510,7 +510,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getMultipleComponentManagers()
      */
     @Override
@@ -520,7 +520,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isLoaded()
      */
     @Override
@@ -530,7 +530,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisible()
      */
     @Override
@@ -540,7 +540,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisible(java.lang.String)
      */
     @Override
@@ -553,7 +553,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getModulesNeeded()
      */
     @Override
@@ -564,7 +564,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getModulesNeeded(org.talend.core.model.process.INode)
      */
     @Override
@@ -574,7 +574,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPathSource()
      */
     @Override
@@ -584,7 +584,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getAvailableCodeParts()
      */
     @Override
@@ -594,7 +594,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPluginDependencies()
      */
     @Override
@@ -605,7 +605,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isMultipleOutput()
      */
     @Override
@@ -616,7 +616,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#useImport()
      */
     @Override
@@ -627,7 +627,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getComponentType()
      */
     @Override
@@ -637,7 +637,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isTechnical()
      */
     @Override
@@ -647,7 +647,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isVisibleInComponentDefinition()
      */
     @Override
@@ -657,7 +657,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isSingleton()
      */
     @Override
@@ -667,7 +667,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isMainCodeCalled()
      */
     @Override
@@ -677,7 +677,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#canParallelize()
      */
     @Override
@@ -687,7 +687,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getCombine()
      */
     @Override
@@ -697,7 +697,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getProcess()
      */
     @Override
@@ -708,7 +708,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getRepositoryType()
      */
     @Override
@@ -719,7 +719,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isLog4JEnabled()
      */
     @Override
@@ -730,7 +730,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isReduce()
      */
     @Override
@@ -741,7 +741,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isSparkAction()
      */
     @Override
@@ -752,7 +752,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isSupportDbType()
      */
     @Override
@@ -763,7 +763,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#isAllowedPropagated()
      */
     @Override
@@ -774,7 +774,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getCONNECTORList()
      */
     @Override
@@ -785,7 +785,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /**
      * Sets the componentImage.
-     * 
+     *
      * @param componentImage the componentImage to set
      */
     public void setComponentImage(IImage componentImage) {
@@ -794,7 +794,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /**
      * Getter for componentImage.
-     * 
+     *
      * @return the componentImage
      */
     public IImage getComponentImage() {
@@ -803,7 +803,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     /**
      * Getter for unifiedObjects.
-     * 
+     *
      * @return the unifiedObjects
      */
     public Set<UnifiedObject> getUnifiedObjects() {

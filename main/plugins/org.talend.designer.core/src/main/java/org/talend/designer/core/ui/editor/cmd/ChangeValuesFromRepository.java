@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -82,9 +82,9 @@ import org.talend.repository.UpdateRepositoryUtils;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
@@ -330,9 +330,9 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
             if (elem instanceof INode) {
                 contextMap.put("NODE", (INode) elem);
             }
-            
+
             for (IElementParameter param : elementParameters) {
-                  
+
                 String repositoryValue = param.getRepositoryValue();
                 if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
                     continue;
@@ -1126,7 +1126,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     /**
      * qzhang Comment method "getTake".
-     * 
+     *
      * @return
      */
     private Boolean take = null;
@@ -1208,7 +1208,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     /**
      * Sets a sets of maps.
-     * 
+     *
      * @param tablesmap
      * @param queriesmap
      * @param repositoryTableMap
@@ -1218,11 +1218,11 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "isGuessQuery".
-     * 
+     *
      * for guess query
-     * 
+     *
      * @return
      */
     public boolean isGuessQuery() {
@@ -1235,7 +1235,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     /**
      * Getter for sapFunctionName.
-     * 
+     *
      * @return the sapFunctionName
      */
     public String getSapFunctionLabel() {
@@ -1259,7 +1259,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     /**
      * Sets the sapFunctionName.
-     * 
+     *
      * @param sapFunctionName the sapFunctionName to set
      */
     public void setSapFunctionLabel(String sapFunctionName) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -62,9 +62,9 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerPart;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class GEFPasteAction extends SelectionAction {
 
@@ -72,7 +72,7 @@ public class GEFPasteAction extends SelectionAction {
 
     /**
      * Getter for cursorLocation.
-     * 
+     *
      * @return the cursorLocation
      */
     public org.eclipse.draw2d.geometry.Point getCursorLocation() {
@@ -85,7 +85,7 @@ public class GEFPasteAction extends SelectionAction {
 
     /**
      * Sets the cursorLocation.
-     * 
+     *
      * @param cursorLocation the cursorLocation to set
      */
     public void setCursorLocation(Point cursorLocation) {
@@ -94,7 +94,7 @@ public class GEFPasteAction extends SelectionAction {
 
     /**
      * DOC nrousseau NodesPasteAction constructor comment.
-     * 
+     *
      * @param part
      */
     public GEFPasteAction(IWorkbenchPart part) {
@@ -108,7 +108,7 @@ public class GEFPasteAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
     @Override

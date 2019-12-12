@@ -289,6 +289,27 @@ public class Tools implements IPropertyChangeListener, IConstants {
             throw new JvmCoreException(IStatus.ERROR, message, t);
         }
     }
+    
+    protected Object invokeStartLocalManagementAgent(Object virtualMachine) throws JvmCoreException {
+        try {
+            Class<?> clazz = Class.forName(VIRTUAL_MACHINE_CLASS);
+            Method method = clazz.getDeclaredMethod(START_LOCAL_MANAGEMENT_AGENT);
+            return method.invoke(virtualMachine);
+        } catch (Throwable t) {
+            String message = t.getMessage();
+            if (message == null) {
+                Throwable cause = t.getCause();
+                while (cause != null) {
+                    message = cause.getMessage();
+                    if (message != null) {
+                        break;
+                    }
+                    cause = cause.getCause();
+                }
+            }
+            throw new JvmCoreException(IStatus.ERROR, message, t);
+        }
+    }
 
     /**
      * Invokes the heapHisto method of HotSpotVirtualMachine with reflection.

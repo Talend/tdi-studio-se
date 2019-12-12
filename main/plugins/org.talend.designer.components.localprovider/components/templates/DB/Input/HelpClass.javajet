@@ -76,21 +76,21 @@ imports="
 		}
 %>
 				String driverClass_<%=cid%> = "<%=this.getDirverClassName(node) %>";
-			    java.lang.Class.forName(driverClass_<%=cid%>);
-<%              if (needUserAndPassword){%>
-					String dbUser_<%=cid %> = <%=dbuser%>;
-					<%
-					String passwordFieldName = "__PASS__";
-					%>
-					
-					<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-					
-					String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
-<%              }%>
+			    java.lang.Class jdbcclazz_<%=cid%> = java.lang.Class.forName(driverClass_<%=cid%>);
+<%
+				newInstance(node);
+%>
+				String dbUser_<%=cid %> = <%=dbuser%>;
+				<%
+				String passwordFieldName = "__PASS__";
+				%>
+				<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+				
+				String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
 				<%this.setURL(node);%>
 				<%
 				log4jCodeGenerateUtil.debugConnectionParams(node);
-				if ("SSO".equals(ElementParameterParser.getValue(node, "__JDBC_URL__")) || !needUserAndPassword){
+				if (!needUserAndPassword){
 					log4jCodeGenerateUtil.connect_begin_noUser();
 				} else {
 					log4jCodeGenerateUtil.connect_begin();
@@ -115,6 +115,11 @@ imports="
 		    }
 <%
 			}
+		}
+		
+		protected void newInstance(INode node) {
+			//do nothing as default
+			//for sybase jdbc in java 11, we have to call jdbcclazz.newInstance method
 		}
 		
 		public String getQueryString(INode node) {

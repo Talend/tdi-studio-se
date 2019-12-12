@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -43,9 +43,17 @@ public class PasswordController extends TextController {
 
     protected static final String PASSWORD = "PASSWORD"; //$NON-NLS-1$
 
+    protected String getDialogTitle() {
+        return Messages.getString("PasswordController.NewPassword"); //$NON-NLS-1$
+    }
+
+    protected String getDialogMessage() {
+        return Messages.getString("PasswordController.NoteConvention"); //$NON-NLS-1$
+    }
+
     /**
      * DOC nrousseau PasswordController constructor comment.
-     * 
+     *
      * @param dp
      */
     public PasswordController(IDynamicProperty dp) {
@@ -54,7 +62,7 @@ public class PasswordController extends TextController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.TextController#isPasswordParam(org.talend.core.model
      * .process.IElementParameter)
@@ -66,7 +74,7 @@ public class PasswordController extends TextController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.TextController#isReadOnly()
      */
     @Override
@@ -76,7 +84,7 @@ public class PasswordController extends TextController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.TextController#createControl(org.eclipse.swt.widgets
      * .Composite, org.talend.core.model.process.IElementParameter, int, int, int, org.eclipse.swt.widgets.Control)
@@ -133,7 +141,7 @@ public class PasswordController extends TextController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.TextController#estimateRowSize(org.eclipse.swt.widgets
      * .Composite, org.talend.core.model.process.IElementParameter)
@@ -166,12 +174,12 @@ public class PasswordController extends TextController {
 
             InputDialog dlg = new InputDialog(
                     button.getShell(),
-                    Messages.getString("PasswordController.NewPassword"), Messages.getString("PasswordController.NoteConvention"), //$NON-NLS-1$ //$NON-NLS-2$
+                    getDialogTitle(), getDialogMessage(),
                     initValue, null) {
 
                 /*
                  * (non-Javadoc)
-                 * 
+                 *
                  * @see org.eclipse.jface.dialogs.InputDialog#createDialogArea(org.eclipse.swt.widgets.Composite)
                  */
                 @Override

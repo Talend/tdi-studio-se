@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -12,9 +12,9 @@
  */
 package org.talend.sdk.component.studio.metadata.handler;
 
-import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.addQuotesIfNecessary;
-import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
-import static org.talend.sdk.component.studio.util.TaCoKitUtil.isEmpty;
+import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.*;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.*;
+import static org.talend.sdk.component.studio.util.TaCoKitUtil.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +32,7 @@ import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -79,7 +80,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
 
     /**
      * Retrieves persisted value (value stored in repository) by {@code repositoryKey}
-     * 
+     *
      * @param connection object, which stores persisted values
      * @param repositoryKey repository value key
      * @param table component schema value
@@ -94,9 +95,11 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
             return null;
         }
         ValueModel valueModel = null;
+        TaCoKitConfigurationModel model = null;
+        String key = null;
         try {
-            final TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);           
-            final String key = computeKey(model, repositoryKey, targetComponent);
+            model = new TaCoKitConfigurationModel(connection);
+            key = computeKey(model, repositoryKey, targetComponent);
             valueModel = model.getValue(key);
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -104,8 +107,16 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         if (valueModel == null || valueModel.getValue() == null) {
             return null;
         }
-        if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())) {
+        EParameterFieldType fieldType = null;
+        if (model != null) {
+            fieldType = model.getEParameterFieldType(key);
+        }
+        if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())
+                && !EParameterFieldType.CLOSED_LIST.equals(fieldType)) {
             return addQuotesIfNecessary(connection, valueModel.getValue());
+        } else if (EParameterFieldType.TABLE.equals(fieldType)
+                || EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE.equals(fieldType)) {
+            return model.convertParameterValue(repositoryKey, key, valueModel.getValue());
         } else {
             return valueModel.getValue();
         }
@@ -113,7 +124,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
 
     /**
      * Computes stored key (a key which is used to store specific parameter value) from {@code parameterId} of specified {@code component}
-     * 
+     *
      * @param model object which stores persisted values
      * @param parameterId parameter id
      * @param component component name
@@ -125,14 +136,14 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         final Map<String, PropertyDefinitionDecorator> tree = retrieveProperties(component);
         final Optional<String> configPath = findConfigPath(tree, model, parameterId);
         final String modelRoot = findModelRoot(model);
-        
+
         if (configPath.isPresent()) {
             return parameterId.replace(configPath.get(), modelRoot);
         } else {
             return null;
         }
     }
-    
+
     private String findModelRoot(final TaCoKitConfigurationModel model) {
         final Map<String, String> values = model.getProperties();
         List<String> possibleRoots = values.keySet().stream()
@@ -140,23 +151,23 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
             .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR)))
             .distinct()
             .collect(Collectors.toList());
-        
+
         if (possibleRoots.size() != 1) {
             throw new IllegalStateException("Multiple roots found. Can't guess correct one: " + possibleRoots);
         }
         return possibleRoots.get(0);
     }
-    
+
     private Map<String, PropertyDefinitionDecorator> retrieveProperties(final String component) {
         final ComponentDetail detail = retrieveDetail(component);
         return buildPropertyTree(detail);
     }
-    
+
     private Optional<String> findConfigPath(final Map<String, PropertyDefinitionDecorator> tree, final TaCoKitConfigurationModel model, final String parameterId) throws Exception {
         final ConfigTypeNode configTypeNode = model.getConfigTypeNode();
         final String configType = configTypeNode.getConfigurationType();
         final String configName = configTypeNode.getName();
-        
+
         for (PropertyDefinitionDecorator current = tree.get(parameterId); current != null; current = tree.get(current.getParentPath())) {
             if (configType.equals(current.getConfigurationType())
                     && configName.equals(current.getConfigurationTypeName())) {
@@ -165,14 +176,14 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         }
         return Optional.empty();
     }
-    
+
     private ComponentDetail retrieveDetail(final String component) {
         final ComponentIndices indices = client().getIndex(language());
         final ComponentId id = indices.getComponents().stream().map(ComponentIndex::getId)
                 .filter(i -> component.equals(TaCoKitUtil.getFullComponentName(i.getFamily(), i.getName())))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(component + " not found"));
-        
+
         final ComponentDetailList detailList = client()
                 .getDetail(language(), new String[] { id.getId() });
         if (detailList.getDetails().size() != 1) {
@@ -180,18 +191,18 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         }
         return detailList.getDetails().get(0);
     }
-    
+
     private Map<String, PropertyDefinitionDecorator> buildPropertyTree(final ComponentDetail detail) {
         final Map<String, PropertyDefinitionDecorator> tree = new HashMap<>();
         final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator.wrap(detail.getProperties());
         properties.forEach(p -> tree.put(p.getPath(), p));
         return tree;
     }
-    
+
     private V1Component client() {
         return Lookups.client().v1().component();
     }
-    
+
     private String language() {
         return Locale.getDefault().getLanguage();
     }
@@ -216,7 +227,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         String configName = configTypeNode.getName();
 
         IComponentsService service =
-                (IComponentsService) GlobalServiceRegister.getDefault().getService(IComponentsService.class);
+                GlobalServiceRegister.getDefault().getService(IComponentsService.class);
         Collection<IComponent> components = service.getComponentsFactory().readComponents();
         for (IComponent component : components) {
             if (component instanceof ComponentModel) {
@@ -264,7 +275,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
 
     @Override
     public void setComponentValue(final Connection connection, final INode node, final IElementParameter param) {
-        System.out.println("setComponentValue: " + param);
+        // System.out.println("setComponentValue: " + param);
     }
 
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,7 +18,7 @@ import java.util.List;
 import org.apache.spark.api.java.function.FlatMapFunction;
 
 public class NormalizeFunction implements FlatMapFunction<List<Object>,List<Object>> {
-	
+
 	private static final long serialVersionUID = 1L;
 	private String separator;
 	private int index;
@@ -27,7 +27,7 @@ public class NormalizeFunction implements FlatMapFunction<List<Object>,List<Obje
 		this.separator = separator;
 		this.index = index;
 	}
-	
+
 	public Iterable<List<Object>> call(List<Object> data)
 			throws Exception {
 		String dataToNormalize = (String)data.get(this.index);

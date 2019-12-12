@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ public class ScdComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.AbstractExternalNode#renameMetadataColumnName(java.lang.String,
      * java.lang.String, java.lang.String)
      */
@@ -47,7 +47,7 @@ public class ScdComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getComponentDocumentation(java.lang.String, java.lang.String)
      */
     public IComponentDocumentation getComponentDocumentation(String componentName, String tempFolderPath) {
@@ -62,7 +62,7 @@ public class ScdComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getExternalData()
      */
     public IExternalData getExternalData() {
@@ -72,7 +72,7 @@ public class ScdComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#initialize()
      */
     public void initialize() {
@@ -80,7 +80,7 @@ public class ScdComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#open(org.eclipse.swt.widgets.Display)
      */
     public int open(Display display) {
@@ -90,7 +90,7 @@ public class ScdComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#open(org.eclipse.swt.widgets.Composite)
      */
     public int open(Composite parent) {
@@ -102,7 +102,7 @@ public class ScdComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#renameInputConnection(java.lang.String, java.lang.String)
      */
     public void renameInputConnection(String oldName, String newName) {
@@ -111,7 +111,7 @@ public class ScdComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#renameOutputConnection(java.lang.String, java.lang.String)
      */
     public void renameOutputConnection(String oldName, String newName) {
@@ -121,7 +121,7 @@ public class ScdComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#setExternalData(org.talend.core.model.process.IExternalData)
      */
     public void setExternalData(IExternalData persistentData) {
@@ -131,7 +131,7 @@ public class ScdComponent extends AbstractExternalNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalNode#getTMapExternalData()
      */
     public IExternalData getTMapExternalData() {

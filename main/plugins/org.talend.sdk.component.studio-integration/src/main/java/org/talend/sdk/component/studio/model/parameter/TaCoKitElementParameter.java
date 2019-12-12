@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -18,12 +18,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import org.talend.core.model.process.IElement;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
+import org.talend.sdk.component.studio.ui.composite.problemmanager.IProblemManager;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -42,6 +46,10 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     private ElementParameter redrawParameter;
 
     private Map<String, Object> additionalInfoMap = new HashMap<>();
+
+    private Optional<IProblemManager> problemManager = Optional.ofNullable(null);
+
+    private Optional<Callable<Void>> registValidatorCallback = Optional.ofNullable(null);
 
     public TaCoKitElementParameter() {
         this(null);
@@ -67,6 +75,22 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
      */
     public String getStringValue() {
         return (String) getValue();
+    }
+
+    public Optional<IProblemManager> getProblemManager() {
+        return problemManager;
+    }
+
+    public void setProblemManager(IProblemManager problemManager) {
+        this.problemManager = Optional.ofNullable(problemManager);
+    }
+
+    public Optional<Callable<Void>> getRegistValidatorCallback() {
+        return registValidatorCallback;
+    }
+
+    public void setRegistValidatorCallback(Callable<Void> registValidatorCallback) {
+        this.registValidatorCallback = Optional.ofNullable(registValidatorCallback);
     }
 
     public void registerListener(final String propertyName, final PropertyChangeListener listener) {
@@ -160,6 +184,14 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     }
 
     @Override
+    public Object func(String funcName, Object... params) throws Exception {
+        if (TaCoKitUtil.equals(funcName, "isPersisted")) { //$NON-NLS-1$
+            return isPersisted();
+        }
+        return IAdditionalInfo.super.func(funcName, params);
+    }
+
+    @Override
     public void cloneAddionalInfoTo(final IAdditionalInfo targetAdditionalInfo) {
         if (targetAdditionalInfo == null) {
             return;
@@ -183,7 +215,6 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         super.setValue(newValue);
         firePropertyChange("value", oldValue, getStringValue());
         fireValueChange(oldValue, newValue);
-        redraw();
     }
 
     public void updateValueOnly(final Object newValue) {
@@ -198,6 +229,16 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
      */
     public boolean isPersisted() {
         return true;
+    }
+
+    @Override
+    public boolean isSerialized() {
+        if (isPersisted()) {
+            return super.isSerialized();
+        } else {
+            // return true to skip serialization
+            return true;
+        }
     }
 
     /**

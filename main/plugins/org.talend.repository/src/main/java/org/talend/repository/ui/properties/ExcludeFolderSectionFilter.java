@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.repository.model.IRepositoryNode.ENodeType;
 
 /**
  * DOC mhelleboid class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SectionFilter.java 295 2006-11-02 08:28:03 +0000 (jeu., 02 nov. 2006) smallet $
- * 
+ *
  */
 public class ExcludeFolderSectionFilter extends SectionFilter implements IFilter {
 

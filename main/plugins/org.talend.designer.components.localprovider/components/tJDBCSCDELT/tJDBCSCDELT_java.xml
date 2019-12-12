@@ -313,24 +313,22 @@
     >
     </PARAMETER>
     
-    <!-- this field only work for oracle, keep it hidden and use the default now -->
     <PARAMETER NAME="L2_ENDDATE_FIELD_TYPE" FIELD="CLOSED_LIST" NUM_ROW="86"
-		SHOW="false"
-		>
-		<ITEMS DEFAULT="NULL">
-			<ITEM NAME="NULL" VALUE="NULL" />
-			<ITEM NAME="FIXED_YEAR_VALUE" VALUE="FIXED_YEAR_VALUE" />
-		</ITEMS>
-	</PARAMETER>
+      SHOW_IF="USE_L2 == 'true'"
+    >
+    <ITEMS DEFAULT="NULL">
+      <ITEM NAME="NULL" VALUE="NULL" />
+      <ITEM NAME="FIXED_DATE_VALUE" VALUE="FIXED_DATE_VALUE" />
+    </ITEMS>
+  </PARAMETER>
 
-	<!-- this field only work for oracle, keep it hidden and use the default now -->
     <PARAMETER
-      NAME="FIXED_YEAR_VALUE"
+      NAME="FIXED_DATE_VALUE"
       FIELD="TEXT"
       NUM_ROW="86"
-	  SHOW_IF="isShow[L2_ENDDATE_FIELD_TYPE] AND (L2_ENDDATE_FIELD_TYPE == 'FIXED_YEAR_VALUE')"
+      SHOW_IF="isShow[L2_ENDDATE_FIELD_TYPE] AND (L2_ENDDATE_FIELD_TYPE == 'FIXED_DATE_VALUE')"
     >
-      <DEFAULT>""</DEFAULT>
+      <DEFAULT>"9999-12-31"</DEFAULT>
     </PARAMETER>
 
     <PARAMETER

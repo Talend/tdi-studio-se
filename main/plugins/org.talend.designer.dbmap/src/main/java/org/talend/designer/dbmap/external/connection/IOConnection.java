@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.core.model.process.IConnection;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: IOConnection.java 968 2006-12-12 10:59:26Z amaumont $
- * 
+ *
  */
 public class IOConnection {
 
@@ -35,7 +35,7 @@ public class IOConnection {
 
     /**
      * DOC amaumont MapperConnection constructor comment.
-     * 
+     *
      * @param connection
      * @param ioDataComponent
      */
@@ -50,7 +50,7 @@ public class IOConnection {
 
     /**
      * DOC amaumont MapperConnection constructor comment.
-     * 
+     *
      * @param connection
      * @param ioDataComponent
      */
@@ -68,7 +68,7 @@ public class IOConnection {
 
     /**
      * Getter for uniqueName.
-     * 
+     *
      * @return the uniqueName
      */
     public String getUniqueName() {

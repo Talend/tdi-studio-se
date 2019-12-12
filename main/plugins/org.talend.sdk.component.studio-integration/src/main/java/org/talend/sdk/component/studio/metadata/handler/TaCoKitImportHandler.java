@@ -77,6 +77,7 @@ public class TaCoKitImportHandler extends MetadataConnectionImportHandler {
                     }
                 }
             });
+            super.applyMigrationTasks(importItem, monitor);
         } catch (Exception e) {
             logError(e);
         }

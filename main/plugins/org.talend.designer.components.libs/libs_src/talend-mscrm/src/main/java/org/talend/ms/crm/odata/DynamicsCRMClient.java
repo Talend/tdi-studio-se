@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -71,7 +71,7 @@ import org.talend.ms.crm.odata.httpclientfactory.IHttpclientFactoryObservable;
 
 /**
  * Client for accessing Dynamics CRM Online using the Web API
- * 
+ *
  */
 public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
@@ -154,7 +154,7 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     /**
      * Create EntitySet Iterator request
-     * 
+     *
      * @param entirySet entirySet the EntitySet name which you want to retrieve records
      * @param queryOption
      * @return EntitySet iterator request
@@ -183,11 +183,11 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     /**
      * Retrieve records from EntitySet
-     * 
+     *
      * @param entitySet the EntitySet name which you want to retrieve records
      * @param queryOption
      * @return the entity set iterator object
-     * 
+     *
      * @throws ServiceUnavailableException
      */
     public ClientEntitySet retrieveEntities(QueryOptionConfig queryOption) throws AuthenticationException {
@@ -217,10 +217,10 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     /**
      * Create entity
-     * 
+     *
      * @param entitySet entitySet the EntitySet name which you want to create record
      * @param entity provided content for create
-     * 
+     *
      * @throws ServiceUnavailableException
      */
     public HttpResponse insertEntity(ClientEntity entity) throws ServiceUnavailableException {
@@ -233,10 +233,10 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * Update entity with provided content.
      * The PATCH method is used, so only given properties are updated.
      * Navigation link properties that must be set to null are updated by another DELETE calls.
-     * 
+     *
      * @param entity The payload containing properties to update
      * @param keySegment The id of the entity to update
-     * 
+     *
      * @throws ServiceUnavailableException
      */
     public HttpResponse updateEntity(ClientEntity entity, String keySegment) throws ServiceUnavailableException {
@@ -260,10 +260,10 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     /**
      * Deleted entity by key
-     * 
+     *
      * @param entitySet entitySet the EntitySet name which you want to delete records
      * @param keySegment Entity key segment
-     * 
+     *
      * @throws ServiceUnavailableException
      */
     public HttpResponse deleteEntity(String keySegment) throws ServiceUnavailableException {
@@ -294,7 +294,7 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     /**
      * Get entity type by EntitySet name
-     * 
+     *
      * @param entitySetName
      * @return entity type value
      */
@@ -326,7 +326,7 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     /**
      * Create a OData entity with entity type
-     * 
+     *
      * @return OData entity
      */
     public ClientEntity newEntity() {
@@ -419,9 +419,9 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     /**
      * Convert OData entity to HttpEntity type
-     * 
+     *
      * @param entity OData entity.
-     * 
+     *
      * @return An entity that can be sent or received with an HTTP message.
      * @throws
      */
@@ -445,11 +445,11 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     /**
      * Created and executes a request
-     * 
+     *
      * @param uri the request URI
      * @param httpEntity the entity to send.
      * @param method HTTP method
-     * 
+     *
      * @return the response to the request.
      * @throws ServiceUnavailableException
      */
@@ -507,9 +507,9 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * 200 retrieve entity success
      * 204 create/update/delete entity success without return
      * 201 create/update/delete entity success with return (not used in our component at present)
-     * 
+     *
      * @param statusCode HTTP status code
-     * 
+     *
      * @return success or not(true or false)
      */
     public boolean isResponseSuccess(int statusCode) {

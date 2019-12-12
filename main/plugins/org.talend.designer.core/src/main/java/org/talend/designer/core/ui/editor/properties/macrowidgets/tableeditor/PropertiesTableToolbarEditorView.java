@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,6 +49,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.cmd.PropertyTablePasteCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.TableController;
@@ -56,7 +57,7 @@ import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.Pr
 
 /**
  * $Id$
- * 
+ *
  */
 public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
@@ -66,7 +67,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /**
      * DOC amaumont MetadataToolbarEditorView constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param extendedTableViewer
@@ -79,7 +80,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createComponents(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -90,7 +91,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createAddPushButton()
      */
     @Override
@@ -198,7 +199,24 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
                      * "firePropertyChange(RETURNS_CHANGED, null, null)" in Node.
                      */
                     if (param.getFieldType().equals(EParameterFieldType.TABLE)) {
-                        node.setPropertyValue(param.getName(), param.getValue());
+                        boolean isTacokit = false;
+                        if (param instanceof ElementParameter) {
+                            Object sourceName = ((ElementParameter) param).getTaggedValue("org.talend.sdk.component.source"); //$NON-NLS-1$
+                            isTacokit = "tacokit".equalsIgnoreCase(String.valueOf(sourceName)); //$NON-NLS-1$
+                        }
+                        if (isTacokit) {
+                            Object paramValue = param.getValue();
+                            if (paramValue != null && paramValue instanceof List) {
+                                List<Map<String, Object>> beansList = new ArrayList<Map<String, Object>>();
+                                beansList.addAll(tableEditorModel.getBeansList());
+                                node.setPropertyValue(param.getName(), tableEditorModel.getBeforeChangeBeansList());
+                                node.setPropertyValue(param.getName(), beansList);
+                            } else {
+                                node.setPropertyValue(param.getName(), paramValue);
+                            }
+                        } else {
+                            node.setPropertyValue(param.getName(), param.getValue());
+                        }
                     }
                 }
             };
@@ -208,7 +226,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createAddAllPushButton()
      */
     @Override
@@ -339,7 +357,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createPastButton()
      */
     @Override
@@ -401,7 +419,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createExportPushButton()
      */
     @Override
@@ -411,7 +429,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.extended.ExtendedToolbarView#createPastButton()
      */
     @Override
@@ -474,7 +492,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createMoveUpPushButton()
      */
     @Override
@@ -487,7 +505,7 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createMoveDownPushButton()
      */
     @Override

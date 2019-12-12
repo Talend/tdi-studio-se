@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,7 +14,7 @@ package org.talend.designer.gefabstractmap.part;
 
 /**
  * created by wchen on 2013-1-15 Detailled comment
- * 
+ *
  */
 public abstract class VarTablePart extends MapperTablePart {
 

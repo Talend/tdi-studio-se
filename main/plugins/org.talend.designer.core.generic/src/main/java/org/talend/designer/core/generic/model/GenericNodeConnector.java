@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,20 +25,20 @@ import org.talend.designer.core.model.components.NodeConnector;
  *
  */
 public class GenericNodeConnector extends NodeConnector {
-    
+
     public static String INPUT_CONNECTOR = Connector.MAIN_NAME;
 
     private String genericConnectorType;
 
     private Connector myConnector;
-    
+
     private boolean output;
 
     private ComponentProperties componentProperties;
 
     /**
      * DOC nrousseau GenericNodeConnector constructor comment.
-     * 
+     *
      * @param parentNode
      */
     public GenericNodeConnector(INode parentNode, boolean output) {
@@ -48,7 +48,7 @@ public class GenericNodeConnector extends NodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.NodeConnector#getMaxLinkOutput()
      */
     @Override
@@ -72,7 +72,7 @@ public class GenericNodeConnector extends NodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.NodeConnector#getMinLinkInput()
      */
     @Override
@@ -82,7 +82,7 @@ public class GenericNodeConnector extends NodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.NodeConnector#getMinLinkOutput()
      */
     @Override
@@ -92,7 +92,7 @@ public class GenericNodeConnector extends NodeConnector {
 
     /**
      * DOC nrousseau Comment method "setGenericConnectorType".
-     * 
+     *
      * @param genericConnectorType
      */
     public void setGenericConnectorType(String genericConnectorType) {
@@ -117,7 +117,7 @@ public class GenericNodeConnector extends NodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.NodeConnector#getMenuName()
      */
     @Override
@@ -130,7 +130,7 @@ public class GenericNodeConnector extends NodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.NodeConnector#getName()
      */
     @Override
@@ -143,7 +143,7 @@ public class GenericNodeConnector extends NodeConnector {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.NodeConnector#getBaseSchema()
      */
     @Override
@@ -163,7 +163,7 @@ public class GenericNodeConnector extends NodeConnector {
         return null;
     }
 
-    
+
     /**
      * Getter for output.
      * @return the output

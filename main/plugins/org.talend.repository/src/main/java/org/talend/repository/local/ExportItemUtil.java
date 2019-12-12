@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -208,7 +208,7 @@ public class ExportItemUtil {
 
     /**
      * export the sected TOS model elements to the destination
-     * 
+     *
      * @param destination zip file or folder to store the exported elements
      * @param items, the items to be exported
      * @param exportAllVersions whether all the versions are export or only the selected once
@@ -223,7 +223,7 @@ public class ExportItemUtil {
     /**
      * return a collection of items that have the same id as the input items params and a different version. <br>
      * WARNING : when calling this method the global TOS model will be updated with all the items versions
-     * 
+     *
      * @param items all the items to get the different version of.
      * @return list of all the items with same id as input items and different versions
      * @throws PersistenceException if could not load some items //MOD sgandon 31/03/2010 bug 12229: changed
@@ -257,7 +257,7 @@ public class ExportItemUtil {
 
     /**
      * DOC chuang Comment method "sortItemsByProject".
-     * 
+     *
      * @param items
      * @param itemProjectMap
      * @return
@@ -320,7 +320,7 @@ public class ExportItemUtil {
                 tdmService = (ITransformService) GlobalServiceRegister.getDefault().getService(ITransformService.class);
             }
             itemProjectMap.clear();
-            Set<String> jarNameList = new HashSet<String>();
+            Map<String,String> jarNameAndUrl = new HashMap<String,String>();
             Iterator<Item> iterator = allItems.iterator();
             Set<String> projectHasTdm = new HashSet<String>();
             while (iterator.hasNext()) {
@@ -362,7 +362,14 @@ public class ExportItemUtil {
                 XmiResourceManager localRepositoryManager = ProxyRepositoryFactory.getInstance()
                         .getRepositoryFactoryFromProvider().getResourceManager();
                 IPath propertyPath = null;
-                for (Resource curResource : localRepositoryManager.getAffectedResources(item.getProperty())) {
+                Property property = item.getProperty();
+                List<Resource> resources = localRepositoryManager.getAffectedResources(property);
+                if (resources.isEmpty()) {
+                    IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getSpecificVersion(property.getId(),
+                            property.getVersion(), true);
+                    resources = localRepositoryManager.getAffectedResources(obj.getProperty());
+                }
+                for (Resource curResource : resources) {
                     URI uri = curResource.getURI();
                     IPath relativeItemPath = URIHelper.convert(uri).makeRelative();
                     Project project = ProjectManager.getInstance().getProject(item);
@@ -402,7 +409,7 @@ public class ExportItemUtil {
                     List list = ((RoutineItem) item).getImports();
                     for (int i = 0; i < list.size(); i++) {
                         String jarName = ((IMPORTTypeImpl) list.get(i)).getMODULE();
-                        jarNameList.add(jarName.toString());
+                        jarNameAndUrl.put(jarName, ((IMPORTTypeImpl) list.get(i)).getMVN());
                     }
 
                 }
@@ -445,9 +452,10 @@ public class ExportItemUtil {
             // add the routines of the jars at the end, to add them only once in the export.
             IPath libPath = getProjectOutputPath().append(JavaUtils.JAVA_LIB_DIRECTORY);
             String libAbsPath = new Path(destinationDirectory.toString()).append(libPath.toString()).toPortableString();
-            for (String jarName : jarNameList) {
+            for (String jarName : jarNameAndUrl.keySet()) {
                 if (repositoryBundleService.contains(jarName)) {
-                    repositoryBundleService.retrieve(jarName, libAbsPath, new NullProgressMonitor());
+                	String mavenUri =  jarNameAndUrl.get(jarName);
+                    repositoryBundleService.retrieve(jarName, mavenUri, libAbsPath, new NullProgressMonitor());
                     toExport.put(new File(libAbsPath, jarName), libPath.append(jarName));
                 }
             }
@@ -473,7 +481,7 @@ public class ExportItemUtil {
         IPath proTargetPath = new Path(destinationDirectory.getAbsolutePath()).append(proRelativePath);
 
         copyAndAddResource(toExport, proSourcePath, proTargetPath, proRelativePath);
-        
+
         IPath proSettingFolderPath = this.getProjectSettingLocationPath(project.getTechnicalLabel());
         File proSettingFolder = new File(proSettingFolderPath.toPortableString());
         if (proSettingFolder.exists()) {
@@ -481,7 +489,7 @@ public class ExportItemUtil {
             File proSettingSourcefile = new File(proSettingSourcePath.toPortableString());
             if (proSettingSourcefile.exists()) {
                 IPath projectSettingFolderPath = getProjectSettingFolderPath();
-                
+
                 IPath proSettingRelativePath = projectSettingFolderPath.append(File.separator)
                         .append(FileConstants.PROJECTSETTING_FILE_NAME);
                 IPath proSettingTargetPath = new Path(destinationDirectory.getAbsolutePath()).append(proSettingRelativePath);
@@ -490,7 +498,7 @@ public class ExportItemUtil {
                     projectSetttingTargetFolder.mkdirs();
                 }
                 copyAndAddResource(toExport, proSettingSourcePath, proSettingTargetPath, proSettingRelativePath);
-                
+
                 IPath proRelationShipSourcePath = proSettingFolderPath.append(File.separator).append(FileConstants.RELATIONSHIP_FILE_NAME);
                 File proRelationShipSourceFile = new File(proRelationShipSourcePath.toPortableString());
                 if (proRelationShipSourceFile.exists()) {
@@ -563,13 +571,13 @@ public class ExportItemUtil {
     private IPath getProjectLocationPath(String technicalLabel) {
         return getEclipseProject(technicalLabel).getLocation();
     }
-    
+
     private IPath getProjectSettingLocationPath(String technicalLabel) {
         IPath projectPath = getProjectLocationPath(technicalLabel);
         IPath projectSettingFolderPath = projectPath.append(File.separator).append(FileConstants.SETTINGS_FOLDER_NAME);
         return projectSettingFolderPath;
     }
-    
+
     private IPath getProjectSettingFolderPath () {
         IPath projectOutPath = getProjectOutputPath();
         IPath projectSettingFolderPath = projectOutPath.append(File.separator).append(FileConstants.SETTINGS_FOLDER_NAME);

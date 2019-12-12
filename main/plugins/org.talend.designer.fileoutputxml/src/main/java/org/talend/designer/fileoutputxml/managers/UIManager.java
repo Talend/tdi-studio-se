@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,9 +25,9 @@ import org.talend.metadata.managment.ui.wizard.metadata.xml.node.FOXTreeNode;
 
 /**
  * UI Manager<br/>
- * 
+ *
  * $Id: UIManager.java,v 1.1 2007/06/12 07:20:38 gke Exp $
- * 
+ *
  */
 public class UIManager {
 
@@ -39,7 +39,7 @@ public class UIManager {
 
     /**
      * UIManager constructor .
-     * 
+     *
      * @param foxManager
      */
     public UIManager(FOXManager foxManager) {
@@ -48,7 +48,7 @@ public class UIManager {
 
     /**
      * Getter for foxManager.
-     * 
+     *
      * @return the foxManager
      */
     public FOXManager getFoxManager() {
@@ -57,7 +57,7 @@ public class UIManager {
 
     /**
      * Sets the foxManager.
-     * 
+     *
      * @param foxManager the foxManager to set
      */
     public void setFoxManager(FOXManager foxManager) {
@@ -66,7 +66,7 @@ public class UIManager {
 
     /**
      * Getter for foxUI.
-     * 
+     *
      * @return the foxUI
      */
     public FOXUI getFoxUI() {
@@ -75,7 +75,7 @@ public class UIManager {
 
     /**
      * Sets the foxUI.
-     * 
+     *
      * @param foxUI the foxUI to set
      */
     public void setFoxUI(FOXUI foxUI) {
@@ -84,7 +84,7 @@ public class UIManager {
 
     /**
      * Getter for uiResponse.
-     * 
+     *
      * @return the uiResponse
      */
     public int getUiResponse() {
@@ -93,7 +93,7 @@ public class UIManager {
 
     /**
      * Sets the uiResponse.
-     * 
+     *
      * @param uiResponse the uiResponse to set
      */
     public void setUiResponse(int uiResponse) {
@@ -102,7 +102,7 @@ public class UIManager {
 
     /**
      * DOC qiang.zhang Comment method "closeFOX".
-     * 
+     *
      * @param reponse
      */
     public void closeFOX(int response) {
@@ -126,7 +126,7 @@ public class UIManager {
     }
 
     /**
-     * 
+     *
      * DOC xzhang Comment method "autoMap".
      */
     public void autoMap() {

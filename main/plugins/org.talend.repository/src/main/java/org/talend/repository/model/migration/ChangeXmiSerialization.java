@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,7 +34,7 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.repository.utils.XmiResourceManager;
 
 /**
- * 
+ *
  */
 public class ChangeXmiSerialization extends AbstractProjectMigrationTask {
 
@@ -116,7 +116,7 @@ public class ChangeXmiSerialization extends AbstractProjectMigrationTask {
     }
 
     /**
-     * 
+     *
      */
     private final class PropertiesResourcesCollector implements IResourceVisitor {
 

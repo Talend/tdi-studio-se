@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -101,9 +101,9 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  * @deprecated use MultipleThreadDynamicComposite instead.
  */
 @Deprecated
@@ -163,7 +163,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * ftang Comment method "showQueryStoreRepositoryList".
-     * 
+     *
      * @param show
      */
     private void showQueryStoreRepositoryList(boolean show) {
@@ -177,7 +177,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * ftang Comment method "showPropertyRepositoryList".
-     * 
+     *
      * @param show boolean
      */
     private void showPropertyRepositoryList(boolean show, boolean extra) {
@@ -266,7 +266,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Sort the element order of the inputed list.
-     * 
+     *
      * @param compareList
      */
     private void sortList(List<String> compareList) {
@@ -593,7 +593,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * qzhang Comment method "addOrderDisplayNames".
-     * 
+     *
      * @param connectionValuesList
      * @param connectionStringList
      * @param key
@@ -619,7 +619,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * ftang Comment method "getElement".
-     * 
+     *
      * @return an instance of Element
      */
     @Override
@@ -628,7 +628,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
     }
 
     /**
-     * 
+     *
      */
     private boolean checkErrorsWhenViewRefreshed;
 
@@ -854,7 +854,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * DOC nrousseau Comment method "estimatePropertyHeightSize".
-     * 
+     *
      * @param maxRow
      * @param listParam
      * @param tabbedPropertyComposite
@@ -953,7 +953,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#
      * createControls(org.eclipse.swt.widgets.Composite, org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
      */
@@ -1025,7 +1025,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
     // private ISelection lastSelection;
     /*
      * @Override (non-Java)
-     * 
+     *
      * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection# setInput(org.eclipse.ui.IWorkbenchPart,
      * org.eclipse.jface.viewers.ISelection)
      */
@@ -1117,7 +1117,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Set the section of the tabbed property.
-     * 
+     *
      * @param section
      */
     public DynamicTabbedPropertySection(final EComponentCategory section) {
@@ -1142,7 +1142,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * yzhang Comment method "setCurRowSize" Sets the curRowSize.
-     * 
+     *
      * @param curRowSize int
      */
     @Override
@@ -1152,7 +1152,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * dev Comment method "getRepositoryTableMap".
-     * 
+     *
      * @return Map
      */
     public Map<String, IMetadataTable> getRepositoryTableMap() {
@@ -1164,7 +1164,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * dev Comment method "getRepositoryConnectionItemMap".
-     * 
+     *
      * @return Map
      */
     public Map<String, ConnectionItem> getRepositoryConnectionItemMap() {
@@ -1173,7 +1173,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for composite.
-     * 
+     *
      * @return the composite
      */
     @Override
@@ -1183,7 +1183,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for currentComponent.
-     * 
+     *
      * @return the currentComponent
      */
     public String getCurrentComponent() {
@@ -1192,7 +1192,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for curRowSize.
-     * 
+     *
      * @return the curRowSize
      */
     @Override
@@ -1202,7 +1202,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for hashCurControls.
-     * 
+     *
      * @return the hashCurControls
      */
     @Override
@@ -1212,7 +1212,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for part.
-     * 
+     *
      * @return the part
      */
     @Override
@@ -1222,7 +1222,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for section.
-     * 
+     *
      * @return the section
      */
     @Override
@@ -1232,7 +1232,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for repositoryQueryStoreMap.
-     * 
+     *
      * @return the repositoryQueryStoreMap
      */
     public Map<String, Query> getRepositoryQueryStoreMap() {
@@ -1241,7 +1241,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Get the command stack of the Gef editor.
-     * 
+     *
      * @return
      */
     protected CommandStack getCommandStack() {
@@ -1310,7 +1310,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * qzhang Comment method "getDefaultRepository".
-     * 
+     *
      * @return
      */
     private String getDefaultRepository(IElementParameter baseParam, boolean istable, String defaultPropertyValue) {
@@ -1376,7 +1376,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for tablesMap.
-     * 
+     *
      * @return the tablesMap
      */
     public Map<String, List<String>> getTablesMap() {
@@ -1386,7 +1386,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for queriesMap.
-     * 
+     *
      * @return the queriesMap
      */
     public Map<String, List<String>> getQueriesMap() {
@@ -1396,7 +1396,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for tableIdAndDbTypeMap.
-     * 
+     *
      * @return the tableIdAndDbTypeMap
      */
     @Override
@@ -1406,7 +1406,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for tableIdAndDbSchemaMap.
-     * 
+     *
      * @return the tableIdAndDbSchemaMap
      */
     @Override
@@ -1416,7 +1416,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for lastCompositeSize.
-     * 
+     *
      * @return the lastCompositeSize
      */
     public int getLastCompositeSize() {
@@ -1425,7 +1425,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#aboutToBeShown()
      */
     @Override
@@ -1445,7 +1445,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
 
     /**
      * Getter for lastPropertyUsed.
-     * 
+     *
      * @return the lastPropertyUsed
      */
     public static DynamicTabbedPropertySection getLastPropertyUsed() {

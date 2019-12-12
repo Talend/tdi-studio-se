@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,9 +20,9 @@ import org.talend.metadata.managment.ui.wizard.metadata.xml.node.FOXTreeNode;
 
 /**
  * bqian Disconnect the schema to xml tree. <br/>
- * 
+ *
  * $Id: DisconnectAction.java,v 1.1 2007/06/12 07:20:38 gke Exp $
- * 
+ *
  */
 public class DisconnectAction extends SelectionProviderAction {
 
@@ -33,7 +33,7 @@ public class DisconnectAction extends SelectionProviderAction {
 
     /**
      * CreateNode constructor comment.
-     * 
+     *
      * @param provider
      * @param text
      */
@@ -50,7 +50,7 @@ public class DisconnectAction extends SelectionProviderAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
@@ -68,7 +68,7 @@ public class DisconnectAction extends SelectionProviderAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.actions.SelectionProviderAction#selectionChanged(org.eclipse.jface.viewers.IStructuredSelection)
      */

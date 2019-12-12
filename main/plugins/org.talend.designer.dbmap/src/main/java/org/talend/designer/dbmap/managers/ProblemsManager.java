@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,9 +42,9 @@ import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ProblemsManager {
 
@@ -75,7 +75,7 @@ public class ProblemsManager {
 
     /**
      * DOC amaumont ProblemsManager constructor comment.
-     * 
+     *
      * @param manager
      */
     public ProblemsManager(final MapperManager mapperManager) {
@@ -138,7 +138,7 @@ public class ProblemsManager {
     }
 
     /**
-     * 
+     *
      * Check all problems and save in cache for Java only.
      */
     public void checkProblems() {
@@ -149,7 +149,7 @@ public class ProblemsManager {
 
     /**
      * DOC amaumont Comment method "checkExpressionSyntax".
-     * 
+     *
      * @param expression
      */
     public List<Problem> checkExpressionSyntax(String expression) {
@@ -159,7 +159,7 @@ public class ProblemsManager {
 
     /**
      * DOC amaumont Comment method "checkProblemsForAllEntries".
-     * 
+     *
      * @param forceRefreshData TODO
      */
     public void checkProblemsForAllEntriesOfAllTables(boolean forceRefreshData) {
@@ -177,7 +177,7 @@ public class ProblemsManager {
 
     /**
      * DOC amaumont Comment method "processAllExpressions".
-     * 
+     *
      * @param forceRefreshData TODO
      */
     @SuppressWarnings("unchecked")

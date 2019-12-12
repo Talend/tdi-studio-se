@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,6 +14,7 @@ package org.talend.designer.fileoutputxml.action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -24,9 +25,11 @@ import org.eclipse.ui.actions.SelectionProviderAction;
 import org.eclipse.xsd.XSDSchema;
 import org.talend.commons.runtime.xml.XmlUtil;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
 import org.talend.datatools.xml.utils.ATreeNode;
 import org.talend.datatools.xml.utils.SchemaPopulationUtil;
 import org.talend.datatools.xml.utils.XSDPopulationUtil2;
+import org.talend.designer.fileoutputxml.i18n.Messages;
 import org.talend.designer.fileoutputxml.ui.FOXUI;
 import org.talend.metadata.managment.ui.dialog.RootNodeSelectDialog;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.node.Attribute;
@@ -37,11 +40,13 @@ import org.talend.metadata.managment.ui.wizard.metadata.xml.utils.TreeUtil;
 
 /**
  * bqian Create a xml node. <br/>
- * 
+ *
  * $Id: ImportTreeFromXMLAction.java,v 1.1 2007/06/12 07:20:38 gke Exp $
- * 
+ *
  */
 public class ImportTreeFromXMLAction extends SelectionProviderAction {
+
+    private static final String LINEFEED = "\n";//$NON-NLS-1$
 
     // the xml viewer, see FOXUI.
     private TreeViewer xmlViewer;
@@ -50,7 +55,7 @@ public class ImportTreeFromXMLAction extends SelectionProviderAction {
 
     /**
      * CreateNode constructor comment.
-     * 
+     *
      * @param provider
      * @param text
      */
@@ -138,9 +143,9 @@ public class ImportTreeFromXMLAction extends SelectionProviderAction {
     }
 
     /**
-     * 
+     *
      * wzhang Comment method "getSelectedSchema".
-     * 
+     *
      * @return
      */
     private String getSelectedSchema() {
@@ -156,7 +161,7 @@ public class ImportTreeFromXMLAction extends SelectionProviderAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
@@ -172,19 +177,32 @@ public class ImportTreeFromXMLAction extends SelectionProviderAction {
         try {
             if (XmlUtil.isXSDFile(filePath)) {
                 XSDSchema xsdSchema = TreeUtil.getXSDSchema(filePath);
-                List<ATreeNode> list = new XSDPopulationUtil2().getAllRootNodes(xsdSchema);
-                if (list.size() > 1) {
-                    RootNodeSelectDialog dialog = new RootNodeSelectDialog(xmlViewer.getControl().getShell(), list);
-                    if (dialog.open() == IDialogConstants.OK_ID) {
-                        ATreeNode selectedNode = dialog.getSelectedNode();
-                        newInput = TreeUtil.getFoxTreeNodesByRootNode(xsdSchema, selectedNode);
-                        changed = true;
-                    } else {
-                        changed = false;
+
+                // check if there have some (<xs:import>) import reference schema xsd file don't exist
+                Set<String> notExistImportSchema = TreeUtil.getNotExistImportSchema(filePath, xsdSchema);
+                if (!notExistImportSchema.isEmpty()) {
+                    StringBuffer detail = new StringBuffer();
+                    detail.append(Messages.getString("ImportTreeFromXMLAction.schemaFileNotExistDetailTitle")).append(LINEFEED);//$NON-NLS-1$
+                    for (String xsdfilePath : notExistImportSchema) {
+                        detail.append(xsdfilePath).append(LINEFEED);
                     }
-                } else {
-                    newInput = TreeUtil.getFoxTreeNodesByRootNode(xsdSchema, list.get(0));
-                    changed = true;
+                    new ErrorDialogWidthDetailArea(xmlViewer.getControl().getShell(), Messages.PLUGIN_ID,
+                            Messages.getString("ImportTreeFromXMLAction.ImportSchemaNotExistError"), detail.toString());//$NON-NLS-1$
+                }else {
+                    List<ATreeNode> list = new XSDPopulationUtil2().getAllRootNodes(xsdSchema);
+                    if (list.size() > 1) {
+                        RootNodeSelectDialog dialog = new RootNodeSelectDialog(xmlViewer.getControl().getShell(), list);
+                        if (dialog.open() == IDialogConstants.OK_ID) {
+                            ATreeNode selectedNode = dialog.getSelectedNode();
+                            newInput = TreeUtil.getFoxTreeNodesByRootNode(xsdSchema, selectedNode);
+                            changed = true;
+                        } else {
+                            changed = false;
+                        }
+                    } else {
+                        newInput = TreeUtil.getFoxTreeNodesByRootNode(xsdSchema, list.get(0));
+                        changed = true;
+                    }
                 }
             } else {
                 newInput = treeNodeAdapt(filePath);
@@ -217,7 +235,7 @@ public class ImportTreeFromXMLAction extends SelectionProviderAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.actions.SelectionProviderAction#selectionChanged(org.eclipse.jface.viewers.IStructuredSelection)
      */

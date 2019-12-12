@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,14 +23,14 @@ import org.talend.designer.abstractmap.managers.MapDataDelegateHelper;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExternalMapperData.java 1 2006-09-29 17:06:40Z nrousseau $
- * 
+ *
  */
 public class ExternalDbMapData implements IExternalData {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 4877887839142463534L;
 
@@ -79,7 +79,7 @@ public class ExternalDbMapData implements IExternalData {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
     @SuppressWarnings("unchecked")
@@ -112,17 +112,17 @@ public class ExternalDbMapData implements IExternalData {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IExternalData#getJoinTableNames(java.lang.String)
      */
     public List<String> getJoinedTableNames(String mainTable) {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -146,7 +146,7 @@ public class ExternalDbMapData implements IExternalData {
         if(this.varsTables.size() != other.varsTables.size()){
             return false;
         }
-        
+
         for(ExternalDbMapTable inTable:inputTables){
             boolean found = false;
             for(ExternalDbMapTable otherTable:other.inputTables){
@@ -162,7 +162,7 @@ public class ExternalDbMapData implements IExternalData {
                 return false;
             }
         }
-        
+
         for(ExternalDbMapTable outTable:outputTables){
             boolean found = false;
             for(ExternalDbMapTable otherTable:other.outputTables){
@@ -178,7 +178,7 @@ public class ExternalDbMapData implements IExternalData {
                 return false;
             }
         }
-        
+
         for(ExternalDbMapTable varTable:varsTables){
             boolean found = false;
             for(ExternalDbMapTable var:other.varsTables){

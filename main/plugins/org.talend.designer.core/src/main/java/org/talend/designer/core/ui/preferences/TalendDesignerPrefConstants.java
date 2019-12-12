@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,9 +14,9 @@ package org.talend.designer.core.ui.preferences;
 
 /**
  * Core preferences. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class TalendDesignerPrefConstants {
 
@@ -67,6 +67,8 @@ public class TalendDesignerPrefConstants {
     public static final String EDITOR_LINESTYLE = "editorLineStyle "; //$NON-NLS-1$
 
     public static final String DUPLICATE_TESTCASE = "duplicateTestCases "; //$NON-NLS-1$
+    
+    public static final String PROPAGATE_CONTEXT = "propagateContext"; //$NON-NLS-1$
 
     public static final String SCHEMA_OPTIONS = "schemaOptions"; //$NON-NLS-1$
 

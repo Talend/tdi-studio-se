@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -60,7 +60,7 @@ import org.talend.repository.ui.actions.ShowStandardAction;
 
 /**
  * DOC qwei class global comment. Detailled comment
- * 
+ *
  * @deprecated see ProjectSettingDialog
  */
 @Deprecated
@@ -87,7 +87,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /**
      * DOC qwei PaletteSettingsDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
 
@@ -106,7 +106,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
      */
     @Override
@@ -118,7 +118,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -149,7 +149,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /**
      * qwei Comment method "addViewer".
-     * 
+     *
      * @param parent
      */
     private void addTreeViewer(ThreeCompositesSashForm parent) {
@@ -191,7 +191,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /**
      * DOC qwei Comment method "getFilterForHiddenComponent". isVisible false for left viewer; true for right viewer
-     * 
+     *
      * @return
      */
     private ViewerFilter getFilterForComponent(final boolean isVisible) {
@@ -217,7 +217,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /**
      * Check if this folder needs to be showed. *
-     * 
+     *
      * @param entry
      * @param isVisible
      * @return
@@ -315,7 +315,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /**
      * set the selected component as visible or not
-     * 
+     *
      * @param selection
      * @param b
      */
@@ -396,7 +396,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /**
      * qwei Comment method "getViewer".
-     * 
+     *
      * @return
      */
     public TreeViewer getViewer() {
@@ -405,7 +405,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -418,7 +418,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     @Override
@@ -437,7 +437,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#buttonPressed(int)
      */
     @Override
@@ -459,7 +459,7 @@ public class PaletteSettingsDialog extends Dialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#cancelPressed()
      */
     @Override

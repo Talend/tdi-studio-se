@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -83,7 +83,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /**
      * yzhang AdvancedContextComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -178,7 +178,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /**
      * yzhang Comment method "calculateComboContent".
-     * 
+     *
      * @param tableViewer
      * @param legalParameters
      * @return
@@ -193,7 +193,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getComposite()
      */
     @Override
@@ -203,7 +203,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getCurRowSize()
      */
     @Override
@@ -213,7 +213,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getElement()
      */
     @Override
@@ -223,7 +223,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getHashCurControls()
      */
     @Override
@@ -233,7 +233,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getPart()
      */
     @Override
@@ -243,7 +243,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getQueriesMap()
      */
     public Map<String, List<String>> getQueriesMap() {
@@ -252,7 +252,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getRepositoryAliasName(org
      * .talend.core.model.properties.ConnectionItem)
@@ -298,7 +298,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getSection()
      */
     @Override
@@ -308,7 +308,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getTableIdAndDbSchemaMap()
      */
@@ -319,7 +319,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getTableIdAndDbTypeMap()
      */
@@ -330,7 +330,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getTablesMap()
      */
     public Map<String, List<String>> getTablesMap() {
@@ -339,7 +339,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#refresh()
      */
     @Override
@@ -351,7 +351,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#setCurRowSize(int)
      */
     @Override
@@ -360,7 +360,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
     }
 
     /**
-     * 
+     *
      * ggu AdvancedContextTableView class global comment. Detailled comment
      */
     class AdvancedContextTableView extends AbstractDataTableEditorView<IElementParameter> {
@@ -380,7 +380,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView#createColumns(org.talend.commons
          * .ui.swt.tableviewer.TableViewerCreator, org.eclipse.swt.widgets.Table)
@@ -498,7 +498,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
         /**
          * yzhang Comment method "refreshComboContent".
-         * 
+         *
          * @param tableViewer
          * @param legalParameters
          */
@@ -644,13 +644,13 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
         }
 
         /**
-         * 
+         *
          * YeXiaowei Comment method "findRadioParamInSameGroup".
-         * 
+         *
          * @param param
          * @return
          */
-        
+
 
         /**
          * yzhang AdvancedContextComposite class global comment. Detailled comment
@@ -659,7 +659,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
             /**
              * yzhang ComboBoxCellEditor constructor comment.
-             * 
+             *
              * @param composite
              * @param list
              * @param labelProvider

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,7 +48,6 @@ import org.eclipse.ui.internal.wizards.datatransfer.TarEntry;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
-import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
@@ -61,6 +60,7 @@ import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
+import org.talend.repository.items.importexport.ui.managers.TalendZipLeveledStructureProvider;
 import org.talend.repository.model.migration.ChangeProjectTechinicalNameMigrationTask;
 import org.talend.repository.ui.actions.importproject.ImportProjectBean;
 import org.talend.repository.ui.actions.importproject.ImportProjectHelper;
@@ -85,11 +85,11 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
     private String sourcePath;
 
     private ILeveledImportStructureProvider structureProvider;
-    
+
     private Map<String,String> oldToNewSource = new HashMap<>();
 
     /**
-     * 
+     *
      * DOC guanglong.du TalendWizardProjectsImportPage class global comment. Detailled comment
      */
     public class TalendProjectRecord {
@@ -110,7 +110,7 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
 
         /**
          * Create a record for a project based on the info in the file.
-         * 
+         *
          * @param file
          */
         TalendProjectRecord(File file) {
@@ -181,7 +181,7 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
 
         /**
          * Returns whether the given project description file path is in the default location for a project
-         * 
+         *
          * @param path The path to examine
          * @return Whether the given path is the default location for a project
          */
@@ -196,7 +196,7 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
 
         /**
          * Get the name of the project
-         * 
+         *
          * @return String
          */
         public String getProjectName() {
@@ -205,7 +205,7 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
 
         /**
          * Gets the label to be used when rendering this project record in the UI.
-         * 
+         *
          * @return String the label
          * @since 3.4
          */
@@ -273,7 +273,7 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage#updateProjectsList(java.lang.String)
      */
     @Override
@@ -303,7 +303,7 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
         }
     }
     /**
-     * 
+     *
      * DOC xlwang Comment method "items2Projects".
      */
     public String items2Projects(String sourcePath) throws Exception {
@@ -401,7 +401,7 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
                 if (sourceFile == null) {
                     return new ProjectRecord[0];
                 }
-                structureProvider = new ZipLeveledStructureProvider(sourceFile);
+                structureProvider = new TalendZipLeveledStructureProvider(sourceFile);
                 Object child = structureProvider.getRoot();
                 collectProjectFilesFromProvider(files, child, 0);
                 selected = new ProjectRecord[files.size()];
@@ -470,9 +470,9 @@ public class TalendWizardProjectsImportPage extends AbstractWizardProjectsImport
 
     /**
      * This method must not be called outside the workbench.
-     * 
+     *
      * Utility method for creating status.
-     * 
+     *
      * @param severity
      * @param message
      * @return {@link IStatus}

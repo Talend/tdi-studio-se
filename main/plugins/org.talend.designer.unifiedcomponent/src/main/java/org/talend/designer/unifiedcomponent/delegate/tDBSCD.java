@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,7 +23,7 @@ public class tDBSCD implements IComponentDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.unifiedcomponent.comp.service.IUnifiedComponent#getName()
      */
     @Override
@@ -33,7 +33,7 @@ public class tDBSCD implements IComponentDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.unifiedcomponent.comp.service.IUnifiedComponent#getFamily()
      */
     @Override
@@ -43,7 +43,7 @@ public class tDBSCD implements IComponentDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.unifiedcomponent.comp.service.IUnifiedComponent#getImage()
      */
     @Override

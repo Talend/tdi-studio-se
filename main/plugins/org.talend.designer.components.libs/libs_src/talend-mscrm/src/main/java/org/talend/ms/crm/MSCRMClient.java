@@ -22,7 +22,8 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.transport.http.HTTPTransportConstants;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.axis2.transport.http.HttpTransportProperties.ProxyProperties;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.datacontract.schemas._2004._07.system_collections_generic.KeyValuePairOfEndpointTypestringztYlk6OT;
 import org.talend.ms.crm.sdk.OnlineAuthenticationPolicy;
 import org.talend.ms.crm.sdk.OrganizationServiceStubWrapper;
@@ -44,7 +45,7 @@ import com.microsoft.schemas.xrm._2011.contracts.discovery.RetrieveOrganizationR
 
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -57,11 +58,11 @@ import com.microsoft.schemas.xrm._2011.contracts.discovery.RetrieveOrganizationR
 
 /**
  * created by bchen on Jun 26, 2013 Detailled comment
- * 
+ *
  */
 public class MSCRMClient {
 
-    static Logger logger = Logger.getLogger(MSCRMClient.class.getName());
+    static Logger logger = LoggerFactory.getLogger(MSCRMClient.class.getName());
 
     /**
      * Microsoft account (e.g. youremail@live.com) or Microsoft Office 365 (Org ID e.g.
@@ -127,7 +128,7 @@ public class MSCRMClient {
      * https://dev.crm.dynamics.com/XRMServices/2011/Discovery.svc Microsoft office 365, discovery service url is
      * https://disco.crm.dynamics.com/XRMServices/2011/Discovery.svc To use appropriate discovery service url for other
      * environments refer http://technet.microsoft.com/en-us/library/gg309401.aspx
-     * 
+     *
      * @throws Exception
      */
     public OrganizationServiceStub doGetOnlineConnection(String discoveryServiceURL) throws Exception {

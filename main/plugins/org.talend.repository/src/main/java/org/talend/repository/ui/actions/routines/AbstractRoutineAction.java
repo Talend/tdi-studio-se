@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,9 +37,9 @@ import org.talend.repository.ui.actions.AContextualAction;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public abstract class AbstractRoutineAction extends AContextualAction {
 
@@ -47,7 +47,7 @@ public abstract class AbstractRoutineAction extends AContextualAction {
 
     /**
      * DOC smallet Comment method "openRoutineEditor".
-     * 
+     *
      * @param routineItem
      * @throws SystemException
      * @throws PartInitException
@@ -121,7 +121,7 @@ public abstract class AbstractRoutineAction extends AContextualAction {
             }
             RepositoryEditorInput input = new RoutineEditorInput(file, routineItem);
             input.setReadOnly(readOnly);
-            talendEditor = page.openEditor(input, talendEditorID); 
+            talendEditor = page.openEditor(input, talendEditorID);
         }
 
         return talendEditor;

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,15 +19,21 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaSourceViewer;
+import org.eclipse.jdt.internal.ui.text.JavaCompositeReconcilingStrategy;
+import org.eclipse.jdt.internal.ui.text.JavaReconciler;
 import org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds;
 import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
 import org.eclipse.jdt.ui.text.JavaTextTools;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.FileEditorInput;
 import org.talend.commons.exception.SystemException;
@@ -48,9 +54,9 @@ import org.talend.designer.core.ui.views.problems.Problems;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TalendJavaEditor.java 1 2007-1-18 下午03:26:08 +0000 (下午03:26:08, 2007-1-18 2007) yzhang $
- * 
+ *
  */
 public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCheckableEditor {
 
@@ -60,7 +66,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
     private String currentSelection;
 
     private IProcess2 process;
-    
+
     private boolean initialized = false;
 
     /**
@@ -74,7 +80,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
     /*
      * Over write this method force to add complier to this editor. Beacuse by default if the editor is not editable,
      * the complier for error check will not installed.
-     * 
+     *
      * @see
      * org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor#createPartControl(org.eclipse.swt.widgets.Composite)
      */
@@ -86,7 +92,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
 
     /*
      * Edit is not allowed.
-     * 
+     *
      * @see org.eclipse.ui.texteditor.AbstractTextEditor#isEditable()
      */
     @Override
@@ -96,7 +102,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
 
     /*
      * Check the syntax for java code.
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.ISyntaxCheckable#validateSyntax()
      */
     @Override
@@ -192,7 +198,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
 
     /*
      * Save as is not allowed.
-     * 
+     *
      * @see org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor#isSaveAsAllowed()
      */
     @Override
@@ -202,7 +208,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor#dispose()
      */
     @Override
@@ -213,10 +219,10 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * DOC yzhang Comment method "isDisposed".
-     * 
+     *
      * @return Whether this editor had been disposed.
      */
     @Override
@@ -226,7 +232,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
 
     /**
      * Getter for unit.
-     * 
+     *
      * @return the unit
      */
     public org.eclipse.jdt.core.ICompilationUnit getUnit() {
@@ -235,7 +241,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
 
     /**
      * DOC nrousseau Comment method "placeCursorTo".
-     * 
+     *
      * @param string
      */
     public void placeCursorTo(String currentSelection) {
@@ -245,7 +251,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#createJavaSourceViewerConfiguration()
      */
     @Override
@@ -271,7 +277,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor#rememberSelection()
      */
     @Override
@@ -281,7 +287,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor#restoreSelection()
      */
     @Override
@@ -296,6 +302,42 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
         }
         super.initializeDragAndDrop(viewer);
     }
-    
-    
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor#createJavaSourceViewer(org.eclipse.swt.widgets.
+     * Composite, org.eclipse.jface.text.source.IVerticalRuler, org.eclipse.jface.text.source.IOverviewRuler, boolean,
+     * int, org.eclipse.jface.preference.IPreferenceStore)
+     */
+    @Override
+    protected ISourceViewer createJavaSourceViewer(Composite parent, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler,
+            boolean isOverviewRulerVisible, int styles, IPreferenceStore store) {
+        return new TalendAdaptedSourceViewer(parent, verticalRuler, overviewRuler, isOverviewRulerVisible, styles, store);
+    }
+
+    @SuppressWarnings("restriction")
+    protected class TalendAdaptedSourceViewer extends AdaptedSourceViewer {
+
+        public TalendAdaptedSourceViewer(Composite parent, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler,
+                boolean showAnnotationsOverview, int styles, IPreferenceStore store) {
+            super(parent, verticalRuler, overviewRuler, showAnnotationsOverview, styles, store);
+        }
+
+        @Override
+        public void configure(SourceViewerConfiguration configuration) {
+            super.configure(configuration);
+            if (fReconciler == null) {
+                JavaCompositeReconcilingStrategy strategy = new JavaCompositeReconcilingStrategy(this, TalendJavaEditor.this,
+                        configuration.getConfiguredDocumentPartitioning(this));
+                JavaReconciler reconciler = new JavaReconciler(TalendJavaEditor.this, strategy, false);
+                reconciler.setIsAllowedToModifyDocument(false);
+                reconciler.setDelay(500);
+                fReconciler = reconciler;
+                fReconciler.install(this);
+            }
+        }
+    }
+
+
 }

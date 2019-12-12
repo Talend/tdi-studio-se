@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,23 +34,23 @@ public class HBaseLoad<T> {
 	public static JavaRDD<List<Object>> hbaseRDD(JavaSparkContext ctx,
 			String zookeeperHost, String zookeeperPort, String table,
 			final String columns, Map<String, String> properties) {
-		
+
 		Configuration conf = HBaseConfiguration.create();
 		conf.set("hbase.zookeeper.quorum", zookeeperHost);
 		conf.set("hbase.zookeeper.property.clientPort", zookeeperPort);
 		conf.set("mapred.input.dir", table);
 		conf.set("hbase.mapred.tablecolumns", columns);
-		
+
 		for(Entry<String, String> e:properties.entrySet()) {
 			conf.set(e.getKey(), e.getValue());
 		}
-		
+
 		JavaPairRDD<ImmutableBytesWritable, Result> hbaseRDD = ctx.hadoopRDD(
 				new org.apache.hadoop.mapred.JobConf(conf),
 				org.apache.hadoop.hbase.mapred.TableInputFormat.class,
 				org.apache.hadoop.hbase.io.ImmutableBytesWritable.class,
 				org.apache.hadoop.hbase.client.Result.class);
-		
+
 		JavaRDD<List<Object>> rdd = hbaseRDD
 				.map(new Function<Tuple2<ImmutableBytesWritable, Result>, List<Object>>() {
 
@@ -75,7 +75,7 @@ public class HBaseLoad<T> {
 						return ra;
 					}
 				});
-		
+
 		return rdd;
 	}
 }

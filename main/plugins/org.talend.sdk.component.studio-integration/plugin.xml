@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+  Copyright (C) 2006-2019 Talend Inc. - www.talend.com
    Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -44,7 +44,7 @@
      <repositoryNode
            alias="TACOKIT"
            folder="metadata/tacokit"
-           icon="icon/connection.png"
+           icon="icon/configuration_16x16.png"
            isResouce="true"
            key="repository.metadata.TaCoKit"
            label="%TaCoKitConnection"
@@ -141,6 +141,11 @@
               mapping="TACOKIT_SUGGESTABLE_TABLE"
               name="Suggestable Table Generator">
       </generator>
+      <generator
+           class="org.talend.sdk.component.studio.ui.composite.generator.TaCoKitTextAreaSelectionGenerator"
+           mapping="TACOKIT_TEXT_AREA_SELECTION"
+           name="Text Area Selection Generator">
+     </generator>
   </extension>
   <extension
         point="org.talend.designer.core.process_provider">
@@ -171,7 +176,7 @@
     <navigatorContent
           activeByDefault="true"
           contentProvider="org.talend.sdk.component.studio.metadata.provider.TaCoKitMetadataContentProvider"
-          icon="icon/connection.png"
+          icon="icon/configuration_16x16.png"
           id="org.talend.repository.viewer.metadata.TaCoKit"
           labelProvider="org.talend.sdk.component.studio.metadata.provider.TaCoKitMetadataLabelProvider"
           name="TaCoKit Connection"
@@ -185,24 +190,35 @@
                  <test
                        property="org.talend.sdk.component.node.metadata.isTaCoKitNode">
                  </test>
+                 <test
+                       property="org.talend.repository.node.isRecycleBin">
+                 </test>
              </or>
           </and>
        </possibleChildren>
        <triggerPoints>
-          <and>
-             <instanceof
-                   value="org.talend.repository.model.RepositoryNode">
-             </instanceof>
-             <or>
-                 <test
-                       forcePluginActivation="true"
-                       property="org.talend.repository.node.isMetadataTopNode">
-                 </test>
-                 <test
-                       property="org.talend.sdk.component.node.metadata.isTaCoKitNode">
-                 </test>
-             </or>
-          </and>
+           <or>
+               <adapt
+                     type="org.talend.core.repository.model.ProjectRepositoryNode">
+               </adapt>
+               <instanceof
+                     value="org.talend.core.repository.model.ProjectRepositoryNode">
+               </instanceof>
+               <and>
+	             <instanceof
+	                   value="org.talend.repository.model.RepositoryNode">
+	             </instanceof>
+	             <or>
+	                 <test
+	                       forcePluginActivation="true"
+	                       property="org.talend.repository.node.isMetadataTopNode">
+	                 </test>
+	                 <test
+	                       property="org.talend.sdk.component.node.metadata.isTaCoKitNode">
+	                 </test>
+	             </or>
+               </and>
+          </or>
        </triggerPoints>
        <actionProvider
              class="org.talend.sdk.component.studio.metadata.provider.NodeActionProvider"
@@ -269,7 +285,24 @@
         name="Reload Component Kit Server">
     </command>
   </extension>
-
+  <extension
+        point="org.talend.core.migrationTask">
+     <projecttask
+           beforeLogon="false"
+           breaks="7.1.0"
+           class="org.talend.sdk.component.studio.metadata.migration.EncryptTckMetadataMigrationTask"
+           description="Encrypt tck metadata password"
+           id="org.talend.sdk.component.studio.metadata.migration.EncryptTckMetadataMigrationTask"
+           name="EncryptTckMetadataMigrationTask"
+           version="7.3.0">
+     </projecttask>
+  </extension>
+ <extension
+       point="org.eclipse.ui.startup">
+    <startup
+          class="org.talend.sdk.component.studio.startup.TacokitLoadComponentsStatusStartup">
+    </startup>
+ </extension>
   <!-- don't use it since there is already one which is integrated and studio doesnt support composition here
   <extension point="org.talend.core.runtime.service">
     <Service serviceId="IGenericWizardService" class="org.talend.sdk.component.studio.metadata.WizardRegistry" />

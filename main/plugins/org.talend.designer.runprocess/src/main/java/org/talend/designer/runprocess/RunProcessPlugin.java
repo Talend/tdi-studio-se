@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,7 +42,7 @@ public class RunProcessPlugin extends AbstractUIPlugin {
     private RunProcessContextManager runProcessContextManager;
 
     private ProjectPreferenceManager projectPreferenceManager;
-    
+
     private PropertyChangeListener processChangeListener;
 
     /**
@@ -54,7 +54,7 @@ public class RunProcessPlugin extends AbstractUIPlugin {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
      */
     public void start(BundleContext context) throws Exception {
@@ -73,7 +73,7 @@ public class RunProcessPlugin extends AbstractUIPlugin {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext context) throws Exception {
@@ -84,7 +84,7 @@ public class RunProcessPlugin extends AbstractUIPlugin {
 
     /**
      * Returns the shared instance.
-     * 
+     *
      * @return the shared instance
      */
     public static RunProcessPlugin getDefault() {
@@ -93,7 +93,7 @@ public class RunProcessPlugin extends AbstractUIPlugin {
 
     /**
      * Getter for runProcessContextManager.
-     * 
+     *
      * @return the runProcessContextManager
      */
     public RunProcessContextManager getRunProcessContextManager() {
@@ -114,7 +114,7 @@ public class RunProcessPlugin extends AbstractUIPlugin {
 
     /**
      * DOC get a implement of CodeGeneratorService.
-     * 
+     *
      * @return a implement of CodeGeneratorService
      */
     public ICodeGeneratorService getCodeGeneratorService() {

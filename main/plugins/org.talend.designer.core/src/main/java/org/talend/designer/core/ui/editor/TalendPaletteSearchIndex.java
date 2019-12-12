@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,7 +38,7 @@ import org.talend.commons.exception.CommonExceptionHandler;
 
 /**
  * DOC cmeng class global comment. Detailled comment<br/>
- * 
+ *
  * @see org.eclipse.help.internal.search.SearchIndexWithIndexingProgress
  */
 public class TalendPaletteSearchIndex extends SearchIndexWithIndexingProgress {
@@ -94,7 +94,7 @@ public class TalendPaletteSearchIndex extends SearchIndexWithIndexingProgress {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.help.internal.search.SearchIndex#getDocPlugins()
      */
     @Override

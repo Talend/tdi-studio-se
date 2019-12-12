@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,9 +34,9 @@ import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 
 /**
- * 
+ *
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class RunProcessPreferenceInitializer extends AbstractPreferenceInitializer {
 
@@ -49,7 +49,7 @@ public class RunProcessPreferenceInitializer extends AbstractPreferenceInitializ
     public RunProcessPreferenceInitializer() {
         super();
     }
-    
+
     private String defaultVM(){
         JSONObject root = new JSONObject();
         try {
@@ -77,7 +77,7 @@ public class RunProcessPreferenceInitializer extends AbstractPreferenceInitializ
         prefs.setDefault(RunProcessPrefsConstants.ISSTATISTICSRUN, true);
         prefs.setDefault(RunProcessPrefsConstants.STRACESTIME, 1000);
         prefs.setDefault(RunProcessPrefsConstants.VMARGUMENTS, defaultVM()); //$NON-NLS-1$
-        
+
 
         // for logs
         prefs.setDefault(RunProcessPrefsConstants.COMMON_LOGGING_PROPERTIES_TEMPLATE, getLogTemplate(commonLogFilePath));
@@ -106,7 +106,7 @@ public class RunProcessPreferenceInitializer extends AbstractPreferenceInitializ
                     if (batContent != null) {
                         projectSettingStore.setDefault(IProjectSettingPreferenceConstants.TEMPLATE_BAT, batContent);
                     }
-                    
+
                     InputStream psStream = templateManager
                             .readBundleStream(IProjectSettingTemplateConstants.PATH_RESOURCES_TEMPLATES + '/'
                                     + IProjectSettingTemplateConstants.JOB_RUN_PS_TEMPLATE_FILE_NAME);
@@ -134,7 +134,7 @@ public class RunProcessPreferenceInitializer extends AbstractPreferenceInitializ
 
     /**
      * DOC amaumont Comment method "getPluginPreferenceStore".
-     * 
+     *
      * @return
      */
     public static IPreferenceStore getPluginPreferenceStore() {

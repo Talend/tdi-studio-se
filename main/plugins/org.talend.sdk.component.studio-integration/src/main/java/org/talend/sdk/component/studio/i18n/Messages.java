@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class Messages extends MessagesCore {
 
     /**
      * Returns the i18n formatted message for <i>key</i> in the class bundle.
-     * 
+     *
      * @param key - the key for the desired string
      * @return the string for the given key in the class resource bundle
      * @see MessagesCore#getString(String, ResourceBundle)
@@ -42,7 +42,7 @@ public class Messages extends MessagesCore {
 
     /**
      * Returns the i18n formatted message for <i>key</i> and <i>args</i> in the specified bundle.
-     * 
+     *
      * @param key - the key for the desired string
      * @param args - arg to include in the string
      * @return the string for the given key in the given resource bundle

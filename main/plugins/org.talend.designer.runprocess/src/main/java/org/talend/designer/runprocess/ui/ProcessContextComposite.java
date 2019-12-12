@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -51,19 +51,19 @@ import org.talend.designer.runprocess.i18n.Messages;
 
 /**
  * Manages the context of a process. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ProcessContextComposite extends Composite {
 
     /**
-     * 
+     *
      */
     private static final int COLUMN_WIDTH = 120;
 
     /**
-     * 
+     *
      */
     private static final int HINT_HEIGHT = 250;
 
@@ -81,7 +81,7 @@ public class ProcessContextComposite extends Composite {
 
     /**
      * Constructs a new ProcessContextComposite.
-     * 
+     *
      * @param parent Parent composite.
      * @param style Style bits.
      */
@@ -139,10 +139,10 @@ public class ProcessContextComposite extends Composite {
             runSelectionChange(event);
         }
     };
-    
+
     /**
      * zwxue Comment method "runSelectionChange".
-     * for memory run can call this method. 
+     * for memory run can call this method.
      */
     public void runSelectionChange(final SelectionChangedEvent event) {
 		Object input = null;
@@ -168,7 +168,7 @@ public class ProcessContextComposite extends Composite {
 
     /**
      * Set the process on wich we are selecting context.
-     * 
+     *
      * @param process The process.
      */
     public void setProcess(final IProcess2 process) {
@@ -308,7 +308,7 @@ public class ProcessContextComposite extends Composite {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
         @Override
@@ -372,14 +372,14 @@ public class ProcessContextComposite extends Composite {
         } else {
             if (context.isConfirmationNeeded()) {
                 continueLaunch = MessageDialog.openQuestion(shell, Messages.getString("ProcessComposite.confirmTitle"), //$NON-NLS-1$
-                        Messages.getString("ProcessComposite.confirmText", context.getName())); //$NON-NLS-1$ 
+                        Messages.getString("ProcessComposite.confirmText", context.getName())); //$NON-NLS-1$
             }
 
             updateDefaultValueForListTypeParameter(context.getContextParameterList());
         }
         return continueLaunch;
     }
-    
+
     public Object getContextComboInput(){
     	return contextComboViewer.getInput();
     }
@@ -389,7 +389,7 @@ public class ProcessContextComposite extends Composite {
 
     /**
      * Set the first item of value list for the default value if this parameter does not need to prompt.
-     * 
+     *
      * @param contextParameterList
      */
     private static void updateDefaultValueForListTypeParameter(List<IContextParameter> contextParameterList) {
@@ -409,9 +409,9 @@ public class ProcessContextComposite extends Composite {
 
     /**
      * LabelProvider for a context combo. <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private static class ContextNameLabelProvider extends LabelProvider {
 
@@ -427,9 +427,9 @@ public class ProcessContextComposite extends Composite {
 
     /**
      * LabelProvider for a context table. <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private static class ContextParameterLabelProvider extends LabelProvider implements ITableLabelProvider {
 

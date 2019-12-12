@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,7 +56,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
     /**
      * DOC talend TalendEntryEditPart constructor comment.
-     * 
+     *
      * @param paletteEntry
      */
     public TalendEntryEditPart(PaletteEntry paletteEntry, TalendPaletteCSSStyleSetting cssStyleSetting) {
@@ -220,7 +220,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
         /**
          * Should hover feedback be shown? Allows other palette entities to control when the hover feedback should be
          * shown on this tool entry.
-         * 
+         *
          * @param showHoverFeedback true if the hover feedback is to be shown; false otherwise.
          */
         public void setShowHoverFeedback(boolean showHoverFeedback) {
@@ -374,7 +374,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for iconBorder.
-         * 
+         *
          * @return the iconBorder
          */
         public Border getIconBorder() {
@@ -383,7 +383,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the iconBorder.
-         * 
+         *
          * @param iconBorder the iconBorder to set
          */
         public void setIconBorder(Border iconBorder) {
@@ -396,7 +396,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for listBorder.
-         * 
+         *
          * @return the listBorder
          */
         public Border getListBorder() {
@@ -405,7 +405,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the listBorder.
-         * 
+         *
          * @param listBorder the listBorder to set
          */
         public void setListBorder(Border listBorder) {
@@ -418,7 +418,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for entryEditPartToolEntryForgroundDisabledColor.
-         * 
+         *
          * @return the entryEditPartToolEntryForgroundDisabledColor
          */
         public Color getEntryEditPartToolEntryForgroundDisabledColor() {
@@ -427,7 +427,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the entryEditPartToolEntryForgroundDisabledColor.
-         * 
+         *
          * @param entryEditPartToolEntryForgroundDisabledColor the entryEditPartToolEntryForgroundDisabledColor to set
          */
         public void setEntryEditPartToolEntryForgroundDisabledColor(Color entryEditPartToolEntryForgroundDisabledColor) {
@@ -436,7 +436,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for entryEditPartToolEntrySelectedBackgroundColor.
-         * 
+         *
          * @return the entryEditPartToolEntrySelectedBackgroundColor
          */
         public Color getEntryEditPartToolEntrySelectedBackgroundColor() {
@@ -445,7 +445,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the entryEditPartToolEntrySelectedBackgroundColor.
-         * 
+         *
          * @param entryEditPartToolEntrySelectedBackgroundColor the entryEditPartToolEntrySelectedBackgroundColor to set
          */
         public void setEntryEditPartToolEntrySelectedBackgroundColor(Color entryEditPartToolEntrySelectedBackgroundColor) {
@@ -454,7 +454,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for entryEditPartToolEntryHoverBackgroundColor.
-         * 
+         *
          * @return the entryEditPartToolEntryHoverBackgroundColor
          */
         public Color getEntryEditPartToolEntryHoverBackgroundColor() {
@@ -463,7 +463,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the entryEditPartToolEntryHoverBackgroundColor.
-         * 
+         *
          * @param entryEditPartToolEntryHoverBackgroundColor the entryEditPartToolEntryHoverBackgroundColor to set
          */
         public void setEntryEditPartToolEntryHoverBackgroundColor(Color entryEditPartToolEntryHoverBackgroundColor) {
@@ -472,7 +472,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for entryEditPartToolEntryBorderFocusForgroundColor.
-         * 
+         *
          * @return the entryEditPartToolEntryBorderFocusForgroundColor
          */
         public Color getEntryEditPartToolEntryBorderFocusForgroundColor() {
@@ -481,7 +481,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the entryEditPartToolEntryBorderFocusForgroundColor.
-         * 
+         *
          * @param entryEditPartToolEntryBorderFocusForgroundColor the entryEditPartToolEntryBorderFocusForgroundColor to
          * set
          */
@@ -491,7 +491,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for entryEditPartToolEntryBorderFocusBackgroundColor.
-         * 
+         *
          * @return the entryEditPartToolEntryBorderFocusBackgroundColor
          */
         public Color getEntryEditPartToolEntryBorderFocusBackgroundColor() {
@@ -500,7 +500,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the entryEditPartToolEntryBorderFocusBackgroundColor.
-         * 
+         *
          * @param entryEditPartToolEntryBorderFocusBackgroundColor the entryEditPartToolEntryBorderFocusBackgroundColor
          * to set
          */
@@ -510,7 +510,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for arrowWidth.
-         * 
+         *
          * @return the arrowWidth
          */
         public int getArrowWidth() {
@@ -519,7 +519,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the arrowWidth.
-         * 
+         *
          * @param arrowWidth the arrowWidth to set
          */
         public void setArrowWidth(int arrowWidth) {
@@ -528,7 +528,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for entryEditPartToolEntryTopLineColor.
-         * 
+         *
          * @return the entryEditPartToolEntryTopLineColor
          */
         public Color getEntryEditPartToolEntryTopLineColor() {
@@ -537,7 +537,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the entryEditPartToolEntryTopLineColor.
-         * 
+         *
          * @param entryEditPartToolEntryTopLineColor the entryEditPartToolEntryTopLineColor to set
          */
         public void setEntryEditPartToolEntryTopLineColor(Color entryEditPartToolEntryTopLineColor) {
@@ -546,7 +546,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for entryEditPartToolEntryBottomLineColor.
-         * 
+         *
          * @return the entryEditPartToolEntryBottomLineColor
          */
         public Color getEntryEditPartToolEntryBottomLineColor() {
@@ -555,7 +555,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the entryEditPartToolEntryBottomLineColor.
-         * 
+         *
          * @param entryEditPartToolEntryBottomLineColor the entryEditPartToolEntryBottomLineColor to set
          */
         public void setEntryEditPartToolEntryBottomLineColor(Color entryEditPartToolEntryBottomLineColor) {
@@ -564,7 +564,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for entryEditPartToolEntryBackgroundColor.
-         * 
+         *
          * @return the entryEditPartToolEntryBackgroundColor
          */
         public Color getEntryEditPartToolEntryBackgroundColor() {
@@ -573,7 +573,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the entryEditPartToolEntryBackgroundColor.
-         * 
+         *
          * @param entryEditPartToolEntryBackgroundColor the entryEditPartToolEntryBackgroundColor to set
          */
         public void setEntryEditPartToolEntryBackgroundColor(Color entryEditPartToolEntryBackgroundColor) {
@@ -582,7 +582,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Getter for inheritFromParent.
-         * 
+         *
          * @return the inheritFromParent
          */
         public boolean isInheritFromParent() {
@@ -591,7 +591,7 @@ public class TalendEntryEditPart extends ToolEntryEditPart {
 
         /**
          * Sets the inheritFromParent.
-         * 
+         *
          * @param inheritFromParent the inheritFromParent to set
          */
         public void setInheritFromParent(boolean inheritFromParent) {

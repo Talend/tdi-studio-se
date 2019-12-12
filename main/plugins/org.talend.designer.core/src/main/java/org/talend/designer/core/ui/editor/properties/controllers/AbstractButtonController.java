@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,7 +37,7 @@ public abstract class AbstractButtonController extends AbstractElementPropertySe
 
     /**
      * DOC bZhou BrowseReportsController constructor comment.
-     * 
+     *
      * @param dp
      */
     public AbstractButtonController(IDynamicProperty dp) {
@@ -46,7 +46,7 @@ public abstract class AbstractButtonController extends AbstractElementPropertySe
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#createControl
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -86,7 +86,7 @@ public abstract class AbstractButtonController extends AbstractElementPropertySe
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
          */
         @Override
@@ -101,7 +101,7 @@ public abstract class AbstractButtonController extends AbstractElementPropertySe
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -113,7 +113,7 @@ public abstract class AbstractButtonController extends AbstractElementPropertySe
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#refresh(org
      * .talend.core.model.process.IElementParameter, boolean)
@@ -125,7 +125,7 @@ public abstract class AbstractButtonController extends AbstractElementPropertySe
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

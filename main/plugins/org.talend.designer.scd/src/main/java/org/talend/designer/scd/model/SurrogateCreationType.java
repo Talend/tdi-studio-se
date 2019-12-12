@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -63,7 +63,7 @@ public enum SurrogateCreationType {
 
     /**
      * Gets the type by the given name. Created by Marvin Wang on May 11, 2012.
-     * 
+     *
      * @param name
      * @return
      */
@@ -80,7 +80,7 @@ public enum SurrogateCreationType {
      * Invokers must insure the given value <code>i</code> can map to the index of <code>SurrogateCreationType</code>.
      * If can not, please refer to the method {@link SurrogateCreationType#getTypeByName(String)}. Created by Marvin
      * Wang on May 11, 2012.
-     * 
+     *
      * @param i
      * @return
      */
@@ -106,7 +106,7 @@ public enum SurrogateCreationType {
 
     /**
      * Gets all the display code names like "AUTO_INCREMENT", "INPUT_FIELD" and so on.
-     * 
+     *
      * @return
      */
     public static String[] getAllDisplayCodeNames() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,7 +41,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * DOC Administrator class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class RepositoryValueUtils {
 
@@ -168,7 +168,7 @@ public class RepositoryValueUtils {
 
     /**
      * DOC Administrator Comment method "getRepositoryAliasName".
-     * 
+     *
      * @param connectionItem
      * @return
      */
@@ -212,7 +212,7 @@ public class RepositoryValueUtils {
 
     /**
      * qzhang Comment method "getDefaultRepository".
-     * 
+     *
      * @return
      */
     private String getDefaultRepository(boolean istable, String defaultPropertyValue) {
@@ -253,7 +253,7 @@ public class RepositoryValueUtils {
 
     /**
      * dev Comment method "getRepositoryTableMap".
-     * 
+     *
      * @return Map
      */
     public Map<String, IMetadataTable> getRepositoryTableMap() {
@@ -265,7 +265,7 @@ public class RepositoryValueUtils {
 
     /**
      * dev Comment method "getRepositoryConnectionItemMap".
-     * 
+     *
      * @return Map
      */
     public Map<String, ConnectionItem> getRepositoryConnectionItemMap() {
@@ -274,7 +274,7 @@ public class RepositoryValueUtils {
 
     /**
      * Getter for repositoryQueryStoreMap.
-     * 
+     *
      * @return the repositoryQueryStoreMap
      */
     public Map<String, Query> getRepositoryQueryStoreMap() {
@@ -283,7 +283,7 @@ public class RepositoryValueUtils {
 
     /**
      * Getter for tablesMap.
-     * 
+     *
      * @return the tablesMap
      */
     public Map<String, List<String>> getTablesMap() {
@@ -293,7 +293,7 @@ public class RepositoryValueUtils {
 
     /**
      * Getter for queriesMap.
-     * 
+     *
      * @return the queriesMap
      */
     public Map<String, List<String>> getQueriesMap() {
@@ -303,7 +303,7 @@ public class RepositoryValueUtils {
 
     /**
      * Getter for tableIdAndDbTypeMap.
-     * 
+     *
      * @return the tableIdAndDbTypeMap
      */
     public Map<String, String> getTableIdAndDbTypeMap() {
@@ -312,7 +312,7 @@ public class RepositoryValueUtils {
 
     /**
      * Getter for tableIdAndDbSchemaMap.
-     * 
+     *
      * @return the tableIdAndDbSchemaMap
      */
     public Map<String, String> getTableIdAndDbSchemaMap() {

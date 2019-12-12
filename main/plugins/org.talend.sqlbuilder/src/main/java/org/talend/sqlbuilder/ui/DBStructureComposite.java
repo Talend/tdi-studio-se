@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -73,9 +73,9 @@ import org.talend.sqlbuilder.util.UIUtils;
 /**
  * Detailled comment for this class. <br/>
  * $Id: DBStructureComposite.java,v 1.40 2006/11/09 07:29:18 peiqin.hou Exp $
- * 
+ *
  * @author phou
- * 
+ *
  */
 
 public class DBStructureComposite extends Composite {
@@ -120,7 +120,7 @@ public class DBStructureComposite extends Composite {
 
     /**
      * Create the composite.
-     * 
+     *
      * @param parent parent
      * @param style style
      */
@@ -209,7 +209,7 @@ public class DBStructureComposite extends Composite {
 
     /**
      * qzhang Comment method "getNeedExpandedNodes".
-     * 
+     *
      * @return
      */
     private boolean getNeedExpandedNodes(RepositoryNode selectQuery) {
@@ -224,7 +224,7 @@ public class DBStructureComposite extends Composite {
 
     /**
      * Updates the structure view to reflect the change of Repository View.
-     * 
+     *
      * @see SQLBuilderDialog.repositoryChanged(RepositoryChangedEvent event)
      * @param event
      */
@@ -393,9 +393,9 @@ public class DBStructureComposite extends Composite {
 
     /**
      * Add context menu.
-     * 
+     *
      * method description.
-     * 
+     *
      * @param
      * @return
      * @exception
@@ -565,7 +565,7 @@ public class DBStructureComposite extends Composite {
 
     /**
      * Refresh RepositoryNode.
-     * 
+     *
      * @param
      * @return
      * @exception
@@ -668,7 +668,7 @@ public class DBStructureComposite extends Composite {
 
     /**
      * Close the connection.
-     * 
+     *
      * @Override
      */
     @Override

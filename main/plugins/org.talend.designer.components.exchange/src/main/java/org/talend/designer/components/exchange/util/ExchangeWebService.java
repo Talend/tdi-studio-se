@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -80,9 +80,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "searchExtensionJSONArray".
-     * 
+     *
      * @return
      */
     public static JSONArray searchExtensionJSONArray(String typeExtension, String versionStudio, String category) {
@@ -138,9 +138,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "searchContributedExtensionJSONArray".
-     * 
+     *
      * @return
      */
     public static JSONArray searchContributedExtensionJSONArray(String username, String passwordHash) {
@@ -167,9 +167,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "searchInstalledExtensionJSONArray".
-     * 
+     *
      * @return
      */
     public static JSONArray searchInstalledExtensionJSONArray(String username, String passwordHash) {
@@ -196,9 +196,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "downloadingExtensionService".
-     * 
+     *
      * @param idExtension
      * @param typeExtension
      * @param username
@@ -242,9 +242,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "deleteExtensionService".
-     * 
+     *
      * @param idExtension
      * @param typeExtension
      * @param username
@@ -289,9 +289,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "searchLastRevisionForExtensionService".
-     * 
+     *
      * @param idExtension
      * @param username
      * @param passwordHash
@@ -331,9 +331,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "searchCategoryExtensionJSONArray".
-     * 
+     *
      * @param typeExtension
      * @return
      */
@@ -373,9 +373,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "searchVersionRevisionJSONArray".
-     * 
+     *
      * @param typeExtension
      * @return
      */
@@ -414,9 +414,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "insertReviewService".
-     * 
+     *
      * @param idExtension
      * @param typeExtension
      * @param username
@@ -480,9 +480,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "insertionRevisionService".
-     * 
+     *
      * @param idExtension
      * @param typeExtension
      * @param username
@@ -551,9 +551,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "updateRevisionService".
-     * 
+     *
      * @param idExtension
      * @param typeExtension
      * @param username
@@ -606,9 +606,9 @@ public class ExchangeWebService {
     }
 
     /**
-     * 
+     *
      * DOC hcyi Comment method "insertionExtensionService".
-     * 
+     *
      * @param typeExtension
      * @param username
      * @param passwordHash

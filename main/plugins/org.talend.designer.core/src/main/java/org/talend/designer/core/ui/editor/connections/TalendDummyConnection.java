@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -62,7 +62,7 @@ public class TalendDummyConnection extends PolylineConnectionEx implements IMapM
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode#LPtoDP(int)
      */
     @Override
@@ -72,7 +72,7 @@ public class TalendDummyConnection extends PolylineConnectionEx implements IMapM
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode#DPtoLP(int)
      */
     @Override
@@ -82,7 +82,7 @@ public class TalendDummyConnection extends PolylineConnectionEx implements IMapM
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode#LPtoDP(org.eclipse.draw2d.geometry.Translatable)
      */
     @Override
@@ -93,7 +93,7 @@ public class TalendDummyConnection extends PolylineConnectionEx implements IMapM
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode#DPtoLP(org.eclipse.draw2d.geometry.Translatable)
      */
     @Override
@@ -104,7 +104,7 @@ public class TalendDummyConnection extends PolylineConnectionEx implements IMapM
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx#outlineShape(org.eclipse.draw2d.Graphics)
      */
     @Override
@@ -116,7 +116,7 @@ public class TalendDummyConnection extends PolylineConnectionEx implements IMapM
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.PolylineConnection#getSourceAnchor()
      */
     @Override
@@ -126,7 +126,7 @@ public class TalendDummyConnection extends PolylineConnectionEx implements IMapM
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.draw2d.PolylineConnection#getTargetAnchor()
      */
     @Override

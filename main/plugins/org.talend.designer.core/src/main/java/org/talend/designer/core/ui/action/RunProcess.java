@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.repository.ui.actions.AContextualAction;
 
 /**
  * bqian A action to run the selected process without opening it's editor. <br/>
- * 
+ *
  * $Id: RunProcess.java 0 2007-12-28 11:09:48Z bqian $
- * 
+ *
  */
 public class RunProcess extends AContextualAction {
 
@@ -47,7 +47,7 @@ public class RunProcess extends AContextualAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     protected void doRun() {
@@ -62,7 +62,7 @@ public class RunProcess extends AContextualAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.actions.ITreeContextualAction#init(org.eclipse.jface.viewers.TreeViewer,
      * org.eclipse.jface.viewers.IStructuredSelection)
      */
@@ -95,7 +95,7 @@ public class RunProcess extends AContextualAction {
 
     /**
      * Returns the launch configuration manager.
-     * 
+     *
      * @return launch configuration manager
      */
     private LaunchConfigurationManager getLaunchConfigurationManager() {
@@ -105,7 +105,7 @@ public class RunProcess extends AContextualAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.actions.AContextualView#getClassForDoubleClick()
      */
     @Override

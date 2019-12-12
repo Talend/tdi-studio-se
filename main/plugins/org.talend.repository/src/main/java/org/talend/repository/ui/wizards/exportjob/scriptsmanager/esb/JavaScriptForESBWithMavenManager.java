@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,11 +36,11 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.IMavenPropertie
 import org.talend.resources.util.EMavenBuildScriptProperties;
 
 /**
- * 
+ *
  * DOC ggu class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 55206 2011-02-15 17:32:14Z mhirt $
- * 
+ *
  */
 public abstract class JavaScriptForESBWithMavenManager extends JobJavaScriptOSGIForESBManager {
 
@@ -51,7 +51,7 @@ public abstract class JavaScriptForESBWithMavenManager extends JobJavaScriptOSGI
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb.JobJavaScriptOSGIForESBManager#getExportResources
      * (org.talend.repository.documentation.ExportFileResource[], java.lang.String[])
@@ -112,7 +112,7 @@ public abstract class JavaScriptForESBWithMavenManager extends JobJavaScriptOSGI
 
     /**
      * DOC ggu Comment method "getMenifestProperties".
-     * 
+     *
      * @param manifestURL
      * @param mavenPropertiesMap
      */
@@ -157,7 +157,7 @@ public abstract class JavaScriptForESBWithMavenManager extends JobJavaScriptOSGI
 
     /**
      * DOC nrousseau Comment method "addSourceCodeToExport".
-     * 
+     *
      * @param list
      * @param processes
      */
@@ -206,7 +206,7 @@ public abstract class JavaScriptForESBWithMavenManager extends JobJavaScriptOSGI
 
     /**
      * DOC nrousseau Comment method "addMavenScriptToExport".
-     * 
+     *
      * @param list
      * @param processes
      * @param codeOptions

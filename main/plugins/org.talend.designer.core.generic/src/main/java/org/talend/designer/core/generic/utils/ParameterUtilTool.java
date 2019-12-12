@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,11 +18,10 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
-import org.talend.utils.security.CryptoHelper;
 
 /**
  * UtilTool to handle NodeType.
- * 
+ *
  * created by hcyi on Apr 7, 2016 Detailled comment
  */
 public final class ParameterUtilTool {
@@ -100,17 +99,14 @@ public final class ParameterUtilTool {
         if (paramName != null && paramValue != null) {
             // Check param name
         	if (EParameterFieldType.PASSWORD.getName().equals(paramType.getField())) {
-            	try{
-            		return CryptoHelper.getDefault().decrypt(paramValue);
-            	}catch(Exception e){
-            		return paramValue;
-            	}
+                // we should always depend on getRawValue to get clear password
+                return paramType.getRawValue();
             }
-            
+
         	if ("ACTION".equalsIgnoreCase(paramName)) {//$NON-NLS-1$
                 return paramValue.toUpperCase();
             }
-        	
+
             // Check param value
             if ("true".equalsIgnoreCase(paramValue)) {//$NON-NLS-1$
                 return true;

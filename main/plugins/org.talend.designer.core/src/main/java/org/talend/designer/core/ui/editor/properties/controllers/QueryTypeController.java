@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -73,7 +73,7 @@ public class QueryTypeController extends AbstractRepositoryController {
 
     /**
      * DOC nrousseau QueryTypeController constructor comment.
-     * 
+     *
      * @param dp
      */
     public QueryTypeController(IDynamicProperty dp) {
@@ -82,7 +82,7 @@ public class QueryTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#createControl(org.eclipse
      * .swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -151,7 +151,7 @@ public class QueryTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#createButtonCommand(org
      * .eclipse.swt.widgets.Button)
@@ -191,7 +191,7 @@ public class QueryTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#createComboCommand(org
      * .eclipse.swt.custom.CCombo)
@@ -279,7 +279,7 @@ public class QueryTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#getRepositoryChoiceParamName
      * ()
@@ -291,7 +291,7 @@ public class QueryTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#getRepositoryTypeParamName
      * ()

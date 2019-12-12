@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,7 +46,7 @@ public class ProcessTest {
      */
     @Test
     public void testCheckProcess() {
-        
+
         Process p = new Process(new FakePropertyImpl()) {
 
             /* (non-Javadoc)
@@ -57,7 +57,7 @@ public class ProcessTest {
                 assertThat(isDuplicate(), is(false));
                 assertThat(isActivate(), is(true));
             }
-            
+
         };
         p.setActivate(false);
         p.setDuplicate(false);
@@ -72,34 +72,34 @@ public class ProcessTest {
         p.setDuplicate(true);
         p.checkProcess();
     }
-    
+
     /**
      * Test method for {@link org.talend.designer.core.ui.editor.process.Process#checkProcess()}.
      */
     @Test
     public void testNoNeedSetValue() {
         Process p = new Process(new FakePropertyImpl());
-        
+
         List<IElementParameterDefaultValue> defaultValues = null;
-        
+
         IElement elem = new FakeElement("test");
         IElementParameter param = new ElementParameter(elem);
-        
+
         IElementParameterDefaultValue defaultValue = new ElementParameterDefaultValue();
         defaultValues = new ArrayList<IElementParameterDefaultValue>();
         defaultValues.add(defaultValue);
         param.setDefaultValues(defaultValues);
         assertFalse(p.noNeedSetValue(param, "aa"));
-        
+
         assertTrue(p.noNeedSetValue(param, null));
-        
+
         defaultValue = new ElementParameterDefaultValue();
         defaultValue.setDefaultValue("aa");
         defaultValues = new ArrayList<IElementParameterDefaultValue>();
         defaultValues.add(defaultValue);
         param.setDefaultValues(defaultValues);
         assertTrue(p.noNeedSetValue(param, "aa"));
-        
+
         defaultValue = new ElementParameterDefaultValue();
         defaultValues = new ArrayList<IElementParameterDefaultValue>();
         defaultValue.setDefaultValue("bb");

@@ -47,34 +47,88 @@ iterateConnSet.addAll(node.getOutgoingConnections(EConnectionType.ITERATE));
 
 List<IConnection> allSubProcessConnection = codeGenArgument.getAllMainSubTreeConnections();
 
-if((codePart.equals(ECodePart.END))&&(stat)){
+String cid = node.getUniqueName();
+
+List<? extends INode> jobCatcherNodes = process.getNodesOfType("tJobStructureCatcher");
+boolean enableLogStash = jobCatcherNodes != null && !jobCatcherNodes.isEmpty();
+boolean logstashCurrent = !cid.startsWith("tJobStructureCatcher") && !cid.startsWith("talend") && enableLogStash;
+
+if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
 	boolean iterateInVFComp = (node.getVirtualLinkTo() != null && node.getVirtualLinkTo() == EConnectionType.ITERATE);
 	if(iterateInVFComp){
 		List<String> needToEndConnNames = new ArrayList<String>();
 		INode nextNode = node.getOutgoingConnections(EConnectionType.ITERATE).get(0).getTarget();
 		NodeUtil.fillConnectionsForStat(needToEndConnNames, nextNode);
-		%>
-		if(execStat){
+		if(!needToEndConnNames.isEmpty()) {
+			if(stat && logstashCurrent) {
+			%>
+			runStat.updateStatAndLog(execStat,enableLogStash,iterateId,2,0<%for(String connName : needToEndConnNames){%>,"<%=connName%>"<%}%>);
 			<%
-			for(String connName : needToEndConnNames){
-			%>
-				runStat.updateStatOnConnection("<%=connName%>"+iterateId,2, 0); 
-			<%	
+			} else {
+				if(stat) {%>
+				if(execStat){
+					runStat.updateStatOnConnection(iterateId,2,0<%for(String connName : needToEndConnNames){%>,"<%=connName%>"<%}%>);
+				}
+				<%}%>
+				
+				<%if(logstashCurrent) {//now only finish the log, not send, TODO%>
+				if(enableLogStash){
+					runStat.log(iterateId,2,0<%for(String connName : needToEndConnNames){%>,"<%=connName%>"<%}%>);
+				}
+				<%
+				}
 			}
-			%>
 		}
-	<%
 	}
-	if(connSet.size()>0){
-	  	for(IConnection con:connSet){
-		%>
-			if(execStat){
-				if(resourceMap.get("inIterateVComp") == null || !((Boolean)resourceMap.get("inIterateVComp"))){
-			 		runStat.updateStatOnConnection("<%=con.getUniqueName()%>"+iterateId,2, 0); 
-			 	}
+	
+	if(connSet.size()>0) {
+		if(stat && logstashCurrent && (connSet.size()==1)) {//the most common case, write this ugly logic for 65535 issue
+			for(IConnection con:connSet){
+		  		INode source = con.getSource();
+				String sourceNodeId = source.getUniqueName();
+				String sourceNodeComponent = source.getComponent().getName();
+	 			for (INode jobStructureCatcher : jobCatcherNodes) {
+	 			%>
+			 		if(runStat.updateStatAndLog(execStat,enableLogStash,resourceMap,iterateId,"<%=con.getUniqueName()%>",2,0,
+			 			<%=jobStructureCatcher.getUniqueName()%>,"<%=sourceNodeId%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getComponent().getName()%>","<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>")) {
+						<%=jobStructureCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
+					}
+				<%
+					break;
+				}
+		  	}
+		} else {
+			if(stat){
+				%>
+				if(execStat){
+			  		runStat.updateStat(resourceMap,iterateId,2,0<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+			  	}
+			  	<%
 			}
-		<%
-	  	}
+			
+			if(logstashCurrent){
+				%>
+				if(enableLogStash) {
+				<%
+			  	for(IConnection con:connSet){
+			  		INode source = con.getSource();
+					String sourceNodeId = source.getUniqueName();
+					String sourceNodeComponent = source.getComponent().getName();
+		 			for (INode jobStructureCatcher : jobCatcherNodes) {
+		 			%>
+				 		if(runStat.log(resourceMap,iterateId,"<%=con.getUniqueName()%>",2,0,
+				 			<%=jobStructureCatcher.getUniqueName()%>,"<%=sourceNodeId%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getComponent().getName()%>","<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>")) {
+							<%=jobStructureCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
+						}
+					<%
+						break;
+					}
+			  	}
+			  	%>
+			  	}
+			  	<%
+			}
+		}
 	}
 }
 %>
@@ -275,14 +329,26 @@ end_Hash.put("<%=node.getUniqueName() %>", System.currentTimeMillis());
 				}
 				// Else, that means the component is a ON_COMPONENT_OK virtual component typed.
 			}
-			
+
 			if(generateMethodCall) {
+			/*check if parralel iterate call not finished from this component */
+			boolean parallelIterate = false;
+			for (IConnection iterateConn : iterateConnSet) {
+				parallelIterate = "true".equals(ElementParameterParser.getValue(iterateConn, "__ENABLE_PARALLEL__"));
+				if (parallelIterate) {
+					if (codePart.equals(ECodePart.END)) {
+						String iterateTargetNodeName = iterateConn.getTarget().getUniqueName();
+%>
+						mtp_<%=iterateTargetNodeName %>.waitForEndOfQueue();
+<%
+					}
+				}
+			}
 %>
 				<%=outgoingConn.getTarget().getUniqueName() %>Process(globalMap);
 <%  
 			}
-  	    }        
-       
+		}
 
    		if (outgoingConn.getLineStyle().equals(EConnectionType.RUN_IF)) {
 		%>
@@ -290,12 +356,27 @@ end_Hash.put("<%=node.getUniqueName() %>", System.currentTimeMillis());
    				<%//send the true status to socket
 				if(stat){
 				%>
-					if(execStat){   
+					if(execStat){
    	 					runStat.updateStatOnConnection("<%=outgoingConn.getUniqueName() %>", 0, "true");
 					}
-				<%}%>
-    			<%=outgoingConn.getTarget().getUniqueName() %>Process(globalMap);
-   			}
+<%
+				}
+				/*check if parralel iterate call not finished from this component */
+				boolean parallelIterate = false;
+				for (IConnection iterateConn : iterateConnSet) {
+					parallelIterate = "true".equals(ElementParameterParser.getValue(iterateConn, "__ENABLE_PARALLEL__"));
+					if (parallelIterate) {
+						if (codePart.equals(ECodePart.END)) {
+							String iterateTargetNodeName = iterateConn.getTarget().getUniqueName();
+%>
+							mtp_<%=iterateTargetNodeName %>.waitForEndOfQueue();
+<%
+						}
+					}
+				}
+%>
+				<%=outgoingConn.getTarget().getUniqueName() %>Process(globalMap);
+			}
 
 			<%
 			//send the false status to socket
@@ -322,7 +403,7 @@ end_Hash.put("<%=node.getUniqueName() %>", System.currentTimeMillis());
 		parallelIterate = "true".equals(ElementParameterParser.getValue(iterateConn, "__ENABLE_PARALLEL__"));
 		if (parallelIterate) {
 			if (codePart.equals(ECodePart.END)) {
-			String iterateTargetNodeName = iterateConn.getTarget().getUniqueName();				
+			String iterateTargetNodeName = iterateConn.getTarget().getUniqueName();
 %>
 			mtp_<%=iterateTargetNodeName %>.waitForEndOfQueue();
 			

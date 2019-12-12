@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,10 +17,10 @@ import org.talend.designer.runprocess.i18n.Messages;
 
 /**
  * Message about a process. <br/>
- * 
+ *
  * $Id$
- * 
- * 
+ *
+ *
  */
 public class ProcessMessage implements IProcessMessage {
 
@@ -63,7 +63,7 @@ public class ProcessMessage implements IProcessMessage {
 
     /**
      * Getter for content.
-     * 
+     *
      * @return the content
      */
     @Override
@@ -73,7 +73,7 @@ public class ProcessMessage implements IProcessMessage {
 
     /**
      * Getter for type.
-     * 
+     *
      * @return the type
      */
     @Override

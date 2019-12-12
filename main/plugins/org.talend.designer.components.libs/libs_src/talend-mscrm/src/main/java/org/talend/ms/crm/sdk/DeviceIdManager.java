@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.util.Random;
 import java.util.UUID;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,7 +38,8 @@ import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -52,7 +54,7 @@ public final class DeviceIdManager {
     /**
      * Logger
      */
-    static final Logger Log = Logger.getLogger(DeviceIdManager.class.getName());
+    static final Logger Log = LoggerFactory.getLogger(DeviceIdManager.class.getName());
 
     private static final Random RandomInstance = new Random();
 
@@ -232,6 +234,14 @@ public final class DeviceIdManager {
 
             // Parse the response in a XML document.
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            
+            try {
+	            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+	            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            } catch (Exception e) {
+            	Log.warn("failed to enable xml safe feature");
+            }
+            
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(entity.getContent());
             document.getDocumentElement().normalize();

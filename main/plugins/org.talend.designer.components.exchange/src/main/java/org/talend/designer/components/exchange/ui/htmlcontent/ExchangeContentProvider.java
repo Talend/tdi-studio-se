@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -130,7 +130,7 @@ public class ExchangeContentProvider implements IIntroXHTMLContentProvider {
                 String typeExtension = ExchangeUtils.TYPEEXTENSION != null ? ExchangeUtils.TYPEEXTENSION : "tos";
                 String imageUrl = "http://www.talendforge.org/exchange/" + typeExtension + "/upload_" + typeExtension
                         + "/extension-" + idExtension + "/thumbnail.jpg";
-                
+
                 boolean touchFile =false;
                 try {
                     // Get the image
@@ -141,7 +141,7 @@ public class ExchangeContentProvider implements IIntroXHTMLContentProvider {
                 } catch (Exception e) {
                     touchFile =false;
                 }
-                
+
                 if (touchFile) {
                     Element imgElem = dom.createElement("img");
                     imgElem.setAttribute("src", imageUrl);

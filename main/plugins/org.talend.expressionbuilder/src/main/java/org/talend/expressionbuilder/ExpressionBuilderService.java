@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,15 +26,15 @@ import org.talend.expressionbuilder.ui.PigExpressionBuilderDialog;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ExpressionBuilderService.java 下午04:40:37 2007-8-1 +0000 (2007-8-1) yzhang $
- * 
+ *
  */
 public class ExpressionBuilderService implements IExpressionBuilderDialogService {
 
     /*
      * (non-Jsdoc)
-     * 
+     *
      * @see org.talend.core.ui.expressionbuilder.IExpressionBuilderDialogService#getExpressionBuilderInstance(Composite,
      * IExpressionDataBean, INode)
      */
@@ -46,7 +46,7 @@ public class ExpressionBuilderService implements IExpressionBuilderDialogService
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.expressionbuilder.IExpressionBuilderDialogService#getExpressionBuilderInstance(org.eclipse.swt.widgets
      * .Composite, org.talend.commons.ui.expressionbuilder.IExpressionDataBean, org.talend.core.model.process.INode,

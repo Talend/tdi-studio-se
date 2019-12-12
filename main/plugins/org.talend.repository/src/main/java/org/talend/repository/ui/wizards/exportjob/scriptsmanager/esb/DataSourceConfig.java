@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,7 @@ import org.talend.designer.runprocess.ItemCacheManager;
 public class DataSourceConfig {
 
     private static final String TRUN_JOB = "tRunJob"; //$NON-NLS-1$
-    
+
     private static final Set<String> PROCESSES_SUB_JOB = new HashSet<>();
 
     private DataSourceConfig() {
@@ -97,7 +97,7 @@ public class DataSourceConfig {
                 return;
             }
             PROCESSES_SUB_JOB.add(processId);
-            
+
             List<? extends INode> subNodes = getSubProcessNodesFromTRunjob(node);
             if (subNodes != null) {
                 for (INode n : subNodes) {

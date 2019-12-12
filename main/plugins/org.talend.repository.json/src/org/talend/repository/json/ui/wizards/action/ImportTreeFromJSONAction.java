@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,10 +20,17 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.actions.SelectionProviderAction;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.utils.ContextParameterUtils;
+import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.node.FOXTreeNode;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.utils.TreeUtil;
 import org.talend.repository.json.ui.wizards.AbstractJSONStepForm;
 import org.talend.repository.json.util.JSONUtil;
+import org.talend.repository.model.json.JSONFileConnection;
 
 /**
  * hwang class global comment. Detailled comment
@@ -56,7 +63,25 @@ public class ImportTreeFromJSONAction extends SelectionProviderAction {
 
         boolean changed = true;
         try {
-            newInput = TreeUtil.getFoxTreeNodes(JSONUtil.changeJsonToXml(filePath));
+            String encoding = "UTF-8";
+            if (this.form != null) {
+                ConnectionItem connectionItem = this.form.getConnectionItem();
+                if (connectionItem != null) {
+                    Connection connection = connectionItem.getConnection();
+                    if (connection instanceof JSONFileConnection) {
+                        encoding = ((JSONFileConnection) connection).getEncoding();
+                        try {
+                            ContextType contextType = ConnectionContextHelper.getContextTypeForContextMode(connection,
+                                    connection.getContextName());
+                            encoding = TalendQuoteUtils
+                                    .removeQuotes(ContextParameterUtils.getOriginalValue(contextType, encoding));
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
+                    }
+                }
+            }
+            newInput = TreeUtil.getFoxTreeNodes(JSONUtil.changeJsonToXml(filePath, encoding));
             changed = true;
         } catch (Exception e) {
             ExceptionHandler.process(e);

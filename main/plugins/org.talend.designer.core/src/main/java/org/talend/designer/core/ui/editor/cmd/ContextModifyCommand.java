@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,9 +37,9 @@ import org.talend.designer.runprocess.IRunProcessService;
 
 /**
  * Command that will modify a context.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ContextModifyCommand extends Command {
 
@@ -193,7 +193,7 @@ public class ContextModifyCommand extends Command {
 
     /**
      * Gets the context file resource according to the project type.
-     * 
+     *
      * @param process
      * @param context
      * @return

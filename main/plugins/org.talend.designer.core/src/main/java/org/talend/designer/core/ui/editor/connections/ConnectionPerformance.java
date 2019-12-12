@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,11 +18,11 @@ import org.talend.core.model.runprocess.data.CommonPerformance;
 
 /**
  * Model part of connection performance.
- * 
+ *
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ConnectionPerformance.java 下午02:22:20 2007-6-8 +0000 (2007-6-8) yzhang $
- * 
+ *
  */
 public class ConnectionPerformance extends Element {
 
@@ -36,7 +36,7 @@ public class ConnectionPerformance extends Element {
 
     /**
      * Constructor.
-     * 
+     *
      * yzhang ConnectionPerformance constructor comment.
      */
     public ConnectionPerformance(Connection conn) {
@@ -46,7 +46,7 @@ public class ConnectionPerformance extends Element {
 
     /**
      * Sets the label.
-     * 
+     *
      * @param label the label to set
      */
     public void setLabel(String msg) {
@@ -59,7 +59,7 @@ public class ConnectionPerformance extends Element {
 
     /**
      * Getter for label.
-     * 
+     *
      * @return the label
      */
     public String getLabel() {
@@ -68,9 +68,9 @@ public class ConnectionPerformance extends Element {
 
     /**
      * Get offset.
-     * 
+     *
      * yzhang Comment method "getLocation".
-     * 
+     *
      * @return
      */
     public Point getOffset() {
@@ -79,7 +79,7 @@ public class ConnectionPerformance extends Element {
 
     /**
      * Format performance to a simple HTML.
-     * 
+     *
      * @param data Performance data to be rendered.
      * @return HTML string.
      */
@@ -89,7 +89,7 @@ public class ConnectionPerformance extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.Element#getElementName()
      */
     @Override
@@ -99,7 +99,7 @@ public class ConnectionPerformance extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#isReadOnly()
      */
     public boolean isReadOnly() {
@@ -108,7 +108,7 @@ public class ConnectionPerformance extends Element {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#setReadOnly(boolean)
      */
     public void setReadOnly(boolean readOnly) {

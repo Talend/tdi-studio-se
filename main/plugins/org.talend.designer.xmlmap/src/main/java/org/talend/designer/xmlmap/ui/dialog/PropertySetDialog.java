@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,7 +39,7 @@ public class PropertySetDialog extends Dialog {
 
     /**
      * Create the dialog
-     * 
+     *
      * @param parentShell
      */
     public PropertySetDialog(Shell parentShell, boolean initDieOnError) {
@@ -50,7 +50,7 @@ public class PropertySetDialog extends Dialog {
 
     /**
      * Create contents of the dialog
-     * 
+     *
      * @param parent
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,9 +19,9 @@ import org.talend.designer.core.ui.editor.nodes.NodeLabel;
 
 /**
  * Command that change the label of a node. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ChangeNodeTextCommand extends Command {
 
@@ -33,7 +33,7 @@ public class ChangeNodeTextCommand extends Command {
 
     /**
      * Initialisation of the command with the label of the node and the new text.
-     * 
+     *
      * @param nodeLabel Gef object that contains the label of the node.
      * @param newName new name of the node label
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,28 +56,28 @@ public class ChangetMongoDBInputSortTextToTable extends AbstractJobMigrationTask
                             	ComponentUtilities.removeNodeProperty(node, "SORT");
                             	ComponentUtilities.addNodeProperty(node,  "SORT", "TABLE");
                             	if(sortValue!=null && !"".equals(sortValue)){
-	                            	sort = ComponentUtilities.getNodeProperty(node , "SORT"); 
-	                            	sortValue = sortValue.substring(sortValue.indexOf("{") + 1, sortValue.lastIndexOf("}"));  
+	                            	sort = ComponentUtilities.getNodeProperty(node , "SORT");
+	                            	sortValue = sortValue.substring(sortValue.indexOf("{") + 1, sortValue.lastIndexOf("}"));
 	                            	String [] sortTable = sortValue.split(",");
-	                            	ElementValueType columnNameElement = null; 
-	                            	ElementValueType sortType = null; 
-	                            	for (String sortStr : sortTable) { 
+	                            	ElementValueType columnNameElement = null;
+	                            	ElementValueType sortType = null;
+	                            	for (String sortStr : sortTable) {
 	                            		columnNameElement = TalendFileFactory.eINSTANCE.createElementValueType();
 	                            		columnNameElement.setElementRef("COLNAME");
 	                            		String columnValue = sortStr.split(":")[0].trim();
-	                            		if (columnValue.startsWith("\\\"") && columnValue.endsWith("\\\"")) {  
-	                            			columnValue = "\"" + columnValue.substring(2, columnValue.length() - 2) + "\""; 
+	                            		if (columnValue.startsWith("\\\"") && columnValue.endsWith("\\\"")) {
+	                            			columnValue = "\"" + columnValue.substring(2, columnValue.length() - 2) + "\"";
 	                            		}
 	                            		columnNameElement.setValue(columnValue);
-	                            		
-		                            	sort.getElementValue().add(columnNameElement); 
+
+		                            	sort.getElementValue().add(columnNameElement);
 		                            	sortType = TalendFileFactory.eINSTANCE.createElementValueType();
 		                            	sortType.setElementRef("ORDER");
-		                            	sortType.setValue(("1".equals(sortStr.split(":")[1].trim())) ? "asc" : "desc"); 
-		                            	sort.getElementValue().add(sortType); 
+		                            	sortType.setValue(("1".equals(sortStr.split(":")[1].trim())) ? "asc" : "desc");
+		                            	sort.getElementValue().add(sortType);
 	                            	}
                             	}
-                            	
+
                             }
                         }
                     }));

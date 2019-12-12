@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,7 +23,7 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class TalendCompletionProposal implements ICompletionProposal {
 
@@ -66,7 +66,7 @@ public class TalendCompletionProposal implements ICompletionProposal {
     /**
      * Creates a new completion proposal based on the provided information. The replacement string is considered being
      * the display string too. All remaining fields are set to <code>null</code>.
-     * 
+     *
      * @param replacementString the actual string to be inserted into the document
      * @param replacementOffset the offset of the text to be replaced
      * @param replacementLength the length of the text to be replaced
@@ -78,7 +78,7 @@ public class TalendCompletionProposal implements ICompletionProposal {
 
     /**
      * Creates a new completion proposal. All fields are initialized based on the provided information.
-     * 
+     *
      * @param replacementString the actual string to be inserted into the document
      * @param replacementOffset the offset of the text to be replaced
      * @param replacementLength the length of the text to be replaced
@@ -155,7 +155,7 @@ public class TalendCompletionProposal implements ICompletionProposal {
 
     /**
      * Getter for type.
-     * 
+     *
      * @return the type
      */
     public String getType() {
@@ -164,7 +164,7 @@ public class TalendCompletionProposal implements ICompletionProposal {
 
     /**
      * Sets the type.
-     * 
+     *
      * @param type the type to set
      */
     public void setType(String type) {
@@ -173,7 +173,7 @@ public class TalendCompletionProposal implements ICompletionProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

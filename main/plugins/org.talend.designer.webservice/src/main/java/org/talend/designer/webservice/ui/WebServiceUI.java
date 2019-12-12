@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1019,7 +1019,7 @@ public class WebServiceUI implements AbstractWebService {
 
     /**
      * DOC gcui Comment method "useSSL".
-     * 
+     *
      * @return
      */
     private void useSSL() {
@@ -1045,7 +1045,7 @@ public class WebServiceUI implements AbstractWebService {
 
     /**
      * Sets the listener.
-     * 
+     *
      * @param listener the listener to set
      */
     public void addListener(WebServiceEventListener listener) {
@@ -1131,7 +1131,7 @@ public class WebServiceUI implements AbstractWebService {
                 if (currentFunction == null) {
                     tabFolder.setSelection(wsdlTabItem);
                     MessageBox box = new MessageBox(Display.getCurrent().getActiveShell(), SWT.ICON_WARNING | SWT.OK);
-                    box.setText("WARNING"); //$NON-NLS-1$ 
+                    box.setText("WARNING"); //$NON-NLS-1$
                     box.setMessage("Please Select a Operation."); //$NON-NLS-1$
                     box.open();
                     return;
@@ -1913,6 +1913,8 @@ public class WebServiceUI implements AbstractWebService {
 
             @Override
             protected void createColumns(TableViewerCreator<InputMappingData> tableViewerCreator, final Table table) {
+                ExtendedTableModel<InputMappingData> tableModel = this.getExtendedTableModel();
+
                 // input mapping express cloumn.
                 TableViewerCreatorColumn<InputMappingData, String> expressionColumn = new TableViewerCreatorColumn<InputMappingData, String>(
                         tableViewerCreator);
@@ -1981,7 +1983,12 @@ public class WebServiceUI implements AbstractWebService {
                         if (para != null) {
                             List<ParameterInfo> paraList = new ParameterInfoUtil().getAllChildren(para);// para.
                             if (paraList != null && paraList.size() > 0 && para.getParent() == null) {
-                                boolean flag = isExpanded(table, para, paraList, "IN"); //$NON-NLS-1$
+                                boolean flag = false;
+                                if (TableViewerCreator.getRecommandLazyLoad()) {
+                                    flag = isExpanded4Input(tableModel.getBeansList(), para, paraList);
+                                } else {
+                                    flag = isExpanded(table, para, paraList, "IN"); //$NON-NLS-1$
+                                }
                                 if (flag) {
                                     return "[-] " + para.getName(); //$NON-NLS-1$
                                 }
@@ -2595,6 +2602,8 @@ public class WebServiceUI implements AbstractWebService {
 
             @Override
             protected void createColumns(TableViewerCreator<OutPutMappingData> tableViewerCreator, final Table table) {
+                ExtendedTableModel<OutPutMappingData> tableModel = this.getExtendedTableModel();
+
                 TableViewerCreatorColumn rowColumn = new TableViewerCreatorColumn(tableViewerCreator);
                 rowColumn.setTitle(Messages.getString("WebServiceUI.ELEMENT")); //$NON-NLS-1$
                 rowColumn.setBeanPropertyAccessors(new IBeanPropertyAccessors<OutPutMappingData, String>() {
@@ -2607,7 +2616,12 @@ public class WebServiceUI implements AbstractWebService {
                         if (para != null) {
                             List<ParameterInfo> paraList = new ParameterInfoUtil().getAllChildren(para);// para.
                             if (paraList != null && paraList.size() > 0 && para.getParent() == null) {
-                                boolean flag = isExpanded(table, para, paraList, "OUT"); //$NON-NLS-1$
+                                boolean flag = false;
+                                if (TableViewerCreator.getRecommandLazyLoad()) {
+                                    flag = isExpanded4Output(tableModel.getBeansList(), para, paraList);
+                                } else {
+                                    flag = isExpanded(table, para, paraList, "OUT"); //$NON-NLS-1$
+                                }
                                 if (flag) {
                                     return "[-] " + para.getName(); //$NON-NLS-1$
                                 }
@@ -3409,7 +3423,13 @@ public class WebServiceUI implements AbstractWebService {
         this.outputMetadata = outputMetadata;
     }
 
+    public void reInitLinks() {
+        initLinksForIn();
+        initLinksForOut();
+    }
+
     private void initLinksForIn() {
+        // refreshTableView();
         IElementParameter INPUT_PARAMSPara = connector.getElementParameter("INPUT_PARAMS"); //$NON-NLS-1$
         List<Map<String, String>> inputparaValue = (List<Map<String, String>>) INPUT_PARAMSPara.getValue();
         TableItem[] items = rowTableForin.getItems();
@@ -3497,7 +3517,7 @@ public class WebServiceUI implements AbstractWebService {
                         String sourseName = ((OutPutMappingData) items[i].getData()).getParameterName();
                         // int m = sourseName.lastIndexOf(".");
                         // sourseName = sourseName.substring(m + 1);
-                        if (sourseName.equals(source)) {
+                        if (sourseName != null && sourseName.equals(source)) {
                             sourceItem = items[i];
                             sourceData = items[i].getData();
                             if (sourceItem == null) {
@@ -3664,6 +3684,68 @@ public class WebServiceUI implements AbstractWebService {
         }
 
         // List<ParameterInfo> paraList = currentInputMappingData.getParameter().getParameterInfos();
+
+        return flag;
+    }
+
+    /**
+     * For Lazyload, table maybe didn't load data completely, use TableModel to judge if is expanded DOC jding Comment
+     * method "isExpanded".
+     *
+     * @param tableBeansList
+     * @param para
+     * @param childparaList
+     * @return
+     */
+    private boolean isExpanded4Input(List<InputMappingData> tableBeansList, ParameterInfo para,
+            List<ParameterInfo> childparaList) {
+        boolean flag = false;
+        int index = -1;
+        for (int i = 0; i < tableBeansList.size(); i++) {
+            if (tableBeansList.get(i).getParameter() == para) {
+                index = i;
+            }
+        }
+
+        if (index + 1 < tableBeansList.size()) {
+            ParameterInfo paraToComp = tableBeansList.get(index + 1).getParameter();
+            for (ParameterInfo info : childparaList) {
+                if (paraToComp == info) {
+                    flag = true;
+                    return flag;
+                }
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * For Lazyload, table maybe didn't load data completely, use TableModel to judge if is expanded DOC jding Comment
+     * method "isExpanded4Output".
+     *
+     * @param tableBeansList
+     * @param para
+     * @param childparaList
+     * @return
+     */
+    private boolean isExpanded4Output(List<OutPutMappingData> tableBeansList, ParameterInfo para,
+            List<ParameterInfo> childparaList) {
+        boolean flag = false;
+        int index = -1;
+        for (int i = 0; i < tableBeansList.size(); i++) {
+            if (tableBeansList.get(i).getParameter() == para) {
+                index = i;
+            }
+        }
+        if (index + 1 < tableBeansList.size()) {
+            ParameterInfo paraToComp = tableBeansList.get(index + 1).getParameter();
+            for (ParameterInfo info : childparaList) {
+                if (paraToComp == info) {
+                    flag = true;
+                    return flag;
+                }
+            }
+        }
 
         return flag;
     }
@@ -3901,6 +3983,7 @@ public class WebServiceUI implements AbstractWebService {
         }
         expressinPutTableView.getTableViewerCreator().getTableViewer().refresh();
         rowoutPutTableView.getTableViewerCreator().getTableViewer().refresh();
+        expressoutPutTableView.getTableViewerCreator().getTableViewer().refresh();
     }
 
     private void synchronizeInputLinks(TableToTablesLinker<Object, Object> tabTotabLink,

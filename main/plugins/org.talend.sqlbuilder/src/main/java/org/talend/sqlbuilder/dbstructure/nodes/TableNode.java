@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -45,9 +45,9 @@ import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TableNode.java,v 1.20 2006/11/09 01:21:53 qiang.zhang Exp $
- * 
+ *
  */
 public class TableNode extends AbstractNode {
 
@@ -77,7 +77,7 @@ public class TableNode extends AbstractNode {
 
     /**
      * Create new database table node.
-     * 
+     *
      * @param parent node
      * @param name of this node
      * @param sessionNode session for this node
@@ -114,7 +114,7 @@ public class TableNode extends AbstractNode {
 
     /**
      * Set isFromRepository.
-     * 
+     *
      * @param isFromRepository2 isFromRepository.
      */
     public void setFromRepository(boolean isFromRepository2) {
@@ -241,7 +241,7 @@ public class TableNode extends AbstractNode {
 
     /**
      * Returns the table info type as the type for this node.
-     * 
+     *
      * @return Type.
      * @see org.talend.sqlbuilder.dbstructure.nodes.INode#getType()
      */
@@ -291,8 +291,8 @@ public class TableNode extends AbstractNode {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @see org.talend.sqlbuilder.dbstructure.nodes.AbstractNode#loadChildren()
      */
     public void loadChildren() {
@@ -392,7 +392,7 @@ public class TableNode extends AbstractNode {
 
     /**
      * Check if ColumnNode and Column are the same.
-     * 
+     *
      * @param node ColumnNode
      * @param column MetadataColumnImpl
      * @return isNodeSameToColumn
@@ -430,7 +430,7 @@ public class TableNode extends AbstractNode {
 
     /**
      * Check if TableColumnInfo and MetadataColumnImpl are the same..
-     * 
+     *
      * @param info MetadataColumn
      * @param column MetadataColumnImpl
      * @return isEquivalent.
@@ -500,7 +500,7 @@ public class TableNode extends AbstractNode {
 
     /**
      * Get repository columns from table repositoryNode.
-     * 
+     *
      * @param repositoryNode -- table repositoryNode
      * @return columns
      * @exception
@@ -512,7 +512,7 @@ public class TableNode extends AbstractNode {
 
     /**
      * Get repository table from table repositoryNode.
-     * 
+     *
      * @param repositoryNode -- table repositoryNode
      * @return columns
      * @exception

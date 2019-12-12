@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -47,16 +47,16 @@ import org.talend.repository.ProjectManager;
 
 /**
  * Launch a Process in shadow mode. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  * @param <T>
- * 
+ *
  */
 public class ShadowProcess<T extends IProcessDescription> {
 
     /**
-     * 
+     *
      */
     private static final String TEMP_LDAP_SCHEMA_FILE_NAME = "TempLDAPSchema"; //$NON-NLS-1$
 
@@ -70,9 +70,9 @@ public class ShadowProcess<T extends IProcessDescription> {
 
     /**
      * Available Shadow Process Types.
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     public static enum EShadowProcessType {
         FILE_DELIMITED,
@@ -169,7 +169,7 @@ public class ShadowProcess<T extends IProcessDescription> {
         }
 
         FileOutputDelimitedNode outNode = new FileOutputDelimitedNode(
-                TalendTextUtils.addQuotes("" + PathUtils.getPortablePath(outPath.toOSString())), description.getEncoding()); //$NON-NLS-1$ 
+                TalendTextUtils.addQuotes("" + PathUtils.getPortablePath(outPath.toOSString())), description.getEncoding()); //$NON-NLS-1$
         switch (type) {
 
         case FILE_DELIMITED:
@@ -349,9 +349,9 @@ public class ShadowProcess<T extends IProcessDescription> {
     }
 
     /**
-     * 
+     *
      * DOC xye Comment method "runWithErrorOutputAsException".
-     * 
+     *
      * @param outputErrorAsException
      * @return
      * @throws ProcessorException
@@ -400,7 +400,7 @@ public class ShadowProcess<T extends IProcessDescription> {
 
     /**
      * Destroy the current process if exists.
-     * 
+     *
      * @return error code of {@link java.lang.Process#exitValue()}
      */
     public int destroy() {

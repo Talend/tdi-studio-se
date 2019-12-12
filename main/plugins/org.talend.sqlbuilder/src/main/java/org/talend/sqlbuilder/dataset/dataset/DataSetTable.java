@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,7 +36,7 @@ import org.talend.sqlbuilder.Messages;
 
 /**
  * @author Davy Vanherbergen
- * 
+ *
  */
 public class DataSetTable {
 
@@ -49,7 +49,7 @@ public class DataSetTable {
 
     /**
      * Create a new table element for a resultset in a given composite.
-     * 
+     *
      * @param composite canvas to draw table on
      * @param dataSet content of table
      * @param info text displayed in bottem left corner under table

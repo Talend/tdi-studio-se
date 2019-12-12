@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -62,7 +62,7 @@ import org.talend.repository.preference.audit.AuditManager;
 import org.talend.repository.preference.audit.SupportDBUrlStore;
 import org.talend.repository.preference.audit.SupportDBUrlType;
 import org.talend.repository.preference.audit.SupportDBVersions;
-import org.talend.utils.security.CryptoHelper;
+import org.talend.utils.security.StudioEncryption;
 import org.talend.utils.sugars.TypedReturnCode;
 
 /**
@@ -108,7 +108,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -466,7 +466,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             driverText.setText(prefManager.getValue(AuditManager.AUDIT_DRIVER));
             urlText.setText(prefManager.getValue(AuditManager.AUDIT_URL));
             usernameText.setText(prefManager.getValue(AuditManager.AUDIT_USERNAME));
-            passwordText.setText(CryptoHelper.getDefault().decrypt(prefManager.getValue(AuditManager.AUDIT_PASSWORD)));
+            passwordText.setText(StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                    .decrypt(prefManager.getValue(AuditManager.AUDIT_PASSWORD)));
         }
         hideControl(!savedInDBButton.getSelection());
     }
@@ -491,7 +492,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             prefManager.setValue(AuditManager.AUDIT_DRIVER, driverText.getText());
             prefManager.setValue(AuditManager.AUDIT_URL, urlText.getText());
             prefManager.setValue(AuditManager.AUDIT_USERNAME, usernameText.getText());
-            prefManager.setValue(AuditManager.AUDIT_PASSWORD, CryptoHelper.getDefault().encrypt(passwordText.getText()));
+            prefManager.setValue(AuditManager.AUDIT_PASSWORD, StudioEncryption
+                    .getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).encrypt(passwordText.getText()));
             prefManager.setValue(AuditManager.AUDIT_SAVEDINDB, savedInDBButton.getSelection());
             prefManager.save();
         }
@@ -589,7 +591,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#performApply()
      */
     @Override
@@ -600,7 +602,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
@@ -611,7 +613,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.preference.ProjectSettingPage#refresh()
      */
     @Override

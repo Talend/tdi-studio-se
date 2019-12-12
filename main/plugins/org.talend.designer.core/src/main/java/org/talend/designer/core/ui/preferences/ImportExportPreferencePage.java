@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,7 @@ public class ImportExportPreferencePage extends FieldEditorPreferencePage implem
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
      */
     @Override
@@ -42,7 +42,7 @@ public class ImportExportPreferencePage extends FieldEditorPreferencePage implem
         CheckBoxFieldEditor addClasspathJarButton = new CheckBoxFieldEditor(IRepositoryPrefConstants.ADD_CLASSPATH_JAR,
                 Messages.getString("ImportExportPreferencePage.addClasspathJar"), getFieldEditorParent()); //$NON-NLS-1$
         addField(addClasspathJarButton);
-        
+
         CheckBoxFieldEditor needRebuild = new CheckBoxFieldEditor(IRepositoryPrefConstants.REBUILD_RELATIONSHIPS,
                 Messages.getString("ImportExportPreferencePage.rebuildRelationships"), getFieldEditorParent()); //$NON-NLS-1$
         addField(needRebuild);

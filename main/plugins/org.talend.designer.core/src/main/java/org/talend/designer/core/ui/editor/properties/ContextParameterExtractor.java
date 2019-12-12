@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,9 +41,9 @@ import org.talend.designer.core.ui.wizards.ContextParameterWizard;
 
 /**
  * Extract context parameter from the GUI. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public final class ContextParameterExtractor {
 
@@ -55,7 +55,7 @@ public final class ContextParameterExtractor {
 
     /**
      * Install a context parameter extracter on a text field associated with a given process.
-     * 
+     *
      * @param text Component on wich extractor is installed.
      * @param process Process on wich context parameter is added.
      */
@@ -116,7 +116,7 @@ public final class ContextParameterExtractor {
 
     /**
      * qzhang Comment method "saveContext".
-     * 
+     *
      * @param parameterName
      * @param elem
      * @param replaceCode

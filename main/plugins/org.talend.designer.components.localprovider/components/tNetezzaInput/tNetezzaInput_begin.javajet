@@ -17,11 +17,22 @@ imports="
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
 	    
+	    public void beforeComponentProcess(INode node){
+			super.beforeComponentProcess(node);
+			cid = node.getUniqueName();
+		}
+	    
 		public void setURL(INode node) {
 			
+			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
-			String url_<%=cid %> = "jdbc:netezza://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+				String url_<%=cid %> = "jdbc:netezza://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
 <%
+			} else {
+%>
+				String url_<%=cid %> = "jdbc:netezza://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+<%
+			}
 		}
 		
 		public String getDirverClassName(INode node){

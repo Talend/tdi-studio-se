@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,7 +49,7 @@ import orgomg.cwm.objectmodel.core.CoreFactory;
 import orgomg.cwm.objectmodel.core.TaggedValue;
 
 /**
- * 
+ *
  * created by ycbai on 2016年9月22日 Detailled comment
  *
  */
@@ -149,7 +149,7 @@ public class NewDelimitedFileWizardMigrationTask extends NewGenericWizardMigrati
 
     /**
      * Remove quotes from string property value unless it is a space which is invisible.
-     * 
+     *
      * @param componentProperties
      * @param propertyName
      * @return true if the property is modified, otherwise return false.

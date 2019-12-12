@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.talend.core.model.process.IConnectionCategory;
 
 /**
  * cli class global comment. Detailled comment
- * 
+ *
  * this action process all of the no data connection.
- * 
+ *
  * "connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)" is false for bug 8087
  */
 public class ModifyConnectionOrderAction extends ModifyOutputOrderAction {

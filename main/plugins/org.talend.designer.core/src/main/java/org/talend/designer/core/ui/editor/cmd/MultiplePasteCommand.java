@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,7 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerPart;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class MultiplePasteCommand extends CompoundCommand {
 
@@ -62,7 +62,7 @@ public class MultiplePasteCommand extends CompoundCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.CompoundCommand#execute()
      */
     @Override
@@ -113,7 +113,7 @@ public class MultiplePasteCommand extends CompoundCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.commands.CompoundCommand#undo()
      */
     @Override
@@ -134,7 +134,7 @@ public class MultiplePasteCommand extends CompoundCommand {
     /**
      * bqian Comment method "setSelectedSubjobs". <br>
      * see bug 0004882: Subjob title is not copied when copying/pasting subjobs from one job to another
-     * 
+     *
      * @param subjobParts
      */
     public void setSelectedSubjobs(List<SubjobContainerPart> subjobParts) {
@@ -143,7 +143,7 @@ public class MultiplePasteCommand extends CompoundCommand {
 
     /**
      * Sets the selectedExpandedJoblet.
-     * 
+     *
      * @param selectedExpandedJoblet the selectedExpandedJoblet to set
      */
     public void setSelectedExpandedJoblet(List<NodePart> selectedExpandedJoblet) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,13 +42,13 @@ import org.talend.core.ui.properties.tab.IDynamicProperty;
 public class TreeTableController extends AbstractElementPropertySectionController {
 
     /**
-     * 
+     *
      */
     private static final int MIN_NUMBER_ROWS = 10;
 
     /**
      * DOC hcyi TreeTableController constructor comment.
-     * 
+     *
      * @param dp
      */
     public TreeTableController(IDynamicProperty dp) {
@@ -57,7 +57,7 @@ public class TreeTableController extends AbstractElementPropertySectionControlle
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#createControl
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -159,7 +159,7 @@ public class TreeTableController extends AbstractElementPropertySectionControlle
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent arg0) {
@@ -173,7 +173,7 @@ public class TreeTableController extends AbstractElementPropertySectionControlle
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -189,7 +189,7 @@ public class TreeTableController extends AbstractElementPropertySectionControlle
     }
 
     /**
-     * 
+     *
      * DOC hcyi TreeTableController class global comment. Detailled comment
      */
     class MyTreeContentProvider implements ITreeContentProvider {
@@ -235,7 +235,7 @@ public class TreeTableController extends AbstractElementPropertySectionControlle
     }
 
     /**
-     * 
+     *
      * DOC hcyi TreeTableController class global comment. Detailled comment
      */
     class MyTableLableProvider implements ITableLabelProvider {

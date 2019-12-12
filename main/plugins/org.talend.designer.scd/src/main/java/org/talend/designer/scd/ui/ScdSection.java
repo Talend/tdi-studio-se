@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -80,7 +80,7 @@ public class ScdSection {
 
     /**
      * DOC hcw Comment method "init".
-     * 
+     *
      * @param width
      * @param composite
      */
@@ -109,7 +109,7 @@ public class ScdSection {
 
     /**
      * DOC chuang Comment method "createToolbar".
-     * 
+     *
      * @param headerComposite
      */
     protected void createToolbar(Composite headerComposite) {
@@ -145,7 +145,7 @@ public class ScdSection {
 
     /**
      * DOC hcw Comment method "createContents".
-     * 
+     *
      * @param composite
      */
     protected void createContents(Composite composite) {
@@ -169,7 +169,7 @@ public class ScdSection {
 
     /**
      * DOC hcw Comment method "adjustIndicesDown".
-     * 
+     *
      * @param selectionIndices
      * @param tableModel2
      * @return
@@ -215,7 +215,7 @@ public class ScdSection {
 
     /**
      * DOC hcw Comment method "adjustIndicesUp".
-     * 
+     *
      * @param selectionIndices
      * @param tableModel2
      * @return
@@ -261,7 +261,7 @@ public class ScdSection {
 
     /**
      * DOC hcw Comment method "convertToArray".
-     * 
+     *
      * @param collection
      * @return
      */

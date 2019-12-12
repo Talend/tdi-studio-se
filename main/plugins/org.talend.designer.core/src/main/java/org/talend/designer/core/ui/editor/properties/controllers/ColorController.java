@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,9 +46,9 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: CheckController.java 1 2006-12-12 下午01:45:55 +0000 (下午01:45:55) yzhang $
- * 
+ *
  */
 public class ColorController extends AbstractElementPropertySectionController {
 
@@ -58,7 +58,7 @@ public class ColorController extends AbstractElementPropertySectionController {
 
     /**
      * DOC yzhang CheckController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public ColorController(IDynamicProperty dp) {
@@ -67,7 +67,7 @@ public class ColorController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
@@ -93,7 +93,7 @@ public class ColorController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
@@ -170,7 +170,7 @@ public class ColorController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
@@ -192,7 +192,7 @@ public class ColorController extends AbstractElementPropertySectionController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(PropertyChangeEvent evt) {
@@ -222,7 +222,7 @@ public class ColorController extends AbstractElementPropertySectionController {
 
     /**
      * yzhang Comment method "resetButtonColor".
-     * 
+     *
      * @param colorBtn
      * @param value
      */

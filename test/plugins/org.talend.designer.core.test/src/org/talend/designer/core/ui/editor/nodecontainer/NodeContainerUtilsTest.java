@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -68,7 +68,7 @@ public class NodeContainerUtilsTest {
     @Test
     public void testformatTime1000000000ms() {
         String result = NodeContainerUtils.formatTime("1000000000"); //$NON-NLS-1$
-        assertEquals(result, "16666" + MINUTE + SPACE + "40" + SECOND); //$NON-NLS-1$ //$NON-NLS-2$ 
+        assertEquals(result, "16666" + MINUTE + SPACE + "40" + SECOND); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Test

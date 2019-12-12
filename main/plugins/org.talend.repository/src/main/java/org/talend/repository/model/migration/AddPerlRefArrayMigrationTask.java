@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,7 +46,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * Use to replace .
- * 
+ *
  */
 public class AddPerlRefArrayMigrationTask extends AbstractJobMigrationTask {
 
@@ -62,7 +62,7 @@ public class AddPerlRefArrayMigrationTask extends AbstractJobMigrationTask {
             } else {
 
                 List<String> namesList = new ArrayList<String>();
-              
+
                 for (Object o : processType.getNode()) {
                     NodeType nt = (NodeType) o;
                     namesList.add(ComponentUtilities.getNodeUniqueName(nt));
@@ -81,7 +81,7 @@ public class AddPerlRefArrayMigrationTask extends AbstractJobMigrationTask {
 
                     /*
                      * (non-Javadoc)
-                     * 
+                     *
                      * @see org.talend.core.model.components.filters.IComponentFilter#accept(org.talend.designer.core.model.utils.emf.talendfile.NodeType)
                      */
                     public boolean accept(NodeType node) {
@@ -96,7 +96,7 @@ public class AddPerlRefArrayMigrationTask extends AbstractJobMigrationTask {
 
                     /*
                      * (non-Javadoc)
-                     * 
+                     *
                      * @see org.talend.core.model.components.conversions.IComponentConversion#transform(org.talend.designer.core.model.utils.emf.talendfile.NodeType)
                      */
                     public void transform(NodeType node) {
@@ -136,7 +136,7 @@ public class AddPerlRefArrayMigrationTask extends AbstractJobMigrationTask {
     }
 
     /**
-     * 
+     *
      * DOC amaumont AddPerlRefArrayPointer class global comment. Detailled comment
      */
     public class RefArraySyntaxReplacerForPerl {
@@ -160,7 +160,7 @@ public class AddPerlRefArrayMigrationTask extends AbstractJobMigrationTask {
 
         /**
          * DOC amaumont Comment method "setRegexpPattern".
-         * 
+         *
          * @param regexpPattern
          */
         public void setLocationPattern(String locationPattern) {
@@ -216,7 +216,7 @@ public class AddPerlRefArrayMigrationTask extends AbstractJobMigrationTask {
                 if (returnedExpression != null) {
                     matcher.setMultiline(true);
                     Perl5Substitution substitution = new Perl5Substitution("@\\$" + "$1" //$NON-NLS-1$ //$NON-NLS-2$
-                    , Perl5Substitution.INTERPOLATE_ALL); 
+                    , Perl5Substitution.INTERPOLATE_ALL);
                     returnedExpression = Util.substitute(matcher, pattern, substitution, returnedExpression, Util.SUBSTITUTE_ALL);
                 }
 
@@ -227,7 +227,7 @@ public class AddPerlRefArrayMigrationTask extends AbstractJobMigrationTask {
     }
 
     /**
-     * 
+     *
      * DOC amaumont AddPerlRefArrayPointer class global comment. Detailled comment
      */
     public class TableEntryLocation {
@@ -242,7 +242,7 @@ public class AddPerlRefArrayMigrationTask extends AbstractJobMigrationTask {
 
         /**
          * DOC amaumont Couple constructor comment.
-         * 
+         *
          * @param tableName
          * @param columnName
          */
@@ -253,7 +253,7 @@ public class AddPerlRefArrayMigrationTask extends AbstractJobMigrationTask {
 
         /**
          * DOC amaumont Couple constructor comment.
-         * 
+         *
          * @param tableName
          * @param columnName
          */

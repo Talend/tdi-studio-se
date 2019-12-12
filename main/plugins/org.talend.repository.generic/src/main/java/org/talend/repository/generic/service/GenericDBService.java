@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -93,9 +93,9 @@ import orgomg.cwm.objectmodel.core.TaggedValue;
  * DOC hwang  class global comment. Detailled comment
  */
 public class GenericDBService implements IGenericDBService{
-    
+
     private static List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();
-    
+
     @Override
     public Map<String, Composite> creatDBDynamicComposite(Composite composite, EComponentCategory sectionCategory, boolean isReadOnly, boolean isCreation,
             Property property, String typeName) {
@@ -125,7 +125,7 @@ public class GenericDBService implements IGenericDBService{
                 }
             }
         }
-        
+
         List<Form> forms = componentWizard.getForms();
         Element baseElement = new FakeElement("");//$NON-NLS-1$
         Form form = forms.get(0);
@@ -139,7 +139,7 @@ public class GenericDBService implements IGenericDBService{
                 baseElement, (ConnectionItem) property.getItem(), true, composite.getBackground(), form, false);
         dynamicComposite.setLayoutData(createMainFormData(true));
         map.put("DynamicComposite", dynamicComposite);
-        
+
         if(isCreation && ((ConnectionItem)item).getConnection().getCompProperties() != null){
             ComponentProperties componentProperties = ComponentsUtils
                     .getComponentPropertiesFromSerialized(connection.getCompProperties(), connection);
@@ -149,7 +149,7 @@ public class GenericDBService implements IGenericDBService{
                     continue;
                 }
                 if(thing instanceof org.talend.daikon.properties.property.Property){
-                    param.setValue(ComponentsUtils.getParameterValue(baseElement, 
+                    param.setValue(ComponentsUtils.getParameterValue(baseElement,
                             (org.talend.daikon.properties.property.Property)thing, param.getFieldType(), param.getName()));
                 }else if(thing instanceof Properties){
                     param.setValue(GenericTableUtils.getTableValues(((Properties)thing), param));
@@ -161,18 +161,18 @@ public class GenericDBService implements IGenericDBService{
         Composite contextParentComp = new Composite(composite, SWT.NONE);
         contextParentComp.setLayoutData(createFooterFormData(dynamicComposite));
         contextParentComp.setLayout(new GridLayout());
-        
+
         GenericContextHandler contextHandler = new GenericContextHandler();
         contextHandler.setParameters(getContextParameters(baseElement));
         ContextComposite contextComp = new ContextComposite(contextParentComp, (ConnectionItem)property.getItem(), isReadOnly,
                 contextHandler);
-        
+
         contextComp.addPropertyChangeListener(dynamicComposite);
         contextComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         map.put("ContextComposite", contextComp);
         return map;
     }
-    
+
     private List<IElementParameter> getContextParameters(Element element) {
         List<IElementParameter> contextParameters = new ArrayList<>();
         for (IElementParameter parameter : element.getElementParameters()) {
@@ -192,7 +192,7 @@ public class GenericDBService implements IGenericDBService{
         }
         return contextParameters;
     }
-    
+
     private FormData createMainFormData(boolean addContextSupport) {
         FormData data = new FormData();
         data.left = new FormAttachment(0, 0);
@@ -275,12 +275,12 @@ public class GenericDBService implements IGenericDBService{
         if (!creation) {
             GenericUpdateManager.updateGenericConnection(item, oldMetadataTable);
         }
-      
+
     }
 
     /**
      * Update some attributes on DQ side(same as other type database connections)
-     * 
+     *
      * @param creation
      * @param connectionItem
      */
@@ -295,16 +295,12 @@ public class GenericDBService implements IGenericDBService{
             // MOD qiongli 2012-11-19 TDQ-6287
             if (creation) {
                 tdqRepService.notifySQLExplorer(connectionItem);
-                tdqRepService.openConnectionEditor(connectionItem);
             } else {
                 tdqRepService.updateAliasInSQLExplorer(connectionItem, connectionItem.getProperty().getDisplayName());
-                // refresh the opened connection editor whatever is in DI or DQ perspective.
-                tdqRepService.refreshConnectionEditor(connectionItem);
-
             }
         }
     }
-    
+
     @Override
     public Form getDynamicForm(Composite composite){
         if(composite != null && composite instanceof DynamicComposite){
@@ -334,7 +330,7 @@ public class GenericDBService implements IGenericDBService{
     public List<ERepositoryObjectType> getExtraTypes() {
         return extraTypes;
     }
-    
+
     @Override
     public void convertPropertiesToDBElements(Properties props,Connection connection){
         if(!(connection instanceof DatabaseConnection)){
@@ -362,7 +358,7 @@ public class GenericDBService implements IGenericDBService{
                 } else if (proName.equals("userId")) {//$NON-NLS-1$
                     dbConnection.setUsername((String) value);
                 } else if (proName.equals("password")) {//$NON-NLS-1$
-                    dbConnection.setPassword((String) value);
+                    dbConnection.setRawPassword((String) value);
                 } else if (proName.equals("mappingFile")) {//$NON-NLS-1$
                     dbConnection.setDbmsId((String) value);
                 } else if (proName.equals("drivers") && GenericTypeUtils.isListStringType((org.talend.daikon.properties.property.Property) otherProp)) {//$NON-NLS-1$
@@ -413,7 +409,7 @@ public class GenericDBService implements IGenericDBService{
         if(rejectProperties != null){
             rejectProperties.setValue("schema", MetadataToolAvroHelper.convertToAvro(table));
         }
-        
+
         TaggedValue serializedPropsTV = CoreFactory.eINSTANCE.createTaggedValue();
         serializedPropsTV.setTag(IComponentConstants.COMPONENT_PROPERTIES_TAG);
         serializedPropsTV.setValue(properties.toSerialized());
@@ -422,7 +418,7 @@ public class GenericDBService implements IGenericDBService{
         schemaPropertyTV.setTag(IComponentConstants.COMPONENT_SCHEMA_TAG);
         schemaPropertyTV.setValue("schema");
         table.getTaggedValue().add(schemaPropertyTV);
-        
+
         iTable = MetadataToolHelper.convert(table);
         return iTable;
     }
@@ -455,5 +451,5 @@ public class GenericDBService implements IGenericDBService{
         }
         return type;
     }
-    
+
 }

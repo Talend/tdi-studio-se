@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,7 +21,7 @@ import org.talend.daikon.avro.AvroUtils;
 
 /**
  * {@link DynamicIndexMapper} implementation, which match fields according their indexes
- * 
+ *
  * When design schema and runtime schema have fields in different order or when there are gaps between non dynamic
  * fields, {@link DynamicIndexMapperByName} should be used instead
  */
@@ -39,7 +39,7 @@ class DynamicIndexMapperByIndex implements DynamicIndexMapper {
 
     /**
      * Constructor sets design schema size and dynamic field position
-     * 
+     *
      * @param designSchema design schema
      */
     DynamicIndexMapperByIndex(Schema designSchema) {
@@ -54,7 +54,7 @@ class DynamicIndexMapperByIndex implements DynamicIndexMapper {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * If there is dynamic field corresponding value has no sense, because there are several runtime fields which corresponds
      * dynamic field.
      * That's why -1 value is set for dynamic field index. All other fields should be shifted on dynamicFields positions forward

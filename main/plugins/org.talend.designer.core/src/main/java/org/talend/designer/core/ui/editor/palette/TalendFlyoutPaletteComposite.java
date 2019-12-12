@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -80,7 +80,7 @@ public class TalendFlyoutPaletteComposite extends FlyoutPaletteComposite impleme
 
     /**
      * DOC Administrator TalendFlyoutPaletteComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param page
@@ -197,7 +197,7 @@ public class TalendFlyoutPaletteComposite extends FlyoutPaletteComposite impleme
 
     /**
      * log the exception and throw a Runtime exception cause this is serious.
-     * 
+     *
      * @param e
      */
     private static void handleReflectionFailure(Exception e) {
@@ -209,7 +209,7 @@ public class TalendFlyoutPaletteComposite extends FlyoutPaletteComposite impleme
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.themes.core.elements.widgets.ITalendPaletteWidget#getCSSStyleSetting()
      */
     @Override

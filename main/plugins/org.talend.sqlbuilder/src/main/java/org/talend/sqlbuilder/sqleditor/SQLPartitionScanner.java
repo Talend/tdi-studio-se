@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,9 +29,9 @@ import org.eclipse.jface.text.rules.WordRule;
 
 /**
  * SQLPartitionScanner. <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  */
 public class SQLPartitionScanner extends RuleBasedPartitionScanner {
 
@@ -60,7 +60,7 @@ public class SQLPartitionScanner extends RuleBasedPartitionScanner {
 
         /**
          * Constructor for EmptyCommentRule.
-         * 
+         *
          * @param defaultToken
          */
         public EmptyCommentRule(IToken successToken) {

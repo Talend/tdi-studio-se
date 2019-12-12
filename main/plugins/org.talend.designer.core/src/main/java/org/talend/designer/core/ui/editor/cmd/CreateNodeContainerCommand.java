@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,9 +37,9 @@ import org.talend.designer.core.ui.views.problems.Problems;
 
 /**
  * Command that create a new node. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class CreateNodeContainerCommand extends CreateCommand {
 
@@ -47,7 +47,7 @@ public class CreateNodeContainerCommand extends CreateCommand {
 
     /**
      * Create the node on the given diagram.
-     * 
+     *
      * @param diagram
      * @param node
      * @param location

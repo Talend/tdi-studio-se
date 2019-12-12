@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.talend.core.ui.properties.tab.IDynamicProperty;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: LanguageMemoController.java 1 2006-12-12 下午02:48:54 +0000 (下午02:48:54) yzhang $
- * 
+ *
  */
 public class PerlMemoController extends AbstractLanguageMemoController {
 

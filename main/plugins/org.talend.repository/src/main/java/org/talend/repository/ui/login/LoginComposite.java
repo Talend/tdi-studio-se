@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -130,10 +130,10 @@ import org.talend.utils.json.JSONException;
 
 /**
  * labe Composite login.<br/>
- * 
+ *
  * $Id: /talend/tos/trunk/org.talend.repository/src/main/java/org/talend/repository/ui/login/LoginComposite.java 24167
  * 2009-04-28T09:55:53.574018Z wchen $
- * 
+ *
  * @deprecated use LoginProjectPage instead
  */
 @Deprecated
@@ -283,7 +283,7 @@ public class LoginComposite extends Composite {
 
     /**
      * Constructs a new LoginComposite.
-     * 
+     *
      * @param parent Parent component.
      * @param style Style bits.
      */
@@ -349,7 +349,7 @@ public class LoginComposite extends Composite {
         }
         try {
             setStatusArea();
-            log.info("validate updatesite..."); //$NON-NLS-1$ 
+            log.info("validate updatesite..."); //$NON-NLS-1$
             validateUpdate();
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
@@ -1516,7 +1516,7 @@ public class LoginComposite extends Composite {
 
     /**
      * If setted, Select last ? used in PreferenceStore.
-     * 
+     *
      * @param prefManipulator
      */
     private void selectLast(String lastObjectSelected, Combo comboToSelect) {
@@ -1537,7 +1537,7 @@ public class LoginComposite extends Composite {
     }
 
     /**
-     * 
+     *
      * @return
      */
     protected boolean isAuthenticationNeeded() {
@@ -2299,7 +2299,7 @@ public class LoginComposite extends Composite {
 
     /**
      * smallet Comment method "selectLastUsedProject".
-     * 
+     *
      * @param projects
      */
     private void selectLastUsedProject() {
@@ -2328,7 +2328,7 @@ public class LoginComposite extends Composite {
 
     /**
      * smallet Comment method "selectProject".
-     * 
+     *
      * @param goodProject
      */
     private void selectProject(Project goodProject) {
@@ -2400,9 +2400,9 @@ public class LoginComposite extends Composite {
 
     /**
      * Label provider for Projects. <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class ProjectLabelProvider extends LabelProvider {
 
@@ -2427,9 +2427,9 @@ public class LoginComposite extends Composite {
 
     /**
      * DOC smallet LoginComposite class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id$
-     * 
+     *
      */
     private class ConnectionLabelProvider extends LabelProvider {
 

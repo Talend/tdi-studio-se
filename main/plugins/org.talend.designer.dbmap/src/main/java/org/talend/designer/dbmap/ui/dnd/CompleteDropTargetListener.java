@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,9 +48,9 @@ import org.talend.designer.dbmap.ui.visualmap.zone.scrollable.TablesZoneView;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class CompleteDropTargetListener extends DefaultDropTargetListener {
 
@@ -62,7 +62,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
 
     /**
      * DOC amaumont CompleteDropTargetListener constructor comment.
-     * 
+     *
      * @param mapperManager
      */
     public CompleteDropTargetListener(MapperManager mapperManager, Table draggableTable) {
@@ -211,9 +211,9 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "updateInsertionIndicator".
-     * 
+     *
      * @param event
      * @return true if droppable
      */
@@ -463,6 +463,8 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
         getUiManager().refreshSqlExpression();
 
         uiManager.selectLinks(dataMapTableViewTarget, selectedEntries, targetTableIsFiltersTable, true);
+        // refresh for cell data disappear on MAC
+        tableViewerCreatorTarget.getTableViewer().refresh();
         tableViewerCreatorTarget.getTable().setFocus();
 
         uiManager.setDragging(false);
@@ -470,7 +472,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
 
     /**
      * DOC amaumont Comment method "modifyExistingEntry".
-     * 
+     *
      * @param uiManager
      * @param analyzer
      * @param currentLanguage
@@ -499,7 +501,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
 
     /**
      * DOC amaumont Comment method "updateExpressionsOfInsertedEntries".
-     * 
+     *
      * @param uiManager
      * @param currentLanguage
      * @param metadataEditorView
@@ -561,7 +563,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
 
     /**
      * DOC amaumont Comment method "setDefaultOperator".
-     * 
+     *
      * @param dataMapTableEntry
      */
     private void setDefaultOperator(InputColumnTableEntry inputEntry) {
@@ -662,9 +664,9 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "getItemIndexFromPosition".
-     * 
+     *
      * @param cursorPosition
      * @return
      */
@@ -683,9 +685,9 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "getTableItemFromPosition".
-     * 
+     *
      * @param cursorPosition
      * @return
      */
@@ -696,9 +698,9 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "getEntryFromPosition".
-     * 
+     *
      * @param cursorPosition
      * @return
      */

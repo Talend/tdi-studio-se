@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ public abstract class AbstractJSONStepForm extends AbstractForm {
 
     /**
      * wchen AbstractXmlStepForm constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -78,7 +78,7 @@ public abstract class AbstractJSONStepForm extends AbstractForm {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.swt.utils.AbstractForm#exportAsContext()
      */
     @Override
@@ -119,7 +119,7 @@ public abstract class AbstractJSONStepForm extends AbstractForm {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.swt.utils.AbstractForm#revertContext()
      */
     @Override
@@ -140,7 +140,7 @@ public abstract class AbstractJSONStepForm extends AbstractForm {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.swt.utils.AbstractForm#getConetxtParams()
      */
     @Override

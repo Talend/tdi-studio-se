@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
@@ -121,7 +120,7 @@ public class FeaturesModel extends BaseModel {
     }
 
     private InputStream internalGetContent() throws Exception {
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        Document document = XmlUtils.getSecureDocumentBuilderFactory().newDocumentBuilder().newDocument();
 
         Element features = document.createElement("features");
         features.setAttribute("xmlns", "http://karaf.apache.org/xmlns/features/v1.0.0");
@@ -190,7 +189,7 @@ public class FeaturesModel extends BaseModel {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.publish.core.models.BaseModel#getClassifier()
      */
     @Override

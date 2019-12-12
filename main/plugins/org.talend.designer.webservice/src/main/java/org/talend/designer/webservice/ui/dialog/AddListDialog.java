@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -90,7 +90,7 @@ public class AddListDialog extends Dialog {
 
     /**
      * DOC Administrator AddListDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     protected AddListDialog(Shell parentShell) {
@@ -102,7 +102,7 @@ public class AddListDialog extends Dialog {
 
     /**
      * DOC Administrator AddListDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     public AddListDialog(Shell parentShell, ParameterInfo para, String inOrOut, String URLValue,
@@ -471,7 +471,7 @@ public class AddListDialog extends Dialog {
 
     /**
      * Sets the size.
-     * 
+     *
      * @param size the size to set
      */
     public void setSize(Rectangle size) {
@@ -480,7 +480,7 @@ public class AddListDialog extends Dialog {
 
     /**
      * Sets the maximizedSize.
-     * 
+     *
      * @param maximizedSize the maxmimizedSize to set
      */
     public void setMaximized(boolean maximized) {

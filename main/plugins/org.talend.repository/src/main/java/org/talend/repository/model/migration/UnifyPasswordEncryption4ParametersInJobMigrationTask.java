@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -50,7 +50,7 @@ public class UnifyPasswordEncryption4ParametersInJobMigrationTask extends UnifyP
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractItemMigrationTask#execute(org .talend.core.model.properties.Item)
      */
     @Override
@@ -94,7 +94,7 @@ public class UnifyPasswordEncryption4ParametersInJobMigrationTask extends UnifyP
     }
 
     /**
-     * 
+     *
      * same as UnifyPasswordEncryption4ContextMigrationTask to change the encryption.
      */
     @SuppressWarnings("deprecation")
@@ -135,7 +135,7 @@ public class UnifyPasswordEncryption4ParametersInJobMigrationTask extends UnifyP
 	        for (Object p : parameters.getElementParameter()) {
 	            if (p instanceof ElementParameterType) {
 	                ElementParameterType param = (ElementParameterType) p;
-	
+
 	                // variable name used for Stat&Logs
 	                if ("PASS".equals(param.getName())) { //$NON-NLS-1$
 	                    param.setField(EParameterFieldType.PASSWORD.getName());
@@ -143,7 +143,7 @@ public class UnifyPasswordEncryption4ParametersInJobMigrationTask extends UnifyP
 	                        modified = true;
 	                    }
 	                }
-	
+
 	                // variable name used for implicit context
 	                if ("PASS_IMPLICIT_CONTEXT".equals(param.getName())) { //$NON-NLS-1$
 	                    param.setField(EParameterFieldType.PASSWORD.getName());

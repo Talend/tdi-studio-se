@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,7 @@ public class RenametXMLRPCMigrationTask extends AbstractJobMigrationTask {
     	ProcessType processType = getProcessType(item);
 		if (processType == null) {
 			return ExecutionResult.NOTHING_TO_DO;
-		}	
+		}
         try {
             ModifyComponentsAction.searchAndRename(item, processType, "tXMLRPC", "tXMLRPCInput"); //$NON-NLS-1$ //$NON-NLS-2$
             return ExecutionResult.SUCCESS_WITH_ALERT;

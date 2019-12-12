@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -70,9 +70,9 @@ public class StatsAndLogsHelper extends Utils {
     public static final String ENCODING_TYPE_CUSTOM = "CUSTOM"; //$NON-NLS-1$
 
     /**
-     * 
+     *
      * Load StatsAndLogs Preference setting to Project Only load Once
-     * 
+     *
      * @param pro
      */
     static void loadPreferenceToProject(Project pro) {
@@ -518,7 +518,7 @@ public class StatsAndLogsHelper extends Utils {
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(54);
         param.setRepositoryValue("SID"); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and DB_TYPE =='OCLE_OCI'"); //$NON-NLS-1$ 
+        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and DB_TYPE =='OCLE_OCI'"); //$NON-NLS-1$
         paramList.add(param);
 
         // additional parameters

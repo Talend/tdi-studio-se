@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -49,7 +49,7 @@ public class RetrieveSchemaHelper {
         IElementParameter outParam = node.getElementParameter("SCHEMA_OUT");
         IMetadataTable outputMeta = node.getMetadataFromConnector(outParam.getContext());
         IMetadataTable outputMetaCopy = outputMeta.clone(true);
-        
+
         File xmlFile = new File(TalendTextUtils.removeQuotes(node.getElementParameter("PATH_JOBDEF").getValue().toString()));
         if (!xmlFile.exists())
             try {
@@ -172,7 +172,7 @@ public class RetrieveSchemaHelper {
                 a.closeConnection();
             }catch (Exception e){
                 ExceptionHandler.process(e);
-            }                    
+            }
         }
 
         CompoundCommand cc = new CompoundCommand();

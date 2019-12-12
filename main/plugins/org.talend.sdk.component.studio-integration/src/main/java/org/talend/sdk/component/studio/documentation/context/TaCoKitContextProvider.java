@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.help.AbstractContextProvider;
+import org.eclipse.help.HelpSystem;
 import org.eclipse.help.IContext;
 import org.eclipse.help.IHelpResource;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
@@ -33,6 +34,7 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.documentation.Locales;
 import org.talend.sdk.component.studio.documentation.toc.TaCoKitTopic;
 import org.talend.sdk.component.studio.lang.Pair;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
@@ -61,14 +63,19 @@ public class TaCoKitContextProvider extends AbstractContextProvider {
         if (firstIndex == null) {
             return null;
         }
+        String displayName = TaCoKitUtil.getDisplayName(firstIndex);
+        IContext existsContext = HelpSystem.getContext(TaCoKitConst.BASE_HELP_LINK + displayName);
+        if (existsContext != null) {
+            return existsContext;
+        }
         DocumentationContent doc = client.v1().documentation().getDocumentation(expLocale.getLanguage(),
                 firstIndex.getId().getId(), "asciidoc");
-        TaCoKitHelpContext context = new TaCoKitHelpContext(parseDescription(doc.getSource(), firstIndex.getDisplayName()));
+        TaCoKitHelpContext context = new TaCoKitHelpContext(parseDescription(doc.getSource(), displayName));
 
         TaCoKitTopic topic = new TaCoKitTopic();
         topic.setHref(
-                "/" + GAV.INSTANCE.getArtifactId() + "/" + firstIndex.getId().getId() + ".html#_" + firstIndex.getDisplayName().toLowerCase());
-        topic.setLabel(firstIndex.getDisplayName());
+                "/" + GAV.INSTANCE.getArtifactId() + "/" + firstIndex.getId().getId() + ".html#_" + displayName.toLowerCase());
+        topic.setLabel(displayName);
         context.addRelatedTopic(topic);
 
         return context;

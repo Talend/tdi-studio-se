@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.designer.core.ui.editor.process.Process;
 /**
  * This class gets all node to add them in the tree in the Outline It doesn't give any detail, it just adds the roots
  * objects. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ProcessTreeEditPart extends AbstractTreeEditPart implements PropertyChangeListener {
 
@@ -74,7 +74,7 @@ public class ProcessTreeEditPart extends AbstractTreeEditPart implements Propert
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#activate()
      */
     @Override
@@ -87,7 +87,7 @@ public class ProcessTreeEditPart extends AbstractTreeEditPart implements Propert
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#refreshChildren()
      */
     @SuppressWarnings("unchecked")
@@ -138,7 +138,7 @@ public class ProcessTreeEditPart extends AbstractTreeEditPart implements Propert
 
     /*
      * ss (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#deactivate()
      */
     @Override
@@ -151,7 +151,7 @@ public class ProcessTreeEditPart extends AbstractTreeEditPart implements Propert
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#getModelChildren()
      */
     @Override
@@ -161,7 +161,7 @@ public class ProcessTreeEditPart extends AbstractTreeEditPart implements Propert
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

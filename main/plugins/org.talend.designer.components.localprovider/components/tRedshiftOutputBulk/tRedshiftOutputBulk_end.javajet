@@ -36,15 +36,21 @@
 			conn_<%=cid%>.putObject(<%=bucket%>, <%=key%>, file_<%=cid%>);
 			<%
 			if(isLog4jEnabled){
-			%>	
+			%>
 				log.info("<%=cid%> - Upload the object successfully.");
 			<%
 			}
 			%>
 		} finally {
-			if(conn_<%=cid%> !=null){
-				conn_<%=cid%>.shutdown();
+<%
+			if(("false").equals(useExistingConn)){
+%>
+				if(conn_<%=cid%> !=null){
+					conn_<%=cid%>.shutdown();
+				}
+<%
 			}
+%>
 		}
 	} else {
 <%

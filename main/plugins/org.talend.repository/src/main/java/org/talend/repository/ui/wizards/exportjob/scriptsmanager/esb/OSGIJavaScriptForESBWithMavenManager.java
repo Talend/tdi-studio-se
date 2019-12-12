@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,13 +39,13 @@ import org.talend.resources.util.EMavenBuildScriptProperties;
 
 /**
  * created by nrousseau on Sep 25, 2012 Detailled comment
- * 
+ *
  */
 public class OSGIJavaScriptForESBWithMavenManager extends JavaScriptForESBWithMavenManager {
 
     /**
      * DOC nrousseau JobJavaScriptOSGIForESBWithMavenManager constructor comment.
-     * 
+     *
      * @param exportChoiceMap
      * @param contextName
      * @param launcher
@@ -111,7 +111,7 @@ public class OSGIJavaScriptForESBWithMavenManager extends JavaScriptForESBWithMa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb.JavaScriptForESBWithMavenManager#
      * getMenifestMavenProperties(java.net.URL, java.util.Map)
      */

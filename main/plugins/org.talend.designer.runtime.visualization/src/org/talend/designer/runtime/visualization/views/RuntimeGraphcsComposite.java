@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -112,11 +112,11 @@ public class RuntimeGraphcsComposite extends AbstractRuntimeGraphcsComposite {
 
     /** The information composite. */
     private Composite infoComposite;
-    
+
     private static volatile RuntimeGraphcsComposite lastInstance;
-    
+
     private ReportMessageManager messageManager;
-    
+
     private static long lastAddTime = System.currentTimeMillis();
 
     public RuntimeGraphcsComposite(Composite parent, ISelection selection, int style) {
@@ -153,7 +153,7 @@ public class RuntimeGraphcsComposite extends AbstractRuntimeGraphcsComposite {
             }
         }
     }
-    
+
     private void refreshReportField() {
     	long newAddTime = System.currentTimeMillis();
     	if(newAddTime-lastAddTime<10*1000){
@@ -415,8 +415,8 @@ public class RuntimeGraphcsComposite extends AbstractRuntimeGraphcsComposite {
         data.bottom = new FormAttachment(100, 0);
         chart.setLayoutData(data);
         section.setClient(flatFormComposite);
-        
-        
+
+
         ArrayList<Action> list = new ArrayList<Action>();
         list.add(garbageCollectorAction);
         if(group.getName().equals(MonitorAttributeName.HEAP_MEMORY)){
@@ -576,7 +576,7 @@ public class RuntimeGraphcsComposite extends AbstractRuntimeGraphcsComposite {
         data.bottom = new FormAttachment(93, 0);
         reportField.setLayoutData(data);
         displayReportField();
-        
+
         //export button
         Button exportButton = new Button(group, SWT.PUSH);
         exportButton.setText("Export"); //$NON-NLS-1$
@@ -589,12 +589,12 @@ public class RuntimeGraphcsComposite extends AbstractRuntimeGraphcsComposite {
         exportButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
+
 				if(messageManager ==null || messageManager.getMessages().size() <1){
 					MessageDialog.openWarning(getShell(), "Warning", "No log to export."); //$NON-NLS-1$ //$NON-NLS-2$
 					return;
 				}
-				
+
 				UnboundedFifoBuffer messages = messageManager.getMessages();
 	    		Iterator iterator = messages.iterator();
 	    		StringBuilder content = new StringBuilder();
@@ -606,7 +606,7 @@ public class RuntimeGraphcsComposite extends AbstractRuntimeGraphcsComposite {
 	    			MessageDialog.openWarning(getShell(), "Warning", "Waiting for job done."); //$NON-NLS-1$ //$NON-NLS-2$
 	    			return;
 	    		}
-	    		
+
 	    		FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
 				dialog.setFilterPath("."); //$NON-NLS-1$
 				String fileName = dialog.open();
@@ -627,7 +627,7 @@ public class RuntimeGraphcsComposite extends AbstractRuntimeGraphcsComposite {
 						}
 					}
 				}
-				
+
 	    	}
 		});
     }

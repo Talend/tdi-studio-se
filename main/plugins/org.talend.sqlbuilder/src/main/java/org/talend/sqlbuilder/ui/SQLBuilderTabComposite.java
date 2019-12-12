@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,9 +44,9 @@ import org.talend.sqlbuilder.repository.utility.SQLBuilderRepositoryNodeManager;
 
 /**
  * This class is responsible for creating tab composite. <br/>
- * 
+ *
  * $Id: SQLBuilderTabComposite.java,v 1.23 2006/11/09 08:40:43 tangfn Exp $
- * 
+ *
  */
 public class SQLBuilderTabComposite extends Composite {
 
@@ -65,7 +65,7 @@ public class SQLBuilderTabComposite extends Composite {
 
     /**
      * Opens an new sql editor.
-     * 
+     *
      * @param node RepositoryNode with the DatabaseConnection
      * @param repositoryNames all the repositories' name
      * @param connParam ConnectionParameters
@@ -88,9 +88,9 @@ public class SQLBuilderTabComposite extends Composite {
     }
 
     /**
-     * 
+     *
      * Creates tab folder.
-     * 
+     *
      */
     private void createTabFolder() {
 
@@ -109,7 +109,7 @@ public class SQLBuilderTabComposite extends Composite {
 
     /**
      * Dispose all parent Controls.
-     * 
+     *
      */
     private void clearParent() {
 
@@ -125,7 +125,7 @@ public class SQLBuilderTabComposite extends Composite {
      * Creates tab item. Changed by Marvin Wang on Feb. 24, 2012 for bug TDI-7643, for all SQLBuilderEditorComposite
      * when using <code>editorComposite.getConnParam().getQueryObject()</code> to get the query object, the query every
      * time get is the same object. Caz all <code>SQLBuilderEditorComposite</code>s use the same connection parameter.
-     * 
+     *
      * @param node
      * @param connParam
      * @param isDefaultEditor
@@ -212,9 +212,9 @@ public class SQLBuilderTabComposite extends Composite {
     private List<IRepositoryNode> nodesSel = new ArrayList<IRepositoryNode>();
 
     /**
-     * 
+     *
      * Gets default tab page's text.
-     * 
+     *
      * @return a string representing sql text.
      */
     public String getDefaultTabSql() {
@@ -226,7 +226,7 @@ public class SQLBuilderTabComposite extends Composite {
 
     /**
      * method "getCurrentTabSql" : Get Cuurent Tab page (Used tab) 's Text.
-     * 
+     *
      * @return a string representing sql text.
      */
     public String getCurrentTabSql() {

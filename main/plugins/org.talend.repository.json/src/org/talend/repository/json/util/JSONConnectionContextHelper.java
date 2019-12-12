@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -86,9 +86,9 @@ public final class JSONConnectionContextHelper {
     public static IContextManager contextManager;
 
     /**
-     * 
+     *
      * ggu Comment method "exportAsContext".
-     * 
+     *
      */
     public static Map<ContextItem, List<ConectionAdaptContextVariableModel>> exportAsContext(ConnectionItem connItem,
             Set<IConnParamName> paramSet) {
@@ -143,9 +143,9 @@ public final class JSONConnectionContextHelper {
     }
 
     /**
-     * 
+     *
      * change the mode of lebel to Context mode
-     * 
+     *
      * @param label which you want to convert(it is the name of connection normal)
      * @return Context mode label
      */
@@ -451,9 +451,9 @@ public final class JSONConnectionContextHelper {
     }
 
     /**
-     * 
+     *
      * wzhang Comment method "checkAndAddContextsVarDND".
-     * 
+     *
      * @param item
      * @param contextManager
      */
@@ -505,11 +505,11 @@ public final class JSONConnectionContextHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "getContextTypeForContextMode".
-     * 
+     *
      * if connection is in context mode,choose the context. if return null, the connection is not in context mode.
-     * 
+     *
      * if canCancel is true, the selecting cotnext sets dialog will can be cancel.
      */
     private static ContextType getContextTypeForContextMode(Shell shell, Connection connection, String selectedContext,
@@ -546,9 +546,9 @@ public final class JSONConnectionContextHelper {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "getOriginalValue".
-     * 
+     *
      * if value is context mode, return original value.
      */
     @SuppressWarnings("unchecked")

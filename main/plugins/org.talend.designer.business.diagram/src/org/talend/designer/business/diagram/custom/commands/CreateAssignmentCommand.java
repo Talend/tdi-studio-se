@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,7 +36,7 @@ public class CreateAssignmentCommand extends AbstractTransactionalCommand {
 
     /**
      * DOC mhelleboid createAssignmentCommand constructor comment.
-     * 
+     *
      * @param domain
      * @param label
      * @param affectedFiles
@@ -47,7 +47,7 @@ public class CreateAssignmentCommand extends AbstractTransactionalCommand {
 
     /**
      * DOC mhelleboid Comment method "setBusinessItem".
-     * 
+     *
      * @param businessItem
      */
     public void setBusinessItem(BusinessItem businessItem) {
@@ -56,7 +56,7 @@ public class CreateAssignmentCommand extends AbstractTransactionalCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.gmf.runtime.emf.commands.core.command.AbstractTransactionalCommand#doExecuteWithResult(org.eclipse
      * .core.runtime.IProgressMonitor, org.eclipse.core.runtime.IAdaptable)
@@ -91,7 +91,7 @@ public class CreateAssignmentCommand extends AbstractTransactionalCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.core.commands.operations.AbstractOperation#canExecute()
      */
     @Override

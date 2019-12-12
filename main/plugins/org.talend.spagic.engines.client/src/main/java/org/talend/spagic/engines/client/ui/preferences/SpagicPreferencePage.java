@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,9 +28,9 @@ import org.talend.spagic.engines.client.Activator;
 
 /**
  * Preference for the SpagoBiServer values.
- * 
+ *
  * $Id: SpagoBiPreferencePage.java 2738 2007-04-26 13:12:27Z cantoine $
- * 
+ *
  */
 public class SpagicPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -44,9 +44,9 @@ public class SpagicPreferencePage extends FieldEditorPreferencePage implements I
 
     /**
      * SpagoBiPreferencePage.
-     * 
+     *
      * $Id: SpagoBiPreferencePage.java 2738 2007-04-26 13:12:27Z cantoine $
-     * 
+     *
      */
 
     public SpagicPreferencePage() {
@@ -131,7 +131,7 @@ public class SpagicPreferencePage extends FieldEditorPreferencePage implements I
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performDefaults()
      */
     @Override

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,11 +37,11 @@ import org.talend.designer.maven.model.TalendMavenConstants;
 
 /**
  * Delete all the perl and java jobs when T.O.S start up.
- * 
+ *
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DeleteAllJobWhenStartUp.java 下午02:50:26 2007-5-29 +0000 (2007-5-29) yzhang $
- * 
+ *
  */
 public class DeleteAllJobWhenStartUp implements IStartup {
 
@@ -52,7 +52,7 @@ public class DeleteAllJobWhenStartUp implements IStartup {
         // will do when every individual project created.
         // earlyStartup();
     }
-    
+
     @Deprecated
     public void startup(boolean pluginModel) {
         startup();
@@ -60,7 +60,7 @@ public class DeleteAllJobWhenStartUp implements IStartup {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IStartup#earlyStartup()
      */
     @Override

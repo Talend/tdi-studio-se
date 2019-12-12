@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -69,9 +69,9 @@ import org.talend.designer.core.generic.model.Component;
 
 /**
  * CodeGenerator.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class CodeGenerator implements ICodeGenerator {
 
@@ -113,7 +113,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Constructor : use the process and laguage to initialize internal components.
-     * 
+     *
      * @param process
      * @param language
      */
@@ -175,7 +175,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Return true to display size of source code in method comment.
-     * 
+     *
      * @return
      */
     private boolean isMethodSizeNeeded() {
@@ -187,7 +187,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Generate the code for the process given to the constructor.
-     * 
+     *
      * @return the generated code
      * @throws CodeGeneratorException if an error occurs during Code Generation
      */
@@ -284,7 +284,7 @@ public class CodeGenerator implements ICodeGenerator {
     /**
      * get the incomingName matching with inputId. Purpose: It will generate different parts for the merge node
      * according the different incomingName.
-     * 
+     *
      * @param branchStartNode
      * @param mergeNode
      * @return
@@ -315,7 +315,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Parse Process, and generate Code for Context Variables.
-     * 
+     *
      * @param designerContext the context to generate code from
      * @return the generated code
      * @throws CodeGeneratorException if an error occurs during Code Generation
@@ -397,7 +397,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Generate Code for a given Component.
-     * 
+     *
      * @param type the internal component template
      * @param argument the bean
      * @return the generated code
@@ -409,7 +409,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Generate Code Part for a given Component.
-     * 
+     *
      * @param type the internal component template
      * @param argument the bean
      * @param part part of code to generate
@@ -423,7 +423,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Generate Code Part for a given Component.
-     * 
+     *
      * @param type the internal component template
      * @param argument the bean
      * @param part part of code to generate
@@ -498,7 +498,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Generate Code Parts for a Sub Process .
-     * 
+     *
      * @param subProcess the suprocess
      * @param node the subprocess root
      * @param part the part of code to generate
@@ -513,7 +513,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Generate Code Parts for a Sub Process .
-     * 
+     *
      * @param subProcess the suprocess
      * @param node the subprocess root
      * @param part the part of code to generate
@@ -684,7 +684,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Return Type of Node to correctly sort the encapsulated code.
-     * 
+     *
      * @param node the node to check
      * @return true if the node is an iterate node
      */
@@ -709,7 +709,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Generate this tree Code.
-     * 
+     *
      * @param subProcess the tree
      * @param node the tree root
      * @param part the part of code to generate
@@ -722,7 +722,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Generate this tree Code.
-     * 
+     *
      * @param subProcess the tree
      * @param node the tree root
      * @param part the part of code to generate
@@ -802,7 +802,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Generate Part Code for a given Component.
-     * 
+     *
      * @param node the component
      * @param part the component's part
      * @return the generated code
@@ -878,7 +878,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Generate Part Code for a given Component.
-     * 
+     *
      * @param node the component
      * @param part the component's part
      * @return the generated code
@@ -930,7 +930,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * Initialize Jet Bean to pass to the Jet Generator.
-     * 
+     *
      * @param argument the node to convert
      * @return the initialized JetBean
      */
@@ -964,7 +964,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.codegen.ICodeGenerator#generateComponentCodeWithRows (java.lang.String,
      * java.lang.Object)
      */
@@ -1079,7 +1079,7 @@ public class CodeGenerator implements ICodeGenerator {
 
     /**
      * DOC mhirt Comment method "extractNodeFromProcess".
-     * 
+     *
      * @param nodeName
      * @return
      */

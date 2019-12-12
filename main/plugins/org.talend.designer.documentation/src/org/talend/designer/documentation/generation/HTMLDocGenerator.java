@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -126,9 +125,9 @@ import org.xml.sax.SAXException;
 
 /**
  * This class is used for generating HTML file.
- * 
+ *
  * $Id: XMLGenerator.java 2007-3-8,下午01:09:34 ftang $
- * 
+ *
  */
 public class HTMLDocGenerator implements IDocumentationGenerator {
 
@@ -174,7 +173,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.documentation.generation.IDocumentationGenerator#getRepositoryObjectType()
      */
     @Override
@@ -184,7 +183,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.documentation.generation.IDocumentationGenerator#getItemType()
      */
     @Override
@@ -199,7 +198,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /*
      * This method is used for generating HTML file base on an instance of <code>ExportFileResource</code> (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.documentation.generation.IDocumentationGenerator#generateHTMLFile(org.talend.repository
      * .documentation.ExportFileResource)
@@ -317,8 +316,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
     private void generateXslFile(String resource, String xslfile, String cssfile, String folder) {
         try {
 
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = XmlUtils.getSecureDocumentBuilderFactory().newDocumentBuilder();
             org.w3c.dom.Document document = builder.parse(new File(resource));
             org.w3c.dom.Element rootElement = document.getDocumentElement();
 
@@ -372,7 +370,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /*
      * This method is used for generating HTML file base on an instance of <code>ExportFileResource</code> (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.documentation.generation.IDocumentationGenerator#generateDocumentation(org.talend.repository
      * .documentation.ExportFileResource, java.lang.String, java.lang.String[])
@@ -539,7 +537,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Checks if pictures directory is existing.
-     * 
+     *
      * @param resource
      */
     private static String checkPicDirIsExists(ExportFileResource resource, String tempFolderPath) {
@@ -554,7 +552,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Checks if temporary directory is existing.
-     * 
+     *
      * @param resource
      * @return
      */
@@ -610,11 +608,11 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Using xslt to parse the xml to html.
-     * 
+     *
      * @param jobName
      * @param tempFolderPath
      * @param xslFileName
-     * 
+     *
      * @return top folder path of this job.
      * @throws Exception
      */
@@ -655,7 +653,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Generates the xml file base on an instance of <code>ExportFileResource</code> and the temporary folder path.
-     * 
+     *
      * @param resource
      * @param tempFolderPath
      * @param version
@@ -824,7 +822,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * DOC YeXiaowei Comment method "genereateJobSettingInfo".
-     * 
+     *
      * @return
      */
     private void generateJobSettingInfo(final Item item, final Element element) {
@@ -968,9 +966,9 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "createSingleJobParameter".
-     * 
+     *
      * @param root
      * @param nameValue
      * @return
@@ -1003,7 +1001,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * DOC YeXiaowei Comment method "generateContextInfo".
-     * 
+     *
      * @return
      */
     private void generateContextInfo(final Item item, final Element element) {
@@ -1047,7 +1045,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
                     contextParamElement.addAttribute("promptNeeded", HTMLDocUtils.checkString(Boolean.toString(param //$NON-NLS-1$
                             .isPromptNeeded())));
                     contextParamElement.addAttribute("type", HTMLDocUtils.checkString(param.getType())); //$NON-NLS-1$
-                    contextParamElement.addAttribute("value", ParameterValueUtil.getValue4Doc(param)); //$NON-NLS-1$ 
+                    contextParamElement.addAttribute("value", ParameterValueUtil.getValue4Doc(param)); //$NON-NLS-1$
                     // replace repository id with context label
                     if (param.getRepositoryContextId() != null) {
                         ContextItem contextItem = ContextUtils.getContextItemById2(param.getRepositoryContextId());
@@ -1068,9 +1066,9 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Generates all components summary information.
-     * 
+     *
      * @param item
-     * 
+     *
      * @param inputJobElement
      * @param allComponentsList
      */
@@ -1089,7 +1087,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * DOC tang Comment method "getComponentListInfo".
-     * 
+     *
      * @param inputJobElement
      * @param allComponentsList
      * @param componentNameListElement
@@ -1127,7 +1125,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * DOC tang Comment method "getScreenShotOffset".
-     * 
+     *
      * @param screenshotOffset
      * @param processItem
      */
@@ -1145,7 +1143,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * This method is used for seperating all nodes into internal and external.
-     * 
+     *
      * @param item
      * @return
      */
@@ -1206,7 +1204,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Generates connections information base on <code>jobElement</code>,<code>connectionList</code>
-     * 
+     *
      * @param jobElement
      * @param connectionList
      */
@@ -1227,7 +1225,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Generates job(process) information in XML base on <code>ProcessItem</code> and project element.
-     * 
+     *
      * @param item <code>ProcessItem</code>
      * @param projectElement <code>Element</code>
      * @param version
@@ -1324,7 +1322,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * add by gliu for TESB-13788
-     * 
+     *
      * @param item
      * @return
      */
@@ -1339,7 +1337,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Generates project element information in XML file.
-     * 
+     *
      * @param document <code>Document</code>
      * @return an instance of <code>Element</code>
      */
@@ -1369,9 +1367,9 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
     }
 
     /**
-     * 
+     *
      * wzhang Comment method "generateMessages". generate messages for i18n.
-     * 
+     *
      * @param element
      * @return
      */
@@ -1405,7 +1403,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         element.addAttribute("i18n.job.modification", Messages.HTMLDocGenerator_Modification); //$NON-NLS-1$
         element.addAttribute("i18n.job.extract.settings", Messages.HTMLDocGenerator_Extra_settings); //$NON-NLS-1$
         element.addAttribute("i18n.job.value", Messages.HTMLDocGenerator_Value); //$NON-NLS-1$
-        element.addAttribute("i18n.job.stats.logs", Messages.HTMLDocGenerator_Status + " & " + Messages.HTMLDocGenerator_Logs); //$NON-NLS-1$ 
+        element.addAttribute("i18n.job.stats.logs", Messages.HTMLDocGenerator_Status + " & " + Messages.HTMLDocGenerator_Logs); //$NON-NLS-1$
         element.addAttribute("i18n.job.context", Messages.HTMLDocGenerator_Context); //$NON-NLS-1$
         element.addAttribute("i18n.job.promt", Messages.HTMLDocGenerator_Prompt); //$NON-NLS-1$
         element.addAttribute("i18n.job.need.promt", Messages.HTMLDocGenerator_Need_Prompt); //$NON-NLS-1$
@@ -1419,7 +1417,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         element.addAttribute("i18n.job.label", Messages.HTMLDocGenerator_LABEL); //$NON-NLS-1$
         element.addAttribute("i18n.job.output", Messages.HTMLDocGenerator_OUTPUT); //$NON-NLS-1$
         element.addAttribute("i18n.job.component.parameters", Messages.HTMLDocGenerator_Component_Parameters); //$NON-NLS-1$
-        element.addAttribute("i18n.job.schema.for", Messages.HTMLDocGenerator_Schema_for + " "); //$NON-NLS-1$ 
+        element.addAttribute("i18n.job.schema.for", Messages.HTMLDocGenerator_Schema_for + " "); //$NON-NLS-1$
         element.addAttribute("i18n.job.column", Messages.HTMLDocGenerator_Column); //$NON-NLS-1$
         element.addAttribute("i18n.job.key", Messages.HTMLDocGenerator_Key); //$NON-NLS-1$
         element.addAttribute("i18n.job.length", Messages.HTMLDocGenerator_Length); //$NON-NLS-1$
@@ -1442,7 +1440,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * ftang Comment method "addDocTypeAttribute".
-     * 
+     *
      * @param projectElement
      */
     protected String getDocTypeAttribute() {
@@ -1454,7 +1452,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Add resources.
-     * 
+     *
      * @param resource <code>ExportFileResource</code>
      * @param resultFiles a <code>List</code> of <code>URL</code>
      */
@@ -1464,7 +1462,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Get the current project.
-     * 
+     *
      * @return an instance of <code>Project</code>
      */
     protected Project getProject() {
@@ -1476,7 +1474,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Get source connections and target connections base on given <code>ProcessItem</code>.
-     * 
+     *
      * @param item ProcessItem
      */
     protected void getSourceAndTargetConnection(Item item) {
@@ -1490,7 +1488,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * Comment method "handleSourceAndTargetConnection".
-     * 
+     *
      * @param sourceConnectionMap
      * @param targetConnectionMap
      * @param connectionList
@@ -1519,11 +1517,11 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "getExternalHtmlPath".<br>
-     * 
+     *
      * add external Doc file list
-     * 
+     *
      * @return
      * @throws MalformedURLException
      */
@@ -1550,9 +1548,9 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "getProductName".
-     * 
+     *
      * @return
      */
     private String getFullProductName() {
@@ -1618,7 +1616,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     /**
      * It is used for component list sort.
-     * 
+     *
      * @return Comparator.
      */
     private Comparator getComparator() {

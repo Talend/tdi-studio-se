@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,9 +21,9 @@ import org.talend.commons.utils.StringUtils;
 
 /**
  * Jet container for a particular component.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class JetBean {
 
@@ -59,7 +59,7 @@ public class JetBean {
 
     /**
      * Getter for crc.
-     * 
+     *
      * @return the crc
      */
     public long getCrc() {
@@ -68,7 +68,7 @@ public class JetBean {
 
     /**
      * Sets the crc.
-     * 
+     *
      * @param crc the crc to set
      */
     public void setCrc(long crc) {
@@ -83,7 +83,7 @@ public class JetBean {
 
     /**
      * Full Constructor.
-     * 
+     *
      * @param jetPluginRepository
      * @param classpathVariable
      * @param classpathParameter
@@ -112,7 +112,7 @@ public class JetBean {
 
     /**
      * Getter for classPath.
-     * 
+     *
      * @return the classPath
      */
     public HashMap<String, String> getClassPath() {
@@ -121,7 +121,7 @@ public class JetBean {
 
     /**
      * Sets the classPath.
-     * 
+     *
      * @param classPath the classPath to set
      */
     public void setClassPath(HashMap<String, String> classPath) {
@@ -130,7 +130,7 @@ public class JetBean {
 
     /**
      * add a variable to the classPath.
-     * 
+     *
      * @param classpathVariable
      * @param classpathParameter
      */
@@ -140,7 +140,7 @@ public class JetBean {
 
     /**
      * Getter for jetPluginRepository.
-     * 
+     *
      * @return the jetPluginRepository
      */
     public String getJetPluginRepository() {
@@ -149,7 +149,7 @@ public class JetBean {
 
     /**
      * Sets the jetPluginRepository.
-     * 
+     *
      * @param jetPluginRepository the jetPluginRepository to set
      */
     public void setJetPluginRepository(String jetPluginRepository) {
@@ -158,7 +158,7 @@ public class JetBean {
 
     /**
      * Getter for argument.
-     * 
+     *
      * @return the argument
      */
     public Object getArgument() {
@@ -167,7 +167,7 @@ public class JetBean {
 
     /**
      * Sets the argument.
-     * 
+     *
      * @param argument the argument to set
      */
     public void setArgument(Object argument) {
@@ -176,7 +176,7 @@ public class JetBean {
 
     /**
      * Getter for templateRelativeUri.
-     * 
+     *
      * @return the templateRelativeUri
      */
     public String getTemplateRelativeUri() {
@@ -185,7 +185,7 @@ public class JetBean {
 
     /**
      * Sets the templateRelativeUri.
-     * 
+     *
      * @param templateRelativeUri the templateRelativeUri to set
      */
     public void setTemplateRelativeUri(String templateRelativeUri) {
@@ -194,7 +194,7 @@ public class JetBean {
 
     /**
      * Return this Bean Template Full URI.
-     * 
+     *
      * @return
      */
     public String getTemplateFullUri() {
@@ -203,7 +203,7 @@ public class JetBean {
 
     /**
      * Return uri for this plugin.
-     * 
+     *
      * @param pluginId
      * @param relativeUri
      * @return
@@ -222,7 +222,7 @@ public class JetBean {
 
     /**
      * Getter for forceOverwrite.
-     * 
+     *
      * @return the forceOverwrite
      */
     public boolean isForceOverwrite() {
@@ -231,7 +231,7 @@ public class JetBean {
 
     /**
      * Sets the forceOverwrite.
-     * 
+     *
      * @param forceOverwrite the forceOverwrite to set
      */
     public void setForceOverwrite(boolean forceOverwrite) {
@@ -240,7 +240,7 @@ public class JetBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -252,7 +252,7 @@ public class JetBean {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -279,7 +279,7 @@ public class JetBean {
 
     /**
      * Getter for loader.
-     * 
+     *
      * @return the loader
      */
     public ClassLoader getClassLoader() {
@@ -288,7 +288,7 @@ public class JetBean {
 
     /**
      * Sets the loader.
-     * 
+     *
      * @param loader the loader to set
      */
     public void setClassLoader(ClassLoader newloader) {
@@ -297,7 +297,7 @@ public class JetBean {
 
     /**
      * Getter for className.
-     * 
+     *
      * @return the className
      */
     public String getClassName() {
@@ -306,7 +306,7 @@ public class JetBean {
 
     /**
      * Sets the className.
-     * 
+     *
      * @param className the className to set
      */
     public void setClassName(String className) {
@@ -315,7 +315,7 @@ public class JetBean {
 
     /**
      * Getter for version.
-     * 
+     *
      * @return the version
      */
     public String getVersion() {
@@ -324,7 +324,7 @@ public class JetBean {
 
     /**
      * Sets the version.
-     * 
+     *
      * @param version the version to set
      */
     public void setVersion(String version) {
@@ -333,7 +333,7 @@ public class JetBean {
 
     /**
      * Getter for language.
-     * 
+     *
      * @return the language
      */
     public String getLanguage() {
@@ -342,7 +342,7 @@ public class JetBean {
 
     /**
      * Sets the language.
-     * 
+     *
      * @param language the language to set
      */
     public void setLanguage(String language) {
@@ -351,7 +351,7 @@ public class JetBean {
 
     /**
      * Getter for codePart.
-     * 
+     *
      * @return the codePart
      */
     public String getCodePart() {
@@ -360,7 +360,7 @@ public class JetBean {
 
     /**
      * Sets the codePart.
-     * 
+     *
      * @param codePart the codePart to set
      */
     public void setCodePart(String codePart) {
@@ -377,7 +377,7 @@ public class JetBean {
 
     /**
      * Getter for methodName.
-     * 
+     *
      * @return the methodName
      */
     public String getMethodName() {
@@ -386,7 +386,7 @@ public class JetBean {
 
     /**
      * Sets the methodName.
-     * 
+     *
      * @param methodName the methodName to set
      */
     public void setMethodName(String methodName) {

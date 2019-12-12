@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,9 +44,9 @@ import org.talend.sqlbuilder.util.UIUtils;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public class ReadQueriesAction extends AContextualAction {
 
@@ -68,7 +68,7 @@ public class ReadQueriesAction extends AContextualAction {
 
         DatabaseConnectionItem dbConnectionItem = null;
         ConnectionParameters connParameters = new ConnectionParameters();
-        if (repositoryNode.getObjectType() == ERepositoryObjectType.METADATA_CONNECTIONS || 
+        if (repositoryNode.getObjectType() == ERepositoryObjectType.METADATA_CONNECTIONS ||
                 repositoryNode.getProperties(EProperties.CONTENT_TYPE) == ERepositoryObjectType.METADATA_CONNECTIONS) {
             dbConnectionItem = (DatabaseConnectionItem) repositoryNode.getObject().getProperty().getItem();
             connParameters.setRepositoryName(repositoryNode.getObject().getLabel());

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,18 +25,18 @@ import twitter4j.auth.OAuthAuthorization;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterLoad<T> {
-	
+
 	public static JavaDStream<List<Object>> twitterStream(JavaStreamingContext ctx, String username, String password, String accessToken, String secretToken, String[] filters, List<TwitterParameter> twitterParameters) {
 		twitter4j.conf.ConfigurationBuilder builder = new ConfigurationBuilder();
 		builder.setOAuthAccessToken(accessToken);
 		builder.setOAuthAccessTokenSecret(secretToken);
 		builder.setOAuthConsumerKey(username);
 		builder.setOAuthConsumerSecret(password);
-		JavaDStream<Status> inputDStream = null; 
+		JavaDStream<Status> inputDStream = null;
 		if(filters.length>0) {
 			if(filters.length==1 && filters[0].equals("")) inputDStream = TwitterUtils.createStream(ctx, new OAuthAuthorization(builder.build()));
 			else inputDStream = TwitterUtils.createStream(ctx, new OAuthAuthorization(builder.build()), filters);
-		
+
 			return inputDStream.map(new LoadTwitterFunction(twitterParameters));
 		}
 		return null;

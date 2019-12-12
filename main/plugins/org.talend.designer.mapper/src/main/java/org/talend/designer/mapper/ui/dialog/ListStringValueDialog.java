@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -40,7 +40,7 @@ import org.eclipse.swt.widgets.TableColumn;
 
 /**
  * DOC ycbai class global comment. Detailled comment
- * 
+ *
  * @param <E>
  */
 public class ListStringValueDialog<E> extends Dialog {
@@ -55,7 +55,7 @@ public class ListStringValueDialog<E> extends Dialog {
 
     /**
      * Create the dialog
-     * 
+     *
      * @param parentShell
      */
     public ListStringValueDialog(Shell parentShell) {
@@ -76,7 +76,7 @@ public class ListStringValueDialog<E> extends Dialog {
 
     /**
      * Create contents of the dialog
-     * 
+     *
      * @param parent
      */
     @Override
@@ -123,7 +123,7 @@ public class ListStringValueDialog<E> extends Dialog {
 
     /**
      * Create contents of the button bar
-     * 
+     *
      * @param parent
      */
     @Override
@@ -134,7 +134,7 @@ public class ListStringValueDialog<E> extends Dialog {
 
     /**
      * Sets the dataList.
-     * 
+     *
      * @param dataList the dataList to set
      */
     public void setDataList(List<E> dataList) {
@@ -149,7 +149,7 @@ public class ListStringValueDialog<E> extends Dialog {
 
     /**
      * Getter for selectObj.
-     * 
+     *
      * @return the selectObj
      */
     public Object getSelectObj() {
@@ -165,7 +165,7 @@ public class ListStringValueDialog<E> extends Dialog {
 
     /**
      * Return the initial size of the dialog
-     * 
+     *
      * For bug TUP-21564, remove the initialSize and return the default size from parent class instead.
      */
 //    @Override

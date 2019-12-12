@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -72,9 +72,9 @@ public final class UpgradeElementHelper {
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "isSQLQueryParameter".
-     * 
+     *
      * @param parameter
      * @return
      */
@@ -83,10 +83,10 @@ public final class UpgradeElementHelper {
     }
 
     /**
-     * 
+     *
      * DOC xye Comment method "iJavaRowCodeParameter".
      * <p>
-     * 
+     *
      * @see bug 5167
      * @param node
      * @param parameter

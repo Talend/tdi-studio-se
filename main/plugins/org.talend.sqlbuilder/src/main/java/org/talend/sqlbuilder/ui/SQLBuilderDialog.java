@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -65,6 +65,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryElementDelta;
 import org.talend.core.model.update.RepositoryUpdateManager;
+import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.core.sqlbuilder.util.TextUtil;
 import org.talend.cwm.helper.ConnectionHelper;
@@ -84,15 +85,14 @@ import org.talend.sqlbuilder.dbstructure.nodes.INode;
 import org.talend.sqlbuilder.editors.MultiPageSqlBuilderEditor;
 import org.talend.sqlbuilder.repository.utility.SQLBuilderRepositoryNodeManager;
 import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
-import org.talend.sqlbuilder.util.ImageUtil;
 import org.talend.sqlbuilder.util.UIUtils;
 import org.talend.utils.sql.ConnectionUtils;
 
 /**
  * This Dialog is used for building sql.
- * 
+ *
  * $Id: SQLBuilderDialog.java,v 1.44 2006/11/09 08:44:09 tangfn Exp $
- * 
+ *
  */
 public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepositoryChangedListener {
 
@@ -211,7 +211,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.core.runtime.IProgressMonitorWithBlocking#clearBlocked()
          */
         @Override
@@ -220,7 +220,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.core.runtime.IProgressMonitorWithBlocking#setBlocked(org.eclipse.core.runtime.IStatus)
          */
         @Override
@@ -233,7 +233,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /**
      * Create the dialog.
-     * 
+     *
      * @param parentShell
      */
     public SQLBuilderDialog(Shell parentShell, String title) {
@@ -243,7 +243,6 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
     public SQLBuilderDialog(Shell parentShell) {
         super(parentShell);
         setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.RESIZE | SWT.MIN | SWT.MAX | SWT.APPLICATION_MODAL);
-        parentShell.setImage(ImageUtil.getImage("Images.title")); //$NON-NLS-1$
         SqlBuilderPlugin.getDefault().getRepositoryService().registerRepositoryChangedListener(this);
     }
 
@@ -252,13 +251,12 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
         this.node = node;
         this.selectedContext = selectedContext;
         setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.RESIZE | SWT.MIN | SWT.MAX | SWT.APPLICATION_MODAL);
-        parentShell.setImage(ImageUtil.getImage("Images.title")); //$NON-NLS-1$
         SqlBuilderPlugin.getDefault().getRepositoryService().registerRepositoryChangedListener(this);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
      */
     @Override
@@ -270,7 +268,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /**
      * Create contents of the dialog.
-     * 
+     *
      * @param parent
      */
     @Override
@@ -311,7 +309,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.ISQLBuilderDialog#openEditor(org.talend.repository.model.RepositoryNode,
      * java.util.List, org.talend.sqlbuilder.util.ConnectionParameters, boolean)
      */
@@ -324,7 +322,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /**
      * Creates the sql detail composite.
-     * 
+     *
      * @param sashFormResultAndDetail
      */
     private void createDetail(SashForm sashFormResultAndDetail) {
@@ -333,7 +331,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /**
      * Creates the composite to display sql execution result.
-     * 
+     *
      * @param sashFormResultAndDetail
      */
     private void createResult(SashForm sashFormResultAndDetail) {
@@ -344,7 +342,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /**
      * Creates the sql editor composite.
-     * 
+     *
      * @param sashFormStructureAndEditor
      */
     private void createSQLEditor(SashForm sashFormStructureAndEditor) {
@@ -355,7 +353,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /**
      * Creates composite to display database structure.
-     * 
+     *
      * @param sashFormStructureAndEditor
      */
     private void createDatabaseStructure(SashForm sashFormStructureAndEditor) {
@@ -372,7 +370,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /**
      * Create contents of the button bar.
-     * 
+     *
      * @param parent
      */
     @Override
@@ -524,7 +522,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /**
      * Returns the progress monitor to use for operations run in this progress dialog.
-     * 
+     *
      * @return the progress monitor
      */
     @Override
@@ -534,7 +532,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /**
      * Added by Tang Fengneng Sets the connParameters.
-     * 
+     *
      * @param connParameters the connParameters to set
      */
     @Override
@@ -549,7 +547,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#cancelPressed()
      */
     @Override
@@ -560,7 +558,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     @Override
@@ -605,8 +603,9 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
             // }
 
             // sql = QueryUtil.checkAndAddQuotes(sql);
+            sql = TalendTextUtils.addStrInQuery(sql);
 
-            connParameters.setQuery(sql);
+            connParameters.setQuery(sql, true);
 
             if (connParameters.isFromRepository() && !connParameters.isNodeReadOnly()) {
                 List<Query> qs = new ArrayList<Query>();
@@ -700,7 +699,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.ISQLBuilderDialog#refreshNode(org.talend.repository.model.RepositoryNode)
      */
     @Override
@@ -711,9 +710,9 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
     /**
      * qianbing class global comment. Refreshes Detail Composite according to selection changing of the database
      * structure viewer. <br/>
-     * 
+     *
      * $Id: talend-code-templates.xml,v 1.3 2006/11/01 05:38:28 nicolas Exp $
-     * 
+     *
      */
     public class RefreshDetailCompositeAction extends SelectionProviderAction {
 
@@ -725,7 +724,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
         /**
          * qianbing RefreshDetailCompositeAction constructor comment.
-         * 
+         *
          * @param provider
          */
         public RefreshDetailCompositeAction(ISelectionProvider provider, Shell shell) {
@@ -735,7 +734,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
         /*
          * (non-Java)
-         * 
+         *
          * @see
          * org.eclipse.ui.actions.SelectionProviderAction#selectionChanged(org.eclipse.jface.viewers.IStructuredSelection
          * )
@@ -851,7 +850,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /*
      * (non-Java)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.ISQLBuilderDialog#openEditor(org.talend.repository.model.RepositoryNode,
      * java.util.List, org.talend.sqlbuilder.util.ConnectionParameters, boolean, java.util.List)
      */
@@ -874,7 +873,7 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.ui.ISQLBuilderDialog#getSelectedContext()
      */
     @Override

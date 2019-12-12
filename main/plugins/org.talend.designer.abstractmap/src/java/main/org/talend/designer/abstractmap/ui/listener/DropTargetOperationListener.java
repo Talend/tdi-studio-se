@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.talend.designer.abstractmap.ui.dnd.TableEntriesTransfer;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: DropTargetOperationListener.java 898 2006-12-07 11:06:17Z amaumont $
- * 
+ *
  */
 public class DropTargetOperationListener {
 
@@ -41,7 +41,7 @@ public class DropTargetOperationListener {
 
     /**
      * DOC amaumont Comment method "addControl".
-     * 
+     *
      * @param outputTablesZoneView
      */
     public void addControl(Control control) {

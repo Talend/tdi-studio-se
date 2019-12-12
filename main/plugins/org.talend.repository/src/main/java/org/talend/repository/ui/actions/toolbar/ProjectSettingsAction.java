@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ public class ProjectSettingsAction extends AContextualAction implements IWorkben
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.actions.ITreeContextualAction#init(org.eclipse.jface.viewers.TreeViewer,
      * org.eclipse.jface.viewers.IStructuredSelection)
      */
@@ -46,7 +46,7 @@ public class ProjectSettingsAction extends AContextualAction implements IWorkben
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
      */
     public void dispose() {
@@ -56,7 +56,7 @@ public class ProjectSettingsAction extends AContextualAction implements IWorkben
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
      */
     public void init(IWorkbenchWindow window) {
@@ -66,7 +66,7 @@ public class ProjectSettingsAction extends AContextualAction implements IWorkben
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     public void run(IAction action) {
@@ -77,7 +77,7 @@ public class ProjectSettingsAction extends AContextualAction implements IWorkben
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
      * org.eclipse.jface.viewers.ISelection)
      */
@@ -107,7 +107,7 @@ public class ProjectSettingsAction extends AContextualAction implements IWorkben
     }
 
     /**
-     * 
+     *
      * DOC aimingchen Comment method "run2".
      */
     public void run2() {

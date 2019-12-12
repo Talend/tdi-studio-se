@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.talend.designer.core.i18n.Messages;
 
 /**
  * Return parameters for each component. These returns are described in the xml file of the component. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeReturn implements INodeReturn {
 
@@ -43,9 +43,9 @@ public class NodeReturn implements INodeReturn {
     protected final static String UNIQUE_NAME = "__UNIQUE_NAME__"; //$NON-NLS-1$
 
     /*
-     * 
+     *
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeReturn#getAvailability()
      */
     public String getAvailability() {
@@ -54,7 +54,7 @@ public class NodeReturn implements INodeReturn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeReturn#setAvailability(java.lang.String)
      */
     public void setAvailability(final String availability) {
@@ -63,7 +63,7 @@ public class NodeReturn implements INodeReturn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeReturn#getCode()
      */
     public String getVarName() {
@@ -79,7 +79,7 @@ public class NodeReturn implements INodeReturn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeReturn#setCode(java.lang.String)
      */
     public void setVarName(final String variableName) {
@@ -88,7 +88,7 @@ public class NodeReturn implements INodeReturn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeReturn#getDisplayName()
      */
     public String getDisplayName() {
@@ -97,7 +97,7 @@ public class NodeReturn implements INodeReturn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeReturn#setDisplayName(java.lang.String)
      */
     public void setDisplayName(final String displayName) {
@@ -106,7 +106,7 @@ public class NodeReturn implements INodeReturn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeReturn#getName()
      */
     public String getName() {
@@ -115,7 +115,7 @@ public class NodeReturn implements INodeReturn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeReturn#setName(java.lang.String)
      */
     public void setName(final String name) {
@@ -124,7 +124,7 @@ public class NodeReturn implements INodeReturn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeReturn#getType()
      */
     public String getType() {
@@ -133,7 +133,7 @@ public class NodeReturn implements INodeReturn {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.INodeReturn#setType(org.talend.core.model.metadata.EMetadataType)
      */
     public void setType(final String type) {

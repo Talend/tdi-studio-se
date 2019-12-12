@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -126,12 +126,12 @@ public class RepositoryUpdateTest {
             updateNode(id, node, connection);
 
             testRepositoryValue(node, "connection.userPassword.userId", "\"myUser\""); //$NON-NLS-1$  //$NON-NLS-2$
-            
+
             IElementParameter param = node.getElementParameter("connection.userPassword.userId");
             assertTrue(param.isRepositoryValueUsed());
             assertNotNull(param.getRepositoryValue());
             Form form = node.getComponentProperties().getForm(Form.MAIN);
-            
+
             List<ElementParameter> parameters = new ArrayList<>();
             parameters = ComponentsUtils.getParametersFromForm(node, false, EComponentCategory.BASIC, node.getComponentProperties(),
                     form);
@@ -140,7 +140,7 @@ public class RepositoryUpdateTest {
             param = node.getElementParameter("connection.userPassword.userId");
             assertTrue(param.isRepositoryValueUsed());
             assertNotNull(param.getRepositoryValue());
-            
+
         } finally {
             IRepositoryViewObject object = ProxyRepositoryFactory.getInstance().getLastVersion(id);
             if (object != null) {
@@ -233,7 +233,7 @@ public class RepositoryUpdateTest {
             testRepositoryValue(node, "connection.proxy.userPassword.userId", "\"\""); //$NON-NLS-1$  //$NON-NLS-2$
             testRepositoryValue(node, "connection.proxy.userPassword.password", "\"\""); //$NON-NLS-1$  //$NON-NLS-2$
 
-            
+
             setupPropertiesWithProxyEmptyVars(id);
             prepareTableForTest(id);
 
@@ -312,7 +312,7 @@ public class RepositoryUpdateTest {
         };
         return ur;
     }
-    
+
     private void updateNode(String id, Node node, GenericConnection connection) {
         MetadataTable table = prepareTableForTest(id);
         updateNodeConnectionOnly(id, node, connection);
@@ -338,7 +338,7 @@ public class RepositoryUpdateTest {
 
     /**
      * DOC nrousseau Comment method "createBasicConnection".
-     * 
+     *
      * @param id
      * @return
      * @throws PersistenceException

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,9 +29,9 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * Use to rename tDB(Input|Output|SQLRow) into tMSSql(Input|Output|Row).
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public class RenametDBInputToMssqlMigrationTask extends AbstractJobMigrationTask {
 
@@ -39,7 +39,7 @@ public class RenametDBInputToMssqlMigrationTask extends AbstractJobMigrationTask
     	ProcessType processType = getProcessType(item);
 		if (processType == null) {
 			return ExecutionResult.NOTHING_TO_DO;
-		}	
+		}
         try {
             IComponentConversion removePropertyComponentConversion = new RemovePropertyComponentConversion("TYPE"); //$NON-NLS-1$
 

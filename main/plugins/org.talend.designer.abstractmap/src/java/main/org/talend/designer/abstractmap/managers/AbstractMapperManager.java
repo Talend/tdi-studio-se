@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,7 +20,7 @@ import org.talend.designer.abstractmap.AbstractMapComponent;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  */
 public abstract class AbstractMapperManager {
 
@@ -38,7 +38,7 @@ public abstract class AbstractMapperManager {
 
     /**
      * DOC amaumont AbstractMapperManager constructor comment.
-     * 
+     *
      * @param mapperComponent
      */
     public AbstractMapperManager(AbstractMapComponent mapperComponent) {
@@ -64,14 +64,14 @@ public abstract class AbstractMapperManager {
 
     /**
      * Getter for mapperChanged.
-     * 
+     *
      * @return the mapperChanged
      */
     public abstract boolean isDataChanged();
 
     /**
      * DOC amaumont Comment method "setOriginalExternalData".
-     * 
+     *
      * @param data
      */
     public void setOriginalExternalData(IExternalData data) {

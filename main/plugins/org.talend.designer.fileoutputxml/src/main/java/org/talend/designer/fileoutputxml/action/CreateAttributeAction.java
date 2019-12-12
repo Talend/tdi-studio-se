@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.talend.metadata.managment.ui.wizard.metadata.xml.node.FOXTreeNode;
 
 /**
  * bqian Create a xml node. <br/>
- * 
+ *
  * $Id: CreateAttributeAction.java,v 1.1 2007/06/12 07:20:38 gke Exp $
- * 
+ *
  */
 public class CreateAttributeAction extends SelectionProviderAction {
 
@@ -37,7 +37,7 @@ public class CreateAttributeAction extends SelectionProviderAction {
 
     /**
      * CreateNode constructor comment.
-     * 
+     *
      * @param provider
      * @param text
      */
@@ -54,7 +54,7 @@ public class CreateAttributeAction extends SelectionProviderAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
@@ -67,7 +67,7 @@ public class CreateAttributeAction extends SelectionProviderAction {
 
     /**
      * Create the child node of the input node
-     * 
+     *
      * @param node
      */
     private void createChildNode(FOXTreeNode node) {
@@ -94,7 +94,7 @@ public class CreateAttributeAction extends SelectionProviderAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.actions.SelectionProviderAction#selectionChanged(org.eclipse.jface.viewers.IStructuredSelection)
      */

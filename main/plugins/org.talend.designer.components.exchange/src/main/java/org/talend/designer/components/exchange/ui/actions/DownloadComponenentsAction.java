@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -70,7 +70,7 @@ import org.talend.designer.core.ui.editor.AbstractTalendEditor;
 import org.talend.utils.io.FilesUtils;
 
 /**
- * 
+ *
  * DOC hcyi class global comment. Detailled comment
  */
 public class DownloadComponenentsAction extends Action implements IIntroAction {
@@ -110,7 +110,7 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
     /**
      * Update ui after job finished.
-     * 
+     *
      * @param action
      * @param event
      */
@@ -227,7 +227,7 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
     /**
      * Notify after download complete.
-     * 
+     *
      * @param extension
      */
     void extensionDownloadCompleted(ComponentExtension extension) {

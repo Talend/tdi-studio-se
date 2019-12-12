@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,11 +44,11 @@ import org.talend.metadata.managment.ui.wizard.PropertiesWizardPage;
 import org.talend.repository.resource.i18n.Messages;
 
 /**
- * 
+ *
  * New Route Resource Wizard Page
- * 
+ *
  * @author xpli
- * 
+ *
  */
 public class NewRouteResourceWizardPage extends PropertiesWizardPage {
 
@@ -60,12 +60,12 @@ public class NewRouteResourceWizardPage extends PropertiesWizardPage {
 
 	/**
 	 * Constructs a new NewProjectWizardPage.
-	 * 
+	 *
 	 */
 	public NewRouteResourceWizardPage(Property property, IPath destinationPath) {
 		super("WizardPage", property, destinationPath); //$NON-NLS-1$
 
-		setTitle(Messages.getString("NewRouteResourceWizardPage.title")); //$NON-NLS-1$
+        setTitle(Messages.getString("NewRouteResourceWizardPage.update.title")); //$NON-NLS-1$
 		setDescription(Messages.getString("NewRouteResourceWizardPage.desc")); //$NON-NLS-1$
 	}
 
@@ -90,13 +90,13 @@ public class NewRouteResourceWizardPage extends PropertiesWizardPage {
 				}
 			});
 			filenameText.addModifyListener(new ModifyListener() {
-	
+
 				@Override
 				public void modifyText(ModifyEvent e) {
 					File file = new File(filenameText.getText());
 					String fileName = file.getName();
 					if (nameText.getText().isEmpty()) {
-						nameText.setText(fileName); //$NON-NLS-1$ //$NON-NLS-2$
+						nameText.setText(fileName);
 					}
 					evaluateFields();
 				}
@@ -117,7 +117,7 @@ public class NewRouteResourceWizardPage extends PropertiesWizardPage {
 			// Source file
 			Label filenameLab = new Label(container, SWT.NONE);
 			filenameLab.setText(Messages.getString("NewRouteResourceWizardPage.sourceFile")); //$NON-NLS-1$
-	
+
 			Composite filenameContainer = new Composite(container, SWT.NONE);
 			GridData data = new GridData(GridData.FILL_HORIZONTAL);
 			data.horizontalSpan = layout.numColumns - 1;
@@ -126,30 +126,30 @@ public class NewRouteResourceWizardPage extends PropertiesWizardPage {
 			filenameLayout.marginHeight = 0;
 			filenameLayout.marginWidth = 0;
 			filenameContainer.setLayout(filenameLayout);
-	
+
 			filenameText = new Text(filenameContainer, SWT.BORDER);
 			data = new GridData(GridData.FILL_HORIZONTAL);
 			filenameText.setLayoutData(data);
-	
+
 			browseBtn = new Button(filenameContainer, SWT.PUSH);
 			browseBtn.setText(Messages.getString("NewRouteResourceWizardPage.browse")); //$NON-NLS-1$
 			browseBtn.setToolTipText(Messages.getString("NewRouteResourceWizardPage.browseTip")); //$NON-NLS-1$
-	
+
 			super.createControl(container);
-	
+
 		}
 		setControl(container);
 		updateContent();
 		addListeners();
 		setPageComplete(false);
-		
+
 		nameText.selectAll();
 		nameText.setFocus();
 	}
 
 	@Override
 	protected void evaluateTextField() {
-		
+
 		String trimName = nameText.getText().trim();
 		//Check name is a valid file name
 		nameStatus = ResourcesPlugin.getWorkspace().validateName(trimName, IResource.FILE);

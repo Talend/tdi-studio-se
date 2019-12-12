@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,7 +32,7 @@ import org.talend.repository.RepositoryPlugin;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class ContextsView extends AbstractContextView implements PropertyChangeListener {
 
@@ -42,7 +42,7 @@ public class ContextsView extends AbstractContextView implements PropertyChangeL
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.context.view.AbstractContextView#getContextManager()
      */
     @Override
@@ -52,7 +52,7 @@ public class ContextsView extends AbstractContextView implements PropertyChangeL
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.context.view.AbstractContextView#getPart()
      */
     @Override
@@ -67,7 +67,7 @@ public class ContextsView extends AbstractContextView implements PropertyChangeL
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.context.view.AbstractContextView#setEditorDirty(org.eclipse.ui.part.EditorPart)
      */
     @Override
@@ -78,7 +78,7 @@ public class ContextsView extends AbstractContextView implements PropertyChangeL
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.context.view.AbstractContextView#createContextComposite()
      */
     @Override
@@ -89,7 +89,7 @@ public class ContextsView extends AbstractContextView implements PropertyChangeL
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.context.view.AbstractContextView#handleDrop(org.talend.core.model.properties.ContextItem,
      * java.util.Set, org.eclipse.ui.IEditorInput)
      */
@@ -111,7 +111,7 @@ public class ContextsView extends AbstractContextView implements PropertyChangeL
                 Set<String> addedContext = ConnectionContextHelper.checkAndAddContextVariables(contextItem, contextSet,
                         contextManager, false);
                 if (addedContext != null && addedContext.size() > 0) {
-                    ConnectionContextHelper.addContextVarForJob(process, contextItem, contextSet);
+                    ConnectionContextHelper.addContextVarForJob(process, contextItem, addedContext);
                     created = true;
                 }
             }
@@ -121,7 +121,7 @@ public class ContextsView extends AbstractContextView implements PropertyChangeL
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.context.view.AbstractContextView#swithToContextView()
      */
     @Override
@@ -131,7 +131,7 @@ public class ContextsView extends AbstractContextView implements PropertyChangeL
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.ui.context.view.AbstractContextView#setCompositeReadonly(org.eclipse.ui.IEditorInput)
      */
     @Override

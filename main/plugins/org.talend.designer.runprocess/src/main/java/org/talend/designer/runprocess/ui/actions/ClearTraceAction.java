@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,9 +25,9 @@ import org.talend.designer.runprocess.trace.TraceConnectionsManager;
 
 /**
  * Clean trace data on a process. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ClearTraceAction extends Action {
 
@@ -45,7 +45,7 @@ public class ClearTraceAction extends Action {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
@@ -100,7 +100,7 @@ public class ClearTraceAction extends Action {
 
     /**
      * Getter for process.
-     * 
+     *
      * @return the process
      */
     public IProcess getProcess() {
@@ -109,7 +109,7 @@ public class ClearTraceAction extends Action {
 
     /**
      * Sets the process.
-     * 
+     *
      * @param process the process to set
      */
     public void setProcess(IProcess process) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,9 +17,9 @@ import org.talend.sqlbuilder.ui.editor.ISQLEditor;
 
 /**
  * Abstract implementation for a sql editor actions. Extend this class to add new actions to the sql editor.
- * 
+ *
  * @author Davy Vanherbergen
- * 
+ *
  */
 public abstract class AbstractEditorAction extends Action {
 
@@ -35,7 +35,7 @@ public abstract class AbstractEditorAction extends Action {
 
     /**
      * Sets the editor.
-     * 
+     *
      * @param editor the editor to set
      */
     public final void setEditor(ISQLEditor editor) {
@@ -44,7 +44,7 @@ public abstract class AbstractEditorAction extends Action {
 
     /**
      * Getter for editor.
-     * 
+     *
      * @return the editor
      */
     public ISQLEditor getEditor() {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ public class UpdateTheJobsActionsOnTable extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.AbstractJobMigrationTask#executeOnProcess(org.talend.core.model.properties.ProcessItem)
      */
     @Override
@@ -43,8 +43,8 @@ public class UpdateTheJobsActionsOnTable extends AbstractJobMigrationTask {
 		ProcessType process = getProcessType(item);
 		if (process == null) {
 			return ExecutionResult.NOTHING_TO_DO;
-		}	
-      
+		}
+
         List<NodeType> nodeList = process.getNode();
         for (NodeType node : nodeList) {
             if (node.getComponentName().indexOf(UpdateTheJobsActionsOnTable.T_ORACLE_OUTPUT) != -1) {
@@ -63,7 +63,7 @@ public class UpdateTheJobsActionsOnTable extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
      */
     public Date getOrder() {

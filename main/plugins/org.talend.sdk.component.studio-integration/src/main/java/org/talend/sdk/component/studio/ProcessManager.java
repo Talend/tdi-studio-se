@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,11 @@
  */
 package org.talend.sdk.component.studio;
 
-import static java.lang.ClassLoader.getSystemClassLoader;
-import static java.lang.Thread.sleep;
-import static java.util.Collections.emptyEnumeration;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
+import static java.lang.ClassLoader.*;
+import static java.lang.Thread.*;
+import static java.util.Collections.*;
+import static java.util.Optional.*;
+import static java.util.stream.Collectors.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +37,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -47,9 +47,12 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.services.ICoreTisService;
 import org.talend.sdk.component.studio.lang.LocalLock;
 import org.talend.sdk.component.studio.lang.StringPropertiesTokenizer;
 import org.talend.sdk.component.studio.logging.JULToOsgiHandler;
@@ -74,6 +77,8 @@ public class ProcessManager implements AutoCloseable {
     private URLClassLoader loader;
 
     private Thread serverThread;
+
+    private Exception loadException;
 
     public ProcessManager(final String groupId, final Function<String, File> resolver) {
         this.groupId = groupId;
@@ -284,6 +289,14 @@ public class ProcessManager implements AutoCloseable {
                         throw new IllegalStateException(ie.getTargetException());
                     }
                 } catch (final Exception e) {
+                    Throwable cause = getThrowableException(e);
+                    if (cause != null) {
+                        if (cause instanceof Exception) {
+                            setLoadException((Exception) cause);
+                        } else {
+                            setLoadException(new Exception(cause));
+                        }
+                    }
                     throw new IllegalStateException(e);
                 }
             }
@@ -348,7 +361,11 @@ public class ProcessManager implements AutoCloseable {
 
     private void reloadProperties() {
         try {
-            System.setProperty(TaCoKitConst.PROP_COMPONENT, TaCoKitUtil.getInstalledComponentsString(new NullProgressMonitor()));
+            final String value = TaCoKitUtil.getInstalledComponentsString(new NullProgressMonitor());
+            if (value == null) {
+                return;
+            }
+            System.setProperty(TaCoKitConst.PROP_COMPONENT, value);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -359,12 +376,27 @@ public class ProcessManager implements AutoCloseable {
         if (m2Repo == null) {
             m2Repo = MavenPlugin.getMaven().getLocalRepositoryPath();
         }
-        final String components = System.getProperty(TaCoKitConst.PROP_COMPONENT);
+        String components = System.getProperty(TaCoKitConst.PROP_COMPONENT);
+
         final String registry = System.getProperty(TaCoKitConst.PROP_REGISTRY);
         if (m2Repo != null) {
             System.setProperty("talend.component.server.maven.repository", m2Repo);
         }
         if (components != null) {
+            // filter from component blacklist.
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+                ICoreTisService coreTisService = GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
+                try {
+                    StringBuilder builder = new StringBuilder();
+                    String separator = TaCoKitConst.PROP_COMPONENT_SEPARATOR;
+                    Set<String> blackList = coreTisService.getComponentBlackList();
+                    Stream.of(components.split(separator)).filter(s -> !blackList.contains(s))
+                            .forEach(s -> builder.append(s).append(separator));
+                    components = StringUtils.removeEnd(builder.toString(), separator);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
             System.setProperty("talend.component.server.component.coordinates", components);
         }
         if (registry != null) {
@@ -492,10 +524,26 @@ public class ProcessManager implements AutoCloseable {
         paths.add(mvnResolver.apply("org.slf4j:slf4j-jdk14:jar:" + GAV.INSTANCE.getSlf4jVersion()).toURI().toURL());
         // server
         paths.add(serverJar.toURI().toURL());
-        Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
-            aggregateDeps(paths, deps);
+        final int originalPaths = paths.size();
+        // only available in 1.1.8
+        Mvn.withDependencies(serverJar, "TALEND-INF/server/dependencies.txt", false, deps -> {
+            Stream<String> filteredDeps = deps.filter(dep -> {
+                if (dep.contains("com.sun.istack/istack-commons-runtime/")) {
+                    return false;
+                } else if (dep.contains("org.codehaus.woodstox/stax2-api/")) {
+                    return false;
+                }
+                return true;
+            });
+            aggregateDeps(paths, filteredDeps);
             return null;
         });
+        if (paths.size() == originalPaths) { // < 1.1.8
+            Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
+                aggregateDeps(paths, deps);
+                return null;
+            });
+        }
         // beam if needed
         if (Boolean.getBoolean("components.server.beam.active")) {
             final File beamModule = mvnResolver.apply(groupId + ":component-runtime-beam:" + GAV.INSTANCE.getComponentRuntimeVersion());
@@ -530,4 +578,24 @@ public class ProcessManager implements AutoCloseable {
         return port;
     }
 
+    private Throwable getThrowableException(Throwable ex) {
+        if (ex != null) {
+            if (ex instanceof IllegalArgumentException) {
+                return ex;
+            } else {
+                if (ex.getCause() != null) {
+                    return getThrowableException(ex.getCause());
+                }
+            }
+        }
+        return ex;
+    }
+
+    public Exception getLoadException() {
+        return this.loadException;
+    }
+
+    public void setLoadException(Exception loadException) {
+        this.loadException = loadException;
+    }
 }

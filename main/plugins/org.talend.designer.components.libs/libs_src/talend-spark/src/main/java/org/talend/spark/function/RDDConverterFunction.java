@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,7 +42,7 @@ public class RDDConverterFunction implements
 			for (int i = size; i < size + this.colIds.size(); i++) {
 				output.add(null);
 			}
-	
+
 			if (this.colIds != null && this.colIds.size() > 0) {
 				for (int index = 0; index < keys.size(); index++) {
 					if (output.get(this.colIds.get(index)) != null) {

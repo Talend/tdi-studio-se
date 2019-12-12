@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -86,10 +86,10 @@ import org.eclipse.ui.internal.wizards.datatransfer.TarEntry;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
-import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.wizards.datatransfer.FileSystemStructureProvider;
 import org.eclipse.ui.wizards.datatransfer.ImportOperation;
+import org.talend.repository.items.importexport.ui.managers.TalendZipLeveledStructureProvider;
 
 public class AbstractWizardProjectsImportPage extends WizardDataTransferPage {
 
@@ -854,7 +854,7 @@ public class AbstractWizardProjectsImportPage extends WizardDataTransferPage {
                     if (sourceFile == null) {
                         return;
                     }
-                    structureProvider = new ZipLeveledStructureProvider(sourceFile);
+                    structureProvider = new TalendZipLeveledStructureProvider(sourceFile);
                     Object child2 = structureProvider.getRoot();
 
                     if (!collectProjectFilesFromProvider(files, child2, 0, monitor)) {
@@ -1526,7 +1526,7 @@ public class AbstractWizardProjectsImportPage extends WizardDataTransferPage {
 
     /**
      * Getter for workingSetGroup.
-     * 
+     *
      * @return the workingSetGroup
      */
     public WorkingSetGroup getWorkingSetGroup() {

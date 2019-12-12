@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -112,6 +112,9 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             // TDI-32861, because for publish job, so means, must be binaries
             exportChoiceMap.put(ExportChoice.binaries, true);
             exportChoiceMap.put(ExportChoice.includeLibs, true);
+            
+            // TESB-26145 adding context to published job
+            exportChoiceMap.put(ExportChoice.needContext, true);
 
             ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
             exportItemForDQComponent(processItem);
@@ -147,7 +150,7 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
 
     /**
      * TDQ-15391: when have tDqReportRun, must always export items.
-     * 
+     *
      * @param processItem
      */
     private void exportItemForDQComponent(ProcessItem processItem) {

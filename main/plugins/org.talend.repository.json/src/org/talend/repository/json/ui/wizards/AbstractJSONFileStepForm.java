@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,6 +34,7 @@ import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.metadata.editor.MetadataEmfTableEditor;
@@ -53,9 +54,9 @@ import org.talend.repository.model.json.JsonFactory;
 
 /**
  * DOC cantoine class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: AbstractJSONFileStepForm.java 48226 2010-09-14 10:04:12Z hywang $
- * 
+ *
  */
 public abstract class AbstractJSONFileStepForm extends AbstractJSONStepForm {
 
@@ -77,7 +78,7 @@ public abstract class AbstractJSONFileStepForm extends AbstractJSONStepForm {
 
     /**
      * DOC cantoine AbstractJSONFileStepForm constructor comment. Use to step2
-     * 
+     *
      * @param parent
      * @param connection2
      */
@@ -384,6 +385,20 @@ public abstract class AbstractJSONFileStepForm extends AbstractJSONStepForm {
             }
         }
         return null;
+    }
+
+    protected String getConnectionEncoding() {
+        JSONFileConnection conn = getConnection();
+        String encoding = conn.getEncoding();
+        try {
+            if (isContextMode()) {
+                ContextType contextType = ConnectionContextHelper.getContextTypeForContextMode(conn, conn.getContextName());
+                encoding = TalendQuoteUtils.removeQuotes(ContextParameterUtils.getOriginalValue(contextType, encoding));
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return encoding;
     }
 
     @Override

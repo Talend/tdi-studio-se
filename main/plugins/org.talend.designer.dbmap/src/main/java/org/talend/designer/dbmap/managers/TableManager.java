@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,9 +34,9 @@ import org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TableManager.java 1782 2007-02-03 07:57:38Z bqian $
- * 
+ *
  */
 public class TableManager {
 
@@ -63,7 +63,7 @@ public class TableManager {
 
     /**
      * DOC amaumont Comment method "addTable".
-     * 
+     *
      * @param view
      * @param tableData
      */
@@ -108,7 +108,7 @@ public class TableManager {
 
     /**
      * DOC amaumont Comment method "removeTable".
-     * 
+     *
      * @param view
      */
     IDataMapTable removeTable(DataMapTableView view) {
@@ -119,7 +119,7 @@ public class TableManager {
 
     /**
      * DOC amaumont Comment method "removeTable".
-     * 
+     *
      * @param dataTable
      */
     Object removeTable(IDataMapTable dataTable) {
@@ -146,9 +146,9 @@ public class TableManager {
     }
 
     /**
-     * 
+     *
      * Return a copy.
-     * 
+     *
      * @return
      */
     Collection<DataMapTableView> getTablesView() {
@@ -187,9 +187,9 @@ public class TableManager {
     }
 
     /**
-     * 
+     *
      * Return an unmodifiable collection.
-     * 
+     *
      * @return
      */
     Collection<IDataMapTable> getTablesData() {
@@ -197,9 +197,9 @@ public class TableManager {
     }
 
     /**
-     * 
+     *
      * Return an unmodifiable list.
-     * 
+     *
      * @return
      */
     List<InputTable> getInputTables() {
@@ -207,9 +207,9 @@ public class TableManager {
     }
 
     /**
-     * 
+     *
      * Return an unmodifiable list.
-     * 
+     *
      * @return
      */
     List<OutputTable> getOutputTables() {
@@ -217,9 +217,9 @@ public class TableManager {
     }
 
     /**
-     * 
+     *
      * Return an unmodifiable list.
-     * 
+     *
      * @return
      */
     List<VarsTable> getVarsTables() {
@@ -240,7 +240,7 @@ public class TableManager {
 
     /**
      * DOC amaumont Comment method "swapTableInputTables".
-     * 
+     *
      * @param dataMapTable
      * @param dataMapTable2
      */
@@ -259,7 +259,7 @@ public class TableManager {
 
     /**
      * DOC amaumont Comment method "swapTableInputTables".
-     * 
+     *
      * @param dataMapTable
      * @param dataMapTable2
      */

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,7 +44,7 @@ public class PromptDefaultValueDialog extends Dialog {
 
     /**
      * DOC hcw PromptDefaultValueDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     protected PromptDefaultValueDialog(Shell parentShell, List<ColumnInfo> inputs) {
@@ -76,7 +76,7 @@ public class PromptDefaultValueDialog extends Dialog {
 
     /**
      * DOC hcw Comment method "createTableViewer".
-     * 
+     *
      * @param parent
      */
     private void createTable(Composite parent) {
@@ -214,7 +214,7 @@ public class PromptDefaultValueDialog extends Dialog {
     }
 
     /**
-     * 
+     *
      * DOC chuang ErrorDetailDialog class global comment. Detailled comment
      */
     static class ColumnInfo {

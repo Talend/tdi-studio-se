@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,9 +34,9 @@ import org.talend.sqlbuilder.sqlcontrol.AbstractSQLExecution;
 
 /**
  * DOC dev class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: SQLResultComposite.java,v 1.18 2006/11/06 09:18:06 qiang.zhang Exp $
- * 
+ *
  * @author qiang.zhang
  */
 public class SQLResultComposite extends Composite implements IResultDisplayer {
@@ -50,9 +50,9 @@ public class SQLResultComposite extends Composite implements IResultDisplayer {
     private AbstractSQLExecution sqlExecution;
 
     /**
-     * 
+     *
      * DOC dev SQLResultComposite constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -76,9 +76,9 @@ public class SQLResultComposite extends Composite implements IResultDisplayer {
     }
 
     /**
-     * 
+     *
      * DOC dev Comment method "addSQLExecution".
-     * 
+     *
      * @param sqlExe sql execution object
      * @throws Exception throw all exception
      */
@@ -90,7 +90,7 @@ public class SQLResultComposite extends Composite implements IResultDisplayer {
 
     /**
      * Getter for instance.
-     * 
+     *
      * @return the instance
      */
     public static IResultDisplayer getInstance() {
@@ -98,9 +98,9 @@ public class SQLResultComposite extends Composite implements IResultDisplayer {
     }
 
     /**
-     * 
+     *
      * DOC dev Comment method "createTabFolder".
-     * 
+     *
      */
     private void createTabFolder() {
 
@@ -122,7 +122,7 @@ public class SQLResultComposite extends Composite implements IResultDisplayer {
     }
 
     /**
-     * 
+     *
      * DOC dev Comment method "clearParent".
      */
     private void clearParent() {
@@ -138,9 +138,9 @@ public class SQLResultComposite extends Composite implements IResultDisplayer {
     }
 
     /**
-     * 
+     *
      * DOC dev Comment method "createTabItem".
-     * 
+     *
      * @throws Exception throw all exception
      */
     private void createTabItem() throws Exception {
@@ -224,9 +224,9 @@ public class SQLResultComposite extends Composite implements IResultDisplayer {
     }
 
     /**
-     * 
+     *
      * DOC dev Comment method "createHeaderComposite".
-     * 
+     *
      * @param parent a TabItem 's Control
      * @param tabItem a TabItem
      */
@@ -289,9 +289,9 @@ public class SQLResultComposite extends Composite implements IResultDisplayer {
     }
 
     /**
-     * 
+     *
      * DOC dev Comment method "createDetailComposite".
-     * 
+     *
      * @param parent a CTabItem 's Control
      * @param tabItem a CTabItem
      */

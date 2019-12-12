@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -37,7 +37,7 @@ public class ChangeOracleVersionForProjectSetting extends AbstractMigrationTask 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IMigrationTask#getOrder()
      */
     @Override
@@ -48,7 +48,7 @@ public class ChangeOracleVersionForProjectSetting extends AbstractMigrationTask 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#isApplicableOnItems()
      */
     @Override
@@ -58,7 +58,7 @@ public class ChangeOracleVersionForProjectSetting extends AbstractMigrationTask 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
     @Override
@@ -118,21 +118,21 @@ public class ChangeOracleVersionForProjectSetting extends AbstractMigrationTask 
 
     private boolean updateJarValue(ElementParameterType param) {
         String jarValue = param.getValue();
-        if ("ojdbc6.jar".equalsIgnoreCase(jarValue) || "ojdbc6-11g.jar".equalsIgnoreCase(param.getValue())) { //$NON-NLS-1$ //$NON-NLS-2$ 
+        if ("ojdbc6.jar".equalsIgnoreCase(jarValue) || "ojdbc6-11g.jar".equalsIgnoreCase(param.getValue())) { //$NON-NLS-1$ //$NON-NLS-2$
             param.setValue("ORACLE_11"); //$NON-NLS-1$
             // no ORACLE_11-6 from repositoy for now
             //param.setValue("ORACLE_11-6"); //$NON-NLS-1$
             return true;
-        } else if ("ojdbc5.jar".equalsIgnoreCase(jarValue) || "ojdbc5-11g.jar".equalsIgnoreCase(param.getValue())) { //$NON-NLS-1$ //$NON-NLS-2$ 
+        } else if ("ojdbc5.jar".equalsIgnoreCase(jarValue) || "ojdbc5-11g.jar".equalsIgnoreCase(param.getValue())) { //$NON-NLS-1$ //$NON-NLS-2$
             param.setValue("ORACLE_11"); //$NON-NLS-1$
             return true;
-        } else if ("ojdbc14.jar".equalsIgnoreCase(jarValue) || "ojdbc14-10g.jar".equalsIgnoreCase(param.getValue())) { //$NON-NLS-1$ //$NON-NLS-2$ 
+        } else if ("ojdbc14.jar".equalsIgnoreCase(jarValue) || "ojdbc14-10g.jar".equalsIgnoreCase(param.getValue())) { //$NON-NLS-1$ //$NON-NLS-2$
             param.setValue("ORACLE_10"); //$NON-NLS-1$
             return true;
         } else if ("ojdbc14-9i.jar".equalsIgnoreCase(jarValue)) { //$NON-NLS-1$
             param.setValue("ORACLE_9"); //$NON-NLS-1$
             return true;
-        } else if ("ojdbc12.jar".equalsIgnoreCase(jarValue) || "ojdbc12-8i.jar".equalsIgnoreCase(param.getValue())) { //$NON-NLS-1$ //$NON-NLS-2$ 
+        } else if ("ojdbc12.jar".equalsIgnoreCase(jarValue) || "ojdbc12-8i.jar".equalsIgnoreCase(param.getValue())) { //$NON-NLS-1$ //$NON-NLS-2$
             param.setValue("ORACLE_8"); //$NON-NLS-1$
             return true;
         }
@@ -142,7 +142,7 @@ public class ChangeOracleVersionForProjectSetting extends AbstractMigrationTask 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project, boolean)
      */
     @Override
@@ -152,7 +152,7 @@ public class ChangeOracleVersionForProjectSetting extends AbstractMigrationTask 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project,
      * org.talend.core.model.properties.Item)
      */

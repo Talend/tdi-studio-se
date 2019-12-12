@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -23,9 +23,9 @@ import org.talend.metadata.managment.ui.wizard.metadata.xml.node.NameSpaceNode;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.utils.StringUtil;
 
 /**
- * 
+ *
  * $Id: CreateNameSpaceAction.java,v 1.1 2007/10/30 07:20:38 xzhang Exp $
- * 
+ *
  */
 public class CreateNameSpaceAction extends SelectionProviderAction {
 
@@ -36,7 +36,7 @@ public class CreateNameSpaceAction extends SelectionProviderAction {
 
     /**
      * CreateNode constructor comment.
-     * 
+     *
      * @param provider
      * @param text
      */
@@ -53,7 +53,7 @@ public class CreateNameSpaceAction extends SelectionProviderAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     @Override
@@ -66,7 +66,7 @@ public class CreateNameSpaceAction extends SelectionProviderAction {
 
     /**
      * Create the child node of the input node
-     * 
+     *
      * @param node
      */
     private void createChildNode(FOXTreeNode node) {
@@ -98,7 +98,7 @@ public class CreateNameSpaceAction extends SelectionProviderAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.actions.SelectionProviderAction#selectionChanged(org.eclipse.jface.viewers.IStructuredSelection)
      */

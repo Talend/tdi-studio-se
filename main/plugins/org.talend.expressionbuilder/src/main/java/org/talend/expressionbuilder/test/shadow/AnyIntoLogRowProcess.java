@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -44,9 +44,9 @@ import org.talend.repository.model.RepositoryNode;
 
 /**
  * yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: AnyIntoLogRowProcess.java 下午04:13:24 2007-8-20 +0000 (2007-8-20) yzhang $
- * 
+ *
  * @param <K>
  */
 public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
@@ -80,7 +80,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#addUniqueConnectionName(java.lang.String)
      */
     @Override
@@ -91,7 +91,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#checkValidConnectionName(java.lang.String)
      */
     @Override
@@ -102,7 +102,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#checkValidConnectionName(java.lang.String, boolean)
      */
     @Override
@@ -113,7 +113,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#generateUniqueConnectionName(java.lang.String)
      */
     @Override
@@ -124,7 +124,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getAllConnections(java.lang.String)
      */
     @Override
@@ -134,7 +134,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getContextManager()
      */
     @Override
@@ -144,7 +144,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getGeneratingNodes()
      */
     @Override
@@ -154,7 +154,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getGraphicalNodes()
      */
     @Override
@@ -166,7 +166,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getName()
      */
     @Override
@@ -176,7 +176,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getNeededLibraries(boolean)
      */
     @Override
@@ -187,7 +187,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getNodesOfType(java.lang.String)
      */
     @Override
@@ -205,7 +205,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getProcessor()
      */
     public IProcessor getProcessor() {
@@ -215,7 +215,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#removeUniqueConnectionName(java.lang.String)
      */
     @Override
@@ -226,7 +226,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#setProcessor(org.talend.designer.runprocess.IProcessor)
      */
     public void setProcessor(IProcessor processor) {
@@ -236,7 +236,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getAuthor()
      */
     public User getAuthor() {
@@ -246,7 +246,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getChildren()
      */
     public List<IRepositoryViewObject> getChildren() {
@@ -256,7 +256,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getCreationDate()
      */
     public Date getCreationDate() {
@@ -266,7 +266,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getDescription()
      */
     public String getDescription() {
@@ -276,7 +276,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getId()
      */
     @Override
@@ -286,7 +286,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getLabel()
      */
     public String getLabel() {
@@ -295,7 +295,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getModificationDate()
      */
     public Date getModificationDate() {
@@ -305,7 +305,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getProperty()
      */
     public Property getProperty() {
@@ -315,7 +315,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getPurpose()
      */
     public String getPurpose() {
@@ -325,7 +325,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getStatusCode()
      */
     public String getStatusCode() {
@@ -335,7 +335,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getType()
      */
     public ERepositoryObjectType getType() {
@@ -345,7 +345,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getVersion()
      */
     @Override
@@ -356,7 +356,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setAuthor(org.talend.core.model.properties.User)
      */
     public void setAuthor(User author) {
@@ -366,7 +366,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setCreationDate(java.util.Date)
      */
     public void setCreationDate(Date value) {
@@ -376,7 +376,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setDescription(java.lang.String)
      */
     public void setDescription(String value) {
@@ -386,7 +386,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setId(java.lang.String)
      */
     public void setId(String id) {
@@ -396,7 +396,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setLabel(java.lang.String)
      */
     public void setLabel(String label) {
@@ -406,7 +406,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setModificationDate(java.util.Date)
      */
     public void setModificationDate(Date value) {
@@ -416,7 +416,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setProperty(org.talend.core.model.properties.Property)
      */
     public void setProperty(Property property) {
@@ -426,7 +426,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setPurpose(java.lang.String)
      */
     public void setPurpose(String value) {
@@ -436,7 +436,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setStatusCode(java.lang.String)
      */
     public void setStatusCode(String statusCode) {
@@ -446,7 +446,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#setVersion(java.lang.String)
      */
     public void setVersion(String version) {
@@ -456,7 +456,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#getElementParameter(java.lang.String)
      */
     @Override
@@ -467,7 +467,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#getElementParameters()
      */
     @Override
@@ -477,7 +477,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#isReadOnly()
      */
     @Override
@@ -488,7 +488,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#setElementParameters(java.util.List)
      */
     @Override
@@ -499,7 +499,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#setReadOnly(boolean)
      */
     @Override
@@ -510,7 +510,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getMergelinkOrder(org.talend.core.model.process.INode)
      */
     @Override
@@ -521,7 +521,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#isThereLinkWithHash(org.talend.core.model.process.INode)
      */
     @Override
@@ -532,7 +532,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#disableRunJobView()
      */
     public boolean disableRunJobView() {
@@ -542,7 +542,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getNodesWithImport()
      */
     @Override
@@ -558,7 +558,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getLastRunContext()
      */
     public IContext getLastRunContext() {
@@ -568,7 +568,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#setLastRunContext(org.talend.core.model.process.IContext)
      */
     public void setLastRunContext(IContext context) {
@@ -578,7 +578,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryObject#getRepositoryNode()
      */
     public RepositoryNode getRepositoryNode() {
@@ -588,7 +588,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.core.model.repository.IRepositoryObject#setRepositoryNode(org.talend.repository.model.RepositoryNode)
      */
@@ -599,7 +599,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#isNeedRegenerateCode()
      */
     @Override
@@ -610,7 +610,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#setNeedRegenerateCode(boolean)
      */
     @Override
@@ -621,7 +621,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getOutputMetadataTable()
      */
     @Override
@@ -632,7 +632,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryViewObject#getInformationStatus()
      */
     public ERepositoryStatus getInformationStatus() {
@@ -642,7 +642,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryViewObject#getPath()
      */
     public String getPath() {
@@ -652,7 +652,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryViewObject#getProjectLabel()
      */
     public String getProjectLabel() {
@@ -662,7 +662,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryViewObject#getRepositoryStatus()
      */
     public ERepositoryStatus getRepositoryStatus() {
@@ -672,7 +672,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.repository.IRepositoryViewObject#isDeleted()
      */
     public boolean isDeleted() {
@@ -682,7 +682,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.core.model.repository.IRepositoryViewObject#setRepositoryNode(org.talend.repository.model.IRepositoryNode
      * )
@@ -694,7 +694,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#getElementName()
      */
     @Override
@@ -780,7 +780,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IProcess#getComponentsType()
      */
     @Override
@@ -790,7 +790,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#isForceReadOnly()
      */
     @Override
@@ -801,7 +801,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElement#setForceReadOnly(boolean)
      */
     @Override

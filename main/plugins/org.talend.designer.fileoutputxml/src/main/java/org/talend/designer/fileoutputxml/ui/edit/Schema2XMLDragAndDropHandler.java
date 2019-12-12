@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,9 +48,9 @@ import org.talend.metadata.managment.ui.wizard.metadata.xml.node.FOXTreeNode;
 
 /**
  * amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: Schema2XMLDragAndDropHandler.java,v 1.1 2007/06/12 07:20:38 gke Exp $
- * 
+ *
  */
 public class Schema2XMLDragAndDropHandler {
 
@@ -64,7 +64,7 @@ public class Schema2XMLDragAndDropHandler {
 
     /**
      * amaumont TreeToTableDragAndDropHandler constructor comment.
-     * 
+     *
      * @param linker
      */
     public Schema2XMLDragAndDropHandler(Schema2XMLLinker linker) {
@@ -81,9 +81,9 @@ public class Schema2XMLDragAndDropHandler {
     }
 
     /**
-     * 
+     *
      * amaumont Comment method "createDragSource".
-     * 
+     *
      * @param sourceListener
      */
     private void createDragSource() {
@@ -99,7 +99,7 @@ public class Schema2XMLDragAndDropHandler {
     }
 
     /**
-     * 
+     *
      * create DropTarget.
      */
     private void createDropTarget() {
@@ -115,9 +115,9 @@ public class Schema2XMLDragAndDropHandler {
     }
 
     /**
-     * 
+     *
      * DOC wzhang Comment method "getManager".
-     * 
+     *
      * @return
      */
     private FOXManager getManager() {
@@ -125,11 +125,11 @@ public class Schema2XMLDragAndDropHandler {
     }
 
     /**
-     * 
+     *
      * amaumont XmlToSchemaDragAndDropHandler class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: Schema2XMLDragAndDropHandler.java,v 1.1 2007/06/12 07:20:38 gke Exp $
-     * 
+     *
      */
     class TreeDragSourceListener implements TransferDragSourceListener {
 
@@ -168,11 +168,11 @@ public class Schema2XMLDragAndDropHandler {
     };
 
     /**
-     * 
+     *
      * amaumont XmlToSchemaDragAndDropHandler class global comment. Detailled comment <br/>
-     * 
+     *
      * $Id: Schema2XMLDragAndDropHandler.java,v 1.1 2007/06/12 07:20:38 gke Exp $
-     * 
+     *
      */
     public class TableDropTargetListener implements TransferDropTargetListener {
 
@@ -181,9 +181,9 @@ public class Schema2XMLDragAndDropHandler {
         }
 
         /**
-         * 
+         *
          * DOC wzhang Comment method "getRootElement".
-         * 
+         *
          * @param curElement
          * @return
          */
@@ -213,7 +213,7 @@ public class Schema2XMLDragAndDropHandler {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.util.TransferDropTargetListener#getTransfer()
          */
         @Override
@@ -223,7 +223,7 @@ public class Schema2XMLDragAndDropHandler {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.jface.util.TransferDropTargetListener#isEnabled(org.eclipse.swt.dnd.DropTargetEvent)
          */
         @Override
@@ -292,7 +292,7 @@ public class Schema2XMLDragAndDropHandler {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.swt.dnd.DropTargetListener#drop(org.eclipse.swt.dnd.DropTargetEvent)
          */
         @Override
@@ -472,7 +472,7 @@ public class Schema2XMLDragAndDropHandler {
 
         /**
          * DOC wzhang Comment method "setDefaultFixValue".
-         * 
+         *
          * @param treeNode
          */
         private void setDefaultFixValue(FOXTreeNode treeNode) {

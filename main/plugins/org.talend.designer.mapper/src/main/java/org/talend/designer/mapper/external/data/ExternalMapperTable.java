@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,14 +24,14 @@ import org.talend.designer.mapper.utils.DataMapExpressionParser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ExternalMapperTable extends AbstractExternalMapTable implements Serializable, Cloneable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 8768004929161302382L;
 
@@ -138,7 +138,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Getter for globalMapKeyValues.
-     * 
+     *
      * @return the globalMapKeyValues
      */
     public List<ExternalMapperTableEntry> getGlobalMapKeysValues() {
@@ -147,7 +147,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Sets the globalMapKeyValues.
-     * 
+     *
      * @param globalMapKeyValues the globalMapKeyValues to set
      */
     public void setGlobalMapKeysValues(List<ExternalMapperTableEntry> globalMapKeyValues) {
@@ -155,11 +155,11 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "getConstraintTableEntries". <code>constraintTableEntries</code> has been replaced by
      * expressionFilter since 2.1.0 r4515 <code>constraintTableEntries</code> can't be removed to keep the ascendant
      * compatibility.
-     * 
+     *
      * @return
      */
     public List<ExternalMapperTableEntry> getConstraintTableEntries() {
@@ -167,11 +167,11 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "setConstraintTableEntries". <code>constraintTableEntries</code> has been replaced by
      * expressionFilter since 2.1.0 r4515 <code>constraintTableEntries</code> can't be removed to keep the ascendant
      * compatibility.
-     * 
+     *
      * @param constraintTableEntries
      */
     public void setConstraintTableEntries(List<ExternalMapperTableEntry> constraintTableEntries) {
@@ -179,9 +179,9 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
     }
 
     /**
-     * 
+     *
      * used only for outputs.
-     * 
+     *
      * @return
      */
     public boolean isReject() {
@@ -189,9 +189,9 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
     }
 
     /**
-     * 
+     *
      * used only for outputs.
-     * 
+     *
      * @param reject
      */
     public void setReject(boolean reject) {
@@ -200,7 +200,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Getter for rejectInnerJoin.
-     * 
+     *
      * @return the rejectInnerJoin
      */
     public boolean isRejectInnerJoin() {
@@ -209,7 +209,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Sets the rejectInnerJoin.
-     * 
+     *
      * @param rejectInnerJoin the rejectInnerJoin to set
      */
     public void setRejectInnerJoin(boolean rejectInnerJoin) {
@@ -218,7 +218,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Getter for innerJoin.
-     * 
+     *
      * @return the innerJoin
      */
     public boolean isInnerJoin() {
@@ -227,7 +227,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Sets the innerJoin.
-     * 
+     *
      * @param innerJoin the innerJoin to set
      */
     public void setInnerJoin(boolean innerJoin) {
@@ -253,7 +253,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Getter for activateExpressionFilter.
-     * 
+     *
      * @return the activateExpressionFilter
      */
     @Override
@@ -263,7 +263,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Sets the activateExpressionFilter.
-     * 
+     *
      * @param activateExpressionFilter the activateExpressionFilter to set
      */
     public void setActivateExpressionFilter(boolean activateExpressionFilter) {
@@ -272,7 +272,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Getter for lookupType.
-     * 
+     *
      * @return the lookupType
      */
     public String getMatchingMode() {
@@ -281,7 +281,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Sets the lookupType.
-     * 
+     *
      * @param matchingMode the lookupType to set
      */
     public void setMatchingMode(String matchingMode) {
@@ -290,7 +290,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Getter for lookupMode.
-     * 
+     *
      * @return the lookupMode
      */
     public String getLookupMode() {
@@ -299,7 +299,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Sets the lookupMode.
-     * 
+     *
      * @param lookupMode the lookupMode to set
      */
     public void setLookupMode(String lookupMode) {
@@ -308,7 +308,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Getter for tableSizeState.
-     * 
+     *
      * @return the tableSizeState
      */
     public String getSizeState() {
@@ -317,7 +317,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /**
      * Sets the tableSizeState.
-     * 
+     *
      * @param tableSizeState the tableSizeState to set
      */
     public void setSizeState(String tableSizeState) {
@@ -334,7 +334,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#clone()
      */
     @SuppressWarnings("unchecked")
@@ -361,7 +361,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -387,7 +387,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

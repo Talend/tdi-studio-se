@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -32,13 +32,13 @@ import org.talend.repository.model.RepositoryNodeUtilities;
 
 /**
  * Action group that adds the actions opening a new editor to the context menu and the action bar's navigate menu.
- * 
+ *
  * <p>
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
- * 
+ *
  * @since 2.0
- * 
+ *
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class JobActionGroup extends ActionGroup {
@@ -47,7 +47,7 @@ public class JobActionGroup extends ActionGroup {
      * Creates a new <code>OpenActionGroup</code>. The group requires that the selection provided by the part's
      * selection provider is of type <code>
 	 * org.eclipse.jface.viewers.IStructuredSelection</code>.
-     * 
+     *
      * @param part the view part that owns this action group
      */
     public JobActionGroup() {
@@ -96,7 +96,7 @@ public class JobActionGroup extends ActionGroup {
         /**
          * because all AContextualAction can only process the RepositoryNode, so adapt IProcess2 to RepositoryNode of
          * job type
-         * 
+         *
          * @param selection2
          */
         private void adaptProcessToRepositoryNode(IStructuredSelection inputSelection) {

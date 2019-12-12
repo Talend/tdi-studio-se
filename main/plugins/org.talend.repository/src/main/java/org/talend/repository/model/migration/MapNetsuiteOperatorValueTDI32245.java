@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -53,9 +53,9 @@ public class MapNetsuiteOperatorValueTDI32245 extends AbstractJobMigrationTask {
 
 		IComponentConversion changeDeletEmptyFileValue = new IComponentConversion() {
 			public void transform(NodeType node) {
-				
+
 				Map<String, String> operatorMap = new HashMap<String, String>();
-				
+
 				operatorMap.put("contains", "S-contains");
 				operatorMap.put("doesNotContain", "S-doesNotContain");
 				operatorMap.put("doesNotStartWith", "S-doesNotStartWith");
@@ -98,14 +98,14 @@ public class MapNetsuiteOperatorValueTDI32245 extends AbstractJobMigrationTask {
 				operatorMap.put("boolean", "B-boolean");
 
 				ElementParameterType criteriaTable = ComponentUtilities.getNodeProperty(node, "CONDITIONS");
-				
+
 				if(criteriaTable != null){
 					for(Object o : criteriaTable.getElementValue()){
 						ElementValueTypeImpl el = (ElementValueTypeImpl)o;
 						if(el.getElementRef().equals("OPERATOR")){
 							String oldValue = el.getValue();
 							String newValue = operatorMap.get(oldValue);
-							
+
 							el.setValue(newValue);
 						}
 					}

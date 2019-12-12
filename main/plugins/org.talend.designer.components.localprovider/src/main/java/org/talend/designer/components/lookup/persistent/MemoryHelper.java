@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -13,7 +13,7 @@
 package org.talend.designer.components.lookup.persistent;
 
 /**
- * 
+ *
  * Memory helper.
  */
 public final class MemoryHelper {
@@ -24,7 +24,7 @@ public final class MemoryHelper {
 
     private static long startValue;
     private static String currentKey;
-    
+
     private static final Runtime S_RUNTIME = Runtime.getRuntime();
 
     public static long usedMemory() {
@@ -69,7 +69,7 @@ public final class MemoryHelper {
         gc();
         startValue = usedMemory();
     }
-    
+
     public static void end(String key) {
         if(key != null && key.equals(currentKey)) {
             gc();
@@ -80,9 +80,9 @@ public final class MemoryHelper {
         } else {
             System.err.println("Keys for memory measure do not match: currentKey=" + currentKey + " != " + key); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        
+
     }
-    
+
     public static void displayMemory(String label, long bytes) {
         long memoryKBytes = bytes / 1024;
         long memoryMBytes = memoryKBytes / 1024;
@@ -90,5 +90,5 @@ public final class MemoryHelper {
                 + memoryMBytes + "MB"); //$NON-NLS-1$
 
     }
-    
+
 }

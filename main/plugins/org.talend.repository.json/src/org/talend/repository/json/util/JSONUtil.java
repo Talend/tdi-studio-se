@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -111,7 +111,7 @@ public class JSONUtil {
         return true;
     }
 
-    public static String changeJsonToXml(String jsonPath) {
+    public static String changeJsonToXml(String jsonPath, String encoding) {
         Project project = ProjectManager.getInstance().getCurrentProject();
         IProject fsProject = null;
         try {
@@ -166,10 +166,9 @@ public class JSONUtil {
         }
 
         try {
-            String jsonStr = IOUtils.toString(input);
+            String jsonStr = IOUtils.toString(input, encoding);
 
             convertJSON.setJsonString(jsonStr);
-
             convertJSON.generate();
             jsonStr = convertJSON.getJsonString4XML();
             inStream = new ByteArrayInputStream(jsonStr.getBytes());

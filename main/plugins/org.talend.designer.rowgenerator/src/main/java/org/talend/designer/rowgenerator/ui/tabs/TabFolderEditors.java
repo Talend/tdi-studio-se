@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -39,7 +39,7 @@ import org.talend.designer.rowgenerator.ui.editor.MetadataTableEditorViewExt;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: TabFolderEditors.java,v 1.19 2007/01/31 05:20:52 pub Exp $
  */
 public class TabFolderEditors extends CTabFolder {
@@ -123,7 +123,7 @@ public class TabFolderEditors extends CTabFolder {
 
     /**
      * qzhang Comment method "createPreview".
-     * 
+     *
      * @return
      */
     private void createPreview(final Composite parent, final int width, int height) {
@@ -217,7 +217,7 @@ public class TabFolderEditors extends CTabFolder {
 
     /**
      * qzhang Comment method "createTableView".
-     * 
+     *
      * @param inEditorContainer
      */
     public void createTableView() {
@@ -236,7 +236,7 @@ public class TabFolderEditors extends CTabFolder {
 
     /**
      * qzhang Comment method "setRowGeneratorUI".
-     * 
+     *
      * @param generatorUI
      */
     public void setRowGeneratorUI(RowGeneratorUI generatorUI) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,9 +33,9 @@ import org.talend.designer.core.ui.editor.process.ProcessPart;
 
 /**
  * Action to toggle a breakpoint on a node. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class NodeBreakpointAction extends SelectionAction {
 
@@ -47,7 +47,7 @@ public class NodeBreakpointAction extends SelectionAction {
 
     /**
      * Constructs a new NodeBreakpointAction.
-     * 
+     *
      * @param part
      */
     public NodeBreakpointAction(IWorkbenchPart part) {
@@ -58,7 +58,7 @@ public class NodeBreakpointAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
     @Override
@@ -68,7 +68,7 @@ public class NodeBreakpointAction extends SelectionAction {
 
     /**
      * Test if the selected item is a node.
-     * 
+     *
      * @return true / false
      */
     private boolean canPerformAction() {
@@ -120,7 +120,7 @@ public class NodeBreakpointAction extends SelectionAction {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.action.Action#run()
      */
     public void run() {

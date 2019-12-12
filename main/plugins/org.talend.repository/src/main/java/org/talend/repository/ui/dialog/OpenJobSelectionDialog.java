@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,7 +38,7 @@ public class OpenJobSelectionDialog extends RepositoryReviewDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.dialog.RepositoryReviewDialog#configureShell(org.eclipse.swt.widgets.Shell)
      */
     @Override
@@ -49,7 +49,7 @@ public class OpenJobSelectionDialog extends RepositoryReviewDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.repository.ui.dialog.RepositoryReviewDialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite
      * )
@@ -62,7 +62,7 @@ public class OpenJobSelectionDialog extends RepositoryReviewDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.Dialog#buttonPressed(int)
      */
     @Override
@@ -83,7 +83,7 @@ public class OpenJobSelectionDialog extends RepositoryReviewDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.dialog.RepositoryReviewDialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override

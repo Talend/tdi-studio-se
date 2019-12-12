@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,7 +22,7 @@ import org.talend.commons.ui.swt.extended.table.AbstractExtendedTableViewer;
 
 /**
  * created by Administrator on 2013-1-25 Detailled comment
- * 
+ *
  */
 public class XmlMapExtendedToolbarView extends ExtendedToolbarView {
 
@@ -32,7 +32,7 @@ public class XmlMapExtendedToolbarView extends ExtendedToolbarView {
 
     /**
      * DOC Administrator XmlMapExtendedToolbarView constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param extendedTableViewer
@@ -43,7 +43,7 @@ public class XmlMapExtendedToolbarView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#createComponents(org.eclipse.swt.widgets.Composite
      * )
@@ -57,7 +57,7 @@ public class XmlMapExtendedToolbarView extends ExtendedToolbarView {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView#getButtons()
      */
     @Override

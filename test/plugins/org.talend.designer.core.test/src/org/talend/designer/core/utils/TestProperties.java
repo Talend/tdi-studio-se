@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,7 @@ import org.talend.daikon.properties.property.Property;
 
 
 /**
- * 
+ *
  * created by ycbai on 2016年3月15日 Detailled comment
  *
  */
@@ -36,9 +36,9 @@ public class TestProperties extends FixedConnectorsComponentProperties {
     public SchemaProperties schema = new SchemaProperties("schema"); //$NON-NLS-1$
 
     public TestNestedProperties nestedProps = new TestNestedProperties("nestedProps"); //$NON-NLS-1$
-    
+
     protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schema");
-    
+
     public TestProperties(String name) {
         super(name);
     }

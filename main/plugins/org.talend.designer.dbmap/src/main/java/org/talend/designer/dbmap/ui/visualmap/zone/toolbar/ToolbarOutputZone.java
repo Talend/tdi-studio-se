@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,9 +24,9 @@ import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: ToolbarOutputZone.java 1782 2007-02-03 07:57:38Z bqian $
- * 
+ *
  */
 public class ToolbarOutputZone extends ToolbarZone {
 
@@ -48,7 +48,7 @@ public class ToolbarOutputZone extends ToolbarZone {
 
     /**
      * DOC amaumont MatadataToolbarEditor constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      * @param manager
@@ -156,7 +156,7 @@ public class ToolbarOutputZone extends ToolbarZone {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.dbmap.ui.visualmap.zone.ToolbarZone#getZone()
      */
     @Override
@@ -166,7 +166,7 @@ public class ToolbarOutputZone extends ToolbarZone {
 
     /**
      * DOC amaumont Comment method "setEnabledRemoveTableButton".
-     * 
+     *
      * @param b
      */
     public void setEnabledRemoveTableButton(boolean enabled) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -56,7 +56,7 @@ public class UpdateResolverTest {
         final ActionMock action = new ActionMock(actionRef.getName(), actionRef.getFamily());
         final Map<String, IElementParameter> settings = component.getSettings();
         final UpdateResolver resolver = new UpdateResolver(null, EComponentCategory.ADVANCED, 0,
-                action, actionOwner,actions, null, settings);
+                action, actionOwner,actions, null, settings, () -> true);
 
         resolver.resolveParameters(settings);
 

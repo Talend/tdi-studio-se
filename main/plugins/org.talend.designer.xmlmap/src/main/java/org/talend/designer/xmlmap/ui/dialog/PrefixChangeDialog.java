@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * 
+ *
  * created by wchen on 2015年7月9日 Detailled comment
  *
  */
@@ -49,7 +49,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
     /**
      * wchen NameSpaceDialog constructor comment.
-     * 
+     *
      * @param parentShell
      */
     public PrefixChangeDialog(Shell parentShell) {
@@ -58,7 +58,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.dialogs.TitleAreaDialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     @Override
@@ -103,7 +103,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
             @Override
@@ -124,7 +124,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
             @Override
@@ -151,7 +151,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
     /**
      * Getter for rootNodeName.
-     * 
+     *
      * @return the rootNodeName
      */
     public String getRootNodeName() {
@@ -160,7 +160,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
     /**
      * Sets the rootNodeName.
-     * 
+     *
      * @param rootNodeName the rootNodeName to set
      */
     public void setRootNodeName(String rootNodeName) {
@@ -169,7 +169,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
     /**
      * Getter for prefix.
-     * 
+     *
      * @return the prefix
      */
     public String getPrefix() {
@@ -178,7 +178,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
     /**
      * Sets the prefix.
-     * 
+     *
      * @param prefix the prefix to set
      */
     public void setPrefix(String prefix) {
@@ -187,7 +187,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
     /**
      * Getter for sourceExpression.
-     * 
+     *
      * @return the sourceExpression
      */
     public String getSourceExpression() {
@@ -196,7 +196,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
     /**
      * Sets the sourceExpression.
-     * 
+     *
      * @param sourceExpression the sourceExpression to set
      */
     public void setSourceExpression(String sourceExpression) {
@@ -205,7 +205,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
     /**
      * Getter for targetExpression.
-     * 
+     *
      * @return the targetExpression
      */
     public String getTargetExpression() {
@@ -214,7 +214,7 @@ public class PrefixChangeDialog extends TitleAreaDialog {
 
     /**
      * Sets the targetExpression.
-     * 
+     *
      * @param targetExpression the targetExpression to set
      */
     public void setTargetExpression(String targetExpression) {

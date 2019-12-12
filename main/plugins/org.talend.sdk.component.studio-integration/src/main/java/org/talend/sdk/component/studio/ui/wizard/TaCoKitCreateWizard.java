@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package org.talend.sdk.component.studio.ui.wizard;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IWorkbench;
@@ -52,14 +51,14 @@ public class TaCoKitCreateWizard extends TaCoKitConfigurationWizard {
     @Override
     protected void setWindowTitle() {
         ConfigTypeNode configTypeNode = getRuntimeData().getConfigTypeNode();
-        setWindowTitle(Messages.getString("TaCoKitConfiguration.wizard.title.create", //$NON-NLS-1$
-                configTypeNode.getConfigurationType(), configTypeNode.getDisplayName()));
+        setWindowTitle(Messages.getString("TaCoKitConfiguration.wizard.title.create.str", //$NON-NLS-1$
+                configTypeNode.getDisplayName(), configTypeNode.getConfigurationType()));
     }
 
     /**
      * Creates operation, which is performed, when Finish button is pushed.
      * This operation creates ConfigurationItem
-     * 
+     *
      * @return operation to perform on finish
      */
     @Override
@@ -82,8 +81,23 @@ public class TaCoKitCreateWizard extends TaCoKitConfigurationWizard {
 
         connectionItem.getProperty().setId(nextId);
         TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connectionItem.getConnection(), configTypeNode);
-        if (taCoKitRepositoryNode.isLeafNode()) {
-            model.setParentItemId(taCoKitRepositoryNode.getObject().getId());
+        ITaCoKitRepositoryNode parentNode = null;
+        ITaCoKitRepositoryNode tempNode = taCoKitRepositoryNode;
+        while (true) {
+            if (tempNode == null) {
+                break;
+            }
+            if (tempNode.isLeafNode()) {
+                parentNode = tempNode;
+                break;
+            }
+            if (tempNode.isFamilyNode()) {
+                break;
+            }
+            tempNode = tempNode.getParentTaCoKitNode();
+        }
+        if (parentNode != null) {
+            model.setParentItemId(parentNode.getObject().getId());
         }
         factory.create(connectionItem, getWizardPropertiesPage().getDestinationPath());
         RepositoryManager.refreshCreatedNode(TaCoKitConst.METADATA_TACOKIT);

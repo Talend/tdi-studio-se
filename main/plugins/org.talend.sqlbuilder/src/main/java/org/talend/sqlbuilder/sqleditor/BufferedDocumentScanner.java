@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,9 +22,9 @@ import org.talend.sqlbuilder.SqlBuilderPlugin;
 /**
  * A buffered document scanner. The buffer always contains a section of a fixed size of the document to be scanned.
  * <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
- * 
+ *
  * @author qiang.zhang
  */
 public final class BufferedDocumentScanner implements ICharacterScanner {
@@ -55,7 +55,7 @@ public final class BufferedDocumentScanner implements ICharacterScanner {
 
     /**
      * Creates a new buffered document scanner. The buffer size is set to the given number of characters.
-     * 
+     *
      * @param size the buffer size
      */
     public BufferedDocumentScanner(int size) {
@@ -65,7 +65,7 @@ public final class BufferedDocumentScanner implements ICharacterScanner {
 
     /**
      * Fills the buffer with the contens of the document starting at the given offset.
-     * 
+     *
      * @param offset the document offset at which the buffer starts
      */
     private final void updateBuffer(int offset) {
@@ -88,7 +88,7 @@ public final class BufferedDocumentScanner implements ICharacterScanner {
 
     /**
      * Configures the scanner by providing access to the document range over which to scan.
-     * 
+     *
      * @param document the document to scan
      * @param offset the offset of the document range to scan
      * @param length the length of the document range to scan

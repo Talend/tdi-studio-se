@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,15 +24,15 @@ import org.talend.repository.model.RepositoryNode;
 /**
  * DOC qianbing class global comment. An interface provides some method for the composites in SQLBuilderDialog to
  * interactive. <br/>
- * 
+ *
  * $Id: talend-code-templates.xml,v 1.3 2006/11/01 05:38:28 nicolas Exp $
- * 
+ *
  */
 public interface ISQLBuilderDialog {
 
     /**
      * DOC qianbing Comment method "openEditor".
-     * 
+     *
      * @param node RepositoryNode with the DatabaseConnection
      * @param repositoryName all the repositories' name
      * @param connParam ConnectionParameters

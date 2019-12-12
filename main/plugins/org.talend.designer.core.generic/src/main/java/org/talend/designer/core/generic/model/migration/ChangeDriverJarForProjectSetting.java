@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -52,7 +52,7 @@ public class ChangeDriverJarForProjectSetting extends AbstractMigrationTask impl
 
     @Override
     public ExecutionResult execute(Project project) {
-        
+
         ProxyRepositoryFactory prf = ProxyRepositoryFactory.getInstance();
         Resource projectResource = project.getEmfProject().eResource();
         if (projectResource == null) {
@@ -86,7 +86,7 @@ public class ChangeDriverJarForProjectSetting extends AbstractMigrationTask impl
                 }
             }
         }
-        
+
         ImplicitContextSettings implicitContext = emfProject.getImplicitContextSettings();
         if (implicitContext != null && implicitContext.getParameters() != null) {
             ParametersType parameters = implicitContext.getParameters();

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+ * Copyright (C) 2006-2019 Talend Inc. - www.talend.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,17 +33,17 @@ import org.talend.sdk.component.studio.lang.Strings;
  * DOC cmeng class global comment. Detailled comment
  */
 public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalInfo {
-    
+
     static final String DEFAULT = "__default__";
-    
+
     private static final String TYPE = "CONNECTOR_TYPE";
-    
+
     private static final String TACOKIT_TYPE = "tacokit";
-    
+
     private final Map<String, Object> info = new HashMap<>();
 
     private boolean hasInput = false;
-    
+
     private boolean hasOutput = false;
 
     private Boolean isMultiSchema = null;
@@ -52,18 +52,18 @@ public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalIn
      * This constructor should be used by default. It is suitable to create connectors of all types except FLOW and REJECT.
      * FLOW connector may have different name, linkName and menuName from default values for FLOW connection type.
      * REJECT connector is different from other, because its default connection type should be FLOW.
-     * 
+     *
      * @param node node to which this connector belongs to
      * @param type connection type
      */
     TaCoKitNodeConnector(final INode node, final EConnectionType type) {
         this(node, type.getName(), type.getDefaultLinkName(), type.getDefaultMenuName(), type, type);
     }
-    
+
     /**
      * Creates connector according specified arguments and sets min/max links to 0, which means connector may no have any connections.
      * Correct min/max links values should be set after constructor
-     * 
+     *
      * @param node node to which this connector belongs to
      * @param name connection type name
      * @param linkName display name, which is shown as part of connection name
@@ -87,12 +87,12 @@ public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalIn
                 type.getDefaultLineStyle());
         putInfo(TYPE, TACOKIT_TYPE);
     }
-    
+
     /**
      * Creates new connector of FLOW_MAIN type.
      * This connector may have name(type), linkName and menuName defined in component.
      * If type defined in component is "_default_" than connector has the same values as FLOW_MAIN connection type
-     * 
+     *
      * @param node node to which this connector belongs to
      * @param name connector name(type)
      * @return TaCoKitNodeConnector of FLOW_MAIN type
@@ -109,11 +109,11 @@ public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalIn
         }
         return tacokitConnector;
     }
-    
+
     /**
      * Creates new connector of REJECT type.
      * A specialty of REJECT connector is it should have FLOW_MAIN type as default connector type
-     * 
+     *
      * @param node node to which this connector belongs to
      * @param originalName original connector name set in component
      * @return TaCoKitNodeConnector of REJECT type
@@ -168,7 +168,7 @@ public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalIn
 
     @Override
     public void onEvent(String event, Object... parameters) {
-        throw new UnsupportedOperationException();        
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -176,5 +176,5 @@ public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalIn
         Objects.requireNonNull(target);
         info.entrySet().stream().forEach(e -> target.putInfo(e.getKey(), e.getValue()));
     }
-    
+
 }

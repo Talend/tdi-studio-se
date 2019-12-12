@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,14 +33,14 @@ import org.talend.designer.core.ui.editor.process.Process;
  * DOC hwang  class global comment. Detailled comment
  */
 public class GenericServiceTest {
-    
+
     @Test
     public void testResetReferenceValue() {
           GenericService service = new GenericService();
         //---first
           String oldConnectionName = "joblet3_1";
           String newConnectionName = "joblet1_1_joblet2_1_joblet3_1";
-          
+
           IComponent component = ComponentsFactoryProvider.getInstance().get("tJDBCInput",
                   ComponentCategory.CATEGORY_4_DI.getName());
           Property property = PropertiesFactory.eINSTANCE.createProperty();
@@ -48,11 +48,11 @@ public class GenericServiceTest {
           property.setVersion(VersionUtils.DEFAULT_VERSION);
           Process process = new Process(property);
           Node node = new Node(component, process);
-          
+
           ComponentProperties pros = node.getComponentProperties();
           ComponentReferenceProperties comPro = (ComponentReferenceProperties) pros.getProperties("referencedComponent"); //$NON-NLS-1$
           comPro.componentInstanceId.setValue("joblet3_1_joblet4_1_joblet5_1_tJDBCConnection_1");
-          
+
           service.resetReferenceValue(node, oldConnectionName, newConnectionName);
           assertTrue(comPro.componentInstanceId.getStoredValue().equals("joblet1_1_joblet2_1_joblet3_1_joblet4_1_joblet5_1_tJDBCConnection_1"));
           //---second

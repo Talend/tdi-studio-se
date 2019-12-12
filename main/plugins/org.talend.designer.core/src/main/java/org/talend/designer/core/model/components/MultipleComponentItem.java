@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -20,9 +20,9 @@ import org.talend.core.model.components.IMultipleComponentItem;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class MultipleComponentItem implements IMultipleComponentItem {
 
@@ -44,7 +44,7 @@ public class MultipleComponentItem implements IMultipleComponentItem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentItem#getName()
      */
     public String getName() {
@@ -53,7 +53,7 @@ public class MultipleComponentItem implements IMultipleComponentItem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IMultipleComponentItem#setName(java.lang.String)
      */
     public void setName(String name) {

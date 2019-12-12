@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,9 +30,9 @@ import org.talend.core.utils.TalendQuoteUtils;
 
 /**
  * DOC chuger class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: FileInputDelimitedNode.java 93 2006-10-04 10:02:12 +0000 (mer., 04 oct. 2006) mhirt $
- * 
+ *
  */
 public class FileInputLdifNode extends FileInputNode {
 
@@ -86,7 +86,7 @@ public class FileInputLdifNode extends FileInputNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.shadow.ShadowNode#getMetadataList()
      */
     @Override
@@ -96,7 +96,7 @@ public class FileInputLdifNode extends FileInputNode {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.shadow.ShadowNode#setMetadataList(java.util.List)
      */
     @Override

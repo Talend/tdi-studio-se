@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,18 +27,18 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 
 /**
  * DOC ggu class global comment. Detailled comment <br/>
- * 
+ *
  */
 public final class NodeQueryCheckUtil {
 
-    public static final String SELECT = "SELECT"; //$NON-NLS-1$   
+    public static final String SELECT = "SELECT"; //$NON-NLS-1$
 
-    public static final String FROM = "FROM"; //$NON-NLS-1$   
+    public static final String FROM = "FROM"; //$NON-NLS-1$
 
     private static final int REGX_FLAG = java.util.regex.Pattern.CANON_EQ | java.util.regex.Pattern.CASE_INSENSITIVE
             | java.util.regex.Pattern.UNICODE_CASE;
 
-    private static final String NL_REGX_ONE = "(\\s)+"; //$NON-NLS-1$   
+    private static final String NL_REGX_ONE = "(\\s)+"; //$NON-NLS-1$
 
     private static final String QUOTE = LanguageManager.getCurrentLanguage() == ECodeLanguage.JAVA ? TalendTextUtils.QUOTATION_MARK
             : TalendTextUtils.SINGLE_QUOTE;
@@ -47,25 +47,25 @@ public final class NodeQueryCheckUtil {
     private static final String SQL_REGX = "^" + QUOTE + "(\\s)*(" + SELECT + ")" + NL_REGX_ONE + "(.*?)" + NL_REGX_ONE + "(" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
             + FROM + ")" + NL_REGX_ONE + "(.*)" + QUOTE + "$"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-    private static final String NL_REGX = "(\\s)*"; //$NON-NLS-1$   
+    private static final String NL_REGX = "(\\s)*"; //$NON-NLS-1$
 
     /*
      * add by wzhang
      */
     // field contains function
-    private static final String SQL_FUNC_REGX = "(.+?)(\\s)*\\((\\s)*(.*)(\\s)*\\)(\\s)*(.*)"; //$NON-NLS-1$  
+    private static final String SQL_FUNC_REGX = "(.+?)(\\s)*\\((\\s)*(.*)(\\s)*\\)(\\s)*(.*)"; //$NON-NLS-1$
 
     // split the function
-    private static final String FUNC_SPLIT = "(\\s)*(\\w*)\\((.*?)\\)(\\s+\\w*){0,1}"; //$NON-NLS-1$  
+    private static final String FUNC_SPLIT = "(\\s)*(\\w*)\\((.*?)\\)(\\s+\\w*){0,1}"; //$NON-NLS-1$
 
     private static final String COMMENT_REGX_PATTERN = ("(?ms)('(?:''|[^'])*')|--.*?$|/\\*.*?\\*/"); //$NON-NLS-1$
 
     private static boolean needMatchQuery;
 
     /**
-     * 
+     *
      * DOC ggu Comment method "checkQueryOK".
-     * 
+     *
      * @param node
      * @param sql
      * @return
@@ -112,9 +112,9 @@ public final class NodeQueryCheckUtil {
     }
 
     /**
-     * 
+     *
      * DOC wzhang Comment method "compareNodeTableColumnsWithFunc".
-     * 
+     *
      * @param node
      * @param columns
      * @return
@@ -130,7 +130,7 @@ public final class NodeQueryCheckUtil {
         }
         int originColumnSize = metaTable.getListColumns().size();
         // modified by wzhang. replace the field to one String if it contains function
-        columns = columns.replaceAll(FUNC_SPLIT, "column"); //$NON-NLS-1$  
+        columns = columns.replaceAll(FUNC_SPLIT, "column"); //$NON-NLS-1$
         String[] columnArray = columns.split(","); //$NON-NLS-1$
         // columns not match
         if (columnArray.length != originColumnSize) {
@@ -159,9 +159,9 @@ public final class NodeQueryCheckUtil {
     }
 
     /**
-     * 
+     *
      * DOC wzhang Comment method "compareNodeTableColumnsNoFunc".
-     * 
+     *
      * @param node
      * @param columns
      * @return
@@ -187,7 +187,7 @@ public final class NodeQueryCheckUtil {
      * See bug 5836. java.util.regex works too slow here. Use apache oro regex library instead.
      * <p>
      * DOC xye Comment method "apacheRegexMatch".
-     * 
+     *
      * @param patternString
      * @param flag
      * @param input

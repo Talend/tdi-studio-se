@@ -70,6 +70,15 @@ imports="
 			<%
 			}
 		}
+		
+		public void newInstance(INode node) {
+			String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
+			if("SYBSEIQ_16".equals(dbVersion)){
+%>
+				jdbcclazz_<%=cid%>.newInstance();
+<%
+			}
+		}
 	}
 	dbRowBeginUtil = new DBRowBeginUtil();
 %>

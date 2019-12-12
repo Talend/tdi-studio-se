@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,9 +16,9 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40Z nrousseau $
- * 
+ *
  */
 public class KeyWordContentProposal implements IContentProposal {
 
@@ -26,7 +26,7 @@ public class KeyWordContentProposal implements IContentProposal {
 
     /**
      * DOC amaumont KeyWordContentProposal constructor comment.
-     * 
+     *
      * @param keyWord
      */
     public KeyWordContentProposal(String keyWord) {
@@ -35,7 +35,7 @@ public class KeyWordContentProposal implements IContentProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposal#getContent()
      */
     public String getContent() {
@@ -44,7 +44,7 @@ public class KeyWordContentProposal implements IContentProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposal#getCursorPosition()
      */
     public int getCursorPosition() {
@@ -53,7 +53,7 @@ public class KeyWordContentProposal implements IContentProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposal#getDescription()
      */
     public String getDescription() {
@@ -62,7 +62,7 @@ public class KeyWordContentProposal implements IContentProposal {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.fieldassist.IContentProposal#getLabel()
      */
     public String getLabel() {

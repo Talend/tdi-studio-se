@@ -2,7 +2,7 @@
 //
 // Talend Community Edition
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -37,9 +37,9 @@ import org.talend.core.model.process.IElementParameter;
 
 /**
  * wchen class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 1 2006-09-29 17:06:40Z nrousseau $
- * 
+ *
  */
 public class CheckColumnSelectionListener implements ITableColumnSelectionListener {
 
@@ -60,7 +60,7 @@ public class CheckColumnSelectionListener implements ITableColumnSelectionListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.tableviewer.selection.ITableColumnSelectionListener#addColumnSortedListener(org.talend
      * .commons.ui.swt.tableviewer.sort.IColumnSortedListener)
@@ -73,7 +73,7 @@ public class CheckColumnSelectionListener implements ITableColumnSelectionListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.tableviewer.selection.ITableColumnSelectionListener#getTableViewerCreator()
      */
     @Override
@@ -84,7 +84,7 @@ public class CheckColumnSelectionListener implements ITableColumnSelectionListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.commons.ui.swt.tableviewer.selection.ITableColumnSelectionListener#getTableViewerCreatorColumn()
      */
     @Override
@@ -95,7 +95,7 @@ public class CheckColumnSelectionListener implements ITableColumnSelectionListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.tableviewer.selection.ITableColumnSelectionListener#removeColumnSortedListener(org.
      * talend.commons.ui.swt.tableviewer.sort.IColumnSortedListener)
@@ -108,7 +108,7 @@ public class CheckColumnSelectionListener implements ITableColumnSelectionListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.tableviewer.selection.ITableColumnSelectionListener#setTableViewerCreator(org.talend
      * .commons.ui.swt.tableviewer.TableViewerCreator)
@@ -119,7 +119,7 @@ public class CheckColumnSelectionListener implements ITableColumnSelectionListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.tableviewer.selection.ITableColumnSelectionListener#setTableViewerCreatorColumn(org
      * .talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn)
@@ -130,7 +130,7 @@ public class CheckColumnSelectionListener implements ITableColumnSelectionListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
      */
     @Override
@@ -141,7 +141,7 @@ public class CheckColumnSelectionListener implements ITableColumnSelectionListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
      */
     @Override
@@ -205,7 +205,7 @@ public class CheckColumnSelectionListener implements ITableColumnSelectionListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.tableviewer.selection.ITableColumnSelectionListener#setTableViewerCreatorColumn(org
      * .talend.commons.ui.swt.tableviewer.TableViewerCreatorColumnNotModifiable)
@@ -217,7 +217,7 @@ public class CheckColumnSelectionListener implements ITableColumnSelectionListen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.commons.ui.swt.tableviewer.selection.ITableColumnSelectionListener#setTableViewerCreator(org.talend
      * .commons.ui.swt.tableviewer.TableViewerCreatorNotModifiable)

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 
 /**
  * Command that will set or remove the start status on a node. <br/>
- * 
+ *
  * $Id: ChangeActivateStatusNodeCommand.java 3351 2007-05-04 12:14:00 +0000 (ven., 04 mai 2007) plegall $
- * 
+ *
  */
 public class DisplaySubjobCommand extends Command {
 
@@ -30,7 +30,7 @@ public class DisplaySubjobCommand extends Command {
 
     /**
      * Gives the node where the status will be set or removed.
-     * 
+     *
      * @param newStartNode
      */
     public DisplaySubjobCommand(SubjobContainer subjob) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,7 +26,7 @@ import org.talend.core.model.process.INode;
 /**
  * Use for wrap a {@link INode} to provide faster and convenient methods to get
  * parameters.
- * 
+ *
  * @author GaoZone
  * @update 2013-9-12 [TESB-11028]
  */
@@ -51,7 +51,7 @@ public class NodeParamsHelper {
 
         /**
          * Instantiates a new prop entry.
-         * 
+         *
          * @param key
          *            the key
          * @param value
@@ -81,7 +81,7 @@ public class NodeParamsHelper {
 
     /**
      * Instantiates a new node params helper.
-     * 
+     *
      * @param node
      *            the node
      */
@@ -97,7 +97,7 @@ public class NodeParamsHelper {
 
     /**
      * Gets the parameter from cached name map.
-     * 
+     *
      * @param key
      *            the key
      * @return the parameter
@@ -108,7 +108,7 @@ public class NodeParamsHelper {
 
     /**
      * Gets the boolean parameter by {@code key}. If no {@code key} provided
-     * 
+     *
      * @param key
      *            the key
      * @return the boolean parameter
@@ -119,7 +119,7 @@ public class NodeParamsHelper {
 
     /**
      * Gets the string parameter by {@code key}.
-     * 
+     *
      * @param key
      *            the key
      * @return the parameter value in String
@@ -139,7 +139,7 @@ public class NodeParamsHelper {
     /**
      * Gets string parameter by {@code key}. Especially, if the parameter's
      * controller is not visible, then also return {@code ""}.
-     * 
+     *
      * @param key
      *            the key
      * @return the parameter value
@@ -158,7 +158,7 @@ public class NodeParamsHelper {
     /**
      * Gets the object param. </br>//TODO Not used name map yet, and be improve
      * by expose methods from {@link ElementParameterParser}
-     * 
+     *
      * @param <T>
      *            the generic type
      * @param key
@@ -174,7 +174,7 @@ public class NodeParamsHelper {
     /**
      * Gets boolean parameter by {@code key}. Especially, if the parameter's
      * controller is not visible, then also return {@code false}.
-     * 
+     *
      * @param key
      *            the key
      * @return the parameter value
@@ -194,7 +194,7 @@ public class NodeParamsHelper {
 
     /**
      * Gets the properties pram.
-     * 
+     *
      * @param key
      *            the key
      * @return the properties pram
@@ -216,7 +216,7 @@ public class NodeParamsHelper {
 
     /**
 	 * Gets the display value.
-	 * 
+	 *
 	 * @param param
 	 *            the param
 	 * @return the display value

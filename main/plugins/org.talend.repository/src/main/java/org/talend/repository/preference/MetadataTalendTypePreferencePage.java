@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,17 +26,17 @@ import org.talend.repository.model.RepositoryPreferenceStore;
 
 /**
  * Preference for the Metadata Talend type files.
- * 
+ *
  * $Id: MetadataTalendTypePreferencePage.java 2738 2007-04-26 13:12:27Z cantoine $
- * 
+ *
  */
 public class MetadataTalendTypePreferencePage extends FieldEditorPreferencePage {
 
     /**
      * MetadataTalendTypePreferencePage.
-     * 
+     *
      * $Id: SpagoBiPreferencePage.java 2738 2007-04-26 13:12:27Z cantoine $
-     * 
+     *
      */
 
     public MetadataTalendTypePreferencePage() {

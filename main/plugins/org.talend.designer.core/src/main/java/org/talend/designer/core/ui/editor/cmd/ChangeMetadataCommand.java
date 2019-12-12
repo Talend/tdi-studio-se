@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -54,13 +54,13 @@ import org.talend.designer.core.ui.editor.properties.controllers.ColumnListContr
 
 /**
  * Command that will change a metadata in a node.
- * 
+ *
  * $Id$
- * 
+ *
  */
 /**
  * DOC Administrator class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class ChangeMetadataCommand extends Command {
 
@@ -253,7 +253,7 @@ public class ChangeMetadataCommand extends Command {
     public static boolean askPropagate() {
         Boolean needPropagate = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false),
                 Messages.getString("ChangeMetadataCommand.messageDialog.propagate"), //$NON-NLS-1$
-                Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage")); //$NON-NLS-1$ 
+                Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage")); //$NON-NLS-1$
         return needPropagate;
     }
 
@@ -557,6 +557,7 @@ public class ChangeMetadataCommand extends Command {
                     }
                 }
                 MetadataToolHelper.copyTable(newInputMetadata, currentInputMetadata);
+                currentOutputMetadata.setOriginalColumns(newOutputMetadata.getOriginalColumns());
             }
         }
 
@@ -573,6 +574,7 @@ public class ChangeMetadataCommand extends Command {
                 }
             }
             MetadataToolHelper.copyTable(newOutputMetadata, currentOutputMetadata);
+            currentOutputMetadata.setOriginalColumns(newOutputMetadata.getOriginalColumns());
         }
         if (inputSchemaParam != null
                 && inputSchemaParam.getChildParameters().get(EParameterName.SCHEMA_TYPE.getName()) != null
@@ -624,19 +626,21 @@ public class ChangeMetadataCommand extends Command {
         setTableMAPPING();
 
         if (!internal) {
-            updateColumnList(oldOutputMetadata, newOutputMetadata);
-            ((Process) node.getProcess()).checkProcess();
+            if (!oldOutputMetadata.sameMetadataAs(newOutputMetadata, IMetadataColumn.OPTIONS_NONE)) {
+                updateColumnList(oldOutputMetadata, newOutputMetadata);
+                ((Process) node.getProcess()).checkProcess();
+            }
         }
         refreshMetadataChanged();
     }
-    
+
     /**
      * Checks whether {@code connector} has the same base schema as {@link #currentConnector}.
      * This is the case for FLOW and REJECT connectors as REJECT schema depends on FLOW schema.
      * It contains all columns of FLOW schema and additional error columns. However, this is
      * true only for javaject and TCOMP components, but not for Tacokit. FLOW and REJECT schemas
      * are independent for Tacokit component. Thus, method always return false for Tacokit components.
-     * 
+     *
      * @param connector node connector to check
      * @return true, if connector has the same base schema as current connector
      */
@@ -644,10 +648,10 @@ public class ChangeMetadataCommand extends Command {
         return (!connector.getName().equals(currentConnector)) && connector.getBaseSchema().equals(currentConnector)
                 && !isTacokit(connector);
     }
-    
+
     /**
      * Checks whethere specified INodeConnector is Tacokit connector
-     * 
+     *
      * @param connector node connecto to check
      * @return true if it is Tacokit connector
      */
@@ -655,7 +659,7 @@ public class ChangeMetadataCommand extends Command {
         return (IAdditionalInfo.class.isInstance(connector))
                 && "tacokit".equals(IAdditionalInfo.class.cast(connector).getInfo("CONNECTOR_TYPE"));
     }
-    
+
     private void updateComponentSchema(INode selectedNode, IMetadataTable table) {
         IGenericWizardService wizardService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
@@ -817,7 +821,7 @@ public class ChangeMetadataCommand extends Command {
 
     /**
      * Getter for connection.
-     * 
+     *
      * @return the connection
      */
     public org.talend.core.model.metadata.builder.connection.Connection getConnection() {
@@ -826,7 +830,7 @@ public class ChangeMetadataCommand extends Command {
 
     /**
      * Sets the connection.
-     * 
+     *
      * @param connection the connection to set
      */
     public void setConnection(org.talend.core.model.metadata.builder.connection.Connection connection) {
@@ -868,7 +872,7 @@ public class ChangeMetadataCommand extends Command {
 
     /**
      * DOC qzhang Comment method "changeTableNameParameter".
-     * 
+     *
      * @param newdbTableName
      * @param olddbTableName
      * @param uniqueName
@@ -907,7 +911,7 @@ public class ChangeMetadataCommand extends Command {
 
     /**
      * Sets the propagate.
-     * 
+     *
      * @param propagate the propagate to set
      */
     public void setPropagate(Boolean propagate) {
@@ -923,7 +927,7 @@ public class ChangeMetadataCommand extends Command {
 
     /**
      * Sets the currentConnector.
-     * 
+     *
      * @param currentConnector the currentConnector to set
      */
     public void setCurrentConnector(String currentConnector) {

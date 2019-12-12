@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,9 +17,9 @@ import org.osgi.framework.Bundle;
 
 /**
  * CodeGenerator Templates Ressources Utils.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class TemplateUtil {
 
@@ -37,16 +37,16 @@ public class TemplateUtil {
     private String version = ""; //$NON-NLS-1$
 
     public static final String RESOURCES_DIRECTORY_GENERIC = "generic"; //$NON-NLS-1$
-    
+
     private String jetPluginRepository;
 
     private String templateRelativeUri;
-    
+
     private EInternalTemplate template;
 
     /**
      * Constructor.
-     * 
+     *
      * @param resourceName
      */
     public TemplateUtil(EInternalTemplate template) {
@@ -62,7 +62,7 @@ public class TemplateUtil {
 
     /**
      * Getter for resourceName.
-     * 
+     *
      * @return the resourceName
      */
     public String getResourceName() {
@@ -71,7 +71,7 @@ public class TemplateUtil {
 
     /**
      * Sets the resourceName.
-     * 
+     *
      * @param resourceName the resourceName to set
      */
     public void setResourceName(String resourceName) {
@@ -80,7 +80,7 @@ public class TemplateUtil {
 
     /**
      * Getter for version.
-     * 
+     *
      * @return the version
      */
     public String getVersion() {
@@ -89,7 +89,7 @@ public class TemplateUtil {
 
     /**
      * Sets the version.
-     * 
+     *
      * @param version the version to set
      */
     public void setVersion(String version) {
@@ -145,7 +145,7 @@ public class TemplateUtil {
         this.templateRelativeUri = templateRelativeUri;
     }
 
-   
+
     /**
      * Getter for template.
      * @return the template
@@ -156,7 +156,7 @@ public class TemplateUtil {
 
     /**
      * Replacement of Platform.getPlugin(bundleName).getDescriptor().getInstallURL().toString()
-     * 
+     *
      * @param bundleName
      * @return
      */

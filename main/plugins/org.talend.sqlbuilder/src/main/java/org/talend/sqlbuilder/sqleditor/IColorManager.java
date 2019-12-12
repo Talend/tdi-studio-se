@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,9 +21,9 @@ import org.eclipse.swt.graphics.RGB;
  * <p>
  * This interface may be implemented by clients.
  * </p>
- * 
+ *
  * @see IJavaColorConstants
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (Fri, 29 Sep 2006) nrousseau $
  * @author qiang.zhang
  */
@@ -32,7 +32,7 @@ public interface IColorManager {
     /**
      * Returns a color object for the given key. The color objects are remembered internally; the same color object is
      * returned for equal keys.
-     * 
+     *
      * @param key the color key
      * @return the color object for the given key
      */
@@ -40,7 +40,7 @@ public interface IColorManager {
 
     /**
      * Returns the color object for the value represented by the given <code>RGB</code> object.
-     * 
+     *
      * @param rgb the rgb color specification
      * @return the color object for the given rgb value
      */

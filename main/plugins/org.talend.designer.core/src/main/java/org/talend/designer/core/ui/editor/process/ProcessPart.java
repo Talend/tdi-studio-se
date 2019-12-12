@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -50,9 +50,9 @@ import org.talend.repository.model.RepositoryNode;
 
 /**
  * EditPart of the Diagram that will set the main layer, and the differents kinds of rulers. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ProcessPart extends AbstractGraphicalEditPart implements PropertyChangeListener, IAdaptable {
 
@@ -68,7 +68,7 @@ public class ProcessPart extends AbstractGraphicalEditPart implements PropertyCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#getModelChildren()
      */
     @Override
@@ -87,7 +87,7 @@ public class ProcessPart extends AbstractGraphicalEditPart implements PropertyCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#activate()
      */
     @Override
@@ -101,7 +101,7 @@ public class ProcessPart extends AbstractGraphicalEditPart implements PropertyCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#deactivate()
      */
     @Override
@@ -119,7 +119,7 @@ public class ProcessPart extends AbstractGraphicalEditPart implements PropertyCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
      */
     @Override
@@ -154,7 +154,7 @@ public class ProcessPart extends AbstractGraphicalEditPart implements PropertyCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#getAdapter(java.lang.Class)
      */
     @Override
@@ -207,7 +207,7 @@ public class ProcessPart extends AbstractGraphicalEditPart implements PropertyCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
      */
     @Override
@@ -221,7 +221,7 @@ public class ProcessPart extends AbstractGraphicalEditPart implements PropertyCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractEditPart#createEditPolicies()
      */
     @Override
@@ -232,7 +232,7 @@ public class ProcessPart extends AbstractGraphicalEditPart implements PropertyCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -261,7 +261,7 @@ public class ProcessPart extends AbstractGraphicalEditPart implements PropertyCh
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#refresh()
      */
     @Override
@@ -271,11 +271,11 @@ public class ProcessPart extends AbstractGraphicalEditPart implements PropertyCh
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "sortNode". <br/>
-     * 
+     *
      * Sort components Alphabeticaly in the Outline viewer. <br/>
-     * 
+     *
      * Rule: sorted by unique name
      */
 

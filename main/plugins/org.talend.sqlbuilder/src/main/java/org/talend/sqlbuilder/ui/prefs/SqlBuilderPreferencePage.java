@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,7 +28,7 @@ import org.talend.sqlbuilder.Messages;
 
 /**
  * DOC qiang.zhang class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class SqlBuilderPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -57,7 +57,7 @@ public class SqlBuilderPreferencePage extends FieldEditorPreferencePage implemen
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
      */
     @Override

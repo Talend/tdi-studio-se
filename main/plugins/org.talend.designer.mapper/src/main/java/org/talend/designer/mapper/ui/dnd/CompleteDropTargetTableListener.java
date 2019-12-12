@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -52,9 +52,9 @@ import org.talend.designer.mapper.ui.visualmap.zone.scrollable.TablesZoneView;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class CompleteDropTargetTableListener extends DefaultDropTargetListener {
 
@@ -66,7 +66,7 @@ public class CompleteDropTargetTableListener extends DefaultDropTargetListener {
 
     /**
      * DOC amaumont CompleteDropTargetListener constructor comment.
-     * 
+     *
      * @param mapperManager
      */
     public CompleteDropTargetTableListener(MapperManager mapperManager, Table draggableTargetControl) {
@@ -216,9 +216,9 @@ public class CompleteDropTargetTableListener extends DefaultDropTargetListener {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "updateInsertionIndicator".
-     * 
+     *
      * @param event
      * @return true if droppable
      */
@@ -516,7 +516,7 @@ public class CompleteDropTargetTableListener extends DefaultDropTargetListener {
 
     /**
      * DOC amaumont Comment method "updateExpressionsOfInsertedEntries".
-     * 
+     *
      * @param uiManager
      * @param currentLanguage
      * @param metadataEditorView
@@ -695,9 +695,9 @@ public class CompleteDropTargetTableListener extends DefaultDropTargetListener {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "getItemIndexFromPosition".
-     * 
+     *
      * @param cursorPosition
      * @return
      */
@@ -716,9 +716,9 @@ public class CompleteDropTargetTableListener extends DefaultDropTargetListener {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "getTableItemFromPosition".
-     * 
+     *
      * @param cursorPosition
      * @return
      */
@@ -729,9 +729,9 @@ public class CompleteDropTargetTableListener extends DefaultDropTargetListener {
     }
 
     /**
-     * 
+     *
      * DOC amaumont Comment method "getEntryFromPosition".
-     * 
+     *
      * @param cursorPosition
      * @return
      */

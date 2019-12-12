@@ -14,7 +14,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,7 +27,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
  * created by bchen on Aug 26, 2013 Detailled comment
- * 
+ *
  */
 public class HttpsService {
 
@@ -37,7 +37,7 @@ public class HttpsService {
 
     /**
      * DOC bchen HttpService constructor comment.
-     * 
+     *
      * @throws Exception
      */
     public HttpsService(int port) throws Exception {

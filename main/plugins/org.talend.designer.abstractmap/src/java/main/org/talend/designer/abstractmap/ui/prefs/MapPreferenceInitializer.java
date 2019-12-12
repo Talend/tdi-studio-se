@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,9 +18,9 @@ import org.talend.designer.abstractmap.MapPlugin;
 import org.talend.designer.abstractmap.ui.properties.LINK_STYLE;
 
 /**
- * 
+ *
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * @deprecated moved to ComponentsPreferencePage
  */
 public class MapPreferenceInitializer extends AbstractPreferenceInitializer {
@@ -38,7 +38,7 @@ public class MapPreferenceInitializer extends AbstractPreferenceInitializer {
 
     /**
      * DOC amaumont Comment method "getPluginPreferenceStore".
-     * 
+     *
      * @return
      */
     public static IPreferenceStore getPluginPreferenceStore() {

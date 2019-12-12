@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -45,7 +45,7 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
      */
     @Override
@@ -64,6 +64,9 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
                     getFieldEditorParent()));
             addField(new BooleanFieldEditor(TalendDesignerPrefConstants.CHECK_ONLY_LAST_VERSION,
                     Messages.getString("PerformancePreferencePage.checkVersion"), //$NON-NLS-1$
+                    getFieldEditorParent()));
+            addField(new BooleanFieldEditor(TalendDesignerPrefConstants.PROPAGATE_CONTEXT,
+                    Messages.getString("PerformancePreferencePage.propagateContext"), //$NON-NLS-1$
                     getFieldEditorParent()));
             addField(new BooleanFieldEditor(TalendDesignerPrefConstants.PROPAGATE_CONTEXT_VARIABLE,
                     Messages.getString("PerformancePreferencePage.addOrDeleteVariable"), //$NON-NLS-1$
@@ -100,6 +103,9 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
                     getFieldEditorParent()));
             addField(new BooleanFieldEditor(TalendDesignerPrefConstants.CHECK_ONLY_LAST_VERSION,
                     Messages.getString("PerformancePreferencePage.checkVersion"), //$NON-NLS-1$
+                    getFieldEditorParent()));
+            addField(new BooleanFieldEditor(TalendDesignerPrefConstants.PROPAGATE_CONTEXT,
+                    Messages.getString("PerformancePreferencePage.propagateContext"), //$NON-NLS-1$
                     getFieldEditorParent()));
             addField(new BooleanFieldEditor(TalendDesignerPrefConstants.PROPAGATE_CONTEXT_VARIABLE,
                     Messages.getString("PerformancePreferencePage.addOrDeleteVariable"), //$NON-NLS-1$
@@ -200,7 +206,7 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
      */
 

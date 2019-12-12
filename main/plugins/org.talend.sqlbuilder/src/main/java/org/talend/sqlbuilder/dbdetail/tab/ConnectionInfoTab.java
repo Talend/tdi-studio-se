@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,7 +24,7 @@ import org.talend.sqlbuilder.dbstructure.nodes.INode;
 
 /**
  * @author Davy Vanherbergen
- * 
+ *
  */
 public class ConnectionInfoTab extends AbstractDataSetTab {
 
@@ -36,12 +36,12 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
     @Override
     public String getStatusMessage() {
         return Messages.getString(
-                "DatabaseDetailView.Tab.ConnectionInfo.status", new String[] { getNode().getSession().toString() }); //$NON-NLS-1$ 
+                "DatabaseDetailView.Tab.ConnectionInfo.status", new String[] { getNode().getSession().toString() }); //$NON-NLS-1$
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.sqlbuilder.dbdetail.tab.AbstractDataSetTab#getDataSet()
      */
     @Override
@@ -82,7 +82,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
 
     /**
      * DOC set the data(100-120) value .
-     * 
+     *
      * @param jdbcMetaData
      * @param data
      */
@@ -275,7 +275,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
 
     /**
      * DOC set the data(106) value ..
-     * 
+     *
      * @param jdbcMetaData
      * @param data
      */
@@ -317,7 +317,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
 
     /**
      * DOC set the data(80-100) value .
-     * 
+     *
      * @param jdbcMetaData
      * @param data
      */
@@ -446,7 +446,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
 
     /**
      * DOC set the data(60-80) value ..
-     * 
+     *
      * @param jdbcMetaData
      * @param data
      */
@@ -575,7 +575,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
 
     /**
      * DOC set the data(40-60) value ..
-     * 
+     *
      * @param jdbcMetaData
      * @param data
      */
@@ -710,7 +710,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
 
     /**
      * DOC set the data(20-40) value ..
-     * 
+     *
      * @param jdbcMetaData
      * @param data
      */
@@ -839,7 +839,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
 
     /**
      * DOC set the data(0-20) value ..
-     * 
+     *
      * @param node
      * @param sqlMetaData
      * @param jdbcMetaData

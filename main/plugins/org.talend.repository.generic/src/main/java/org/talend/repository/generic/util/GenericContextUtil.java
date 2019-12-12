@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -92,7 +92,7 @@ public class GenericContextUtil {
                                 String keyWithPrefix = prefixName + ConnectionContextHelper.LINE + ContextParameterUtils.getValidParameterName(key);
                                 if(propertyValue instanceof List){
 //                                    ConnectionContextHelper.createParameters(varList, keyWithPrefix, propertyValue, JavaTypesManager.VALUE_LIST);
-                                    
+
                                     String value = null;
                                     for(Object obj : (List)propertyValue){
                                         if(value == null){
@@ -107,10 +107,10 @@ public class GenericContextUtil {
                         }
                     }
                 }
-                
+
             }
         }
-    
+
         return varList;
     }
 
@@ -121,7 +121,7 @@ public class GenericContextUtil {
         }
         return null;
     }
-    
+
     private static List<Map<String, Object>> getPropertiesValue(Connection connection, Properties properties,String value){
         List<Map<String, Object>> lines = new ArrayList<Map<String, Object>>();
         for(NamedThing nameThing : properties.getProperties()){
@@ -155,7 +155,7 @@ public class GenericContextUtil {
             }
         }
         updateComponentProperties(connection, componentProperties);
-    
+
     }
 
     public static void setPropertiesForExistContextMode(Connection connection, Set<IConnParamName> paramSet,
@@ -189,7 +189,7 @@ public class GenericContextUtil {
 
         }
         updateComponentProperties(connection, componentProperties);
-    
+
     }
 
     private static String getCorrectVariableName(ContextItem contextItem, String originalVariableName,
@@ -217,7 +217,7 @@ public class GenericContextUtil {
             matchContextForPrperties(properties, param, genericVariableName, prefixName,isReuse);
         }
     }
-    
+
     private static void matchContextForPrperties(Properties properties,IConnParamName param,
             String genericVariableName, String prefixName,boolean isReuse){
         for(NamedThing nameThing : properties.getProperties()){
@@ -290,7 +290,7 @@ public class GenericContextUtil {
                                             property.setValue(possibleValue);
                                         }
                                     }
-                                } 
+                                }
                             }else {
                                 property.setValue(TalendQuoteUtils.removeQuotes(valueFromContext));
                             }

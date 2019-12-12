@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,14 +25,14 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * This migration task did nothing but for importing job(s) from TOS 3.0.0. <br/>
- * 
- * 
+ *
+ *
  */
 public class FileInputRegexContextVariableMigrationTask extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.core.model.migration.AbstractJobMigrationTask#executeOnProcess(org.talend.core.model.properties.
      * ProcessItem)
      */
@@ -88,7 +88,7 @@ public class FileInputRegexContextVariableMigrationTask extends AbstractJobMigra
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
      */
     public Date getOrder() {
