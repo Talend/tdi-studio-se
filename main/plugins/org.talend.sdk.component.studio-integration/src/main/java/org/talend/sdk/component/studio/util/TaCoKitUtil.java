@@ -34,10 +34,12 @@ import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.repository.ProjectManager;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.metadata.WizardRegistry;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.updates.runtime.utils.PathUtils;
 
 /**
@@ -314,6 +316,27 @@ public class TaCoKitUtil {
             }
         }
         return false;
+    }
+
+    public static int getConfigTypeVersion(final PropertyDefinitionDecorator p, final ConfigTypeNodes configTypeNodes,
+            final String familyId) {
+        final String type = p.getMetadata().get("configurationtype::type");
+        final String name = p.getMetadata().get("configurationtype::name");
+        return configTypeNodes.getNodes().values().stream().filter(c -> c.getConfigurationType() != null && c.getName() != null)
+                .filter(c -> c.getConfigurationType().equals(type) && c.getName().equals(name))
+                .filter(c -> familyId.equals(getPropertyFamilyId(c, configTypeNodes))).findFirst().map(ConfigTypeNode::getVersion)
+                .orElse(-1);
+    }
+
+    public static String getPropertyFamilyId(final ConfigTypeNode it, final ConfigTypeNodes nodes) {
+        if (it.getParentId() == null) {
+            return null;
+        }
+        String parent = it.getParentId();
+        while (nodes.getNodes().get(parent) != null && nodes.getNodes().get(parent).getParentId() != null) {
+            parent = nodes.getNodes().get(parent).getParentId();
+        }
+        return parent;
     }
 
     public static class GAV {

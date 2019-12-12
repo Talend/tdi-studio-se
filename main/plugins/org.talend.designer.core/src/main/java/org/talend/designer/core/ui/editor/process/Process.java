@@ -2374,8 +2374,13 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             }
             if (EComponentType.GENERIC.equals(component.getComponentType())) {
                 if (component instanceof AbstractBasicComponent) {
-                    ((AbstractBasicComponent) component).setNeedMigration(
-                            component.getVersion() != null && !component.getVersion().equals(nType.getComponentVersion()));
+                    AbstractBasicComponent abbComponent = (AbstractBasicComponent) component;
+                    boolean needMigration = component.getVersion() != null
+                            && !component.getVersion().equals(nType.getComponentVersion());
+                    if (!needMigration) {
+                        needMigration = JavaProcessUtil.needMigration(component.getName(), nType.getElementParameter());
+                    }
+                    abbComponent.setNeedMigration(needMigration);
                 }
             }
             nc = loadNode(nType, component, nodesHashtable, listParamType);

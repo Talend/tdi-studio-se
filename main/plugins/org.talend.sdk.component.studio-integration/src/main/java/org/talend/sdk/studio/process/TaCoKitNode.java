@@ -85,15 +85,14 @@ public final class TaCoKitNode {
         node.getElementParameter().clear();
         node.getElementParameter().addAll(noMigration);
         properties.entrySet().stream().filter(e -> isComponentProperty(e.getKey())).forEach(e -> node.getElementParameter().add(createParameter(e.getKey(), e.getValue())));
-        properties.entrySet().stream().filter(e -> e.getKey().endsWith(VersionParameter.VERSION_SUFFIX))
-                .forEach(e -> {
-                    final ElementParameterTypeImpl parameter = new ElementParameter();
-                    parameter.setName(e.getKey());
-                    parameter.setValue(e.getValue());
-                    parameter.setField(EParameterFieldType.TECHNICAL.getName());
-                    parameter.setShow(false);
-                    node.getElementParameter().add(parameter);
-                });
+        properties.entrySet().stream().filter(e -> e.getKey().endsWith(VersionParameter.VERSION_SUFFIX)).forEach(e -> {
+            final ElementParameterTypeImpl parameter = new ElementParameter();
+            parameter.setName(e.getKey());
+            parameter.setValue(e.getValue());
+            parameter.setField(EParameterFieldType.TECHNICAL.getName());
+            parameter.setShow(false);
+            node.getElementParameter().add(parameter);
+        });
         node.setComponentVersion(Integer.toString(detail.getVersion()));
     }
 

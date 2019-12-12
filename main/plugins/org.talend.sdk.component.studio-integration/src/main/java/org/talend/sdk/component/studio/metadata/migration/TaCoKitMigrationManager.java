@@ -23,6 +23,7 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ProcessTypeImpl;
+import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.exception.UserCancelledException;
@@ -74,7 +75,9 @@ public class TaCoKitMigrationManager {
                     }
                 }
                 final TaCoKitNode tacokitNode = new TaCoKitNode(node);
-                if (tacokitNode.needsMigration()) {
+                // Check from version properties / component version
+                boolean needMigration = JavaProcessUtil.needMigration(node.getComponentName(), node.getElementParameter());
+                if (needMigration || tacokitNode.needsMigration()) {
                     tacokitNode.migrate(componentClient.migrate(tacokitNode.getId(), tacokitNode.getPersistedVersion(),
                             tacokitNode.getPropertiesToMigrate()));
                     migrated = true;
