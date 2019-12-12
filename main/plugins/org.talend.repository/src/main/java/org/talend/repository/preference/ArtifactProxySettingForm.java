@@ -219,6 +219,7 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
         usernameText.setEnabled(checked);
         talendLibPasswordText.setEnabled(checked);
         repositoryIdText.setEnabled(checked);
+        checkConnectionBtn.setEnabled(checked);
     }
 
     @Override
@@ -318,7 +319,7 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
             usernameText.setEnabled(false);
             talendLibPasswordText.setEnabled(false);
             repositoryIdText.setEnabled(false);
-            return;
+            checkConnectionBtn.setEnabled(false);
         }
         enableProxySettingBtn.setSelection(enableProxy);
         urlText.setText(prefManager.getValue(TalendLibsServerManager.NEXUS_PROXY_URL));
