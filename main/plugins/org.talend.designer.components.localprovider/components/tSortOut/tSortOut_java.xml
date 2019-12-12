@@ -82,7 +82,7 @@
 
 	<CODEGENERATION>
 	<IMPORTS>
-      <IMPORT  NAME="External Merge Sort" MODULE="external_sort.jar" MVN="mvn:org.talend.libraries/external_sort/6.0.0"  REQUIRED="true"/>
+      <IMPORT  NAME="External Merge Sort" MODULE="external_sort-1.0.jar" MVN="mvn:org.talend.libraries/external_sort-1.0/6.0.0"  REQUIRED="true"/>
     </IMPORTS>
 	</CODEGENERATION>
 
