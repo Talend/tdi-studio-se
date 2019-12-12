@@ -53,16 +53,6 @@
   <plugin id="org.talend.designer.xmlmap.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
   <plugin id="org.talend.expressionbuilder" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.expressionbuilder.nl" download-size="0" install-size="0" version="0.0.0" fragment="true" unpack="false"/>
-  <plugin id="org.talend.help.azurestorage" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.help.filedelimited" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.help.filterrow" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.help.googledrive" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.help.jdbc" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.help.jira" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.help.marketo" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.help.salesforce" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.help.snowflake" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-  <plugin id="org.talend.help.splunk" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.repository.generic" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
   <plugin id="org.talend.sdk.component.studio-integration" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 </feature>
