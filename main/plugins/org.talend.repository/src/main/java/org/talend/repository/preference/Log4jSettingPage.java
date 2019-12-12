@@ -217,10 +217,17 @@ public class Log4jSettingPage extends ProjectSettingPage {
             if (service != null) {
                 Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_ENABLE_NODE,
                         String.valueOf(false));
-                Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
-                        service.getLogTemplate(Log4jPrefsConstants.LOG4JFILEPATH));
-                Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
-                        String.valueOf(false));
+                if (isNewProject) {
+                    Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
+                            service.getLogTemplate(Log4jPrefsConstants.LOG4J_VERSION2_FILEPATH));
+                    Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
+                            String.valueOf(true));
+                } else {
+                    Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
+                            service.getLogTemplate(Log4jPrefsConstants.LOG4JFILEPATH));
+                    Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
+                            String.valueOf(false));
+                }
             }
         } else {
             if (log4jBtn != null && !log4jBtn.isDisposed()) {
@@ -255,9 +262,15 @@ public class Log4jSettingPage extends ProjectSettingPage {
             if (log4jBtn != null && !log4jBtn.isDisposed()) {
                 log4jBtn.setSelection(false);
             }
-            templateTxt
-                    .setText(Log4jPrefsSettingManager.getInstance().getDefaultTemplateString(Log4jPrefsConstants.LOG4JFILEPATH));
-            combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(Log4jPrefsConstants.LOG4J1));
+            if (isNewProject) {
+                templateTxt.setText(Log4jPrefsSettingManager.getInstance()
+                        .getDefaultTemplateString(Log4jPrefsConstants.LOG4J_VERSION2_FILEPATH));
+                combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(Log4jPrefsConstants.LOG4J2));
+            } else {
+                templateTxt.setText(
+                        Log4jPrefsSettingManager.getInstance().getDefaultTemplateString(Log4jPrefsConstants.LOG4JFILEPATH));
+                combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(Log4jPrefsConstants.LOG4J1));
+            }
         }
     }
 }
