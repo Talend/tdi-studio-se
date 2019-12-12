@@ -386,16 +386,12 @@ public class ProcessManager implements AutoCloseable {
             // filter from component blacklist.
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
                 ICoreTisService coreTisService = GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
-                try {
-                    StringBuilder builder = new StringBuilder();
-                    String separator = TaCoKitConst.PROP_COMPONENT_SEPARATOR;
-                    Set<String> blackList = coreTisService.getComponentBlackList();
-                    Stream.of(components.split(separator)).filter(s -> !blackList.contains(s))
-                            .forEach(s -> builder.append(s).append(separator));
-                    components = StringUtils.removeEnd(builder.toString(), separator);
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
-                }
+                StringBuilder builder = new StringBuilder();
+                String separator = TaCoKitConst.PROP_COMPONENT_SEPARATOR;
+                Set<String> blackList = coreTisService.getComponentBlackList();
+                Stream.of(components.split(separator)).filter(s -> !blackList.contains(s))
+                        .forEach(s -> builder.append(s).append(separator));
+                components = StringUtils.removeEnd(builder.toString(), separator);
             }
             System.setProperty("talend.component.server.component.coordinates", components);
         }
