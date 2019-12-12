@@ -377,25 +377,26 @@ public class ProcessManager implements AutoCloseable {
             m2Repo = MavenPlugin.getMaven().getLocalRepositoryPath();
         }
         String components = System.getProperty(TaCoKitConst.PROP_COMPONENT);
-        // filter from component blacklist.
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
-            ICoreTisService coreTisService = GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
-            try {
-                StringBuilder builder = new StringBuilder();
-                String separator = TaCoKitConst.PROP_COMPONENT_SEPARATOR;
-                Set<String> blackList = coreTisService.getComponentBlackList();
-                Stream.of(components.split(separator)).filter(s -> !blackList.contains(s))
-                        .forEach(s -> builder.append(s).append(separator));
-                components = StringUtils.removeEnd(builder.toString(), separator);
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-            }
-        }
+
         final String registry = System.getProperty(TaCoKitConst.PROP_REGISTRY);
         if (m2Repo != null) {
             System.setProperty("talend.component.server.maven.repository", m2Repo);
         }
         if (components != null) {
+            // filter from component blacklist.
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+                ICoreTisService coreTisService = GlobalServiceRegister.getDefault().getService(ICoreTisService.class);
+                try {
+                    StringBuilder builder = new StringBuilder();
+                    String separator = TaCoKitConst.PROP_COMPONENT_SEPARATOR;
+                    Set<String> blackList = coreTisService.getComponentBlackList();
+                    Stream.of(components.split(separator)).filter(s -> !blackList.contains(s))
+                            .forEach(s -> builder.append(s).append(separator));
+                    components = StringUtils.removeEnd(builder.toString(), separator);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
             System.setProperty("talend.component.server.component.coordinates", components);
         }
         if (registry != null) {
