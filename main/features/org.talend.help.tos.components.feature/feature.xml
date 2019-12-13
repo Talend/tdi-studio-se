@@ -20,16 +20,17 @@
    <url>
       <update label="CORE Talend update site for milestones" url="http://talendforge.org/core/updatesite/testing/"/>
    </url>
-  <requires>
-  	<import plugin="org.talend.help.azurestorage" version="0.0.0" match="greaterOrEqual"/>
-	<import plugin="org.talend.help.filedelimited" version="0.0.0" match="greaterOrEqual"/>
-	<import plugin="org.talend.help.filterrow" version="0.0.0" match="greaterOrEqual"/>
-	<import plugin="org.talend.help.googledrive" version="0.0.0" match="greaterOrEqual"/>
-	<import plugin="org.talend.help.jdbc" version="0.0.0" match="greaterOrEqual"/>
-	<import plugin="org.talend.help.jira" version="0.0.0" match="greaterOrEqual"/>
-	<import plugin="org.talend.help.marketo" version="0.0.0" match="greaterOrEqual"/>
-	<import plugin="org.talend.help.salesforce" version="0.0.0" match="greaterOrEqual"/>
-	<import plugin="org.talend.help.snowflake" version="0.0.0" match="greaterOrEqual"/>
-	<import plugin="org.talend.help.splunk" version="0.0.0" match="greaterOrEqual"/>
-  </requires>
+   <requires>
+      <import plugin="org.talend.help.azurestorage" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.help.filedelimited" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.help.filterrow" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.help.googledrive" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.help.jdbc" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.help.jira" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.help.marketo" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.help.salesforce" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.help.snowflake" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.help.splunk" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.talend.help"/>
+   </requires>
 </feature>
