@@ -28,6 +28,8 @@ import org.junit.Test;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.context.Context;
+import org.talend.core.context.RepositoryContext;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
@@ -38,6 +40,7 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.model.bridge.ReponsitoryContextBridge;
@@ -103,6 +106,10 @@ public class BuildJobHandlerTest {
         // Fix the NPE for org.talend.designer.core.ui.editor.process.Process.createMainParameters(Process.java:401)
         bridgeProject = ReponsitoryContextBridge.getProject();
         ReponsitoryContextBridge.setProject(ProjectManager.getInstance().getCurrentProject().getEmfProject());
+        Context ctx = CoreRuntimePlugin.getInstance().getContext();
+        RepositoryContext rc = (RepositoryContext) ctx.getProperty(Context.REPOSITORY_CONTEXT_KEY);
+        rc.setUser(ReponsitoryContextBridge.getProject().getAuthor());
+
 
         ImportExportHandlersManager importManager = new ImportExportHandlersManager();
 
@@ -359,6 +366,9 @@ public class BuildJobHandlerTest {
     @After
     public void tearDown() throws Exception {
         ReponsitoryContextBridge.setProject(bridgeProject);
+        Context ctx = CoreRuntimePlugin.getInstance().getContext();
+        RepositoryContext rc = (RepositoryContext) ctx.getProperty(Context.REPOSITORY_CONTEXT_KEY);
+        rc.setUser(ReponsitoryContextBridge.getProject().getAuthor());
 
         if (!testItems.isEmpty()) {
             for (Item item : testItems) {
