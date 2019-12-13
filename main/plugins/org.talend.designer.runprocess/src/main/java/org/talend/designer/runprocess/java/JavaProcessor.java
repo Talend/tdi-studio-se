@@ -161,6 +161,7 @@ import org.talend.repository.constants.BuildJobConstants;
 import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 import org.talend.repository.utils.EmfModelUtils;
 import org.talend.repository.utils.EsbConfigUtils;
+import org.talend.utils.StudioKeysFileCheck;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -1782,6 +1783,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, this.getMainClass());
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, CTX_ARG + context.getName());
+            setupEncryptionFilePathParameter(wc);
             config = wc.doSave();
         }
         return config;
@@ -1808,9 +1810,26 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, this.getMainClass());
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
             wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, CTX_ARG + context.getName() + parameterStr);
+            setupEncryptionFilePathParameter(wc);
             config = wc.doSave();
         }
         return config;
+    }
+
+    private void setupEncryptionFilePathParameter(ILaunchConfigurationWorkingCopy wc) throws CoreException {
+        StringBuilder vmArguments = new StringBuilder();
+        vmArguments.append(wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""));
+        if (vmArguments.indexOf(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM) < 0) {
+            if (vmArguments.length() > 0) {
+                vmArguments.append(" ");
+            }
+            String encryptionFilePath = System.getProperty(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_SYS_PROP);
+            File encryptionFile = new File(encryptionFilePath);
+            if (encryptionFile.exists()) {
+                vmArguments.append(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM + "=" + encryptionFile.toURI().getPath());
+            }
+            wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments.toString());
+        }
     }
 
     /*

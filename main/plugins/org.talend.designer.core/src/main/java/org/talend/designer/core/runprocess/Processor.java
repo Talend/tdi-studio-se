@@ -17,6 +17,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -34,6 +36,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
+import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
@@ -50,6 +53,7 @@ import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
+import org.talend.utils.StudioKeysFileCheck;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
@@ -361,6 +365,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
             throws ProcessorException {
 
         String[] cmd = getCommandLine(true, false, statOption, traceOption, codeOptions);
+        cmd = addEncryptionFilePathParameter(cmd);
         logCommandLine(cmd, level);
         return exec(cmd, path);
     }
@@ -379,6 +384,31 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
         } catch (IOException ioe) {
             throw new ProcessorException(Messages.getString("Processor.execFailed"), ioe); //$NON-NLS-1$
         }
+    }
+
+    protected String[] addEncryptionFilePathParameter(String[] cmds) {
+        String encryptionFilePath = System.getProperty(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_SYS_PROP);
+        File encryptionFile = new File(encryptionFilePath);
+        boolean isContained = false;
+        for (String cmd : cmds) {
+            if (cmd != null && cmd.trim().startsWith(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM)) {
+                isContained = true;
+                break;
+            }
+        }
+        if (!isContained) {
+            List<String> cmdList = new ArrayList<String>();
+            int cpIndex = ArrayUtils.indexOf(cmds, JavaUtils.JAVA_CP);
+            for (int i = 0; i < cpIndex; i++) {
+                cmdList.add(cmds[i]);
+            }
+            cmdList.add(StudioKeysFileCheck.ENCRYPTION_KEY_FILE_JVM_PARAM + "=" + encryptionFile.toURI().getPath());
+            for (int i = cpIndex; i < cmds.length; i++) {
+                cmdList.add(cmds[i]);
+            }
+            return cmdList.toArray(new String[0]);
+        }
+        return cmds;
     }
 
     /**

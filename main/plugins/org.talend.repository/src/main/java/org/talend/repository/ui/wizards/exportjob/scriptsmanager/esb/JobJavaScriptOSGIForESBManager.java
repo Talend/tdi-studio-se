@@ -881,7 +881,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 // TESB-21804:Fail to deploy cMessagingEndpoint with quartz component in runtime for ClassCastException
                 if (url.getPath().matches("(.*)camel-(.*)-alldep-(.*)$") 
                         || url.getPath().matches("(.*)activemq-all-[\\d\\.]*.jar$")
-                        || url.getPath().matches("(.*)jms[\\d\\.-]*.jar$")) {
+                        || url.getPath().matches("(.*)jms[\\d\\.-]*.jar$")
+                        || url.getPath().matches("(.*)tdm-lib-di-[\\d\\.-]*.jar$")) {
                     continue;
                 }
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));

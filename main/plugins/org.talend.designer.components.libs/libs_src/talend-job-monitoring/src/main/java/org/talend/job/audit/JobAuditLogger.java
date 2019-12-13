@@ -21,11 +21,5 @@ public interface JobAuditLogger extends EventAuditLogger {
     
     @AuditEvent(category = "connection", message = "Component {connectorType} received {rows} rows in {duration} with {connectionName} line", level = LogLevel.INFO)
     void flowInput(Context context);
-    
-    @AuditEvent(category = "connector", message = "Component {connectorId} parameters : {connectorParameters}", level = LogLevel.INFO)
-    void componentParameters(Context context);
-    
-    @AuditEvent(category = "connection", message = "{connectionName} : {schema} from {sourceConnectorId} to {targetConnectorId}", level = LogLevel.INFO)
-    void schema(Context context);
 
 }

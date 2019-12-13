@@ -372,8 +372,6 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 	%>
 
 <%
-	boolean enable_runtime_lineage_log = Boolean.getBoolean("enable_runtime_lineage_log");
-	
 	INode jobCatcherNode = null;
 	for (INode nodeInProcess : processNodes) {
 		String componentName = nodeInProcess.getComponent().getName();
@@ -429,13 +427,8 @@ private RunTrace runTrace = new RunTrace();
 	JobStructureCatcherUtils <%=jobCatcherNode.getUniqueName() %> = new JobStructureCatcherUtils(jobName, "<%=process.getId() %>", "<%=process.getVersion() %>");
 	org.talend.job.audit.JobAuditLogger auditLogger_<%=jobCatcherNode.getUniqueName()%> = null;
 <%
-		if(enable_runtime_lineage_log) {
-%>
-		org.talend.job.audit.JobAuditLogger runtime_lineage_logger_<%=jobCatcherNode.getUniqueName()%> = null;
-<%
-		}
 	}
-	
+
 	for (INode metterCatcher : process.getNodesOfType("tFlowMeterCatcher")) {
 %>
 	MetterCatcherUtils <%=metterCatcher.getUniqueName() %> = new MetterCatcherUtils("<%=process.getId() %>", "<%=process.getVersion() %>");
