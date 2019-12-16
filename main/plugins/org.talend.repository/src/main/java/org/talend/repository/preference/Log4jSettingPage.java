@@ -54,9 +54,7 @@ public class Log4jSettingPage extends ProjectSettingPage {
     @Override
     protected Control createContents(Composite parent) {
 
-        if (Log4jUtil.isEnable()) {
-            createLog4jActivateGroup(parent);
-        }
+        createLog4jActivateGroup(parent);
 
         Label headLabel = new Label(parent, SWT.NONE);
         headLabel.setText("Log4j template"); //$NON-NLS-1$
@@ -97,6 +95,7 @@ public class Log4jSettingPage extends ProjectSettingPage {
         group.setText(Messages.getString("Log4jSettingPage.Log4jEnabled")); //$NON-NLS-1$
 
         log4jBtn = new Button(composite, SWT.CHECK);
+        log4jBtn.setVisible(Log4jUtil.isEnable());
         log4jBtn.setText(Messages.getString("Log4jSettingPage.ActivateLog4j"));//$NON-NLS-1$
 
         Composite compositeVersion = new Composite(composite, SWT.NONE);
@@ -140,6 +139,7 @@ public class Log4jSettingPage extends ProjectSettingPage {
 
     private void initListerner() {
         log4jBtn.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
                 if (isNewProject) {
