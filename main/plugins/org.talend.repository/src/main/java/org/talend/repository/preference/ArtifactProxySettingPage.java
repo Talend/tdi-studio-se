@@ -105,14 +105,18 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
         if (currentForm != null) {
             currentForm.performApply();
         }
-        dynamicDistributionPrefForm.performApply();
+        if (dynamicDistributionPrefForm != null) {
+            dynamicDistributionPrefForm.performApply();
+        }
         super.performApply();
     }
 
     @Override
     protected void performDefaults() {
-        if (!dynamicDistributionPrefForm.performDefaults()) {
-            return;
+        if (dynamicDistributionPrefForm != null) {
+            if (!dynamicDistributionPrefForm.performDefaults()) {
+                return;
+            }
         }
         AbstractArtifactProxySettingForm currentForm = getCurrentForm();
         if (currentForm != null) {
@@ -129,6 +133,9 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
             if (!isOk) {
                 return false;
             }
+        }
+        if (dynamicDistributionPrefForm != null) {
+            dynamicDistributionPrefForm.performApply();
         }
         return super.performOk();
     }
