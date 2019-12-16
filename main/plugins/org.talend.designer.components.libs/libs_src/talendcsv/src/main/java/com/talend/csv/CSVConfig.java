@@ -47,7 +47,9 @@ public class CSVConfig {
     }
 
     public boolean isEscapechar(char value) {
-        return this.escapechar != '\0' && value == this.escapechar;
+        return this.escapechar != '\0'
+                && value == this.escapechar
+                && this.escapechar != this.quotechar; // mean no escape char.
     }
 
     public boolean isSkipEmptyRecords() {

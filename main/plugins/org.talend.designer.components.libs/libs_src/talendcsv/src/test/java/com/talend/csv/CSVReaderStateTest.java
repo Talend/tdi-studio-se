@@ -67,9 +67,6 @@ class CSVReaderStateTest {
     private CSVReader.State accept(CSVReader.State state, String value, CSVReader.ResultAction action)  {
         for (int i = 0; i < value.length(); i++) {
             CSVReader.State state2 = state.accept(value.charAt(i), config, action);
-            if (state2 == null) {
-                System.out.println("Err " + state.getClass().getName());
-            }
             state = state2;
         }
         return state;

@@ -50,13 +50,13 @@ class CSVReaderTest {
 
     @Test
     void readNextEmptyRecord() throws IOException {
-        String line = "007,, \"\" ,\"  xx  \" ";
+        String line = "0\\t07,, \"\" ,\"  x\\tx  \" ";
         final CSVReader reader2 = new CSVReader(new StringReader(line), ',');
         reader2.setEscapeChar('\\');
         reader2.setTrimWhitespace(true);
         reader2.setSkipEmptyRecords(true);
         Assertions.assertAll(
-                () -> this.checkNextValues("empty record", reader2, "007", "", "", "  xx  ")
+                () -> this.checkNextValues("empty record", reader2, "0\t07", "", "", "  x\tx  ")
         );
     }
 
@@ -77,19 +77,16 @@ class CSVReaderTest {
 
     @Test
     void testEscapeIsQuote() throws IOException {
-        String lines = "\"Lin\"te 1\"\nLine\"t2";
+        String lines = "\"L\"\"in\"te 1\"\nLine\"t\"\"2";
         final CSVReader reader = new CSVReader(new StringReader(lines), ',');
 
         Assertions.assertAll(
-                () -> checkNextValues("line 1", reader, "Lin\te 1"),
-                () -> checkNextValues("line 2", reader, "Line\t2")
+                () -> checkNextValues("line 1", reader, "L\"in\"te 1"),
+                () -> checkNextValues("line 2", reader, "Line\"t\"\"2")
         );
     }
 
     void checkNextValues(String comment, CSVReader reader, String... excepted) throws IOException {
-        if ("006".equals(excepted[0])) {
-            System.out.println("");
-        }
         Assertions.assertTrue(reader.readNext());
         String[] values = reader.getValues();
         Assertions.assertEquals(excepted.length, values.length, comment + " : wrong length");
