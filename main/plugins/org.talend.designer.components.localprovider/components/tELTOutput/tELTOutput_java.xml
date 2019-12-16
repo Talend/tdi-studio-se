@@ -149,6 +149,17 @@
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
+    <PARAMETER
+          NAME="SET_COLMN"
+          FIELD="TABLE"
+          REQUIRED="true"
+          NUM_ROW="12"
+          NB_LINES="5"
+          SHOW_IF="(DATA_ACTION == 'UPDATE') AND (USE_UPDATE_STATEMENT =='false')" >
+          <ITEMS BASED_ON_SCHEMA="true">
+            <ITEM NAME="UPDATE_COLUMN" FIELD="CHECK" VALUE="true"/>
+          </ITEMS>
+    </PARAMETER>
   </ADVANCED_PARAMETERS>
 
   <CODEGENERATION>
