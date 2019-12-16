@@ -260,7 +260,7 @@ public class Log4jSettingPage extends ProjectSettingPage {
         if (templateTxt != null && !templateTxt.isDisposed()) {
             reset = true;
             if (log4jBtn != null && !log4jBtn.isDisposed()) {
-                log4jBtn.setSelection(false);
+                log4jBtn.setSelection(true);
             }
             if (isNewProject) {
                 templateTxt.setText(Log4jPrefsSettingManager.getInstance()
