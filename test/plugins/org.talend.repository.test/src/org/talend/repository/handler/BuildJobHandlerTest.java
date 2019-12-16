@@ -275,10 +275,17 @@ public class BuildJobHandlerTest {
                 dependencyEntry = zip.getEntry("lib/" + dependencyFromJobAndTestcase);
                 assertNotNull("No job dependency in lib folder", dependencyEntry);
             }
-
-            // log4j
-            ZipEntry log4jXmlEntry = zip.getEntry(jobName + "/log4j.xml");
-            assertNotNull("No log4j.xml", log4jXmlEntry);
+            if (runProcessService != null) {
+                if (runProcessService.isSelectLog4j2()) {
+                    // log4j2
+                    ZipEntry log4jXmlEntry = zip.getEntry(jobName + "/log4j2.xml");
+                    assertNotNull("No log4j2.xml", log4jXmlEntry);
+                } else {
+                    // log4j1
+                    ZipEntry log4jXmlEntry = zip.getEntry(jobName + "/log4j.xml");
+                    assertNotNull("No log4j.xml", log4jXmlEntry);
+                }
+            }
 
             // shell, ps1, bat
             ZipEntry batEntry = zip.getEntry(jobName + "/" + jobName + "_run.bat");
