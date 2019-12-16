@@ -20,6 +20,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.PluginChecker;
 import org.talend.core.ui.services.IHadoopUiService;
 import org.talend.core.ui.services.IPreferenceForm;
 import org.talend.repository.preference.AbstractArtifactProxySettingForm.ICheckListener;
@@ -67,12 +68,14 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
 
         };
          
-
-        ArtifactProxySettingForm existingConfigForm = new ArtifactProxySettingForm(container, SWT.NONE);
+        // only show in tis product
         GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
-        existingConfigForm.setLayoutData(layoutData);
-        existingConfigForm.setCheckListener(checkListener);
-        setCurrentForm(existingConfigForm);
+        if (PluginChecker.isTIS()) {
+            ArtifactProxySettingForm existingConfigForm = new ArtifactProxySettingForm(container, SWT.NONE);
+            existingConfigForm.setLayoutData(layoutData);
+            existingConfigForm.setCheckListener(checkListener);
+            setCurrentForm(existingConfigForm);
+        }
         // dynamic distribution group begin
         GlobalServiceRegister serviceRegister = GlobalServiceRegister.getDefault();
         if (serviceRegister.isServiceRegistered(IHadoopUiService.class)) {
@@ -93,7 +96,7 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
         Composite placeHolder = new Composite(parent, SWT.NONE);
         layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
         placeHolder.setLayoutData(layoutData);
-        return existingConfigForm;
+        return container;
     }
 
     @Override
