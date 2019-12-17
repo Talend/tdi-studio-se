@@ -1,0 +1,117 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.IConnectionCategory 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.core.model.metadata.IMetadataColumn
+    org.talend.core.model.metadata.types.JavaTypesManager
+    org.talend.core.model.metadata.types.JavaType
+    java.util.List
+" 
+%>
+
+<%
+		CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+		INode node = (INode)codeGenArgument.getArgument();
+		String cid = node.getUniqueName();
+		
+		String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+		String accessToken = ElementParameterParser.getValue(node,"__ACCESS_TOKEN__");
+	    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	    String connectionKey = "conn_" + connection;
+	    
+	    String uploadLocalFile = ElementParameterParser.getValue(node, "__UPLOAD_LOCAL_FILE__");
+	    String localFilePath = ElementParameterParser.getValue(node, "__LOCAL_FILE_PATH__");
+	    
+		String readContentFromInput = ElementParameterParser.getValue(node, "__READ_CONTENT_FROM_INPUT__");
+		String exposeOutput = ElementParameterParser.getValue(node, "__EXPOSE_OUTPUT_STREAM__");
+		
+		String filePath = ElementParameterParser.getValue(node, "__FILE_PATH__");
+		
+        String dataInputConnection = null;	
+        String dataOutputConnection = null;	
+        
+        if("true".equals(readContentFromInput)){
+	        List< ? extends IConnection> inputConnections = node.getIncomingConnections();
+		    for(IConnection conn : inputConnections) {
+		        if(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+		        	dataInputConnection = conn.getName();
+		        	break;
+		        } // if(conn) end
+		    } // for(conns) end
+		    
+		    
+			List< ? extends IConnection> outputConnections = node.getOutgoingSortedConnections();
+		    for(IConnection conn : outputConnections) {
+		        if(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+		        	dataOutputConnection = conn.getName();
+		        	break;
+		        } // if(conn) end
+		    } // for(conns) end
+        }
+		String mode = "com.dropbox.core.v2.files.WriteMode.ADD";
+		if("true".equals(ElementParameterParser.getValue(node,"__FORCE_MODE__"))){
+			mode = "com.dropbox.core.v2.files.WriteMode.OVERWRITE";
+		}else if("true".equals(ElementParameterParser.getValue(node,"__UPDATE_MODE__"))){
+			mode = "com.dropbox.core.v2.files.WriteMode.update("+ElementParameterParser.getValue(node,"__REVISION__")+")";
+		}
+%>
+<%
+if ("true".equals(readContentFromInput)) {
+%>
+<%
+	if (dataInputConnection != null) {
+%>
+		Object content_<%=cid%> = <%=dataInputConnection%>.content;
+		if (content_<%=cid%> == null) {
+			throw new Exception("The Uploaded Dropbox file Content can't be null");
+		}
+		
+		java.io.InputStream inputStream_<%=cid%> = null;
+		if (content_<%=cid%> instanceof byte[]) {
+			inputStream_<%=cid%> = new java.io.ByteArrayInputStream((byte[]) content_<%=cid%>);
+		} else if (content_<%=cid%> instanceof java.io.InputStream) {
+			inputStream_<%=cid%> = (java.io.InputStream) content_<%=cid%>;
+		} else {
+			inputStream_<%=cid%> = new java.io.ByteArrayInputStream(content_<%=cid%>.toString().getBytes());
+		}
+		
+		try {
+			com.dropbox.core.v2.files.UploadBuilder uploadBuilder_<%=cid%> = filesClient_<%=cid%>.uploadBuilder(<%=filePath%>).withMode(<%=mode%>).withAutorename(true);
+			uploadBuilder_<%=cid%>.uploadAndFinish(inputStream_<%=cid%>);
+		} finally {
+			inputStream_<%=cid%>.close();
+		}		
+<%
+	}
+%>
+<%
+} else if ("true".equals(uploadLocalFile)) {
+%>
+	java.io.InputStream inputStream_<%=cid%> = new java.io.BufferedInputStream(new java.io.FileInputStream(<%=localFilePath%>));
+	try {
+		com.dropbox.core.v2.files.UploadBuilder uploadBuilder_<%=cid%> = filesClient_<%=cid%>.uploadBuilder(<%=filePath%>).withMode(<%=mode%>).withAutorename(true);
+		uploadBuilder_<%=cid%>.uploadAndFinish(inputStream_<%=cid%>);
+	} finally {
+		inputStream_<%=cid%>.close();
+	}
+<%
+} else if ("true".equals(exposeOutput)) {
+%>
+	uploader_<%=cid%>.finish();
+	uploader_<%=cid%>.close();
+	uploader_<%=cid%> = uploadBuilder_<%=cid%>.start();
+	uploaderStream_<%=cid%> = uploader_<%=cid%>.getOutputStream();
+	uploaderFilterStream_<%=cid%> = new java.io.FilterOutputStream(new com.dropbox.core.NoThrowOutputStream(uploaderStream_<%=cid%>)) {
+		@Override
+		public void close() {
+			// overridden exception throwing
+		}
+	};
+	globalMap.put("<%=cid%>_OUTPUTSTREAM", uploaderFilterStream_<%=cid%>);
+<%
+}
+%>

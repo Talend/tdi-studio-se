@@ -1,0 +1,37 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+" 
+%>
+
+<%
+		CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+		INode node = (INode)codeGenArgument.getArgument();
+		String cid = node.getUniqueName();
+		
+		String accessToken = ElementParameterParser.getValue(node, "__ACCESS_TOKEN__");
+		
+		String useProxy = ElementParameterParser.getValue(node, "__USE_PROXY__");
+		String proxyHost = ElementParameterParser.getValue(node, "__PROXY_HOST__");
+		String proxyPort = ElementParameterParser.getValue(node, "__PROXY_PORT__");
+		
+		String clientIdentifier = "\""+cid+"\"";
+		
+		String localeName = "\""+java.util.Locale.getDefault().toString()+"\"";
+		
+%>
+
+	com.dropbox.core.DbxRequestConfig.Builder configBuilder_<%=cid%> = com.dropbox.core.DbxRequestConfig.newBuilder(<%=clientIdentifier%>);
+	configBuilder_<%=cid%>.withUserLocale(<%=localeName%>);
+<%if ("true".equals(useProxy)) {%>
+	java.net.InetSocketAddress socketAddress_<%=cid%> = new java.net.InetSocketAddress(<%=proxyHost%>, <%=proxyPort%>);
+	java.net.Proxy proxy_<%=cid%> = new java.net.Proxy(java.net.Proxy.Type.HTTP, socketAddress_<%=cid%>);
+	com.dropbox.core.http.StandardHttpRequestor.Config config_<%=cid%> = com.dropbox.core.http.StandardHttpRequestor.Config.builder().withNoConnectTimeout().withProxy(proxy_<%=cid%>).build();
+	com.dropbox.core.http.HttpRequestor httpRequestor_<%=cid%> = new com.dropbox.core.http.StandardHttpRequestor(config_<%=cid%>);
+	configBuilder_<%=cid%>.withHttpRequestor(httpRequestor_<%=cid%>);
+<%}%>
+	com.dropbox.core.DbxRequestConfig dbxConfig_<%=cid%> = configBuilder_<%=cid%>.build();
+	com.dropbox.core.v2.DbxClientV2 client_<%=cid%> = new com.dropbox.core.v2.DbxClientV2(dbxConfig_<%=cid%>, <%=accessToken%>);
+	globalMap.put("conn_<%=cid%>", client_<%=cid%>);

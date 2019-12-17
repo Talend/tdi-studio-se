@@ -80,6 +80,7 @@
 		<module>main/plugins/org.talend.designer.components.exchange</module>
 		<module>main/plugins/org.talend.designer.components.libs</module>
 		<module>main/plugins/org.talend.designer.components.localprovider</module>
+		<module>main/plugins/org.talend.designer.components.localprovider.dropbox</module>
 		<module>main/plugins/org.talend.designer.core</module>
 		<module>main/plugins/org.talend.designer.dbmap</module>
 		<module>main/plugins/org.talend.designer.documentation</module>
@@ -128,7 +129,7 @@
 		<module>main/plugins/org.talend.rcp.branding.tos</module>
 		<module>main/plugins/org.talend.repository</module>
 		<module>main/plugins/org.talend.repository.ftp</module>
-		<module>main/plugins/org.talend.repository.resource</module>		
+		<module>main/plugins/org.talend.repository.resource</module>
 		<module>main/plugins/org.talend.libraries.json</module>
 		<module>main/plugins/org.talend.repository.json</module>
 		<module>main/plugins/org.talend.repository.view.di</module>

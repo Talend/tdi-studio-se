@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Dropbox Components Local provider Plug-in
+Bundle-SymbolicName: org.talend.designer.components.localprovider.dropbox;singleton:=true
+Bundle-Version: 7.3.1.qualifier
+Bundle-Activator: org.talend.designer.components.ComponentsLocalProviderPlugin
+Require-Bundle: org.apache.log4j,
+ org.talend.designer.components.localprovider
+Eclipse-LazyStart: true
+Bundle-Vendor: .Talend SA.
+Bundle-ClassPath: .
+Eclipse-BundleShape: dir
