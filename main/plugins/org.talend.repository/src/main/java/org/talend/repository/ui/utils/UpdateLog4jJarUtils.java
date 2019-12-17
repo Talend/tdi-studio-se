@@ -121,7 +121,8 @@ public class UpdateLog4jJarUtils {
                         .getNeededLibrariesForProcessBeforeUpdateLog(process, false);
                 if (modulesNeededForProcess != null) {
                     for (ModuleNeeded m : modulesNeededForProcess) {
-                        if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
+                        if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar") //$NON-NLS-1$
+                                || m.getModuleName().matches("talend-bigdata-launcher-platform-\\d+\\.\\d+\\.\\d+\\.jar")) {
                             usedlog4j1JarBefore = true;
                             break;
                         }
@@ -152,6 +153,7 @@ public class UpdateLog4jJarUtils {
             ModuleNeeded log4jCore = new ModuleNeeded("org.apache.logging.log4j", "log4j-core-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
             log4jCore.setMavenUri("mvn:org.apache.logging.log4j/log4j-core/2.12.1");//$NON-NLS-1$
             moduleNeededList.add(log4jCore);
+           
         } else {
             boolean usedjclOverSlf4jBefore = false;
 
