@@ -188,6 +188,11 @@ public class PostgresGenerationManager extends DbGenerationManager {
     }
 
     @Override
+    protected String addQuotes(String name) {
+        return "\\\"" + name + "\\\""; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    @Override
     protected String getHandledTableName(DbMapComponent component, String tableName, String alias) {
         return getHandledTableName(component, tableName, alias, false);
     }
