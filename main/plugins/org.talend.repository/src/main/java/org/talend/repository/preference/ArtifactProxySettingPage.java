@@ -90,8 +90,10 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
             dynamicDistriutionGroup.setLayoutData(layoutData);
         }
 
-        boolean isValid = getCurrentForm().isComplete();
-        setValid(isValid);
+        if (proxySettingForm != null) {
+            boolean isValid = getCurrentForm().isComplete();
+            setValid(isValid);
+        }
 
         Composite placeHolder = new Composite(parent, SWT.NONE);
         layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
