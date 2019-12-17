@@ -122,7 +122,7 @@ public class UpdateLog4jJarUtils {
                 if (modulesNeededForProcess != null) {
                     for (ModuleNeeded m : modulesNeededForProcess) {
                         if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar") //$NON-NLS-1$
-                                || m.getModuleName().matches("talend-bigdata-launcher-platform-\\d+\\.\\d+\\.\\d+\\.jar")) {
+                                || m.getModuleName().startsWith("talend-bigdata")) {
                             usedlog4j1JarBefore = true;
                             break;
                         }
