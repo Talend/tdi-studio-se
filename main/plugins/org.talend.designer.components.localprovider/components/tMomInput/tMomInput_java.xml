@@ -550,7 +550,8 @@
     </TEMPLATES>
 
     <IMPORTS>
-      <IMPORT NAME="JNP-CLIENT" MODULE="jnp-client.jar" MVN="mvn:org.talend.libraries/jnp-client/6.0.0" REQUIRED="true"/>
+      <IMPORT NAME="JNP-CLIENT" MODULE="jnp-client.jar"          MVN="mvn:org.talend.libraries/jnp-client/6.0.0"    REQUIRED="true"/>
+      <IMPORT NAME="javassist"  MODULE="javassist-3.10.0.GA.jar" MVN="mvn:org.talend.libraries/javassist/3.10.0.GA" REQUIRED="true"/>
     </IMPORTS>
 
   </CODEGENERATION>
