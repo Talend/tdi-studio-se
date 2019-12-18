@@ -13,6 +13,7 @@
 package org.talend.designer.dbmap.language.generation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,6 +24,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.utils.StringUtils;
@@ -629,8 +631,13 @@ public abstract class DbGenerationManager {
                 appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                 boolean isKey = false;
                 int lstSizeOutTableEntries = metadataTableEntries.size();
-                int j = 0;
+                List<Boolean> setColumns = getSetColumnsForUpdateQuery();
+                final boolean hasDeactivatedColumns = !setColumns.isEmpty();
+                boolean isFirstColumn = true;
                 for (int i = 0; i < lstSizeOutTableEntries; i++) {
+                    if (hasDeactivatedColumns && setColumns.get(i)) {
+                        continue;
+                    }
                     ExternalDbMapEntry dbMapEntry = metadataTableEntries.get(i);
                     String columnEntry = dbMapEntry.getName();
                     String expression = dbMapEntry.getExpression();
@@ -643,7 +650,8 @@ public abstract class DbGenerationManager {
                     }
                     String exp = replaceVariablesForExpression(component, expression);
                     String columnSegment = exp;
-                    if (i > 0) {
+                    // Added isFirstColumn to conform old behaior if first column is skipped
+                    if (i > 0 && !isFirstColumn) {
                         queryColumnsName += DbMapSqlConstants.COMMA + DbMapSqlConstants.SPACE;
                         columnSegment = DbMapSqlConstants.COMMA + DbMapSqlConstants.SPACE + columnSegment;
                     }
@@ -666,14 +674,19 @@ public abstract class DbGenerationManager {
                         }
                     }
                     if (expression != null && expression.trim().length() > 0) {
-                        if (j > 0 && i < lstSizeOutTableEntries) {
+                        // Append COMMA and NEW_LINE for all columns except FIRST.
+                        if (!isFirstColumn) {
                             appendSqlQuery(sb, DbMapSqlConstants.COMMA);
                             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                        } else {
+                            isFirstColumn = false;
                         }
                         appendSqlQuery(sb, addQuotes(columnEntry) + " = " + expression); //$NON-NLS-1$
-                        j++;
                     }
                 }
+            }
+            if ("\"".equals(queryColumnsName)) {
+                throw new IllegalArgumentException("Specify at least 1 column for UPDATE QUERY in SET section");
             }
             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
 
@@ -842,6 +855,25 @@ public abstract class DbGenerationManager {
             }
         }
         return false;
+    }
+
+    /**
+     * This piece regulates which columns are going to be skipped in UPDATE QUERY generation in SET section if
+     * <b>SET_COLUMN</b> property exists. This
+     * enhancement is needed for tELTOutput component in case of <b>USE_UPDATE_STATEMENT</b>
+     *
+     * @return List of columns that going to be skipped, if no <b>SET_COLUMN</b> specified then return empty list.
+     */
+    protected List<Boolean> getSetColumnsForUpdateQuery() {
+        IElementParameter setColumns = source.getElementParameter("SET_COLUMN");
+        if (setColumns != null && setColumns.isShow(source.getElementParameters()) && setColumns.getValue() != null) {
+            // This value sometimes comes as String, sometimes as Boolean, avoid cast exception
+            return ((List<Map<String, ? extends Object>>) setColumns.getValue())
+                    .stream()
+                    .map(map -> !Boolean.valueOf(map.get("UPDATE_COLUMN").toString()))
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 
     protected void checkUseDelimitedIdentifiers(DbMapComponent component) {

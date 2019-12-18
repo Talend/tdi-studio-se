@@ -233,7 +233,7 @@ for(IMetadataColumn column:columnList){
 }
 
 int counterOuter =0;
-List<Map<String, String>> setColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_COLMN__");
+List<Map<String, String>> setColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_COLUMN__");
 boolean isUpdate = "UPDATE".equals(dataAction);
 String suffix = ",";
 StringJoiner updateSetStmt = new StringJoiner(suffix);

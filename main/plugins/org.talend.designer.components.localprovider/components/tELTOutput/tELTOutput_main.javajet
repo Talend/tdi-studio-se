@@ -137,7 +137,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 
         StringJoiner updateSetStmt = new StringJoiner(",");
         boolean isUpdate = "UPDATE".equals(dataAction);
-        List<Map<String, String>> setColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_COLMN__");
+        List<Map<String, String>> setColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_COLUMN__");
         int counterOuter = 0;
         for(IMetadataColumn column : columnList){
         	String suffix = ",";
