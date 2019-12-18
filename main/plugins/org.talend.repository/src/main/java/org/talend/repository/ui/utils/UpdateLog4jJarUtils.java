@@ -60,7 +60,7 @@ public class UpdateLog4jJarUtils {
             }
             if (process instanceof IProcess) {
                 Set<ModuleNeeded> modulesNeededForProcess = CorePlugin.getDefault().getDesignerCoreService()
-                        .getNeededLibrariesForProcessBeforeUpdateLog(process, false);
+                        .getNeededLibrariesForProcessBeforeUpdateLog(process, true);
                 if (modulesNeededForProcess != null) {
                     for (ModuleNeeded m : modulesNeededForProcess) {
                         if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
@@ -118,7 +118,7 @@ public class UpdateLog4jJarUtils {
             }
             if (process instanceof IProcess) {
                 Set<ModuleNeeded> modulesNeededForProcess = CorePlugin.getDefault().getDesignerCoreService()
-                        .getNeededLibrariesForProcessBeforeUpdateLog(process, false);
+                        .getNeededLibrariesForProcessBeforeUpdateLog(process, true);
                 if (modulesNeededForProcess != null) {
                     for (ModuleNeeded m : modulesNeededForProcess) {
                         if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar") //$NON-NLS-1$
