@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -197,8 +196,10 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
             public void widgetSelected(SelectionEvent e) {
                 if (enableProxySettingBtn.getSelection()) {
                     disableAllText(true);
+                    updateButtons();
                 } else {
                     disableAllText(false);
+                    updateButtons();
                 }
             }
         });
@@ -224,11 +225,9 @@ public class ArtifactProxySettingForm extends AbstractArtifactProxySettingForm {
 
     @Override
     public boolean isComplete() {
-        showMessage(null, WizardPage.NONE);
-        boolean checkUsernamePassword = true;
-        return checkUsernamePassword;
+        // nothing to check
+        return true;
     }
-
     @Override
     public boolean canFlipToNextPage() {
         return isComplete();

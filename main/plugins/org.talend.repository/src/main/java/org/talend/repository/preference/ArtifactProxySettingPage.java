@@ -88,6 +88,7 @@ public class ArtifactProxySettingPage extends ProjectSettingPage {
                     .createDynamicDistributionPrefForm(dynamicDistriutionGroup, this);
             layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
             dynamicDistriutionGroup.setLayoutData(layoutData);
+            dynamicDistributionPrefForm.isComplete();
         }
 
         if (proxySettingForm != null) {
