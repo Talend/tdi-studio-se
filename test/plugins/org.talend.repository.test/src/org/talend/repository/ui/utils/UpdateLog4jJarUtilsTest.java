@@ -26,7 +26,6 @@ public class UpdateLog4jJarUtilsTest {
         assertTrue(modules4log4j2.contains("log4j-slf4j-impl-2.12.1.jar"));
 
         assertFalse(modules4log4j2.contains("jcl-over-slf4j-1.7.25.jar"));
-        assertFalse(modules4log4j2.contains("jul-to-slf4j-1.7.25.jar"));
         assertFalse(modules4log4j2.contains("log4j-to-slf4j-2.12.1.jar"));
         assertFalse(modules4log4j2.contains("slf4j-log4j12-1.7.25.jar"));
         assertFalse(modules4log4j2.contains("log4j-1.2.17.jar"));
@@ -66,7 +65,6 @@ public class UpdateLog4jJarUtilsTest {
         assertTrue(modules4log4j2.contains("mvn:org.apache.logging.log4j/log4j-slf4j-impl/2.12.1/jar"));
 
         assertFalse(modules4log4j2.contains("mvn:org.slf4j/jcl-over-slf4j/1.7.25/jar"));
-        assertFalse(modules4log4j2.contains("mvn:org.slf4j/jul-to-slf4j/1.7.25/jar"));
         assertFalse(modules4log4j2.contains("mvn:org.apache.logging.log4j/log4j-to-slf4j/2.12.1/jar"));
         assertFalse(modules4log4j2.contains("mvn:org.slf4j/slf4j-log4j12/1.7.25/jar"));
         assertFalse(modules4log4j2.contains("mvn:log4j/log4j/1.2.17/jar"));

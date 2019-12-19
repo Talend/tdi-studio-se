@@ -30,7 +30,9 @@ public class Log4jPrefsConstants {
 
     public static final String LOG4J_SELECT_VERSION2 = "log4jVersion2";//$NON-NLS-1$
 
-    public static final String LOG4J1 = "log4j1";//$NON-NLS-1$
+    public static final String LOG4J_IS_NEW_PROJECT = "isNewProject";//$NON-NLS-1$
+
+    public static final String LOG4J1 = "log4j1(Deprecated)";//$NON-NLS-1$
 
     public static final String LOG4J2 = "log4j2";//$NON-NLS-1$
 

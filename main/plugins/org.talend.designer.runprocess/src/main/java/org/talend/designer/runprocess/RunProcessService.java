@@ -494,4 +494,9 @@ public class RunProcessService implements IRunProcessService {
         return delegateService.isdebug();
     }
 
+    @Override
+    public boolean isSelectLog4j2() {
+        return delegateService.isSelectLog4j2();
+    }
+
 }
