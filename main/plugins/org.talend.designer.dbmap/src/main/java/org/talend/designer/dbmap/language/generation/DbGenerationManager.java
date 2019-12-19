@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
 
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.utils.StringUtils;
@@ -60,6 +59,9 @@ import org.talend.designer.dbmap.language.operator.IDbOperator;
 import org.talend.designer.dbmap.language.operator.IDbOperatorManager;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 import org.talend.designer.dbmap.utils.DataMapExpressionParser;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.Optional.ofNullable;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -865,15 +867,12 @@ public abstract class DbGenerationManager {
      * @return List of columns that going to be skipped, if no <b>SET_COLUMN</b> specified then return empty list.
      */
     protected List<Boolean> getSetColumnsForUpdateQuery() {
-        IElementParameter setColumns = source.getElementParameter("SET_COLUMN");
-        if (setColumns != null && setColumns.isShow(source.getElementParameters()) && setColumns.getValue() != null) {
-            // This value sometimes comes as String, sometimes as Boolean, avoid cast exception
-            return ((List<Map<String, ? extends Object>>) setColumns.getValue())
-                    .stream()
-                    .map(map -> !Boolean.valueOf(map.get("UPDATE_COLUMN").toString()))
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        return ofNullable(source.getElementParameter("SET_COLUMN"))
+                .filter(iep -> iep.isShow(source.getElementParameters()))
+                .flatMap(iep -> ofNullable((List<Map<String, ? extends Object>>)iep.getValue()))
+                .orElseGet(Collections::emptyList).stream()
+                .map(m -> !Boolean.valueOf(m.get("UPDATE_COLUMN").toString()))
+                .collect(toList());
     }
 
     protected void checkUseDelimitedIdentifiers(DbMapComponent component) {
