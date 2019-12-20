@@ -114,3 +114,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.updates.runtime,
  org.eclipse.equinox.p2.metadata
 Import-Package: org.talend.components.api.properties
+Bundle-Localization: plugin
