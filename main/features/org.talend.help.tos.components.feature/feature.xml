@@ -20,17 +20,14 @@
    <url>
       <update label="CORE Talend update site for milestones" url="http://talendforge.org/core/updatesite/testing/"/>
    </url>
-   <requires>
-      <import plugin="org.talend.help.azurestorage" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.help.filedelimited" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.help.filterrow" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.help.googledrive" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.help.jdbc" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.help.jira" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.help.marketo" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.help.salesforce" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.help.snowflake" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.help.splunk" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.talend.help" version="0.0.0" match="greaterOrEqual"/>
-   </requires>
+	<plugin id="org.talend.help.azurestorage" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.talend.help.filedelimited" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.talend.help.filterrow" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.talend.help.googledrive" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.talend.help.jdbc" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.talend.help.jira" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.talend.help.marketo" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.talend.help.salesforce" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.talend.help.snowflake" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.talend.help.splunk" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 </feature>
