@@ -15,12 +15,10 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.Collections.*;
+import static java.util.Optional.*;
+import static java.util.function.Function.*;
+import static java.util.stream.Collectors.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -266,8 +264,15 @@ public class SettingVisitor implements PropertyVisitor {
                 break;
             }
         } else {
+            // Check button only in wizard.
             if (Metadatas.MAIN_FORM.equalsIgnoreCase(form)) {
                 buildHealthCheck(node);
+                if (redrawParameter != null) {
+                    IElement element = redrawParameter.getElement();
+                    if (element != null && element instanceof FakeElement) {
+                        buildHealthCheck(node);
+                    }
+                }
             }
             buildUpdate(node);
         }
