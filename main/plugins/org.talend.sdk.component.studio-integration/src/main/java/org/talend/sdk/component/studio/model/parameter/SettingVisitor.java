@@ -49,6 +49,7 @@ import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.action.update.UpdateAction;
 import org.talend.sdk.component.studio.model.action.update.UpdateResolver;
@@ -56,6 +57,7 @@ import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
 import org.talend.sdk.component.studio.model.parameter.listener.ActiveIfListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory;
+import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
@@ -65,7 +67,7 @@ import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolv
  */
 public class SettingVisitor implements PropertyVisitor {
 
-    protected final static Logger LOGGER = LoggerFactory.getLogger(SettingVisitor.class.getName());
+    private final static Logger LOGGER = LoggerFactory.getLogger(SettingVisitor.class.getName());
 
     private ConfigTypeNode rootConfigNode;
 
@@ -73,33 +75,33 @@ public class SettingVisitor implements PropertyVisitor {
      * Stores created component parameters.
      * Key is parameter name (which is also its path)
      */
-    protected final Map<String, IElementParameter> settings = new LinkedHashMap<>();
+    private final Map<String, IElementParameter> settings = new LinkedHashMap<>();
 
     /**
      * Element(Node) for which parameters are created. It is required to set {@link TaCoKitElementParameter} constructor
      */
-    protected final IElement element;
+    private final IElement element;
 
     /**
      * Defines {@link EComponentCategory} to be set in created {@link TaCoKitElementParameter}
      * It may be {@link EComponentCategory#BASIC} or {@link EComponentCategory#ADVANCED}
      * for Basic and Advanced view correspondingly
      */
-    protected EComponentCategory category;
+    private EComponentCategory category;
 
     /**
      * Defines a Form name, for which properties are built. E.g. "Main" or "Advanced"
      */
-    protected String form;
+    private String form;
 
-    protected String family;
+    private String family;
 
     /**
      * {@link ElementParameter} which defines whether UI should be redrawn
      */
     private final ElementParameter redrawParameter;
 
-    protected final Collection<ActionReference> actions;
+    private final Collection<ActionReference> actions;
 
     /**
      * A cache of ConditionGroups, which is used to collect them and create ActiveIfListeners
@@ -277,7 +279,7 @@ public class SettingVisitor implements PropertyVisitor {
      * @param node current PropertyNode
      * @return true if HealthCheck button should be added
      */
-    protected boolean hasHealthCheck(final PropertyNode node) {
+    private boolean hasHealthCheck(final PropertyNode node) {
         return node.getProperty().isCheckable() && !node.getChildren(form).isEmpty();
     }
 
@@ -287,7 +289,20 @@ public class SettingVisitor implements PropertyVisitor {
      * @param node current PropertyNode
      */
     protected void buildHealthCheck(final PropertyNode node) {
-        // do nothing
+        if (hasHealthCheck(node)) {
+            final ActionReference action = actions.stream().filter(a -> Action.Type.HEALTHCHECK.toString().equals(a.getType()))
+                    .filter(a -> a.getName().equals(node.getProperty().getHealthCheckName())).findFirst().get();
+            final Layout checkableLayout = node.getLayout(form);
+            final Optional<Layout> buttonLayout = checkableLayout
+                    .getChildLayout(checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON);
+            if (buttonLayout.isPresent()) {
+                new HealthCheckResolver(element, family, node, action, category, buttonLayout.get().getPosition())
+                        .resolveParameters(settings);
+            } else {
+                LOGGER.debug("Button layout {} not found for form {}", checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON, //$NON-NLS-1$
+                        form);
+            }
+        }
     }
 
     /**
