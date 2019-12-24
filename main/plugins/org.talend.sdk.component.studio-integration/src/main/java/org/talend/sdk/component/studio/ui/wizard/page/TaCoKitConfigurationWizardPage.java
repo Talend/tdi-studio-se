@@ -45,7 +45,7 @@ import org.talend.sdk.component.studio.model.parameter.LayoutParameter;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.PropertyTreeCreator;
-import org.talend.sdk.component.studio.model.parameter.SettingVisitor;
+import org.talend.sdk.component.studio.model.parameter.SettingVisitor4Wizard;
 import org.talend.sdk.component.studio.model.parameter.VersionParameter;
 import org.talend.sdk.component.studio.ui.composite.TaCoKitComposite;
 import org.talend.sdk.component.studio.ui.composite.TaCoKitWizardComposite;
@@ -118,8 +118,8 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
             final ElementParameter updateParameter = createUpdateComponentsParameter(element);
             final List<IElementParameter> parameters = new ArrayList<>();
             parameters.add(updateParameter);
-            final SettingVisitor settingsCreator =
-                    new SettingVisitor(node, updateParameter, configTypeNode).withCategory(category);
+            final SettingVisitor4Wizard settingsCreator = new SettingVisitor4Wizard(node, updateParameter, configTypeNode)
+                    .withCategory(category);
             root.accept(settingsCreator, form);
             parameters.addAll(settingsCreator.getSettings());
             final ElementParameter layoutParameter = createLayoutParameter(root, form, category, element);

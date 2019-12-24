@@ -15,10 +15,12 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Collections.*;
-import static java.util.Optional.*;
-import static java.util.function.Function.*;
-import static java.util.stream.Collectors.*;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -47,7 +49,6 @@ import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.action.update.UpdateAction;
 import org.talend.sdk.component.studio.model.action.update.UpdateResolver;
@@ -55,7 +56,6 @@ import org.talend.sdk.component.studio.model.parameter.condition.ConditionGroup;
 import org.talend.sdk.component.studio.model.parameter.listener.ActiveIfListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory;
-import org.talend.sdk.component.studio.model.parameter.resolver.HealthCheckResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ParameterResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.SuggestionsResolver;
 import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolver;
@@ -65,7 +65,7 @@ import org.talend.sdk.component.studio.model.parameter.resolver.ValidationResolv
  */
 public class SettingVisitor implements PropertyVisitor {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SettingVisitor.class.getName());
+    protected final static Logger LOGGER = LoggerFactory.getLogger(SettingVisitor.class.getName());
 
     private ConfigTypeNode rootConfigNode;
 
@@ -73,33 +73,33 @@ public class SettingVisitor implements PropertyVisitor {
      * Stores created component parameters.
      * Key is parameter name (which is also its path)
      */
-    private final Map<String, IElementParameter> settings = new LinkedHashMap<>();
+    protected final Map<String, IElementParameter> settings = new LinkedHashMap<>();
 
     /**
      * Element(Node) for which parameters are created. It is required to set {@link TaCoKitElementParameter} constructor
      */
-    private final IElement element;
+    protected final IElement element;
 
     /**
      * Defines {@link EComponentCategory} to be set in created {@link TaCoKitElementParameter}
      * It may be {@link EComponentCategory#BASIC} or {@link EComponentCategory#ADVANCED}
      * for Basic and Advanced view correspondingly
      */
-    private EComponentCategory category;
+    protected EComponentCategory category;
 
     /**
      * Defines a Form name, for which properties are built. E.g. "Main" or "Advanced"
      */
-    private String form;
+    protected String form;
 
-    private String family;
+    protected String family;
 
     /**
      * {@link ElementParameter} which defines whether UI should be redrawn
      */
     private final ElementParameter redrawParameter;
 
-    private final Collection<ActionReference> actions;
+    protected final Collection<ActionReference> actions;
 
     /**
      * A cache of ConditionGroups, which is used to collect them and create ActiveIfListeners
@@ -264,15 +264,8 @@ public class SettingVisitor implements PropertyVisitor {
                 break;
             }
         } else {
-            // Check button only in wizard.
             if (Metadatas.MAIN_FORM.equalsIgnoreCase(form)) {
                 buildHealthCheck(node);
-                if (redrawParameter != null) {
-                    IElement element = redrawParameter.getElement();
-                    if (element != null && element instanceof FakeElement) {
-                        buildHealthCheck(node);
-                    }
-                }
             }
             buildUpdate(node);
         }
@@ -284,7 +277,7 @@ public class SettingVisitor implements PropertyVisitor {
      * @param node current PropertyNode
      * @return true if HealthCheck button should be added
      */
-    private boolean hasHealthCheck(final PropertyNode node) {
+    protected boolean hasHealthCheck(final PropertyNode node) {
         return node.getProperty().isCheckable() && !node.getChildren(form).isEmpty();
     }
 
@@ -293,24 +286,8 @@ public class SettingVisitor implements PropertyVisitor {
      *
      * @param node current PropertyNode
      */
-    private void buildHealthCheck(final PropertyNode node) {
-        if (hasHealthCheck(node)) {
-            final ActionReference action = actions
-                    .stream()
-                    .filter(a -> Action.Type.HEALTHCHECK.toString().equals(a.getType()))
-                    .filter(a -> a.getName().equals(node.getProperty().getHealthCheckName()))
-                    .findFirst()
-                    .get();
-            final Layout checkableLayout = node.getLayout(form);
-            final Optional<Layout> buttonLayout =
-                    checkableLayout.getChildLayout(checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON);
-            if (buttonLayout.isPresent()) {
-                new HealthCheckResolver(element, family, node, action, category, buttonLayout.get().getPosition())
-                        .resolveParameters(settings);
-            } else {
-                LOGGER.debug("Button layout {} not found for form {}", checkableLayout.getPath() + PropertyNode.CONNECTION_BUTTON, form);
-            }
-        }
+    protected void buildHealthCheck(final PropertyNode node) {
+        // do nothing
     }
 
     /**
