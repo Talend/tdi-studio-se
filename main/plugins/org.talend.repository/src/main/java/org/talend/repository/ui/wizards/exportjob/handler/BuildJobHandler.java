@@ -177,7 +177,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
             generationOption = ProcessorUtilities.GENERATE_ALL_CHILDS;
         }
 
-        if (isOptionChoosed(ExportChoice.includeTestSource)) {
+        if (isOptionChoosed(ExportChoice.includeTestSource) || isOptionChoosed(ExportChoice.executeTests)) {
             generationOption = generationOption | ProcessorUtilities.GENERATE_TESTS;
         }
 
