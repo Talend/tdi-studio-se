@@ -300,6 +300,9 @@ public class ProcessChangeListener implements PropertyChangeListener {
             if (getAllProcessTypes().contains(processType)) {
                 IFolder processTypeFolder = getAggregatorPomsHelper().getProcessFolder(processType);
                 IFolder sourceFolder = processTypeFolder.getFolder(sourcePath);
+                if (!sourceFolder.exists()) {
+                    return;
+                }
                 try {
                     removeFromParentSourceFolder(sourceFolder);
                     IFolder targetFolder = processTypeFolder.getFolder(targetPath);
