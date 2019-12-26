@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColorCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
@@ -865,6 +866,30 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                             if (value instanceof RGB) {
                                 RGB rgb = (RGB) value;
                                 finalValue = rgb.red + ";" + rgb.green + ";" + rgb.blue; //$NON-NLS-1$ //$NON-NLS-2$
+                            }
+                            break;
+                        case NUMBERLIMITTEXT:
+                            if(value==null||StringUtils.isBlank(value.toString()) ) {
+                                finalValue ="0";
+                            }else {
+                                try {
+                                    String strValue=value.toString();
+                                    double num=Double.valueOf(strValue);
+                                    if(num>=1) {
+                                        finalValue ="1";
+                                    }else if(strValue.trim().indexOf(".") == -1){
+                                        finalValue ="1";
+                                    }else {
+                                        int decimalLen = strValue.trim().length() - strValue.trim().indexOf(".")-1;
+                                        if(decimalLen<7){
+                                            finalValue =value;
+                                        }else{
+                                            finalValue =strValue.trim().substring(0, 8);
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    finalValue ="0";
+                                }
                             }
                         default:
                         }

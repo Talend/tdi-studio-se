@@ -390,6 +390,10 @@
             mapping="TEXT"
             name="Text"/>
       <generator
+            class="org.talend.designer.core.ui.editor.properties.controllers.generator.NumberLimitTextGenerator"
+            mapping="NUMBERLIMITTEXT"
+            name="NumberLimitText"/>
+      <generator
             class="org.talend.designer.core.ui.editor.properties.controllers.generator.ComboGenerator"
             mapping="CLOSED_LIST"
             name="Combo"/>
