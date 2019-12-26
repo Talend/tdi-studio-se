@@ -253,6 +253,24 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
             }
         });
+
+        Collections.sort(libNames, new Comparator<String>() {
+
+            @Override
+            public int compare(String o1, String o2) {
+                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_UPDATE_ORDER) {
+                    if (StringUtils.equals(moduleName, o1) && !StringUtils.equals(moduleName, o2)) {
+                        return -1;
+                    }
+                    if (!StringUtils.equals(moduleName, o1) && StringUtils.equals(moduleName, o2)) {
+                        return 1;
+                    }
+                }
+                return 0;
+
+            }
+        });
+
         Collections.sort(libNames, new Comparator<String>() {
 
             @Override
