@@ -331,6 +331,26 @@
 		SHOW_IF="(USE_EXISTING_CONNECTION == 'false') and (CONNECTION_TYPE != 'ORACLE_WALLET')">
 		<DEFAULT>*Note: Example for Additional JDBC Parameters: "parameterName1=value1&amp;&amp;parameterName2=value2"</DEFAULT>
 	</PARAMETER>
+
+    <PARAMETER
+      NAME="USE_ALTERNATE_SCHEMA"
+      FIELD="CHECK"
+      NUM_ROW="15"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="ALTERNATE_SCHEMA"
+      FIELD="TEXT"
+      NUM_ROW="16"
+      REQUIRED="true"
+      SHOW_IF="((USE_EXISTING_CONNECTION == 'true') AND (USE_ALTERNATE_SCHEMA == 'true'))"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
   	<PARAMETER
       NAME="ENCODING"
       FIELD="ENCODING_TYPE"

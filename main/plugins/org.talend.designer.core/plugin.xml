@@ -599,6 +599,11 @@
         name="Password">
   </generator>
   <generator
+        class="org.talend.designer.core.ui.editor.properties.controllers.generator.LicenseKeyControllerGenerator"
+        mapping="LICENSEKEY"
+        name="LicenseKey">
+  </generator>
+  <generator
         class="org.talend.designer.core.ui.editor.properties.controllers.generator.TableByRowGenerator"
         mapping="TABLE_BY_ROW"
         name="Table by row">

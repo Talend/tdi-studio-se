@@ -110,7 +110,9 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                             kmf.init(keyStore, keyStorePassword.toCharArray());
                             keyManagers = kmf.getKeyManagers();
                         } catch (java.security.UnrecoverableKeyException|java.security.KeyStoreException|java.security.cert.CertificateException e) {
+                            <%if(isLog4jEnabled) {%>
                             log.error(e.getLocalizedMessage());
+                            <%}%>
                             e.printStackTrace();
                         }
                     }
@@ -127,7 +129,9 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                             trustManagers = tmf.getTrustManagers();
 
                         } catch (java.security.KeyStoreException|java.security.cert.CertificateException e) {
+                            <%if(isLog4jEnabled) {%>
                             log.error(e.getLocalizedMessage());
+                            <%}%>
                             e.printStackTrace();
                             trustManagers = new javax.net.ssl.TrustManager[]{};
 

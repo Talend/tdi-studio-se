@@ -489,6 +489,9 @@ public class DbTableController extends AbstractElementPropertySectionController 
         if (this.connParameters != null) {
             if (isUseExistingConnection()) {
                 initConnectionParametersWithContext(connectionNode, manager.getDefaultContext());
+                if (isUseAlternateSchema()) {
+                    initAlternateSchema(elem, manager.getDefaultContext());
+                }
             } else {
                 initConnectionParametersWithContext(elem, manager.getDefaultContext());
             }

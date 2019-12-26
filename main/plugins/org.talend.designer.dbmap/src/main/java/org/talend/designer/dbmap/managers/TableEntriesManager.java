@@ -78,6 +78,9 @@ public class TableEntriesManager {
     public void loadDbTableNameColumnNameToMetadaColumns(List<IOConnection> connections) {
         for (IOConnection connection : connections) {
             IMetadataTable metadataTable = connection.getTable();
+            if(metadataTable == null) {
+                continue;
+            }
             List<IMetadataColumn> listColumns = metadataTable.getListColumns();
             for (IMetadataColumn column : listColumns) {
                 addMetadataColumnFromDbTable(connection.getName(), column.getLabel(), column);

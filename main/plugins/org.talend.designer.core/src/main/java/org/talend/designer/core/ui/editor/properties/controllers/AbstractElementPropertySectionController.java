@@ -1630,6 +1630,14 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 TalendTextUtils.removeQuotes(schema), type, realTableName));
     }
 
+    protected void initAlternateSchema(IElement element, IContext context) {
+        String schemaName = getParameterValueWithContext(element,
+                "ALTERNATE_SCHEMA", context, null);
+        if (schemaName != null && !schemaName.trim().isEmpty()) {
+            connParameters.setSchema(schemaName);
+        }
+    }
+
     protected void initConnectionParametersWithContext(IElement element, IContext context) {
 
         IElementParameter basePropertyParameter = null;
@@ -2386,6 +2394,15 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     protected boolean isUseExistingConnection() {
         IElementParameter elementParameter = elem.getElementParameter(EParameterName.USE_EXISTING_CONNECTION.getName());
+        if (elementParameter != null) {
+            Boolean value = (Boolean) elementParameter.getValue();
+            return value;
+        }
+        return false;
+    }
+
+    protected boolean isUseAlternateSchema() {
+        IElementParameter elementParameter = elem.getElementParameter("USE_ALTERNATE_SCHEMA");
         if (elementParameter != null) {
             Boolean value = (Boolean) elementParameter.getValue();
             return value;

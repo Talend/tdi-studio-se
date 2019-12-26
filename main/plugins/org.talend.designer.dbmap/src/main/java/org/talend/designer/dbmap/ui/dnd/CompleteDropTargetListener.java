@@ -463,6 +463,8 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
         getUiManager().refreshSqlExpression();
 
         uiManager.selectLinks(dataMapTableViewTarget, selectedEntries, targetTableIsFiltersTable, true);
+        // refresh for cell data disappear on MAC
+        tableViewerCreatorTarget.getTableViewer().refresh();
         tableViewerCreatorTarget.getTable().setFocus();
 
         uiManager.setDragging(false);

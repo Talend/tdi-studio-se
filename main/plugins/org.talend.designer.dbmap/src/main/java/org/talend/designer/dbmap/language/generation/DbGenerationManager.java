@@ -268,6 +268,10 @@ public abstract class DbGenerationManager {
         return tableName;
     }
 
+    protected String addQuotes(String name) {
+        return name;
+    }
+
     /**
      *
      * ggu Comment method "buildSqlSelect".
@@ -606,7 +610,7 @@ public abstract class DbGenerationManager {
             if (eltSchemaNameParam != null && eltSchemaNameParam.getValue() != null) {
                 String schema = TalendQuoteUtils.removeQuotesIfExist(String.valueOf(eltSchemaNameParam.getValue()));
                 if (org.apache.commons.lang.StringUtils.isNotEmpty(schema)) {
-                    targetSchemaTable = schema + DbMapSqlConstants.DOT + outTableName;
+                    targetSchemaTable = addQuotes(schema) + DbMapSqlConstants.DOT + addQuotes(outTableName);
                 }
             }
 
@@ -625,6 +629,7 @@ public abstract class DbGenerationManager {
                 appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                 boolean isKey = false;
                 int lstSizeOutTableEntries = metadataTableEntries.size();
+                int j = 0;
                 for (int i = 0; i < lstSizeOutTableEntries; i++) {
                     ExternalDbMapEntry dbMapEntry = metadataTableEntries.get(i);
                     String columnEntry = dbMapEntry.getName();
@@ -652,7 +657,7 @@ public abstract class DbGenerationManager {
                             String columnName = column.getLabel();
                             if (columnName.equals(dbMapEntry.getName()) && column.isKey()) {
                                 isKey = column.isKey();
-                                keyColumn = columnEntry + " = " + expression;//$NON-NLS-1$
+                                keyColumn = addQuotes(columnEntry) + " = " + expression;//$NON-NLS-1$
                                 break;
                             }
                         }
@@ -661,11 +666,12 @@ public abstract class DbGenerationManager {
                         }
                     }
                     if (expression != null && expression.trim().length() > 0) {
-                        appendSqlQuery(sb, columnEntry + " = " + expression); //$NON-NLS-1$
-                        if (i < lstSizeOutTableEntries - 1) {
+                        if (j > 0 && i < lstSizeOutTableEntries) {
                             appendSqlQuery(sb, DbMapSqlConstants.COMMA);
                             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
                         }
+                        appendSqlQuery(sb, addQuotes(columnEntry) + " = " + expression); //$NON-NLS-1$
+                        j++;
                     }
                 }
             }
@@ -698,14 +704,9 @@ public abstract class DbGenerationManager {
                 } else {
                     joinType = language.getJoin(inputTable.getJoinType());
                 }
+                boolean commaCouldBeAdded = !explicitJoin && i > 0;
                 if (language.unuseWithExplicitJoin().contains(joinType) && !explicitJoin) {
-                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                    appendSqlQuery(sb, inputTable.getTableName());
-                    String alias = inputTable.getAlias();
-                    if (org.apache.commons.lang.StringUtils.isNotEmpty(alias)) {
-                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                        appendSqlQuery(sb, alias);
-                    }
+                    buildTableDeclaration(component, sb, inputTable, commaCouldBeAdded, false, false);
                 }
             }
 

@@ -4020,11 +4020,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             // .getLog4jPreferences(Log4jPrefsConstants.LOG4J_ENABLE_NODE, false);
             IEclipsePreferences projectPreferences = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_ENABLE_NODE, false);
-            projectPreferences.removePreferenceChangeListener(preferenceEventListener);
-
+            if (projectPreferences != null) {
+                projectPreferences.removePreferenceChangeListener(preferenceEventListener);
+            }
             IEclipsePreferences projectPreferencesLog4jVersion = (IEclipsePreferences) Log4jPrefsSettingManager.getInstance()
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_SELECT_VERSION2, false);
-            projectPreferencesLog4jVersion.removePreferenceChangeListener(preferenceEventListener);
+            if (projectPreferencesLog4jVersion != null) {
+                projectPreferencesLog4jVersion.removePreferenceChangeListener(preferenceEventListener);
+            }
         }
         generatingProcess = null;
         editor = null;

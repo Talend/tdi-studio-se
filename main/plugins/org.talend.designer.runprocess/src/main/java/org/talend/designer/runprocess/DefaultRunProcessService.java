@@ -43,6 +43,7 @@ import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.osgi.framework.Bundle;
+import org.osgi.service.prefs.Preferences;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -118,6 +119,8 @@ public class DefaultRunProcessService implements IRunProcessService {
     private static final String RESOURCE_LOG_FILE_PATH = "log/log4j.properties_template";
 
     private static final String RESOURCE_COMMONLOG_FILE_PATH = "log/common-logging.properties_template";
+
+    private static final String LOG4J_VERSION2_FILEPATH = "log/log4j2.properties_template"; //$NON-NLS-1$
 
     /*
      * (non-Javadoc)
@@ -577,11 +580,26 @@ public class DefaultRunProcessService implements IRunProcessService {
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_ENABLE_NODE,
                     Log4jUtil.isEnable() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
-                    getLogTemplate(RESOURCE_LOG_FILE_PATH));
+                    getLogTemplate(LOG4J_VERSION2_FILEPATH));
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.COMMON_LOGGING_NODE,
                     getLogTemplate(RESOURCE_COMMONLOG_FILE_PATH));
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
-                    Boolean.FALSE.toString());
+                    Boolean.TRUE.toString());
+            Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT,
+                    Boolean.TRUE.toString());
+        } else {
+            Preferences log4j2SelectedPreferences = Log4jPrefsSettingManager.getInstance()
+                    .getLog4jPreferences(Log4jPrefsConstants.LOG4J_SELECT_VERSION2, false);
+            if (log4j2SelectedPreferences == null) {
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
+                        Boolean.FALSE.toString());
+            }
+            Preferences log4jIsNewProjectPreferences = Log4jPrefsSettingManager.getInstance()
+                    .getLog4jPreferences(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT, false);
+            if (log4jIsNewProjectPreferences == null) {
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT,
+                        Boolean.FALSE.toString());
+            }
         }
         // if directly init or modify log4j,need handle with the log4j under .setting/,if not,means execute or export
         // job,need to copy the latest log4j from .setting/ to /java/src
@@ -967,6 +985,11 @@ public class DefaultRunProcessService implements IRunProcessService {
             PomUtil.checkJobRelatedJobletDependencies(mainJobObject.getProperty(), RelationshipItemBuilder.JOB_RELATION,
                     childJobDependencies, itemChecked, progressMonitor);
         }
+    }
+
+    @Override
+    public boolean isSelectLog4j2() {
+        return Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
     }
 
 }
