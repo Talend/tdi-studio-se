@@ -25,8 +25,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1486,69 +1484,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
         neededModules.addAll(neededModulesLogjarUnsorted);
 
-        Collections.sort(neededModules, new Comparator<ModuleNeeded>() {
-
-            @Override
-            public int compare(ModuleNeeded o1, ModuleNeeded o2) {
-                if (highPriorityModuleNeeded == null) {
-
-                    return 0;
-                }
-                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_ADDED_BACK) {
-                    if (StringUtils.equals(moduleName, o1.getModuleName())
-                            && !StringUtils.equals(moduleName, o2.getModuleName())) {
-                        return -1;
-                    }
-                    if (!StringUtils.equals(moduleName, o1.getModuleName())
-                            && StringUtils.equals(moduleName, o2.getModuleName())) {
-                        return 1;
-                    }
-                }
-                return 0;
-
-            }
-        });
-
-        Collections.sort(neededModules, new Comparator<ModuleNeeded>() {
-
-            @Override
-            public int compare(ModuleNeeded o1, ModuleNeeded o2) {
-                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_UPDATE_ORDER) {
-                    if (StringUtils.equals(moduleName, o1.getModuleName())
-                            && !StringUtils.equals(moduleName, o2.getModuleName())) {
-                        return -1;
-                    }
-                    if (!StringUtils.equals(moduleName, o1.getModuleName())
-                            && StringUtils.equals(moduleName, o2.getModuleName())) {
-                        return 1;
-                    }
-                }
-                return 0;
-
-            }
-        });
-
-        Collections.sort(neededModules, new Comparator<ModuleNeeded>() {
-
-            @Override
-            public int compare(ModuleNeeded o1, ModuleNeeded o2) {
-                if (highPriorityModuleNeeded == null) {
-                    return 0;
-                }
-                for (ModuleNeeded module : highPriorityModuleNeeded) {
-                    if (StringUtils.equals(module.getModuleName(), o1.getModuleName())
-                            && !StringUtils.equals(module.getModuleName(), o2.getModuleName())) {
-                        return -1;
-                    }
-                    if (!StringUtils.equals(module.getModuleName(), o1.getModuleName())
-                            && StringUtils.equals(module.getModuleName(), o2.getModuleName())) {
-                        return 1;
-                    }
-                }
-                return 0;
-
-            }
-        });
+        UpdateLog4jJarUtils.sortClassPath4Log4j(highPriorityModuleNeeded, neededModules);
 
         // Ignore hadoop confs jars in lib path.
         if (ProcessorUtilities.hadoopConfJarCanBeLoadedDynamically(property)) {

@@ -84,7 +84,10 @@ public class JavaProcessUtil {
 
         // call recursive function to get all dependencies from job & subjobs
         getNeededModules(process, searchItems, modulesNeeded, options);
-        Set<ModuleNeeded> childrenModules = getChildrenModulesFromProcess(process, searchItems);
+        Set<ModuleNeeded> childrenModules = null;
+        if (!BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CHILDREN)) {
+            childrenModules = getChildrenModulesFromProcess(process, searchItems);
+        }
         /*
          * Remove duplicates in the modulesNeeded list after having prioritize the modules. Details in the
          * ModuleNeededComparator class.
