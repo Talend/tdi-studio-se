@@ -267,7 +267,7 @@
 			    	dynamicMetadata_<%=cid%>.setDbName(dynamicMetadata_<%=cid%>.getName());
 			    	dynamicMetadata_<%=cid%>.setType(routines.system.Dynamic.getTalendTypeFromDBType("bigquery_id", schema_<%=cid%>.getFields().get(i).getType(), 0, 0));
 					dynamicMetadata_<%=cid%>.setDbType(schema_<%=cid%>.getFields().get(i).getType());
-			    	dynamicMetadata_<%=cid%>.setNullable("NULLABLE".equals(schema_tBigQueryInput_1.getFields().get(i).getMode()));
+			    	dynamicMetadata_<%=cid%>.setNullable("NULLABLE".equals(schema_<%=cid%>.getFields().get(i).getMode()));
 			    	dynamicMetadata_<%=cid%>.setColumnPosition(i);
 			    	dcg_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
 			    }
@@ -399,7 +399,7 @@
 			    	dynamicMetadata_<%=cid%>.setDbName(dynamicMetadata_<%=cid%>.getName());
 			    	dynamicMetadata_<%=cid%>.setType(routines.system.Dynamic.getTalendTypeFromDBType("bigquery_id", schema_<%=cid%>.getFields().get(i).getType().getStandardType().name(), 0, 0));
 					dynamicMetadata_<%=cid%>.setDbType(schema_<%=cid%>.getFields().get(i).getType().getStandardType().name());
-			    	dynamicMetadata_<%=cid%>.setNullable(schema_tBigQueryInput_1.getFields().get(i).getMode() == com.google.cloud.bigquery.Field.Mode.NULLABLE);
+			    	dynamicMetadata_<%=cid%>.setNullable(schema_<%=cid%>.getFields().get(i).getMode() == com.google.cloud.bigquery.Field.Mode.NULLABLE);
 			    	dynamicMetadata_<%=cid%>.setColumnPosition(i);
 			    	dcg_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
 			    }
