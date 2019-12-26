@@ -2578,6 +2578,14 @@ public class EmfComponent extends AbstractBasicComponent {
                 case PATTERN_PROPERTY:
                     newParam.setFieldType(EParameterFieldType.PATTERN_PROPERTY);
                     break;
+                case NUMBERLIMITTEXT:
+                    newParam.setFieldType(EParameterFieldType.NUMBERLIMITTEXT);
+                    if (item.getVALUE() == null || item.getVALUE().equals("")) { //$NON-NLS-1$
+                        newParam.setValue(""); //$NON-NLS-1$
+                    } else {
+                        newParam.setValue(item.getVALUE());
+                    }
+                    break;
                 default: // TEXT by default
                     newParam.setFieldType(EParameterFieldType.TEXT);
                     if (item.getVALUE() == null || item.getVALUE().equals("")) { //$NON-NLS-1$

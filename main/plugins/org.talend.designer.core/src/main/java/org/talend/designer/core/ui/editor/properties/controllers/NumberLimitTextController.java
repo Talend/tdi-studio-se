@@ -54,10 +54,13 @@ public class NumberLimitTextController extends TextController {
                         return;
                     }
                     Pattern pattern = Pattern.compile("^\\.|\\d$"); //$NON-NLS-1$
-                    Pattern finalPattern = Pattern.compile("^1(\\.0)?|0(\\.\\d{1,5})?$"); //$NON-NLS-1$
+                    Pattern finalPattern = Pattern.compile("^1(\\.0{1,5})?|0(\\.\\d{1,5})?$"); //$NON-NLS-1$
                     Pattern exceptionPattern = Pattern.compile("^1\\d+|0\\d+$"); //$NON-NLS-1$
                     //when input character one by one then make sure they are valid
                     if (inputValue.length()<=1&&!pattern.matcher(inputValue).matches()) {
+                        e.doit = false;
+                        return;
+                    }else if(".".equals(inputValue)&&labelText.getText().length()>1) {
                         e.doit = false;
                         return;
                     }else {
@@ -88,6 +91,7 @@ public class NumberLimitTextController extends TextController {
                     if(inputValue.length()>1) {
                         e.doit = false;
                         return;
+                        
                     }
                 }
             }
