@@ -18,12 +18,17 @@
     if (setHadoopConf == null) {
         setHadoopConf = Boolean.FALSE;
     }
+    boolean hasConfLib = (confLib != null && confLib.length() > 0);
 %>
 
-<% if((confLib != null && confLib.length() > 0) || setHadoopConf){%>
+<% if(hasConfLib || setHadoopConf){%>
 
 String libPath_<%=cid %> = "";
+java.net.URLClassLoader currentLoader<%=cid %> = (java.net.URLClassLoader) Thread.currentThread().getContextClassLoader();
+java.lang.reflect.Method method_<%=cid %> = java.net.URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { java.net.URL.class });
+method_<%=cid %>.setAccessible(true);
 
+<% if (hasConfLib) { %>
 class DealJobLibrary_<%=cid%> {
 
     public String getConfJarName(String confLib, String extraId) {
@@ -92,11 +97,8 @@ String confJarName = dealJobLibrary.getConfJarName(<%=confLib %>, this.contextSt
     libPath_<%=cid %> = new java.io.File("<%=libFolder %>/" + confJarName).getAbsolutePath();
 <%}%>
 libPath_<%=cid %> = dealJobLibrary.replaceJarPathsFromCrcMap(libPath_<%=cid %>);
-
-java.net.URLClassLoader currentLoader<%=cid %> = (java.net.URLClassLoader) Thread.currentThread().getContextClassLoader();
-java.lang.reflect.Method method_<%=cid %> = java.net.URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { java.net.URL.class });
-method_<%=cid %>.setAccessible(true);
 method_<%=cid %>.invoke(currentLoader<%=cid %>, new Object[] { new java.io.File(libPath_<%=cid %>).toURL() });
+<%}%>
 
 <% if (setHadoopConf) { %>
 
