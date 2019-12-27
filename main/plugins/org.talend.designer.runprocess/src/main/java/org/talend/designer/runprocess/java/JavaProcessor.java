@@ -1469,8 +1469,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         if (isExportConfig() || isSkipClasspathJar()) {
             option = option | TalendProcessOptionConstants.MODULES_EXCLUDE_SHADED;
         }
-        Set<ModuleNeeded> neededModulesLogjarUnsorted = LastGenerationInfo.getInstance().getModulesNeededPerJob(process.getId(),
-                process.getVersion());
+        Set<ModuleNeeded> neededModulesLogjarUnsorted = LastGenerationInfo.getInstance()
+                .getModulesNeededWithSubjobPerJob(process.getId(), process.getVersion());
         if (neededModulesLogjarUnsorted.isEmpty()) {
             neededModulesLogjarUnsorted = getNeededModules(option);
         }
