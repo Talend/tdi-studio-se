@@ -377,4 +377,61 @@ public class UpdateLog4jJarUtils {
             }
         });
     }
+
+    public static void sortClassPath4log4j(Set<ModuleNeeded> highPriorityModuleNeeded, List<String> libNames) {
+        Collections.sort(libNames, new Comparator<String>() {
+
+            @Override
+            public int compare(String o1, String o2) {
+
+                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_ADDED_BACK) {
+                    if (StringUtils.equals(moduleName, o1) && !StringUtils.equals(moduleName, o2)) {
+                        return -1;
+                    }
+                    if (!StringUtils.equals(moduleName, o1) && StringUtils.equals(moduleName, o2)) {
+                        return 1;
+                    }
+                }
+                return 0;
+
+            }
+        });
+
+        Collections.sort(libNames, new Comparator<String>() {
+
+            @Override
+            public int compare(String o1, String o2) {
+                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_UPDATE_ORDER) {
+                    if (StringUtils.equals(moduleName, o1) && !StringUtils.equals(moduleName, o2)) {
+                        return -1;
+                    }
+                    if (!StringUtils.equals(moduleName, o1) && StringUtils.equals(moduleName, o2)) {
+                        return 1;
+                    }
+                }
+                return 0;
+
+            }
+        });
+
+        Collections.sort(libNames, new Comparator<String>() {
+
+            @Override
+            public int compare(String o1, String o2) {
+                if (highPriorityModuleNeeded == null) {
+                    return 0;
+                }
+                for (ModuleNeeded module : highPriorityModuleNeeded) {
+                    if (StringUtils.equals(module.getModuleName(), o1) && !StringUtils.equals(module.getModuleName(), o2)) {
+                        return -1;
+                    }
+                    if (!StringUtils.equals(module.getModuleName(), o1) && StringUtils.equals(module.getModuleName(), o2)) {
+                        return 1;
+                    }
+                }
+                return 0;
+
+            }
+        });
+    }
 }

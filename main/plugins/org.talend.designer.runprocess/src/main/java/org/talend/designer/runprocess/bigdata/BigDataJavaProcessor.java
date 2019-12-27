@@ -15,8 +15,6 @@ package org.talend.designer.runprocess.bigdata;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -236,60 +234,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
 
         List<String> libNames = new ArrayList<>();
         libNames.addAll(libNamesUnsorted);
-        Collections.sort(libNames, new Comparator<String>() {
-
-            @Override
-            public int compare(String o1, String o2) {
-
-                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_ADDED_BACK) {
-                    if (StringUtils.equals(moduleName, o1) && !StringUtils.equals(moduleName, o2)) {
-                        return -1;
-                    }
-                    if (!StringUtils.equals(moduleName, o1) && StringUtils.equals(moduleName, o2)) {
-                        return 1;
-                    }
-                }
-                return 0;
-
-            }
-        });
-
-        Collections.sort(libNames, new Comparator<String>() {
-
-            @Override
-            public int compare(String o1, String o2) {
-                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_UPDATE_ORDER) {
-                    if (StringUtils.equals(moduleName, o1) && !StringUtils.equals(moduleName, o2)) {
-                        return -1;
-                    }
-                    if (!StringUtils.equals(moduleName, o1) && StringUtils.equals(moduleName, o2)) {
-                        return 1;
-                    }
-                }
-                return 0;
-
-            }
-        });
-
-        Collections.sort(libNames, new Comparator<String>() {
-
-            @Override
-            public int compare(String o1, String o2) {
-                if (highPriorityModuleNeeded == null) {
-                    return 0;
-                }
-                for (ModuleNeeded module : highPriorityModuleNeeded) {
-                    if (StringUtils.equals(module.getModuleName(), o1) && !StringUtils.equals(module.getModuleName(), o2)) {
-                        return -1;
-                    }
-                    if (!StringUtils.equals(module.getModuleName(), o1) && StringUtils.equals(module.getModuleName(), o2)) {
-                        return 1;
-                    }
-                }
-                return 0;
-
-            }
-        });
+        UpdateLog4jJarUtils.sortClassPath4log4j(highPriorityModuleNeeded, libNames);
         Iterator<String> it = libNames.iterator();
         while (it.hasNext()) {
             String jarName = it.next();
