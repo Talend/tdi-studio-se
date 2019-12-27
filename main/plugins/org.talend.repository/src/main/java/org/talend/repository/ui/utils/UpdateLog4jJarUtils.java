@@ -76,12 +76,14 @@ public class UpdateLog4jJarUtils {
                     usedlog4j1JarBefore = true;
                 }
             }
-            String componentsType = process.getComponentsType();
-            if (!usedlog4j1JarBefore && (StringUtils.equals(ComponentCategory.CATEGORY_4_MAPREDUCE.getName(), componentsType)
-                    || StringUtils.equals(ComponentCategory.CATEGORY_4_STORM.getName(), componentsType)
-                    || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARK.getName(), componentsType)
-                    || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName(), componentsType))) {
-                usedlog4j1JarBefore = true;
+            if (process != null) {
+                String componentsType = process.getComponentsType();
+                if (!usedlog4j1JarBefore && (StringUtils.equals(ComponentCategory.CATEGORY_4_MAPREDUCE.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_STORM.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARK.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName(), componentsType))) {
+                    usedlog4j1JarBefore = true;
+                }
             }
 
             if (usedlog4jJclBefore) {
@@ -134,12 +136,14 @@ public class UpdateLog4jJarUtils {
                     usedlog4j1JarBefore = true;
                 }
             }
-            String componentsType = process.getComponentsType();
-            if (!usedlog4j1JarBefore && (StringUtils.equals(ComponentCategory.CATEGORY_4_MAPREDUCE.getName(), componentsType)
-                    || StringUtils.equals(ComponentCategory.CATEGORY_4_STORM.getName(), componentsType)
-                    || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARK.getName(), componentsType)
-                    || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName(), componentsType))) {
-                usedlog4j1JarBefore = true;
+            if (process != null) {
+                String componentsType = process.getComponentsType();
+                if (!usedlog4j1JarBefore && (StringUtils.equals(ComponentCategory.CATEGORY_4_MAPREDUCE.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_STORM.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARK.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName(), componentsType))) {
+                    usedlog4j1JarBefore = true;
+                }
             }
 
             if (usedlog4jJclBefore) {

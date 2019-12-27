@@ -1,8 +1,10 @@
 package org.talend.designer.core.utils;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +26,7 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractGuessSchemaProcess;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 public class CheckLogManagerTest {
 
@@ -73,6 +76,84 @@ public class CheckLogManagerTest {
         } finally {
             CommonsPlugin.setHeadless(headless);
         }
+    }
+
+    @Test
+    public void testAddLog4jToModuleListForBDJob() {
+        Process process = new Process(AbstractGuessSchemaProcess.getNewmockProperty());
+        process.setComponentsType(ComponentCategory.CATEGORY_4_SPARK.getName());
+        List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
+        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, true, process);
+        List<String> modules4log4j = new ArrayList<>();
+        for (ModuleNeeded moule : modulesNeeded) {
+            modules4log4j.add(moule.getModuleName());
+        }
+        assertTrue(modules4log4j.contains("log4j-1.2-api-2.12.1.jar"));
+
+        process.setComponentsType(ComponentCategory.CATEGORY_4_MAPREDUCE.getName());
+        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, true, process);
+        modules4log4j.clear();
+        for (ModuleNeeded moule : modulesNeeded) {
+            modules4log4j.add(moule.getModuleName());
+        }
+        assertTrue(modules4log4j.contains("log4j-1.2-api-2.12.1.jar"));
+
+        process.setComponentsType(ComponentCategory.CATEGORY_4_STORM.getName());
+        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, true, process);
+        modules4log4j.clear();
+        for (ModuleNeeded moule : modulesNeeded) {
+            modules4log4j.add(moule.getModuleName());
+        }
+        assertTrue(modules4log4j.contains("log4j-1.2-api-2.12.1.jar"));
+        
+        process.setComponentsType(ComponentCategory.CATEGORY_4_STORM.getName());
+        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, true, process);
+        modules4log4j.clear();
+        for (ModuleNeeded moule : modulesNeeded) {
+            modules4log4j.add(moule.getModuleName());
+        }
+        assertTrue(modules4log4j.contains("log4j-1.2-api-2.12.1.jar"));
+
+        process.setComponentsType(ComponentCategory.CATEGORY_4_DI.getName());
+        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, true, process);
+        modules4log4j.clear();
+        for (ModuleNeeded moule : modulesNeeded) {
+            modules4log4j.add(moule.getModuleName());
+        }
+        assertFalse(modules4log4j.contains("log4j-1.2-api-2.12.1.jar"));
+    }
+
+    @Test
+    public void testSortClassPath4Log4j() {
+        List<ModuleNeeded> neededModules = new ArrayList<>();
+
+        Set<ModuleNeeded> highPriorityModuleNeededs = new HashSet<>();
+        ModuleNeeded highPriorityModuleNeeded1 = new ModuleNeeded("", "high-priority-module1-2.12.1.jar", null, true);
+        highPriorityModuleNeededs.add(highPriorityModuleNeeded1);
+        neededModules.addAll(highPriorityModuleNeededs);
+
+        ModuleNeeded log4jCore = new ModuleNeeded("org.apache.logging.log4j", "log4j-core-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+        log4jCore.setMavenUri("mvn:org.apache.logging.log4j/log4j-core/2.12.1");//$NON-NLS-1$
+        neededModules.add(log4jCore);
+
+        ModuleNeeded log4jApi = new ModuleNeeded("org.apache.logging.log4j", "log4j-api-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+        log4jApi.setMavenUri("mvn:org.apache.logging.log4j/log4j-api/2.12.1");//$NON-NLS-1$
+        neededModules.add(log4jApi);
+        String[] modulesNeedUpdateOrder = UpdateLog4jJarUtils.MODULES_NEED_UPDATE_ORDER;
+        ModuleNeeded sparkAssembly = new ModuleNeeded("", modulesNeedUpdateOrder[0], null, true); //$NON-NLS-1$
+        neededModules.add(sparkAssembly);
+
+        ModuleNeeded orignalJar = new ModuleNeeded("", "orignal-common-1.1.0.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+        neededModules.add(orignalJar);
+
+        UpdateLog4jJarUtils.sortClassPath4Log4j(highPriorityModuleNeededs, neededModules);
+
+        int indexOfHighPriority = neededModules.indexOf(highPriorityModuleNeeded1);
+        int indexOfSparkAssembly = neededModules.indexOf(sparkAssembly);
+        int indexOfOrignalJar = neededModules.indexOf(orignalJar);
+        assertTrue(indexOfHighPriority == 0);
+        assertTrue(indexOfSparkAssembly == 1);
+        assertTrue(indexOfOrignalJar == neededModules.size() - 1);
     }
 
     private ElementParameter createElementParameter(INode node, String name, Object value) {
