@@ -2,6 +2,8 @@ package org.talend.repository.ui.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -10,8 +12,8 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.CommonExceptionHandler;
-import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
@@ -22,6 +24,8 @@ import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 
 public class UpdateLog4jJarUtils {
+
+    public static final String[] MODULES_NEED_UPDATE_ORDER = { "spark-assembly-1.6.0-hadoop2.6.0.jar" };
 
     public static void addLog4jToJarList(Collection<String> jarList, boolean isSelectLog4j2) {
         IProcess process = null;
@@ -35,13 +39,24 @@ public class UpdateLog4jJarUtils {
     }
 
     public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, boolean isSelectLog4j2, IProcess currentProcess) {
+        addLog4jToModuleList(jarList, null, isSelectLog4j2, currentProcess);
+    }
+
+    public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, Collection<ModuleNeeded> childJarList,
+            boolean isSelectLog4j2, IProcess currentProcess) {
         List<ModuleNeeded> modulesUsedBefore = removeLog4jFromModuleListAndGetModulesUsedBefore(currentProcess, jarList);
+        if (childJarList != null) {
+            for (ModuleNeeded module : childJarList) {
+                getSpecialModulesUsedBefore(modulesUsedBefore, module);
+            }
+        }
         addBackModules(jarList, isSelectLog4j2, modulesUsedBefore, currentProcess);
     }
 
     public static final String[] MODULES_NEED_ADDED_BACK = { "log4j-jcl-2.12.1.jar", "log4j-jul-2.12.1.jar",
             "log4j-slf4j-impl-2.12.1.jar", "log4j-api-2.12.1.jar", "log4j-core-2.12.1.jar", "jcl-over-slf4j-1.7.25.jar",
-            "log4j-to-slf4j-2.12.1.jar", "slf4j-log4j12-1.7.25.jar", "log4j-1.2.17.jar" };
+            "jul-to-slf4j-1.7.25.jar", "log4j-to-slf4j-2.12.1.jar", "slf4j-log4j12-1.7.25.jar", "log4j-1.2.17.jar",
+            "log4j-1.2-api-2.12.1.jar" };
 
     private static void addBackJars(Collection<String> moduleNeededList, boolean isSelectLog4j2, List<String> modulesUsedBefore,
             IProcess process) {
@@ -57,19 +72,20 @@ public class UpdateLog4jJarUtils {
                 if (module.matches("log4j-jul-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
                     usedlog4jJulBefore = true;
                 }
-            }
-            if (process instanceof IProcess) {
-                Set<ModuleNeeded> modulesNeededForProcess = CorePlugin.getDefault().getDesignerCoreService()
-                        .getNeededLibrariesForProcessBeforeUpdateLog(process, true);
-                if (modulesNeededForProcess != null) {
-                    for (ModuleNeeded m : modulesNeededForProcess) {
-                        if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
-                            usedlog4j1JarBefore = true;
-                            break;
-                        }
-                    }
+                if (module.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+                    usedlog4j1JarBefore = true;
                 }
             }
+            if (process != null) {
+                String componentsType = process.getComponentsType();
+                if (!usedlog4j1JarBefore && (StringUtils.equals(ComponentCategory.CATEGORY_4_MAPREDUCE.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_STORM.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARK.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName(), componentsType))) {
+                    usedlog4j1JarBefore = true;
+                }
+            }
+
             if (usedlog4jJclBefore) {
                 moduleNeededList.add("log4j-jcl-2.12.1.jar");//$NON-NLS-1$
             }
@@ -115,20 +131,21 @@ public class UpdateLog4jJarUtils {
                 if (module.getModuleName().matches("log4j-jul-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
                     usedlog4jJulBefore = true;
                 }
-            }
-            if (process instanceof IProcess) {
-                Set<ModuleNeeded> modulesNeededForProcess = CorePlugin.getDefault().getDesignerCoreService()
-                        .getNeededLibrariesForProcessBeforeUpdateLog(process, true);
-                if (modulesNeededForProcess != null) {
-                    for (ModuleNeeded m : modulesNeededForProcess) {
-                        if (m.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar") //$NON-NLS-1$
-                                || m.getModuleName().startsWith("talend-bigdata")) {
-                            usedlog4j1JarBefore = true;
-                            break;
-                        }
-                    }
+                if (module.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
+
+                    usedlog4j1JarBefore = true;
                 }
             }
+            if (process != null) {
+                String componentsType = process.getComponentsType();
+                if (!usedlog4j1JarBefore && (StringUtils.equals(ComponentCategory.CATEGORY_4_MAPREDUCE.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_STORM.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARK.getName(), componentsType)
+                        || StringUtils.equals(ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName(), componentsType))) {
+                    usedlog4j1JarBefore = true;
+                }
+            }
+
             if (usedlog4jJclBefore) {
                 ModuleNeeded log4jJcl = new ModuleNeeded("org.apache.logging.log4j", "log4j-jcl-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
                 log4jJcl.setMavenUri("mvn:org.apache.logging.log4j/log4j-jcl/2.12.1");//$NON-NLS-1$
@@ -153,7 +170,7 @@ public class UpdateLog4jJarUtils {
             ModuleNeeded log4jCore = new ModuleNeeded("org.apache.logging.log4j", "log4j-core-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
             log4jCore.setMavenUri("mvn:org.apache.logging.log4j/log4j-core/2.12.1");//$NON-NLS-1$
             moduleNeededList.add(log4jCore);
-           
+
         } else {
             boolean usedjclOverSlf4jBefore = false;
 
@@ -216,7 +233,7 @@ public class UpdateLog4jJarUtils {
 
     private static List<ModuleNeeded> getSpecialModulesUsedBefore(List<ModuleNeeded> modulesUsedBefore, ModuleNeeded module) {
         for (String moduleUsedBefore : SPECIALMODULESUSEDBEFORES) {
-            if (module.getModuleName().matches(moduleUsedBefore)) { // $NON-NLS-1$
+            if (module.getModuleName().matches(moduleUsedBefore)) {
                 modulesUsedBefore.add(module);
             }
         }
@@ -225,7 +242,7 @@ public class UpdateLog4jJarUtils {
 
     private static List<String> getSpecialJarsUsedBefore(List<String> jarsUsedBefore, String jar) {
         for (String moduleUsedBefore : SPECIALMODULESUSEDBEFORES) {
-            if (jar.matches(moduleUsedBefore)) { // $NON-NLS-1$
+            if (jar.matches(moduleUsedBefore)) {
                 jarsUsedBefore.add(jar);
             }
         }
@@ -299,133 +316,126 @@ public class UpdateLog4jJarUtils {
         return false;
     }
 
-    private static boolean addLog4jToJarListForESB(Collection<String> jarList, boolean isSelectLog4j2) {
-        List<String> moduleNeededList = new ArrayList<String>();
-        List<String> moduleDeleteList = new ArrayList<String>();
-        if (isSelectLog4j2) {
-            boolean foundLog4j2CoreJar = false;
-            boolean foundLog4j2ApiJar = false;
-//            boolean foundLog4j2AdapterJar = false;
-            for (String jar : jarList) {
-                if (jar.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    moduleDeleteList.add(jar);
+    public static void sortClassPath4Log4j(Set<ModuleNeeded> highPriorityModuleNeeded, List<ModuleNeeded> neededModules) {
+        Collections.sort(neededModules, new Comparator<ModuleNeeded>() {
+
+            @Override
+            public int compare(ModuleNeeded o1, ModuleNeeded o2) {
+                if (highPriorityModuleNeeded == null) {
+
+                    return 0;
                 }
-                if (jar.matches("log4j-core-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    foundLog4j2CoreJar = true;
+                for (String moduleName : MODULES_NEED_ADDED_BACK) {
+                    if (StringUtils.equals(moduleName, o1.getModuleName())
+                            && !StringUtils.equals(moduleName, o2.getModuleName())) {
+                        return -1;
+                    }
+                    if (!StringUtils.equals(moduleName, o1.getModuleName())
+                            && StringUtils.equals(moduleName, o2.getModuleName())) {
+                        return 1;
+                    }
                 }
-                if (jar.matches("log4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    foundLog4j2ApiJar = true;
-                }
-//                if (jar.matches("log4j-\\d+\\.\\d+\\-api-2.12.1.jar")) { //$NON-NLS-1$
-//                    foundLog4j2AdapterJar = true;
-//                }
-            }
-            if (!foundLog4j2CoreJar) {
-                moduleNeededList.add("log4j-core-2.12.1.jar");//$NON-NLS-1$
+                return 0;
 
             }
-            if (!foundLog4j2ApiJar) {
-                moduleNeededList.add("log4j-api-2.12.1.jar");//$NON-NLS-1$
-            }
-//            if (!foundLog4j2AdapterJar) {
-//                moduleNeededList.add("log4j-1.2-api-2.12.1.jar");//$NON-NLS-1$
-//            }
+        });
 
-        } else {
-            boolean foundLog4jJar = false;
-            for (String jar : jarList) {
-                if (jar.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    foundLog4jJar = true;
-                }
-                if (jar.matches("log4j-core-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    moduleDeleteList.add(jar);
-                }
-                if (jar.matches("log4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    moduleDeleteList.add(jar);
-                }
-//                if (jar.matches("log4j-\\d+\\.\\d+\\-api-2.12.1.jar")) { //$NON-NLS-1$
-//                    moduleDeleteList.add(jar);
-//                }
-            }
-            if (!foundLog4jJar) {
-                moduleNeededList.add("log4j-1.2.17.jar");//$NON-NLS-1$
-            }
+        Collections.sort(neededModules, new Comparator<ModuleNeeded>() {
 
-        }
-        jarList.removeAll(moduleDeleteList);
-        jarList.addAll(moduleNeededList);
+            @Override
+            public int compare(ModuleNeeded o1, ModuleNeeded o2) {
+                for (String moduleName : MODULES_NEED_UPDATE_ORDER) {
+                    if (StringUtils.equals(moduleName, o1.getModuleName())
+                            && !StringUtils.equals(moduleName, o2.getModuleName())) {
+                        return -1;
+                    }
+                    if (!StringUtils.equals(moduleName, o1.getModuleName())
+                            && StringUtils.equals(moduleName, o2.getModuleName())) {
+                        return 1;
+                    }
+                }
+                return 0;
 
-        return moduleNeededList.size() > 0;
+            }
+        });
+
+        Collections.sort(neededModules, new Comparator<ModuleNeeded>() {
+
+            @Override
+            public int compare(ModuleNeeded o1, ModuleNeeded o2) {
+                if (highPriorityModuleNeeded == null) {
+                    return 0;
+                }
+                for (ModuleNeeded module : highPriorityModuleNeeded) {
+                    if (StringUtils.equals(module.getModuleName(), o1.getModuleName())
+                            && !StringUtils.equals(module.getModuleName(), o2.getModuleName())) {
+                        return -1;
+                    }
+                    if (!StringUtils.equals(module.getModuleName(), o1.getModuleName())
+                            && StringUtils.equals(module.getModuleName(), o2.getModuleName())) {
+                        return 1;
+                    }
+                }
+                return 0;
+
+            }
+        });
     }
 
-    private static boolean addLog4jToModuleListForESB(Collection<ModuleNeeded> jarList, boolean isSelectLog4j2) {
+    public static void sortClassPath4log4j(Set<ModuleNeeded> highPriorityModuleNeeded, List<String> libNames) {
+        Collections.sort(libNames, new Comparator<String>() {
 
-        List<ModuleNeeded> moduleNeededList = new ArrayList<ModuleNeeded>();
-        List<ModuleNeeded> moduleDeleteList = new ArrayList<ModuleNeeded>();
-        if (isSelectLog4j2) {
-            boolean foundLog4j2CoreJar = false;
-            boolean foundLog4j2ApiJar = false;
-//            boolean foundLog4j2AdapterJar = false;
-            for (ModuleNeeded jar : jarList) {
-                if (jar.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    moduleDeleteList.add(jar);
-                }
-                if (jar.getModuleName().matches("log4j-core-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    foundLog4j2CoreJar = true;
-                }
-                if (jar.getModuleName().matches("log4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    foundLog4j2ApiJar = true;
-                }
-//                if (jar.getModuleName().matches("log4j-\\d+\\.\\d+\\-api-2.12.1.jar")) { //$NON-NLS-1$
-//                    foundLog4j2AdapterJar = true;
-//                }
-            }
+            @Override
+            public int compare(String o1, String o2) {
 
-            if (!foundLog4j2CoreJar) {
-                ModuleNeeded log4jCore = new ModuleNeeded("org.apache.logging.log4j", "log4j-core-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-                log4jCore.setMavenUri("mvn:org.apache.logging.log4j/log4j-core/2.12.1");//$NON-NLS-1$
-                moduleNeededList.add(log4jCore);
+                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_ADDED_BACK) {
+                    if (StringUtils.equals(moduleName, o1) && !StringUtils.equals(moduleName, o2)) {
+                        return -1;
+                    }
+                    if (!StringUtils.equals(moduleName, o1) && StringUtils.equals(moduleName, o2)) {
+                        return 1;
+                    }
+                }
+                return 0;
 
             }
-            if (!foundLog4j2ApiJar) {
-                ModuleNeeded log4jApi = new ModuleNeeded("org.apache.logging.log4j", "log4j-api-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-                log4jApi.setMavenUri("mvn:org.apache.logging.log4j/log4j-api/2.12.1");//$NON-NLS-1$
-                moduleNeededList.add(log4jApi);
-            }
-//            if (!foundLog4j2AdapterJar) {
-//                ModuleNeeded log4jCore = new ModuleNeeded("org.apache.logging.log4j", "log4j-1.2-api-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-//                log4jCore.setMavenUri("mvn:org.apache.logging.log4j/log4j-1.2-api/2.12.1");//$NON-NLS-1$
-//                moduleNeededList.add(log4jCore);
-//            }
+        });
 
-        } else {
-            boolean foundLog4jJar = false;
-            for (ModuleNeeded jar : jarList) {
-                if (jar.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    foundLog4jJar = true;
+        Collections.sort(libNames, new Comparator<String>() {
+
+            @Override
+            public int compare(String o1, String o2) {
+                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_UPDATE_ORDER) {
+                    if (StringUtils.equals(moduleName, o1) && !StringUtils.equals(moduleName, o2)) {
+                        return -1;
+                    }
+                    if (!StringUtils.equals(moduleName, o1) && StringUtils.equals(moduleName, o2)) {
+                        return 1;
+                    }
                 }
-                if (jar.getModuleName().matches("log4j-core-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    moduleDeleteList.add(jar);
-                }
-                if (jar.getModuleName().matches("log4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
-                    moduleDeleteList.add(jar);
-                }
-//                if (jar.getModuleName().matches("log4j-\\d+\\.\\d+\\-api-2.12.1.jar")) { //$NON-NLS-1$
-//                    moduleDeleteList.add(jar);
-//                }
+                return 0;
+
             }
-            if (!foundLog4jJar) {
-                ModuleNeeded log4j = new ModuleNeeded("log4j", "log4j-1.2.17.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-                log4j.setMavenUri("mvn:log4j/log4j/1.2.17");//$NON-NLS-1$
-                moduleNeededList.add(log4j);
+        });
+
+        Collections.sort(libNames, new Comparator<String>() {
+
+            @Override
+            public int compare(String o1, String o2) {
+                if (highPriorityModuleNeeded == null) {
+                    return 0;
+                }
+                for (ModuleNeeded module : highPriorityModuleNeeded) {
+                    if (StringUtils.equals(module.getModuleName(), o1) && !StringUtils.equals(module.getModuleName(), o2)) {
+                        return -1;
+                    }
+                    if (!StringUtils.equals(module.getModuleName(), o1) && StringUtils.equals(module.getModuleName(), o2)) {
+                        return 1;
+                    }
+                }
+                return 0;
+
             }
-
-        }
-
-        jarList.removeAll(moduleDeleteList);
-        jarList.addAll(moduleNeededList);
-
-        return moduleNeededList.size() > 0;
+        });
     }
-
 }

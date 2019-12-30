@@ -15,13 +15,11 @@ package org.talend.designer.runprocess.bigdata;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -227,23 +225,16 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         }
         Set<ModuleNeeded> modulesNeeded = LastGenerationInfo.getInstance().getModulesNeededWithSubjobPerJob(process.getId(),
                 process.getVersion());
+        Set<ModuleNeeded> highPriorityModuleNeeded = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded(process.getId(),
+                process.getVersion());
         Set<String> allNeededLibsAfterAdjuster = new HashSet<String>();
         for (ModuleNeeded module : modulesNeeded) {
             allNeededLibsAfterAdjuster.add(MavenUrlHelper.generateModuleNameByMavenURI(module.getMavenUri()));
         }
-        Set<String> libNames = new TreeSet<String>(new Comparator<String>() {
 
-            @Override
-            public int compare(String o1, String o2) {
-                for (String moduleName : UpdateLog4jJarUtils.MODULES_NEED_ADDED_BACK) {
-                    if (StringUtils.equals(moduleName, o2)) {
-                        return -1;
-                    }
-                }
-                return 1;
-            }
-        });
+        List<String> libNames = new ArrayList<>();
         libNames.addAll(libNamesUnsorted);
+        UpdateLog4jJarUtils.sortClassPath4log4j(highPriorityModuleNeeded, libNames);
         Iterator<String> it = libNames.iterator();
         while (it.hasNext()) {
             String jarName = it.next();
@@ -342,7 +333,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         Set<String> libsRequiredByJob = new HashSet<>();
         Set<ModuleNeeded> neededModules = JavaProcessorUtilities.getNeededModulesForProcess(process);
         if (!ProcessorUtilities.isExportConfig()) {
-            JavaProcessorUtilities.addLog4jToModuleList(neededModules, process);
+//            JavaProcessorUtilities.addLog4jToModuleList(neededModules, process);
         }
         JavaProcessorUtilities.checkJavaProjectLib(neededModules);
 

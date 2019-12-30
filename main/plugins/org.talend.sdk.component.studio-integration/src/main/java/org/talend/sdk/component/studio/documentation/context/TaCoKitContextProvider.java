@@ -59,6 +59,10 @@ public class TaCoKitContextProvider extends AbstractContextProvider {
             return TaCoKitUtil.getFullComponentName(index.getId().getFamily(), index.getId().getName()).equals(fullComponentName);
         }).collect(Collectors.toList());
 
+        if (detailsList == null || detailsList.size() == 0) {
+            return null;
+        }
+
         final ComponentIndex firstIndex = detailsList.get(0).getFirst();
         if (firstIndex == null) {
             return null;
