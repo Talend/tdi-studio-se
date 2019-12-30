@@ -1541,7 +1541,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 } else if (hasSapjco3 || hasSapidoc3) {
                     libPath.append(jarPath.toPortableString()).append(classPathSeparator);
                 } else {
-                    libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
+                    libPath.append(PomUtil.getArtifactFullPath(artifact)).append(classPathSeparator);
                 }
             }
         }
