@@ -454,8 +454,15 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 		        		IMetadataTable table = connection.getMetadataTable();
 						List<IMetadataColumn> listColumns = table.getListColumns();
                     	for (IMetadataColumn column : listColumns) {
-							%>this.<%= connection.getName() %>__<%= column.getLabel() %> = <%= connection.getName() %>.<%= column.getLabel() %>;
+                    		if ("Dynamic".equals(JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable()))) {
+							%>
+								this.<%= connection.getName() %>__<%= column.getLabel() %> = (routines.system.Dynamic) <%= connection.getName() %>.<%= column.getLabel() %>.clone();
 	                		<%
+	                		} else {
+	                		%>
+	                			this.<%= connection.getName() %>__<%= column.getLabel() %> = <%= connection.getName() %>.<%= column.getLabel() %>;
+	                		<%
+	                		}
                 		}
                 	}
                 	%>
@@ -660,7 +667,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
            				if (length == -1) {
            	    			this.<%= connection.getName() %>__<%= column.getLabel() %> = null;
            				} else {
-           					this.<%= connection.getName() %>__<%= column.getLabel() %> = dis.read<%= typeToGenerate %>();
+           					this.<%= connection.getName() %>__<%= column.getLabel() %> = (<%= typeToGenerate %>) dis.readObject();
            				}
 					<%
 				}
@@ -734,7 +741,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
            				if (length == -1) {
            	    			this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> = null;
            				} else {
-           					this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> = dis.read<%= typeToGenerate %>();
+           					this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> = (<%= typeToGenerate %>) dis.readObject();
            				}
 					<%
 				}
@@ -749,7 +756,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
     	}
 	    if(hasAtLeastOneRead) {
 	    %>
-        	} catch (IOException e) {
+        	} catch (Exception e) {
 	            throw new RuntimeException(e);
         <%
         }
@@ -832,7 +839,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 			                dos.writeByte(-1);
 						} else {
                				dos.writeByte(0);
-           			    	dos.write<%= typeToGenerate %>(this.<%= connection.getName() %>__<%= column.getLabel() %>);
+           			    	dos.writeObject(this.<%= connection.getName() %>__<%= column.getLabel() %>);
 		            	}
 					<%
 				
@@ -893,7 +900,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 			                dos.writeByte(-1);
 						} else {
                				dos.writeByte(0);
-           			    	dos.write<%= typeToGenerate %>(this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %>);
+           			    	dos.writeObject(this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %>);
 		            	}
 					<%
 				
