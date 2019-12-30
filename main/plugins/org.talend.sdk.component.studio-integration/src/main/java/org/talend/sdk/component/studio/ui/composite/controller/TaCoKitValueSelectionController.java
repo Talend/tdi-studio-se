@@ -45,25 +45,20 @@ public class TaCoKitValueSelectionController extends AbstractValueSelectionContr
         final ValueSelectionParameter valueSelectionParameter = (ValueSelectionParameter) parameter;
         return new SelectionAdapter() {
 
-            private boolean isExec = false;
             private final Job job;
             {
                 job = new Job(Messages.getString("suggestion.job.title")) {
 
                     @Override
                     protected IStatus run(IProgressMonitor monitor) {
-                        if (isExec) {
-                            return Status.OK_STATUS;
-                        }
                         monitor.subTask(Messages.getString("suggestion.job.subtask.retrieveValues"));
                         final Map<String, String> possibleValues = valueSelectionParameter.getSuggestionValues();
                         if (monitor.isCanceled()) {
                             return Status.CANCEL_STATUS;
                         }
                         monitor.subTask(Messages.getString("suggestion.job.subtask.openDialog"));
-                        Display.getDefault().asyncExec(new Runnable() {
+                        Display.getDefault().syncExec(new Runnable() {
                             public void run() {
-                                isExec = true;
                                 final ValueSelectionDialog dialog = new ValueSelectionDialog(composite.getShell(), possibleValues,
                                         false);
                                 if (dialog.open() == IDialogConstants.OK_ID) {
@@ -85,8 +80,10 @@ public class TaCoKitValueSelectionController extends AbstractValueSelectionContr
 
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                isExec = false;
-                job.schedule();
+                int state = job.getState();
+                if (Job.NONE == state) {
+                    job.schedule();
+                }
             }
         };
     }
