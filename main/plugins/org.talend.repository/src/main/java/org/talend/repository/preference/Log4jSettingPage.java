@@ -95,7 +95,6 @@ public class Log4jSettingPage extends ProjectSettingPage {
         group.setText(Messages.getString("Log4jSettingPage.Log4jEnabled")); //$NON-NLS-1$
 
         log4jBtn = new Button(composite, SWT.CHECK);
-        log4jBtn.setVisible(Log4jUtil.isEnable());
         log4jBtn.setText(Messages.getString("Log4jSettingPage.ActivateLog4j"));//$NON-NLS-1$
 
         Composite compositeVersion = new Composite(composite, SWT.NONE);
@@ -260,7 +259,7 @@ public class Log4jSettingPage extends ProjectSettingPage {
         if (templateTxt != null && !templateTxt.isDisposed()) {
             reset = true;
             if (log4jBtn != null && !log4jBtn.isDisposed()) {
-                log4jBtn.setSelection(true);
+                log4jBtn.setSelection(Log4jUtil.isEnable());
             }
             if (isNewProject) {
                 templateTxt.setText(Log4jPrefsSettingManager.getInstance()
