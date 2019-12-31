@@ -21,12 +21,15 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
+
 /**
  * The value of text field need to be is [0,1]
  * And the length of decimal is less than 6
  * 
  */
 public class NumberLimitTextController extends TextController {
+    
+    final static public String CONTEXPREFIX="context.";
 
     public NumberLimitTextController(IDynamicProperty dp) {
         super(dp);
@@ -40,59 +43,35 @@ public class NumberLimitTextController extends TextController {
         final Text labelText = (Text) hashCurControls.get(paramName);
         labelText.addVerifyListener(new VerifyListener() {
 
-
             @Override
             public void verifyText(VerifyEvent e) {
                 String inputValue = e.text;
-                String finalValue=labelText.getText()+e.text;
-                if(inputValue.length()>1) {
-                    finalValue=inputValue;
-                    //original value need to be show here no need to be check
-                }else {
-                    //support Backspace button 
-                    if(inputValue.isEmpty()) {
-                        return;
-                    }
-                    Pattern pattern = Pattern.compile("^\\.|\\d$"); //$NON-NLS-1$
-                    Pattern finalPattern = Pattern.compile("^1(\\.0{1,5})?|0(\\.\\d{1,5})?$"); //$NON-NLS-1$
-                    Pattern exceptionPattern = Pattern.compile("^1\\d+|0\\d+$"); //$NON-NLS-1$
-                    //when input character one by one then make sure they are valid
-                    if (inputValue.length()<=1&&!pattern.matcher(inputValue).matches()) {
-                        e.doit = false;
-                        return;
-                    }else if(".".equals(inputValue)&&labelText.getText().length()>1) {
-                        e.doit = false;
-                        return;
-                    }else {
-                        //when the text of original value is empty then we need to make sure the finalValue is valid
-                        if(StringUtils.isBlank(labelText.getText())&&!finalPattern.matcher(finalValue).matches()) {
-                            e.doit = false;
-                            return;
-                        }
-                        //when the text of original value is not empty we need to make sure both original value and final value are valid
-                        if(!StringUtils.isBlank(labelText.getText())&&!finalPattern.matcher(labelText.getText()).matches()&&!finalPattern.matcher(labelText.getText()+inputValue).matches()) {
-                            e.doit = false;
-                            return;
-                        }
-                        //make sure the final value is not special value
-                        if(exceptionPattern.matcher(labelText.getText()+inputValue).matches()) {
-                            e.doit = false;
-                            return;
-                        }
-                    }
+                StringBuffer buffer = new StringBuffer(labelText.getText());
+                buffer.delete(e.start, e.end).insert(e.start, e.text);
+                String finalValue=buffer.toString();
+                if(finalValue.startsWith(CONTEXPREFIX)||CONTEXPREFIX.startsWith(finalValue)) {
+                  //context mode no any limit
+                  return;
+                }else if(finalValue.length()>=9){
+                    //keep 6 digit after the Decimal point
+                    e.doit = false;
+                    return;
+                }else if("-".equals(inputValue)) {
+                    //'-' is invalid input 
+                    e.doit = false;
+                    return;
                 }
+
                 try {
-                    double num=Double.valueOf(finalValue);
-                    if(num>1) {
+                    double num=Double.valueOf(buffer.toString());
+                    if(num>1||num<0) {
                         e.doit = false;
                         return;
                     }
                 } catch (Exception e1) {
-                    if(inputValue.length()>1) {
-                        e.doit = false;
-                        return;
-                        
-                    }
+                    // any exception case need to be ignore
+                    e.doit = false;
+                    return;
                 }
             }
         });

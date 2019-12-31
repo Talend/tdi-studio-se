@@ -79,6 +79,7 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.celleditor.PatternCellEditor;
 import org.talend.designer.core.ui.celleditor.PatternPropertyCellEditor;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.properties.controllers.NumberLimitTextController;
 import org.talend.designer.core.ui.event.CheckColumnSelectionListener;
 
 /**
@@ -869,28 +870,67 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                             }
                             break;
                         case NUMBERLIMITTEXT:
+                            
                             if(value==null||StringUtils.isBlank(value.toString()) ) {
                                 finalValue ="0";
-                            }else {
-                                try {
-                                    String strValue=value.toString();
-                                    double num=Double.valueOf(strValue);
-                                    if(num>=1) {
-                                        finalValue ="1";
-                                    }else if(strValue.trim().indexOf(".") == -1){
-                                        finalValue ="1";
-                                    }else {
-                                        int decimalLen = strValue.trim().length() - strValue.trim().indexOf(".")-1;
-                                        if(decimalLen<7){
-                                            finalValue =value;
-                                        }else{
-                                            finalValue =strValue.trim().substring(0, 8);
-                                        }
-                                    }
-                                } catch (Exception e) {
-                                    finalValue ="0";
-                                }
+                                break;
                             }
+                            String finalStrValue=value.toString();
+                            if(finalStrValue.startsWith(NumberLimitTextController.CONTEXPREFIX)||NumberLimitTextController.CONTEXPREFIX.startsWith(finalStrValue)) {
+                              //context mode no any limit
+                              finalValue =value;
+                              break;
+                            }else if(finalStrValue.length()>=9){
+                                //keep 6 digit after the Decimal point
+                                finalStrValue =finalStrValue.trim().substring(0, 8);
+                            }else if(finalStrValue.contains("-")) {
+                                //'-' is invalid input 
+                                finalStrValue =finalStrValue.trim().replaceAll("-", "");
+                            }
+
+                            try {
+                                double num=Double.valueOf(finalStrValue);
+                                if(num>1||num<0) {
+                                    finalValue="1";
+                                    break;
+                                }else if(num<0) {
+                                    finalValue="0";
+                                    break;
+                                }
+                                finalValue=finalStrValue;
+                            } catch (Exception e1) {
+                                // any exception then reset result be 0
+                                finalValue="0";
+                            }
+                            
+                            
+                            
+//                            if(value==null||StringUtils.isBlank(value.toString()) ) {
+//                                finalValue ="0";
+//                            }else {
+//                                try {
+//                                    String strValue=value.toString();
+//                                    if(NumberLimitTextController.contexPrefix.startsWith(strValue)||strValue.startsWith(NumberLimitTextController.contexPrefix)) {
+//                                        finalValue =value;
+//                                    }else {
+//                                        double num=Double.valueOf(strValue);
+//                                        if(num>=1) {
+//                                            finalValue ="1";
+//                                        }else if(strValue.trim().indexOf(".") == -1){
+//                                            finalValue ="1";
+//                                        }else {
+//                                            int decimalLen = strValue.trim().length() - strValue.trim().indexOf(".")-1;
+//                                            if(decimalLen<7){
+//                                                finalValue =value;
+//                                            }else{
+//                                                finalValue =strValue.trim().substring(0, 8);
+//                                            }
+//                                        }
+//                                    }
+//                                } catch (Exception e) {
+//                                    finalValue ="0";
+//                                }
+//                            }
                         default:
                         }
                         ((Map<String, Object>) bean).put(items[curCol], finalValue);
