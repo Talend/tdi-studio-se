@@ -6,7 +6,7 @@
 	<!-- #################################################### -->
 
 	<!-- modification 1: config -->
-	<property name="jar.name" value="sugarCRMManagement-1.0.jar" />
+	<property name="jar.name" value="sugarCRMManagement.jar" />
 	<property name="component.name" value="tSugarCRMInput" />
 	<property name="author.name" value="wyang" />
 	
