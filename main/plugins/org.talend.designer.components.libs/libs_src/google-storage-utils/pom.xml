@@ -25,6 +25,7 @@
     <version>1.0.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
     </properties>
     <name>Google Storage Utils</name>
     <description>Talend Helper library for Google Storage</description>
@@ -46,7 +47,16 @@
             <version>0.9.0</version>
         </dependency>
     </dependencies>
-
+    <distributionManagement>
+        <snapshotRepository>
+            <id>talend_nexus_deployment</id>
+            <url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+        </snapshotRepository>
+        <repository>
+            <id>talend_nexus_deployment</id>
+            <url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+        </repository>
+    </distributionManagement>
     <build>
         <plugins>
             <plugin>
