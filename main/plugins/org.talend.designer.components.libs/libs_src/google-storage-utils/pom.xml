@@ -29,7 +29,7 @@
     <name>Google Storage Utils</name>
     <description>Talend Helper library for Google Storage</description>
     <url>
-        https://github.com/Talend/tdi-studio-se/tree/master/main/plugins/org.talend.designer.components.libs/libs_src/GoogleStorageUtils
+        https://github.com/Talend/tdi-studio-se/
     </url>
     <licenses>
         <license>
