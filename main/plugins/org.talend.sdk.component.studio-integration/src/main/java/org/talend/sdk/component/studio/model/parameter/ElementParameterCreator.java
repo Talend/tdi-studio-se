@@ -101,7 +101,7 @@ public class ElementParameterCreator {
         if (!properties.isEmpty()) {
             final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper())
                     .createPropertyTree(properties);
-            final SettingVisitor settingVisitor = new SettingVisitor(node, updateComponentsParameter, detail);
+            final SettingVisitor4Component settingVisitor = new SettingVisitor4Component(node, updateComponentsParameter, detail);
             root.accept(settingVisitor.withCategory(BASIC), Metadatas.MAIN_FORM);
             root.accept(settingVisitor.withCategory(ADVANCED), Metadatas.ADVANCED_FORM);
             parameters.addAll(settingVisitor.getSettings());
