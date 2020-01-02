@@ -23,8 +23,20 @@
     <version>1.0.1</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
     </properties>
-
+    <description>Talend Helper library for ServiceNow components</description>
+    <url>
+        https://github.com/Talend/tdi-studio-se/
+    </url>
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>
+                http://www.talendforge.org/modules/licenses/APACHE_v2.txt
+            </url>
+        </license>
+    </licenses>
     <dependencies>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -76,7 +88,16 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-
+    <distributionManagement>
+        <snapshotRepository>
+            <id>talend_nexus_deployment</id>
+            <url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+        </snapshotRepository>
+        <repository>
+            <id>talend_nexus_deployment</id>
+            <url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+        </repository>
+    </distributionManagement>
     <build>
         <plugins>
             <plugin>

@@ -1160,7 +1160,7 @@
 
   <CODEGENERATION>
     <IMPORTS>
-      <IMPORT NAME="SugarCRM-management" MODULE="sugarCRMManagement-1.0.jar" MVN="mvn:org.talend.libraries/sugarCRMManagement/1.0"  REQUIRED="true" />
+      <IMPORT NAME="SugarCRM-management" MODULE="sugarCRMManagement.jar" MVN="mvn:org.talend.libraries/sugarCRMManagement/1.0"  REQUIRED="true" />
       <IMPORT NAME="SOAP-axis" MODULE="axis.jar" MVN="mvn:org.talend.libraries/axis/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/axis.jar" REQUIRED="true" />
       <IMPORT NAME="SOAP-jaxrpc" MODULE="jaxrpc.jar" MVN="mvn:org.talend.libraries/jaxrpc/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jax/lib/jaxrpc.jar" REQUIRED="true" />
       <IMPORT NAME="SOAP-saaj" MODULE="saaj.jar" MVN="mvn:org.talend.libraries/saaj/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.saaj/lib/saaj.jar" REQUIRED="true" />
