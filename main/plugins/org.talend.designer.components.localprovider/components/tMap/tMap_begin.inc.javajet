@@ -470,10 +470,15 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
                     sizeNextColumns = nextColumnsKeys.size();
                     for (int iColumn = 0; iColumn < sizeNextColumns; iColumn++) { // T_TM_B_104
                     	IMetadataColumn column = nextColumnsKeys.get(iColumn);
-
-						%>this.exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %> = exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %>;
+						if ("Dynamic".equals(JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable()))) {
+						%>
+							this.exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %> = (routines.system.Dynamic) exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %>.clone();
 						<%
-                    
+						} else {
+						%>
+							this.exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %> = exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %>;
+						<%
+                    	}
                     } // T_TM_B_104
                     %>
                 }
