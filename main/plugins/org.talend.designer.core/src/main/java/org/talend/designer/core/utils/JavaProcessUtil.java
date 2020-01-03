@@ -88,8 +88,6 @@ public class JavaProcessUtil {
 
         // call recursive function to get all dependencies from job & subjobs
         getNeededModules(process, searchItems, modulesNeeded, options);
-        Set<ModuleNeeded> childrenModules = null;
-
         /*
          * Remove duplicates in the modulesNeeded list after having prioritize the modules. Details in the
          * ModuleNeededComparator class.
@@ -121,8 +119,7 @@ public class JavaProcessUtil {
             new BigDataJobUtil(process).removeExcludedModules(modulesNeeded);
         }
 
-        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, childrenModules,
-                Log4jPrefsSettingManager.getInstance().isSelectLog4j2(), process);
+        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, Log4jPrefsSettingManager.getInstance().isSelectLog4j2(), process);
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 

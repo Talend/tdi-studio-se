@@ -39,17 +39,7 @@ public class UpdateLog4jJarUtils {
     }
 
     public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, boolean isSelectLog4j2, IProcess currentProcess) {
-        addLog4jToModuleList(jarList, null, isSelectLog4j2, currentProcess);
-    }
-
-    public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, Collection<ModuleNeeded> childJarList,
-            boolean isSelectLog4j2, IProcess currentProcess) {
         List<ModuleNeeded> modulesUsedBefore = removeLog4jFromModuleListAndGetModulesUsedBefore(currentProcess, jarList);
-        if (childJarList != null) {
-            for (ModuleNeeded module : childJarList) {
-                getSpecialModulesUsedBefore(modulesUsedBefore, module);
-            }
-        }
         addBackModules(jarList, isSelectLog4j2, modulesUsedBefore, currentProcess);
     }
 
