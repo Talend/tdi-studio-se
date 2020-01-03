@@ -147,14 +147,17 @@ public class Log4jSettingPage extends ProjectSettingPage {
                 }
                 if (!log4jBtn.getSelection()) {
                     combo.setEnabled(false);
-                    combo.select(1);
-                    IRunProcessService service = null;
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-                        service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
-                    }
-                    if (service != null) {
-                        String logTemplate = service.getLogTemplate(Log4jPrefsConstants.LOG4J_VERSION2_FILEPATH);
-                        templateTxt.setText(logTemplate);
+                    if (combo.getSelectionIndex() != 1) {
+                        combo.select(1);
+                        IRunProcessService service = null;
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                            service = (IRunProcessService) GlobalServiceRegister.getDefault()
+                                    .getService(IRunProcessService.class);
+                        }
+                        if (service != null) {
+                            String logTemplate = service.getLogTemplate(Log4jPrefsConstants.LOG4J_VERSION2_FILEPATH);
+                            templateTxt.setText(logTemplate);
+                        }
                     }
                 } else {
                     combo.setEnabled(true);
