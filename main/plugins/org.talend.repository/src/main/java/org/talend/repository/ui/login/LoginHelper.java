@@ -546,8 +546,8 @@ public class LoginHelper {
                         public void run() {
                             String[] dialogButtonLabels = new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL };
                             int open = MessageDialog.open(MessageDialog.WARNING, Display.getDefault().getActiveShell(),
-                                    Messages.getString("LoginHelper.connectUserLibraryTitle"),
-                                    Messages.getString("LoginHelper.connectUserLibraryFailureWarning"), SWT.NONE,
+                                    Messages.getString("LoginHelper.connectUserLibraryTitle"), //$NON-NLS-1$
+                                    Messages.getString("LoginHelper.connectUserLibraryFailureWarning"), SWT.NONE, //$NON-NLS-1$
                                     dialogButtonLabels);
                             if (open == 0) {
                                 flag[0] = true;
