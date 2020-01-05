@@ -51,6 +51,7 @@ import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.InformException;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.OperationCancelException;
 import org.talend.commons.exception.PersistenceException;
@@ -499,6 +500,9 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                         }
 
                     });
+                } else if (e instanceof InformException) {
+                    Display.getDefault().syncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                            Messages.getString("LoginDialog.logonDenyTitle"), e.getLocalizedMessage()));
                 } else {
                     MessageBoxExceptionHandler.process(e, DisplayUtils.getDefaultShell(false));
                 }

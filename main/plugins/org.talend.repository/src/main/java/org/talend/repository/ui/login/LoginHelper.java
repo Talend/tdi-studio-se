@@ -40,6 +40,7 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.CommonExceptionHandler;
+import org.talend.commons.exception.InformException;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.OperationCancelException;
 import org.talend.commons.exception.PersistenceException;
@@ -546,8 +547,8 @@ public class LoginHelper {
                         public void run() {
                             String[] dialogButtonLabels = new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL };
                             int open = MessageDialog.open(MessageDialog.WARNING, Display.getDefault().getActiveShell(),
-                                    Messages.getString("LoginHelper.connectUserLibraryTitle"),
-                                    Messages.getString("LoginHelper.connectUserLibraryFailureWarning"), SWT.NONE,
+                                    Messages.getString("LoginHelper.connectUserLibraryTitle"), //$NON-NLS-1$
+                                    Messages.getString("LoginHelper.connectUserLibraryFailureWarning"), SWT.NONE, //$NON-NLS-1$
                                     dialogButtonLabels);
                             if (open == 0) {
                                 flag[0] = true;
@@ -601,6 +602,9 @@ public class LoginHelper {
                     }
 
                 });
+            } else if (e.getTargetException() instanceof InformException) {
+                Display.getDefault().syncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                        Messages.getString("LoginDialog.logonDenyTitle"), e.getTargetException().getLocalizedMessage()));
             } else {
                 MessageBoxExceptionHandler.process(e.getTargetException(), getUsableShell());
             }
