@@ -3255,7 +3255,8 @@ public class DataProcess implements IGeneratingProcess {
         if (!confJarBean.isPresent()) {
             return null;
         }
-        if (confJarBean.get().isUseDefaultCustomConfJar()) {
+        boolean useDefaultCustomConfJar = confJarBean.get().isUseDefaultCustomConfJar();
+        if (useDefaultCustomConfJar && !ComponentCategory.CATEGORY_4_DI.equals(componentCategory)) {
             // default config jar is added into classpath, no need to load manually
             return null;
         }
@@ -3271,8 +3272,10 @@ public class DataProcess implements IGeneratingProcess {
                 IElementParameter clusterIdParam = confNode.getElementParameter("CLUSTER_ID"); //$NON-NLS-1$
                 clusterIdParam.setValue(hadoopClusterItemId);
             }
-            IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB"); //$NON-NLS-1$
-            confLibParam.setValue(TalendTextUtils.addQuotes(confJarBean.get().getCustomConfJarName()));
+            if (!useDefaultCustomConfJar) {
+                IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB"); //$NON-NLS-1$
+                confLibParam.setValue(TalendTextUtils.addQuotes(confJarBean.get().getCustomConfJarName()));
+            }
             IElementParameter setConfParam = confNode.getElementParameter("SET_HADOOP_CONF"); //$NON-NLS-1$
             if (setConfParam != null) {
                 setConfParam.setValue(Boolean.valueOf(confJarBean.get().isOverrideCustomConf()));
