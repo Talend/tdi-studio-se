@@ -4,7 +4,7 @@
     SERIAL=""
     VERSION="0.102"
     STATUS="ALPHA"
-    
+
     COMPATIBILITY="ALL"
     AUTHOR="Talend"
     RELEASE_DATE="20070314A"
@@ -50,7 +50,7 @@
         <ITEM NAME="TRUNCATE" VALUE="TRUNCATE"/>
       </ITEMS>
     </PARAMETER>
-    
+
     <!-- work for teradata only -->
     <PARAMETER
       NAME="CREATE_TABLE_TYPE"
@@ -63,7 +63,7 @@
           <ITEM NAME="MULTISET" VALUE="MULTISET" />
       </ITEMS>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="DATA_ACTION"
       FIELD="CLOSED_LIST"
@@ -87,7 +87,7 @@
 	>
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
+
 	<PARAMETER
       NAME="ELT_TABLE_NAME"
       FIELD="TEXT"
@@ -95,7 +95,7 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    	
+
 	<PARAMETER
       NAME="ELT_SCHEMA_NAME"
       FIELD="TEXT"
@@ -103,7 +103,7 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="IS_TABLE_NAME_VARIABLE"
       FIELD="CHECK"
@@ -129,7 +129,7 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="MAPPING"
       FIELD="MAPPING_TYPE"
@@ -137,9 +137,9 @@
     >
       <DEFAULT>mysql_id</DEFAULT>
     </PARAMETER>
-    
+
   </PARAMETERS>
-  
+
   <ADVANCED_PARAMETERS>
     <PARAMETER
         NAME="USE_UPDATE_STATEMENT"
@@ -149,11 +149,22 @@
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
+    <PARAMETER
+          NAME="SET_COLUMN"
+          FIELD="TABLE"
+          REQUIRED="true"
+          NUM_ROW="12"
+          NB_LINES="5"
+          SHOW_IF="DATA_ACTION == 'UPDATE'" >
+          <ITEMS BASED_ON_SCHEMA="true">
+            <ITEM NAME="UPDATE_COLUMN" FIELD="CHECK" VALUE="true"/>
+          </ITEMS>
+    </PARAMETER>
   </ADVANCED_PARAMETERS>
 
   <CODEGENERATION>
   </CODEGENERATION>
-   
+
   <RETURNS>
     <RETURN NAME="NB_LINE"          TYPE="id_Integer" AVAILABILITY="AFTER"/>
     <RETURN NAME="NB_LINE_INSERTED" TYPE="id_Integer" AVAILABILITY="AFTER" SHOW_IF="DATA_ACTION=='INSERT'"/>

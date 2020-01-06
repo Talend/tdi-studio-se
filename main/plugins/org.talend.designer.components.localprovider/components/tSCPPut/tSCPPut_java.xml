@@ -138,7 +138,7 @@
 
   <CODEGENERATION>
     <IMPORTS>
-    	<IMPORT  NAME="Java_SCP"  MODULE="ganymed-ssh2-261.jar" MVN="mvn:org.talend.libraries/ganymed-ssh2-261/6.0.0"  REQUIRED="true"/>
+    	<IMPORT  NAME="Java_SCP"  MODULE="ganymed-ssh2-261.jar" MVN="mvn:ch.ethz.ganymed/ganymed-ssh2/261"  REQUIRED="true"/>
     </IMPORTS>
   </CODEGENERATION>
   <RETURNS>

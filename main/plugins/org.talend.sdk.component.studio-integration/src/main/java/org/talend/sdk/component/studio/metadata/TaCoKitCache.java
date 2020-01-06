@@ -15,7 +15,6 @@ package org.talend.sdk.component.studio.metadata;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
@@ -180,17 +179,4 @@ public class TaCoKitCache {
             configTypeNodeMapCache.clear();
         }
     }
-
-    public void clearCache() {
-        configTypeNodesCache = null;
-        if (configTypeNodeMapCache != null) {
-            configTypeNodeMapCache.clear();
-        }
-        try {
-            getMigrationManager().runMigrationJob();
-        } catch (final Exception e) {
-            ExceptionHandler.process(e);
-        }
-    }
-
 }

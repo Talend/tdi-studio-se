@@ -300,17 +300,23 @@ public class ProcessChangeListener implements PropertyChangeListener {
             if (getAllProcessTypes().contains(processType)) {
                 IFolder processTypeFolder = getAggregatorPomsHelper().getProcessFolder(processType);
                 IFolder sourceFolder = processTypeFolder.getFolder(sourcePath);
-                try {
-                    removeFromParentSourceFolder(sourceFolder);
-                    IFolder targetFolder = processTypeFolder.getFolder(targetPath);
-                    if (!targetFolder.exists()) {
-                        targetFolder.create(true, true, null);
+                if (!sourceFolder.exists()) {
+                    return;
+                }
+                synchronized (sourceFolder) {
+                    try {
+                        sourceFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+                        removeFromParentSourceFolder(sourceFolder);
+                        IFolder targetFolder = processTypeFolder.getFolder(targetPath);
+                        if (!targetFolder.exists()) {
+                            targetFolder.create(true, true, null);
+                        }
+                        MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
+                        change.perform(new NullProgressMonitor());
+                        updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
+                    } catch (OperationCanceledException | CoreException e) {
+                        ExceptionHandler.process(e);
                     }
-                    MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
-                    change.perform(new NullProgressMonitor());
-                    updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
-                } catch (OperationCanceledException | CoreException e) {
-                    ExceptionHandler.process(e);
                 }
             }
         }

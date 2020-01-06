@@ -14,6 +14,8 @@ package org.talend.designer.core.ui.views.jobsettings;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +34,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -687,7 +690,22 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
         if (force) {
             cleanDisplay();
         }
-        final IEditorPart activeEditor = getSite().getPage().getActiveEditor();
+        IEditorPart activeEditor = null;
+        IWorkbenchPage page = getSite().getPage();
+        if (page.getActivePart() instanceof IEditorPart) {
+            // in this case, page.getActiveEditor() sometime is not accurate, could be a bug of eclipse.
+            // can get the right one by page.findActiveEditor().
+            try {
+                Method method = page.getClass().getDeclaredMethod("findActiveEditor"); //$NON-NLS-1$
+                method.setAccessible(true);
+                activeEditor = (IEditorPart) method.invoke(page);
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException e) {
+                ExceptionHandler.process(e);
+            }
+        } else {
+            activeEditor = page.getActiveEditor();
+        }
 
         if (obj == null) {
             if (activeEditor != null && activeEditor instanceof AbstractMultiPageTalendEditor) {

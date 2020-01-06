@@ -545,7 +545,7 @@ public class JobSettingsManager {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(43);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_URL.getDisplayName()); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_URL.getDisplayName()); 
         String dbCon = dbTypeName + " == 'JDBC'";
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
@@ -591,7 +591,7 @@ public class JobSettingsManager {
         param.setValue(new ArrayList<Map<String, Object>>());
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(44);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()); 
         dbCon = dbTypeName + " == 'JDBC'";
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
@@ -606,7 +606,7 @@ public class JobSettingsManager {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(45);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()); 
         dbCon = dbTypeName + " == 'JDBC'";
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
@@ -637,7 +637,9 @@ public class JobSettingsManager {
         param.setNumRow(46);
         param.setRepositoryValue("PORT"); //$NON-NLS-1$
         dbCon = dbTypeName
-                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'" + " and " + dbTypeName + "!='ODBC'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$
+                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$
+                + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'" + " and " + dbTypeName + "!='ODBC'" + " and " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+                + dbTypeName + "!='TERADATA'"; //$NON-NLS-1$
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);

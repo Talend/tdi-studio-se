@@ -288,7 +288,7 @@ public class SettingVisitor implements PropertyVisitor {
      *
      * @param node current PropertyNode
      */
-    private void buildHealthCheck(final PropertyNode node) {
+    protected void buildHealthCheck(final PropertyNode node) {
         if (hasHealthCheck(node)) {
             final ActionReference action = actions
                     .stream()

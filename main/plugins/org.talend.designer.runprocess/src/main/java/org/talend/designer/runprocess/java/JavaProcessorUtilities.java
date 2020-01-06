@@ -80,8 +80,6 @@ import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.RepositoryConstants;
-import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
-import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 /**
  * DOC nrousseau class global comment. Detailled comment
@@ -371,7 +369,6 @@ public class JavaProcessorUtilities {
             listModulesReallyNeeded.add(jar);
         }
 
-        addLog4jToModuleList(listModulesReallyNeeded, process);
         listModulesReallyNeeded.removeAll(alreadyRetrievedModules);
         alreadyRetrievedModules.addAll(listModulesReallyNeeded);
 
@@ -427,9 +424,6 @@ public class JavaProcessorUtilities {
         }
     }
 
-    public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, IProcess process) {
-        UpdateLog4jJarUtils.addLog4jToModuleList(jarList, Log4jPrefsSettingManager.getInstance().isSelectLog4j2(), process);
-    }
 
     /**
      *

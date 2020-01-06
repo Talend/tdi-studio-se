@@ -81,15 +81,7 @@ public class InputTable extends AbstractInOutTable {
      */
     @Override
     public void initFromExternalData(ExternalDbMapTable externalMapperTable) {
-
-        boolean isAliasTable = externalMapperTable != null && externalMapperTable.getAlias() != null;
-        if (isAliasTable) {
-            // dbmap table is alias
-            setMetadataTable(connection.getTable().clone());
-        } else if (connection != null) {
-            // dbmap table references a physical table
-            setMetadataTable(connection.getTable());
-        }
+        setMetadataTable(connection.getTable());
         super.initFromExternalData(externalMapperTable);
 
         List<IMetadataColumn> columns = getMetadataTable().getListColumns();
