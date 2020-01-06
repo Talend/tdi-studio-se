@@ -1,152 +1,152 @@
 <COMPONENT>
 
-  	<HEADER
-	    PLATEFORM="ALL"
-	    SERIAL=""
-	    VERSION="0.102"
-	    STATUS="ALPHA"
-	
-	    COMPATIBILITY="ALL"
-	    AUTHOR="Talend"
-	    RELEASE_DATE="20130903A"
-	    STARTABLE="true"
-	    LOG4J_ENABLED="true"
-  	>
-    	<SIGNATURE/>
-  	</HEADER>
+    <HEADER
+            PLATEFORM="ALL"
+            SERIAL=""
+            VERSION="0.102"
+            STATUS="ALPHA"
 
-  	<FAMILIES>
-    	<FAMILY>Big Data/Google Storage</FAMILY>
-    	<FAMILY>Cloud/Google Storage</FAMILY>
-  	</FAMILIES>
+            COMPATIBILITY="ALL"
+            AUTHOR="Talend"
+            RELEASE_DATE="20130903A"
+            STARTABLE="true"
+            LOG4J_ENABLED="true"
+    >
+        <SIGNATURE/>
+    </HEADER>
 
-  	<DOCUMENTATION>
-    	<URL/>
-  	</DOCUMENTATION>
+    <FAMILIES>
+        <FAMILY>Big Data/Google Storage</FAMILY>
+        <FAMILY>Cloud/Google Storage</FAMILY>
+    </FAMILIES>
 
-  	<CONNECTORS>
-	    <CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="0"/>
-	    <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="1"/>
-	    <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
-	    <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
-	    <CONNECTOR CTYPE="COMPONENT_OK"/>
-	    <CONNECTOR CTYPE="COMPONENT_ERROR"/>
-	    <CONNECTOR CTYPE="RUN_IF"/>
-  	</CONNECTORS>
+    <DOCUMENTATION>
+        <URL/>
+    </DOCUMENTATION>
+
+    <CONNECTORS>
+        <CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="0"/>
+        <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="1"/>
+        <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+        <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+        <CONNECTOR CTYPE="COMPONENT_OK"/>
+        <CONNECTOR CTYPE="COMPONENT_ERROR"/>
+        <CONNECTOR CTYPE="RUN_IF"/>
+    </CONNECTORS>
 
     <PARAMETERS>
-    
-    	<PARAMETER 
-		    NAME="USE_EXISTING_CONNECTION" 
-		    FIELD="CHECK"
-	        NUM_ROW="5"  
-	        GROUP="CONNECTION_CONFIG"
-	   	>
-        	<DEFAULT>false</DEFAULT>
-    	</PARAMETER>
-    
-    	<PARAMETER 
-	    	NAME="CONNECTION" 
-	    	FIELD="COMPONENT_LIST" 
-	    	REQUIRED="true" FILTER="tGSConnection"
-	        NUM_ROW="5" 
-	        SHOW_IF="USE_EXISTING_CONNECTION == 'true'" 
-	        GROUP="CONNECTION_CONFIG"
+
+        <PARAMETER
+                NAME="USE_EXISTING_CONNECTION"
+                FIELD="CHECK"
+                NUM_ROW="5"
+                GROUP="CONNECTION_CONFIG"
+        >
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+                NAME="CONNECTION"
+                FIELD="COMPONENT_LIST"
+                REQUIRED="true" FILTER="tGSConnection"
+                NUM_ROW="5"
+                SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+                GROUP="CONNECTION_CONFIG"
         />
 
-		<PARAMETER
-	      	NAME="ACCESS_KEY"
-	      	FIELD="TEXT"
-	      	NUM_ROW="20"
-	      	REQUIRED="true"
-	      	GROUP="CONNECTION_CONFIG"
-	      	SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
-	    >
-	      	<DEFAULT>""</DEFAULT>
-	    </PARAMETER>
-	
-	    <PARAMETER
-	      NAME="SECRET_KEY"
-	      FIELD="PASSWORD"
-	      NUM_ROW="20"
-	      REQUIRED="true"
-	      GROUP="CONNECTION_CONFIG"
-	      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
-	    >
-	        <DEFAULT>""</DEFAULT>
-	    </PARAMETER>
-	    
-	    <PARAMETER
-	      NAME="BUCKET"
-	      FIELD="TEXT"
-	      NUM_ROW="25"
-	      REQUIRED="true"
-	    >
-	    	<DEFAULT>""</DEFAULT>
-		</PARAMETER>
-	    
-	  	<PARAMETER 
-			NAME="LOCALDIR" 
-		    FIELD="DIRECTORY" 
-		    REQUIRED="true" 
-		    NUM_ROW="30"
-		>
-			<DEFAULT>""</DEFAULT>
-		</PARAMETER>
-		
-		<PARAMETER 
-		    NAME="REMOTEDIR" 
-		    FIELD="TEXT" 
-		    REQUIRED="true" 
-		    NUM_ROW="35"
-		>
-			<DEFAULT>""</DEFAULT>
-		</PARAMETER>
-		
-		<PARAMETER 
-		    NAME="USE_FILES_LIST" 
-		    FIELD="CHECK"
-	        NUM_ROW="40"  
-	   	>
-        	<DEFAULT>false</DEFAULT>
-    	</PARAMETER>
-	    
-	    <PARAMETER 
-		    NAME="FILES" 
-		    FIELD="TABLE" 
-		    REQUIRED_IF="false" 
-		    NUM_ROW="45" 
-		    NB_LINES="5"
-		    SHOW_IF="USE_FILES_LIST == 'true'"
-	    >
-	      	<ITEMS>
-	        	<ITEM NAME="FILEMASK" VALUE="&quot;&quot;"/>
-	        	<ITEM NAME="NEWNAME" VALUE="&quot;&quot;"/>
-	      	</ITEMS>
-	    </PARAMETER>
-	    
-	    <PARAMETER
-	        NAME="DIE_ON_ERROR"
-	        FIELD="CHECK"
-	        NUM_ROW="90"
-	    >
-	        <DEFAULT>false</DEFAULT>
-		</PARAMETER>
-    
-	</PARAMETERS>
+        <PARAMETER
+                NAME="ACCESS_KEY"
+                FIELD="TEXT"
+                NUM_ROW="20"
+                REQUIRED="true"
+                GROUP="CONNECTION_CONFIG"
+                SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+                NAME="SECRET_KEY"
+                FIELD="PASSWORD"
+                NUM_ROW="20"
+                REQUIRED="true"
+                GROUP="CONNECTION_CONFIG"
+                SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+                NAME="BUCKET"
+                FIELD="TEXT"
+                NUM_ROW="25"
+                REQUIRED="true"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+                NAME="LOCALDIR"
+                FIELD="DIRECTORY"
+                REQUIRED="true"
+                NUM_ROW="30"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+                NAME="REMOTEDIR"
+                FIELD="TEXT"
+                REQUIRED="true"
+                NUM_ROW="35"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+                NAME="USE_FILES_LIST"
+                FIELD="CHECK"
+                NUM_ROW="40"
+        >
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+                NAME="FILES"
+                FIELD="TABLE"
+                REQUIRED_IF="false"
+                NUM_ROW="45"
+                NB_LINES="5"
+                SHOW_IF="USE_FILES_LIST == 'true'"
+        >
+            <ITEMS>
+                <ITEM NAME="FILEMASK" VALUE="&quot;&quot;"/>
+                <ITEM NAME="NEWNAME" VALUE="&quot;&quot;"/>
+            </ITEMS>
+        </PARAMETER>
+
+        <PARAMETER
+                NAME="DIE_ON_ERROR"
+                FIELD="CHECK"
+                NUM_ROW="90"
+        >
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+    </PARAMETERS>
 
     <ADVANCED_PARAMETERS/>
 
-   <CODEGENERATION>
-    <IMPORTS>
-      	<IMPORT NAME="GoogleStorageUtils" MODULE="GoogleStorageUtils.jar" MVN="mvn:org.talend.libraries/GoogleStorageUtils/6.0.0"  REQUIRED="true" />
-      	<IMPORT NAME="jets3t-0.9.1" MODULE="jets3t-0.9.1.jar" MVN="mvn:org.talend.libraries/jets3t-0.9.1/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
-			<IMPORT NAME="commons-logging-1.1.3" MODULE="commons-logging-1.1.3.jar" MVN="mvn:commons-logging/commons-logging/1.1.3"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
-			<IMPORT NAME="httpclient-4.3.6" MODULE="httpclient-4.3.6.jar" MVN="mvn:org.talend.libraries/httpclient-4.3.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-4.3.6.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
-			<IMPORT NAME="httpcore-4.3.3" MODULE="httpcore-4.3.3.jar" MVN="mvn:org.talend.libraries/httpcore-4.3.3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.3.3.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
-			<IMPORT NAME="commons-codec-1.6" MODULE="commons-codec-1.6.jar" MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
-    </IMPORTS>
-   </CODEGENERATION>
+    <CODEGENERATION>
+        <IMPORTS>
+            <IMPORT NAME="google-storage-utils-1.0.0" MODULE="google-storage-utils-1.0.0.jar" MVN="mvn:org.talend.components/google-storage-utils/1.0.0" REQUIRED="true" />
+            <IMPORT NAME="jets3t-0.9.1" MODULE="jets3t-0.9.1.jar" MVN="mvn:org.talend.libraries/jets3t-0.9.1/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="commons-logging-1.1.3" MODULE="commons-logging-1.1.3.jar" MVN="mvn:commons-logging/commons-logging/1.1.3"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="httpclient-4.3.6" MODULE="httpclient-4.3.6.jar" MVN="mvn:org.talend.libraries/httpclient-4.3.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-4.3.6.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="httpcore-4.3.3" MODULE="httpcore-4.3.3.jar" MVN="mvn:org.talend.libraries/httpcore-4.3.3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.3.3.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+            <IMPORT NAME="commons-codec-1.6" MODULE="commons-codec-1.6.jar" MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+        </IMPORTS>
+    </CODEGENERATION>
 
     <RETURNS>
         <RETURN NAME="NB_LINE" TYPE="id_Integer" AVAILABILITY="AFTER" />

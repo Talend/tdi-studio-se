@@ -39,17 +39,7 @@ public class UpdateLog4jJarUtils {
     }
 
     public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, boolean isSelectLog4j2, IProcess currentProcess) {
-        addLog4jToModuleList(jarList, null, isSelectLog4j2, currentProcess);
-    }
-
-    public static void addLog4jToModuleList(Collection<ModuleNeeded> jarList, Collection<ModuleNeeded> childJarList,
-            boolean isSelectLog4j2, IProcess currentProcess) {
         List<ModuleNeeded> modulesUsedBefore = removeLog4jFromModuleListAndGetModulesUsedBefore(currentProcess, jarList);
-        if (childJarList != null) {
-            for (ModuleNeeded module : childJarList) {
-                getSpecialModulesUsedBefore(modulesUsedBefore, module);
-            }
-        }
         addBackModules(jarList, isSelectLog4j2, modulesUsedBefore, currentProcess);
     }
 
@@ -60,6 +50,7 @@ public class UpdateLog4jJarUtils {
 
     private static void addBackJars(Collection<String> moduleNeededList, boolean isSelectLog4j2, List<String> modulesUsedBefore,
             IProcess process) {
+        boolean usedSlf4jApiJarBefore = false;
         if (isSelectLog4j2) {
             boolean usedlog4jJclBefore = false;
             boolean usedlog4jJulBefore = false;
@@ -74,6 +65,9 @@ public class UpdateLog4jJarUtils {
                 }
                 if (module.matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
                     usedlog4j1JarBefore = true;
+                }
+                if (module.matches("slf4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
+                    usedSlf4jApiJarBefore = true;
                 }
             }
             if (process != null) {
@@ -105,7 +99,9 @@ public class UpdateLog4jJarUtils {
                         || module.matches("commons-logging-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
                     usedjclOverSlf4jBefore = true;
                 }
-
+                if (module.matches("slf4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) {//$NON-NLS-1$
+                    usedSlf4jApiJarBefore = true;
+                }
             }
             if (usedjclOverSlf4jBefore) {
                 moduleNeededList.add("jcl-over-slf4j-1.7.25.jar");//$NON-NLS-1$
@@ -115,10 +111,14 @@ public class UpdateLog4jJarUtils {
             moduleNeededList.add("slf4j-log4j12-1.7.25.jar");//$NON-NLS-1$
             moduleNeededList.add("log4j-1.2.17.jar");//$NON-NLS-1$
         }
+        if (usedSlf4jApiJarBefore) {
+            moduleNeededList.add("slf4j-api-1.7.25.jar");
+        }
     }
 
     private static void addBackModules(Collection<ModuleNeeded> moduleNeededList, boolean isSelectLog4j2,
             List<ModuleNeeded> modulesUsedBefore, IProcess process) {
+        boolean usedSlf4jApiJarBefore = false;
         if (isSelectLog4j2) {
             boolean usedlog4jJclBefore = false;
             boolean usedlog4jJulBefore = false;
@@ -134,6 +134,9 @@ public class UpdateLog4jJarUtils {
                 if (module.getModuleName().matches("log4j-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
 
                     usedlog4j1JarBefore = true;
+                }
+                if (module.getModuleName().matches("slf4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) {
+                    usedSlf4jApiJarBefore = true;
                 }
             }
             if (process != null) {
@@ -179,7 +182,9 @@ public class UpdateLog4jJarUtils {
                         || module.getModuleName().matches("commons-logging-\\d+\\.\\d+\\.\\d+\\.jar")) { //$NON-NLS-1$
                     usedjclOverSlf4jBefore = true;
                 }
-
+                if (module.getModuleName().matches("slf4j-api-\\d+\\.\\d+\\.\\d+\\.jar")) {
+                    usedSlf4jApiJarBefore = true;
+                }
             }
             if (usedjclOverSlf4jBefore) {
                 ModuleNeeded jclOverSlf4j = new ModuleNeeded("org.slf4j", "jcl-over-slf4j-1.7.25.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
@@ -197,7 +202,15 @@ public class UpdateLog4jJarUtils {
             log4j.setMavenUri("mvn:log4j/log4j/1.2.17");//$NON-NLS-1$
             moduleNeededList.add(log4j);
         }
+        if (usedSlf4jApiJarBefore) {
+            ModuleNeeded slf4jApi = new ModuleNeeded("org.slf4j", "slf4j-api-1.7.25.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+            slf4jApi.setMavenUri("mvn:org.slf4j/slf4j-api/1.7.25");//$NON-NLS-1$
+            moduleNeededList.add(slf4jApi);
+        }
+
     }
+
+
 
     private static List<ModuleNeeded> removeLog4jFromModuleListAndGetModulesUsedBefore(IProcess process,
             Collection<ModuleNeeded> jarList) {
@@ -231,8 +244,16 @@ public class UpdateLog4jJarUtils {
             "jul-to-slf4j-\\d+\\.\\d+\\.\\d+\\.jar", "commons-logging-\\d+\\.\\d+\\.\\d+\\.jar", //$NON-NLS-1$
             "log4j-\\d+\\.\\d+\\.\\d+\\.jar" };//$NON-NLS-1$
 
+    public static final String[] NEED_REMOVE_THE_SAME_VERSION_MODULES = { "slf4j-api-\\d+\\.\\d+\\.\\d+\\.jar" };//$NON-NLS-1$
+
     private static List<ModuleNeeded> getSpecialModulesUsedBefore(List<ModuleNeeded> modulesUsedBefore, ModuleNeeded module) {
         for (String moduleUsedBefore : SPECIALMODULESUSEDBEFORES) {
+            if (module.getModuleName().matches(moduleUsedBefore)) {
+                modulesUsedBefore.add(module);
+            }
+        }
+
+        for (String moduleUsedBefore : NEED_REMOVE_THE_SAME_VERSION_MODULES) {
             if (module.getModuleName().matches(moduleUsedBefore)) {
                 modulesUsedBefore.add(module);
             }
@@ -242,6 +263,11 @@ public class UpdateLog4jJarUtils {
 
     private static List<String> getSpecialJarsUsedBefore(List<String> jarsUsedBefore, String jar) {
         for (String moduleUsedBefore : SPECIALMODULESUSEDBEFORES) {
+            if (jar.matches(moduleUsedBefore)) {
+                jarsUsedBefore.add(jar);
+            }
+        }
+        for (String moduleUsedBefore : NEED_REMOVE_THE_SAME_VERSION_MODULES) {
             if (jar.matches(moduleUsedBefore)) {
                 jarsUsedBefore.add(jar);
             }
@@ -294,7 +320,7 @@ public class UpdateLog4jJarUtils {
             "log4j-jcl-\\d+\\.\\d+\\.\\d+\\.jar", "log4j-jul-\\d+\\.\\d+\\.\\d+\\.jar", //$NON-NLS-1$//$NON-NLS-2$
             "log4j-slf4j-impl-\\d+\\.\\d+\\.\\d+\\.jar", "log4j-1.2-api-\\d+\\.\\d+\\.\\d+\\.jar", //$NON-NLS-1$//$NON-NLS-2$
             "log4j-core-\\d+\\.\\d+\\.\\d+\\.jar", "log4j-api-\\d+\\.\\d+\\.\\d+\\.jar", //$NON-NLS-1$//$NON-NLS-2$
-            "slf4j-standard-\\d+\\.\\d+\\.\\d+\\.jar" };//$NON-NLS-1$
+            "slf4j-standard-\\d+\\.\\d+\\.\\d+\\.jar", "slf4j-api-\\d+\\.\\d+\\.\\d+\\.jar" };//$NON-NLS-1$ //$NON-NLS-2$
 
     private static boolean isNeedRemoveModule(ModuleNeeded module, String moduleName) {
         for (String needRemoveModuleName : NEEDREMOVEMODULES) {

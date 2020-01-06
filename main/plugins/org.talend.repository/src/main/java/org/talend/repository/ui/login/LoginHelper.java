@@ -28,16 +28,19 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.CommonExceptionHandler;
+import org.talend.commons.exception.InformException;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.OperationCancelException;
 import org.talend.commons.exception.PersistenceException;
@@ -57,6 +60,7 @@ import org.talend.core.model.general.ConnectionBean;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.User;
+import org.talend.core.nexus.TalendLibsServerManager;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.prefs.PreferenceManipulator;
 import org.talend.core.repository.model.IRepositoryFactory;
@@ -532,6 +536,35 @@ public class LoginHelper {
             return false;
         }
 
+        // Check user library connection
+        try {
+            if (!factory.isLocalConnectionProvider() && !factory.getRepositoryContext().isOffline()) {
+                if (!TalendLibsServerManager.getInstance().canConnectUserLibrary()) {
+                    boolean[] flag = new boolean[] { false };
+                    Display.getDefault().syncExec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            String[] dialogButtonLabels = new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL };
+                            int open = MessageDialog.open(MessageDialog.WARNING, Display.getDefault().getActiveShell(),
+                                    Messages.getString("LoginHelper.connectUserLibraryTitle"), //$NON-NLS-1$
+                                    Messages.getString("LoginHelper.connectUserLibraryFailureWarning"), SWT.NONE, //$NON-NLS-1$
+                                    dialogButtonLabels);
+                            if (open == 0) {
+                                flag[0] = true;
+                            }
+                        }
+
+                    });
+                    if (!flag[0]) {
+                        return false;
+                    }
+                }
+            }
+        } catch (PersistenceException e1) {
+            CommonExceptionHandler.process(e1);
+        }
+
         final Shell shell = getUsableShell();
         ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell);
 
@@ -569,6 +602,9 @@ public class LoginHelper {
                     }
 
                 });
+            } else if (e.getTargetException() instanceof InformException) {
+                Display.getDefault().syncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                        Messages.getString("LoginDialog.logonDenyTitle"), e.getTargetException().getLocalizedMessage()));
             } else {
                 MessageBoxExceptionHandler.process(e.getTargetException(), getUsableShell());
             }

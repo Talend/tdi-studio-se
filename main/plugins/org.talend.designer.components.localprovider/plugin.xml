@@ -8142,7 +8142,7 @@
                 description="HD Insight common libraries"
                 id="HD_INSIGHT_COMMON_LIBRARIES_LATEST"
                 name="HD_INSIGHT_COMMON_LIBRARIES_LATEST">
-            <library id="talend-bigdata-launcher-1.1.0-2016040.jar" />
+            <library id="talend-bigdata-launcher-1.1.0-20160405.jar" />
             <library id="cxf-api-2.7.7.jar" />
             <library id="cxf-rt-bindings-xml-2.7.7.jar" />
             <library id="cxf-rt-core-2.7.7.jar" />

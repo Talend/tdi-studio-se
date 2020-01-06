@@ -3407,6 +3407,14 @@
         name="log4j-1.2-api-2.12.1.jar"
         mvn_uri="mvn:org.apache.logging.log4j/log4j-1.2-api/2.12.1"
         uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2-api-2.12.1.jar">
+      </libraryNeeded>
+      
+      <libraryNeeded
+        context="plugin:org.talend.librariesmanager"
+        id="slf4j-api-1.7.25.jar"
+        name="slf4j-api-1.7.25.jar"
+        mvn_uri="mvn:org.slf4j/slf4j-api/1.7.25"
+        uripath="platform:/plugin/org.talend.librariesmanager/lib/slf4j-api-1.7.25.jar">
       </libraryNeeded>         
    </extension>
    <!--

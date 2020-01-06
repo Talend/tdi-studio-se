@@ -1,9 +1,9 @@
-<%@ jet 
+<%@ jet
 imports="
     	org.talend.designer.codegen.config.CodeGeneratorArgument
 		org.talend.core.model.process.INode
-		org.talend.core.model.process.ElementParameterParser  
-		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.core.model.metadata.IMetadataTable
 		org.talend.core.model.metadata.IMetadataColumn
 		org.talend.core.model.process.IConnection
 		org.talend.core.model.metadata.MappingTypeRetriever
@@ -13,6 +13,7 @@ imports="
 		java.util.List
 		java.util.ArrayList
 		java.util.LinkedList
+    java.util.StringJoiner
 		java.util.Map
 		java.util.HashMap
 "
@@ -23,7 +24,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	<%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
-	
+
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	String cid = node.getUniqueName();
 
@@ -31,13 +32,13 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String dbschema = ElementParameterParser.getValue(node,"__ELT_SCHEMA_NAME__");
 	String uniqueNameConnection = null;
 	INode previousNode = null;
-	
+
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
 	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
 	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
 	boolean useUpdateStatement="true".equals(ElementParameterParser.getValue(node, "__USE_UPDATE_STATEMENT__"));
 	%>
-	String select_query_<%=cid %> = null;	
+	String select_query_<%=cid %> = null;
 	String tableName_<%=cid%> = null;
 	String selectQueryColumnsName_<%=cid %> = null;
 	<%
@@ -48,7 +49,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	    String previousComponentName = previousNode.getUniqueName();
 		dbtable = connection.getName();
 		uniqueNameConnection = connection.getUniqueName();
-		
+
 		%>
 		select_query_<%=cid %> = (String) globalMap.get("<%=previousComponentName%>"+"QUERY"+"<%=uniqueNameConnection%>");
 		selectQueryColumnsName_<%=cid %> = (String) globalMap.get("<%=previousComponentName%>"+"QUERY_COLUMNS_NAME"+"<%=uniqueNameConnection%>");
@@ -107,12 +108,12 @@ skeleton="../templates/db_output_bulk.skeleton"
         %>
         String driverClass_<%=cid%> = <%=driverClass %>;
         java.lang.Class.forName(driverClass_<%=cid%>);
-        String url_<%=cid %> = <%=jdbcUrl %>; 
-        dbUser_<%=cid %> = <%=dbuser%>;	        
+        String url_<%=cid %> = <%=jdbcUrl %>;
+        dbUser_<%=cid %> = <%=dbuser%>;
     	<%
     	String passwordFieldName = "__PASS__";
     	%>
-    	
+
     	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/eltpassword.javajet"%>
        	String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
         java.sql.Connection conn_<%=cid%> = null;
@@ -120,9 +121,9 @@ skeleton="../templates/db_output_bulk.skeleton"
     	log4jCodeGenerateUtil.debugConnectionParams(node);
        	log4jCodeGenerateUtil.connect(node);
     }
-    
+
     List<IMetadataColumn> columnList = null;
-    
+
     List<IMetadataTable> metadatas = node.getMetadataList();
     if(metadatas !=null && metadatas.size()>0){
     	IMetadataTable metadata = metadatas.get(0);
@@ -130,30 +131,31 @@ skeleton="../templates/db_output_bulk.skeleton"
     		columnList = metadata.getListColumns();
     	}
     }
-    
+
     if(columnList != null && columnList.size()>0){
         StringBuilder insertColName = new StringBuilder();
-        
-        StringBuilder updateSetStmt = new StringBuilder();
-        
+
+        StringJoiner updateSetStmt = new StringJoiner(",");
+        boolean isUpdate = "UPDATE".equals(dataAction);
+        List<Map<String, String>> setColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_COLUMN__");
         int counterOuter = 0;
         for(IMetadataColumn column : columnList){
         	String suffix = ",";
-        	
+
         	if(counterOuter==(columnList.size()-1)){
     			suffix = "";
         	}
-        	
+
         	String columnName = column.getOriginalDbColumnName();
     		if(columnName==null || columnName.trim().isEmpty()){
 				columnName = column.getLabel();
     		}
-        	
-        	insertColName.append(columnName).append(suffix);
-        	
-        	updateSetStmt.append(columnName+"=(\"+select_query_"+ cid +".replaceFirst(java.util.regex.Pattern.quote(selectQueryColumnsName_"+ cid +"),routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "])+\")" + suffix);
-        	
-        	counterOuter++;
+          boolean isUpdateColumn = "true".equals(setColumns.get(counterOuter).get("UPDATE_COLUMN"));
+          insertColName.append(columnName).append(suffix);
+          if (isUpdate && isUpdateColumn) {
+            updateSetStmt.add(columnName+"=(\"+select_query_"+ cid +".replaceFirst(java.util.regex.Pattern.quote(selectQueryColumnsName_"+ cid +"),routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "])+\")");
+          }
+          counterOuter++;
         }
 
         if(("INSERT").equals(dataAction)){
@@ -189,7 +191,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             }
     	} else if (("DELETE").equals(dataAction)){
     	%>
-        	String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") " 
+          String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") "
         	<%
         	if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
         	%>
@@ -201,7 +203,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     	<%
     	}
     	%>
-    	
+
         int nb_line_<%=cid%> = 0;
         int nb_line_updated_<%=cid%> = 0;
         int nb_line_inserted_<%=cid%> = 0;
@@ -214,17 +216,17 @@ skeleton="../templates/db_output_bulk.skeleton"
     		Manager manager = null;
     		String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
     		String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
-    		
+
     		List<Column> stmtStructure = getELTManager(dbmsId, cid, node).createColumnList(columnList, false, null, null);
-    		
+
     		String table = useDifferentTable ? differenttable : ("\""+dbtable +"\"");
-    		
+
     		dbLog = new DBLogUtil(node);
     		%>
     		<%@ include file="../templates/_tableActionForELT.javajet"%>
     		<%
 		}
-		
+
 		if(("INSERT").equals(dataAction)){
 		%>
         System.out.println("Inserting with : \n" + insertQuery_<%=cid %> + "\n");
