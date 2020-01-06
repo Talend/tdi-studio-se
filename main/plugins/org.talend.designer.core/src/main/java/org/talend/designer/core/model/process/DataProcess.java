@@ -3255,6 +3255,10 @@ public class DataProcess implements IGeneratingProcess {
         if (!confJarBean.isPresent()) {
             return null;
         }
+        if (confJarBean.get().isUseDefaultCustomConfJar()) {
+            // default config jar is added into classpath, no need to load manually
+            return null;
+        }
         IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, componentCategory.getName());
         if (component != null) {
             DataNode confNode = new DataNode(component, component.getName() + "_" + node.getUniqueName()); //$NON-NLS-1$
