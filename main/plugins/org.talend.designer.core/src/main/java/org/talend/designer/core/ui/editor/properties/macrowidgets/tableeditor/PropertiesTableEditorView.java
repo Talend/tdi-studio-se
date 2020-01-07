@@ -903,34 +903,6 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                                 finalValue="0";
                             }
                             
-                            
-                            
-//                            if(value==null||StringUtils.isBlank(value.toString()) ) {
-//                                finalValue ="0";
-//                            }else {
-//                                try {
-//                                    String strValue=value.toString();
-//                                    if(NumberLimitTextController.contexPrefix.startsWith(strValue)||strValue.startsWith(NumberLimitTextController.contexPrefix)) {
-//                                        finalValue =value;
-//                                    }else {
-//                                        double num=Double.valueOf(strValue);
-//                                        if(num>=1) {
-//                                            finalValue ="1";
-//                                        }else if(strValue.trim().indexOf(".") == -1){
-//                                            finalValue ="1";
-//                                        }else {
-//                                            int decimalLen = strValue.trim().length() - strValue.trim().indexOf(".")-1;
-//                                            if(decimalLen<7){
-//                                                finalValue =value;
-//                                            }else{
-//                                                finalValue =strValue.trim().substring(0, 8);
-//                                            }
-//                                        }
-//                                    }
-//                                } catch (Exception e) {
-//                                    finalValue ="0";
-//                                }
-//                            }
                         default:
                         }
                         ((Map<String, Object>) bean).put(items[curCol], finalValue);
