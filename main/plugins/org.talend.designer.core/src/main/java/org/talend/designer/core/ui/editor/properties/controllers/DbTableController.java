@@ -697,15 +697,6 @@ public class DbTableController extends AbstractElementPropertySectionController 
         job.schedule();
     }
 
-    // for oracle custom with ssl enable, should add TRUSTSTORE and KEYSTORE info
-    private void addAdditionalParam(IMetadataConnection iMetadataConnection) {
-        if (connParameters.getParameters().get("USE_SSL") != null) {
-            String additionalParams = iMetadataConnection.getAdditionalParams();
-            additionalParams += connParameters.getParameters().get("SSL_STRING");
-            iMetadataConnection.setAdditionalParams(additionalParams);
-        }
-    }
-
     private void openParamemerDialog(Button button, IContextManager manager) {
         initConnectionParameters();
         if (connParameters != null) {
