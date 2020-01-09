@@ -35,7 +35,7 @@ class BigQueryHelper_<%=cid%> {
 					column.addColumnValue(Date.from(ta.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()));
 				}
 			} else if ("id_Integer".equals(dcm.getType()) || "id_Long".equals(dcm.getType()) || "id_Double".equals(dcm.getType())
-					|| "id_Byte".equals(dcm.getType())) {
+					|| "id_Byte".equals(dcm.getType()) || "id_BigDecimal".equals(dcm.getType)) {
 				<%
 				if(advancedSeparator) {
 				%>
@@ -55,6 +55,8 @@ class BigQueryHelper_<%=cid%> {
 					column.addColumnValue(ParserUtils.parseTo_Double(strNum));
 				} else if ("id_Byte".equals(dcm.getType())) {
 					column.addColumnValue(ParserUtils.parseTo_Byte(strNum));
+				} else if ("id_BigDecimal".equals(dcm.getType())) {
+					column.addColumnValue(ParserUtils.parseTo_BigDecimal(strNum));
 				}
 			} else if("id_byte[]".equals(dcm.getType())) {
 				column.addColumnValue(rs.get(colNum).getV().toString().getBytes(<%=encoding %>));

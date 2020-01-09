@@ -674,6 +674,12 @@
 									case "DATETIME":
 										typeToGenerate = com.google.cloud.bigquery.LegacySQLTypeName.DATETIME;
 										break;
+									case "NUMERIC":
+										typeToGenerate = com.google.cloud.bigquery.LegacySQLTypeName.NUMERIC;
+										break;
+									case "GEOGRAPHY":
+										typeToGenerate = com.google.cloud.bigquery.LegacySQLTypeName.valueOf("GEOGRAPHY");
+										break;
 									default:
 										typeToGenerate = com.google.cloud.bigquery.LegacySQLTypeName.STRING;
 										break;
