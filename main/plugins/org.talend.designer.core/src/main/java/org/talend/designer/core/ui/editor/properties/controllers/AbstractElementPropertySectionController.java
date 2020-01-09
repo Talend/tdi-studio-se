@@ -1587,7 +1587,6 @@ public abstract class AbstractElementPropertySectionController implements Proper
         if (EDatabaseTypeName.ORACLE_CUSTOM.getDbType().equals(typ)) {
             // for ssl
             String useSSL = getValueFromRepositoryName(element, "USE_SSL"); //$NON-NLS-1$
-            TalendQuoteUtils.removeQuotesIfExist(null);
             connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_USE_SSL, useSSL);
             // trustStore
             String trustStore = getValueFromRepositoryName(element, "SSL_TRUSTSERVER_TRUSTSTORE");
