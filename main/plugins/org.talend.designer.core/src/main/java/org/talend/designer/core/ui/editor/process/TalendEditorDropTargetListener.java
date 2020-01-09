@@ -1271,6 +1271,10 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                                         // replace connection by CDC connection
                                         connectionItem = dbConnItem;
                                         connection = dbConnItem.getConnection();
+                                        String originalCdcTypeMode = ((DatabaseConnection) originalConnection).getCdcTypeMode();
+                                        if (connection instanceof DatabaseConnection) {
+                                            ((DatabaseConnection) connection).setCdcTypeMode(originalCdcTypeMode);
+                                        }
                                     }
                                 }
                             } catch (PersistenceException e) {
