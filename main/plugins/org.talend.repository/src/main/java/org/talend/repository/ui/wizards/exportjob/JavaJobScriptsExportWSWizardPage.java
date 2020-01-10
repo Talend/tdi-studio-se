@@ -270,7 +270,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         destinationNameField.setLayoutData(data);
         destinationNameField.setFont(font);
-        destinationNameField.setTextDirection(SWT.RIGHT_TO_LEFT);
         BidiUtils.applyBidiProcessing(destinationNameField, "file"); //$NON-NLS-1$
 
         // destination browse button
@@ -711,7 +710,27 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
     @Override
     protected void setDestinationValue(String value) {
-        destinationNameField.setText(value);
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+
+        String[] oldItems = destinationNameField.getItems();
+        int idx = -1;
+        for (int j = 0; j < oldItems.length; j++) {
+            if (oldItems[j].equals(value)) {
+                idx = j;
+                break;
+            }
+        }
+
+        if (idx > -1) {
+            destinationNameField.select(idx);
+            return;
+        }
+        String[] items = Arrays.copyOf(oldItems, oldItems.length + 1);
+        items[items.length - 1] = value;
+        destinationNameField.setItems(items);
+        destinationNameField.select(items.length - 1);
     }
 
     @Override
