@@ -401,7 +401,7 @@
 			    	String typeNameString_<%=cid%> = (typeName_<%=cid%> != null) ? typeName_<%=cid%>.name() : schema_<%=cid%>.getFields().get(i).getType().name();
 			    	dynamicMetadata_<%=cid%>.setType(routines.system.Dynamic.getTalendTypeFromDBType("bigquery_id", typeNameString_<%=cid%>, 0, 0));
 			    	dynamicMetadata_<%=cid%>.setDbType(typeNameString_<%=cid%>);
-			    	dynamicMetadata_<%=cid%>.setNullable(schema_tBigQueryInput_1.getFields().get(i).getMode() == com.google.cloud.bigquery.Field.Mode.NULLABLE);
+			    	dynamicMetadata_<%=cid%>.setNullable(schema_<%=cid%>.getFields().get(i).getMode() == com.google.cloud.bigquery.Field.Mode.NULLABLE);
 			    	dynamicMetadata_<%=cid%>.setColumnPosition(i);
 			    	dcg_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
 			    }

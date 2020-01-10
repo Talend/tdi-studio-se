@@ -13,7 +13,7 @@ class BigQueryHelper_<%=cid%> {
 		for (int i = 0; i < column.getColumnCount(); i++) {
 			DynamicMetadata dcm = column.getColumnMetadata(i);
 			int colNum = fixedColumnCount + i;
-			if (rs.get(colNum).getV() == null) {
+			if (com.google.api.client.util.Data.isNull(rs.get(colNum).getV())) {
 				column.addColumnValue(null);
 				continue;
 			}
@@ -35,7 +35,7 @@ class BigQueryHelper_<%=cid%> {
 					column.addColumnValue(Date.from(ta.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()));
 				}
 			} else if ("id_Integer".equals(dcm.getType()) || "id_Long".equals(dcm.getType()) || "id_Double".equals(dcm.getType())
-					|| "id_Byte".equals(dcm.getType()) || "id_BigDecimal".equals(dcm.getType)) {
+					|| "id_Byte".equals(dcm.getType()) || "id_BigDecimal".equals(dcm.getType())) {
 				<%
 				if(advancedSeparator) {
 				%>
