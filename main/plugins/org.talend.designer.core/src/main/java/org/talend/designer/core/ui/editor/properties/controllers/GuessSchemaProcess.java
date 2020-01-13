@@ -13,9 +13,11 @@
 package org.talend.designer.core.ui.editor.properties.controllers;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.core.runtime.IPath;
 import org.talend.core.database.EDatabaseTypeName;
@@ -261,10 +263,53 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
 
     private String getCodeStart(INode connectionNode, String createStatament, int fetchSize){
         IPath temppath = getTemppath();
-        String codeStart = "java.lang.Class.forName(\"" + info.getDriverClassName() + "\");\r\n" + "String url = \"" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        Properties prop = new Properties();
+        String additionalParams = info.getadditionalParams();
+        additionalParams = additionalParams.replaceAll("&", "\n");
+        String dbType = info.getDbType();
+        boolean additionalParamFlag = false;
+        String user = info.getUsername();
+        if(user!=null&&!"".equals(user)) {
+            prop.put("user", user);
+        }
+        String password = info.getPwd();
+        if(password!=null&&!"".equals(password)) {
+            prop.put("password", password);
+        }
+        try {
+            if (additionalParams != null && !"".equals(additionalParams) && dbType.toUpperCase().contains("ORACLE")) {
+                prop.load(new java.io.ByteArrayInputStream(additionalParams.getBytes()));
+                additionalParamFlag = true;
+            }
+        } catch (IOException e) {
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("java.util.Properties prop = new Properties();\r\n");
+        sb.append("String additionalParams = \"" + info.getadditionalParams() + "\";\r\n");
+        sb.append("additionalParams = additionalParams.replaceAll(\"&\", \"\\n\");\r\n");
+        sb.append("String dbType = \"" + info.getDbType() + "\";\r\n");
+        sb.append("boolean additionalParamFlag = false;\r\n");
+        sb.append("String user = info.getUsername();\r\n");
+        sb.append("if(user != null && !\"\".equals(user)) {\r\n");
+        sb.append("    prop.put(\"user\", user);\r\n");
+        sb.append("}\r\n");
+        sb.append("String password = info.getPwd();\r\n");
+        sb.append("if(password != null && !\"\".equals(password)) {\r\n");
+        sb.append("    prop.put(\"password\", password);\r\n");
+        sb.append("}\r\n");
+        sb.append("try{\r\n");
+        sb.append(
+                "    if (additionalParams != null && !\"\".equals(additionalParams) && dbType.toUpperCase().contains(\"ORACLE\")) {\r\n");
+        sb.append("        prop.load(new java.io.ByteArrayInputStream(additionalParams.getBytes()));\r\n");
+        sb.append("        additionalParamFlag = true;\r\n");
+        sb.append("  }\r\n");
+        sb.append("}catch(IOException e){\r\n");
+        sb.append("}\r\n");
+        String codeStart = sb.toString() + "java.lang.Class.forName(\"" + info.getDriverClassName() + "\");\r\n" //$NON-NLS-1$ //$NON-NLS-2$
+                + "String url = \"" //$NON-NLS-1$
                 + info.getUrl() 
-                + "\";\r\n" + "java.sql.Connection conn = java.sql.DriverManager.getConnection(url, \"" + info.getUsername() //$NON-NLS-1$ //$NON-NLS-2$
-                + "\", \"" + info.getPwd() + "\");\r\n" + "java.sql.Statement stm = " + createStatament + ";\r\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                + "\";\r\n" + "java.sql.Connection conn = java.sql.DriverManager.getConnection(url, prop);\r\n"//$NON-NLS-1$ //$NON-NLS-2$
+                + "java.sql.Statement stm = " + createStatament + ";\r\n" 
                 + "try {\r\nstm.setFetchSize(" + fetchSize //$NON-NLS-1$
                 + ");\r\n} catch (Exception e) {\r\n// Exception is thrown if db don't support, no need to catch exception here\r\n} \r\n" //$NON-NLS-1$
                 + "java.sql.ResultSet rs = stm.executeQuery(" + memoSQL + ");\r\n" //$NON-NLS-1$ //$NON-NLS-2$
