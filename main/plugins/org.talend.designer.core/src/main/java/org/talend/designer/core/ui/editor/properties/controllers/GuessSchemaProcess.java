@@ -262,15 +262,15 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
     private String getCodeStart(INode connectionNode, String createStatament, int fetchSize){
         IPath temppath = getTemppath();
         StringBuilder sb = new StringBuilder();
-        sb.append("java.util.Properties prop = new Properties();\r\n");
+        sb.append("java.util.Properties prop = new java.util.Properties();\r\n");
         sb.append("String additionalParams = \"" + info.getadditionalParams() + "\";\r\n");
         sb.append("additionalParams = additionalParams.replaceAll(\"&\", \"\\n\");\r\n");
         sb.append("String dbType = \"" + info.getDbType() + "\";\r\n");
-        sb.append("String user = info.getUsername();\r\n");
+        sb.append("String user = \"" + info.getUsername() + "\";\r\n");
         sb.append("if(user != null && !\"\".equals(user)) {\r\n");
         sb.append("    prop.put(\"user\", user);\r\n");
         sb.append("}\r\n");
-        sb.append("String password = info.getPwd();\r\n");
+        sb.append("String password =  \"" + info.getPwd() + "\";\r\n");
         sb.append("if(password != null && !\"\".equals(password)) {\r\n");
         sb.append("    prop.put(\"password\", password);\r\n");
         sb.append("}\r\n");
