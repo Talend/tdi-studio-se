@@ -710,27 +710,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
     @Override
     protected void setDestinationValue(String value) {
-        if (value == null || value.isEmpty()) {
-            return;
-        }
-
-        String[] oldItems = destinationNameField.getItems();
-        int idx = -1;
-        for (int j = 0; j < oldItems.length; j++) {
-            if (oldItems[j].equals(value)) {
-                idx = j;
-                break;
-            }
-        }
-
-        if (idx > -1) {
-            destinationNameField.select(idx);
-            return;
-        }
-        String[] items = Arrays.copyOf(oldItems, oldItems.length + 1);
-        items[items.length - 1] = value;
-        destinationNameField.setItems(items);
-        destinationNameField.select(items.length - 1);
+        destinationNameField.setText(value);
     }
 
     @Override
@@ -930,6 +910,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             } else {
                 setDefaultDestination();
             }
+            this.destinationNameField.pack(true);
+
             shellLauncherButton.setSelection(settings.getBoolean(STORE_SHELL_LAUNCHER_ID));
             // TDQ-15391: when have tDqReportRun, must always export items.
             if (EmfModelUtils.getComponentByName(getProcessItem(), "tDqReportRun") != null) { //$NON-NLS-1$
