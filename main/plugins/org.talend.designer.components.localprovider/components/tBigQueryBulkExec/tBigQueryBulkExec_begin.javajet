@@ -385,6 +385,8 @@
 										}
 										if (dataType == null || ("").equals(dataType)) {
 											dataType = orignalDBType;
+										} else if(dataType.equalsIgnoreCase("RECORD") || dataType.equalsIgnoreCase("STRUCT")) {
+											dataType = "STRING";
 										}
 										String modeType = (!metadata.isNullable()) ? "REQUIRED" : "NULLABLE";
 										com.google.api.services.bigquery.model.TableFieldSchema <%=columnName%>_<%=cid%> = new com.google.api.services.bigquery.model.TableFieldSchema();
