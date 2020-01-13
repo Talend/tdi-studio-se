@@ -288,7 +288,6 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
         sb.append("String additionalParams = \"" + info.getadditionalParams() + "\";\r\n");
         sb.append("additionalParams = additionalParams.replaceAll(\"&\", \"\\n\");\r\n");
         sb.append("String dbType = \"" + info.getDbType() + "\";\r\n");
-        sb.append("boolean additionalParamFlag = false;\r\n");
         sb.append("String user = info.getUsername();\r\n");
         sb.append("if(user != null && !\"\".equals(user)) {\r\n");
         sb.append("    prop.put(\"user\", user);\r\n");
@@ -301,7 +300,6 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
         sb.append(
                 "    if (additionalParams != null && !\"\".equals(additionalParams) && dbType.toUpperCase().contains(\"ORACLE\")) {\r\n");
         sb.append("        prop.load(new java.io.ByteArrayInputStream(additionalParams.getBytes()));\r\n");
-        sb.append("        additionalParamFlag = true;\r\n");
         sb.append("  }\r\n");
         sb.append("}catch(IOException e){\r\n");
         sb.append("}\r\n");
