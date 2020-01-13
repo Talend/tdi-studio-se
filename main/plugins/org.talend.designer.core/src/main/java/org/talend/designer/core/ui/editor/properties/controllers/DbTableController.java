@@ -485,6 +485,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
      * @return
      */
     protected void createListTablesCommand(Button button, IContextManager manager) {
+        button.setEnabled(false);
         contextManager = manager;
         initConnectionParameters();
         if (this.connParameters != null) {
@@ -587,7 +588,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
                                         .returnTablesFormConnection(iMetadataConnection);
 
                             }
-                            Display.getDefault().asyncExec(new Runnable() {
+                            Display.getDefault().syncExec(new Runnable() {
 
                                 @Override
                                 public void run() {
@@ -641,7 +642,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
                                 }
                             });
                         } else {
-                            Display.getDefault().asyncExec(new Runnable() {
+                            Display.getDefault().syncExec(new Runnable() {
 
                                 @Override
                                 public void run() {
@@ -661,7 +662,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
                         JavaSqlFactory.doHiveConfigurationClear();
                         ExceptionHandler.process(e);
 
-                        Display.getDefault().asyncExec(new Runnable() {
+                        Display.getDefault().syncExec(new Runnable() {
 
                             @Override
                             public void run() {
@@ -680,6 +681,13 @@ public class DbTableController extends AbstractElementPropertySectionController 
                     }
                 }
                 monitor.done();
+                Display.getDefault().syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        openListTable.setEnabled(true);
+                    }
+                });
                 return Status.OK_STATUS;
             }
 
