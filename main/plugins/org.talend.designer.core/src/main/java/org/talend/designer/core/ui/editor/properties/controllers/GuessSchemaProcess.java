@@ -13,11 +13,9 @@
 package org.talend.designer.core.ui.editor.properties.controllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.eclipse.core.runtime.IPath;
 import org.talend.core.database.EDatabaseTypeName;
@@ -263,26 +261,6 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
 
     private String getCodeStart(INode connectionNode, String createStatament, int fetchSize){
         IPath temppath = getTemppath();
-        Properties prop = new Properties();
-        String additionalParams = info.getadditionalParams();
-        additionalParams = additionalParams.replaceAll("&", "\n");
-        String dbType = info.getDbType();
-        boolean additionalParamFlag = false;
-        String user = info.getUsername();
-        if(user!=null&&!"".equals(user)) {
-            prop.put("user", user);
-        }
-        String password = info.getPwd();
-        if(password!=null&&!"".equals(password)) {
-            prop.put("password", password);
-        }
-        try {
-            if (additionalParams != null && !"".equals(additionalParams) && dbType.toUpperCase().contains("ORACLE")) {
-                prop.load(new java.io.ByteArrayInputStream(additionalParams.getBytes()));
-                additionalParamFlag = true;
-            }
-        } catch (IOException e) {
-        }
         StringBuilder sb = new StringBuilder();
         sb.append("java.util.Properties prop = new Properties();\r\n");
         sb.append("String additionalParams = \"" + info.getadditionalParams() + "\";\r\n");
