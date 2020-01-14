@@ -22,6 +22,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.constants.Log4jPrefsConstants;
 import org.talend.repository.i18n.Messages;
@@ -42,6 +43,8 @@ public class Log4jSettingPage extends ProjectSettingPage {
     private Combo combo;
 
     private String log4jVersion;
+
+    private Boolean log4jEnable;
 
     private Boolean isNewProject;
 
@@ -76,6 +79,8 @@ public class Log4jSettingPage extends ProjectSettingPage {
             // if already exist,to get its value from prefs
             log4jBtn.setSelection(Boolean
                     .valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE)));
+            log4jEnable = Boolean
+                    .valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE));
         }
 
     }
@@ -207,6 +212,9 @@ public class Log4jSettingPage extends ProjectSettingPage {
                 saveLog4jSetting();
             }
         }
+        if (isLog4jEnableChanged()) {
+            BuildCacheManager.getInstance().clearAllCaches();
+        }
         return ok;
     }
 
@@ -248,6 +256,11 @@ public class Log4jSettingPage extends ProjectSettingPage {
                 .valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_SELECT_VERSION2))
                         ? Log4jPrefsConstants.LOG4J2
                         : Log4jPrefsConstants.LOG4J1;
+    }
+
+    private boolean isLog4jEnableChanged() {
+        boolean selection = log4jBtn.getSelection();
+        return !log4jEnable.equals(selection);
     }
 
     private boolean isLog4jVersionChanged() {
