@@ -25,6 +25,7 @@ import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -220,6 +221,7 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
         if (ConnectionUtils.isVertica(info.getUrl())) {
             createStatament = "conn.createStatement()";
         }
+
         if (EDatabaseTypeName.GENERAL_JDBC.getXmlName().equals(info.getDbType())
                 && "com.sap.db.jdbc.Driver".equals(info.getDriverClassName())
                 || EDatabaseTypeName.SAPHana.getXmlName().equals(info.getDbType())) {
@@ -230,6 +232,13 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
                 || EDatabaseTypeName.REDSHIFT_SSO.getXmlName().equals(info.getDbType())) {
             createStatament = "conn.createStatement()";
         }
+
+        // TDQ-17294 msjian: support snowflake well
+        if (ExtractMetaDataUtils.SNOWFLAKE.equals(info.getDbType())) {
+            createStatament = "conn.createStatement()";
+        }
+        // TDQ-17294~
+
         codeStart = systemProperty + getCodeStart(connectionNode, createStatament, fetchSize);
 
         codeMain = "String[] dataOneRow = new String[numbOfColumn];\r\n" + "for (int i = 1; i <= numbOfColumn; i++) {\r\n" //$NON-NLS-1$ //$NON-NLS-2$
