@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.repository.ui.login;
 
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -1110,6 +1112,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         // if relaunch, should delete the "disableLoginDialog" argument in eclipse data for bug TDI-19214
         String workspace = iBean.getWorkSpace();
         if (workspace != null) {
+            URI uri = new File(workspace).toURI();
+            workspace = uri.toString();
             workspace = workspace.replaceAll("\\\\", "\\\\\\\\"); //$NON-NLS-1$//$NON-NLS-2$
         }
         EclipseCommandLine.updateOrCreateExitDataPropertyWithCommand("-data", workspace, false); //$NON-NLS-1$
