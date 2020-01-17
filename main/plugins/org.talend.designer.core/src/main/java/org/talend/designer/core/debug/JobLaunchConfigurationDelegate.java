@@ -84,7 +84,7 @@ public class JobLaunchConfigurationDelegate extends org.eclipse.debug.core.model
 
         final IProcess2 p = process;
         // Run job
-        Job runJob = new Job("Waiting for running process...") {
+        Job runJob = new Job(Messages.getString("JobLaunchConfigurationDelegate.waitProcessRunning")) {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
