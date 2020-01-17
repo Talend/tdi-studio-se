@@ -38,14 +38,7 @@ public class ComponentsHelpUtil {
 
     private static Boolean IS_HELP_INSTALLED = null;
 
-    public static boolean isEnabledOnLineHelp() {
-        return Boolean.parseBoolean(System.getProperty(JVM_PARAM_ONLINE_HELP_ENABLE, "false"));
-    }
-
     public static boolean isUseOnLineHelp() {
-        if (!isEnabledOnLineHelp()) {
-            return false;
-        }
         boolean isOffLineHelpInPre = DesignerPlugin.getDefault().getPreferenceStore()
                 .getBoolean(TalendDesignerPrefConstants.HELP_OFFLINE);
         if (isHelpInstalled() && isOffLineHelpInPre) {

@@ -379,9 +379,8 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
             createForJoblet(parent);
         }
         createForComponentAssist(parent);
-        if (ComponentsHelpUtil.isEnabledOnLineHelp()) {
-            createForHelpType(parent);
-        }
+        createForHelpType(parent);
+
         parent.pack();
     }
 
