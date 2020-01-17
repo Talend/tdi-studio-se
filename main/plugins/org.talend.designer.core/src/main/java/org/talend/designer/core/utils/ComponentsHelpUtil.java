@@ -16,7 +16,6 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.program.Program;
-import org.talend.commons.utils.VersionUtils;
 import org.talend.core.PluginChecker;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
@@ -27,7 +26,8 @@ public class ComponentsHelpUtil {
 
     private static final String JVM_PARAM_ONLINE_HELP_VERSION = "online.help.version"; //$NON-NLS-1$
 
-    private static String INTERNAL_VERSION = VersionUtils.getInternalVersion();
+    private static String INTERNAL_VERSION = "7.2.1.20190620_1446";
+    // private static String INTERNAL_VERSION = VersionUtils.getInternalVersion();
 
     private static boolean IS_RELEASE_VERSION = INTERNAL_VERSION.indexOf("-") < 0 //$NON-NLS-1$
             || INTERNAL_VERSION.toLowerCase().indexOf("patch") >= 0;
