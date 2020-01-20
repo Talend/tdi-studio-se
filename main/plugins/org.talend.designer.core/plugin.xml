@@ -906,4 +906,12 @@
                 priority="normal">
           </loginTask>
        </extension>
+       <extension
+             id="TalendHelpUI"
+             name="org.talend.designer.core.ui.help.TalendHelpUI"
+             point="org.eclipse.ui.helpSupport">
+          <config
+                class="org.talend.designer.core.ui.help.TalendHelpUI">
+          </config>
+       </extension>
 </plugin>

@@ -3996,6 +3996,7 @@ public class EmfComponent extends AbstractBasicComponent {
             optionMap.put(XMLResource.OPTION_USE_PARSER_POOL, new XMLParserPoolImpl());
             optionMap.put(XMLResource.OPTION_USE_XML_NAME_TO_FEATURE_MAP, new HashMap());
             optionMap.put(XMLResource.OPTION_USE_DEPRECATED_METHODS, Boolean.FALSE);
+            optionMap.put(XMLResource.OPTION_RECORD_UNKNOWN_FEATURE,Boolean.TRUE);
             optionMapSoftRef = new SoftReference<Map>(optionMap);
         }
         return optionMap;

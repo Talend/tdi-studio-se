@@ -435,7 +435,9 @@ String inputConnName = null;
         <%
             if (ProcessorUtilities.isEsbJob(currentProcess)) {
         %>
-        childJob_<%=cid %>.setEndpointRegistry(registry);
+        if (childJob_<%=cid %> instanceof routines.system.api.TalendESBJob) {
+            ((routines.system.api.TalendESBJob)childJob_<%=cid %>).setEndpointRegistry(registry);
+        }
         <%
             }
         %>

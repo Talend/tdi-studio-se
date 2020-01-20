@@ -232,7 +232,7 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
         alldependcies.setEnabled(false);
 
         subjobs = new Button(versionComposit, SWT.NONE);
-        subjobs.setText(Messages.getString("VersionManagementDialog.subjob"));
+        subjobs.setText(Messages.getString("VersionManagementDialog.subjob2"));
         subjobs.setEnabled(false);
 
         eachVersionButton = new Button(option, SWT.RADIO);

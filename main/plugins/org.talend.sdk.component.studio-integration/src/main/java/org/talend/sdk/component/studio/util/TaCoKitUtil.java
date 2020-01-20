@@ -16,9 +16,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Stack;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
@@ -40,6 +43,7 @@ import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.metadata.WizardRegistry;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
+import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.updates.runtime.utils.PathUtils;
 
 /**
@@ -306,6 +310,57 @@ public class TaCoKitUtil {
             return componentName;
         }
         return null;
+    }
+
+    public static PropertyNode getSamePropertyNode(PropertyNode propertyNode, ConfigTypeNode configTypeNode) throws Exception {
+        return getSamePropertyNode(new Stack<>(), getRootPropertyNode(propertyNode), configTypeNode);
+    }
+
+    private static PropertyNode getSamePropertyNode(Stack<Object> visited, PropertyNode propertyNode,
+            ConfigTypeNode configTypeNode) {
+        if (propertyNode == null || visited.contains(propertyNode)) {
+            return null;
+        }
+        PropertyDefinitionDecorator property = propertyNode.getProperty();
+        if (property == null) {
+            return null;
+        }
+        if (StringUtils.equals(property.getConfigurationType(), configTypeNode.getConfigurationType())
+                && StringUtils.equals(property.getConfigurationTypeName(), configTypeNode.getName())) {
+            return propertyNode;
+        }
+        try {
+            visited.push(propertyNode);
+            List<PropertyNode> children = propertyNode.getChildren();
+            if (children != null) {
+                for (PropertyNode c : children) {
+                    PropertyNode pn = getSamePropertyNode(visited, c, configTypeNode);
+                    if (pn != null) {
+                        return pn;
+                    }
+                }
+            }
+
+            return null;
+        } finally {
+            visited.pop();
+        }
+    }
+
+    public static PropertyNode getRootPropertyNode(PropertyNode propertyNode) throws Exception {
+        Set<Object> visited = new HashSet<>();
+        PropertyNode node = propertyNode;
+        PropertyNode parentNode = node;
+        while (node != null) {
+            if (visited.contains(node)) {
+                throw new IllegalArgumentException("dead loop detected from input parameter");
+            } else {
+                visited.add(node);
+            }
+            parentNode = node;
+            node = node.getParent();
+        }
+        return parentNode;
     }
 
     public static boolean isTaCoKitComponentMadeByTalend(final ComponentIndex index) {

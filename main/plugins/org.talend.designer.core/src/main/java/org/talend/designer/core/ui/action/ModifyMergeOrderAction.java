@@ -102,14 +102,14 @@ public class ModifyMergeOrderAction extends SelectionAction {
                                 .getSource().getOutgoingConnections(EConnectionType.ON_SUBJOB_OK).size() != 0)) {
                     MessageDialog.openError(DisplayUtils.getDefaultShell(false),
                             Messages.getString("ModifyMergeOrderAction.ERROE"), //$NON-NLS-1$
-                            Messages.getString("ModifyMergeOrderAction.ConnectionModifyError")); //$NON-NLS-1$
+                            Messages.getString("ModifyMergeOrderAction.ConnectionModifyError2")); //$NON-NLS-1$
                     return;
                 }
                 if (connection.getSource().getIncomingConnections(EConnectionType.ON_SUBJOB_ERROR).size() != 0
                         || connection.getSource().getIncomingConnections(EConnectionType.ON_SUBJOB_OK).size() != 0) {
                     MessageDialog.openError(DisplayUtils.getDefaultShell(false),
                             Messages.getString("ModifyMergeOrderAction.ERROE"), //$NON-NLS-1$
-                            Messages.getString("ModifyMergeOrderAction.ConnectionModifyError")); //$NON-NLS-1$
+                            Messages.getString("ModifyMergeOrderAction.ConnectionModifyError2")); //$NON-NLS-1$
                     return;
                 }
             }
