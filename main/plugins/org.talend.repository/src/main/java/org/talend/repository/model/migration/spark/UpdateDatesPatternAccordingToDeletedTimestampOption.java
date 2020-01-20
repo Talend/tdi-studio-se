@@ -48,10 +48,7 @@ public class UpdateDatesPatternAccordingToDeletedTimestampOption extends Abstrac
     
     @Override
     public List<ERepositoryObjectType> getTypes() {
-        List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
-        toReturn.add(ERepositoryObjectType.PROCESS_MR);
-        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
-        return toReturn;
+        return Arrays.asList(ERepositoryObjectType.PROCESS_MR, ERepositoryObjectType.PROCESS_STORM);
     }
 
     @Override
@@ -65,12 +62,12 @@ public class UpdateDatesPatternAccordingToDeletedTimestampOption extends Abstrac
                 Arrays.asList("tFileOutputParquet", "tHiveOutput", "tRedshiftOutput", "tSqlRow", "tMatchPairing",
                         "tMatchPredict", "tMatchModel", "tDataShuffling");
 
-        IComponentConversion AdaptSchemaForDateType = new AdaptSchemaForDateType();
+        IComponentConversion adaptSchemaForDateType = new AdaptSchemaForDateType();
 
         try {
             for (String componentName : impactedComponents) {
                 ModifyComponentsAction.searchAndModify(item, processType, new NameComponentFilter(componentName),
-                        Arrays.<IComponentConversion> asList(AdaptSchemaForDateType));
+                        java.util.Collections.singletonList(adaptSchemaForDateType));
             }
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
@@ -80,7 +77,7 @@ public class UpdateDatesPatternAccordingToDeletedTimestampOption extends Abstrac
 
     private class AdaptSchemaForDateType implements IComponentConversion {
 
-        private String name = "DATE_TO_TIMESTAMP_DF_TYPE_SUBSTITUTION"; //$NON-NLS-1$
+        private String CHECK_BOX_NAME = "DATE_TO_TIMESTAMP_DF_TYPE_SUBSTITUTION"; //$NON-NLS-1$
 
         public void transform(NodeType node) {
             
@@ -89,9 +86,9 @@ public class UpdateDatesPatternAccordingToDeletedTimestampOption extends Abstrac
                 for(Object oc : metadata.getColumn()){
                     ColumnType column = (ColumnType) oc;
                     if(column.getType().equals("id_Date")) {
-                        if("true".equals(ComponentUtilities.getNodePropertyValue(node, name))){
+                        if("true".equals(ComponentUtilities.getNodePropertyValue(node, CHECK_BOX_NAME))){
                             column.setPattern("\"yyyy-MM-dd HH:mm:ss\"");
-                        } else if ("false".equals(ComponentUtilities.getNodePropertyValue(node, name))) {
+                        } else if ("false".equals(ComponentUtilities.getNodePropertyValue(node, CHECK_BOX_NAME))) {
                             column.setPattern("\"dd-MM-yyyy\"");
                         }
                     }
