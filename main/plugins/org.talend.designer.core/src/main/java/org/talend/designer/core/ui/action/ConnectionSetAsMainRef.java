@@ -118,14 +118,16 @@ public class ConnectionSetAsMainRef extends SelectionAction {
             MessageDialog
                     .openError(
                             DisplayUtils.getDefaultShell(false),
-                            Messages.getString("ConnectionSetAsMainRef.ERROR"), Messages.getString("ConnectionSetAsMainRef.ConnectionModifyError")); //$NON-NLS-1$ //$NON-NLS-2$
+                            Messages.getString("ConnectionSetAsMainRef.ERROR"), //$NON-NLS-1$
+                            Messages.getString("ConnectionSetAsMainRef.ConnectionModifyError2")); //$NON-NLS-1$
             return;
         }
         if (checkConnectionStatus(connection.getTarget())) {
             MessageDialog
                     .openError(
                             DisplayUtils.getDefaultShell(false),
-                            Messages.getString("ConnectionSetAsMainRef.ERROR"), Messages.getString("ConnectionSetAsMainRef.ConnectionModifyError")); //$NON-NLS-1$ //$NON-NLS-2$
+                            Messages.getString("ConnectionSetAsMainRef.ERROR"), //$NON-NLS-1$
+                            Messages.getString("ConnectionSetAsMainRef.ConnectionModifyError2")); //$NON-NLS-1$
             return;
         }
         ChangeConnectionStatusCommand cmd = new ChangeConnectionStatusCommand(connection);
