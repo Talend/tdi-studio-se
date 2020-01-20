@@ -114,7 +114,7 @@ public enum EParameterName {
     SCHEMA_OPTIONS(Messages.getString("EParameterName.schemaOptions")), //$NON-NLS-1$
     COLLAPSED("COLLAPSED"), //$NON-NLS-1$  Hidden parameter so no translation needed
     SUBJOB_DISPLAYED("DISPLAY_SUBJOB"), //$NON-NLS-1$  Hidden parameter so no translation needed
-    SHOW_SUBJOB_TITLE(Messages.getString("EParameterName.showSubjob")), //$NON-NLS-1$
+    SHOW_SUBJOB_TITLE(Messages.getString("EParameterName.showSubjob2")), //$NON-NLS-1$
     SUBJOB_TITLE(Messages.getString("EParameterName.title")), //$NON-NLS-1$
     SUBJOB_TITLE_COLOR(Messages.getString("EParameterName.SubjobTitleColor")), //$NON-NLS-1$
     SUBJOB_COLOR(Messages.getString("EParameterName.SubjobColor")), //$NON-NLS-1$
