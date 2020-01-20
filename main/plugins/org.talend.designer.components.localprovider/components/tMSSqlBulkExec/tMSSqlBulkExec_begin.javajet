@@ -41,18 +41,9 @@ String codePage = ElementParameterParser.getValue(node, "__CODE_PAGE__");
 String data_file_type = ElementParameterParser.getValue(node, "__DATA_FILE_TYPE__");
 boolean fire_triggers = ("true").equals(ElementParameterParser.getValue(node, "__FIRE_TRIGGERS__"));
 boolean convertToUppercase = false; // not active this function
-
-
-
-
-
 boolean useExistingDynamic = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
-//String dynamicComponentName = ElementParameterParser.getValue(node, "__DYNAMIC__");
+String dynamicComponentName = ElementParameterParser.getValue(node, "__DYNAMIC__");
 boolean isDynamic = useExistingDynamic;
-
-
-
-
 %>
 int deletedCount_<%=cid%>=0;
 <%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
@@ -76,9 +67,7 @@ if(("EXPORT").equals(action)) {
 	}else{
 		char_type = "-w";
 	}
-
 	%>
-
 	<%
 	String passwordFieldName = "__PASS__";
 	%>
@@ -205,13 +194,6 @@ if(("EXPORT").equals(action)) {
 	if(columnList != null && columnList.size() > 0) {
 		stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null);
 	}
-
-	// if(isDynamic) {
-	// 	IMetadataColumn dyn = new MetadataColumn();
-	// 	dyn.setTalendType("id_dynamic");
-	// 	columnList.add(dyn);
-	// 	stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null);
-	// }
 
 	if((columnList != null && columnList.size() > 0) || isDynamic || "CLEAR".equals(tableAction) || "NONE".equals(tableAction) || "TRUNCATE".equals(tableAction)){
 	%>

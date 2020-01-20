@@ -5,8 +5,6 @@
 Boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
 boolean isLog4jEnabled_tableAction = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 
-
-
 if (!isParallelize) {
 //end issue 0010346 Parallelization crash with "Drop table if exists and create"
 	manager = getManager(dbmsId, cid);
@@ -199,9 +197,6 @@ if (!isParallelize) {
 				rsTable_<%=cid%>.close();
 			<%
 			}
-			%>
-//here8
-			<%
 			if(("CREATE_IF_NOT_EXISTS").equals(tableAction)) {
 			%>
 				if(!whetherExist_<%=cid%>) {
@@ -209,17 +204,8 @@ if (!isParallelize) {
 					<%if(isLog4jEnabled_tableAction){%>
 						log.info("<%=cid%> - Creating table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>.");
 					<%}%>
-
-
-
-
-
 					<%
-					//try to replace it in component
-					//boolean useExistingDynamic = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
-					String dynamicComponentName = ElementParameterParser.getValue(node, "__DYNAMIC__");
 					if (MSSQL.equalsIgnoreCase(dbmsId) && isDynamic){
-						//String query = manager.getCreateTableSQL(stmtStructure);
 					%>
 						routines.system.Dynamic dynamicColumn = (Dynamic)globalMap.get("<%=dynamicComponentName%>" + "_DYNAMIC");
 						String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
@@ -232,14 +218,6 @@ if (!isParallelize) {
 					<%
 					}
 					%>
-
-
-
-
-
-
-
-
 					<%if(isLog4jEnabled_tableAction){%>
 						log.info("<%=cid%> - Create table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
 					<%}%>
@@ -263,7 +241,20 @@ if (!isParallelize) {
 				<%if(isLog4jEnabled_tableAction){%>
 					log.info("<%=cid%> - Creating table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>." );
 				<%}%>
-				stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+				<%
+				if (MSSQL.equalsIgnoreCase(dbmsId) && isDynamic){
+				%>
+					routines.system.Dynamic dynamicColumn = (Dynamic)globalMap.get("<%=dynamicComponentName%>" + "_DYNAMIC");
+					String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
+					String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
+					stmtCreate_<%=cid%>.execute(queryForExec);
+				<%
+				} else {
+				%>
+					stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+				<%
+				}
+				%>
 				<%if(isLog4jEnabled_tableAction){%>
 					log.info("<%=cid%> - Create table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
 				<%}%>
