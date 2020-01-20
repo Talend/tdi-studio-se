@@ -49,8 +49,8 @@ public class UpdateDatesPatternAccordingToDeletedTimestampOption extends Abstrac
     @Override
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
-        toReturn.add(ERepositoryObjectType.PROCESS_SPARK);
-        toReturn.add(ERepositoryObjectType.PROCESS_SPARKSTREAMING);
+        toReturn.add(ERepositoryObjectType.PROCESS_MR);
+        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
         return toReturn;
     }
 
@@ -89,10 +89,10 @@ public class UpdateDatesPatternAccordingToDeletedTimestampOption extends Abstrac
                 for(Object oc : metadata.getColumn()){
                     ColumnType column = (ColumnType) oc;
                     if(column.getType().equals("id_Date")) {
-                        if(ComponentUtilities.getNodePropertyValue(node, name) == "true"){
-                            column.setPattern("\"yyyy-MM-dd\"");
-                        } else {
-                                
+                        if("true".equals(ComponentUtilities.getNodePropertyValue(node, name))){
+                            column.setPattern("\"yyyy-MM-dd HH:mm:ss\"");
+                        } else if ("false".equals(ComponentUtilities.getNodePropertyValue(node, name))) {
+                            column.setPattern("\"dd-MM-yyyy\"");
                         }
                     }
                 }
