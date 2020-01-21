@@ -301,7 +301,9 @@ public class Log4jSettingPage extends ProjectSettingPage {
             } else {
                 templateTxt.setText(
                         Log4jPrefsSettingManager.getInstance().getDefaultTemplateString(Log4jPrefsConstants.LOG4JFILEPATH));
-                combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(Log4jPrefsConstants.LOG4J1));
+                if (combo != null) {
+                    combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(Log4jPrefsConstants.LOG4J1));
+                }
             }
         }
     }
