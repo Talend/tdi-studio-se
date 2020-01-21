@@ -294,7 +294,7 @@ boolean checkDate = (checkDateStr!=null&&!("").equals(checkDateStr))?("true").eq
             java.util.HashMap<String,String> xmlNameSpaceMap_<%=cid%> = new java.util.HashMap<String, String>();
             x_<%=cid%> = doc_<%=cid%>.createXPath(loopQuery_<%=cid %>); 
             x_<%=cid%>.setNamespaceURIs(xmlNameSpaceMap_<%=cid%>); 
-            java.util.List<org.dom4j.tree.AbstractNode> nodeList_<%=cid%> = (java.util.List<org.dom4j.tree.AbstractNode>)x_<%=cid%>.selectNodes(doc_<%=cid%>);  
+            java.util.List<org.dom4j.Node> nodeList_<%=cid%> = (java.util.List<org.dom4j.Node>)x_<%=cid%>.selectNodes(doc_<%=cid%>);  
             XML_API_<%=cid%> xml_api_<%=cid%> = new XML_API_<%=cid%>();
             String str_<%=cid %> = "";
             org.dom4j.Node node_<%=cid%> = null;
@@ -310,7 +310,7 @@ boolean checkDate = (checkDateStr!=null&&!("").equals(checkDateStr))?("true").eq
             }
 %>
 
-            for (org.dom4j.tree.AbstractNode temp_<%=cid%>: nodeList_<%=cid%>) {
+            for (org.dom4j.Node temp_<%=cid%>: nodeList_<%=cid%>) {
                 nb_line_<%=cid%>++;
 <%
 log4jFileUtil.debugRetriveData(node);

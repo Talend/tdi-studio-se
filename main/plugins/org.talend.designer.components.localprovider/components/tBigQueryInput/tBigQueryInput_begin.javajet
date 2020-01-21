@@ -32,12 +32,37 @@
 	String basePackage = "";
 	boolean isCustomTemporaryName = ElementParameterParser.getBooleanValue(node,"__USE_CUSTOM_TEMPORARY_DATASET__");
 	String tempDataset =  ElementParameterParser.getValue(node,"__TEMPORARY_DATASET_NAME__");
+	
+	String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
+	String advancedSeparatorStr = ElementParameterParser.getValue(node, "__ADVANCED_SEPARATOR__");
+	boolean advancedSeparator = (advancedSeparatorStr!=null&&!("").equals(advancedSeparatorStr))?("true").equals(advancedSeparatorStr):false;
+	String thousandsSeparator = ElementParameterParser.getValueWithJavaType(node, "__THOUSANDS_SEPARATOR__", JavaTypesManager.CHARACTER);
+	String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER);
 
 	query = query.replaceAll("\n"," ");
 	query = query.replaceAll("\r"," ");
 
     String tokenFile = ElementParameterParser.getValue(node,"__TOKEN_NAME__");
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	
+	//Dynamic start
+	List<IMetadataTable> metadatas = node.getMetadataList();
+	    int sizeListColumns = 0;
+		List<IMetadataColumn> columnList = null;
+		boolean isDynamic = false;
+	    if ((metadatas!=null)&&(metadatas.size()>0)) {
+		    IMetadataTable metadata = metadatas.get(0);
+			isDynamic = metadata.isDynamicSchema();
+		    if (metadata!=null) {
+			    columnList = metadata.getListColumns();
+			    sizeListColumns = columnList.size();
+		    }
+	    }
+		int dynamic_index=-1;
+		
+	//Dynamic end
+	
+	
     if (authMode.equals("OAUTH")) {
 		%>
 		final String CLIENT_ID_<%=cid %> = <%=clientId %>;
@@ -214,6 +239,43 @@
 		}
 		%>
 		String pageToken_<%=cid%> = null;
+		//Dynamic start
+
+		<%
+		
+		if(isDynamic){
+		%>
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Input/BigQuery/BigQueryHelper_Oauth.javajet"%>
+		BigQueryHelper_<%=cid%> helper_<%=cid%> = new BigQueryHelper_<%=cid%>();
+		com.google.api.services.bigquery.model.TableSchema schema_<%=cid%> = bigqueryclient_<%=cid%>
+						.jobs().getQueryResults(PROJECT_ID_<%=cid%>, insert_<%=cid%>.getJobReference().getJobId()).execute().getSchema();
+		routines.system.Dynamic dcg_<%=cid%> =  new routines.system.Dynamic();
+		
+		    <%
+
+		    for(int i=0; i< columnList.size(); i++) {
+		        if(columnList.get(i).getTalendType().equals("id_Dynamic")){
+		            dynamic_index = i+1;
+		        }
+			}
+			%>
+			//
+			    int colsLen_<%=cid %> = schema_<%=cid%>.getFields().size();
+			    for (int i = <%=dynamic_index-1%>; i < colsLen_<%=cid %>-<%=columnList.size()-dynamic_index%>; i++) {
+			    	routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
+			    	dynamicMetadata_<%=cid%>.setName(schema_<%=cid%>.getFields().get(i).getName());
+			    	dynamicMetadata_<%=cid%>.setDbName(dynamicMetadata_<%=cid%>.getName());
+			    	dynamicMetadata_<%=cid%>.setType(routines.system.Dynamic.getTalendTypeFromDBType("bigquery_id", schema_<%=cid%>.getFields().get(i).getType(), 0, 0));
+					dynamicMetadata_<%=cid%>.setDbType(schema_<%=cid%>.getFields().get(i).getType());
+			    	dynamicMetadata_<%=cid%>.setNullable("NULLABLE".equals(schema_<%=cid%>.getFields().get(i).getMode()));
+			    	dynamicMetadata_<%=cid%>.setColumnPosition(i);
+			    	dcg_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
+			    }
+			<%
+		
+		}
+		%>
+		//Dynamic end
 	<%
 	} else if (authMode.equals("SERVICEACCOUNT")) {
 	%>
@@ -310,6 +372,44 @@
 			log.info("<%=cid%> - Job " + jobId_<%=cid%> + " finished successfully.");
 		<% } %>
 		com.google.cloud.bigquery.TableResult result_<%=cid%> = job_<%=cid%>.getQueryResults();
+		//Dynamic start
+
+		<%
+		
+		if(isDynamic){
+		%>
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Input/BigQuery/BigQueryHelper_ServiceAccount.javajet"%>
+		BigQueryHelper_<%=cid%> helper_<%=cid%> = new BigQueryHelper_<%=cid%>();
+		com.google.cloud.bigquery.Schema schema_<%=cid%> = result_<%=cid%>.getSchema();
+		routines.system.Dynamic dcg_<%=cid%> =  new routines.system.Dynamic();
+		
+		    <%
+
+		    for(int i=0; i< columnList.size(); i++) {
+		        if(columnList.get(i).getTalendType().equals("id_Dynamic")){
+		            dynamic_index = i+1;
+		        }
+			}
+			%>
+			//
+			    int colsLen_<%=cid %> = schema_<%=cid%>.getFields().size();
+			    for (int i = <%=dynamic_index-1%>; i < colsLen_<%=cid %>-<%=columnList.size()-dynamic_index%>; i++) {
+			    	routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
+			    	dynamicMetadata_<%=cid%>.setName(schema_<%=cid%>.getFields().get(i).getName());
+			    	dynamicMetadata_<%=cid%>.setDbName(dynamicMetadata_<%=cid%>.getName());
+			    	com.google.cloud.bigquery.StandardSQLTypeName typeName_<%=cid%> = schema_<%=cid%>.getFields().get(i).getType().getStandardType();
+			    	String typeNameString_<%=cid%> = (typeName_<%=cid%> != null) ? typeName_<%=cid%>.name() : schema_<%=cid%>.getFields().get(i).getType().name();
+			    	dynamicMetadata_<%=cid%>.setType(routines.system.Dynamic.getTalendTypeFromDBType("bigquery_id", typeNameString_<%=cid%>, 0, 0));
+			    	dynamicMetadata_<%=cid%>.setDbType(typeNameString_<%=cid%>);
+			    	dynamicMetadata_<%=cid%>.setNullable(schema_<%=cid%>.getFields().get(i).getMode() == com.google.cloud.bigquery.Field.Mode.NULLABLE);
+			    	dynamicMetadata_<%=cid%>.setColumnPosition(i);
+			    	dcg_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
+			    }
+			<%
+		
+		}
+		%>
+		//Dynamic end
 		long nb_line_<%=cid%> = 0;
 	<%
 	} else {
@@ -349,21 +449,23 @@
 	} else {
 		throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
 	}
+		%>
+		int fieldsCount_<%=cid %> = field_<%=cid %>.size();
+		int column_index_<%=cid%> =0;
+		<%if(isDynamic){%>
+			int fixedColumnCount_<%=cid%> = <%=dynamic_index-1%>;
+		<%}
 		List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
 		if (conns != null){
 			if (conns.size()>0){
 				IConnection conn =conns.get(0);
 				String connName = conn.getName();
 				if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-					List<IMetadataTable> metadatas = node.getMetadataList();
+				    
+					
 					if ((metadatas!=null) && (metadatas.size() > 0)) {
 						IMetadataTable metadata = metadatas.get(0);
 						if (metadata != null) {
-							String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
-							String advancedSeparatorStr = ElementParameterParser.getValue(node, "__ADVANCED_SEPARATOR__");
-							boolean advancedSeparator = (advancedSeparatorStr!=null&&!("").equals(advancedSeparatorStr))?("true").equals(advancedSeparatorStr):false;
-							String thousandsSeparator = ElementParameterParser.getValueWithJavaType(node, "__THOUSANDS_SEPARATOR__", JavaTypesManager.CHARACTER);
-							String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER);
 
 							List<IMetadataColumn> columns = metadata.getListColumns();
 							int nbColumns = columns.size();
@@ -373,14 +475,33 @@
 
 								String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
 								JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+								String defVal = JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate);
+								if(isDynamic && !("Dynamic").equals(typeToGenerate) && dynamic_index - 1 < i) {
+								%>
+									column_index_<%=cid%> = <%=i-1%> + dcg_<%=cid%>.getColumnCount();
+								<%}else{%>
+									column_index_<%=cid%> = <%=i%>;
+								<%
+								}
 								String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+								if(("Dynamic").equals(typeToGenerate)) {
+									%>
+									    <%=connName%>.<%=columnName%> = dcg_<%=cid%>;
+										helper_<%=cid%>.readColumnsFromBigQuery(<%=connName%>.<%=columnName%>, field_<%=cid %>, fixedColumnCount_<%=cid%>, true);
+									<%
+								} else {
+								%>
+								if(fieldsCount_<%=cid %> <= column_index_<%=cid%>) {
+									<%=connName%>.<%=column.getLabel()%> = <%=defVal%>;
+								} else {
+								<%
 								if (authMode.equals("OAUTH")) {
 								%>
-								value_<%=cid%> = field_<%=cid %>.get(<%=i%>).getV();
+								value_<%=cid%> = field_<%=cid %>.get(column_index_<%=cid%>).getV();
 								<%
 								} else if (authMode.equals("SERVICEACCOUNT")) {
 								%>
-								value_<%=cid%> = field_<%=cid %>.get(<%=i%>).getValue();
+								value_<%=cid%> = field_<%=cid %>.get(column_index_<%=cid%>).getValue();
 								<%
 								} else {
 									throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
@@ -426,7 +547,9 @@
 								}else{
 									<%=connName%>.<%=columnName%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate, column.getDefault())%>;
 								}
+								}
 							<%
+								}
 							}
 							log4jFileUtil.debugRetriveData(node);
 						}

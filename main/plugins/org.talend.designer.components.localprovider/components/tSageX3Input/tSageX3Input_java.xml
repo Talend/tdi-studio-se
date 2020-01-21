@@ -111,8 +111,8 @@
 			<IMPORT NAME="SOAP-logging" MODULE="commons-logging-1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.jar" REQUIRED="true" />
 			<IMPORT NAME="SOAP-JavaMail" MODULE="mail.jar" MVN="mvn:org.talend.libraries/mail/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/mail.jar" REQUIRED="true" />
 			<IMPORT NAME="SOAP-JAF" MODULE="activation.jar" MVN="mvn:org.talend.libraries/activation/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation.jar" REQUIRED="true" />
-			<IMPORT NAME="XML-DOM4J" MODULE="dom4j-1.6.1.jar" MVN="mvn:dom4j/dom4j/1.6.1"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/dom4j-1.6.1.jar" REQUIRED="true" BundleID="" />
-			<IMPORT NAME="XML-XPATH-JAXEN" MODULE="jaxen-1.1.1.jar" MVN="mvn:org.talend.libraries/jaxen-1.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/jaxen-1.1.1.jar" REQUIRED="true" BundleID="" />
+			<IMPORT NAME="XML-DOM4J" MODULE="dom4j-2.1.1.jar" MVN="mvn:org.dom4j/dom4j/2.1.1" REQUIRED="true" BundleID="" />
+			<IMPORT NAME="XML-XPATH-JAXEN" MODULE="jaxen-1.1.6.jar" MVN="mvn:jaxen/jaxen/1.1.6" REQUIRED="true" BundleID="" />
 			<IMPORT NAME="TALEND-SAGE" MODULE="talend-sage.jar" MVN="mvn:org.talend.libraries/talend-sage/6.0.0"  REQUIRED="true" />
      </IMPORTS>
   </CODEGENERATION>

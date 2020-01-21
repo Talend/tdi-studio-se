@@ -257,7 +257,7 @@ if (outConn!=null) {
                 if(extractColNo%schemaOptNum==0){
 %>
             public void putExtractValue_<%=extractColNo/schemaOptNum%>(<%=NodeUtil.getPrivateConnClassName(outConn)%>Struct <%=firstConnName%>,<%if(inConn!=null){%><%=NodeUtil.getPrivateConnClassName(inConn)%>Struct <%=inConn.getName()%>,<%}%>
-                String xmlStr_<%=cid%>,org.dom4j.tree.AbstractNode temp_<%=cid %>,String loopQuery_<%=cid %>,java.util.HashMap xmlNameSpaceMap_<%=cid%>,org.dom4j.Node node_<%=cid %>,
+                String xmlStr_<%=cid%>,org.dom4j.Node temp_<%=cid %>,String loopQuery_<%=cid %>,java.util.HashMap xmlNameSpaceMap_<%=cid%>,org.dom4j.Node node_<%=cid %>,
                     String str_<%=cid %>,XML_API_<%=cid%> xml_api_<%=cid%>,OriginalJSONString_<%=cid %> originalJSONString_<%=cid %>,ConvertJSONString_<%=cid%> cjs_<%=cid %>,boolean isGetWholeJson_<%=cid%> ) throws java.lang.Exception {
 <%
                 }

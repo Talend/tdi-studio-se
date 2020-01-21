@@ -62,6 +62,8 @@ import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public class ProcessManager implements AutoCloseable {
 
+    private static final String CLIENT_IP = "127.0.0.1";
+
     private final String groupId;
 
     private final Function<String, File> mvnResolver;
@@ -335,8 +337,8 @@ public class ProcessManager implements AutoCloseable {
                         lock.unlock();
                         throw new IllegalStateException("Component server startup failed");
                     }
-                    try (final Socket ignored = new Socket("localhost", port)) {
-                        final URLConnection conn = new URL("http://localhost:" + port + "/api/v1/environment")
+                    try (final Socket ignored = new Socket(CLIENT_IP, port)) {
+                        final URLConnection conn = new URL("http://" + CLIENT_IP + ":" + port + "/api/v1/environment")
                                 .openConnection();
                         conn.setRequestProperty("Content-Type", "application/json");
                         conn.setRequestProperty("Accept", "application/json");

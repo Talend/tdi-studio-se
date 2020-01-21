@@ -81,7 +81,9 @@ public class InputTable extends AbstractInOutTable {
      */
     @Override
     public void initFromExternalData(ExternalDbMapTable externalMapperTable) {
-        setMetadataTable(connection.getTable());
+        if(connection != null) {
+            setMetadataTable(connection.getTable());
+        }
         super.initFromExternalData(externalMapperTable);
 
         List<IMetadataColumn> columns = getMetadataTable().getListColumns();

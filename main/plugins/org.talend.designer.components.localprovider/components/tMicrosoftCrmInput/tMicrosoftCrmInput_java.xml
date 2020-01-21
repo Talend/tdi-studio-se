@@ -27514,7 +27514,7 @@
                 <IMPORT NAME="geronimo-stax" MODULE="geronimo-stax-api_1.0_spec-1.0.1.jar" MVN="mvn:org.talend.libraries/geronimo-stax-api_1.0_spec-1.0.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/geronimo-stax-api_1.0_spec-1.0.1.jar" REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')"/>
                 <IMPORT NAME="wstx-asl" MODULE="wstx-asl-3.2.4.jar" MVN="mvn:org.talend.libraries/wstx-asl-3.2.4/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/wstx-asl-3.2.4.jar" REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')"/>
                 <IMPORT NAME="SOAP-JAF" MODULE="activation.jar" MVN="mvn:org.talend.libraries/activation/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation.jar" REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')"/>
-                <IMPORT NAME="Java-JAXEN" MODULE="jaxen-1.1.1.jar" MVN="mvn:org.talend.libraries/jaxen-1.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/jaxen-1.1.1.jar" REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')" BundleID="" />
+                <IMPORT NAME="Java-JAXEN" MODULE="jaxen-1.1.6.jar" MVN="mvn:jaxen/jaxen/1.1.6" REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')" BundleID="" />
                 <IMPORT NAME="saajapi" MODULE="saaj-api.jar" MVN="mvn:org.talend.libraries/saaj-api/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.saaj/lib/saaj-api.jar" REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')"/>
                 <IMPORT NAME="saajimpl" MODULE="saaj-impl.jar" MVN="mvn:org.talend.libraries/saaj-impl/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.saaj/lib/saaj-impl.jar" REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')"/>
                 <IMPORT NAME="jaxpapi" MODULE="jaxp-api.jar" MVN="mvn:org.talend.libraries/jaxp-api/6.0.0"  BundleID="" UrlPath="platform:/plugin/org.talend.libraries.jax/lib/jaxp-api.jar" REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')"/>
@@ -27755,10 +27755,9 @@
                     MVN="mvn:org.apache.santuario/xmlsec/2.1.2"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="dom4j-1.6.1"
-                    MODULE="dom4j-1.6.1.jar"
-                    MVN="mvn:dom4j/dom4j/1.6.1"
-                    UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/dom4j-1.6.1.jar"
+                    NAME="dom4j-2.1.1"
+                    MODULE="dom4j-2.1.1.jar"
+                    MVN="mvn:org.dom4j/dom4j/2.1.1"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')"
                     BundleID="" />
                 <IMPORT

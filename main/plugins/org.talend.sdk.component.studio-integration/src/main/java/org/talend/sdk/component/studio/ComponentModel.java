@@ -691,4 +691,9 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     public ComponentId getId(){
         return this.index.getId();
     }
+
+    @Override
+    public boolean isMadeByTalend() {
+        return TaCoKitUtil.isTaCoKitComponentMadeByTalend(this.index);
+    }
 }

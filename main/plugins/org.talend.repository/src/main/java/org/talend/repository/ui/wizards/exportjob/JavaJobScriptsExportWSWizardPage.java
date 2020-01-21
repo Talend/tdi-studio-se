@@ -270,7 +270,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         destinationNameField.setLayoutData(data);
         destinationNameField.setFont(font);
-        destinationNameField.setTextDirection(SWT.RIGHT_TO_LEFT);
         BidiUtils.applyBidiProcessing(destinationNameField, "file"); //$NON-NLS-1$
 
         // destination browse button
@@ -911,6 +910,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             } else {
                 setDefaultDestination();
             }
+            this.destinationNameField.pack(true);
+
             shellLauncherButton.setSelection(settings.getBoolean(STORE_SHELL_LAUNCHER_ID));
             // TDQ-15391: when have tDqReportRun, must always export items.
             if (EmfModelUtils.getComponentByName(getProcessItem(), "tDqReportRun") != null) { //$NON-NLS-1$

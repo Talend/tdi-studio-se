@@ -315,6 +315,10 @@ public class JavaProcessUtil {
     }
 
     public static String getHadoopClusterItemId(INode node) {
+        return getHadoopClusterItemId(node, true);
+    }
+
+    public static String getHadoopClusterItemId(INode node, boolean ignore) {
         IHadoopClusterService hadoopClusterService = HadoopRepositoryUtil.getHadoopClusterService();
         if (hadoopClusterService == null) {
             return null;
@@ -329,7 +333,7 @@ public class JavaProcessUtil {
         }
         Map<String, IElementParameter> childParameters = propertyElementParameter.getChildParameters();
         String propertyType = (String) childParameters.get(EParameterName.PROPERTY_TYPE.getName()).getValue();
-        if (!EmfComponent.REPOSITORY.equals(propertyType)) {
+        if (ignore && !EmfComponent.REPOSITORY.equals(propertyType)) {
             return null;
         }
         IElementParameter propertyParam = childParameters.get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());

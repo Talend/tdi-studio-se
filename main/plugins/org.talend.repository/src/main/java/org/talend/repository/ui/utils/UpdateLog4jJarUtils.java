@@ -25,6 +25,8 @@ import org.talend.librariesmanager.model.ModulesNeededProvider;
 
 public class UpdateLog4jJarUtils {
 
+    private static final String LOG4J_VERSION = "2.12.1";
+
     public static final String[] MODULES_NEED_UPDATE_ORDER = { "spark-assembly-1.6.0-hadoop2.6.0.jar" };
 
     public static void addLog4jToJarList(Collection<String> jarList, boolean isSelectLog4j2) {
@@ -43,10 +45,10 @@ public class UpdateLog4jJarUtils {
         addBackModules(jarList, isSelectLog4j2, modulesUsedBefore, currentProcess);
     }
 
-    public static final String[] MODULES_NEED_ADDED_BACK = { "log4j-jcl-2.12.1.jar", "log4j-jul-2.12.1.jar",
-            "log4j-slf4j-impl-2.12.1.jar", "log4j-api-2.12.1.jar", "log4j-core-2.12.1.jar", "jcl-over-slf4j-1.7.25.jar",
-            "jul-to-slf4j-1.7.25.jar", "log4j-to-slf4j-2.12.1.jar", "slf4j-log4j12-1.7.25.jar", "log4j-1.2.17.jar",
-            "log4j-1.2-api-2.12.1.jar" };
+    public static final String[] MODULES_NEED_ADDED_BACK = { "log4j-jcl-"+LOG4J_VERSION+".jar", "log4j-jul-"+LOG4J_VERSION+".jar",
+            "log4j-slf4j-impl-"+LOG4J_VERSION+".jar", "log4j-api-"+LOG4J_VERSION+".jar", "log4j-core-"+LOG4J_VERSION+".jar", "jcl-over-slf4j-1.7.25.jar",
+            "jul-to-slf4j-1.7.25.jar", "log4j-to-slf4j-"+LOG4J_VERSION+".jar", "slf4j-log4j12-1.7.25.jar", "log4j-1.2.17.jar",
+            "log4j-1.2-api-"+LOG4J_VERSION+".jar" };
 
     private static void addBackJars(Collection<String> moduleNeededList, boolean isSelectLog4j2, List<String> modulesUsedBefore,
             IProcess process) {
@@ -81,17 +83,17 @@ public class UpdateLog4jJarUtils {
             }
 
             if (usedlog4jJclBefore) {
-                moduleNeededList.add("log4j-jcl-2.12.1.jar");//$NON-NLS-1$
+                moduleNeededList.add("log4j-jcl-"+LOG4J_VERSION+".jar");//$NON-NLS-1$
             }
             if (usedlog4jJulBefore) {
-                moduleNeededList.add("log4j-jul-2.12.1.jar");//$NON-NLS-1$
+                moduleNeededList.add("log4j-jul-"+LOG4J_VERSION+".jar");//$NON-NLS-1$
             }
             if (usedlog4j1JarBefore) {
-                moduleNeededList.add("log4j-1.2-api-2.12.1.jar");
+                moduleNeededList.add("log4j-1.2-api-"+LOG4J_VERSION+".jar");
             }
-            moduleNeededList.add("log4j-slf4j-impl-2.12.1.jar");//$NON-NLS-1$
-            moduleNeededList.add("log4j-api-2.12.1.jar");//$NON-NLS-1$
-            moduleNeededList.add("log4j-core-2.12.1.jar");//$NON-NLS-1$
+            moduleNeededList.add("log4j-slf4j-impl-"+LOG4J_VERSION+".jar");//$NON-NLS-1$
+            moduleNeededList.add("log4j-api-"+LOG4J_VERSION+".jar");//$NON-NLS-1$
+            moduleNeededList.add("log4j-core-"+LOG4J_VERSION+".jar");//$NON-NLS-1$
         } else {
             boolean usedjclOverSlf4jBefore = false;
             for (String module : modulesUsedBefore) {
@@ -107,7 +109,7 @@ public class UpdateLog4jJarUtils {
                 moduleNeededList.add("jcl-over-slf4j-1.7.25.jar");//$NON-NLS-1$
             }
 
-            moduleNeededList.add("log4j-to-slf4j-2.12.1.jar");//$NON-NLS-1$
+            moduleNeededList.add("log4j-to-slf4j-"+LOG4J_VERSION+".jar");//$NON-NLS-1$
             moduleNeededList.add("slf4j-log4j12-1.7.25.jar");//$NON-NLS-1$
             moduleNeededList.add("log4j-1.2.17.jar");//$NON-NLS-1$
         }
@@ -150,28 +152,28 @@ public class UpdateLog4jJarUtils {
             }
 
             if (usedlog4jJclBefore) {
-                ModuleNeeded log4jJcl = new ModuleNeeded("org.apache.logging.log4j", "log4j-jcl-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-                log4jJcl.setMavenUri("mvn:org.apache.logging.log4j/log4j-jcl/2.12.1");//$NON-NLS-1$
+                ModuleNeeded log4jJcl = new ModuleNeeded("org.apache.logging.log4j", "log4j-jcl-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+                log4jJcl.setMavenUri("mvn:org.apache.logging.log4j/log4j-jcl/"+LOG4J_VERSION);//$NON-NLS-1$
                 moduleNeededList.add(log4jJcl);
             }
             if (usedlog4jJulBefore) {
-                ModuleNeeded log4jJul = new ModuleNeeded("org.apache.logging.log4j", "log4j-jul-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-                log4jJul.setMavenUri("mvn:org.apache.logging.log4j/log4j-jul/2.12.1");//$NON-NLS-1$
+                ModuleNeeded log4jJul = new ModuleNeeded("org.apache.logging.log4j", "log4j-jul-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+                log4jJul.setMavenUri("mvn:org.apache.logging.log4j/log4j-jul/"+LOG4J_VERSION);//$NON-NLS-1$
                 moduleNeededList.add(log4jJul);
             }
             if (usedlog4j1JarBefore) {
-                ModuleNeeded log4j1To2Api = new ModuleNeeded("org.apache.logging.log4j", "log4j-1.2-api-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-                log4j1To2Api.setMavenUri("mvn:org.apache.logging.log4j/log4j-1.2-api/2.12.1");//$NON-NLS-1$
+                ModuleNeeded log4j1To2Api = new ModuleNeeded("org.apache.logging.log4j", "log4j-1.2-api-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+                log4j1To2Api.setMavenUri("mvn:org.apache.logging.log4j/log4j-1.2-api/"+LOG4J_VERSION);//$NON-NLS-1$
                 moduleNeededList.add(log4j1To2Api);
             }
-            ModuleNeeded log4jSlf4jImpl = new ModuleNeeded("org.apache.logging.log4j", "log4j-slf4j-impl-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-            log4jSlf4jImpl.setMavenUri("mvn:org.apache.logging.log4j/log4j-slf4j-impl/2.12.1");//$NON-NLS-1$
+            ModuleNeeded log4jSlf4jImpl = new ModuleNeeded("org.apache.logging.log4j", "log4j-slf4j-impl-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+            log4jSlf4jImpl.setMavenUri("mvn:org.apache.logging.log4j/log4j-slf4j-impl/"+LOG4J_VERSION);//$NON-NLS-1$
             moduleNeededList.add(log4jSlf4jImpl);
-            ModuleNeeded log4jApi = new ModuleNeeded("org.apache.logging.log4j", "log4j-api-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-            log4jApi.setMavenUri("mvn:org.apache.logging.log4j/log4j-api/2.12.1");//$NON-NLS-1$
+            ModuleNeeded log4jApi = new ModuleNeeded("org.apache.logging.log4j", "log4j-api-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+            log4jApi.setMavenUri("mvn:org.apache.logging.log4j/log4j-api/"+LOG4J_VERSION);//$NON-NLS-1$
             moduleNeededList.add(log4jApi);
-            ModuleNeeded log4jCore = new ModuleNeeded("org.apache.logging.log4j", "log4j-core-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-            log4jCore.setMavenUri("mvn:org.apache.logging.log4j/log4j-core/2.12.1");//$NON-NLS-1$
+            ModuleNeeded log4jCore = new ModuleNeeded("org.apache.logging.log4j", "log4j-core-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+            log4jCore.setMavenUri("mvn:org.apache.logging.log4j/log4j-core/"+LOG4J_VERSION);//$NON-NLS-1$
             moduleNeededList.add(log4jCore);
 
         } else {
@@ -192,8 +194,8 @@ public class UpdateLog4jJarUtils {
                 moduleNeededList.add(jclOverSlf4j);
             }
 
-            ModuleNeeded log4jToSlf4j = new ModuleNeeded("org.apache.logging.log4j", "log4j-to-slf4j-2.12.1.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-            log4jToSlf4j.setMavenUri("mvn:org.apache.logging.log4j/log4j-to-slf4j/2.12.1");//$NON-NLS-1$
+            ModuleNeeded log4jToSlf4j = new ModuleNeeded("org.apache.logging.log4j", "log4j-to-slf4j-"+LOG4J_VERSION+".jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
+            log4jToSlf4j.setMavenUri("mvn:org.apache.logging.log4j/log4j-to-slf4j/"+LOG4J_VERSION);//$NON-NLS-1$
             moduleNeededList.add(log4jToSlf4j);
             ModuleNeeded slf4jLog4j12 = new ModuleNeeded("org.slf4j", "slf4j-log4j12-1.7.25.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
             slf4jLog4j12.setMavenUri("mvn:org.slf4j/slf4j-log4j12/1.7.25");//$NON-NLS-1$

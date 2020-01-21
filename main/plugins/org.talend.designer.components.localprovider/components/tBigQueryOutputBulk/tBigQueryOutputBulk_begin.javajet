@@ -16,6 +16,63 @@ imports="
 	if ((metadatas!=null)&&(metadatas.size()>0)) {
 	    IMetadataTable metadata = metadatas.get(0);
 	    if (metadata!=null) {
+			
+	        String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
+			
+			if(metadata.isDynamicSchema()) {
+			%>
+			class BigQueryOutputHelper_<%=cid%> {
+				public void writeData(routines.system.Dynamic column, String[] row, int offset) {
+					for (int i = 0; i < column.getColumnCount(); i++) {
+						if (column.getColumnValue(i) != null) {
+							routines.system.DynamicMetadata metadata = column.getColumnMetadata(i);
+							String dataType = routines.system.MetadataTalendType.getDefaultSelectedDbType("bigquery_id", metadata.getType(), -1, -1);
+							String orignalDBType = metadata.getDbType();
+							java.util.List<String> outputDBTypelist = routines.system.MetadataTalendType.getTalendToDBList("bigquery_id", metadata.getType());
+							if (outputDBTypelist != null && outputDBTypelist.size() > 0) {
+								for (String dbType : outputDBTypelist) {
+									if (orignalDBType.equalsIgnoreCase(dbType)) {
+										dataType = dbType;
+										break;
+									}
+								}
+							}
+							if (dataType == null || ("").equals(dataType)) {
+								dataType = orignalDBType;
+							}
+							if ("id_Date".equals(metadata.getType())) {
+								String pattern = getPattern(dataType);
+								row[offset + i] = routines.system.DynamicUtils.formatDate(column.getColumnValue(i), pattern);
+							} else if ("id_byte[]".equals(metadata.getType())) {
+								row[offset + i] = java.nio.charset.Charset.forName(<%=encoding %>).decode(java.nio.ByteBuffer.wrap((byte[])column.getColumnValue(i))).toString();
+							} else {
+								row[offset + i] = String.valueOf(column.getColumnValue(i));
+							}
+						}
+					}
+				}
+				public String getPattern(String typeName) {
+					if(typeName == null) {
+						return "yyyy-MM-dd hh:mm:ss.SSS";
+					}
+					switch(typeName.toUpperCase()) {
+					case "TIMESTAMP":
+						return "yyyy-MM-dd hh:mm:ss.SSSXXX";
+					case "DATE":
+						return "yyyy-MM-dd";
+					case "TIME":
+						return "hh:mm:ss.SSS";
+					case "DATETIME":
+						return "yyyy-MM-dd hh:mm:ss.SSS";
+					default:
+						return "yyyy-MM-dd hh:mm:ss.SSS";
+					}
+				}
+			}
+			BigQueryOutputHelper_<%=cid%> bigQueryHelper_<%=cid%> = new BigQueryOutputHelper_<%=cid%>();
+			<%
+			}
+			
 	        String filename = ElementParameterParser.getValue(node,"__FILENAME__");
 	        
 	        String rowSeparator = ElementParameterParser.getValue(node,"__ROWSEPARATOR__");
@@ -25,8 +82,6 @@ imports="
 	        String escapeChar = ElementParameterParser.getValue(node, "__ESCAPE_CHAR__");
 	        
 	        String textEnclosure = ElementParameterParser.getValue(node, "__TEXT_ENCLOSURE__");
-	        
-	        String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
 	        
 	        boolean checkDiskSpace = ("true").equals(ElementParameterParser.getValue(node,"__CHECK_DISK_SPACE__"));
 	        
