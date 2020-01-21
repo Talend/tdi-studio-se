@@ -3148,8 +3148,9 @@ public class EmfComponent extends AbstractBasicComponent {
         List<String> moduleNames = new ArrayList<String>();
         if (!isAlreadyLoad) {
             IMPORTSType imports = compType.getCODEGENERATION().getIMPORTS();
+            List<IMPORTType> importTypes = new ArrayList<IMPORTType>();
             if (imports != null) {
-                List<IMPORTType> importTypes = ImportModuleManager.getInstance().getImportTypes(imports);
+                importTypes.addAll(ImportModuleManager.getInstance().getImportTypes(imports));
                 for (IMPORTType importType : importTypes) {
                     ModulesNeededProvider.collectModuleNeeded(this.getName(), importType, componentImportNeedsList);
                 }
@@ -3192,8 +3193,8 @@ public class EmfComponent extends AbstractBasicComponent {
                                     if (msg.startsWith(Messages.KEY_NOT_FOUND_PREFIX)) {
                                         msg = Messages.getString("modules.required"); //$NON-NLS-1$
                                     }
-                                    ModuleNeeded componentImportNeeds = new ModuleNeeded(this.getName(), valueIndex, msg, true,
-                                            new ArrayList(), null, null);
+                                    ModuleNeeded componentImportNeeds = new ModuleNeeded(this.getName(), valueIndex, msg, isRequired(importTypes, valueIndex),
+                                            new ArrayList(), getRequiredIF(importTypes, valueIndex), null);
                                     componentImportNeeds.setShow(false);
                                     componentImportNeedsList.add(componentImportNeeds);
                                 }
@@ -3295,6 +3296,27 @@ public class EmfComponent extends AbstractBasicComponent {
         }
 
         return componentImportNeedsList;
+    }
+    
+    private boolean isRequired(List<IMPORTType> importTypes, String valueIndex) {
+        for(IMPORTType type : importTypes) {
+            if(type.getMODULE().equals(valueIndex)) {
+                return type.isREQUIRED();
+            }
+        }
+        return true;
+    }
+    
+    private String getRequiredIF(List<IMPORTType> importTypes, String valueIndex) {
+        for(IMPORTType type : importTypes) {
+            if(type.getMODULE().equals(valueIndex)) {
+                String reIF = type.getREQUIREDIF();
+                if(reIF != null && reIF.length() > 0) {
+                    return reIF;
+                }
+            }
+        }
+        return null;
     }
 
     protected void initBundleID(IMPORTType importType, ModuleNeeded componentImportNeeds) {
