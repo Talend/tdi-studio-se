@@ -197,6 +197,7 @@ public class ElementParameterCreator {
         addUniqueNameParameter();
         addComponentNameParameter();
         addTacokitComponentIdParameter();
+        addTaCoKitMetadataTypeIdParameter();
         addVersionParameter();
         addFamilyParameter();
         addStartParameter();
@@ -614,6 +615,21 @@ public class ElementParameterCreator {
         parameter.setCategory(EComponentCategory.BASIC);
         parameter.setNumRow(1);
         parameter.setReadOnly(true);
+        parameter.setShow(false);
+        parameters.add(parameter);
+    }
+
+    private void addTaCoKitMetadataTypeIdParameter() {
+        final ElementParameter parameter = new ElementParameter(node);
+        parameter.setName(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+        parameter.setFieldType(EParameterFieldType.TEXT);
+        parameter.setValue(null);
+        parameter.setRepositoryValue(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+        parameter.setDisplayName(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+        parameter.setFieldType(EParameterFieldType.TECHNICAL);
+        parameter.setCategory(EComponentCategory.BASIC);
+        parameter.setNumRow(1);
+        parameter.setReadOnly(false);
         parameter.setShow(false);
         parameters.add(parameter);
     }

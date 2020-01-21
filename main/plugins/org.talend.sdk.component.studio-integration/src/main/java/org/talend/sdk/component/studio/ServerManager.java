@@ -30,6 +30,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.osgi.hook.maven.MavenResolver;
 import org.talend.sdk.component.studio.debounce.DebounceManager;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
@@ -61,6 +62,11 @@ public class ServerManager {
     private static Object lock = new Object();
 
     private ServerManager() {
+        /**
+         * update/set "talend.studio.version", because TCK server need to know whether running on studio by checking
+         * this parameter
+         */
+        VersionUtils.getInternalVersion();
     }
 
     public static ServerManager getInstance() {

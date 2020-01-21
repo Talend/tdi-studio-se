@@ -99,45 +99,49 @@ public class Log4jSettingPage extends ProjectSettingPage {
         composite.setLayoutData(gridData);
         group.setText(Messages.getString("Log4jSettingPage.Log4jEnabled")); //$NON-NLS-1$
 
-        log4jBtn = new Button(composite, SWT.CHECK);
-        log4jBtn.setText(Messages.getString("Log4jSettingPage.ActivateLog4j"));//$NON-NLS-1$
-
-        Composite compositeVersion = new Composite(composite, SWT.NONE);
-        GridLayout gridLayoutVersion = new GridLayout(2, false);
-        compositeVersion.setLayout(gridLayoutVersion);
-        Label label = new Label(compositeVersion, SWT.NONE);
-        label.setText(Messages.getString("Log4jSettingPage.Log4jVersion")); //$NON-NLS-1$
-        GridData labelData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false, 1, 1);
-        label.setLayoutData(labelData);
-        combo = new Combo(compositeVersion, SWT.READ_ONLY);
-        GridData comboData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false, 1, 1);
-        GC gc = new GC(combo);
-        Point labelSize = gc.stringExtent(Log4jPrefsConstants.LOG4J1);
-        gc.dispose();
-        int hint = labelSize.x + (ITabbedPropertyConstants.HSPACE * 1);
-        comboData.widthHint = hint;
-        combo.setLayoutData(comboData);
-        combo.setItems(Log4jPrefsConstants.LOG4J_VERSIONS.toArray(new String[] {}));
-        log4jVersion = Boolean
-                .valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_SELECT_VERSION2))
-                        ? Log4jPrefsConstants.LOG4J2
-                        : Log4jPrefsConstants.LOG4J1;
-        combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(log4jVersion));
-
-        GridLayout layout = new GridLayout();
-        layout.numColumns = 1;
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        layout.horizontalSpacing = 8;
-        composite.setLayout(layout);
         isNewProject = Boolean
                 .valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT));
-
-        combo.setEnabled(!isNewProject);
+        log4jBtn = new Button(composite, SWT.CHECK);
+        log4jBtn.setText(isNewProject ? Messages.getString("Log4jSettingPage.ActivateLog4j2") //$NON-NLS-1$
+                : Messages.getString("Log4jSettingPage.ActivateLog4j"));//$NON-NLS-1$
         if (!isNewProject) {
-            combo.setEnabled(Boolean
-                    .valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE)));
+            Composite compositeVersion = new Composite(composite, SWT.NONE);
+            GridLayout gridLayoutVersion = new GridLayout(2, false);
+            compositeVersion.setLayout(gridLayoutVersion);
+            Label label = new Label(compositeVersion, SWT.NONE);
+            label.setText(Messages.getString("Log4jSettingPage.Log4jVersion")); //$NON-NLS-1$
+            GridData labelData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false, 1, 1);
+            label.setLayoutData(labelData);
+            combo = new Combo(compositeVersion, SWT.READ_ONLY);
+            GridData comboData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false, 1, 1);
+            GC gc = new GC(combo);
+            Point labelSize = gc.stringExtent(Log4jPrefsConstants.LOG4J1);
+            gc.dispose();
+            int hint = labelSize.x + (ITabbedPropertyConstants.HSPACE * 1);
+            comboData.widthHint = hint;
+            combo.setLayoutData(comboData);
+            combo.setItems(Log4jPrefsConstants.LOG4J_VERSIONS.toArray(new String[] {}));
+            log4jVersion = Boolean
+                    .valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_SELECT_VERSION2))
+                            ? Log4jPrefsConstants.LOG4J2
+                            : Log4jPrefsConstants.LOG4J1;
+            combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(log4jVersion));
+
+            GridLayout layout = new GridLayout();
+            layout.numColumns = 1;
+            layout.marginWidth = 0;
+            layout.marginHeight = 0;
+            layout.horizontalSpacing = 8;
+            composite.setLayout(layout);
+
+
+            combo.setEnabled(!isNewProject);
+            if (!isNewProject) {
+                combo.setEnabled(Boolean.valueOf(
+                        Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE)));
+            }
         }
+
         return group;
     }
 
@@ -168,28 +172,32 @@ public class Log4jSettingPage extends ProjectSettingPage {
                 }
             }
         });
-        combo.addSelectionListener(new SelectionAdapter() {
 
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                int index = combo.getSelectionIndex();
-                String version = Log4jPrefsConstants.LOG4J_VERSIONS.get(index);
-                IRunProcessService service = null;
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-                    service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
-                }
-                if (service != null) {
+        if (combo != null) {
+            combo.addSelectionListener(new SelectionAdapter() {
 
-                    if (version != null && StringUtils.equals(version.trim(), Log4jPrefsConstants.LOG4J2)) {
-                        String logTemplate = service.getLogTemplate(Log4jPrefsConstants.LOG4J_VERSION2_FILEPATH);
-                        templateTxt.setText(logTemplate);
-                    } else {
-                        String logTemplate = service.getLogTemplate(Log4jPrefsConstants.LOG4JFILEPATH);
-                        templateTxt.setText(logTemplate);
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    int index = combo.getSelectionIndex();
+                    String version = Log4jPrefsConstants.LOG4J_VERSIONS.get(index);
+                    IRunProcessService service = null;
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                        service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+                    }
+                    if (service != null) {
+
+                        if (version != null && StringUtils.equals(version.trim(), Log4jPrefsConstants.LOG4J2)) {
+                            String logTemplate = service.getLogTemplate(Log4jPrefsConstants.LOG4J_VERSION2_FILEPATH);
+                            templateTxt.setText(logTemplate);
+                        } else {
+                            String logTemplate = service.getLogTemplate(Log4jPrefsConstants.LOG4JFILEPATH);
+                            templateTxt.setText(logTemplate);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+
     }
 
     @Override
@@ -246,10 +254,11 @@ public class Log4jSettingPage extends ProjectSettingPage {
             }
             Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
                     templateTxt.getText());
-            int selectionIndex = combo.getSelectionIndex();
-            Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
-                    String.valueOf(selectionIndex == 1));
-
+            if (!isNewProject && combo != null) {
+                int selectionIndex = combo.getSelectionIndex();
+                Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
+                        String.valueOf(selectionIndex == 1));
+            }
         }
         reset = false;
         log4jVersion = Boolean
@@ -264,6 +273,9 @@ public class Log4jSettingPage extends ProjectSettingPage {
     }
 
     private boolean isLog4jVersionChanged() {
+        if (isNewProject) {
+            return false;
+        }
         int selectionIndex = combo.getSelectionIndex();
         String version = Log4jPrefsConstants.LOG4J_VERSIONS.get(selectionIndex);
         return !StringUtils.equals(log4jVersion, version);
@@ -280,7 +292,6 @@ public class Log4jSettingPage extends ProjectSettingPage {
             if (isNewProject) {
                 templateTxt.setText(Log4jPrefsSettingManager.getInstance()
                         .getDefaultTemplateString(Log4jPrefsConstants.LOG4J_VERSION2_FILEPATH));
-                combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(Log4jPrefsConstants.LOG4J2));
             } else {
                 templateTxt.setText(
                         Log4jPrefsSettingManager.getInstance().getDefaultTemplateString(Log4jPrefsConstants.LOG4JFILEPATH));

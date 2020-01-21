@@ -37,6 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.distribution-management.repository.id>@ProjectDistributionManagementRepositoryId@</project.distribution-management.repository.id>
         <project.distribution-management.repository.url>@ProjectDistributionManagementRepositoryUrl@</project.distribution-management.repository.url>
+        <docker.skip>true</docker.skip>
 	</properties>
 
 	<dependencies>
