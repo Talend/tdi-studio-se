@@ -40,6 +40,10 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
  */
 public class UpdateDatesPatternAccordingToDeletedTimestampOption extends AbstractJobMigrationTask {
 
+    List<String> impactedComponents =
+            Arrays.asList("tFileOutputParquet", "tHiveOutput", "tRedshiftOutput", "tSqlRow", "tMatchPairing",
+                    "tMatchPredict", "tMatchModel", "tDataShuffling");
+    
     @Override
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2020, 01, 19, 10, 0, 0);
@@ -57,10 +61,6 @@ public class UpdateDatesPatternAccordingToDeletedTimestampOption extends Abstrac
         if (processType == null) {
             return ExecutionResult.NOTHING_TO_DO;
         }
-
-        List<String> impactedComponents =
-                Arrays.asList("tFileOutputParquet", "tHiveOutput", "tRedshiftOutput", "tSqlRow", "tMatchPairing",
-                        "tMatchPredict", "tMatchModel", "tDataShuffling");
 
         IComponentConversion adaptSchemaForDateType = new AdaptSchemaForDateType();
 
