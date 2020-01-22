@@ -66,7 +66,7 @@ public class UpdateDatesPatternAccordingToDeletedTimestampOption extends Abstrac
         IComponentConversion adaptSchemaForDateType = new AdaptSchemaForDateType();
 
         try {
-            for (String componentName : IMPACTEDCOMPONENTS) {
+            for (String componentName : IMPACTED_COMPONENTS) {
                 ModifyComponentsAction.searchAndModify(item, processType, new NameComponentFilter(componentName),
                         java.util.Collections.singletonList(adaptSchemaForDateType));
             }
