@@ -41,7 +41,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
  */
 public class UpdateDatesPatternAccordingToDeletedTimestampOption extends AbstractJobMigrationTask {
 
-    private static final List<String> IMPACTEDCOMPONENTS =
+    private static final List<String> IMPACTED_COMPONENTS =
             Arrays.asList("tFileOutputParquet", "tHiveOutput", "tRedshiftOutput", "tSqlRow", "tMatchPairing",
                     "tMatchPredict", "tMatchModel", "tDataShuffling");
     
