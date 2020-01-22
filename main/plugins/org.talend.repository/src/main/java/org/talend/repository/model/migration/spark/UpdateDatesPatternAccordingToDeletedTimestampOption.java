@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.ModifyComponentsAction;
 import org.talend.core.model.components.conversions.IComponentConversion;
@@ -71,6 +72,7 @@ public class UpdateDatesPatternAccordingToDeletedTimestampOption extends Abstrac
             }
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
+            ExceptionHandler.process(e);
             return ExecutionResult.FAILURE;
         }
     }
