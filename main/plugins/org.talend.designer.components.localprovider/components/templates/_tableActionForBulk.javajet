@@ -4,6 +4,8 @@
 //issue 0010346 Parallelization crash with "Drop table if exists and create"
 Boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
 boolean isLog4jEnabled_tableAction = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+boolean isDynamic = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
+String dynamicComponentName = ElementParameterParser.getValue(node, "__DYNAMIC__");
 
 if (!isParallelize) {
 //end issue 0010346 Parallelization crash with "Drop table if exists and create"
@@ -208,8 +210,21 @@ if (!isParallelize) {
 					if (MSSQL.equalsIgnoreCase(dbmsId) && isDynamic){
 					%>
 						routines.system.Dynamic dynamicColumn = (Dynamic)globalMap.get("<%=dynamicComponentName%>" + "_DYNAMIC");
+
+						//This code should be in DynamicUtils class.
+						for (DynamicMetadata column : dynamicColumn.metadatas){
+							//set maximum precision for double types
+							//in MSSQL double is float. Maximum precision is 53
+							if (column.getType().equals("id_Double")){
+								column.setLength(53);
+							} else if (column.getType().equals("id_Boolean")){
+								column.setType("id_String");
+								column.setLength(5);
+							}
+						}
 						String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
 						String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
+						System.out.println("queryForExec: " + queryForExec);
 						stmtCreate_<%=cid%>.execute(queryForExec);
 					<%
 					} else {
@@ -245,8 +260,20 @@ if (!isParallelize) {
 				if (MSSQL.equalsIgnoreCase(dbmsId) && isDynamic){
 				%>
 					routines.system.Dynamic dynamicColumn = (Dynamic)globalMap.get("<%=dynamicComponentName%>" + "_DYNAMIC");
+					//This code should be in DynamicUtils class.
+					for (DynamicMetadata column : dynamicColumn.metadatas){
+						//set maximum precision for double types
+						//in MSSQL double is float. Maximum precision is 53
+						if (column.getType().equals("id_Double")){
+							column.setLength(53);
+						} else if (column.getType().equals("id_Boolean")){
+							column.setType("id_String");
+							column.setLength(5);
+						}
+					}
 					String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
 					String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
+					System.out.println("queryForExec: " + queryForExec);
 					stmtCreate_<%=cid%>.execute(queryForExec);
 				<%
 				} else {

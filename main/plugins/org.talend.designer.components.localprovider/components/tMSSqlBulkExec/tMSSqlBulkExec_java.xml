@@ -196,9 +196,6 @@
   		<DEFAULT>Warning : this component configuration will automatically generate a commit before bulk insert</DEFAULT>
   	</PARAMETER>
 
-
-
-
     <PARAMETER
       NAME="USE_EXISTING_DYNAMIC"
       FIELD="CHECK"
@@ -216,13 +213,11 @@
       >
     </PARAMETER>
 
-
-
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
       NUM_ROW="20"
-      SHOW_IF="(ACTION=='INSERT') or (ACTION=='UPDATE')"
+      SHOW_IF="((ACTION=='INSERT') or (ACTION=='UPDATE')) AND (USE_EXISTING_DYNAMIC == 'false')"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>

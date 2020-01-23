@@ -4,8 +4,6 @@ imports="
 	org.talend.core.model.process.ElementParameterParser
 	org.talend.designer.codegen.config.CodeGeneratorArgument
 	org.talend.core.model.metadata.IMetadataTable
-	org.talend.core.model.metadata.IMetadataColumn
-	org.talend.core.model.metadata.MetadataColumn
 	org.talend.core.model.metadata.MetadataTalendType
 	org.talend.core.model.metadata.MappingTypeRetriever
 	org.talend.core.model.utils.NodeUtil
@@ -42,8 +40,6 @@ String data_file_type = ElementParameterParser.getValue(node, "__DATA_FILE_TYPE_
 boolean fire_triggers = ("true").equals(ElementParameterParser.getValue(node, "__FIRE_TRIGGERS__"));
 boolean convertToUppercase = false; // not active this function
 boolean useExistingDynamic = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
-String dynamicComponentName = ElementParameterParser.getValue(node, "__DYNAMIC__");
-boolean isDynamic = useExistingDynamic;
 %>
 int deletedCount_<%=cid%>=0;
 <%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
@@ -67,13 +63,13 @@ if(("EXPORT").equals(action)) {
 	}else{
 		char_type = "-w";
 	}
+
 	%>
+
 	<%
 	String passwordFieldName = "__PASS__";
 	%>
-
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-
 	StringBuffer command_<%=cid%> = new StringBuffer();
 	command_<%=cid%>.append(<%=bcp_utility%>)
 		.append(" \"")
@@ -195,7 +191,7 @@ if(("EXPORT").equals(action)) {
 		stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null);
 	}
 
-	if((columnList != null && columnList.size() > 0) || isDynamic || "CLEAR".equals(tableAction) || "NONE".equals(tableAction) || "TRUNCATE".equals(tableAction)){
+	if((columnList != null && columnList.size() > 0) || useExistingDynamic || "CLEAR".equals(tableAction) || "NONE".equals(tableAction) || "TRUNCATE".equals(tableAction)){
 	%>
 		<%@ include file="../templates/_tableActionForBulk.javajet"%>
     	<%
