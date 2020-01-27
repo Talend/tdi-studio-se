@@ -558,6 +558,19 @@ public class JavaProcessorUtilities {
         return null;
     }
 
+    public static IFolder getJavaProjectResourcesFolder(IRunProcessService processService, Process process) {
+        ITalendProcessJavaProject talendProject = processService.getTalendJobJavaProject(((Process) process).getProperty());
+        return talendProject.getExternalResourcesFolder();        
+        
+//        try {
+//            jobProject = (ITalendProcessJavaProject) ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());
+//            return jobProject.getExternalResourcesFolder();
+//        } catch (PersistenceException e) {
+//            ExceptionHandler.process(e);
+//        }
+//        return null;
+    }
+    
     public static boolean hasBatchOrStreamingSubProcess(Item item) throws PersistenceException {
         return hasBatchOrStreamingSubProcess(item, new HashSet<String>());
     }
