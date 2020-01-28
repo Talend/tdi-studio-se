@@ -1,10 +1,9 @@
-<%@ jet
+<%@ jet 
 	imports="
-		org.talend.core.model.process.INode
-		org.talend.core.model.process.ElementParameterParser
-		org.talend.core.model.process.IProcess
-		org.talend.core.model.metadata.IMetadataTable
-		org.talend.core.model.metadata.IMetadataColumn
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
 		org.talend.core.model.process.IConnection
 		org.talend.core.model.process.IConnectionCategory
 		org.talend.designer.codegen.config.CodeGeneratorArgument
@@ -12,15 +11,15 @@
 		org.talend.core.model.metadata.types.JavaType
 		org.talend.core.model.utils.TalendTextUtils
 		java.util.List
-		java.util.Map
-	"
+    	java.util.Map
+	" 
 %>
 	<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
-
+	
 	List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
 	List<? extends IConnection> connsFlow = node.getOutgoingConnections("FLOW");
 
@@ -31,65 +30,65 @@
 		IMetadataTable metadata = metadatas.get(0);
 		if (metadata!=null) {
 			String rowSeparator = ElementParameterParser.getValue(node, "__ROWSEPARATOR__");
-
+			
 			List<Map<String, String>> formats =
             (List<Map<String,String>>)ElementParameterParser.getObjectValue(
                 node,
                 "__FORMATS__"
             );
-
+            
             List<Map<String, String>> trimSelects =
             (List<Map<String,String>>)ElementParameterParser.getObjectValue(
                 node,
                 "__TRIMSELECT__"
             );
-
+            
             String pattern1 = ElementParameterParser.getValue(node, "__PATTERN__");
-
+            
             String patternUnits = ElementParameterParser.getValue(node, "__PATTERN_UNITS__");
             boolean advanced = ("true").equals(ElementParameterParser.getValue(node, "__ADVANCED_OPTION__"));
-
+            
 			String filename = ElementParameterParser.getValueWithUIFieldKey(node,"__FILENAME__", "FILENAME");
-
+			
 			String trimAll = ElementParameterParser.getValue(node,"__TRIMALL__");
 			boolean isTrimAll = true;
 			if(trimAll != null && ("false").equals(trimAll)){
 				isTrimAll = false;
 			}
-
+			
    			String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
-
+   			
     		String header = ElementParameterParser.getValue(node, "__HEADER__");
-
-    		String limit = ElementParameterParser.getValue(node, "__LIMIT__");
+    		
+    		String limit = ElementParameterParser.getValue(node, "__LIMIT__");    		
     		if ("".equals(limit.trim())) limit = "-1";
-
+    		
     		String removeEmptyRow = ElementParameterParser.getValue(node, "__REMOVE_EMPTY_ROW__");
-
+    		
         	String dieOnErrorStr = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
     		boolean dieOnError = (dieOnErrorStr!=null&&!("").equals(dieOnErrorStr))?("true").equals(dieOnErrorStr):false;
-
+    		
     		//need to process rows longger than 100 000 characters, the property SafetySwitch(in talend_file_enhanced_20070724.jar) should be sent to false.(the default is true)
     		//that means if check the option(true), the logic value of bSafetySwitch should be changed to false (XOR with 'true')
-    		boolean bSafetySwitch = (("true").equals(ElementParameterParser.getValue(node, "__PROCESS_LONG_ROW__")) ^ true);
+    		boolean bSafetySwitch = (("true").equals(ElementParameterParser.getValue(node, "__PROCESS_LONG_ROW__")) ^ true);    		
     		String advancedSeparatorStr = ElementParameterParser.getValue(node, "__ADVANCED_SEPARATOR__");
     		boolean advancedSeparator = (advancedSeparatorStr!=null&&!("").equals(advancedSeparatorStr))?("true").equals(advancedSeparatorStr):false;
     		String thousandsSeparator = ElementParameterParser.getValueWithJavaType(node, "__THOUSANDS_SEPARATOR__", JavaTypesManager.CHARACTER);
-    		String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER);
-
+    		String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER);    		  
+			
 			String checkDateStr = ElementParameterParser.getValue(node,"__CHECK_DATE__");
 			boolean checkDate = (checkDateStr!=null&&!("").equals(checkDateStr))?("true").equals(checkDateStr):false;
-
+			
 			boolean uncompress = ("true").equals(ElementParameterParser.getValue(node,"__UNCOMPRESS__"));
 			String footer = uncompress?"0":ElementParameterParser.getValue(node, "__FOOTER__");
-
+			
 			final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 			log4jFileUtil.componentStartInfo(node);
-
+			
     		if(("").equals(header)){
     			header = "0";
     		}
-
+    			
     		if(("").equals(footer)){
     			footer = "0";
     		}
@@ -122,28 +121,15 @@
                 }
             <%
             }
-
-			IProcess process = node.getProcess();
-			String dynamic = ElementParameterParser.getValue(node, "__DYNAMIC__");
-			List<? extends INode> dynamicSchemaNodes = process.getNodesOfType("tSetDynamicSchema");
-			boolean guessSchemaFromFile = false;
-			for (INode currentNode : dynamicSchemaNodes){
-				if (currentNode.getUniqueName().equals(dynamic)){
-					guessSchemaFromFile = ("true").equals(ElementParameterParser.getValue(currentNode, "__GUESS_SCHEMA_FROM_FILE__"));
-				}
-			}
-			%>
-			if (<%=guessSchemaFromFile%>) {
-				throw new RuntimeException("tFileInputPositional can't work with tSetDynamicSchema when 'Guess schema from file' option is activated");
-			}
-			<%
+            
 			boolean hasDynamic = metadata.isDynamicSchema();
+			String dynamic = ElementParameterParser.getValue(node, "__DYNAMIC__");
 			boolean useExistingDynamic = "true".equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
-			String dyn = dynamic+"_DYNAMIC";
+            String dyn = dynamic+"_DYNAMIC";
 			if(useExistingDynamic){
 				%>
 				useStar_<%=cid%> = true;
-
+				
 				routines.system.Dynamic dynamic_<%=cid %> = (routines.system.Dynamic)globalMap.get("<%=dyn%>");
 				int maxColumnCount_<%=cid %> = dynamic_<%=cid %>.getColumnCount();
 				dynamic_<%=cid %>.clearColumnValues();
@@ -175,7 +161,7 @@
 
 			class PositionalUtil_<%=cid%>{
 				private boolean useStar = false;
-
+                				
 				public void setUseStar(boolean useStar) {
 					this.useStar = useStar;
 				}
@@ -206,13 +192,13 @@
                 					if(valueN%100==0){
     						        %>
                   						void setValue_<%=(valueN/100)%>(<%=firstConnName %>Struct <%=firstConnName %>,int[] begins_<%=cid %>,int[] ends_<%=cid %>,int rowLen_<%=cid %>,
-                  						<% if("BYTES".equals(patternUnits)){ %>byte[] byteArray_<%=cid %>,Arrays_<%=cid %> arrays_<%=cid %>,<% } %>String column_<%=cid %>,String row_<%=cid %>)throws java.lang.Exception {
+                  						<% if("BYTES".equals(patternUnits)){ %>byte[] byteArray_<%=cid %>,Arrays_<%=cid %> arrays_<%=cid %>,<% } %>String column_<%=cid %>,String row_<%=cid %>)throws java.lang.Exception {  
 									<%
 									}
 									%>
-
+									
 									currentRow = <%=valueN%>;
-
+									
 									if((currentRow == (sizeListColumns-1)) && useStar) {
     									if(begins_<%=cid %>[<%=valueN %>] < rowLen_<%=cid %>){
         									<%
@@ -260,7 +246,7 @@
 										}
                                     	%>
                                     }
-
+                                        
 									<%
 									if(isTrimAll || ("true").equals(trimSelects.get(valueN).get("TRIM"))){
 									%>
@@ -306,7 +292,7 @@
         										if("BYTES".equals(patternUnits)){
 												%>
 													byte[] temp_byteArray_<%=cid %> = arrays_<%=cid %>.copyOfRange(row_<%=cid %>.getBytes(<%=encoding %>),substringBegin<%=cid %>, substringEnd<%=cid %>);
-													String currentColumnValue_<%=cid%> = new String(temp_byteArray_<%=cid %>,<%=encoding %>);
+													String currentColumnValue_<%=cid%> = new String(temp_byteArray_<%=cid %>,<%=encoding %>);						
 												<%
                 								}else{
                 								%>
@@ -323,7 +309,7 @@
 													currentColumnValue_<%=cid%> = currentColumnValue_<%=cid%>.trim();
 												<%
 												}
-												if(advancedSeparator) {
+												if(advancedSeparator) { 
 												%>
 													String type_<%=cid%> = dynamicMetadataColumn_<%=cid%>.getType();
 													if("id_Short".equals(type_<%=cid%>) || "id_Integer".equals(type_<%=cid%>) || "id_Double".equals(type_<%=cid%>) || "id_Float".equals(type_<%=cid%>) || "id_Long".equals(type_<%=cid%>) || "id_BigDecimal".equals(type_<%=cid%>)){
@@ -333,7 +319,7 @@
 												}
 												%>
 												dynamic_<%=cid %>.addColumnValue(currentColumnValue_<%=cid%>);
-												substringBegin<%=cid %> = substringEnd<%=cid %>;
+												substringBegin<%=cid %> = substringEnd<%=cid %>; 
 											}
 											<%=firstConnName %>.<%=column.getLabel() %> = dynamic_<%=cid %>;
 										<%
@@ -352,7 +338,7 @@
 													<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(column_<%=cid %>, <%= patternValue %>);
 												<%
 												}
-											}else if(advancedSeparator && JavaTypesManager.isNumberType(javaType, column.isNullable())) {
+											}else if(advancedSeparator && JavaTypesManager.isNumberType(javaType, column.isNullable())) { 
 											%>
 												<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_<%= typeToGenerate %>(ParserUtils.parseTo_Number(column_<%=cid %>, <%= thousandsSeparator %>, <%= decimalSeparator %>));
 											<%
@@ -369,7 +355,7 @@
     									}else{
     										<%=firstConnName %>.<%=column.getLabel() %> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
 										}
-									<%
+									<%					
 									}
 									if((valueN+1)%100==0){
 									%>
@@ -396,7 +382,7 @@
                         		    if(isDynamic){
                         				String paddingChar = formats.get(i).get("PADDING_CHAR");
                         				String align = formats.get(i).get("ALIGN");
-										%>
+										%> 	
                         				dynamic_<%=cid %>.clearColumnValues();
                         				int maxColumnCount_<%=cid %> = dynamic_<%=cid %>.getColumnCount();
                         				for (int i<%=cid%>=0;i<%=cid%><maxColumnCount_<%=cid %>;i<%=cid%>++) {
@@ -423,7 +409,7 @@
 											if("BYTES".equals(patternUnits)){
 											%>
                     							byte[] temp_byteArray_<%=cid %>= arrays_<%=cid %>.copyOfRange(row_<%=cid %>.getBytes(<%=encoding %>),substringBegin<%=cid %>, substringEnd<%=cid %>);
-	                    						String currentColumnValue_<%=cid%> = new String(temp_byteArray_<%=cid %>,<%=encoding %>);
+	                    						String currentColumnValue_<%=cid%> = new String(temp_byteArray_<%=cid %>,<%=encoding %>);						
 											<%
 											}else{
 											%>
@@ -431,21 +417,21 @@
 											<%
                         					}
                         					if(isTrimAll || (hasDynamic &&(("true").equals(trimSelects.get(trimSelects.size()-1).get("TRIM"))))){
-											%>
+											%>			
 												currentColumnValue_<%=cid%> = currentColumnValue_<%=cid%>.trim();
 											<%
 											}
 											if(advanced){
-											%>
+											%> 
 												currentColumnValue_<%=cid%> = TalendString.talendTrim(currentColumnValue_<%=cid%>, <%=paddingChar %>, <%=align %>);
 											<%
 											}
-											if(advancedSeparator) {
+											if(advancedSeparator) { 
 											%>
                         						String type_<%=cid%> = dynamicMetadataColumn_<%=cid%>.getType();
                         						if("id_Short".equals(type_<%=cid%>) || "id_Integer".equals(type_<%=cid%>) || "id_Double".equals(type_<%=cid%>) || "id_Float".equals(type_<%=cid%>) || "id_Long".equals(type_<%=cid%>) || "id_BigDecimal".equals(type_<%=cid%>)){
                         							currentColumnValue_<%=cid%> = ParserUtils.parseTo_Number(currentColumnValue_<%=cid%>, <%= thousandsSeparator %>, <%= decimalSeparator %>);
-	                    						}
+	                    						}	
 											<%
 											}
 											%>
@@ -492,14 +478,14 @@
     										}else{
     										%>
             									columnValue<%=cid %>[<%=i%>] = row_<%=cid %>.substring(substringBegin<%=cid %>, substringEnd<%=cid %>);
-    										<%
+    										<% 
     										}
            									if(isTrimAll || ("true").equals(trimSelects.get(i).get("TRIM"))){
     										%>
     											columnValue<%=cid %>[<%=i%>] = columnValue<%=cid %>[<%=i%>].trim();
     										<%
     										}
-    										%>
+    										%>    	
             								substringBegin<%=cid %> = substringEnd<%=cid %>;
     									}
 									<%
@@ -517,13 +503,13 @@
                      				}
 								<%
          						}
-
-                				for (int valueN=0; valueN<sizeListColumns; valueN++) {
+         						
+                				for (int valueN=0; valueN<sizeListColumns; valueN++) {	
                 				    if(valueN%100==0){
                 					%>
                                     	void setValue_<%=(valueN/100)%>(<%=firstConnName %>Struct <%=firstConnName %>,String[] columnValue<%=cid %>)throws java.lang.Exception{
                 					<%
-                                    }
+                                    }	
                 					%>
 									<%
                                     IMetadataColumn column = listColumns.get(valueN);
@@ -535,31 +521,31 @@
 	                    				<%=firstConnName %>.<%=column.getLabel() %> = columnValue<%=cid %>[<%=valueN%>];
 					                <%
                 					}else if("id_Dynamic".equals(column.getTalendType())){
-
+                					
                 					} else {
                 					%>
 	                    				if(columnValue<%=cid %>[<%=valueN%>].length() > 0) {
 						                	<%
                 					        if(javaType == JavaTypesManager.DATE) {
                 								if(checkDate) {
-                								%>
+                								%>	
 		                            				<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(columnValue<%=cid %>[<%=valueN%>], <%= patternValue %>,false);
 												<%
 												} else {
 												%>
-		                            				<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(columnValue<%=cid %>[<%=valueN%>], <%= patternValue %>);
+		                            				<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(columnValue<%=cid %>[<%=valueN%>], <%= patternValue %>);	
 												<%
 												}
-											}else if(advancedSeparator && JavaTypesManager.isNumberType(javaType, column.isNullable())) {
+											}else if(advancedSeparator && JavaTypesManager.isNumberType(javaType, column.isNullable())) { 
 											%>
 		                        				<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_<%= typeToGenerate %>(ParserUtils.parseTo_Number(columnValue<%=cid %>[<%=valueN%>], <%= thousandsSeparator %>, <%= decimalSeparator %>));
 											<%
 					        				}else if(javaType == JavaTypesManager.BYTE_ARRAY) {
-											%>
+											%>	
 		                        				<%=firstConnName %>.<%=column.getLabel() %> = columnValue<%=cid %>[<%=valueN%>].getBytes(<%=encoding%>);
 											<%
 											} else {
-											%>
+											%>	
 		                        				<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_<%= typeToGenerate %>(columnValue<%=cid %>[<%=valueN%>].trim());
 											<%
 											}
@@ -570,7 +556,7 @@
 									<%
         							}
 									%>
-
+	
 									<%
              						if((valueN+1)%100==0){
 									%>
@@ -587,7 +573,7 @@
 								<%
          						}
 								%>
-
+	
     						<%
         					}//custom not check
                 		}
@@ -613,7 +599,7 @@
                     int[] surrogateEnds_<%=cid %> = new int[ends_<%=cid %>.length];
                 <%
                 }
-				for(int i = 0; i < formats.size(); i++){
+				for(int i = 0; i < formats.size(); i++){ 
     				if(i == formats.size() - 1 && !(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
     					//now we have to treat the empty string as star, please check the tujs. It's not good.
     					if("*".equals(formats.get(i).get("SIZE")) || "".equals(formats.get(i).get("SIZE"))){
@@ -629,11 +615,11 @@
     					}
 					}else{
 					%>
-						sizes_<%=cid %>[<%=i %>] = <%=formats.get(i).get("SIZE") %>;
+						sizes_<%=cid %>[<%=i %>] = <%=formats.get(i).get("SIZE") %>;				
 					<%
     				}
     			}
-				for(int i = 0; i < formats.size(); i++){
+				for(int i = 0; i < formats.size(); i++){ 
 					if(i == 0){
 					%>
 						begins_<%=cid %>[<%=i %>] = 0;
@@ -661,8 +647,8 @@
             Object filename_<%=cid %> = <%=filename %>;
             java.io.BufferedReader in_<%=cid %> = null;
 
-            org.talend.fileprocess.delimited.RowParser reader_<%=cid %> = null;
-            org.talend.fileprocess.delimited.RowParserByByte byteReader_<%=cid %> = null;
+            org.talend.fileprocess.delimited.RowParser reader_<%=cid %> = null; 
+            org.talend.fileprocess.delimited.RowParserByByte byteReader_<%=cid %> = null; 
 
 
 			<%log4jFileUtil.startRetriveDataInfo();%>
@@ -758,13 +744,13 @@
                 	String[] columnValue<%=cid %>=new String[<%=metadata.getListColumns().size()%>];
                 <%
                 }
-                %>
+                %> 
                 try {//TD110 begin
                 	if(filename_<%=cid %> instanceof java.io.InputStream){
-                		in_<%=cid %> =
+                		in_<%=cid %> = 
                 				new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filename_<%=cid %>, <%=encoding %>));
                 	}else{
-                		in_<%=cid %> =
+                		in_<%=cid %> = 
                 			new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
                 	}
 
@@ -774,8 +760,8 @@
 			%>
 				int rowLength_<%=cid %> = 0;
 				<%
-				if(advanced){
-					for(int i = 0; i < formats.size(); i++){
+				if(advanced){ 
+					for(int i = 0; i < formats.size(); i++){ 
 					%>
 						rowLength_<%=cid %> += sizes_<%=cid %>[<%=i %>];
 					<%
@@ -794,11 +780,11 @@
 				<%
                         }else{
 				%>
-
+				
                               byteReader_<%=cid %> = new org.talend.fileprocess.delimited.RowParserByByte(String.valueOf(filename_<%=cid %>), rowLength_<%=cid %>);
 				<%
                         }
-                }else{
+                }else{	
 				%>
 				reader_<%=cid %> = new org.talend.fileprocess.delimited.RowParser(in_<%=cid %>, rowLength_<%=cid %>);
 			<%
@@ -857,7 +843,7 @@
 					reader_<%=cid %> = new org.talend.fileprocess.delimited.RowParser(in_<%=cid %>, <%=rowSeparator %>, <%=removeEmptyRow %>);
 				<%
 				}
-				%>
+				%>	
                 <%
             	if("BYTES".equals(patternUnits)&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator)) ){
                 %>
@@ -869,7 +855,7 @@
             	<%
             	}
             	%>
-
+	
             	if ( nb_limit_<%=cid %> >= 0 ){
             		nb_limit_<%=cid %> = ( nb_limit_<%=cid %> > available_<%=cid %>) ? available_<%=cid %> : nb_limit_<%=cid %>;
             	}else{
@@ -905,7 +891,7 @@
 			if("BYTES".equals(patternUnits)){
 			%>
 				rowLen_<%=cid %> = row_<%=cid %>.getBytes(<%=encoding %>).length;
-			<%
+			<%	
 			}else{
 			%>
 				rowLen_<%=cid %> = row_<%=cid %>.length();
@@ -920,7 +906,7 @@
             List<IMetadataColumn> rejectColumnList = null;
             IMetadataTable metadataTable = node.getMetadataFromConnector("REJECT");
             if(metadataTable != null) {
-                rejectColumnList = metadataTable.getListColumns();
+                rejectColumnList = metadataTable.getListColumns();      
             }
 
         	if (conns!=null) {
@@ -929,23 +915,23 @@
         				IConnection connTemp = conns.get(i);
         				if (connTemp.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
 						%>
-    						<%=connTemp.getName() %> = null;
+    						<%=connTemp.getName() %> = null;			
 						<%
         				}
         			}
         		}
         	}
-
+    	
         	if (conns!=null) {
         		if (conns.size()>0) {
         			IConnection conn = conns.get(0);
         			firstConnName = conn.getName();
         			if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {%>
-
+        			
             			boolean whetherReject_<%=cid %> = false;
             			<%=firstConnName %> = new <%=conn.getName() %>Struct();
             			try {
-
+    			
     						<%
     						List<IMetadataColumn> listColumns = metadata.getListColumns();
            				    int sizeListColumns = listColumns.size();
@@ -991,7 +977,7 @@
     						%>
                             	int substringBegin<%=cid %>=0,substringEnd<%=cid %>=0;
                             	int[]begin_end_<%=cid %>=new int[2];
-
+                            	
         						<%
                         	    List<IMetadataColumn> columnList = metadata.getListColumns();
                         		for(int i=0; i < columnList.size(); i++){
@@ -1003,27 +989,27 @@
                     				<%
                         			}
                         		}
-
-                            	for (int valueN=0; valueN<sizeListColumns; valueN++) {
+                            	
+                            	for (int valueN=0; valueN<sizeListColumns; valueN++) {	
                             		if(valueN%100==0){
     								%>
       	 								positionalUtil_<%=cid%>.setValue_<%=(valueN/100)%>(<%=firstConnName %>,columnValue<%=cid %>);
     								<%
                             	    }
                                	}
-
+       	 
     							if(useExistingDynamic && !advanced){
     							%>
     								<%=firstConnName %>.<%=metadata.getDynamicColumn().getLabel()%>=dynamic_<%=cid %>;
-    							<%
+    							<%		
                         		}
                             }
-
+        
         					log4jFileUtil.debugRetriveData(node,false);
     						%>
-
-    						<%if(rejectConnName.equals(firstConnName)) {%> <%=firstConnName %> = null; <%}%>
-
+    		
+    						<%if(rejectConnName.equals(firstConnName)) {%> <%=firstConnName %> = null; <%}%>        			
+            			
     					} catch (java.lang.Exception e) {
         					whetherReject_<%=cid%> = true;
                             <%
@@ -1059,32 +1045,32 @@
                                 	<%=rejectConnName%>.errorMessage = e.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
                                 <%
                                 }
-                            }
+                            } 
                             %>
                         }
-
-        			<%
+        			
+        			<%        			
     				}
-            		if (conns.size()>0) {
+            		if (conns.size()>0) {	
             			boolean isFirstEnter = true;
             			for (int i=0;i<conns.size();i++) {
             				conn = conns.get(i);
             				if ((conn.getName().compareTo(firstConnName)!=0)&&(conn.getName().compareTo(rejectConnName)!=0)&&(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA))) {
 							%>
-								<% if(isFirstEnter) {%>if(!whetherReject_<%=cid%>) { <% isFirstEnter = false; } %>
-         						if(<%=conn.getName() %> == null){
+								<% if(isFirstEnter) {%>if(!whetherReject_<%=cid%>) { <% isFirstEnter = false; } %>      
+         						if(<%=conn.getName() %> == null){ 
             	 					<%=conn.getName() %> = new <%=conn.getName() %>Struct();
-         						}
+         						}				
 								<%
 		    	 				for (IMetadataColumn column: metadata.getListColumns()) {
 								%>
-	    	 						<%=conn.getName() %>.<%=column.getLabel() %> = <%=firstConnName %>.<%=column.getLabel() %>;
+	    	 						<%=conn.getName() %>.<%=column.getLabel() %> = <%=firstConnName %>.<%=column.getLabel() %>;    				
 								<%
             				 	}
             				}
             			}
 						%>
-						<% if(!isFirstEnter) {%> } <% } %>
+						<% if(!isFirstEnter) {%> } <% } %>	
 					<%
 					}
             	}
