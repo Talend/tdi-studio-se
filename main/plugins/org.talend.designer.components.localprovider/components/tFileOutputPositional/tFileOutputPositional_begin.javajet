@@ -70,11 +70,11 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         
         boolean isInRowMode = ("true").equals(ElementParameterParser.getValue(node,"__ROW_MODE__"));
         String writerClass = null;
-    	if(isInRowMode){
-    		writerClass = "routines.system.BufferedOutput";
-    	}else{
-    		writerClass = "java.io.BufferedWriter";
-    	}
+        if(isInRowMode){
+            writerClass = "routines.system.BufferedOutput";
+        }else{
+           writerClass = "java.io.BufferedWriter";
+        }
         IProcess process = node.getProcess();
         String dynamic = ElementParameterParser.getValue(node, "__DYNAMIC__");
         List<? extends INode> dynamicSchemaNodes = process.getNodesOfType("tSetDynamicSchema");
