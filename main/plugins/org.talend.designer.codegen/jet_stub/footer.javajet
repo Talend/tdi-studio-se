@@ -1522,6 +1522,7 @@ if (execStat) {
 
         for (INode tcompV0ConnectionNode : tcompV0ComponentsList) { %>
             connections.put("<%=tcompV0ConnectionNode.getUniqueName()%>_connection", globalMap.get("<%=tcompV0ConnectionNode.getUniqueName()%>_connection"));
+            connections.put("<%=tcompV0ConnectionNode.getUniqueName()%>_COMPONENT_RUNTIME_PROPERTIES", globalMap.get("<%=tcompV0ConnectionNode.getUniqueName()%>_COMPONENT_RUNTIME_PROPERTIES"));
 <%      }
 
         for (INode sapNode : sapComponentsList) { %>
