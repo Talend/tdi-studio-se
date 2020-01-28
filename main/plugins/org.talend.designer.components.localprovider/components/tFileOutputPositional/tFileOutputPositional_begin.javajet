@@ -1,19 +1,20 @@
-<%@ jet 
+<%@ jet
 imports="
-    org.talend.core.model.process.INode 
+    org.talend.core.model.process.INode
     org.talend.core.model.process.ElementParameterParser
+    org.talend.core.model.process.IProcess
     org.talend.core.model.metadata.IMetadataTable
     org.talend.core.model.metadata.IMetadataColumn
     org.talend.core.model.process.IConnection
 	org.talend.core.model.process.IConnectionCategory
-    
+
     org.talend.designer.codegen.config.CodeGeneratorArgument
     org.talend.core.model.metadata.types.JavaTypesManager
 	org.talend.core.model.metadata.types.JavaType
 	org.talend.core.model.utils.NodeUtil
     java.util.List
     java.util.Map
-" 
+"
 %>
 
 <%
@@ -21,52 +22,52 @@ CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 
 List<IMetadataTable> metadatas = node.getMetadataList();
-   
+
 if ((metadatas!=null)&&(metadatas.size()>0)) {
     IMetadataTable metadata = metadatas.get(0);
     if (metadata!=null) {
-    
+
     	String cid = node.getUniqueName();
-    	
+
     	String encoding = ElementParameterParser.getValue(node, "__ENCODING__");
         if (encoding!=null) {
             if (("").equals(encoding)) {
                 encoding = "undef";
             }
         }
-        
+
         String separator = ElementParameterParser.getValue(
             node,
             "__ROWSEPARATOR__"
         );
-        
+
         String filename = ElementParameterParser.getValue(
             node,
             "__FILENAME__"
         );
-		
+
 		boolean useByte = ("true").equals(ElementParameterParser.getValue(node, "__USE_BYTE__"));
-		
+
         boolean isIncludeHeader = ("true").equals(ElementParameterParser.getValue(node,"__INCLUDEHEADER__"));
 
         boolean isAppend = ("true").equals(ElementParameterParser.getValue(node,"__APPEND__"));
-        
+
 		boolean useStream = ("true").equals(ElementParameterParser.getValue(node,"__USESTREAM__"));
 		String outStream = ElementParameterParser.getValue(node,"__STREAMNAME__");
-        
+
         String advancedSeparatorStr = ElementParameterParser.getValue(node, "__ADVANCED_SEPARATOR__");
 		boolean advancedSeparator = (advancedSeparatorStr!=null&&!("").equals(advancedSeparatorStr))?("true").equals(advancedSeparatorStr):false;
 		String thousandsSeparator = ElementParameterParser.getValueWithJavaType(node, "__THOUSANDS_SEPARATOR__", JavaTypesManager.CHARACTER);
-		String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER);        
- 
+		String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER);
+
         List<Map<String, String>> formats =
             (List<Map<String,String>>)ElementParameterParser.getObjectValue(
                 node,
                 "__FORMATS__"
             );
-        
+
         boolean compress = ("true").equals(ElementParameterParser.getValue(node,"__COMPRESS__"));
-        
+
         boolean isInRowMode = ("true").equals(ElementParameterParser.getValue(node,"__ROW_MODE__"));
         String writerClass = null;
     	if(isInRowMode){
@@ -74,7 +75,20 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     	}else{
     		writerClass = "java.io.BufferedWriter";
     	}
-		String dynamic = ElementParameterParser.getValue(node, "__DYNAMIC__");
+        IProcess process = node.getProcess();
+        String dynamic = ElementParameterParser.getValue(node, "__DYNAMIC__");
+        List<? extends INode> dynamicSchemaNodes = process.getNodesOfType("tSetDynamicSchema");
+        boolean guessSchemaFromFile = false;
+        for (INode currentNode : dynamicSchemaNodes){
+            if (currentNode.getUniqueName().equals(dynamic)){
+                guessSchemaFromFile = ("true").equals(ElementParameterParser.getValue(currentNode, "__GUESS_SCHEMA_FROM_FILE__"));
+            }
+        }
+%>
+        if (<%=guessSchemaFromFile%>) {
+            throw new RuntimeException("tFileInputPositional can't work with tSetDynamicSchema when 'Guess schema from file' option is activated");
+        }
+<%
 		boolean useExistingDynamic = "true".equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
         String dyn = dynamic+"_DYNAMIC";
 		if(useExistingDynamic){
@@ -87,7 +101,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 %>
 		int nb_line_<%=cid%> = 0;
 		resourceMap.put("nb_line_<%=cid %>", nb_line_<%=cid %>);
-		
+
 <%
 		if(useByte){
 %>
@@ -106,9 +120,9 @@ byte[] byteArray_<%=cid %> = new byte[0];
 Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
 <%
 		}
-%>		
+%>
 		class PositionUtil_<%=cid%>{
-		
+
 <%
 		    List<IMetadataColumn> columns = metadata.getListColumns();
     		int sizeColumns = columns.size();
@@ -119,7 +133,7 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
     			if(i%100==0){
 %>
               void writeHeader_<%=i/100%>(String tempStringB<%=cid %>,int tempLengthB<%=cid %>,final <%=writerClass %> out<%=cid %><% if(useByte){ %>,byte[] byteArray_<%=cid %>,Arrays_<%=cid %> arrays_<%=cid %><% } %>)throws IOException,java.io.UnsupportedEncodingException{
-              
+
                  int tempLengthM<%=cid %>= 0;
 <%
                 }
@@ -218,14 +232,14 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
 <%
 					}
 				}else{//not dynamic begin
-%>				
+%>
     			tempStringB<%=cid %>="<%=column.getLabel() %>";
     			<%if(useByte){%>
     			tempLengthB<%=cid %>=tempStringB<%=cid %>.getBytes(<%=encoding %>).length;
     			<%}else{%>
     			tempLengthB<%=cid %>=tempStringB<%=cid %>.length();
     			<%}%>
-    			
+
             	if (tempLengthB<%=cid %> > <%=format.get("SIZE")%>) {
 <%
                     if (("\'A\'").equals(format.get("KEEP"))) {
@@ -300,8 +314,8 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
                         }
                         tempStringB<%=cid %> = result<%=cid %>.toString();
 <%
-                    } 
-%>       
+                    }
+%>
                 }
                 //get  and format output String end
     			out<%=cid %>.write(tempStringB<%=cid %>);
@@ -315,10 +329,10 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
     	}
     		  if(sizeColumns>0&&(sizeColumns%100)>0){
 %>
-              }  
+              }
 <%
               }
-        }	
+        }
 %>
 <%
 	  	List< ? extends IConnection> conns = node.getIncomingConnections();
@@ -353,7 +367,7 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
 							}
 <%
 						if(advancedSeparator){
-%>							
+%>
 							if("id_BigDecimal".equals(type_<%=cid%>) || "id_Short".equals(type_<%=cid%>) || "id_Integer".equals(type_<%=cid%>) || "id_Double".equals(type_<%=cid%>) || "id_Float".equals(type_<%=cid%>) || "id_Long".equals(type_<%=cid%>)){
 								temp_<%=cid%> = FormatterUtils.format_Number(temp_<%=cid%>, <%= thousandsSeparator %>, <%= decimalSeparator %>);
 							}
@@ -455,11 +469,11 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
 				}else{
 %>
 				//get  and format output String begin
-    			tempStringM<%=cid %>=<%				
+    			tempStringM<%=cid %>=<%
 				if(JavaTypesManager.isJavaPrimitiveType( column.getTalendType(), column.isNullable()) ) {%>
-					String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>)<%					
+					String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>)<%
 				} else {%>
-					(<%=conn.getName() %>.<%=column.getLabel() %> == null) ? 
+					(<%=conn.getName() %>.<%=column.getLabel() %> == null) ?
 					"": <%
 					if(javaType == JavaTypesManager.DATE && patternValue!=null){
 					%>FormatterUtils.format_Date(<%=conn.getName() %>.<%=column.getLabel() %>, <%= patternValue %>)<%
@@ -467,16 +481,16 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
 					%>java.nio.charset.Charset.defaultCharset().decode(java.nio.ByteBuffer.wrap(<%=conn.getName() %>.<%=column.getLabel() %>)).toString()<%
 					}else if(javaType == JavaTypesManager.STRING){
 					%><%=conn.getName() %>.<%=column.getLabel() %><%
-					} else if(advancedSeparator && JavaTypesManager.isNumberType(javaType, column.isNullable())) { 
+					} else if(advancedSeparator && JavaTypesManager.isNumberType(javaType, column.isNullable())) {
 							%>
         							<% if(javaType == JavaTypesManager.BIGDECIMAL) {%>
-        							FormatterUtils.format_Number(<%=column.getPrecision() == null? conn.getName() + "." + column.getLabel() : conn.getName() + "." + column.getLabel() + ".setScale(" + column.getPrecision() + ", java.math.RoundingMode.HALF_UP)" %>.toPlainString(), <%= thousandsSeparator %>, <%= decimalSeparator %>)					
+        							FormatterUtils.format_Number(<%=column.getPrecision() == null? conn.getName() + "." + column.getLabel() : conn.getName() + "." + column.getLabel() + ".setScale(" + column.getPrecision() + ", java.math.RoundingMode.HALF_UP)" %>.toPlainString(), <%= thousandsSeparator %>, <%= decimalSeparator %>)
         							<% } else { %>
-        							FormatterUtils.format_Number(String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>), <%= thousandsSeparator %>, <%= decimalSeparator %>)						
+        							FormatterUtils.format_Number(String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>), <%= thousandsSeparator %>, <%= decimalSeparator %>)
         							<% } %>
 							<%
 					}else if (javaType == JavaTypesManager.BIGDECIMAL) {
-					%><%=column.getPrecision() == null? conn.getName() + "." + column.getLabel() : conn.getName() + "." + column.getLabel() + ".setScale(" + column.getPrecision() + ", java.math.RoundingMode.HALF_UP)" %>.toPlainString()	
+					%><%=column.getPrecision() == null? conn.getName() + "." + column.getLabel() : conn.getName() + "." + column.getLabel() + ".setScale(" + column.getPrecision() + ", java.math.RoundingMode.HALF_UP)" %>.toPlainString()
 					<% }else{
 					%>String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>)<%
 					}
@@ -486,7 +500,7 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
     			<%}else{%>
     			tempLengthM<%=cid %>=tempStringM<%=cid %>.length();
     			<%}%>
-    			
+
             	if (tempLengthM<%=cid %> >=<%=format.get("SIZE")%>) {
                     <%
                     if (("\'A\'").equals(format.get("KEEP"))) {%>
@@ -529,7 +543,7 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
                     	}
                     }%>
                 }else if(tempLengthM<%=cid %><<%=format.get("SIZE")%>){
-                   
+
                     <%
                     if (("\'L\'").equals(format.get("ALIGN"))) {
                     %>
@@ -537,14 +551,14 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
                         for(int i_<%=cid %>=0; i_<%=cid %>< <%=format.get("SIZE")%>-tempLengthM<%=cid %>; i_<%=cid %>++){
                             sb_<%=cid %>.append(<%=format.get("PADDING_CHAR")%>);
                         }
-                        
+
                     <%
                     } else if (("\'R\'").equals(format.get("ALIGN"))) {%>
                         for(int i_<%=cid %>=0; i_<%=cid %>< <%=format.get("SIZE")%>-tempLengthM<%=cid %>; i_<%=cid %>++){
                             sb_<%=cid %>.append(<%=format.get("PADDING_CHAR")%>);
                         }
                         sb_<%=cid %>.append(tempStringM<%=cid %>);
-                        
+
                     <%
                     } else {%>
                         int temp<%=cid %>= (<%=format.get("SIZE")%>-tempLengthM<%=cid %>)/2;
@@ -556,11 +570,11 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
                             sb_<%=cid %>.append(<%=format.get("PADDING_CHAR")%>);
                         }
 
-                        
+
                     <%
-                    } %>       
+                    } %>
                 }
-                //get  and format output String end				
+                //get  and format output String end
 			<%
 				if((i+1)%100==0){
 %>
@@ -577,11 +591,11 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
                  }
           }
 %>
-		
+
 		}
-		
+
 		PositionUtil_<%=cid%> positionUtil_<%=cid%>=new PositionUtil_<%=cid%>();
-		
+
 <%
 		if(!useStream){// the part of file path
 %>
@@ -620,8 +634,8 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
             } else {
                 fullName_<%=cid%> = fileNewName_<%=cid%>.substring(0, fileNewName_<%=cid%>.lastIndexOf("."));
                 extension_<%=cid%> = fileNewName_<%=cid%>.substring(fileNewName_<%=cid%>.lastIndexOf("."));
-            }           
-            directory_<%=cid%> = fileNewName_<%=cid%>.substring(0, fileNewName_<%=cid%>.lastIndexOf("/"));            
+            }
+            directory_<%=cid%> = fileNewName_<%=cid%>.substring(0, fileNewName_<%=cid%>.lastIndexOf("/"));
         } else {
             if(fileNewName_<%=cid%>.lastIndexOf(".") != -1) {
                 fullName_<%=cid%> = fileNewName_<%=cid%>.substring(0, fileNewName_<%=cid%>.lastIndexOf("."));
@@ -663,21 +677,21 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
 %>
 		java.io.OutputStreamWriter outWriter_<%=cid %> = new java.io.OutputStreamWriter(<%=outStream %>,<%= encoding%>);
 		resourceMap.put("outWriter_<%=cid %>", outWriter_<%=cid %>);
-		final <%=writerClass %> out<%=cid %> = new <%=writerClass %>(outWriter_<%=cid %>); 
-		resourceMap.put("out<%=cid %>", out<%=cid %>); 
+		final <%=writerClass %> out<%=cid %> = new <%=writerClass %>(outWriter_<%=cid %>);
+		resourceMap.put("out<%=cid %>", out<%=cid %>);
 <%
 			}
 		}
-		
-		if(isIncludeHeader){      	
+
+		if(isIncludeHeader){
 			if(!useStream){
 %>
 		if(createFile<%=cid%>.length()==0){
 <%
 			}
-			
+
 %>
-    		
+
     		String tempStringB<%=cid %>=null;
     		int tempLengthB<%=cid %>=0;
 <%
