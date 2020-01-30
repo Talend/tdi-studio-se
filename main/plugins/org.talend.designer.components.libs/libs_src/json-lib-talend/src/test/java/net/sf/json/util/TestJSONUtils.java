@@ -61,7 +61,25 @@ public class TestJSONUtils extends TestCase {
    }
 
    public void testDoubleToString_trailingZeros() {
-      assertEquals( "200", JSONUtils.doubleToString( 200.00000 ) );
+      assertEquals( "200.0", JSONUtils.doubleToString( 200.00000 ) );
+   }
+
+   public void testDoubleToString() {
+      Map<String, Double> expected = new HashMap<>();
+      expected.put("200.0", 200.0d);
+      expected.put("200.0", 200.000d);
+      expected.put("200.1", 200.1d);
+      expected.put("200.1", 200.10d);
+      expected.put("200.1", 200.1000d);
+      expected.put("200.12345", 200.12345d);
+      expected.put("200.12345", 200.123450000d);
+      expected.put("200.101", 200.101d);
+      expected.put("1.0E-8", 1.0E-8);
+      expected.put("200.0", 200d);
+
+      for(String key : expected.keySet()){
+         assertEquals(key,JSONUtils.doubleToString(expected.get(key)));
+      }
    }
 
    public void testGetFunctionParams() {

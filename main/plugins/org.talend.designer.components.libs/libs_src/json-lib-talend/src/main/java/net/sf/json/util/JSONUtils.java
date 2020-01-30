@@ -109,12 +109,13 @@ public final class JSONUtils {
 
       String s = Double.toString( d );
       if( s.indexOf( '.' ) > 0 && s.indexOf( 'e' ) < 0 && s.indexOf( 'E' ) < 0 ){
-         while( s.endsWith( "0" ) ){
+        while(s.charAt(s.length() - 1) == '0'){
+            if(s.endsWith(".0")){
+               break;
+            }
+
             s = s.substring( 0, s.length() - 1 );
-         }
-         if( s.endsWith( "." ) ){
-            s = s.substring( 0, s.length() - 1 );
-         }
+        }
       }
       return s;
    }
