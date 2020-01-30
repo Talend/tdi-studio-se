@@ -642,12 +642,6 @@ public class DefaultRunProcessService implements IRunProcessService {
                         ljFileOutputStream.close();
                     }
                 }
-                
-                File log4j2Jar = new File(log4jFile.getLocation().toOSString() + ".jar");
-                JarBuilder jarBuilder = new JarBuilder(ljFile.getParentFile(), log4j2Jar);
-                jarBuilder.setIncludeRoutines(Arrays.asList(ljFile));
-                jarBuilder.setExcludeFiles(Arrays.asList(log4j2Jar));
-                jarBuilder.buildJar();
                 resFolder.refreshLocal(IResource.DEPTH_ONE, null);
             }
             // }
