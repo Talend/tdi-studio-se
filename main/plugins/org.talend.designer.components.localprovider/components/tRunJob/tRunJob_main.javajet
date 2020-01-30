@@ -438,6 +438,7 @@ String inputConnName = null;
         if (childJob_<%=cid %> instanceof routines.system.api.TalendESBJob) {
             ((routines.system.api.TalendESBJob)childJob_<%=cid %>).setEndpointRegistry(registry);
         }
+
         <%
             }
         %>
@@ -463,32 +464,36 @@ String inputConnName = null;
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - The child job '<%if(!useDynamicJob){%><%=childJob %><%}else{%>"+<%=dynamicJobName%>+"<%}%>' is done.");
 		<%}%>
-	  	<%
+<%
 		if (childJob != null) {
-	    	if (isRunInMultiThread){
-    		%>
-				((java.util.Map)threadLocal.get()).put("errorCode", childJob_<%=cid %>.getErrorCode());
-			<%}else {%>
-				errorCode = childJob_<%=cid %>.getErrorCode();
-		    <%}%>
-	            
-	    	if(childJob_<%=cid %>.getErrorCode() == null){
-				globalMap.put("<%=cid %>_CHILD_RETURN_CODE", childJob_<%=cid %>.getStatus() != null && ("failure").equals(childJob_<%=cid %>.getStatus()) ? 1 : 0);
-	    	}else{
-				globalMap.put("<%=cid %>_CHILD_RETURN_CODE", childJob_<%=cid %>.getErrorCode());
-		    }
-		    if (childJob_<%=cid %>.getExceptionStackTrace() != null) { 
-		    	globalMap.put("<%=cid %>_CHILD_EXCEPTION_STACKTRACE", childJob_<%=cid %>.getExceptionStackTrace());
-		    }
-	  
-			<%if (dieOnError) { %> 
-				if (childJob_<%=cid %>.getErrorCode() != null || ("failure").equals(childJob_<%=cid %>.getStatus())) {
-					java.lang.Exception ce_<%=cid%> = childJob_<%=cid %>.getException();
-					throw new RuntimeException("Child job running failed.\n" + ((ce_<%=cid%>!=null) ? (ce_<%=cid%>.getClass().getName() + ": " + ce_<%=cid%>.getMessage()) : ""));
-				}
-			<%}
-		}%>
-	  	<%
+%>
+            if(childJob_<%=cid %>.getErrorCode() == null){
+                globalMap.put("<%=cid %>_CHILD_RETURN_CODE", childJob_<%=cid %>.getStatus() != null && ("failure").equals(childJob_<%=cid %>.getStatus()) ? 1 : 0);
+            }else{
+                globalMap.put("<%=cid %>_CHILD_RETURN_CODE", childJob_<%=cid %>.getErrorCode());
+            }
+            if (childJob_<%=cid %>.getExceptionStackTrace() != null) {
+                globalMap.put("<%=cid %>_CHILD_EXCEPTION_STACKTRACE", childJob_<%=cid %>.getExceptionStackTrace());
+            }
+<%
+            if (dieOnError) {
+                if (isRunInMultiThread){
+%>
+                    ((java.util.Map)threadLocal.get()).put("errorCode", childJob_<%=cid %>.getErrorCode());
+<%
+                }else {
+%>
+                    errorCode = childJob_<%=cid %>.getErrorCode();
+<%
+                }
+%>
+                if (childJob_<%=cid %>.getErrorCode() != null || ("failure").equals(childJob_<%=cid %>.getStatus())) {
+                    java.lang.Exception ce_<%=cid%> = childJob_<%=cid %>.getException();
+                    throw new RuntimeException("Child job running failed.\n" + ((ce_<%=cid%>!=null) ? (ce_<%=cid%>.getClass().getName() + ": " + ce_<%=cid%>.getMessage()) : ""));
+                }
+<%
+            }
+        }
 
 		String firstConnName = null; 
 		if(outConns != null && outConns.size() > 0) {

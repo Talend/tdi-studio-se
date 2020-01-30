@@ -179,12 +179,18 @@ public class JavaProcessUtil {
             getModulesInTable(process, elementParameter, modulesNeeded);
         }
 
+        boolean addDefault = false;
         if (process instanceof IProcess2) {
             Item item = ((IProcess2) process).getProperty().getItem();
-            if (item instanceof ProcessItem) {
+            if (item == null) {
+                addDefault = true;
+            } else if (item instanceof ProcessItem) {
                 modulesNeeded.addAll(ModulesNeededProvider.getModulesNeededForProcess((ProcessItem) item, process));
             }
         } else {
+            addDefault = true;
+        }
+        if (addDefault) {
             Set<ModuleNeeded> optionalJarsOnlyForRoutines = new HashSet<ModuleNeeded>();
             optionalJarsOnlyForRoutines.addAll(ModulesNeededProvider.getSystemRunningModules());
             modulesNeeded.addAll(optionalJarsOnlyForRoutines);
