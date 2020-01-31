@@ -210,13 +210,15 @@ if (!isParallelize) {
 					if (MSSQL.equalsIgnoreCase(dbmsId) && isDynamic){
 					%>
 						routines.system.Dynamic dynamicColumn = (Dynamic)globalMap.get("<%=dynamicComponentName%>" + "_DYNAMIC");
-
-						//This code should be in DynamicUtils class.
 						for (DynamicMetadata column : dynamicColumn.metadatas){
-							//set maximum precision for double types
-							//in MSSQL double is float. Maximum precision is 53
+							<%
+							int floatLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__FLOAT_LENGTH_FOR_DYNAMIC__"));
+							int varcharLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__VARCHAR_LENGTH_FOR_DYNAMIC__"));
+							%>
 							if (column.getType().equals("id_Double")){
-								column.setLength(53);
+								column.setLength(<%=floatLengthForDynamic%>);
+							} else if (column.getType().equals("id_String")){
+								column.setLength(<%=varcharLengthForDynamic%>);
 							} else if (column.getType().equals("id_Boolean")){
 								column.setType("id_String");
 								column.setLength(5);
@@ -224,7 +226,9 @@ if (!isParallelize) {
 						}
 						String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
 						String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
-						System.out.println("queryForExec: " + queryForExec);
+						<%if(isLog4jEnabled_tableAction){%>
+							log.debug("<%=cid%> - Creating table with query: " + queryForExec);
+						<%}%>
 						stmtCreate_<%=cid%>.execute(queryForExec);
 					<%
 					} else {
@@ -260,12 +264,15 @@ if (!isParallelize) {
 				if (MSSQL.equalsIgnoreCase(dbmsId) && isDynamic){
 				%>
 					routines.system.Dynamic dynamicColumn = (Dynamic)globalMap.get("<%=dynamicComponentName%>" + "_DYNAMIC");
-					//This code should be in DynamicUtils class.
 					for (DynamicMetadata column : dynamicColumn.metadatas){
-						//set maximum precision for double types
-						//in MSSQL double is float. Maximum precision is 53
+						<%
+						int floatLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__FLOAT_LENGTH_FOR_DYNAMIC__"));
+						int varcharLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__VARCHAR_LENGTH_FOR_DYNAMIC__"));
+						%>
 						if (column.getType().equals("id_Double")){
-							column.setLength(53);
+							column.setLength(<%=floatLengthForDynamic%>);
+						} else if (column.getType().equals("id_String")){
+							column.setLength(<%=varcharLengthForDynamic%>);
 						} else if (column.getType().equals("id_Boolean")){
 							column.setType("id_String");
 							column.setLength(5);
@@ -273,7 +280,9 @@ if (!isParallelize) {
 					}
 					String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
 					String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
-					System.out.println("queryForExec: " + queryForExec);
+					<%if(isLog4jEnabled_tableAction){%>
+						log.debug("<%=cid%> - Creating table with query: " + queryForExec);
+					<%}%>
 					stmtCreate_<%=cid%>.execute(queryForExec);
 				<%
 				} else {
