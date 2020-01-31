@@ -38,6 +38,7 @@ String table = ElementParameterParser.getValue(node, "__TABLE__");
 String codePage = ElementParameterParser.getValue(node, "__CODE_PAGE__");
 String data_file_type = ElementParameterParser.getValue(node, "__DATA_FILE_TYPE__");
 boolean fire_triggers = ("true").equals(ElementParameterParser.getValue(node, "__FIRE_TRIGGERS__"));
+String additional_query_parameters = ElementParameterParser.getValue(node, "__ADDITIONAL_QUERY_PARAMETERS__");
 boolean convertToUppercase = false; // not active this function
 %>
 int deletedCount_<%=cid%>=0;
@@ -198,7 +199,10 @@ if(("EXPORT").equals(action)) {
     	if(("INSERT").equals(action)) {
 		%>
     		java.sql.Statement stmtBulkInsert_<%=cid %> = conn_<%=cid %>.createStatement();
-    		String bulkSQL_<%=cid%> = "BULK INSERT <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> FROM '" + <%=file%> + "' WITH ( CODEPAGE='" + <%=codePage%> + "',DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%> + <%if (fire_triggers) {%>",FIRE_TRIGGERS" + <%}%> ",ROWTERMINATOR='" + <%=row_separator%>+"')";
+    		String bulkSQL_<%=cid%> = "BULK INSERT <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> FROM '" + <%=file%>
+    		    + "' WITH ( CODEPAGE='" + <%=codePage%> + "',DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%>
+    		    + <%if (fire_triggers) {%>",FIRE_TRIGGERS" + <%}%> ",ROWTERMINATOR='" + <%=row_separator%>+"'"
+    		    + (<%=additional_query_parameters%>.isEmpty() ? "" : "," + <%=additional_query_parameters%>) + ")";
     		<%
     		if(isLog4jEnabled_tableAction){
     		%>
@@ -238,7 +242,12 @@ if(("EXPORT").equals(action)) {
     			<%}%>
     			stmtCreateTmp_<%=cid%>.close();
     			java.sql.Statement stmtTmpBulk_<%=cid%> = conn_<%=cid%>.createStatement();
-    			String bulkSQL_<%=cid%> = "BULK INSERT <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> FROM '" + <%=file%> + "' WITH ( CODEPAGE='" + <%=codePage%> + "',DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%> + ",ROWTERMINATOR='" + <%=row_separator%>+"')";
+    			String bulkSQL_<%=cid%> = "BULK INSERT <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> FROM '" + <%=file%>
+    			    + "' WITH ( CODEPAGE='" + <%=codePage%> + "',DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%>
+    			    + ",ROWTERMINATOR='" + <%=row_separator%>+"'"
+        		    + (<%=additional_query_parameters%>.isEmpty() ? "" : "," + <%=additional_query_parameters%>)
+        		    + ")";
+
     			<%if(isLog4jEnabled_tableAction){%>
     				log.debug("<%=cid%> - Bulk SQL:"+bulkSQL_<%=cid%>+".");
     				log.info("<%=cid%> - Bulk inserting data into <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>." );
