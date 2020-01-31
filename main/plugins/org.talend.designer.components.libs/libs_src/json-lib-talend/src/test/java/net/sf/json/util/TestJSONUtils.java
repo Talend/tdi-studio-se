@@ -136,6 +136,28 @@ public class TestJSONUtils extends TestCase {
       }
    }
 
+   public void testNumberToString() {
+      Map<String, Number> expected = new HashMap<>();
+
+      expected.put("0", Integer.valueOf("00000"));
+      expected.put("123", Integer.valueOf("123"));
+      expected.put("-123", Integer.valueOf("-123"));
+
+      expected.put("0.0", Double.valueOf("0"));
+      expected.put("0.0", Double.valueOf("0.00000"));
+      expected.put("120.0001", Double.valueOf("120.0001000"));
+      expected.put("-120.0001", Double.valueOf("-120.0001000"));
+
+      expected.put("0.0", Float.valueOf("0"));
+      expected.put("0.0", Float.valueOf("0.00000"));
+      expected.put("120.0001", Float.valueOf("120.0001000"));
+      expected.put("-120.0001", Float.valueOf("-120.0001000"));
+
+      for(String key : expected.keySet()) {
+         assertEquals(key, JSONUtils.numberToString(expected.get(key)));
+      }
+   }
+
    public void testQuote_emptyString() {
       assertEquals( "\"\"", JSONUtils.quote( "" ) );
    }
