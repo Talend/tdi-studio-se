@@ -1211,6 +1211,28 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		if(source_<%=cid %> instanceof java.io.InputStream || source_<%=cid %> instanceof String){
 			excelReader_<%=cid%> = new com.talend.excel.xssf.event.ExcelReader();
 			excelReader_<%=cid%>.setIncludePhoneticRuns(<%=includePhoneticRuns%>);
+<%
+      if(hasDynamic) {
+        int listSize = metadata.getListColumns().size();
+        for (int i = 0; i < listSize; i++){
+            IMetadataColumn column = metadata.getListColumns().get(i);
+            if (column.getTalendType().equals("id_Dynamic")) {
+                String columnPattern = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+                if (columnPattern != null) {
+%>
+            excelReader_<%=cid%>.setDynamicDatePattern(<%=columnPattern%>);
+            excelReader_<%=cid%>.setStartDynamicIndex(<%=i%>);
+<%
+                  int endDynamicIndex = listSize - i - 1;
+%>
+            excelReader_<%=cid%>.setEndDynamicIndex(<%=endDynamicIndex%>);
+<%
+                  }
+                  break;
+                }
+            }
+        }
+%>
 		}else{
 			throw new java.lang.Exception("The data source should be specified as Inputstream or File Path!");
 		}
@@ -1399,13 +1421,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 <%
 						} else if(javaType == JavaTypesManager.DATE) {
 %>
-				try{
-					<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(temp_row_<%=cid %>[columnIndex_<%=cid%>]<%=(isTrimAll || (!trimSelects.isEmpty() && ("true").equals(trimSelects.get(i).get("TRIM"))))?".trim()":"" %>, <%= patternValue %>);
-				}catch(java.lang.Exception e){
-					<% // for bug TDI-19404 %>
-					throw new RuntimeException("The cell format is not Date in ( Row. "+(nb_line_<%= cid %>+1)+ " and ColumnNum. " + curColNum_<%=cid %> + " )");
-				}
-
+				<%=firstConnName %>.<%=column.getLabel() %> = new java.util.Date(Long.valueOf(temp_row_<%=cid %>[columnIndex_<%=cid%>]));
 <%
 						}else if(JavaTypesManager.isNumberType(javaType)) {
 							if(advancedSeparator) {
