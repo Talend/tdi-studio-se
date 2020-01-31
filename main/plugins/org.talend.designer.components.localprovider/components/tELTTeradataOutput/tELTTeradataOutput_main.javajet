@@ -310,8 +310,8 @@ if(dbtable != null && columnList != null){
 	%>
 
 System.out.println("Inserting with : \n" + insertQuery_<%=cid %> + "\n");
-<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+insertQuery_"+ cid +"+\"");%>
 nb_line_inserted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+insertQuery_"+ cid +"+\"");%>
 <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
 System.out.println("--> " + nb_line_inserted_<%=cid%> + " rows inserted. \n");
 
@@ -320,16 +320,16 @@ System.out.println("--> " + nb_line_inserted_<%=cid%> + " rows inserted. \n");
 
 	%>
 System.out.println("Updating with : \n" + updateQuery_<%=cid %> +"\n");
-<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+updateQuery_"+ cid +"+\"");%>
 nb_line_updated_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+updateQuery_"+ cid +"+\"");%>
 <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
 	System.out.println("--> " + nb_line_updated_<%=cid%> + " rows updated. \n");
 	<%
 	}else if (("DELETE").equals(dataAction)){
 		%>
 	System.out.println("Deleting with : \n" + deleteQuery_<%=cid %> +"\n");
-		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery_"+ cid +"+\"");%>
 		nb_line_deleted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery_"+ cid +"+\"");%>
 		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
 	System.out.println("--> " + nb_line_deleted_<%=cid%> + " rows deleted. \n");
 		<%
