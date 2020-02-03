@@ -126,10 +126,7 @@ if("FLOW_MODE".equals(mode)){
 	    	if(inConns != null && inConns.size() > 0){
 		    	inConnName = inConns.get(0).getName();
 		    }
-	    	//if(outConns != null && outConns.size() > 0){
-		    //	outConnName = outConns.get(0).getName();
-		    //}
-			%>//<%=outConnName%><%
+			
 				for(IConnection outgoingConn : outConns) {
                     if(rejectConnName == null || (rejectConnName != null && !outgoingConn.getName().equals(rejectConnName))) {
                         if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
