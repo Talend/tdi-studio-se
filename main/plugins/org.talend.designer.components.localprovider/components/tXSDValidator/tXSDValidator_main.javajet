@@ -123,17 +123,18 @@ if("FLOW_MODE".equals(mode)){
 					}
 				}
 			}
-	    	if(inConns != null && inConns.size() > 0){
-		    	inConnName = inConns.get(0).getName();
-		    }
+			if(inConns != null && inConns.size() > 0){
+				inConnName = inConns.get(0).getName();
+			}
 			
 				for(IConnection outgoingConn : outConns) {
-                    if(rejectConnName == null || (rejectConnName != null && !outgoingConn.getName().equals(rejectConnName))) {
-                        if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+					if(rejectConnName == null || (rejectConnName != null && !outgoingConn.getName().equals(rejectConnName))) {
+						if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
 							outConnName = outgoingConn.getName();
-                        }
-                    }
-                }
+							break;
+						}
+					}
+				}
 				if(outConnName != null) {
 %>
 					<%=outConnName%> = new <%=outConnName%>Struct();
