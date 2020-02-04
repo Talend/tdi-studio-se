@@ -113,7 +113,7 @@ public class StatsAndLogsConstants {
 
     public static final String[] MYSQL_VERSION_CODE = new String[] { "MYSQL_8", "MYSQL_5", "MYSQL_4", "MARIADB" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
-    public static final String[] MYSQL_VERSION_DRIVER = new String[] { "mysql-connector-java-8.0.12.jar", //$NON-NLS-1$
+    public static final String[] MYSQL_VERSION_DRIVER = new String[] { "mysql-connector-java-8.0.18.jar", //$NON-NLS-1$
             "mysql-connector-java-5.1.30-bin.jar", "mysql-connector-java-3.1.14-bin.jar", "mariadb-java-client-1.1.7.jar" };//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
     public static final String[] MSSQL_VERSION_DISPLAY = new String[] { "Open source JTDS", "Microsoft" }; //$NON-NLS-1$ //$NON-NLS-2$
