@@ -17,7 +17,6 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.program.Program;
 import org.talend.commons.utils.VersionUtils;
-import org.talend.commons.utils.network.NetworkUtil;
 import org.talend.core.PluginChecker;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
@@ -65,9 +64,6 @@ public class ComponentsHelpUtil {
     }
 
     public static void openLineHelp(String componentName) {
-        if (NetworkUtil.isDisableInternet()) { // $NON-NLS-1$
-            return;
-        }
         String url = calOnLineHelpURL(componentName);
         Program.launch(url);
     }
