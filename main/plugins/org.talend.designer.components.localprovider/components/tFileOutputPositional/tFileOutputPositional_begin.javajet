@@ -86,7 +86,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         }
 %>
         if (<%=guessSchemaFromFile%>) {
-            throw new RuntimeException("tFileOutputPositional can't work with tSetDynamicSchema when 'Guess schema from file' option is activated");
+            throw new RuntimeException("tFileOutputPositional doesn't support to work with tSetDynamicSchema when 'Guess schema from file' option is activated");
         }
 <%
 		boolean useExistingDynamic = "true".equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
