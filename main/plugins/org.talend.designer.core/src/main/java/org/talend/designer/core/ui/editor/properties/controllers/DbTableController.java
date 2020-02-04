@@ -314,6 +314,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
                 if (contextId == null || "".equals(contextId)) {
                     IMetadataConnection metadataConnection = null;
                     metadataConnection = ConvertionHelper.convert(connection);
+                    metadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(connection));
                     isStatus = checkConnection(metadataConnection);
                 } else {
                     isStatus = true;
@@ -484,6 +485,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
      * @return
      */
     protected void createListTablesCommand(Button button, IContextManager manager) {
+        button.setEnabled(false);
         contextManager = manager;
         initConnectionParameters();
         if (this.connParameters != null) {
@@ -558,6 +560,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
                             }
                         }
                     } else {
+                        iMetadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(existConnection));
                         isStatus = checkConnection(iMetadataConnection);
                     }
                 }
@@ -585,7 +588,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
                                         .returnTablesFormConnection(iMetadataConnection);
 
                             }
-                            Display.getDefault().asyncExec(new Runnable() {
+                            Display.getDefault().syncExec(new Runnable() {
 
                                 @Override
                                 public void run() {
@@ -639,7 +642,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
                                 }
                             });
                         } else {
-                            Display.getDefault().asyncExec(new Runnable() {
+                            Display.getDefault().syncExec(new Runnable() {
 
                                 @Override
                                 public void run() {
@@ -659,7 +662,7 @@ public class DbTableController extends AbstractElementPropertySectionController 
                         JavaSqlFactory.doHiveConfigurationClear();
                         ExceptionHandler.process(e);
 
-                        Display.getDefault().asyncExec(new Runnable() {
+                        Display.getDefault().syncExec(new Runnable() {
 
                             @Override
                             public void run() {
@@ -678,6 +681,13 @@ public class DbTableController extends AbstractElementPropertySectionController 
                     }
                 }
                 monitor.done();
+                Display.getDefault().syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        openListTable.setEnabled(true);
+                    }
+                });
                 return Status.OK_STATUS;
             }
 

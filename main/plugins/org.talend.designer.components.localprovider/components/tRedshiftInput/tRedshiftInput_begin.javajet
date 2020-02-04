@@ -29,6 +29,7 @@ imports="
 %>
 				java.io.Writer output_<%=cid %> = new java.io.FileWriter(<%= logFile %>, true);
 				java.io.PrintWriter logWriter_<%=cid %> = new java.io.PrintWriter(output_<%=cid %>,true);
+			    globalMap.put("fileLogWriter_<%=cid %>", logWriter_<%=cid %>);
 
 <%
 			}else{%>
@@ -36,7 +37,6 @@ imports="
 			<%
 			}
 %>
-			globalMap.put("logWriter_<%=cid %>", logWriter_<%=cid %>);
 			java.sql.DriverManager.setLogWriter(logWriter_<%=cid %>);
 		<%}%>
 		
