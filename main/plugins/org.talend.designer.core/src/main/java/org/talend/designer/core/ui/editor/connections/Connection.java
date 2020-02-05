@@ -1474,7 +1474,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
                     return table;
                 } else {
                     IMetadataTable table = source.getMetadataFromConnector(connectorName);
-                    if (table == null) {// && source.getJobletNode() != null) {
+                    if (table == null && source.getJobletNode() != null) {
                         if (source.getMetadataList().size() > 0) {
                             table = source.getMetadataList().get(0);
                         }
