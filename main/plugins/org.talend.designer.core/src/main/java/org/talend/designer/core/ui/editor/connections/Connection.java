@@ -1478,6 +1478,11 @@ public class Connection extends Element implements IConnection, IPerformance, IA
                         if (source.getMetadataList().size() > 0) {
                             table = source.getMetadataList().get(0);
                         }
+                        // MOD msjian TDQ-17965: when source node is tSnowflakeInput for tThresholdvalidAlert job,
+                        // the output row need get metadata as follow:
+                    } else if (table == null && source.getMetadataList() != null
+                            && source.getMetadataList().size() > 0) {
+                        table = source.getMetadataList().get(0);
                     }
                     return table;
                 }
