@@ -264,7 +264,9 @@ class GenerateToolByDom4j{
 			nestXMLTool_<%=cid%> .setText(<%=currEleName%>_<%=cid%>,<%tool.getValue(node);%>);
 <%
 			if(istWriteJSONField && allowEmptyStrings) {
-				if (javaType == JavaTypesManager.STRING) {
+				if (javaType == JavaTypesManager.STRING 
+                    && node.attributes.size() == 0 
+                    && (node.elements == null || node.elements.size() == 0)) {
 				%>
 			<%=currEleName%>_<%=cid%>.addAttribute("type", "string");
 			<%=currEleName%>_<%=cid%>.addAttribute("class", "string");
