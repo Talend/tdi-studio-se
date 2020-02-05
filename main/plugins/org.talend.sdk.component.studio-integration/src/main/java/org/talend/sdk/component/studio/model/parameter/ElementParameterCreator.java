@@ -15,8 +15,9 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import static java.util.Collections.*;
-import static org.talend.core.model.process.EComponentCategory.*;
+import static java.util.Collections.emptyList;
+import static org.talend.core.model.process.EComponentCategory.ADVANCED;
+import static org.talend.core.model.process.EComponentCategory.BASIC;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,9 +35,11 @@ import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
+import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.ComponentModel;
@@ -194,6 +197,7 @@ public class ElementParameterCreator {
         addUniqueNameParameter();
         addComponentNameParameter();
         addTacokitComponentIdParameter();
+        addTaCoKitMetadataTypeIdParameter();
         addVersionParameter();
         addFamilyParameter();
         addStartParameter();
@@ -210,6 +214,8 @@ public class ElementParameterCreator {
         addParallelizeParameter();
         addParallelizeNumberParameter();
         addParallelizeKeepEmptyParameter();
+
+        addViewParameters();
     }
 
     /**
@@ -613,6 +619,21 @@ public class ElementParameterCreator {
         parameters.add(parameter);
     }
 
+    private void addTaCoKitMetadataTypeIdParameter() {
+        final ElementParameter parameter = new ElementParameter(node);
+        parameter.setName(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+        parameter.setFieldType(EParameterFieldType.TEXT);
+        parameter.setValue(null);
+        parameter.setRepositoryValue(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+        parameter.setDisplayName(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+        parameter.setFieldType(EParameterFieldType.TECHNICAL);
+        parameter.setCategory(EComponentCategory.BASIC);
+        parameter.setNumRow(1);
+        parameter.setReadOnly(false);
+        parameter.setShow(false);
+        parameters.add(parameter);
+    }
+
     /**
      * Creates and adds {@link EParameterName#VERSION} parameter
      * Its value is component version. More specifically it is a version of component configuration.
@@ -633,4 +654,56 @@ public class ElementParameterCreator {
         parameters.add(parameter);
     }
 
+    private void addViewParameters() {
+        ElementParameter parameter = new ElementParameter(node);
+        parameter.setName(EParameterName.LABEL.getName());
+        parameter.setDisplayName(EParameterName.LABEL.getDisplayName());
+        parameter.setFieldType(EParameterFieldType.TEXT);
+        parameter.setCategory(EComponentCategory.VIEW);
+        parameter.setNumRow(1);
+        parameter.setReadOnly(false);
+        parameter.setRequired(false);
+        parameter.setShow(true);
+        // in case label/format is not set in the preferences.
+        String label = DesignerPlugin.getDefault().getPreferenceStore().getString(TalendDesignerPrefConstants.DEFAULT_LABEL);
+        if (!"".equals(label)) { //$NON-NLS-1$
+            parameter.setValue(label);
+        }
+        parameter.setDefaultValue(parameter.getValue());
+        parameters.add(parameter);
+
+        parameter = new ElementParameter(node);
+        parameter.setName(EParameterName.HINT.getName());
+        parameter.setDisplayName(EParameterName.HINT.getDisplayName());
+        parameter.setFieldType(EParameterFieldType.TEXT);
+        parameter.setCategory(EComponentCategory.VIEW);
+        parameter.setNumRow(2);
+        parameter.setReadOnly(false);
+        parameter.setRequired(false);
+        parameter.setShow(true);
+        // in case hint/format is not set in the preferences.
+        label = DesignerPlugin.getDefault().getPreferenceStore().getString(TalendDesignerPrefConstants.DEFAULT_HINT);
+        if (!"".equals(label)) { //$NON-NLS-1$
+            parameter.setValue(label);
+        }
+        parameter.setDefaultValue(parameter.getValue());
+        parameters.add(parameter);
+
+        parameter = new ElementParameter(node);
+        parameter.setName(EParameterName.CONNECTION_FORMAT.getName());
+        parameter.setDisplayName(EParameterName.CONNECTION_FORMAT.getDisplayName());
+        parameter.setFieldType(EParameterFieldType.TEXT);
+        parameter.setCategory(EComponentCategory.VIEW);
+        parameter.setNumRow(3);
+        parameter.setReadOnly(false);
+        parameter.setRequired(false);
+        parameter.setShow(true);
+        // in case connection/format is not set in the preferences.
+        label = DesignerPlugin.getDefault().getPreferenceStore().getString(TalendDesignerPrefConstants.DEFAULT_CONNECTION_FORMAT);
+        if (!"".equals(label)) { //$NON-NLS-1$
+            parameter.setValue(label);
+        }
+        parameter.setDefaultValue(parameter.getValue());
+        parameters.add(parameter);
+    }
 }

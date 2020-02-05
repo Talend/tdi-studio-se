@@ -21,13 +21,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang3.StringUtils;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 import org.talend.sdk.component.studio.model.action.SettingsActionParameter;
 import org.talend.sdk.component.studio.ui.composite.problemmanager.IProblemManager;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.sdk.studio.process.TaCoKitNode;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -50,6 +56,8 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     private Optional<IProblemManager> problemManager = Optional.ofNullable(null);
 
     private Optional<Callable<Void>> registValidatorCallback = Optional.ofNullable(null);
+
+    private PropertyNode propertyNode;
 
     public TaCoKitElementParameter() {
         this(null);
@@ -119,10 +127,57 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         }
     }
 
+    @Override
+    public String getRepositoryValue() {
+        String valueFromParentClass = super.getRepositoryValue();
+        if (StringUtils.isNotBlank(valueFromParentClass)) {
+            return valueFromParentClass;
+        }
+        String defaultRepositoryValue = getName();
+        try {
+            /**
+             * It is better to don't use cache here, because it may have issue after metadata type is changed
+             */
+            if (propertyNode != null) {
+                IElement element = this.getElement();
+                if (element != null) {
+                    IElementParameter metadataTypeIdParam = element.getElementParameter(TaCoKitNode.TACOKIT_METADATA_TYPE_ID);
+                    if (metadataTypeIdParam != null) {
+                        String metadataTypeId = (String) metadataTypeIdParam.getValue();
+                        if (StringUtils.isNotBlank(metadataTypeId)) {
+                            ConfigTypeNode configTypeNode = Lookups.taCoKitCache().getConfigTypeNode(metadataTypeId);
+                            if (configTypeNode != null) {
+                                PropertyNode propNode = TaCoKitUtil.getSamePropertyNode(propertyNode, configTypeNode);
+                                if (propNode != null) {
+                                    String prefix = propNode.getProperty().getPath();
+                                    if (!defaultRepositoryValue.startsWith(prefix + ".")) { //$NON-NLS-1$
+                                        defaultRepositoryValue = null;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+
+        return defaultRepositoryValue;
+    }
+
     public void redraw() {
         if (isRedrawable()) {
             redrawParameter.setValue(true);
         }
+    }
+
+    public PropertyNode getPropertyNode() {
+        return propertyNode;
+    }
+
+    public void setPropertyNode(PropertyNode propertyNode) {
+        this.propertyNode = propertyNode;
     }
 
     /**

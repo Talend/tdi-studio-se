@@ -12,13 +12,21 @@
 // ============================================================================
 package org.talend.designer.core.debug;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.IPreferenceConstants;
+import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.IProcess;
@@ -31,6 +39,7 @@ import org.talend.designer.core.ui.editor.ProcessEditorInput;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
+import org.talend.repository.ProjectManager;
 
 /**
  * bqian A launch delegate for launching local job. <br/>
@@ -75,14 +84,38 @@ public class JobLaunchConfigurationDelegate extends org.eclipse.debug.core.model
 
         final IProcess2 p = process;
         // Run job
-        Display.getDefault().asyncExec(new Runnable() {
+        Job runJob = new Job(Messages.getString("JobLaunchConfigurationDelegate.waitProcessRunning")) {
 
             @Override
-            public void run() {
-                IRunProcessService service = DesignerPlugin.getDefault().getRunProcessService();
-                service.setActiveProcess(p);
-                service.refreshView();
-                service.getRunProcessAction().run();
+            protected IStatus run(IProgressMonitor monitor) {
+                Display.getDefault().asyncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        IRunProcessService service = DesignerPlugin.getDefault().getRunProcessService();
+                        service.setActiveProcess(p);
+                        service.refreshView();
+                        service.getRunProcessAction().run();
+                    }
+                });
+                return Status.OK_STATUS;
+            }
+        };
+        ProjectManager pm = ProjectManager.getInstance();
+        runJob.setRule(ResourcesPlugin.getWorkspace().getRuleFactory()
+                .modifyRule(pm.getResourceProject(pm.getCurrentProject().getEmfProject())));
+        runJob.schedule();
+        Display.getDefault().asyncExec(() -> {
+            if (runJob.getResult() == null) {
+                boolean originalValue = true;
+                IPreferenceStore pref = WorkbenchPlugin.getDefault().getPreferenceStore();
+                try {
+                    originalValue = pref.getBoolean(IPreferenceConstants.RUN_IN_BACKGROUND);
+                    pref.setValue(IPreferenceConstants.RUN_IN_BACKGROUND, false);
+                    PlatformUI.getWorkbench().getProgressService().showInDialog(Display.getCurrent().getActiveShell(), runJob);
+                } finally {
+                    pref.setValue(IPreferenceConstants.RUN_IN_BACKGROUND, originalValue);
+                }
             }
         });
 

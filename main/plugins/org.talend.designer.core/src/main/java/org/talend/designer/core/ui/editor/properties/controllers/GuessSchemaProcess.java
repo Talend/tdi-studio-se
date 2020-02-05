@@ -25,6 +25,7 @@ import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -220,6 +221,7 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
         if (ConnectionUtils.isVertica(info.getUrl())) {
             createStatament = "conn.createStatement()";
         }
+
         if (EDatabaseTypeName.GENERAL_JDBC.getXmlName().equals(info.getDbType())
                 && "com.sap.db.jdbc.Driver".equals(info.getDriverClassName())
                 || EDatabaseTypeName.SAPHana.getXmlName().equals(info.getDbType())) {
@@ -230,6 +232,13 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
                 || EDatabaseTypeName.REDSHIFT_SSO.getXmlName().equals(info.getDbType())) {
             createStatament = "conn.createStatement()";
         }
+
+        // TDQ-17294 msjian: support snowflake well
+        if (ExtractMetaDataUtils.SNOWFLAKE.equals(info.getDbType())) {
+            createStatament = "conn.createStatement()";
+        }
+        // TDQ-17294~
+
         codeStart = systemProperty + getCodeStart(connectionNode, createStatament, fetchSize);
 
         codeMain = "String[] dataOneRow = new String[numbOfColumn];\r\n" + "for (int i = 1; i <= numbOfColumn; i++) {\r\n" //$NON-NLS-1$ //$NON-NLS-2$
@@ -261,10 +270,31 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
 
     private String getCodeStart(INode connectionNode, String createStatament, int fetchSize){
         IPath temppath = getTemppath();
-        String codeStart = "java.lang.Class.forName(\"" + info.getDriverClassName() + "\");\r\n" + "String url = \"" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        StringBuilder sb = new StringBuilder();
+        sb.append("java.util.Properties prop = new java.util.Properties();\r\n");
+        sb.append("String additionalParams = \"" + info.getadditionalParams() + "\";\r\n");
+        sb.append("additionalParams = additionalParams.replaceAll(\"&\", \"\\n\");\r\n");
+        sb.append("String dbType = \"" + info.getDbType() + "\";\r\n");
+        sb.append("String user = \"" + info.getUsername() + "\";\r\n");
+        sb.append("if(user != null && !\"\".equals(user)) {\r\n");
+        sb.append("    prop.put(\"user\", user);\r\n");
+        sb.append("}\r\n");
+        sb.append("String password =  \"" + info.getPwd() + "\";\r\n");
+        sb.append("if(password != null && !\"\".equals(password)) {\r\n");
+        sb.append("    prop.put(\"password\", password);\r\n");
+        sb.append("}\r\n");
+        sb.append("try{\r\n");
+        sb.append(
+                "    if (additionalParams != null && !\"\".equals(additionalParams) && dbType.toUpperCase().contains(\"ORACLE\")) {\r\n");
+        sb.append("        prop.load(new java.io.ByteArrayInputStream(additionalParams.getBytes()));\r\n");
+        sb.append("  }\r\n");
+        sb.append("}catch(IOException e){\r\n");
+        sb.append("}\r\n");
+        String codeStart = sb.toString() + "java.lang.Class.forName(\"" + info.getDriverClassName() + "\");\r\n" //$NON-NLS-1$ //$NON-NLS-2$
+                + "String url = \"" //$NON-NLS-1$
                 + info.getUrl() 
-                + "\";\r\n" + "java.sql.Connection conn = java.sql.DriverManager.getConnection(url, \"" + info.getUsername() //$NON-NLS-1$ //$NON-NLS-2$
-                + "\", \"" + info.getPwd() + "\");\r\n" + "java.sql.Statement stm = " + createStatament + ";\r\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                + "\";\r\n" + "java.sql.Connection conn = java.sql.DriverManager.getConnection(url, prop);\r\n"//$NON-NLS-1$ //$NON-NLS-2$
+                + "java.sql.Statement stm = " + createStatament + ";\r\n" 
                 + "try {\r\nstm.setFetchSize(" + fetchSize //$NON-NLS-1$
                 + ");\r\n} catch (Exception e) {\r\n// Exception is thrown if db don't support, no need to catch exception here\r\n} \r\n" //$NON-NLS-1$
                 + "java.sql.ResultSet rs = stm.executeQuery(" + memoSQL + ");\r\n" //$NON-NLS-1$ //$NON-NLS-2$

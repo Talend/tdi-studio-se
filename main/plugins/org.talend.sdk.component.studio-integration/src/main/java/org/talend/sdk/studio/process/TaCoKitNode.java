@@ -30,6 +30,8 @@ public final class TaCoKitNode {
 
     public static final String TACOKIT_COMPONENT_ID = "TACOKIT_COMPONENT_ID";
 
+    public static final String TACOKIT_METADATA_TYPE_ID = "TACOKIT_METADATA_TYPE_ID";
+
     private final NodeTypeImpl node;
 
     private final ComponentDetail detail;

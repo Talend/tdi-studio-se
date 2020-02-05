@@ -25,6 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.utils.io.FilesUtils;
 
 /**
  * DOC Administrator class global comment. Detailled comment
@@ -116,7 +117,7 @@ public class ZipFileUtils {
             for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements();) {
                 ZipEntry entry = entries.nextElement();
                 destFile = new File(destFileName, entry.getName());
-
+                FilesUtils.validateDestPath(destFileName, destFile.getPath());
                 unZipFile(destFile, zipFile, entry);
             }
         } catch (Exception e) {

@@ -2016,6 +2016,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 return;
             }
             Item item = property.getItem();
+            if (item == null) {
+                // may be a guess schema process
+                return;
+            }
             IFolder externalResourcesFolder = tProcessJvaProject.getExternalResourcesFolder();
             IFolder resourcesFolder = tProcessJvaProject.getResourcesFolder();
             String jobClassPackageFolder = JavaResourcesHelper.getJobClassPackageFolder(item, false);

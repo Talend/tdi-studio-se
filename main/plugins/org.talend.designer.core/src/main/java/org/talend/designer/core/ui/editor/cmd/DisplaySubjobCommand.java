@@ -37,10 +37,10 @@ public class DisplaySubjobCommand extends Command {
         this.subjob = subjob;
         if (subjob.isDisplayed()) {
             value = false;
-            setLabel(Messages.getString("DisplaySubjobCommand.HideSubjob")); //$NON-NLS-1$
+            setLabel(Messages.getString("DisplaySubjobCommand.HideSubjob2")); //$NON-NLS-1$
         } else {
             value = true;
-            setLabel(Messages.getString("DisplaySubjobCommand.DisplaySubjob")); //$NON-NLS-1$
+            setLabel(Messages.getString("DisplaySubjobCommand.DisplaySubjob2")); //$NON-NLS-1$
         }
 
     }
