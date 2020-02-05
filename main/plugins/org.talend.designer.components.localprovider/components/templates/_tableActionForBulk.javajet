@@ -27,7 +27,39 @@ if (!isParallelize) {
 			<%if(isLog4jEnabled_tableAction){%>
 				log.info("<%=cid%> - Creating table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>.");
 			<%}%>
-			stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+			
+			<%
+			if (MSSQL.equalsIgnoreCase(dbmsId) && isDynamic){
+			%>
+				routines.system.Dynamic dynamicColumn = (Dynamic)globalMap.get("<%=dynamicComponentName%>" + "_DYNAMIC");
+				for (DynamicMetadata column : dynamicColumn.metadatas){
+					<%
+					int floatLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__FLOAT_LENGTH_FOR_DYNAMIC__"));
+					int varcharLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__VARCHAR_LENGTH_FOR_DYNAMIC__"));
+					%>
+					if (column.getType().equals("id_Double")){
+						column.setLength(<%=floatLengthForDynamic%>);
+					} else if (column.getType().equals("id_String")){
+						column.setLength(<%=varcharLengthForDynamic%>);
+					} else if (column.getType().equals("id_Boolean")){
+						column.setType("id_String");
+						column.setLength(5);
+					}
+				}
+				String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
+				String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
+				<%if(isLog4jEnabled_tableAction){%>
+					log.debug("<%=cid%> - Creating table with query: " + queryForExec);
+				<%}%>
+				stmtCreate_<%=cid%>.execute(queryForExec);
+			<%
+			} else {
+			%>
+				stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+			<%
+			}
+			%>
+			
 			<%if(isLog4jEnabled_tableAction){%>
 				log.info("<%=cid%> - Create table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
 			<%}%>
@@ -39,7 +71,39 @@ if (!isParallelize) {
 			<%if(isLog4jEnabled_tableAction){%>
 				log.info("<%=cid%> - Creating table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>.");
 			<%}%>
-			stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+			
+			<%
+			if (MSSQL.equalsIgnoreCase(dbmsId) && isDynamic){
+			%>
+				routines.system.Dynamic dynamicColumn = (Dynamic)globalMap.get("<%=dynamicComponentName%>" + "_DYNAMIC");
+				for (DynamicMetadata column : dynamicColumn.metadatas){
+					<%
+					int floatLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__FLOAT_LENGTH_FOR_DYNAMIC__"));
+					int varcharLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__VARCHAR_LENGTH_FOR_DYNAMIC__"));
+					%>
+					if (column.getType().equals("id_Double")){
+						column.setLength(<%=floatLengthForDynamic%>);
+					} else if (column.getType().equals("id_String")){
+						column.setLength(<%=varcharLengthForDynamic%>);
+					} else if (column.getType().equals("id_Boolean")){
+						column.setType("id_String");
+						column.setLength(5);
+					}
+				}
+				String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
+				String queryForExec = "CREATE TABLE [" + tableName_<%=cid%> + "](" + columnsPart + ")";
+				<%if(isLog4jEnabled_tableAction){%>
+					log.debug("<%=cid%> - Creating table with query: " + queryForExec);
+				<%}%>
+				stmtCreate_<%=cid%>.execute(queryForExec);
+			<%
+			} else {
+			%>
+				stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+			<%
+			}
+			%>
+			
 			<%if(isLog4jEnabled_tableAction){%>
 				log.info("<%=cid%> - Create table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
 			<%}%>
