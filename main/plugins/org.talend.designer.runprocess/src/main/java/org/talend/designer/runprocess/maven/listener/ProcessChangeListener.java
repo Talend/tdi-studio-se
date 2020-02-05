@@ -305,20 +305,18 @@ public class ProcessChangeListener implements PropertyChangeListener {
                 if (!sourceFolder.exists()) {
                     return;
                 }
-                synchronized (sourceFolder) {
-                    try {
-                        sourceFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-                        removeFromParentSourceFolder(sourceFolder);
-                        IFolder targetFolder = processTypeFolder.getFolder(targetPath);
-                        if (!targetFolder.exists()) {
-                            ResourceUtils.createFolder(targetFolder);
-                        }
-                        MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
-                        change.perform(new NullProgressMonitor());
-                        updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
-                    } catch (OperationCanceledException | CoreException | PersistenceException e) {
-                        ExceptionHandler.process(e);
+                try {
+                    sourceFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+                    removeFromParentSourceFolder(sourceFolder);
+                    IFolder targetFolder = processTypeFolder.getFolder(targetPath);
+                    if (!targetFolder.exists()) {
+                        ResourceUtils.createFolder(targetFolder);
                     }
+                    MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
+                    change.perform(new NullProgressMonitor());
+                    updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
+                } catch (OperationCanceledException | CoreException | PersistenceException e) {
+                    ExceptionHandler.process(e);
                 }
             }
         }
