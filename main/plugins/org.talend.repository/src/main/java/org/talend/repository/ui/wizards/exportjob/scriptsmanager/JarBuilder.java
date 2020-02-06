@@ -342,6 +342,7 @@ public class JarBuilder {
         while (jarEntrys.hasMoreElements()) {
             JarEntry jarEntry = jarEntrys.nextElement();
             File f = new File(outFileName + File.separator + jarEntry.getName());
+            FilesUtils.validateDestPath(outFileName, f.getPath());
             makeSupDir(f.getAbsolutePath());
             if (jarEntry.isDirectory() || jarEntry.getName().contains("MANIFEST.MF")) { //$NON-NLS-1$
                 continue;

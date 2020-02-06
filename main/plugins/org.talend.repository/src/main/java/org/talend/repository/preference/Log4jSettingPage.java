@@ -44,9 +44,9 @@ public class Log4jSettingPage extends ProjectSettingPage {
 
     private String log4jVersion;
 
-    private Boolean log4jEnable;
+    private Boolean log4jEnable = false;
 
-    private Boolean isNewProject;
+    private Boolean isNewProject = false;
 
     @Override
     public void refresh() {
@@ -268,12 +268,18 @@ public class Log4jSettingPage extends ProjectSettingPage {
     }
 
     private boolean isLog4jEnableChanged() {
+        if (log4jBtn == null) {
+            return false;
+        }
         boolean selection = log4jBtn.getSelection();
         return !log4jEnable.equals(selection);
     }
 
     private boolean isLog4jVersionChanged() {
         if (isNewProject) {
+            return false;
+        }
+        if (combo == null) {
             return false;
         }
         int selectionIndex = combo.getSelectionIndex();
@@ -295,7 +301,9 @@ public class Log4jSettingPage extends ProjectSettingPage {
             } else {
                 templateTxt.setText(
                         Log4jPrefsSettingManager.getInstance().getDefaultTemplateString(Log4jPrefsConstants.LOG4JFILEPATH));
-                combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(Log4jPrefsConstants.LOG4J1));
+                if (combo != null) {
+                    combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(Log4jPrefsConstants.LOG4J1));
+                }
             }
         }
     }

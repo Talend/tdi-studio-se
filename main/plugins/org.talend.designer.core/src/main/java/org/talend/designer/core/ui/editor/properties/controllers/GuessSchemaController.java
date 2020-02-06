@@ -763,6 +763,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
         try {
             if (connt != null) {
                 iMetadataConnection = ConvertionHelper.convert(connt);
+                iMetadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(connt));
                 isStatus = checkConnection(iMetadataConnection);
             }
 
@@ -797,6 +798,11 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                 	info = new DbInfo(iMetadataConnection.getDbType(), iMetadataConnection.getUsername(),
                             iMetadataConnection.getPassword(), iMetadataConnection.getDbVersionString(),
                             iMetadataConnection.getUrl(), iMetadataConnection.getDriverJarPath(),iMetadataConnection.getAdditionalParams());
+                } else if (EDatabaseTypeName.ORACLE_CUSTOM.getDisplayName().equals(iMetadataConnection.getDbType())) {
+                    info = new DbInfo(iMetadataConnection.getDbType(), iMetadataConnection.getUsername(),
+                            iMetadataConnection.getPassword(), iMetadataConnection.getDbVersionString(),
+                            iMetadataConnection.getUrl(), iMetadataConnection.getDriverJarPath(),
+                            iMetadataConnection.getAdditionalParams());
                 }else {
                     info = new DbInfo(iMetadataConnection.getDbType(), iMetadataConnection.getUsername(),
                             iMetadataConnection.getPassword(), iMetadataConnection.getDbVersionString(),
