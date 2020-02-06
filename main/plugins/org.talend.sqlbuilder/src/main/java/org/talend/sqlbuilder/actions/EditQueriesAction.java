@@ -213,13 +213,6 @@ public class EditQueriesAction extends AContextualAction {
                             break;
                         }
                     }
-                    IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(
-                            IRepositoryService.class);
-                    IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
-                    if (!repFactory.isPotentiallyEditable(repositoryNode.getObject())) {
-                        canWork = false;
-                        break;
-                    }
                 }
                 if (canWork) {
                     Item item = repositoryNode.getObject().getProperty().getItem();
