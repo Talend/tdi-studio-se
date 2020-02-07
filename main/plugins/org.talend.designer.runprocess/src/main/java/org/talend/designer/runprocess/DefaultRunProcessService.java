@@ -868,10 +868,6 @@ public class DefaultRunProcessService implements IRunProcessService {
         IProgressMonitor monitor = new NullProgressMonitor();
         installRefCodeProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
 
-//        if (ProcessUtils.isRequiredPigUDFs(null, refProject)) {
-//            installRefCodeProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
-//        }
-
         if (ProcessUtils.isRequiredBeans(null, refProject)) {
             installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
         }
