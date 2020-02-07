@@ -1464,7 +1464,7 @@ public abstract class DbGenerationManager {
                                         }
                                         expression = expression.replaceFirst(tableValue + "\\." + co.getLabel(), //$NON-NLS-1$
                                                 tableValue + "\\." + oriName); //$NON-NLS-1$
-                                        expression = replaceAuotes(expression, quto_markParser, quto_mark);
+                                        expression = replaceAuotes(component, expression, quto_markParser, quto_mark);
                                     }
                                 }
 
@@ -1479,11 +1479,14 @@ public abstract class DbGenerationManager {
         return expression;
     }
 
-    protected String replaceAuotes(String expression, String quoParser, String quote){
+    protected String replaceAuotes(DbMapComponent component, String expression, String quoParser, String quote) {
         if(!expression.contains("'")){
-            return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
+            if (isComplexExpression(component, expression)) {
+                return expression;
+            }
+            return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$;
         }
-
+        
         List<Integer> indexs = new ArrayList<>();
         for(int i=0;i<expression.length();i++){
             if("'".equals(String.valueOf(expression.charAt(i)))){
@@ -1514,6 +1517,13 @@ public abstract class DbGenerationManager {
             }
         }
         return result.toString();
+    }
+    
+    protected boolean isComplexExpression(DbMapComponent component, String expression) {
+        if (parser.isContainsGlobalMapExpression(expression)) {
+            return true;
+        }
+        return false;
     }
 
     private String getQuote(DbMapComponent component){
