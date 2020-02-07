@@ -116,7 +116,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
                 modified = updateLDAPSchemaConnection((LDAPSchemaConnection) connection);
             } else if (connection instanceof SAPConnection) {
                 modified = updateSAPConnection((SAPConnection) connection);
-            }else if (isNoSqlConnection(connection)){
+            } else if (isNoSqlConnection(connection)){
                 modified = updateNoSqlConnection(connection);
             }
         }
@@ -376,7 +376,6 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
         list.add(ERepositoryObjectType.METADATA_FILE_FTP);
         list.add(ERepositoryObjectType.METADATA_LDAP_SCHEMA);
         list.add(ERepositoryObjectType.METADATA_MDMCONNECTION);
-        list.add(ERepositoryObjectType.METADATA_SAPCONNECTIONS);
         list.add(ERepositoryObjectType.METADATA_SAPCONNECTIONS);
         if (GlobalServiceRegister.getDefault().isServiceRegistered(INOSQLService.class)) {
             INOSQLService nosqlService = (INOSQLService) GlobalServiceRegister.getDefault().getService(INOSQLService.class);
