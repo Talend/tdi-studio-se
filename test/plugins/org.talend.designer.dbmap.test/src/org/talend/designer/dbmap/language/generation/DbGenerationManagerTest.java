@@ -154,38 +154,38 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         String quote = "\"";
         String quoParser = "[\\\\]?\\" + quote; //$NON-NLS-1$
         DbGenerationManager dbManager = new GenericDbGenerationManager();
-        
+        dbMapComponent = new DbMapComponent();
         String expression = "'\"" + "+" + "(String)globalMap.get(\"BusinessDateStr\")" + "+" + "\"' BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
         
-        assertEquals(expression.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "'\"" + "+" + "(String)globalMap.get(\"BusinessDateStr\")" + "+" + "\" BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
         String expect = "'\\\"" + "+" + "(String)globalMap.get(\\\"BusinessDateStr\\\")" + "+" + "\\\" BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
         
-        assertEquals(expect.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expect.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
         expect = "BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
-        assertEquals(expect.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expect.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "'" +"+"+"context.param1"+"+"+ "aaa";
         expect = "'" +"+"+"context.param1"+"+"+ "aaa";
         
-        assertEquals(expect.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expect.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "'\"" +"+"+"context.param1"+"+"+ "\"'aaa";
         expect = "'\"" +"+"+"context.param1"+"+"+ "\"'aaa";
         
-        assertEquals(expect.trim(), dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expect.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "'context.param1'";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "table1.name = 'context.param2'";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "table1.name = 'context.param2' aa";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
     }
     
     @Test
@@ -193,15 +193,15 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         String quote = "\"";
         String quoParser = "[\\\\]?\\" + quote; //$NON-NLS-1$
         DbGenerationManager dbManager = new GenericDbGenerationManager();
-
+        dbMapComponent = new DbMapComponent();
         String expression = "case when upper(a.rate_type)='FLOAT' then 'D001' else 'AMAT' end";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
 
         expression = "case when upper(a.rate_type)='FLOAT'";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
 
         expression = "'context.jobName'";
-        assertEquals(expression, dbManager.replaceAuotes(expression, quoParser, quote).trim());
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
     }
 
     private void testWithQuote(){

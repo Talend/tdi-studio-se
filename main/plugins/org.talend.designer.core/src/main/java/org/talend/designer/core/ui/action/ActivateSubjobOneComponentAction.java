@@ -33,9 +33,9 @@ public class ActivateSubjobOneComponentAction extends SelectionAction {
 
     public static final String ID = "org.talend.designer.core.ui.editor.action.ActivateSubjobOneComponentAction"; //$NON-NLS-1$
 
-    private static final String TEXT_SET_ACTIVATE_PART = Messages.getString("ActivateSubjobAction.ActivatePart"); //$NON-NLS-1$
+    private static final String TEXT_SET_ACTIVATE_PART = Messages.getString("ActivateSubjobAction.ActivatePart2"); //$NON-NLS-1$
 
-    private static final String TEXT_REM_ACTIVATE_PART = Messages.getString("ActivateSubjobAction.DeactivatePart"); //$NON-NLS-1$
+    private static final String TEXT_REM_ACTIVATE_PART = Messages.getString("ActivateSubjobAction.DeactivatePart2"); //$NON-NLS-1$
 
     public ActivateSubjobOneComponentAction(IWorkbenchPart part) {
         super(part);

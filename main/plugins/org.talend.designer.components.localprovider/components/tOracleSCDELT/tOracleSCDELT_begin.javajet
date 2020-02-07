@@ -54,7 +54,7 @@ if(columnList != null && columnList.size() > 0) {
         String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
         String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__");
         %>
-		<%if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)){%>
+		<%if("ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion) ){%>
         	java.lang.Class.forName("oracle.jdbc.OracleDriver");
         <%}else {%>
     		java.lang.Class.forName("oracle.jdbc.driver.OracleDriver");
