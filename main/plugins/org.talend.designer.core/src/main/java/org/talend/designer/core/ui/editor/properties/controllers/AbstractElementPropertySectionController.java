@@ -1584,6 +1584,30 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         String jdbcProps = getValueFromRepositoryName(element, EConnectionParameterName.PROPERTIES_STRING.getName(),
                 basePropertyParameter);
+        if (EDatabaseTypeName.ORACLE_CUSTOM.getDbType().equals(typ)) {
+            // for ssl
+            String useSSL = getValueFromRepositoryName(element, "USE_SSL"); //$NON-NLS-1$
+            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_USE_SSL, useSSL);
+            // trustStore
+            String trustStore = getValueFromRepositoryName(element, "SSL_TRUSTSERVER_TRUSTSTORE");
+            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PATH,
+                    TalendQuoteUtils.removeQuotesIfExist(trustStore));
+            // trusstStore pwd
+            String trustStorePwd = getValueFromRepositoryName(element, "SSL_TRUSTSERVER_PASSWORD");
+            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PASSWORD,
+                    TalendQuoteUtils.removeQuotesIfExist(trustStorePwd));
+            // clientAuth
+            String clientAuth = getValueFromRepositoryName(element, "NEED_CLIENT_AUTH");
+            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_NEED_CLIENT_AUTH, clientAuth);
+            // keyStore
+            String keyStore = getValueFromRepositoryName(element, "SSL_KEYSTORE");
+            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_KEY_STORE_PATH,
+                    TalendQuoteUtils.removeQuotesIfExist(keyStore));
+            // keyStorePwd
+            String keyStorePwd = getValueFromRepositoryName(element, "SSL_KEYSTORE_PASSWORD");
+            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_KEY_STORE_PASSWORD,
+                    TalendQuoteUtils.removeQuotesIfExist(keyStorePwd));
+        }
         connParameters.setJdbcProperties(jdbcProps);
 
         String realTableName = null;
@@ -2267,6 +2291,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
                         IElementParameter ele = connectionNode.getElementParameter("CONNECTION_TYPE");
                         if (ele != null) {
                             type = (String) ele.getValue();
+                            if ("ORACLE_RAC".equals(ele.getValue())) {
+                                type = "ORACLE_CUSTOM";
+                            }
                         }
                     }
                     setAllConnectionParameters(type, connectionNode);

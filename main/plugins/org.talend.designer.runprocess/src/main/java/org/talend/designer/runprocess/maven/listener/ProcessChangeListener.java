@@ -29,6 +29,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.resource.MoveResourceChange;
 import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
@@ -146,7 +148,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                 IFolder targetFolder = processTypeFolder.getFolder(targetPath);
                 try {
                     if (!targetFolder.exists()) {
-                        targetFolder.create(true, true, null);
+                        ResourceUtils.createFolder(targetFolder);
                     }
                     List<IRepositoryViewObject> allVersions = ProxyRepositoryFactory.getInstance().getAllVersion(obj.getId());
                     for (IRepositoryViewObject objs : allVersions) {
@@ -303,20 +305,18 @@ public class ProcessChangeListener implements PropertyChangeListener {
                 if (!sourceFolder.exists()) {
                     return;
                 }
-                synchronized (sourceFolder) {
-                    try {
-                        sourceFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-                        removeFromParentSourceFolder(sourceFolder);
-                        IFolder targetFolder = processTypeFolder.getFolder(targetPath);
-                        if (!targetFolder.exists()) {
-                            targetFolder.create(true, true, null);
-                        }
-                        MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
-                        change.perform(new NullProgressMonitor());
-                        updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
-                    } catch (OperationCanceledException | CoreException e) {
-                        ExceptionHandler.process(e);
+                try {
+                    sourceFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+                    removeFromParentSourceFolder(sourceFolder);
+                    IFolder targetFolder = processTypeFolder.getFolder(targetPath);
+                    if (!targetFolder.exists()) {
+                        ResourceUtils.createFolder(targetFolder);
                     }
+                    MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
+                    change.perform(new NullProgressMonitor());
+                    updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
+                } catch (OperationCanceledException | CoreException | PersistenceException e) {
+                    ExceptionHandler.process(e);
                 }
             }
         }
