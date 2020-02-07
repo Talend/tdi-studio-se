@@ -116,7 +116,7 @@ public class UpgradePasswordEncryptionAlg4ItemMigrationTask extends UnifyPasswor
                 modified = updateLDAPSchemaConnection((LDAPSchemaConnection) connection);
             } else if (connection instanceof SAPConnection) {
                 modified = updateSAPConnection((SAPConnection) connection);
-            } else if (isNoSqlConnection(connection)){
+            } else if (isNoSqlConnection(connection)) {
                 modified = updateNoSqlConnection(connection);
             }
         }
