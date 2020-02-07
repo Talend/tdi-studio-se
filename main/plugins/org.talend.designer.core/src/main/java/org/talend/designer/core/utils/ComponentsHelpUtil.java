@@ -17,7 +17,9 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.program.Program;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.core.CorePlugin;
 import org.talend.core.PluginChecker;
+import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 
@@ -31,8 +33,6 @@ public class ComponentsHelpUtil {
             || INTERNAL_VERSION.toLowerCase().indexOf("patch") >= 0;
 
     private static String PRODUCT_BASE_VERSION = INTERNAL_VERSION.substring(0, 3);
-
-    private static String HELP_LANGUAGE = Locale.FRENCH.equals(Locale.getDefault().getLanguage()) ? "fr" : "en"; //$NON-NLS-1$ //$NON-NLS-2$
 
     private static Boolean IS_HELP_INSTALLED = null;
 
@@ -53,7 +53,7 @@ public class ComponentsHelpUtil {
             sb.append("https://talend-staging.fluidtopics.net/access/sources/content/topic?pageid="); //$NON-NLS-1$
         }
         sb.append(componentName.toLowerCase());
-        sb.append("&afs:lang=").append(HELP_LANGUAGE); //$NON-NLS-1$
+        sb.append("&afs:lang=").append(getLanguage()); //$NON-NLS-1$
         sb.append("&EnrichVersion="); //$NON-NLS-1$
         if (!StringUtils.isEmpty(System.getProperty(JVM_PARAM_ONLINE_HELP_VERSION))) {
             sb.append(System.getProperty(JVM_PARAM_ONLINE_HELP_VERSION));
@@ -86,4 +86,11 @@ public class ComponentsHelpUtil {
         return IS_HELP_INSTALLED;
     }
 
+    public static String getLanguage() {
+        String language = CorePlugin.getDefault().getPluginPreferences().getString(ITalendCorePrefConstants.LANGUAGE_SELECTOR);
+        if (StringUtils.isBlank(language)) {
+            language = Locale.getDefault().getLanguage();
+        }
+        return Locale.FRENCH.getLanguage().equals(language) ? "fr" : "en"; //$NON-NLS-1$ //$NON-NLS-2$
+    }
 }
