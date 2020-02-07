@@ -284,6 +284,7 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
         String[] columns = new String[] { "_String", "_void" };
         String[] dbColumns = new String[] { "String", "void", "age" };
         String[] expressions = new String[] { schema + "." + tableName + "._String", schema + "." + tableName + "._void" };
+        init(schema, tableName, tableName);
         initForExpression(schema, tableName, columns, dbColumns, "grade", columns, dbColumns, expressions);
         ExternalDbMapTable externalData = dbMapComponent.getExternalData().getOutputTables().get(0);
         ExternalDbMapEntry whereEntity = new ExternalDbMapEntry();
@@ -322,6 +323,7 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
         String[] outputColumns = new String[] { "name", "name_uppercase", "register" };
         String[] expressions = new String[] { "context.schema.bugtdi32594_src.name",
                 "UPPER(context.schema.bugtdi32594_src.name)", "to_date(context.schema.bugtdi32594_src.register, 'yyyy-MM-dd')" };
+        init(schema, tableName, tableName);
         initForExpression(schema, tableName, inputColumns, inputColumns, outputTable, outputColumns, outputColumns, expressions);
         ExternalDbMapTable externalData = dbMapComponent.getExternalData().getOutputTables().get(0);
         ExternalDbMapEntry whereEntity = new ExternalDbMapEntry();
