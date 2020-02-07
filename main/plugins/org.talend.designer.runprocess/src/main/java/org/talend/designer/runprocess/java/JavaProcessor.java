@@ -1430,13 +1430,6 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             basePath.append(getClassPath(routineOutputPath));
             basePath.append(classPathSeparator);
 
-            if (ProcessUtils.isRequiredPigUDFs(process)) {
-                ITalendProcessJavaProject pigudfsProject = TalendJavaProjectManager
-                        .getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
-                IPath pigudfsOutputPath = pigudfsProject.getOutputFolder().getLocation();
-                basePath.append(getClassPath(pigudfsOutputPath));
-                basePath.append(classPathSeparator);
-            }
 
             if (ProcessUtils.isRequiredBeans(process)) {
                 ITalendProcessJavaProject beansProject = TalendJavaProjectManager

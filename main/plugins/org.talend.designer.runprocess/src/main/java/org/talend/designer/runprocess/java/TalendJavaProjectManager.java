@@ -109,10 +109,7 @@ public class TalendJavaProjectManager {
                             IFolder code = createFolderIfNotExist(poms.getFolder(DIR_CODES), monitor);
                             // routines
                             createFolderIfNotExist(code.getFolder(DIR_ROUTINES), monitor);
-                            // pigudfs
-                            if (ProcessUtils.isRequiredPigUDFs(null)) {
-                                createFolderIfNotExist(code.getFolder(DIR_PIGUDFS), monitor);
-                            }
+
                             // beans
                             if (ProcessUtils.isRequiredBeans(null)) {
                                 createFolderIfNotExist(code.getFolder(DIR_BEANS), monitor);

@@ -77,20 +77,6 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
         syncRoutineItems(getRoutines(true), true);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.talend.designer.codegen.AbstractRoutineSynchronizer#syncAllPigudf()
-     */
-    @Override
-    public void syncAllPigudf() throws SystemException {
-        syncRoutineItems(getAllPigudf(false), false);
-    }
-
-    @Override
-    public void syncAllPigudfForLogOn() throws SystemException {
-        syncRoutineItems(getAllPigudf(true), true);
-    }
 
     private void syncRoutineItems(Collection<RoutineItem> routineObjects, boolean forceUpdate) throws SystemException {
         for (RoutineItem routineItem : routineObjects) {
