@@ -603,7 +603,9 @@ public class SQLBuilderDialog extends Dialog implements ISQLBuilderDialog, IRepo
             // }
 
             // sql = QueryUtil.checkAndAddQuotes(sql);
-            sql = TalendTextUtils.addStrInQuery(sql);
+            if (!editorComposite.isIfcontext()) {
+                sql = TalendTextUtils.addStrInQuery(sql);
+            }
 
             connParameters.setQuery(sql, true);
 

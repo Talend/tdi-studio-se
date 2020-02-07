@@ -327,11 +327,21 @@
         <ITEM NAME="widenative" VALUE="widenative" SHOW_IF="(ACTION=='INSERT') or (ACTION=='UPDATE')"/>
       </ITEMS>
     </PARAMETER>
-	
+
+    <PARAMETER
+        NAME="ADDITIONAL_QUERY_PARAMETERS"
+        FIELD="TEXT"
+        NUM_ROW="12"
+        REQUIRED="false"
+        SHOW_IF="(ACTION=='INSERT') or (ACTION=='UPDATE')"
+    >
+        <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
     <PARAMETER
 	  NAME="FIRE_TRIGGERS"
 	  FIELD="CHECK"
-	  NUM_ROW="12"
+	  NUM_ROW="13"
 	  SHOW_IF="ACTION=='INSERT'"
 	>
 		<DEFAULT>false</DEFAULT>
@@ -340,7 +350,7 @@
     <PARAMETER
     	NAME="OUTPUT"
     	FIELD="CLOSED_LIST"
-    	NUM_ROW="12"
+    	NUM_ROW="13"
     	REQUIRED = "true"
     	SHOW_IF="ACTION=='EXPORT'"
     >
