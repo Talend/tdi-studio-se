@@ -1753,18 +1753,8 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                     }
 
                 }
-            } else {
-                for (ExportFileResource resource : process) {
-                    if (resource.getItem() instanceof ProcessItem) {
-                        Set<String> routinesNeededForJob = LastGenerationInfo.getInstance().getPigudfNeededWithSubjobPerJob(
-                                resource.getItem().getProperty().getId(), resource.getItem().getProperty().getVersion());
-                        if (routinesNeededForJob != null) {
-                            allRoutinesNames.addAll(routinesNeededForJob);
-                        }
-                    }
-
-                }
             }
+
             if (allRoutinesNames.isEmpty()) {
                 toReturn.addAll(RoutinesUtil.getCurrentSystemRoutines());
             } else {
