@@ -186,6 +186,12 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         
         expression = "table1.name = 'context.param2' aa";
         assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+        
+        expression = "\"+globalMap.get(\"value1\")+\"";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "COALESCE(test.name ,\"+globalMap.get(\"value2\")+\")";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
     }
     
     @Test
