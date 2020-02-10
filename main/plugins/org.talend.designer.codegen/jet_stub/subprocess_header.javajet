@@ -1036,8 +1036,114 @@ public static class <%=conn.getName() %>Struct<%=templateOrigin %> implements ro
  * Byte Length of Source Code: ?SIZE?
  */
  <% } %>
+
+public class <%=subTree.getName() %>_JarUtilities {
+
+    public static final String TALEND_INF_REPOSITORY = "TALEND-INF/repository";
+
+    public void extractJarsTalendInfDirectory(String jarFile, String destDir) throws IOException {
+        URL url = new URL(jarFile);
+
+        JarURLConnection conn = (JarURLConnection)url.openConnection();
+        final String destFinal = destDir;
+
+        try (JarFile jar = conn.getJarFile()) {
+            Enumeration enumEntries = jar.entries();
+            while (enumEntries.hasMoreElements()) {
+                JarEntry file = (JarEntry) enumEntries.nextElement();
+
+                if (!file.getName().contains(TALEND_INF_REPOSITORY))
+                    continue;
+
+                java.io.File f = new java.io.File(destDir + java.io.File.separator + file.getName());
+                if (file.isDirectory()) { // if its a directory, create it
+                    f.mkdir();
+                    continue;
+                }
+                InputStream is = null;
+                FileOutputStream fos = null;
+                try {
+                    is = <%=subTree.getName() %>_JarUtilities.class.getResourceAsStream("/" + file.getName()); // get the input stream
+                    InputStreamReader isr = new InputStreamReader(is);
+
+                    new File(f.getParent()).mkdirs();
+                    f.createNewFile();
+
+                    byte[] bytes = new byte[1024];
+
+                    fos = new FileOutputStream(f);
+
+                    while ((is.read(bytes)) != -1) {  // write contents of 'is' to 'fos'
+                        fos.write(bytes);
+                    }
+                } finally {
+                    if (fos != null) fos.close();
+                    if (is != null) is.close();
+                }
+            }
+        }
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            boolean deleteDirectory(File directoryToBeDeleted) {
+                if (!Files.isSymbolicLink(directoryToBeDeleted.toPath())) {
+                    File[] allContents = directoryToBeDeleted.listFiles();
+                    if (allContents != null) {
+                        for (File file : allContents) {
+                            deleteDirectory(file);
+                        }
+                    }
+                }
+                return directoryToBeDeleted.delete();
+            }
+
+            @Override
+            public void run() {
+                File index = new File(destFinal + "/TALEND-INF/");
+
+                deleteDirectory(index);
+            }
+        });
+    }
+
+    public String getJarPath() throws URISyntaxException {
+        return <%=subTree.getName() %>_JarUtilities.class.getProtectionDomain().getCodeSource().getLocation().toURI().toString();
+    }
+
+    public String getParentDirectoryFromJar() {
+        String dirtyPath = getClass().getResource("").toString();
+        String jarPath = dirtyPath.replaceAll("^.*file:/", ""); //removes file:/ and everything before it
+        jarPath = jarPath.replaceAll("jar!.*", "jar"); //removes everything after .jar, if .jar exists in dirtyPath
+        jarPath = jarPath.replaceAll("%20", " "); //necessary if path has spaces within
+        if (!jarPath.endsWith(".jar")) { // this is needed if you plan to run the app using Spring Tools Suit play button.
+            jarPath = jarPath.replaceAll("/classes/.*", "/classes/");
+        }
+        String directoryPath = Paths.get(jarPath).getParent().toString(); //Paths - from java 8
+        return directoryPath;
+    }
+
+    void extractTakokitDirectoryIfPresent() throws URISyntaxException, IOException {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        URL url = loader.getResource("/" + TALEND_INF_REPOSITORY);
+        if (url != null) {
+            File newDirectory = new File(getParentDirectoryFromJar());
+
+            extractJarsTalendInfDirectory(getJarPath(), newDirectory.toString());
+
+            System.setProperty("talend.component.manager.m2.repository", newDirectory.getAbsolutePath() + "/" + TALEND_INF_REPOSITORY);
+        }
+    }
+}
+
 public void <%=subTree.getName() %>Process(final java.util.Map<String, Object> globalMap) throws TalendException {
 	globalMap.put("<%=subTree.getName() %>_SUBPROCESS_STATE", 0);
+
+	try {
+		new <%=subTree.getName() %>_JarUtilities().extractTakokitDirectoryIfPresent();
+	} catch (URISyntaxException e1) {
+		e1.printStackTrace();
+	} catch (IOException e1) {
+		e1.printStackTrace();
+	}
 
  final boolean execStat = this.execStat;
 <%

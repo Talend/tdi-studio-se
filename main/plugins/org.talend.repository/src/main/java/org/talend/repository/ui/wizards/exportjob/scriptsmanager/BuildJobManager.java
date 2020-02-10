@@ -12,21 +12,43 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;
+import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -48,11 +70,14 @@ import org.talend.commons.runtime.utils.io.FileCopyUtils;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.ILibraryManagerService;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.model.ProjectRepositoryNode;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
@@ -60,6 +85,7 @@ import org.talend.core.runtime.repository.build.IBuildResourceParametes;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.services.IDesignerCoreUIService;
 import org.talend.designer.maven.model.TalendMavenConstants;
+import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -68,7 +94,9 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
+import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.utils.ZipToFile;
 import org.talend.repository.ui.wizards.exportjob.JavaJobExportReArchieveCreator;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
@@ -76,6 +104,12 @@ import org.talend.repository.ui.wizards.exportjob.handler.AbstractBuildJobHandle
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.util.ExportJobUtil;
 import org.talend.utils.io.FilesUtils;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+
 
 /**
  * created by ycbai on 2015年5月15日 Detailled comment
@@ -339,6 +373,7 @@ public class BuildJobManager {
                         packageSubJob(temUnzipPath, pomModel, rootPom, processItem, null);
                         refreshExportRootPom(temUnzipPath, rootPom);
 
+
                         ZipToFile.zipFile(ExportJobUtil.getTmpFolder(), jobZip);
                         ExportJobUtil.deleteTempFiles();
                     }
@@ -347,7 +382,34 @@ public class BuildJobManager {
                     if (jobFileTarget.isDirectory()) {
                         jobFileTarget = new File(destinationPath, jobZipFile.getName());
                     }
-                    FilesUtils.copyFile(jobZipFile, jobFileTarget);
+                    
+                    String componentServerInfo = getComponentServerInformation();
+                    
+                    if (componentServerInfo != null && jobExportType == JobExportType.MSESB) {
+                    	ObjectMapper mapper = new ObjectMapper();
+	
+                    	Map<String, Object> takokitComponents = mapper.readValue(componentServerInfo, 
+	                    		new TypeReference<HashMap<String, Object>>() {});
+
+                    	List<HashMap<String, String>> componentsPluginString = getComponentsPluginString(takokitComponents);
+                    
+	                    IFile projectPomFile = talendJavaProject.getProjectPom();
+	                    Model pomModel = MavenPlugin.getMavenModelManager().readMavenModel(projectPomFile);
+	                    
+	                    String temUnzipPath = ExportJobUtil.getTmpFolder() + File.separator + label + "_" + version + "takokit" + getAlphaNumericString(5);
+	                    FilesUtils.unzip(jobZipFile.getAbsolutePath(), temUnzipPath);
+	                    
+	                    List<Dependency> dependencies = pomModel.getDependencies();
+	                    
+	                    File zipRoot = new File(temUnzipPath);
+	                    
+	                    copyDependenciesForTakokitComponents(zipRoot, dependencies, componentsPluginString);
+	
+	                    FilesUtils.zipStoreLevelCompression(zipRoot.getAbsolutePath(), jobFileTarget.getAbsolutePath());                
+                    } else {
+                        FilesUtils.copyFile(jobZipFile, jobFileTarget);
+                    }
+                    
                     TimeMeasure.step(timeMeasureId, "Copy packaged file to target");
                     if (isSignJob) {
                         for (String line : logMsg.split("\n")) { //$NON-NLS-1$
@@ -390,6 +452,219 @@ public class BuildJobManager {
         }
     }
     
+    // function to generate a random string of length n 
+    private static String getAlphaNumericString(int n) 
+    { 
+  
+        // chose a Character random from this String 
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                    + "0123456789"
+                                    + "abcdefghijklmnopqrstuvxyz"; 
+  
+        // create StringBuffer size of AlphaNumericString 
+        StringBuilder sb = new StringBuilder(n); 
+  
+        for (int i = 0; i < n; i++) { 
+  
+            // generate a random number between 
+            // 0 to AlphaNumericString variable length 
+            int index 
+                = (int)(AlphaNumericString.length() 
+                        * Math.random()); 
+  
+            // add Character one by one in end of sb 
+            sb.append(AlphaNumericString 
+                          .charAt(index)); 
+        } 
+  
+        return sb.toString(); 
+    }
+
+    private void copyDependenciesForTakokitComponents(File zipRoot, List<Dependency> dependencies,
+                                                      List<HashMap<String, String>> componentsPluginString) throws IOException {
+
+        List<Dependency> takokitDependencies = getTakoKitDependencies(dependencies, componentsPluginString);
+
+        if (takokitDependencies.size()  == 0)
+        	return;
+        
+        String path = zipRoot + "/TALEND-INF/plugins.properties";
+        // Use relative path for Unix systems
+        File f = new File(path);
+
+        f.getParentFile().mkdirs();
+        f.createNewFile();
+        
+        writePluginStringsIntoPluginsProperties(componentsPluginString, f);
+
+        copyArtifactToClasspathRepository(componentsPluginString, zipRoot.getAbsolutePath());
+    }
+
+    public void copyFile(File afile, File bfile) throws IOException {
+        InputStream inStream = null;
+        OutputStream outStream = null;
+
+        try{
+            inStream = new FileInputStream(afile);
+            outStream = new FileOutputStream(bfile);
+
+            byte[] buffer = new byte[1024];
+
+            int length;
+            //copy the file content in bytes
+            while ((length = inStream.read(buffer)) > 0){
+                outStream.write(buffer, 0, length);
+            }
+
+        } catch(IOException e){
+            e.printStackTrace();
+        } finally {
+        	if (outStream != null) outStream.close();
+        	if (inStream != null) inStream.close();
+        }
+    }
+
+	private void copyArtifactToClasspathRepository(List<HashMap<String, String>> componentsPluginString, String classPathDirectory) throws IOException {
+		
+		for (HashMap<String, String> item : componentsPluginString) {
+			String jarSystemPath = item.get("jarSystemPath");
+			
+			String mavenPath = item.get("groupId") + "\\" + item.get("artifactId") + "\\" + item.get("version") + "\\" + item.get("jarName");
+			
+			String[] tokens = jarSystemPath.split(StringEscapeUtils.escapeJava(mavenPath));
+			
+			if (tokens.length >= 1) {
+				String destDir = classPathDirectory + "\\BOOT-INF\\classes\\TALEND-INF\\repository\\" + mavenPath;
+				
+				new File(destDir).getParentFile().mkdirs();
+				
+				copyFile(new File(jarSystemPath), new File(destDir));
+			}
+		}
+	}
+
+	private void writePluginStringsIntoPluginsProperties(List<HashMap<String, String>> componentsPluginString, File f) throws IOException {
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter(f))) {
+		
+			for (HashMap<String, String> pluginString : componentsPluginString) {
+			    writer.append(pluginString.get("pluginString"));
+			    writer.newLine();
+			}
+		}
+	}
+
+	private List<Dependency> getTakoKitDependencies(List<Dependency> dependencies,
+			List<HashMap<String, String>> componentsPluginString) {
+
+        List<Dependency> takokitComponents = new ArrayList<Dependency>();
+
+		for(HashMap<String, String> item : componentsPluginString) {
+			for (int i = 0; i < dependencies.size(); i++) {
+				if (dependencies.get(i).getArtifactId().equalsIgnoreCase(item.get("artifactId")) &&
+					dependencies.get(i).getGroupId().equalsIgnoreCase(item.get("groupId")) && 
+					dependencies.get(i).getVersion().equalsIgnoreCase(item.get("version"))) {
+					
+					String pluginString = item.get("pluginString");
+
+					item.put("pluginString", pluginString);
+
+                    takokitComponents.add(dependencies.get(i));
+				}
+			}
+		}
+
+		return takokitComponents;
+	}
+
+	private List<HashMap<String, String>> getComponentsPluginString(Map<String, Object> components) {
+    	List<Map<String, Object>> componentsList = (List<Map<String, Object>>) components.get("components");
+    	List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+    	
+        for (int i = 0; i < componentsList.size(); i++) {
+        	
+	        HashMap component = (HashMap<String, Object>)componentsList.get(i);
+	        
+	        HashMap id = (HashMap)component.get("id");
+	        
+	        String family = (String)id.get("family");
+	        String name = (String)id.get("name");
+	        String pluginLocation = (String)id.get("pluginLocation");
+	        
+	        StringBuilder resultItem = new StringBuilder();
+	        
+	        resultItem.append(family);
+	        resultItem.append("#");
+	        resultItem.append(name);
+	        resultItem.append("=");
+	        
+	        String[] pluginLocationTokens = pluginLocation.split(":");
+	        
+	        resultItem.append(pluginLocationTokens[0]);
+	        resultItem.append("/");
+	        resultItem.append(pluginLocationTokens[1]);
+	        resultItem.append("/");
+	        resultItem.append(pluginLocationTokens[2]);
+	        resultItem.append("/");
+            
+	        String jarName = "";
+	        HashMap<String, String> resultItemMap = new HashMap<String, String>();
+	        
+	        if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibraryManagerService.class)) {
+	            ILibraryManagerService librariesService = (ILibraryManagerService) GlobalServiceRegister.getDefault()
+	                    .getService(ILibraryManagerService.class);
+
+				String jarLocation = librariesService.getJarPathFromMaven("mvn:"+pluginLocationTokens[0]+"/"+pluginLocationTokens[1]+"/"+pluginLocationTokens[2]);
+			
+				java.nio.file.Path path = Paths.get(jarLocation);
+				
+				resultItemMap.put("jarName", path.getFileName().toString());
+				resultItemMap.put("jarSystemPath", jarLocation);
+				
+				resultItem.append(resultItemMap.get("jarName"));
+	        }
+	        
+	        resultItemMap.put("pluginString", resultItem.toString());
+	        resultItemMap.put("groupId", pluginLocationTokens[0]);
+	        resultItemMap.put("artifactId", pluginLocationTokens[1]);
+	        resultItemMap.put("version", pluginLocationTokens[2]);
+	        
+	        result.add(resultItemMap);
+        }
+        
+        return result;
+	}
+
+	private String getComponentServerInformation()  {
+		HttpURLConnection conn = null;
+		StringBuilder stringBuilder = null;
+    	try {
+	    	String takokitComponentServerport = System.getProperty("component.java.port");
+	    	
+	    	URL url = new URL("http://127.0.0.1:" + takokitComponentServerport + "/api/v1/component/index");
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+		
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+				(conn.getInputStream())));
+	
+			String output;
+			stringBuilder = new StringBuilder();
+			
+			while ((output = br.readLine()) != null) {
+				stringBuilder.append(output);
+			}
+    	}
+    	catch(IOException exception) {
+    		return null;
+    	}
+		finally {
+			if (conn != null) conn.disconnect();
+		}
+    	
+    	return stringBuilder.toString();
+	}
+
     private void packageSubJob(String zipLocation, Model pomModel, File rootPom, ProcessItem item,
             final List<ProcessItem> checkedProcesses)
             throws Exception {

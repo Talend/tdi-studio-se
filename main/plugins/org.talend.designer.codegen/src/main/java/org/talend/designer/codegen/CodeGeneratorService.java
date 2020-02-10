@@ -40,7 +40,7 @@ public class CodeGeneratorService implements ICodeGeneratorService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.codegen.ICodeGeneratorFactory#getCodeGenerator()
      */
     @Override
