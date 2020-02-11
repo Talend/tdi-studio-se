@@ -472,7 +472,6 @@
 		<ITEMS DEFAULT="MYSQL_8">
 			<ITEM NAME="MYSQL_8" VALUE="MYSQL_8" />
 			<ITEM NAME="MYSQL_5" VALUE="MYSQL_5" />
-			<ITEM NAME="MYSQL_4" VALUE="MYSQL_4" />
 			<ITEM NAME="MARIADB" VALUE="MARIADB" />
 		</ITEMS>
 	</PARAMETER>
@@ -855,9 +854,8 @@
 		<IMPORT NAME="Driver_MaxDB" MODULE="sapdbc.jar" MVN="mvn:org.talend.libraries/sapdbc/6.0.0"  REQUIRED_IF="DBTYPE=='MAXDB'" />
 		<IMPORT NAME="Driver-MSSQL" MODULE="jtds-1.3.1-patch-20190523.jar" MVN="mvn:net.sourceforge.jtds/jtds/1.3.1-patch-20190523" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='JTDS')" />
 		<IMPORT NAME="Driver-MSSQL-prop" MODULE="mssql-jdbc.jar" MVN="mvn:org.talend.libraries/mssql-jdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP')" />
-		<IMPORT NAME="Driver-MYSQL4" MODULE="mysql-connector-java-3.1.14-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-3.1.14-bin/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MYSQL_4')"/>
 		<IMPORT NAME="Driver-MYSQL5" MODULE="mysql-connector-java-5.1.30-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MYSQL_5')"/>
-		<IMPORT NAME="Driver-MYSQL8"  MODULE="mysql-connector-java-8.0.12.jar" MVN="mvn:mysql/mysql-connector-java/8.0.12" REQUIRED_IF="(DB_MYSQL_VERSION == 'MYSQL_8') AND (USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MYSQL')" />
+		<IMPORT NAME="Driver-MYSQL8"  MODULE="mysql-connector-java-8.0.18.jar" MVN="mvn:mysql/mysql-connector-java/8.0.18" REQUIRED_IF="(DB_MYSQL_VERSION == 'MYSQL_8') AND (USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MYSQL')" />
 		<IMPORT NAME="Driver-MARIADB"  MODULE="mariadb-java-client-2.5.3.jar" MVN="mvn:org.mariadb.jdbc/mariadb-java-client/2.5.3"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MARIADB')" />
         <IMPORT NAME="Driver-Oracle8i" MODULE="ojdbc12.jar" MVN="mvn:org.talend.libraries/ojdbc12/6.0.0"  REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_8') AND (USE_EXISTING_CONNECTION == 'false')" />
         <IMPORT NAME="Driver-Oracle9i" MODULE="ojdbc14-9i.jar" MVN="mvn:org.talend.libraries/ojdbc14-9i/6.0.0"  REQUIRED_IF="(DBTYPE=='DBORACLE') AND (DB_VERSION == 'ORACLE_9') AND (USE_EXISTING_CONNECTION == 'false')" />
