@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.generation;
 
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,9 +63,6 @@ import org.talend.designer.dbmap.language.operator.IDbOperatorManager;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 import org.talend.designer.dbmap.utils.DataMapExpressionParser;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.Optional.ofNullable;
-
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
  *
@@ -83,6 +83,8 @@ public abstract class DbGenerationManager {
 
     protected String tabSpaceString = DEFAULT_TAB_SPACE_STRING;
 
+    private final String DOT_STR = "."; //$NON-NLS-1$
+
     protected static final String DEFAULT_TAB_SPACE_STRING = ""; //$NON-NLS-1$
 
     protected List<String> queryColumnsSegments = new ArrayList<String>();
@@ -96,6 +98,8 @@ public abstract class DbGenerationManager {
     protected Set<String> subQueryTable = new HashSet<String>();
 
     protected INode source;
+
+    protected Set<String> inputSchemaContextSet = new HashSet<String>();
 
     /**
      * DOC amaumont GenerationManager constructor comment.
@@ -291,6 +295,7 @@ public abstract class DbGenerationManager {
         queryColumnsSegments.clear();
         querySegments.clear();
         subQueryTable.clear();
+        inputSchemaContextSet.clear();
 
         this.tabSpaceString = tabString;
         DbMapComponent component = getDbMapComponent(dbMapComponent);
@@ -303,7 +308,9 @@ public abstract class DbGenerationManager {
         }
 
         ExternalDbMapData data = component.getExternalData();
-
+        List<ExternalDbMapTable> inputTables = data.getInputTables();
+        List<String> contextList = getContextList(component);
+        collectSchemaContextParam(dbMapComponent, inputTables, contextList);
         StringBuilder sb = new StringBuilder();
 
         List<ExternalDbMapTable> outputTables = data.getOutputTables();
@@ -376,8 +383,6 @@ public abstract class DbGenerationManager {
             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
             appendSqlQuery(sb, tabSpaceString);
             appendSqlQuery(sb, DbMapSqlConstants.FROM);
-            List<ExternalDbMapTable> inputTables = data.getInputTables();
-
             // load input table in hash
             boolean explicitJoin = false;
             int lstSizeInputTables = inputTables.size();
@@ -566,6 +571,40 @@ public abstract class DbGenerationManager {
         return sqlQuery;
     }
 
+    protected void collectSchemaContextParam(DbMapComponent dbMapComponent, List<ExternalDbMapTable> inputTables,
+            List<String> contextList) {
+        List<IConnection> incomingConnections = (List<IConnection>) dbMapComponent.getIncomingConnections();
+        if (incomingConnections != null) {
+            for (IConnection connection : incomingConnections) {
+                INode input = connection.getSource();
+                if (input != null) {
+                    IElementParameter eltSchemaNameParam = input.getElementParameter("ELT_SCHEMA_NAME"); //$NON-NLS-1$
+                    if (eltSchemaNameParam != null && eltSchemaNameParam.getValue() != null) {
+                        String schema = String.valueOf(eltSchemaNameParam.getValue());
+                        if (schema != null && !inputSchemaContextSet.contains(schema) && contextList.contains(schema)) {
+                            inputSchemaContextSet.add(schema);
+                        }
+                    }
+                    IElementParameter eltTableNameParam = input.getElementParameter("ELT_TABLE_NAME"); //$NON-NLS-1$
+                    if (eltTableNameParam != null && eltTableNameParam.getValue() != null) {
+                        String table = String.valueOf(eltTableNameParam.getValue());
+                        if (table != null && !inputSchemaContextSet.contains(table) && contextList.contains(table)) {
+                            inputSchemaContextSet.add(table);
+                        }
+                    }
+                }
+            }
+        }
+        if (inputTables != null) {
+            for (ExternalDbMapTable table : inputTables) {
+                if (table.getAlias() != null && !inputSchemaContextSet.contains(table.getAlias())
+                        && contextList.contains(table.getAlias())) {
+                    inputSchemaContextSet.add(table.getAlias());
+                }
+            }
+        }
+    }
+
     public String buildSqlSelect(DbMapComponent dbMapComponent, String outputTableName, String tabString,
             boolean checkUseUpdateStatement) {
         queryColumnsName = "\""; //$NON-NLS-1$
@@ -573,6 +612,7 @@ public abstract class DbGenerationManager {
         queryColumnsSegments.clear();
         querySegments.clear();
         subQueryTable.clear();
+        inputSchemaContextSet.clear();
 
         this.tabSpaceString = tabString;
         DbMapComponent component = getDbMapComponent(dbMapComponent);
@@ -1021,7 +1061,7 @@ public abstract class DbGenerationManager {
 
         return contextList;
     }
-
+    
     protected Set<String> getGlobalMapList(DbMapComponent component, String sqlQuery) {
         return parser.getGlobalMapSet(sqlQuery);
     }
@@ -1093,8 +1133,8 @@ public abstract class DbGenerationManager {
      */
     private boolean buildCondition(DbMapComponent component, StringBuilder sbWhere, ExternalDbMapTable table,
             boolean isFirstClause, ExternalDbMapEntry dbMapEntry, boolean writeCr, boolean isSqlQuery) {
-        String expression = dbMapEntry.getExpression();
-        expression = initExpression(component, dbMapEntry);
+        String originExpression = dbMapEntry.getExpression();
+        String expression = initExpression(component, dbMapEntry);
         IDbOperator dbOperator = getOperatorsManager().getOperatorFromValue(dbMapEntry.getOperator());
         boolean operatorIsSet = dbOperator != null;
         boolean expressionIsSet = expression != null && expression.trim().length() > 0;
@@ -1148,7 +1188,7 @@ public abstract class DbGenerationManager {
                 appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
                 appendSqlQuery(sbWhere, DbMapSqlConstants.RIGHT_COMMENT, isSqlQuery);
             } else if (expressionIsSet) {
-                String exp = replaceVariablesForExpression(component, expression);
+                String exp = replaceVariablesForExpression(component, originExpression);
                 appendSqlQuery(sbWhere, exp, isSqlQuery);
                 appendSqlQuery(sbWhere, getSpecialLeftJoin(table), isSqlQuery);
             }
@@ -1457,7 +1497,7 @@ public abstract class DbGenerationManager {
                                         }
                                         expression = expression.replaceFirst(tableValue + "\\." + co.getLabel(), //$NON-NLS-1$
                                                 tableValue + "\\." + oriName); //$NON-NLS-1$
-                                        expression = replaceAuotes(expression, quto_markParser, quto_mark);
+                                        expression = replaceAuotes(component, expression, quto_markParser, quto_mark);
                                     }
                                 }
 
@@ -1472,11 +1512,14 @@ public abstract class DbGenerationManager {
         return expression;
     }
 
-    protected String replaceAuotes(String expression, String quoParser, String quote){
+    protected String replaceAuotes(DbMapComponent component, String expression, String quoParser, String quote) {
         if(!expression.contains("'")){
-            return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$
+            if (isComplexExpression(component, expression)) {
+                return expression;
+            }
+            return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$;
         }
-
+        
         List<Integer> indexs = new ArrayList<>();
         for(int i=0;i<expression.length();i++){
             if("'".equals(String.valueOf(expression.charAt(i)))){
@@ -1507,6 +1550,13 @@ public abstract class DbGenerationManager {
             }
         }
         return result.toString();
+    }
+    
+    protected boolean isComplexExpression(DbMapComponent component, String expression) {
+        if (parser.isContainsGlobalMapExpression(expression)) {
+            return true;
+        }
+        return false;
     }
 
     private String getQuote(DbMapComponent component){

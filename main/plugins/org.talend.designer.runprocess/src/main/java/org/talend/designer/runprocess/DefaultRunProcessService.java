@@ -815,9 +815,6 @@ public class DefaultRunProcessService implements IRunProcessService {
     public void buildCodesJavaProject(IProgressMonitor monitor) {
         try {
             AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES);
-            if (ProcessUtils.isRequiredPigUDFs(null)) {
-                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.PIG_UDF);
-            }
             if (ProcessUtils.isRequiredBeans(null)) {
                 AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
             }
@@ -870,10 +867,6 @@ public class DefaultRunProcessService implements IRunProcessService {
         // install ref codes project.
         IProgressMonitor monitor = new NullProgressMonitor();
         installRefCodeProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
-
-        if (ProcessUtils.isRequiredPigUDFs(null, refProject)) {
-            installRefCodeProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
-        }
 
         if (ProcessUtils.isRequiredBeans(null, refProject)) {
             installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$

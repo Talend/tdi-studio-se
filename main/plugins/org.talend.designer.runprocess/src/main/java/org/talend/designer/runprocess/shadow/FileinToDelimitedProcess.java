@@ -853,12 +853,6 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
         return null;
     }
 
-    @Override
-    public Set<String> getNeededPigudf() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     /*
      * (non-Javadoc)
      *

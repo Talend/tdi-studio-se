@@ -289,13 +289,6 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
                         JavaUtils.ROUTINE_JAR_NAME + "-" + PomUtil.getDefaultMavenVersion() + FileExtensions.JAR_FILE_SUFFIX); //$NON-NLS-1$
                 libJars.append(routinesJar.getLocation().toPortableString() + ","); //$NON-NLS-1$
 
-                if (ProcessUtils.isRequiredPigUDFs(process)) {
-                    ITalendProcessJavaProject pigudfProject = TalendJavaProjectManager
-                            .getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
-                    IFile pigudfsJar = pigudfProject.getTargetFolder().getFile(
-                            JavaUtils.PIGUDFS_JAR_NAME + "-" + PomUtil.getDefaultMavenVersion() + FileExtensions.JAR_FILE_SUFFIX); //$NON-NLS-1$
-                    libJars.append(pigudfsJar.getLocation().toPortableString() + ","); //$NON-NLS-1$
-                }
 
                 if (ProcessUtils.isRequiredBeans(process)) {
                     ITalendProcessJavaProject beansProject = TalendJavaProjectManager

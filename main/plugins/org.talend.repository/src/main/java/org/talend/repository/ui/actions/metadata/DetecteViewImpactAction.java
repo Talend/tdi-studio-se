@@ -137,7 +137,7 @@ public class DetecteViewImpactAction extends AContextualAction {
                         canWork = true;
                     } else if (objectType == ERepositoryObjectType.BUSINESS_PROCESS
                             || objectType == ERepositoryObjectType.PROCESS || objectType == ERepositoryObjectType.ROUTINES
-                            || objectType == ERepositoryObjectType.PIG_UDF || objectType == ERepositoryObjectType.JOB_SCRIPT
+                            || objectType == ERepositoryObjectType.JOB_SCRIPT
                             || objectType == ERepositoryObjectType.SQLPATTERNS || objectType == ERepositoryObjectType.JOB_DOC
                             || objectType == ERepositoryObjectType.JOBLET_DOC
                             || objectType == ERepositoryObjectType.DOCUMENTATION

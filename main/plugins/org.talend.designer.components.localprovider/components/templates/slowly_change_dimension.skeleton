@@ -2286,7 +2286,7 @@ public class CLASS {
                     boolean isTSWithTZ = false; 
                     if(dbType!=null)
                         isTSWithTZ = dbType.matches("TIMESTAMP WITH TIME ZONE");
-                    if(isTSWithTZ && ("ORACLE_10".equals(dbVersion) || "ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion))){
+                    if(isTSWithTZ && ("ORACLE_10".equals(dbVersion) || "ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion) )){
                         setStatement.append("if("+ variable + " instanceof TalendTimestampWithTZ){\r\n");
                         setStatement.append("((oracle.jdbc.OraclePreparedStatement)" + pstmt + ").setTIMESTAMPTZ(" + paramIndex + ", new oracle.sql.TIMESTAMPTZ(connection_" + cid + ", " +
                                 "((TalendTimestampWithTZ)"+ variable +").getTimestamp(),((TalendTimestampWithTZ)"+ variable +").getCalendar()));\r\n");

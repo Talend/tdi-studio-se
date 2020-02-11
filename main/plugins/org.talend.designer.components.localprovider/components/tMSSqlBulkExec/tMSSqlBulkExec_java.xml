@@ -61,10 +61,10 @@
 	  SHOW_IF="((ACTION=='INSERT') or (ACTION=='UPDATE')) and (USE_EXISTING_CONNECTION == 'true')"
 	  DYNAMIC_SETTINGS="true"
 	/>
-	
-	<PARAMETER 
-		NAME="DRIVER" 
-		FIELD="CLOSED_LIST" 
+
+	<PARAMETER
+		NAME="DRIVER"
+		FIELD="CLOSED_LIST"
 		NUM_ROW="3"
 		REPOSITORY_VALUE="DRIVER"
 		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
@@ -83,7 +83,7 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
- 
+
     <PARAMETER
       NAME="TYPE"
       FIELD="TEXT"
@@ -190,17 +190,34 @@
       </ITEMS>
     </PARAMETER>
 
-	<PARAMETER NAME="NOTE" FIELD="LABEL" NUM_ROW="15"
-			NOT_SHOW_IF="(TABLE_ACTION == 'NONE') OR (USE_EXISTING_CONNECTION == 'false')"
-		>
-		<DEFAULT>Warning : this component configuration will automatically generate a commit before bulk insert</DEFAULT>
-	</PARAMETER>
+  	<PARAMETER NAME="NOTE" FIELD="LABEL" NUM_ROW="15"
+  			NOT_SHOW_IF="(TABLE_ACTION == 'NONE') OR (USE_EXISTING_CONNECTION == 'false')"
+  		>
+  		<DEFAULT>Warning : this component configuration will automatically generate a commit before bulk insert</DEFAULT>
+  	</PARAMETER>
+
+    <PARAMETER
+      NAME="USE_EXISTING_DYNAMIC"
+      FIELD="CHECK"
+      NUM_ROW="17">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="DYNAMIC"
+      FIELD="COMPONENT_LIST"
+      REQUIRED="true"
+      FILTER="tSetDynamicSchema"
+      NUM_ROW="18"
+      SHOW_IF="USE_EXISTING_DYNAMIC == 'true'"
+      >
+    </PARAMETER>
 
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
       NUM_ROW="20"
-      SHOW_IF="(ACTION=='INSERT') or (ACTION=='UPDATE')"
+      SHOW_IF="((ACTION=='INSERT') or (ACTION=='UPDATE')) AND (USE_EXISTING_DYNAMIC == 'false')"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -244,6 +261,25 @@
       <DEFAULT>id_MSSQL</DEFAULT>
     </PARAMETER>
 
+    <PARAMETER
+        NAME="FLOAT_LENGTH_FOR_DYNAMIC"
+        FIELD="TEXT"
+        NUM_ROW="50"
+        SHOW="false"
+        REPOSITORY_VALUE="FLOAT_LENGTH_FOR_DYNAMIC"
+    >
+      <DEFAULT>53</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+        NAME="VARCHAR_LENGTH_FOR_DYNAMIC"
+        FIELD="TEXT"
+        NUM_ROW="60"
+        SHOW="false"
+        REPOSITORY_VALUE="FLOAT_LENGTH_FOR_DYNAMIC"
+    >
+      <DEFAULT>8000</DEFAULT>
+    </PARAMETER>
    </PARAMETERS>
 
    <ADVANCED_PARAMETERS>
@@ -327,20 +363,30 @@
         <ITEM NAME="widenative" VALUE="widenative" SHOW_IF="(ACTION=='INSERT') or (ACTION=='UPDATE')"/>
       </ITEMS>
     </PARAMETER>
-	
+
+    <PARAMETER
+        NAME="ADDITIONAL_QUERY_PARAMETERS"
+        FIELD="TEXT"
+        NUM_ROW="12"
+        REQUIRED="false"
+        SHOW_IF="(ACTION=='INSERT') or (ACTION=='UPDATE')"
+    >
+        <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
     <PARAMETER
 	  NAME="FIRE_TRIGGERS"
 	  FIELD="CHECK"
-	  NUM_ROW="12"
+	  NUM_ROW="13"
 	  SHOW_IF="ACTION=='INSERT'"
 	>
 		<DEFAULT>false</DEFAULT>
-	</PARAMETER> 
+	</PARAMETER>
 
     <PARAMETER
     	NAME="OUTPUT"
     	FIELD="CLOSED_LIST"
-    	NUM_ROW="12"
+    	NUM_ROW="13"
     	REQUIRED = "true"
     	SHOW_IF="ACTION=='EXPORT'"
     >

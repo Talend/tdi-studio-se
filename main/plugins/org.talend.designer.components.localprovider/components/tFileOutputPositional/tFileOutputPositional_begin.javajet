@@ -2,6 +2,7 @@
 imports="
     org.talend.core.model.process.INode 
     org.talend.core.model.process.ElementParameterParser
+    org.talend.core.model.process.IProcess
     org.talend.core.model.metadata.IMetadataTable
     org.talend.core.model.metadata.IMetadataColumn
     org.talend.core.model.process.IConnection
@@ -69,12 +70,25 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         
         boolean isInRowMode = ("true").equals(ElementParameterParser.getValue(node,"__ROW_MODE__"));
         String writerClass = null;
-    	if(isInRowMode){
-    		writerClass = "routines.system.BufferedOutput";
-    	}else{
-    		writerClass = "java.io.BufferedWriter";
-    	}
-		String dynamic = ElementParameterParser.getValue(node, "__DYNAMIC__");
+        if(isInRowMode){
+            writerClass = "routines.system.BufferedOutput";
+        }else{
+           writerClass = "java.io.BufferedWriter";
+        }
+        IProcess process = node.getProcess();
+        String dynamic = ElementParameterParser.getValue(node, "__DYNAMIC__");
+        List<? extends INode> dynamicSchemaNodes = process.getNodesOfType("tSetDynamicSchema");
+        boolean guessSchemaFromFile = false;
+        for (INode currentNode : dynamicSchemaNodes){
+            if (currentNode.getUniqueName().equals(dynamic)){
+                guessSchemaFromFile = ("true").equals(ElementParameterParser.getValue(currentNode, "__GUESS_SCHEMA_FROM_FILE__"));
+            }
+        }
+%>
+        if (<%=guessSchemaFromFile%>) {
+            throw new RuntimeException("tFileOutputPositional doesn't support to work with tSetDynamicSchema when 'Guess schema from file' option is activated");
+        }
+<%
 		boolean useExistingDynamic = "true".equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
         String dyn = dynamic+"_DYNAMIC";
 		if(useExistingDynamic){

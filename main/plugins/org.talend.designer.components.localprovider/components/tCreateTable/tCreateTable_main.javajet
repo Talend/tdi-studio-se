@@ -1147,7 +1147,7 @@ class OracleManager extends Manager {
         this.additionalParams = additionalParams;
     }
     protected String getDriver() {
-        return ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)) ?
+        return ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion) ) ?
             "oracle.jdbc.OracleDriver" : "oracle.jdbc.driver.OracleDriver";
     }
     public String getSpecificConnectionURL() {

@@ -4693,11 +4693,6 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     @Override
-    public Set<String> getNeededPigudf() {
-        return getNeededCodeItem(neededPigudf, ERepositoryObjectType.PIG_UDF);
-    }
-
-    @Override
     public Set<String> getNeededRoutines() {
         return getNeededCodeItem(neededRoutines, ERepositoryObjectType.ROUTINES);
     }
