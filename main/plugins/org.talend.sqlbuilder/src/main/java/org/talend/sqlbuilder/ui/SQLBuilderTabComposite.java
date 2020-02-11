@@ -242,6 +242,21 @@ public class SQLBuilderTabComposite extends Composite {
         return ""; //$NON-NLS-1$
     }
 
+    public boolean isIfcontext() {
+        try {
+            if (tabFolder.getSelection() != null) {
+                Control control = (((CTabFolder) tabFolder.getSelection().getControl())).getSelection().getControl();
+                if (control instanceof AbstractSQLEditorComposite) {
+                    return ((AbstractSQLEditorComposite) control).isIfcontext();
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return false;
+    }
+
     public CTabFolder getTabFolder() {
         return this.tabFolder;
     }

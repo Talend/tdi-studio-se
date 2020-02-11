@@ -28,6 +28,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.FileDialog;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Query;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.repository.model.RepositoryNode;
@@ -135,6 +136,7 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
      *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#doSaveAs()
      */
+    @Override
     public void doSaveAs() {
         FileDialog fileDialog = new FileDialog(this.getShell(), SWT.SAVE);
         fileDialog.setText(Messages.getString("SQLEditor.SaveAsDialog.Title")); //$NON-NLS-1$
@@ -180,9 +182,10 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
      *
      * @see org.talend.sqlbuilder.ui.editor.ISQLEditor#saveSQL()
      */
+    @Override
     public Query doSaveSQL(Query query2, boolean as) {
         // gain the button status ,then passing the value to saveSQLDialog,add by hyWang
-        ifcontext = this.getContextmode().getContextmodeaction().isChecked();
+        updateParameters();
         SQLBuilderRepositoryNodeManager repositoryNodeManager = new SQLBuilderRepositoryNodeManager();
         List<String> existingName = repositoryNodeManager.getALLQueryLabels(getRepositoryNode());
 
@@ -219,6 +222,14 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
         return null;
     }
 
+    protected void updateParameters() {
+        try {
+            this.setIfcontext(this.getContextmode().getContextmodeaction().isChecked());
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
     /*
      * (non-Java)
      *
@@ -229,10 +240,15 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
         return this.ifcontext;
     }
 
+    protected void setIfcontext(boolean ifcontext) {
+        this.ifcontext = ifcontext;
+    }
+
     public ConnectionParameters getConnParam() {
         return this.connParam;
     }
 
+    @Override
     public String getRepositoryName() {
         if (getRepositoryNode() == null) {
             return ""; //$NON-NLS-1$
@@ -377,6 +393,7 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
      *
      * @return the dialog
      */
+    @Override
     public ISQLBuilderDialog getDialog() {
         return this.dialog;
     }

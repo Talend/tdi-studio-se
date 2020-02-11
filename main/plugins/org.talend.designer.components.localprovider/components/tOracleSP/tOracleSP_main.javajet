@@ -45,7 +45,7 @@ List<Map<String, String>> spArgs =
 
 String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__");
 // TimeZone is only compatible with ojdbc8 which is only link with ORACLE 18 (tOracle_SP.xml).
-boolean isTimeZoneCompatible = "ORACLE_18".equals(dbVersion);
+boolean isTimeZoneCompatible = "ORACLE_18".equals(dbVersion) ;
 
 // Functions have an additionnal output parameter
 boolean isFunction = ("true").equals(ElementParameterParser.getValue(node, "__IS_FUNCTION__"));

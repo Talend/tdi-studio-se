@@ -112,7 +112,7 @@ if("FLOW_MODE".equals(mode)){
 	    IMetadataTable metadata = metadatas.get(0);
 	    if (metadata!=null) {
 			List<IMetadataColumn> columns = metadata.getListColumns();
-	    	String inConnName = "", outConnName = "", rejectConnName = null;
+	    	String inConnName = "", outConnName = null, rejectConnName = null;
 	    	List<? extends IConnection> inConns = node.getIncomingConnections();
 	    	List<? extends IConnection> outConns = node.getOutgoingSortedConnections();
 	    	List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
@@ -123,15 +123,23 @@ if("FLOW_MODE".equals(mode)){
 					}
 				}
 			}
-	    	if(inConns != null && inConns.size() > 0){
-		    	inConnName = inConns.get(0).getName();
-		    }
-	    	if(outConns != null && outConns.size() > 0){
-		    	outConnName = outConns.get(0).getName();
-		    }
+			if(inConns != null && inConns.size() > 0){
+				inConnName = inConns.get(0).getName();
+			}
+			
+				for(IConnection outgoingConn : outConns) {
+					if(rejectConnName == null || (rejectConnName != null && !outgoingConn.getName().equals(rejectConnName))) {
+						if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+							outConnName = outgoingConn.getName();
+							break;
+						}
+					}
+				}
+				if(outConnName != null) {
 %>
-				<%=outConnName%> = new <%=outConnName%>Struct();
+					<%=outConnName%> = new <%=outConnName%>Struct();
 <%
+				}
 				if(rejectConnName != null){
 %>
 					<%=rejectConnName %> = new <%=rejectConnName %>Struct();
@@ -168,22 +176,27 @@ if("FLOW_MODE".equals(mode)){
 							}
 						}
 						errorMessage_<%=cid %> = errorHandler_<%=cid %>.returnMessage();
-						if (errorMessage_<%=cid%>==null || errorMessage_<%=cid%>.length()<1) {
+						<%
+						if(outConnName != null) {
+						%>
 							<%=outConnName%>.<%=column.getLabel()%> = <%=inConnName%>.<%=column.getLabel()%>;
+						<%
+						}
+						if(rejectConnName != null){
+						%>
+							<%=rejectConnName%>.<%=column.getLabel()%> = <%=inConnName%>.<%=column.getLabel()%>;
+						<%
+						}
+						%>
+						if (errorMessage_<%=cid%>==null || errorMessage_<%=cid%>.length()<1) {
+							
 							validate_<%=cid %> = 1;
-<%
-							if(rejectConnName != null){
-%>
-								<%=rejectConnName%> = null;
-<%
-							}
-%>
+							
 						} else {
 						    errorMessageRow_<%=cid%> = errorMessageRow_<%=cid%> + "<%=column.getLabel()%>: "+errorMessage_<%=cid%>+'\n';
 <%
 							if(rejectConnName != null){
 %>
-								<%=rejectConnName%>.<%=column.getLabel()%> = <%=inConnName%>.<%=column.getLabel()%>;
 								<%=rejectConnName%>.errorMessage = "<%=column.getLabel()%>: "+errorMessage_<%=cid%>;
 <%
 							}else{
@@ -191,31 +204,47 @@ if("FLOW_MODE".equals(mode)){
 								System.err.println("<%=column.getLabel()%>: "+errorMessage_<%=cid%>);
 <%
 							}
-							if(!outConnName.equals(rejectConnName)){
-%>
-								<%=outConnName%> = null;
-<%
-                            }
 %>
 						}
 <%
 		    		}else{
+						if(outConnName != null) {
 %>
-						if (errorMessage_<%=cid%>==null || errorMessage_<%=cid%>.length()<1) {
 							<%=outConnName%>.<%=column.getLabel()%> = <%=inConnName%>.<%=column.getLabel()%>;
-							validate_<%=cid %> = 1;
-						}
 						<%
+						}
 						if(rejectConnName!=null){
 						%>
-						else {
 						    <%=rejectConnName%>.<%=column.getLabel()%> = <%=inConnName%>.<%=column.getLabel()%>;
+						<%
+						}
+						%>
+						if (errorMessage_<%=cid%>==null || errorMessage_<%=cid%>.length()<1) {
+							validate_<%=cid %> = 1;
 						}
 <%
-                    }
-	    		}
-	    	}
+					}
+				}
 %>
+			errorMessage_<%=cid %> = errorHandler_<%=cid %>.returnMessage();
+			<%
+			if(rejectConnName != null){
+			%>
+				if (errorMessage_<%=cid%>==null || errorMessage_<%=cid%>.length()<1) {
+					<%=rejectConnName%> = null;
+				} 
+			<%
+			}
+			if(outConnName != null){ 
+			%>
+				if (errorMessage_<%=cid%>!=null && !errorMessage_<%=cid%>.isEmpty()) {
+					<%=outConnName%> = null;
+				}
+			<%
+			} 
+			
+			%>
+			
             globalMap.put("<%=cid %>_DIFFERENCE", "" + validate_<%=cid %>);
             globalMap.put("<%=cid %>_VALID", (validate_<%=cid %> == 1)?true:false);
 	    	globalMap.put("<%=cid %>_XSD_ERROR_MESSAGE", errorMessageRow_<%=cid%>);

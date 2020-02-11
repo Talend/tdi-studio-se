@@ -155,15 +155,6 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         return LastGenerationInfo.getInstance().isUseRules(processItem.getProperty().getId(), this.version);
     }
 
-    protected boolean needPigUDFs() {
-        if (this.version == null) {
-            return LastGenerationInfo.getInstance().isUsePigUDFs(processItem.getProperty().getId(),
-                    processItem.getProperty().getVersion());
-        }
-        return LastGenerationInfo.getInstance().isUsePigUDFs(processItem.getProperty().getId(), this.version);
-    }
-
-
     protected String getProgramArgs() {
         StringBuffer programArgs = new StringBuffer();
         StringBuffer profileArgs = getProfileArgs();
@@ -230,11 +221,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         if (needRules()) {
             addArg(profileBuffer, true, TalendMavenConstants.PROFILE_INCLUDE_RULES);
         }
-        // pigudfs
-        if (needPigUDFs()) {
-            addArg(profileBuffer, isBinaries, TalendMavenConstants.PROFILE_INCLUDE_PIGUDFS_BINARIES);
-            addArg(profileBuffer, !isBinaries, TalendMavenConstants.PROFILE_INCLUDE_PIGUDFS_JAVA_SOURCES);
-        }
+
         // always disable ci-builder from studio/commandline
         addArg(profileBuffer, false, TalendMavenConstants.PROFILE_CI_BUILDER);
 

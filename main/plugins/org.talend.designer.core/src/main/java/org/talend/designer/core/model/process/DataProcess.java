@@ -3457,7 +3457,6 @@ public class DataProcess implements IGeneratingProcess {
         ((Process) duplicatedProcess).setGeneratingProcess(this);
         ((Process) duplicatedProcess).setProcessModified(false);
         ((Process) duplicatedProcess).setNeededRoutines(process.getNeededRoutines());
-        ((Process) duplicatedProcess).setNeededPigudf(process.getNeededPigudf());
         ((Process) duplicatedProcess).setEditor(editor);
         List<RoutinesParameterType> routines = null;
         if (process instanceof Process) {

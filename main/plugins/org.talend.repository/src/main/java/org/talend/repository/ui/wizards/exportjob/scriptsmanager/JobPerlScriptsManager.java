@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -52,19 +51,6 @@ public class JobPerlScriptsManager extends JobScriptsManager {
 
     @Override
     protected String getCorrespondingProjectName(Item item) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager#getExportPigudfResources(org.talend
-     * .repository.documentation.ExportFileResource[])
-     */
-    @Override
-    public URL getExportPigudfResources(ExportFileResource[] process) throws ProcessorException {
         // TODO Auto-generated method stub
         return null;
     }

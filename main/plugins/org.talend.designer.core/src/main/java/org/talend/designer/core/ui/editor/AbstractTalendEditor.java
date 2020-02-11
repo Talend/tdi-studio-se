@@ -228,8 +228,8 @@ import org.talend.designer.core.ui.views.CodeView;
 import org.talend.designer.core.ui.views.jobsettings.JobSettings;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
-import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.ComponentsHelpUtil;
+import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.ui.views.IRepositoryView;
@@ -563,7 +563,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                     if (repoObjectView != null && repoObjectView.getProperty() != null) {
                         Item currentItem = repoObjectView.getProperty().getItem();
                         if (isMRServiceRegistered) {
-                            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault().getService(
+                            IMRProcessService mrService = GlobalServiceRegister.getDefault().getService(
                                     IMRProcessService.class);
 
                             if (mrService.isMapReduceItem(currentItem)) {
@@ -573,7 +573,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                             }
                         }
                         if (isStormServiceRegistered) {
-                            IStormProcessService stormService = (IStormProcessService) GlobalServiceRegister.getDefault()
+                            IStormProcessService stormService = GlobalServiceRegister.getDefault()
                                     .getService(IStormProcessService.class);
 
                             if (stormService.isStormItem(currentItem)) {
@@ -612,7 +612,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
             if (isneedReload) {
                 // / See bug 4821
-                ((ILibrariesService) GlobalServiceRegister.getDefault().getService(ILibrariesService.class))
+                GlobalServiceRegister.getDefault().getService(ILibrariesService.class)
                         .updateModulesNeededForCurrentJob(getProcess());
             }
 
@@ -659,7 +659,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         JobSettings.switchToCurJobSettingsView();
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+            ITestContainerProviderService testContainerService = GlobalServiceRegister
                     .getDefault().getService(ITestContainerProviderService.class);
             if (testContainerService != null) {
                 testContainerService.switchToCurTestContainerView();
@@ -933,7 +933,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         IAction zoomOut = new ZoomOutAction(root.getZoomManager());
         getActionRegistry().registerAction(zoomIn);
         getActionRegistry().registerAction(zoomOut);
-        IHandlerService service = (IHandlerService) getEditorSite().getService(IHandlerService.class);
+        IHandlerService service = getEditorSite().getService(IHandlerService.class);
         service.activateHandler(zoomIn.getActionDefinitionId(), new ActionHandler(zoomIn));
 
         service.activateHandler(zoomOut.getActionDefinitionId(), new ActionHandler(zoomOut));
@@ -1701,7 +1701,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
                                 EConnectionType connectionType = EConnectionType.FLOW_MAIN;
                                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-                                    ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister
+                                    ICamelDesignerCoreService camelService = GlobalServiceRegister
                                             .getDefault().getService(ICamelDesignerCoreService.class);
                                     if (camelService.isRouteBuilderNode(node)) {
                                         connectionType = camelService.getTargetConnectionType(node);
@@ -1722,7 +1722,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                                 // FIXME perhaps, this is not good fix, need check it later
                                 // bug 21411
                                 if (PluginChecker.isJobLetPluginLoaded()) {
-                                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                                    IJobletProviderService service = GlobalServiceRegister.getDefault()
                                             .getService(IJobletProviderService.class);
                                     if (service != null && service.isJobletComponent(targetConnection.getTarget())) {
                                         if (targetConnection.getTarget() instanceof Node) {
@@ -2197,7 +2197,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                     if (ComponentsHelpUtil.isUseOnLineHelp()) {
                         if (!node.isJoblet() && node.getComponent() != null && node.getComponent().isLoaded()
                                 && node.getComponent().isMadeByTalend()) {
-                            ComponentsHelpUtil.openLineHelp(node.getComponent().getName());
+                            ComponentsHelpUtil.openLineHelp(node.getComponent().getDisplayName());
                         }
                     } else {
                         String helpLink = (String) node.getPropertyValue(EParameterName.HELP.getName());

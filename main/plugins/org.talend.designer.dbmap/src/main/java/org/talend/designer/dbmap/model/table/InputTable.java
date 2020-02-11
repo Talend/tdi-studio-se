@@ -83,6 +83,8 @@ public class InputTable extends AbstractInOutTable {
     public void initFromExternalData(ExternalDbMapTable externalMapperTable) {
         if(connection != null) {
             setMetadataTable(connection.getTable());
+        }else {
+            setMetadataTable(this.metadataTable);
         }
         super.initFromExternalData(externalMapperTable);
 

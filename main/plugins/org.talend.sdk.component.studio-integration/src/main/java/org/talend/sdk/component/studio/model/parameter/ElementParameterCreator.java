@@ -216,6 +216,7 @@ public class ElementParameterCreator {
         addParallelizeKeepEmptyParameter();
 
         addViewParameters();
+        addDocParameters();
     }
 
     /**
@@ -703,6 +704,21 @@ public class ElementParameterCreator {
         if (!"".equals(label)) { //$NON-NLS-1$
             parameter.setValue(label);
         }
+        parameter.setDefaultValue(parameter.getValue());
+        parameters.add(parameter);
+    }
+
+    private void addDocParameters() {
+        final ElementParameter parameter = new ElementParameter(node);
+        parameter.setName(EParameterName.INFORMATION.getName());
+        parameter.setValue(new Boolean(false));
+        parameter.setDisplayName(EParameterName.INFORMATION.getDisplayName());
+        parameter.setFieldType(EParameterFieldType.CHECK);
+        parameter.setCategory(EComponentCategory.DOC);
+        parameter.setNumRow(1);
+        parameter.setReadOnly(false);
+        parameter.setRequired(false);
+        parameter.setShow(true);
         parameter.setDefaultValue(parameter.getValue());
         parameters.add(parameter);
     }

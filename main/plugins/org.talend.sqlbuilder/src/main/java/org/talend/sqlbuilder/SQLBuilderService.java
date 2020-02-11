@@ -64,6 +64,7 @@ public class SQLBuilderService implements ISQLBuilderService {
             DatabaseConnection connection = createConnection(connParameters);
             if (connection != null) {
                 IMetadataConnection metadataConnection = ConvertionHelper.convert(connection);
+                metadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(connection));
                 UIUtils.checkConnection(parentShell, metadataConnection);
             }
         }
