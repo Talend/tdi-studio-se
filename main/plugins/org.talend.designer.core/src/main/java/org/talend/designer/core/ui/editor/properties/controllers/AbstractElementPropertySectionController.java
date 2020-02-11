@@ -1506,7 +1506,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
             if (EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersionName)
                     || EDatabaseVersion4Drivers.VERTICA_6.getVersionValue().equals(dbVersionName)
                     || EDatabaseVersion4Drivers.VERTICA_6_1_X.getVersionValue().equals(dbVersionName)
-                    || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersionName)) {
+                    || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersionName) 
+                    || EDatabaseVersion4Drivers.VERTICA_7_1_X.getVersionValue().equals(dbVersionName)) {
                 driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
             }
 
@@ -1759,7 +1760,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 if (EDatabaseVersion4Drivers.VERTICA_6.getVersionValue().equals(dbVersion)
                         || EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersion)
                         || EDatabaseVersion4Drivers.VERTICA_6_1_X.getVersionValue().equals(dbVersion)
-                        || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion)) {
+                        || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion) 
+                        || EDatabaseVersion4Drivers.VERTICA_7_1_X.getVersionValue().equals(dbVersion)) {
                     driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
                 }
             }
