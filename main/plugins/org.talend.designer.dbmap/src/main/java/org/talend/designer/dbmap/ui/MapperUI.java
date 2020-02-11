@@ -230,6 +230,13 @@ public class MapperUI {
                 dbmsId = input.getMetadataTable().getDbms();
             }
         }
+        if(dbmsId == null && mapperModel.getOutputDataMapTables() != null && !mapperModel.getOutputDataMapTables().isEmpty()) {
+            OutputTable output = mapperModel.getOutputDataMapTables().get(0);
+            if (output.getMetadataTable() != null) {
+                dbmsId = output.getMetadataTable().getDbms();
+            }
+        }
+        
         tabFolderEditors = new TabFolderEditors(mainSashForm, SWT.BORDER, mapperManager, dbmsId);
 
         createInputZoneWithTables(mapperModel, uiManager, display);
