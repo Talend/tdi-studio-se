@@ -112,8 +112,8 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		
 		sess_<%=cid%>.close();
 		
-		String out_content_<%=cid%> = stringStdout_<%=cid%>.toString();
-		String err_content_<%=cid%> = stringStderr_<%=cid%>.toString();
+		out_content_<%=cid%> = stringStdout_<%=cid%>.toString();
+		err_content_<%=cid%> = stringStderr_<%=cid%>.toString();
 		
 		<%if(isLog4jEnabled){%>
 			log.debug("<%=cid%> - Command line standard result: " + out_content_<%=cid%>);
