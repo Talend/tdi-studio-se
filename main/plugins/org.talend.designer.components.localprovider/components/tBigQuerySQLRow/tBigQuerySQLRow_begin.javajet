@@ -22,6 +22,7 @@
 	String authorizationCode = ElementParameterParser.getValue(node,"__AUTHORIZATION_CODE__");
 	String query = ElementParameterParser.getValue(node,"__QUERY__");
 	boolean useLegacySql = ElementParameterParser.getBooleanValue(node,"__USE_LEGACY_SQL__");
+	String basePackage = "";
 	
 	query = query.replaceAll("\n"," ").replaceAll("\r", " ");
 	
