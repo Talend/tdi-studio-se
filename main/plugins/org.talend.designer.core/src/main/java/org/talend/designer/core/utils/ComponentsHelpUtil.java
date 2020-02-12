@@ -34,11 +34,11 @@ public class ComponentsHelpUtil {
     private static String PRODUCT_BASE_VERSION = null;
 
     private static Boolean IS_HELP_INSTALLED = null;
-    
+
     static {
         initVersionData();
     }
-    
+
     public static void initVersionData() {
         if (INTERNAL_VERSION == null) {
             INTERNAL_VERSION = VersionUtils.getInternalVersion();
@@ -107,9 +107,11 @@ public class ComponentsHelpUtil {
         }
         return Locale.FRENCH.getLanguage().equals(language) ? "fr" : "en"; //$NON-NLS-1$ //$NON-NLS-2$
     }
-    
+
     public static void resetVersionData(String version) {
         INTERNAL_VERSION = version;
+        IS_RELEASE_VERSION = null;
+        PRODUCT_BASE_VERSION = null;
         initVersionData();
     }
 }

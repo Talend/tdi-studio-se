@@ -24,15 +24,15 @@ public class ComponentsHelpUtilTest {
 
     @Test
     public void testCalOnLineHelpURL() {
-        String urlSnapshotFr = "https://talend-staging.fluidtopics.net/access/sources/content/topic?pageid=tJava&afs:lang=fr&EnrichVersion=7.3";
-        String urlSnapshotEn = "https://talend-staging.fluidtopics.net/access/sources/content/topic?pageid=tJava&afs:lang=en&EnrichVersion=7.3";
-        String urlReleaseFr = "https://help.talend.com/access/sources/content/topic?pageid=tJava&afs:lang=fr&EnrichVersion=7.2";
-        String urlReleaseEn = "https://help.talend.com/access/sources/content/topic?pageid=tJava&afs:lang=en&EnrichVersion=7.2";
+        String urlSnapshotFr = "https://talend-staging.fluidtopics.net/access/sources/content/topic?pageid=tjava&afs:lang=fr&EnrichVersion=7.3";
+        String urlSnapshotEn = "https://talend-staging.fluidtopics.net/access/sources/content/topic?pageid=tjava&afs:lang=en&EnrichVersion=7.3";
+        String urlReleaseFr = "https://help.talend.com/access/sources/content/topic?pageid=tjava&afs:lang=fr&EnrichVersion=7.2";
+        String urlReleaseEn = "https://help.talend.com/access/sources/content/topic?pageid=tjava&afs:lang=en&EnrichVersion=7.2";
         String originLanguage = CorePlugin.getDefault().getPluginPreferences()
                 .getString(ITalendCorePrefConstants.LANGUAGE_SELECTOR);
 
         ComponentsHelpUtil.resetVersionData("7.3.1.20200207_1942-SNAPSHOT");
-        String componentName = "tJava";
+        String componentName = "tjava";
         setLanguage(Locale.FRANCE.getLanguage());
         assertEquals(urlSnapshotFr, ComponentsHelpUtil.calOnLineHelpURL(componentName));
         setLanguage(Locale.US.getLanguage());
