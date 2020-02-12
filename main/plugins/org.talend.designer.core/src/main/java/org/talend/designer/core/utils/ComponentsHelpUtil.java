@@ -110,6 +110,8 @@ public class ComponentsHelpUtil {
     
     public static void resetVersionData(String version) {
         INTERNAL_VERSION = version;
+        IS_RELEASE_VERSION = null;
+        PRODUCT_BASE_VERSION = null;
         initVersionData();
     }
 }
