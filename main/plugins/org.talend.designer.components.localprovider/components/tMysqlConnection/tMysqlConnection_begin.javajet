@@ -26,9 +26,12 @@ imports="
 %>
 		String properties_<%=cid%> = <%=dbproperties%>;
 		if (properties_<%=cid%> == null || properties_<%=cid%>.trim().length() == 0) {
-			properties_<%=cid%> += "rewriteBatchedStatements=true";
+			properties_<%=cid%> += "rewriteBatchedStatements=true&allowLoadLocalInfile=true";
 		}else if (properties_<%=cid%> != null && !properties_<%=cid%>.contains("rewriteBatchedStatements")) {
 			properties_<%=cid%> += "&rewriteBatchedStatements=true";
+		}
+		if (properties_<%=cid%> != null && !properties_<%=cid%>.contains("allowLoadLocalInfile")) {
+			properties_<%=cid%> += "&allowLoadLocalInfile=true";
 		}
 		
 		String url_<%=cid%> = "<%=jdbcURL%>://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + properties_<%=cid%>;

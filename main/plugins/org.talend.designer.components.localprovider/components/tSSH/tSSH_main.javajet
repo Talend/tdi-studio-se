@@ -77,7 +77,9 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 <%
 		}
 %>
-		java.io.InputStream stdout_<%=cid%> = sess_<%=cid%>.getStdout();
+		java.io.InputStream stdout_<%=cid%> = new ch.ethz.ssh2.StreamGobbler(sess_<%=cid%>.getStdout());
+		java.io.InputStream stderr_<%=cid%> = new ch.ethz.ssh2.StreamGobbler(sess_<%=cid%>.getStderr());
+		
 		java.io.BufferedReader brout_<%=cid%>= new java.io.BufferedReader(new java.io.InputStreamReader(stdout_<%=cid%>));
         String line_<%=cid%> = "";
 
@@ -91,7 +93,6 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 	    brout_<%=cid%>.close();
 		stdout_<%=cid%>.close();
 		
-		java.io.InputStream stderr_<%=cid%> = sess_<%=cid%>.getStderr();
         java.io.BufferedReader breer_<%=cid%>= new java.io.BufferedReader(new java.io.InputStreamReader(stderr_<%=cid%>));
         String line1_<%=cid%> = "";
 
@@ -110,37 +111,41 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		 /* Close this session */
 		
 		sess_<%=cid%>.close();
+		
+		out_content_<%=cid%> = stringStdout_<%=cid%>.toString();
+		err_content_<%=cid%> = stringStderr_<%=cid%>.toString();
+		
 		<%if(isLog4jEnabled){%>
-			log.debug("<%=cid%> - Command line standard result: " + stringStdout_<%=cid%>.toString());
-			log.debug("<%=cid%> - Command line error result: " + stringStderr_<%=cid%>.toString());
+			log.debug("<%=cid%> - Command line standard result: " + out_content_<%=cid%>);
+			log.debug("<%=cid%> - Command line error result: " + err_content_<%=cid%>);
 		<%}%>
 <%
 		//-----begin to handle output
 		if(("TO_GLOBAL_VARIABLE").equals(standardOutput)){
 %>
-			globalMap.put("<%=cid %>_STDOUT", stringStdout_<%=cid%>.toString());
+			globalMap.put("<%=cid %>_STDOUT", out_content_<%=cid%>);
 <%
 		}else if(("TO_CONSOLE_AND_GLOBAL_VARIABLE").equals(standardOutput)){
 %>
-			globalMap.put("<%=cid %>_STDOUT", stringStdout_<%=cid%>.toString());
+			globalMap.put("<%=cid %>_STDOUT", out_content_<%=cid%>);
 <%
 		}else if(("NORMAL_OUTPUT").equals(standardOutput)){
 %>
-			output_<%=cid%>.add(stringStdout_<%=cid%>.toString());
+			output_<%=cid%>.add(out_content_<%=cid%>);
 			stringStdout_<%=cid%>.delete(0,stringStdout_<%=cid%>.length());
 <%
 		}
 		if(("TO_GLOBAL_VARIABLE").equals(errorOutput)){
 %>
-			globalMap.put("<%=cid %>_STDERR", stringStderr_<%=cid%>.toString());
+			globalMap.put("<%=cid %>_STDERR", err_content_<%=cid%>);
 <%		
 		}else if(("TO_CONSOLE_AND_GLOBAL_VARIABLE").equals(errorOutput)){
 %>
-			globalMap.put("<%=cid %>_STDERR", stringStderr_<%=cid%>.toString());
+			globalMap.put("<%=cid %>_STDERR", err_content_<%=cid%>);
 <%		
 		}else if(("NORMAL_OUTPUT").equals(errorOutput)){
 %>
-			output_<%=cid%>.add(stringStderr_<%=cid%>.toString());
+			output_<%=cid%>.add(err_content_<%=cid%>);
 			stringStderr_<%=cid%>.delete(0, stringStderr_<%=cid%>.length());
 <%		
 		}

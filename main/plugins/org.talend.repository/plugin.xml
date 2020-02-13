@@ -3327,6 +3327,15 @@
               description="change schema pattern according to deleted option"
               id="org.talend.repository.model.migration.spark.UpdateDatesPatternAccordingToDeletedTimestampOption"
               name="UpdateDatesPatternAccordingToDeletedTimestampOption"
+              version="7.3.1">                     
+       </projecttask>
+       <projecttask
+              beforeLogon="true"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
+              description="Remove pigudf modules"
+              id="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
+              name="RemovePigudfModulesMigrationTask"
               version="7.3.1">
         </projecttask>
    </extension>
