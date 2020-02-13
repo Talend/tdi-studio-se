@@ -1,24 +1,30 @@
-/*******************************************************************************
- * Copyright © Microsoft Open Technologies, Inc.
- * 
- * All Rights Reserved
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- * ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
- * PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
- * 
- * See the Apache License, Version 2.0 for the specific language
- * governing permissions and limitations under the License.
- ******************************************************************************/
+// Copyright (c) Microsoft Corporation.
+// All rights reserved.
+//
+// This code is licensed under the MIT License.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 package com.microsoft.aad.adal4j;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,37 +32,40 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.http.CommonContentTypes;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * 
- * 
- */
 class AdalOAuthRequest extends HTTPRequest {
 
     private final Map<String, String> extraHeaderParams;
     private final Logger log = LoggerFactory.getLogger(AdalOAuthRequest.class);
 
+    private final Proxy proxy;
+    private final SSLSocketFactory sslSocketFactory;
+
     /**
      * 
      * @param method
      * @param url
-     * @param correlationId
      */
     AdalOAuthRequest(final Method method, final URL url,
-            final Map<String, String> extraHeaderParams) {
+            final Map<String, String> extraHeaderParams, final Proxy proxy,
+            final SSLSocketFactory sslSocketFactory) {
         super(method, url);
         this.extraHeaderParams = extraHeaderParams;
+        this.proxy = proxy;
+        this.sslSocketFactory = sslSocketFactory;
     }
 
     Map<String, String> getReadOnlyExtraHeaderParameters() {
@@ -69,7 +78,8 @@ class AdalOAuthRequest extends HTTPRequest {
     @Override
     public HTTPResponse send() throws IOException {
 
-        final HttpURLConnection conn = HttpHelper.openConnection(this.getURL());
+        final HttpsURLConnection conn = HttpHelper.openConnection(this.getURL(),
+                this.proxy, this.sslSocketFactory);
         this.configureHeaderAndExecuteOAuthCall(conn);
         final String out = this.processAndReadResponse(conn);
         HttpHelper.verifyReturnedCorrelationId(log, conn,
@@ -83,12 +93,17 @@ class AdalOAuthRequest extends HTTPRequest {
         final HTTPResponse response = new HTTPResponse(conn.getResponseCode());
         final String location = conn.getHeaderField("Location");
         if (!StringHelper.isBlank(location)) {
-            response.setLocation(new URL(location));
+            try {
+                response.setLocation(new URI(location));
+            } catch (URISyntaxException e) {
+                throw new IOException("Invalid location URI " + location, e);
+            }
         }
 
         try {
             response.setContentType(conn.getContentType());
-        } catch (final ParseException e) {
+        }
+        catch (final ParseException e) {
             throw new IOException("Couldn't parse Content-Type header: "
                     + e.getMessage(), e);
         }
@@ -102,7 +117,7 @@ class AdalOAuthRequest extends HTTPRequest {
         return response;
     }
 
-    void configureHeaderAndExecuteOAuthCall(final HttpURLConnection conn)
+    void configureHeaderAndExecuteOAuthCall(final HttpsURLConnection conn)
             throws IOException {
 
         if (this.getAuthorization() != null) {
@@ -111,25 +126,26 @@ class AdalOAuthRequest extends HTTPRequest {
 
         Map<String, String> params = new java.util.HashMap<>();
         if (this.extraHeaderParams != null && !this.extraHeaderParams.isEmpty()) {
-            for (java.util.Map.Entry<String, String> entry : this.extraHeaderParams.entrySet()) {
+            for (java.util.Map.Entry<String, String> entry : this.extraHeaderParams
+                    .entrySet()) {
                 if (entry.getValue() == null || entry.getValue().isEmpty()) {
                     continue;
                 }
                 params.put(entry.getKey(), entry.getValue());
             }
         }
-        
+
         HttpHelper.configureAdditionalHeaders(conn, params);
         conn.setDoOutput(true);
         conn.setRequestProperty("Content-Type",
                 CommonContentTypes.APPLICATION_URLENCODED.toString());
 
         if (this.getQuery() != null) {
-            final OutputStreamWriter writer = new OutputStreamWriter(
-                    conn.getOutputStream());
-            writer.write(getQuery());
-            writer.flush();
-            writer.close();
+            try(final OutputStreamWriter writer = new OutputStreamWriter(
+                        conn.getOutputStream())) {
+                writer.write(getQuery());
+                writer.flush();
+            }
         }
     }
 
@@ -139,13 +155,17 @@ class AdalOAuthRequest extends HTTPRequest {
         final int responseCode = conn.getResponseCode();
         if (responseCode == 200) {
             inReader = new InputStreamReader(conn.getInputStream());
-        } else {
-        	InputStream stream = conn.getErrorStream();
-        	if(stream == null && responseCode == 404)
-        	{
-        		stream = conn.getInputStream();
-        	}
-        	
+        }
+        else {
+            InputStream stream = conn.getErrorStream();
+            if (stream == null && responseCode == 404) {
+                stream = conn.getInputStream();
+            }
+
+            if (stream == null) {
+                stream = conn.getInputStream();
+            }
+
             inReader = new InputStreamReader(stream);
         }
         final BufferedReader reader = new BufferedReader(inReader);
@@ -159,7 +179,8 @@ class AdalOAuthRequest extends HTTPRequest {
                 }
                 out.append(buffer, 0, rsz);
             }
-        } finally {
+        }
+        finally {
             reader.close();
         }
         return out.toString();

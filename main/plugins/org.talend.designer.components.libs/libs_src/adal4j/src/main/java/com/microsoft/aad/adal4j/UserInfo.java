@@ -1,22 +1,26 @@
-/*******************************************************************************
- * Copyright © Microsoft Open Technologies, Inc.
- * 
- * All Rights Reserved
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- * ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
- * PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
- * 
- * See the Apache License, Version 2.0 for the specific language
- * governing permissions and limitations under the License.
- ******************************************************************************/
+// Copyright (c) Microsoft Corporation.
+// All rights reserved.
+//
+// This code is licensed under the MIT License.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 package com.microsoft.aad.adal4j;
 
 import java.io.Serializable;
@@ -24,7 +28,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimsSet;
+import java.util.*;
 
 /**
  * Contains information of a single user.
@@ -39,6 +44,7 @@ public class UserInfo implements Serializable {
     String identityProvider;
     String passwordChangeUrl;
     Date passwordExpiresOn;
+    String tenantId;
 
     private UserInfo() {
     }
@@ -88,13 +94,26 @@ public class UserInfo implements Serializable {
     }
 
     public Date getPasswordExpiresOn() {
-        return passwordExpiresOn;
+        if (passwordExpiresOn != null) {
+            return (Date)passwordExpiresOn.clone();
+        } else {
+            return null;
+        }
     }
 
-    static UserInfo createFromIdTokenClaims(final ReadOnlyJWTClaimsSet claims)
+    /**
+     * Get tenant id
+     *
+     * @return String value
+     */
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    static UserInfo createFromIdTokenClaims(final JWTClaimsSet claims)
             throws java.text.ParseException {
 
-        if (claims == null || claims.getAllClaims().size() == 0) {
+        if (claims == null || claims.getClaims().size() == 0) {
             return null;
         }
 
@@ -105,7 +124,8 @@ public class UserInfo implements Serializable {
                 .getStringClaim(AuthenticationConstants.ID_TOKEN_OBJECT_ID))) {
             uniqueId = claims
                     .getStringClaim(AuthenticationConstants.ID_TOKEN_OBJECT_ID);
-        } else if (!StringHelper.isBlank(claims
+        }
+        else if (!StringHelper.isBlank(claims
                 .getStringClaim(AuthenticationConstants.ID_TOKEN_SUBJECT))) {
             uniqueId = claims
                     .getStringClaim(AuthenticationConstants.ID_TOKEN_SUBJECT);
@@ -115,7 +135,8 @@ public class UserInfo implements Serializable {
                 .getStringClaim(AuthenticationConstants.ID_TOKEN_UPN))) {
             displayableId = claims
                     .getStringClaim(AuthenticationConstants.ID_TOKEN_UPN);
-        } else if (!StringHelper.isBlank(claims
+        }
+        else if (!StringHelper.isBlank(claims
                 .getStringClaim(AuthenticationConstants.ID_TOKEN_EMAIL))) {
             displayableId = claims
                     .getStringClaim(AuthenticationConstants.ID_TOKEN_EMAIL);
@@ -130,6 +151,8 @@ public class UserInfo implements Serializable {
                 .getStringClaim(AuthenticationConstants.ID_TOKEN_GIVEN_NAME);
         userInfo.identityProvider = claims
                 .getStringClaim(AuthenticationConstants.ID_TOKEN_IDENTITY_PROVIDER);
+        userInfo.tenantId = claims
+                .getStringClaim(AuthenticationConstants.ID_TOKEN_TENANTID);
 
         if (!StringHelper
                 .isBlank(claims
@@ -140,9 +163,8 @@ public class UserInfo implements Serializable {
 
         if (claims
                 .getClaim(AuthenticationConstants.ID_TOKEN_PASSWORD_EXPIRES_ON) != null) {
-            int claimExpiry = Integer
-                    .valueOf((String) claims
-                            .getClaim(AuthenticationConstants.ID_TOKEN_PASSWORD_EXPIRES_ON));
+            int claimExpiry = Integer.parseInt(
+                    (String)claims.getClaim(AuthenticationConstants.ID_TOKEN_PASSWORD_EXPIRES_ON));
             // pwd_exp returns seconds to expiration time
             // it returns in seconds. Date accepts milliseconds.
             if (claimExpiry > 0) {
@@ -155,4 +177,52 @@ public class UserInfo implements Serializable {
         return userInfo;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + Objects.hashCode(this.uniqueId);
+        hash = 37 * hash + Objects.hashCode(this.displayableId);
+        hash = 37 * hash + Objects.hashCode(this.givenName);
+        hash = 37 * hash + Objects.hashCode(this.familyName);
+        hash = 37 * hash + Objects.hashCode(this.identityProvider);
+        hash = 37 * hash + Objects.hashCode(this.passwordChangeUrl);
+        hash = 37 * hash + Objects.hashCode(this.passwordExpiresOn);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UserInfo other = (UserInfo) obj;
+        if (!Objects.equals(this.uniqueId, other.uniqueId)) {
+            return false;
+        }
+        if (!Objects.equals(this.displayableId, other.displayableId)) {
+            return false;
+        }
+        if (!Objects.equals(this.givenName, other.givenName)) {
+            return false;
+        }
+        if (!Objects.equals(this.familyName, other.familyName)) {
+            return false;
+        }
+        if (!Objects.equals(this.identityProvider, other.identityProvider)) {
+            return false;
+        }
+        if (!Objects.equals(this.passwordChangeUrl, other.passwordChangeUrl)) {
+            return false;
+        }
+        if (!Objects.equals(this.passwordExpiresOn, other.passwordExpiresOn)) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -1,47 +1,52 @@
-/*******************************************************************************
- * Copyright © Microsoft Open Technologies, Inc.
- * 
- * All Rights Reserved
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- * ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
- * PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
- * 
- * See the Apache License, Version 2.0 for the specific language
- * governing permissions and limitations under the License.
- ******************************************************************************/
+// Copyright (c) Microsoft Corporation.
+// All rights reserved.
+//
+// This code is licensed under the MIT License.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 package com.microsoft.aad.adal4j;
 
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.nimbusds.jwt.JWTClaimsSet;
 import org.easymock.EasyMock;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 
 /**
  *
  */
 @Test(groups = { "checkin" })
+@PrepareForTest(JWTClaimsSet.class)
 public class UserInfoTest extends AbstractAdalTests {
 
     @Test
     public void testCreateFromIdTokenClaims_EmptyClaims() throws ParseException {
 
-        final ReadOnlyJWTClaimsSet claimSet = PowerMock
-                .createMock(ReadOnlyJWTClaimsSet.class);
-        EasyMock.expect(claimSet.getAllClaims())
+        final JWTClaimsSet claimSet = PowerMock
+                .createMock(JWTClaimsSet.class);
+        EasyMock.expect(claimSet.getClaims())
                 .andReturn(new HashMap<String, Object>()).times(1);
         EasyMock.replay(claimSet);
         Assert.assertNull(UserInfo.createFromIdTokenClaims(claimSet));
@@ -58,11 +63,11 @@ public class UserInfoTest extends AbstractAdalTests {
     public void testCreateFromIdTokenClaims_HasEmailSubjectPasswordClaims()
             throws ParseException {
 
-        final ReadOnlyJWTClaimsSet claimSet = PowerMock
-                .createMock(ReadOnlyJWTClaimsSet.class);
+        final JWTClaimsSet claimSet = PowerMock
+                .createMock(JWTClaimsSet.class);
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put("", "");
-        EasyMock.expect(claimSet.getAllClaims()).andReturn(map).times(1);
+        EasyMock.expect(claimSet.getClaims()).andReturn(map).times(1);
         EasyMock.expect(
                 claimSet.getStringClaim(AuthenticationConstants.ID_TOKEN_OBJECT_ID))
                 .andReturn(null).times(1);
@@ -90,6 +95,9 @@ public class UserInfoTest extends AbstractAdalTests {
         EasyMock.expect(
                 claimSet.getClaim(AuthenticationConstants.ID_TOKEN_PASSWORD_EXPIRES_ON))
                 .andReturn("5000").times(2);
+        EasyMock.expect(
+                claimSet.getStringClaim(AuthenticationConstants.ID_TOKEN_TENANTID))
+                .andReturn("TenantID").times(1);
 
         EasyMock.replay(claimSet);
         final UserInfo ui = UserInfo.createFromIdTokenClaims(claimSet);
@@ -100,6 +108,8 @@ public class UserInfoTest extends AbstractAdalTests {
         Assert.assertEquals("value", ui.getFamilyName());
         Assert.assertEquals("idp", ui.getIdentityProvider());
         Assert.assertEquals("url", ui.getPasswordChangeUrl());
+        Assert.assertEquals("TenantID", ui.getTenantId());
+
         Assert.assertNotNull(ui.getPasswordExpiresOn());
         PowerMock.verifyAll();
     }
@@ -107,11 +117,11 @@ public class UserInfoTest extends AbstractAdalTests {
     public void testCreateFromIdTokenClaims_HasUpnObjectIdNoPasswordClaims()
             throws ParseException {
 
-        final ReadOnlyJWTClaimsSet claimSet = PowerMock
-                .createMock(ReadOnlyJWTClaimsSet.class);
+        final JWTClaimsSet claimSet = PowerMock
+                .createMock(JWTClaimsSet.class);
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put("", "");
-        EasyMock.expect(claimSet.getAllClaims()).andReturn(map).times(1);
+        EasyMock.expect(claimSet.getClaims()).andReturn(map).times(1);
         EasyMock.expect(
                 claimSet.getStringClaim(AuthenticationConstants.ID_TOKEN_OBJECT_ID))
                 .andReturn(null).times(1);
@@ -139,6 +149,9 @@ public class UserInfoTest extends AbstractAdalTests {
         EasyMock.expect(
                 claimSet.getClaim(AuthenticationConstants.ID_TOKEN_PASSWORD_EXPIRES_ON))
                 .andReturn(null).times(1);
+        EasyMock.expect(
+                claimSet.getStringClaim(AuthenticationConstants.ID_TOKEN_TENANTID))
+                .andReturn("TenantID").times(1);
 
         EasyMock.replay(claimSet);
         final UserInfo ui = UserInfo.createFromIdTokenClaims(claimSet);
@@ -150,6 +163,7 @@ public class UserInfoTest extends AbstractAdalTests {
         Assert.assertEquals("idp", ui.getIdentityProvider());
         Assert.assertNull(ui.getPasswordChangeUrl());
         Assert.assertNull(ui.getPasswordExpiresOn());
+        Assert.assertEquals("TenantID", ui.getTenantId());
         PowerMock.verifyAll();
     }
 }

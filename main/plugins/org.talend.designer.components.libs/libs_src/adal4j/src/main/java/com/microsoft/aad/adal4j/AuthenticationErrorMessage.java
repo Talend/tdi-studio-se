@@ -1,22 +1,26 @@
-/*******************************************************************************
- * Copyright © Microsoft Open Technologies, Inc.
- * 
- * All Rights Reserved
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- * ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
- * PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
- * 
- * See the Apache License, Version 2.0 for the specific language
- * governing permissions and limitations under the License.
- ******************************************************************************/
+// Copyright (c) Microsoft Corporation.
+// All rights reserved.
+//
+// This code is licensed under the MIT License.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 package com.microsoft.aad.adal4j;
 
 class AuthenticationErrorMessage {
@@ -30,7 +34,7 @@ class AuthenticationErrorMessage {
     final static String CERTIFICATE_KEY_SIZE_TOO_SMALL_TEMPLATE = "The certificate used must have a key size of at least %s bits";
     final static String EMAIL_ADDRESS_SUFFIX_MISMATCH = "No identity provider email address suffix matches the provided address";
     final static String ENCODED_TOKEN_TOO_LONG = "Encoded token size is beyond the upper limit";
-    final static String FEDERATED_SERVICE_RETURNED_ERROR_TEMPLATE = "Federated serviced at %s returned error: %s";
+    final static String FEDERATED_SERVICE_RETURNED_ERROR_TEMPLATE = "Federated service at %s returned error: %s";
     final static String IDENTITY_PROTOCOL_LOGIN_URL_NULL = "The LoginUrl property in identityProvider cannot be null";
     final static String IDENTITY_PROTOCOL_MISMATCH = "No identity provider matches the requested protocol";
     final static String IDENTITY_PROVIDER_REQUEST_FAILED = "Token request to identity provider failed. Check InnerException for more details";
@@ -47,7 +51,7 @@ class AuthenticationErrorMessage {
     final static String PARSING_METADATA_DOCUMENT_FAILED = "Parsing WS metadata exchange failed";
     final static String PARSING_WS_TRUST_RESPONSE_FAILED = "Parsing WS-Trust response failed";
     final static String REDIRECT_URI_CONTAINS_FRAGMENT = "'redirectUri' must NOT include a fragment component";
-    final static String SERVICE_RETURNED_ERROR = "Serviced returned error. Check InnerException for more details";
+    final static String SERVICE_RETURNED_ERROR = "Service returned error. Check InnerException for more details";
     final static String STS_METADATA_REQUEST_FAILED = "Metadata request to Access Control service failed. Check InnerException for more details";
     final static String STS_TOKEN_REQUEST_FAILED = "Token request to security token service failed.  Check InnerException for more details";
     final static String UNAUTHORIZED_HTTP_STATUS_CODE_EXPECTED = "Unauthorized Http Status Code (401) was expected in the response";

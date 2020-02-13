@@ -8,19 +8,19 @@
 	<name>adal4jsample</name>
 	<url>http://maven.apache.org</url>
 	<properties>
-		<spring.version>3.0.5.RELEASE</spring.version>
+		<spring.version>5.2.3.RELEASE</spring.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.microsoft.azure</groupId>
 			<artifactId>adal4j</artifactId>
-			<version>1.1.1</version>
+			<version>1.6.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>oauth2-oidc-sdk</artifactId>
-			<version>4.5</version>
+			<version>6.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -34,14 +34,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
-        </dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.25</version>
+			<version>1.7.5</version>
 		</dependency>
 		<!-- Spring 3 dependencies -->
 		<dependency>
@@ -49,13 +44,11 @@
 			<artifactId>spring-core</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
@@ -81,9 +74,6 @@
 				<version>2.4</version>
 				<configuration>
 					<warName>${project.artifactId}</warName>
-					<source>${project.basedir}\src</source>
-					<target>${maven.compiler.target}</target>
-					<encoding>utf-8</encoding>
 				</configuration>
 			</plugin>
 			<plugin>

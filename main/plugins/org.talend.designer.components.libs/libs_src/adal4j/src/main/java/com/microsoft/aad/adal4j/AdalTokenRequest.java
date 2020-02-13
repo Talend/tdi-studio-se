@@ -1,28 +1,38 @@
-/*******************************************************************************
- * Copyright © Microsoft Open Technologies, Inc.
- * 
- * All Rights Reserved
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- * ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
- * PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
- * 
- * See the Apache License, Version 2.0 for the specific language
- * governing permissions and limitations under the License.
- ******************************************************************************/
+// Copyright (c) Microsoft Corporation.
+// All rights reserved.
+//
+// This code is licensed under the MIT License.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 package com.microsoft.aad.adal4j;
 
+import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
+import java.net.Proxy;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
+import com.nimbusds.oauth2.sdk.ErrorObject;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.SerializeException;
 import com.nimbusds.oauth2.sdk.TokenErrorResponse;
@@ -31,6 +41,7 @@ import com.nimbusds.oauth2.sdk.http.CommonContentTypes;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.util.URLUtils;
+import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 
 /**
  * Extension for TokenRequest to support additional header values like
@@ -40,21 +51,25 @@ class AdalTokenRequest {
 
     private final URL uri;
     private final ClientAuthentication clientAuth;
-    private final AdalAuthorizatonGrant authzGrant;
+    private final AdalAuthorizationGrant grant;
     private final Map<String, String> headerMap;
+    private final Proxy proxy;
+    private final SSLSocketFactory sslSocketFactory;
 
     AdalTokenRequest(final URL uri, final ClientAuthentication clientAuth,
-            final AdalAuthorizatonGrant authzGrant,
-            final Map<String, String> headerMap) {
+            final AdalAuthorizationGrant authzGrant,
+            final Map<String, String> headerMap, final Proxy proxy,
+            final SSLSocketFactory sslSocketFactory) {
         this.clientAuth = clientAuth;
-        this.authzGrant = authzGrant;
+        this.grant = authzGrant;
         this.uri = uri;
         this.headerMap = headerMap;
+        this.proxy = proxy;
+        this.sslSocketFactory = sslSocketFactory;
     }
 
     /**
-     * 
-     * @param request
+     *
      * @return
      * @throws ParseException
      * @throws AuthenticationException
@@ -75,33 +90,55 @@ class AdalTokenRequest {
             final AdalAccessTokenResponse response = AdalAccessTokenResponse
                     .parseHttpResponse(httpResponse);
 
+            OIDCTokens tokens = response.getOIDCTokens();
             String refreshToken = null;
-            if (response.getRefreshToken() != null) {
-                refreshToken = response.getRefreshToken().getValue();
+            if (tokens.getRefreshToken() != null) {
+                refreshToken = tokens.getRefreshToken().getValue();
             }
 
             UserInfo info = null;
-            if (response.getIDToken() != null) {
-                info = UserInfo.createFromIdTokenClaims(response.getIDToken()
+            if (tokens.getIDToken() != null) {
+                info = UserInfo.createFromIdTokenClaims(tokens.getIDToken()
                         .getJWTClaimsSet());
             }
 
-            result = new AuthenticationResult(
-                        response.getAccessToken().getType().getValue(),
-                        response.getAccessToken().getValue(),
-                        refreshToken,
-                        response.getAccessToken().getLifetime(),
-                        response.getIDTokenString(),
-                        info,
-                        !StringHelper.isBlank(response.getResource()));
+            result = new AuthenticationResult(tokens.getAccessToken()
+                    .getType().getValue(),
+                    tokens.getAccessToken().getValue(), refreshToken,
+                    tokens.getAccessToken().getLifetime(),
+                    tokens.getIDTokenString(), info,
+                    !StringHelper.isBlank(response.getResource()));
         } else {
             final TokenErrorResponse errorResponse = TokenErrorResponse
                     .parse(httpResponse);
-            throw new AuthenticationException(errorResponse.toJSONObject()
-                    .toJSONString());
+            ErrorObject errorObject = errorResponse.getErrorObject();
+            if(AdalErrorCode.AUTHORIZATION_PENDING.toString()
+                    .equals(errorObject.getCode())){
+                throw new AuthenticationException(AdalErrorCode.AUTHORIZATION_PENDING,
+                        errorObject.getDescription());
+            }
+
+            if(HTTPResponse.SC_BAD_REQUEST == errorObject.getHTTPStatusCode() &&
+                    AdalErrorCode.INTERACTION_REQUIRED.toString()
+                            .equals(errorObject.getCode())){
+                throw new AdalClaimsChallengeException(errorResponse.toJSONObject()
+                        .toJSONString(), getClaims(httpResponse.getContent()));
+            }
+            else {
+                throw new AuthenticationException(errorResponse.toJSONObject()
+                        .toJSONString());
+            }
         }
 
         return result;
+    }
+
+    private String getClaims(String httpResponseContentStr) {
+        JsonElement root = new JsonParser().parse(httpResponseContentStr);
+
+        JsonElement claims = root.getAsJsonObject().get("claims");
+
+        return claims != null ? claims.getAsString() : null;
     }
 
     /**
@@ -116,9 +153,10 @@ class AdalTokenRequest {
         }
 
         final AdalOAuthRequest httpRequest = new AdalOAuthRequest(
-                HTTPRequest.Method.POST, this.uri, headerMap);
+                HTTPRequest.Method.POST, this.uri, headerMap, this.proxy,
+                this.sslSocketFactory);
         httpRequest.setContentType(CommonContentTypes.APPLICATION_URLENCODED);
-        final Map<String, String> params = this.authzGrant.toParameters();
+        final Map<String, List<String>> params = this.grant.toParameters();
         httpRequest.setQuery(URLUtils.serializeParameters(params));
         if (this.clientAuth != null) {
             this.clientAuth.applyTo(httpRequest);

@@ -1,22 +1,26 @@
-/*******************************************************************************
- * Copyright © Microsoft Open Technologies, Inc.
- * 
- * All Rights Reserved
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- * ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
- * PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
- * 
- * See the Apache License, Version 2.0 for the specific language
- * governing permissions and limitations under the License.
- ******************************************************************************/
+// Copyright (c) Microsoft Corporation.
+// All rights reserved.
+//
+// This code is licensed under the MIT License.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 package com.microsoft.aad.adal4j;
 
 import static org.testng.Assert.assertNotNull;
@@ -27,6 +31,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.nimbusds.oauth2.sdk.http.HTTPRequest.Method;
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.easymock.EasyMock;
 import org.powermock.api.easymock.PowerMock;
@@ -35,9 +41,6 @@ import org.powermock.reflect.Whitebox;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.nimbusds.oauth2.sdk.http.HTTPRequest.Method;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
-
 @Test(groups = { "checkin" })
 @PrepareForTest({ AdalOAuthRequest.class })
 public class AdalOAuthRequestTest extends AbstractAdalTests {
@@ -45,17 +48,17 @@ public class AdalOAuthRequestTest extends AbstractAdalTests {
     @Test
     public void testConstructor() throws MalformedURLException {
         final AdalOAuthRequest request = new AdalOAuthRequest(Method.POST,
-                new URL("http://login.windows.net"), null);
+                new URL("http://login.windows.net"), null, null, null);
         assertNotNull(request);
     }
 
 
-    @Test(expectedExceptions = IOException.class, expectedExceptionsMessageRegExp = "Couldn't parse Content-Type header: Invalid Content-Type value: Expected '/', got null")
+    @Test(expectedExceptions = IOException.class, expectedExceptionsMessageRegExp = "Couldn't parse Content-Type header: Invalid Content-Type value: In Content-Type string <invalid-content>, expected '/', got null")
     public void testCreateResponseContentTypeParsingFailure()
             throws Exception {
 
         final AdalOAuthRequest request = new AdalOAuthRequest(Method.GET,
-                new URL("https://" + TestConfiguration.AAD_HOST_NAME), null);
+                new URL("https://" + TestConfiguration.AAD_HOST_NAME), null, null, null);
         final HttpURLConnection conn = PowerMock
                 .createMock(HttpURLConnection.class);
         EasyMock.expect(conn.getResponseCode()).andReturn(200).times(1);
@@ -65,14 +68,13 @@ public class AdalOAuthRequestTest extends AbstractAdalTests {
                 .times(1);
         PowerMock.replay(conn);
         Whitebox.invokeMethod(request, "createResponse", conn, null);
-
     }
 
     @Test
     public void testCreateResponseLocationNull()
             throws Exception {
         final AdalOAuthRequest request = new AdalOAuthRequest(Method.GET,
-                new URL("https://" + TestConfiguration.AAD_HOST_NAME), null);
+                new URL("https://" + TestConfiguration.AAD_HOST_NAME), null, null, null);
         final HttpURLConnection conn = PowerMock
                 .createMock(HttpURLConnection.class);
         EasyMock.expect(conn.getResponseCode()).andReturn(200).times(1);
@@ -101,7 +103,7 @@ public class AdalOAuthRequestTest extends AbstractAdalTests {
     @Test
     public void testCreateResponse() throws Exception {
         final AdalOAuthRequest request = new AdalOAuthRequest(Method.GET,
-                new URL("https://" + TestConfiguration.AAD_HOST_NAME), null);
+                new URL("https://" + TestConfiguration.AAD_HOST_NAME), null, null, null);
         final HttpURLConnection conn = PowerMock
                 .createMock(HttpURLConnection.class);
         EasyMock.expect(conn.getResponseCode()).andReturn(200).times(1);
@@ -125,14 +127,14 @@ public class AdalOAuthRequestTest extends AbstractAdalTests {
         Assert.assertEquals(response.getWWWAuthenticate(), "www-a");
         Assert.assertEquals(response.getLocation().getAuthority(),
                 "location.pl");
-        Assert.assertEquals(response.getLocation().getProtocol(), "https");
+        Assert.assertEquals(response.getLocation().getScheme(), "https");
         Assert.assertNull(response.getContent());
     }
     
     @Test
     public void testCreateResponseFor404() throws Exception {
         final AdalOAuthRequest request = new AdalOAuthRequest(Method.GET,
-                new URL("https://" + TestConfiguration.AAD_HOST_NAME), null);
+                new URL("https://" + TestConfiguration.AAD_HOST_NAME), null, null, null);
         final HttpURLConnection conn = PowerMock
                 .createMock(HttpURLConnection.class);
         EasyMock.expect(conn.getResponseCode()).andReturn(404);
