@@ -414,8 +414,7 @@ public class MavenJavaProcessor extends JavaProcessor {
                     + BuildCacheManager.BUILD_AGGREGATOR_POM_NAME + " -P " + (packagingAndAssembly() ? "" : "!")
                     + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY + ",!" + TalendMavenConstants.PROFILE_SIGNATURE); // $NON-NLS-1$  //$NON-NLS-2$
             // install all subjobs
-            boolean isBuildJob = ProcessorUtilities.isExportConfig();
-            buildCacheManager.build(monitor, argumentsMap, isBuildJob);
+            buildCacheManager.build(monitor, argumentsMap);
 
             if (!MavenProjectUtils.hasMavenNature(project)) {
                 // enable maven nature in case project not create yet.
