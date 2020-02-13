@@ -12,19 +12,6 @@
 // ============================================================================
 package org.talend.ms.crm.odata;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.naming.AuthenticationException;
-import javax.naming.ServiceUnavailableException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -44,6 +31,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.util.EntityUtils;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.ODataClientErrorException;
+import org.apache.olingo.client.api.communication.request.retrieve.EdmMetadataRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
@@ -68,6 +56,18 @@ import org.talend.ms.crm.odata.authentication.IAuthStrategy;
 import org.talend.ms.crm.odata.httpclientfactory.DefaultHttpClientState;
 import org.talend.ms.crm.odata.httpclientfactory.IHttpClientFactoryObserver;
 import org.talend.ms.crm.odata.httpclientfactory.IHttpclientFactoryObservable;
+
+import javax.naming.AuthenticationException;
+import javax.naming.ServiceUnavailableException;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Client for accessing Dynamics CRM Online using the Web API
@@ -155,7 +155,6 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
     /**
      * Create EntitySet Iterator request
      *
-     * @param entirySet entirySet the EntitySet name which you want to retrieve records
      * @param queryOption
      * @return EntitySet iterator request
      */
@@ -181,10 +180,36 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
         return request;
     }
 
+    public EdmMetadataRequest createMetadataRetrieveRequest() {
+        EdmMetadataRequest request = odataClient.getRetrieveRequestFactory()
+                                                .getMetadataRequest(serviceRootURL);
+        this.authStrategy.configureRequest(request);
+        return request;
+    }
+
+    public ODataEntitySetRequest<ClientEntitySet> createEntitySetRetrieveRequest() {
+        URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment("EntityDefinitions").select("EntitySetName,LogicalName");
+        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = odataClient.getRetrieveRequestFactory().getEntitySetRequest(uriBuilder.build());
+        this.authStrategy.configureRequest(entitySetRequest);
+        return entitySetRequest;
+    }
+
+    public ODataEntitySetRequest<ClientEntitySet> createEndpointsNamesRequest(){
+        URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL);
+        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = odataClient.getRetrieveRequestFactory().getEntitySetRequest(uriBuilder.build());
+        this.authStrategy.configureRequest(entitySetRequest);
+        return entitySetRequest;
+    }
+
+    public ODataEntitySetRequest<ClientEntitySet> createRequest(URIBuilder uriBuilder) {
+        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = odataClient.getRetrieveRequestFactory().getEntitySetRequest(uriBuilder.build());
+        this.authStrategy.configureRequest(entitySetRequest);
+        return entitySetRequest;
+    }
+
     /**
      * Retrieve records from EntitySet
      *
-     * @param entitySet the EntitySet name which you want to retrieve records
      * @param queryOption
      * @return the entity set iterator object
      *
@@ -218,7 +243,6 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
     /**
      * Create entity
      *
-     * @param entitySet entitySet the EntitySet name which you want to create record
      * @param entity provided content for create
      *
      * @throws ServiceUnavailableException
@@ -261,7 +285,6 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
     /**
      * Deleted entity by key
      *
-     * @param entitySet entitySet the EntitySet name which you want to delete records
      * @param keySegment Entity key segment
      *
      * @throws ServiceUnavailableException
