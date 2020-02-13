@@ -3322,7 +3322,7 @@
         </projecttask>
         <projecttask
               beforeLogon="true"
-              breaks="7.3.1"
+              breaks="7.3.0"
               class="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
               description="Remove pigudf modules"
               id="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
