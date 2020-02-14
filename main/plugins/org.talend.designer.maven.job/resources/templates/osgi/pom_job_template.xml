@@ -10,7 +10,7 @@
         <relativePath>@ProjectRelativePath@</relativePath>
     </parent>
 	<groupId>@JobGroupId@</groupId>
-	<artifactId>@JobArtifactId@-bundle</artifactId>
+	<artifactId>@JobArtifactId@</artifactId>
 	<version>@JobVersion@</version>
 	<packaging>bundle</packaging>
     <name>@ProjectName@ @JobName@-${project.version} (@TalendJobVersion@,@JobType@)</name>
@@ -73,36 +73,29 @@
 					</instructions>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<id>attach-artifacts-feature</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attach-artifact</goal>
-						</goals>
-						<configuration>
-							<artifacts>
-								<artifact>
-									<file>${basedir}/src/main/bundle-resources/feature.xml</file>
-									<type>xml</type>
-									<classifier>feature</classifier>
-								</artifact>
-							</artifacts>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${basedir}/src/main/assemblies/assembly.xml</descriptor>
+                            </descriptors>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <finalName>${talend.job.name}-bundle-${project.version}</finalName>
+							<archive>
+								<manifestFile>${current.bundle.resources.dir}/META-INF/MANIFEST.MF</manifestFile>
+							</archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
     <profiles>
@@ -129,6 +122,9 @@
                                     <tarLongFileMode>gnu</tarLongFileMode>
                                     <appendAssemblyId>false</appendAssemblyId>
                                     <finalName>${talend.job.name}-bundle-${project.version}</finalName>
+									<archive>
+										<manifestFile>${current.bundle.resources.dir}/META-INF/MANIFEST.MF</manifestFile>
+									</archive>
                                 </configuration>
                             </execution>
                         </executions>
@@ -285,5 +281,33 @@
                 <microservice.running.configs.dir>${current.resources.dir}/</microservice.running.configs.dir>
             </properties>
         </profile>
+		<profile>
+		  <id>deploy-nexus</id>
+		  <activation>
+		    <property>
+		      <name>altDeploymentRepository</name>
+		    </property>
+		  </activation>
+		  <build>
+		    <plugins>
+				<plugin>
+					<groupId>org.talend.ci</groupId>
+					<artifactId>osgihelper-maven-plugin</artifactId>
+					<executions>
+					  <execution>
+						<id>osgi-helper</id>
+						<phase>generate-sources</phase>
+						<goals>
+						  <goal>generate</goal>
+						</goals>
+						<configuration>
+						  <featuresFile>${current.bundle.resources.dir}/feature.xml</featuresFile>
+						</configuration>
+					  </execution>
+					</executions>
+				 </plugin>
+		    </plugins>
+		  </build>
+		</profile>
     </profiles>
 </project>
