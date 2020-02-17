@@ -71,6 +71,7 @@
 						<Import-Package>${bundle.config.import.package}, *;resolution:=optional</Import-Package>
 						<Bundle-ClassPath>., {maven-dependencies}</Bundle-ClassPath>
 					</instructions>
+					<finalName>${talend.job.finalName}</finalName>
 				</configuration>
 			</plugin>
             <plugin>
