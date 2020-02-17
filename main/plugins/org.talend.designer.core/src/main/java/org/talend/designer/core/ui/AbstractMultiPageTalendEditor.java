@@ -958,7 +958,13 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
      */
     protected void createPage1() {
         IProcess2 process = getProcess();
+        if(process == null) {
+            return;
+        }
         codeEditor = CodeEditorFactory.getInstance().getCodeEditor(getCurrentLang(), process);
+        if(process.getContextManager() == null) {
+            return;
+        }
         processor = ProcessorUtilities.getProcessor(process, process.getProperty(), process.getContextManager()
                 .getDefaultContext());
         if (!process.isReadOnly()) {

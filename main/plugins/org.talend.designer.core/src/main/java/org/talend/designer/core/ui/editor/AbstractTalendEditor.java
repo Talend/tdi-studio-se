@@ -1384,7 +1384,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
         super.dispose();
         AbstractMultiPageTalendEditor parentEditor = getParent();
-        if (parentEditor != null && !parentEditor.isKeepPropertyLocked()) {
+        if (parentEditor != null && !parentEditor.isKeepPropertyLocked() && getProcess() != null) {
             ((Process) getProcess()).dispose();
         }
         // process = null;
