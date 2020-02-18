@@ -102,9 +102,8 @@ public class Log4jSettingPage extends ProjectSettingPage {
         isNewProject = Boolean
                 .valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT));
         log4jBtn = new Button(composite, SWT.CHECK);
-        log4jBtn.setText(isNewProject ? Messages.getString("Log4jSettingPage.ActivateLog4j2") //$NON-NLS-1$
-                : Messages.getString("Log4jSettingPage.ActivateLog4j"));//$NON-NLS-1$
-        if (!isNewProject) {
+        log4jBtn.setText(Messages.getString("Log4jSettingPage.ActivateLog4j"));//$NON-NLS-1$
+
             Composite compositeVersion = new Composite(composite, SWT.NONE);
             GridLayout gridLayoutVersion = new GridLayout(2, false);
             compositeVersion.setLayout(gridLayoutVersion);
@@ -133,15 +132,6 @@ public class Log4jSettingPage extends ProjectSettingPage {
             layout.marginHeight = 0;
             layout.horizontalSpacing = 8;
             composite.setLayout(layout);
-
-
-            combo.setEnabled(!isNewProject);
-            if (!isNewProject) {
-                combo.setEnabled(Boolean.valueOf(
-                        Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE)));
-            }
-        }
-
         return group;
     }
 
@@ -254,7 +244,7 @@ public class Log4jSettingPage extends ProjectSettingPage {
             }
             Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
                     templateTxt.getText());
-            if (!isNewProject && combo != null) {
+            if (combo != null) {
                 int selectionIndex = combo.getSelectionIndex();
                 Log4jPrefsSettingManager.getInstance().saveLog4jNodeIntoPref(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
                         String.valueOf(selectionIndex == 1));
@@ -276,9 +266,6 @@ public class Log4jSettingPage extends ProjectSettingPage {
     }
 
     private boolean isLog4jVersionChanged() {
-        if (isNewProject) {
-            return false;
-        }
         if (combo == null) {
             return false;
         }
@@ -298,6 +285,9 @@ public class Log4jSettingPage extends ProjectSettingPage {
             if (isNewProject) {
                 templateTxt.setText(Log4jPrefsSettingManager.getInstance()
                         .getDefaultTemplateString(Log4jPrefsConstants.LOG4J_VERSION2_FILEPATH));
+                if (combo != null) {
+                    combo.select(Log4jPrefsConstants.LOG4J_VERSIONS.indexOf(Log4jPrefsConstants.LOG4J2));
+                }
             } else {
                 templateTxt.setText(
                         Log4jPrefsSettingManager.getInstance().getDefaultTemplateString(Log4jPrefsConstants.LOG4JFILEPATH));
