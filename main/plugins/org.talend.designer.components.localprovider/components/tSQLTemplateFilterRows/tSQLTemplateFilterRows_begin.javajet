@@ -28,7 +28,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 
     String conn = "conn_" + connection;
     if ("SNOWFLAKE".equals(dbType)) {
-       conn = connection + "_Connection";
+       conn = connection + "_connection";
     }
 
     String createTable = ElementParameterParser.getValue(node,"__STAGING_TABLE_CREATION__");
