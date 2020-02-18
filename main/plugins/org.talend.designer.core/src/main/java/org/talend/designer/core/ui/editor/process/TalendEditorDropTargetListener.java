@@ -1992,9 +1992,13 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         boolean isImpala = EDatabaseTypeName.IMPALA.getDisplayName().toUpperCase().equals(rcSetting.toString());
         boolean isJDBC = EDatabaseTypeName.GENERAL_JDBC.name().toUpperCase().equals(rcSetting.toString());
         if (item != null && item instanceof DatabaseConnectionItem && !isHive && !isImpala && !isJDBC) {
-            IComponent createTableComponent = ComponentsFactoryProvider.getInstance().get("tCreateTable", //$NON-NLS-1$
-                    ComponentCategory.CATEGORY_4_DI.getName());
-            neededComponents.add(createTableComponent);
+            DatabaseConnectionItem databaseConnectionItem = (DatabaseConnectionItem) item;
+            String typeName = databaseConnectionItem.getTypeName();
+            if (!EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equals(typeName)) {
+                IComponent createTableComponent = ComponentsFactoryProvider.getInstance().get("tCreateTable", //$NON-NLS-1$
+                        ComponentCategory.CATEGORY_4_DI.getName());
+                neededComponents.add(createTableComponent);
+            }
         }
 
         neededComponents = (List<IComponent>) ComponentUtilities.filterVisibleComponents(neededComponents);
