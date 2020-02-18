@@ -134,6 +134,17 @@ public class Log4jSettingPage extends ProjectSettingPage {
         composite.setLayout(layout);
         combo.setEnabled(
                 Boolean.valueOf(Log4jPrefsSettingManager.getInstance().getValueOfPreNode(Log4jPrefsConstants.LOG4J_ENABLE_NODE)));
+        if (!combo.isEnabled()) {
+            combo.select(1);
+            IRunProcessService service = null;
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+            }
+            if (service != null) {
+                String logTemplate = service.getLogTemplate(Log4jPrefsConstants.LOG4J_VERSION2_FILEPATH);
+                templateTxt.setText(logTemplate);
+            }
+        }
         return group;
     }
 
