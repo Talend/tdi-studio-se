@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.fieldassist.DecoratedField;
 import org.eclipse.jface.fieldassist.FieldDecoration;
@@ -61,9 +60,6 @@ import org.talend.designer.core.ui.editor.properties.controllers.AbstractElement
 public class ComponentRefController extends AbstractElementPropertySectionController {
 
     private Map<String, String> labelToValueMap = new HashMap<>();
-
-    private String[] componentsName = new String[] { "tJDBCClose", "tJDBCRollback", "tJDBCCommit", "tSnowflakeClose", //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
-            "tSnowflakeRollback", "tSnowflakeCommit", "tMarkLogicClose" }; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 
     public ComponentRefController(IDynamicProperty dp) {
         super(dp);
@@ -290,10 +286,7 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
 
         // First item is this component (see also createComboCommand)
         // FIXME - I18N for this message
-        String componentName = currentNode.getComponent().getName();
-        if (!ArrayUtils.contains(componentsName, componentName)) {
-            itemsLabel.add("Use this Component"); //$NON-NLS-1$
-        }
+        itemsLabel.add("Use this Component");
         itemsValue.add(currentNode.getUniqueName());
         String selectedValue;
         Object referenceType = props.referenceType.getValue();
@@ -331,9 +324,7 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
             String iValue = itemsValue.get(i);
             if ((selectedValue == null && (((INode) elem).getUniqueName()).equals(iValue))
                     || (selectedValue != null && StringUtils.isNotEmpty(iValue) && iValue.endsWith(selectedValue))) {
-                if (itemsLabel.size() > 0) {
-                    iLabel = itemsLabel.get(i);
-                }
+                iLabel = itemsLabel.get(i);
                 break;
             }
             selection++;
