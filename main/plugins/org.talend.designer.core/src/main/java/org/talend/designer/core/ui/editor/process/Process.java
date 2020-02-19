@@ -1823,17 +1823,17 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             List<Project> referenceProjects = ProjectManager.getInstance().getAllReferencedProjects(targetProject, false);
             referenceProjects.stream().forEach(p -> {
                 try {
-                    routines.addAll(factory.getAll(p, ERepositoryObjectType.ROUTINES).stream()
-                            .filter(o -> !((RoutineItem) o.getProperty().getItem()).isBuiltIn()).collect(Collectors.toList()));
+                    routines.addAll(factory.getAll(p, ERepositoryObjectType.ROUTINES));
                 } catch (PersistenceException e) {
                     ExceptionHandler.process(e);
                 }
             });
-            Set<String> allRoutinesSet = routines.stream().map(o -> o.getProperty().getLabel()).collect(Collectors.toSet());
+            Map<String, String> allRoutinesMap = routines.stream()
+                    .collect(Collectors.toMap(IRepositoryViewObject::getId, IRepositoryViewObject::getLabel));
             Iterator<RoutinesParameterType> iterator = routinesDependencies.iterator();
             while (iterator.hasNext()) {
                 RoutinesParameterType routine = iterator.next();
-                if (!allRoutinesSet.contains(routine.getName())) {
+                if (!allRoutinesMap.containsKey(routine.getId())) {
                     iterator.remove();
                 }
             }
