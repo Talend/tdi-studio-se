@@ -663,7 +663,6 @@ public class PropertyTypeController extends AbstractRepositoryController {
         String currentDbType = ((DatabaseConnection) repositoryConnection).getDatabaseType();
         EDatabaseTypeName typeName = EDatabaseTypeName.getTypeFromDbType(currentDbType);
 
-        // DBTYPE value no change then no need have PropertyType change
         if (!typeName.getXMLType().equals(elem.getElementParameter(property).getValue())) {
             Command command = new PropertyChangeCommand(elem, property, typeName.getXMLType());
             compoundCommand.add(command);
