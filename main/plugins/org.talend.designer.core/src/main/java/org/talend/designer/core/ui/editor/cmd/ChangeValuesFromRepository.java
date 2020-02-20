@@ -629,8 +629,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                              * For tCreateTable, several parameter have the same repository value
                              * (e.g.DB_MYSQL_VERSION/DB_POSTGRE_VERSION/...=>DB_VERSION), avoid to set all...
                              */
-                            if ("tCreateTable".equals(elem.getPropertyValue(EParameterName.COMPONENT_NAME.getName())) //$NON-NLS-1$
-                                    && EParameterName.DB_VERSION.getName().equals(param.getRepositoryValue())
+                            if (EParameterName.DB_VERSION.getName().equals(param.getRepositoryValue())
                                     && !param.isShow(elem.getElementParameters())) {
                                 continue;
                             }
