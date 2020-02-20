@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +30,7 @@ import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentUtilities;
+import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
@@ -746,6 +748,27 @@ public class JobletUtil {
         }
         if (expression.contains(":")) {//$NON-NLS-1$
             return true;
+        }
+        return false;
+    }
+
+    public Optional<IComponent> findComponentByName(Set<IComponent> components, String searchName, String paletteType) {
+        return components.stream().filter(p -> p.getComponentType() == EComponentType.JOBLET
+                && paletteType.equals(p.getPaletteType()) && matchesName(p.getName(), searchName)).findFirst();
+    }
+
+    private boolean matchesName(String exist, String search) {
+        if (exist == null) {
+            return false;
+        }
+        if (exist.equals(search)) {
+            return true;
+        }
+        if (matchExpression(exist)) {
+            exist = StringUtils.substringAfterLast(exist, ":"); //$NON-NLS-1$
+            if (exist.equals(search)) {
+                return true;
+            }
         }
         return false;
     }
