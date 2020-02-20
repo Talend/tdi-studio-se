@@ -562,7 +562,9 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
                 ExtraFeaturesUpdatesFactory extraFeaturesFactory = new ExtraFeaturesUpdatesFactory(false);
                 final Set<ExtraFeature> uninstalledExtraFeatures = new HashSet<ExtraFeature>();
                 extraFeaturesFactory.retrieveUninstalledExtraFeatures(monitor, uninstalledExtraFeatures, false);
-
+                if (monitor.isCanceled()) {
+                    throw new InterruptedException("User cancelled"); //$NON-NLS-1$
+                }
                 for (ExtraFeature feature : uninstalledExtraFeatures) {
                     if (HELP_FEATURE_NAME.equalsIgnoreCase(feature.getName())) {
                         if (feature instanceof AbstractExtraFeature) {
@@ -570,19 +572,24 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
                         }
                         installSet.add(feature);
                     }
+                    if (monitor.isCanceled()) {
+                        throw new InterruptedException("User cancelled"); //$NON-NLS-1$
+                    }
                 }
             }
         };
         final ProgressMonitorDialog dialog = new ProgressMonitorDialog(null);
         try {
             dialog.run(true, true, runnable);
+            synchronized (ShowWizardHandler.showWizardLock) {
+                new ShowWizardHandler().showUpdateWizard(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                        installSet);
+            }
         } catch (InvocationTargetException e) {
+            ExceptionHandler.process(e);
             return;
         } catch (InterruptedException e) {
             return;
-        }
-        synchronized (ShowWizardHandler.showWizardLock) {
-            new ShowWizardHandler().showUpdateWizard(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), installSet);
         }
     }
 }
