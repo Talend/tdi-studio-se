@@ -41,6 +41,7 @@ boolean fire_triggers = ("true").equals(ElementParameterParser.getValue(node, "_
 String additional_query_parameters = ElementParameterParser.getValue(node, "__ADDITIONAL_QUERY_PARAMETERS__");
 boolean convertToUppercase = false; // not active this function
 boolean useExistingDynamic = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
+boolean useCodePage = ("true").equals(ElementParameterParser.getValue(node, "__USE_CODE_PAGE__"));
 %>
 int deletedCount_<%=cid%>=0;
 <%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
@@ -200,7 +201,7 @@ if(("EXPORT").equals(action)) {
 		%>
     		java.sql.Statement stmtBulkInsert_<%=cid %> = conn_<%=cid %>.createStatement();
     		String bulkSQL_<%=cid%> = "BULK INSERT <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> FROM '" + <%=file%>
-    		    + "' WITH ( CODEPAGE='" + <%=codePage%> + "',DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%>
+    		    + "' WITH ( <%if (useCodePage){%> CODEPAGE='" + <%=codePage%> + "',	<%}%> DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%>
     		    + <%if (fire_triggers) {%>",FIRE_TRIGGERS" + <%}%> ",ROWTERMINATOR='" + <%=row_separator%>+"'"
     		    + (<%=additional_query_parameters%>.isEmpty() ? "" : "," + <%=additional_query_parameters%>) + ")";
     		<%
@@ -243,7 +244,7 @@ if(("EXPORT").equals(action)) {
     			stmtCreateTmp_<%=cid%>.close();
     			java.sql.Statement stmtTmpBulk_<%=cid%> = conn_<%=cid%>.createStatement();
     			String bulkSQL_<%=cid%> = "BULK INSERT <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> FROM '" + <%=file%>
-    			    + "' WITH ( CODEPAGE='" + <%=codePage%> + "',DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%>
+    			    + "' WITH ( <%if (useCodePage){%> CODEPAGE='" + <%=codePage%> + "',	<%}%> DATAFILETYPE='<%=data_file_type%>',FIELDTERMINATOR='" + <%=field_separator%> + "',FIRSTROW =" + <%=first_row%>
     			    + ",ROWTERMINATOR='" + <%=row_separator%>+"'"
         		    + (<%=additional_query_parameters%>.isEmpty() ? "" : "," + <%=additional_query_parameters%>)
         		    + ")";

@@ -339,13 +339,20 @@
     >
       <DEFAULT>"1"</DEFAULT>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="USE_CODE_PAGE"
+      FIELD="CHECK"
+      NUM_ROW="11"
+      SHOW_IF="(ACTION=='INSERT') or (ACTION=='UPDATE')">
+      <DEFAULT>true</DEFAULT>
+    </PARAMETER>
 
    <PARAMETER
       NAME="CODE_PAGE"
       FIELD="TEXT"
       NUM_ROW="11"
-      REQUIRED="true"
-      SHOW_IF="(ACTION=='INSERT') or (ACTION=='UPDATE')"
+      SHOW_IF="((ACTION=='INSERT') or (ACTION=='UPDATE')) AND (USE_CODE_PAGE=='true')"
     >
       <DEFAULT>"OEM"</DEFAULT>
     </PARAMETER>
