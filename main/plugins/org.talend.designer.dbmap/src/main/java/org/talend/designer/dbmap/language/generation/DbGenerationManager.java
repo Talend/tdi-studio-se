@@ -96,8 +96,6 @@ public abstract class DbGenerationManager {
 
     protected Set<String> subQueryTable = new HashSet<String>();
 
-    protected INode source;
-
     protected Set<String> inputSchemaContextSet = new HashSet<String>();
 
     /**
