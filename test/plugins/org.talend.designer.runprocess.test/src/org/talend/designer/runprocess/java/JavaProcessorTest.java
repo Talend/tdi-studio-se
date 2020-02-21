@@ -12,14 +12,21 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.system.EnvironmentUtils;
+import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
@@ -122,6 +129,41 @@ public class JavaProcessorTest {
         Assert.assertTrue(Arrays.asList(cmd).contains(getLocalM2Path()));
 
         Assert.assertEquals(getLocalM2Path(), Arrays.asList(cmd).get(3));
+    }
+
+    @Test
+    public void testRemoveLowerVersionArtifacts() throws Exception{
+        List<ModuleNeeded> neededModules = new ArrayList<ModuleNeeded>();
+        Set<ModuleNeeded> highPriorityModuleNeeded = new HashSet<ModuleNeeded>();
+        neededModules.add(createModule("commons-lang3", "1.2.0"));
+        neededModules.add(createModule("commons-lang3", "1.3.0"));
+        neededModules.add(createModule("commons-lang3", "1.4.0"));
+
+        // can not remove 1.2.0
+        highPriorityModuleNeeded.add(createModule("commons-lang3", "1.2.0"));
+
+        // remove 1.3.0
+        JavaProcessor.removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
+        assert (neededModules.size() == 2);
+        for (ModuleNeeded mod : neededModules) {
+            if (!mod.getModuleName().equals("commons-lang3-1.2.0.jar")
+                    || !mod.getModuleName().equals("commons-lang3-1.4.0.jar")) {
+                fail("shoud found 1.2.0 and 1.4.0 only");
+            }
+        }
+
+        // can remove 1.2.0
+        highPriorityModuleNeeded.clear();
+        // remove 1.2.0
+        JavaProcessor.removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
+        assert (neededModules.size() == 1);
+        assert (neededModules.get(0).getModuleName().equals("commons-lang3-1.4.0.jar"));
+    }
+
+    private ModuleNeeded createModule(String jarName, String version) {
+        String mvnURI = "mvn:org.talend.libraries/" + jarName + "-" + version + "/6.0.0/jar";
+        ModuleNeeded module = new ModuleNeeded("test", jarName + "-" + version + ".jar", "test", true, null, null, mvnURI);
+        return module;
     }
 
     private String getLocalM2Path() {
