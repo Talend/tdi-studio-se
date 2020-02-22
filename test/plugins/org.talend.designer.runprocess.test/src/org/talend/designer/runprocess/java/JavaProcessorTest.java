@@ -135,19 +135,18 @@ public class JavaProcessorTest {
     public void testRemoveLowerVersionArtifacts() throws Exception{
         List<ModuleNeeded> neededModules = new ArrayList<ModuleNeeded>();
         Set<ModuleNeeded> highPriorityModuleNeeded = new HashSet<ModuleNeeded>();
-        neededModules.add(createModule("commons-lang3", "1.2.0"));
-        neededModules.add(createModule("commons-lang3", "1.3.0"));
-        neededModules.add(createModule("commons-lang3", "1.4.0"));
+        neededModules.add(createModule("dom4j", "1.2.0"));
+        neededModules.add(createModule("dom4j", "1.3.0"));
+        neededModules.add(createModule("dom4j", "1.4.0"));
 
         // can not remove 1.2.0
-        highPriorityModuleNeeded.add(createModule("commons-lang3", "1.2.0"));
+        highPriorityModuleNeeded.add(createModule("dom4j", "1.2.0"));
 
         // remove 1.3.0
         JavaProcessor.removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
         assert (neededModules.size() == 2);
         for (ModuleNeeded mod : neededModules) {
-            if (!mod.getModuleName().equals("commons-lang3-1.2.0.jar")
-                    || !mod.getModuleName().equals("commons-lang3-1.4.0.jar")) {
+            if (!mod.getModuleName().equals("dom4j-1.2.0.jar") || !mod.getModuleName().equals("dom4j-1.4.0.jar")) {
                 fail("shoud found 1.2.0 and 1.4.0 only");
             }
         }
@@ -157,11 +156,11 @@ public class JavaProcessorTest {
         // remove 1.2.0
         JavaProcessor.removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
         assert (neededModules.size() == 1);
-        assert (neededModules.get(0).getModuleName().equals("commons-lang3-1.4.0.jar"));
+        assert (neededModules.get(0).getModuleName().equals("dom4j-1.4.0.jar"));
     }
 
     private ModuleNeeded createModule(String jarName, String version) {
-        String mvnURI = "mvn:org.talend.libraries/" + jarName + "-" + version + "/6.0.0/jar";
+        String mvnURI = "mvn:org.dom4j/" + jarName + "/" + version;
         ModuleNeeded module = new ModuleNeeded("test", jarName + "-" + version + ".jar", "test", true, null, null, mvnURI);
         return module;
     }
