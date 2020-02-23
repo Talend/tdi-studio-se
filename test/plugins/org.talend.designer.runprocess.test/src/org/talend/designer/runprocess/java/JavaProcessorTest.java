@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -144,9 +145,9 @@ public class JavaProcessorTest {
 
         // remove 1.3.0
         JavaProcessor.removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
-        assert (neededModules.size() == 2);
+        assertEquals(2, neededModules.size());
         for (ModuleNeeded mod : neededModules) {
-            if (!mod.getModuleName().equals("dom4j-1.2.0.jar") || !mod.getModuleName().equals("dom4j-1.4.0.jar")) {
+            if (!mod.getModuleName().equals("dom4j-1.2.0.jar") && !mod.getModuleName().equals("dom4j-1.4.0.jar")) {
                 fail("shoud found 1.2.0 and 1.4.0 only");
             }
         }
@@ -155,8 +156,8 @@ public class JavaProcessorTest {
         highPriorityModuleNeeded.clear();
         // remove 1.2.0
         JavaProcessor.removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
-        assert (neededModules.size() == 1);
-        assert (neededModules.get(0).getModuleName().equals("dom4j-1.4.0.jar"));
+        assertEquals(1, neededModules.size());
+        assertEquals("dom4j-1.4.0.jar", neededModules.get(0).getModuleName());
     }
 
     private ModuleNeeded createModule(String jarName, String version) {
