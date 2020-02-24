@@ -35,7 +35,6 @@ imports="
 %>
 			String driverClass_<%=cid%> = "<%=this.getDirverClassName(node)%>";
 			java.lang.Class jdbcclazz_<%=cid%> = java.lang.Class.forName(driverClass_<%=cid%>);
-			globalMap.put("driverClass_<%=cid%>", driverClass_<%=cid%>);
 <%
 			newInstance(node);
 		}
