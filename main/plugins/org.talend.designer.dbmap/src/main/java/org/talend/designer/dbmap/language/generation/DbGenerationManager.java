@@ -1243,8 +1243,9 @@ public abstract class DbGenerationManager {
                 }
                 String handledTableName = getHandledTableName(component, inputTable.getTableName(), alias);
                 appendSqlQuery(sb, handledTableName);
-                appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sb, getAliasSpaceString());
                 String handledField = getHandledField(alias);
+                handledField = replaceVariablesForExpression(component, handledField);
                 appendSqlQuery(sb, handledField);
                 aliasAlreadyDeclared.add(alias);
             } else {
@@ -1263,6 +1264,10 @@ public abstract class DbGenerationManager {
             }
             buildTableDeclaration(component, sb, inputTable);
         }
+    }
+    
+    protected String getAliasSpaceString() {
+        return DbMapSqlConstants.SPACE;
     }
 
     protected IConnection getConnectonByName(List<IConnection> inputConnections, String metaTableName) {

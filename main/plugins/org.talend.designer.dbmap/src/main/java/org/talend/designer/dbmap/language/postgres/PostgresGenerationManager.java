@@ -331,4 +331,8 @@ public class PostgresGenerationManager extends DbGenerationManager {
         }
         return expression;
     }
+
+    protected String getAliasSpaceString() {
+        return "\" +\"" + DbMapSqlConstants.SPACE + "\"+ \"";
+    }
 }

@@ -256,7 +256,7 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
         String expectedQuery = "\"SELECT\n"
                 + "\\\"main_table\\\".\\\"id\\\", \\\"main_table\\\".\\\"name\\\", \\\"main_table\\\".\\\"age\\\", \\\"\"+((String)globalMap.get(\"lookup_table\"))+\"\\\".\\\"score\\\"\n"
                 + "FROM\n"
-                + " \\\"\"+((String)globalMap.get(\"main_table\"))+\"abc\"+\"\\\" \\\"main_table\\\" , \\\"\"+((String)globalMap.get(\"lookup_table\"))+\"\\\" \"";
+                + " \\\"\"+((String)globalMap.get(\"main_table\"))+\"abc\"+\"\\\"\" +" +"\" \"+ "+"\"\\\"main_table\\\" , \\\"\"+((String)globalMap.get(\"lookup_table\"))+\"\\\" \"";
         PostgresGenerationManager manager = new PostgresGenerationManager();
         String query = manager.buildSqlSelect(dbMapComponent, "grade");
         assertEquals(expectedQuery, query);
@@ -269,7 +269,7 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
         expectedQuery = "\"SELECT\n"
                 + "\\\"main_table\\\".\\\"id\\\", \\\"main_table\\\".\\\"name\\\", \\\"main_table\\\".\\\"age\\\", \\\"lookup_table\\\".\\\"score\\\"\n"
                 + "FROM\n"
-                + " \\\"\"+((String)globalMap.get(\"main_table\"))+((String)globalMap.get(\"main_table1\"))+\"\\\" \\\"main_table\\\" , \\\"\"+((String)globalMap.get(\"lookup_table\"))+\"\\\" \\\"lookup_table\\\" \"";
+                + " \\\"\"+((String)globalMap.get(\"main_table\"))+((String)globalMap.get(\"main_table1\"))+\"\\\"\" +" +"\" \"+ "+"\"\\\"main_table\\\" , \\\"\"+((String)globalMap.get(\"lookup_table\"))+\"\\\"\" +" +"\" \"+ "+"\"\\\"lookup_table\\\" \"";
         manager = new PostgresGenerationManager();
         query = manager.buildSqlSelect(dbMapComponent, "grade");
         assertEquals(expectedQuery, query);
