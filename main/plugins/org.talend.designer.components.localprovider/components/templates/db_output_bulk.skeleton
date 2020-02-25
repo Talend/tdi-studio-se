@@ -4466,9 +4466,9 @@ public class CLASS {
         }  
     }
     
-    public class SQLDWHManager extends MSSQLManager{
+    public class AzureSynapseManager extends MSSQLManager{
         
-        public SQLDWHManager(String cid) {
+        public AzureSynapseManager(String cid) {
             super(cid);
         }
         
@@ -5089,8 +5089,8 @@ public class CLASS {
             } else if(dbmsId.equalsIgnoreCase(MAXDB)) {
                 manager = new MaxDBManager(cid);
             } else if(dbmsId.equalsIgnoreCase(MSSQL)) {
-                if(cid != null && cid.indexOf("DWHBulkExec") > -1){
-                    manager = new SQLDWHManager(cid);
+                if(cid != null && cid.indexOf("tAzureSynapseBulkExec") > -1){
+                    manager = new AzureSynapseManager(cid);
                 }else{
                     manager = new MSSQLManager(cid); 
                 }

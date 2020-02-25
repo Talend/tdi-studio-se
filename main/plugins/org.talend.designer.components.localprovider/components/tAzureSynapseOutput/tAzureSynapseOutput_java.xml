@@ -44,7 +44,7 @@
 	    <PARAMETER
 	      NAME="CONNECTION"
 	      FIELD="COMPONENT_LIST"
-	      REQUIRED="true" FILTER="tSQLDWHConnection"
+	      REQUIRED="true" FILTER="tAzureSynapseConnection"
 	      NUM_ROW="20"
 	      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
 	      DYNAMIC_SETTINGS="true"
