@@ -619,6 +619,10 @@
                         } //endIf
 %>
                         context.setContextType("<%=ctxParam.getName()%>", "<%=ctxParam.getType()%>");
+                        if(context.getStringValue("<%=ctxParam.getName()%>") == null) {
+                            context.<%=ctxParam.getName()%> = null;
+                        } else {
+                        <%//}B1 block%>
 <%
                         if (ctxParam.getType().equals("id_Password")) {
 %>
@@ -676,7 +680,7 @@
 <%
                         } else if(typeToGenerate.equals("Object")||typeToGenerate.equals("String")||typeToGenerate.equals("java.lang.String")) {
 %>
-                            context.<%=ctxParam.getName()%>=(<%=typeToGenerate%>) context.getStringValue("<%=ctxParam.getName()%>");
+                            context.<%=ctxParam.getName()%>=(<%=typeToGenerate%>) context.getProperty("<%=ctxParam.getName()%>");
 <%
                         } else if(typeToGenerate.equals("Character")&&ctxParam.getName()!=null) {
 %>
@@ -702,6 +706,10 @@
                             }
 <%
                         }
+%>
+                        <%//{B1 block%>
+                        }
+<%
                     }
 %>
                 } <%/*close last method*/%>
