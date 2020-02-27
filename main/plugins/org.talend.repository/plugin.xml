@@ -3329,6 +3329,15 @@
               name="RemovePigudfModulesMigrationTask"
               version="7.3.1">
         </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.RenameSQLDWHMigrationTask"
+             description="Rename tSQLDWHXXX components to tAzureSynapseXXX"
+             id="org.talend.repository.model.migration.RenameSQLDWHMigrationTask"
+             name="RenameSQLDWHMigrationTask"
+             version="7.4.1">
+       </projecttask>
    </extension>
 
    <extension
