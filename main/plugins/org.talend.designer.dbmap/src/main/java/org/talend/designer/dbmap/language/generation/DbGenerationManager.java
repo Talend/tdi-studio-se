@@ -1513,7 +1513,7 @@ public abstract class DbGenerationManager {
 
     protected String replaceAuotes(DbMapComponent component, String expression, String quoParser, String quote) {
         if (isComplexExpression(component, expression)) {
-            return expression; 
+            return expression;
         }
         if(!expression.contains("'")){
             return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$;
