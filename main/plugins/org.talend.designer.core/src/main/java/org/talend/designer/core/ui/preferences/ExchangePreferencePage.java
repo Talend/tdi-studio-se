@@ -138,10 +138,6 @@ public class ExchangePreferencePage extends FieldEditorPreferencePage implements
     }
 
     public void initData() {
-        String checkUpdate = prefStore.getString(ITalendCorePrefConstants.EXCHANGE_DOWNLOADED_CHECK_UPDATES);
-        if (checkUpdate == null || "".equals(checkUpdate)) {
-            prefStore.setValue(ITalendCorePrefConstants.EXCHANGE_DOWNLOADED_CHECK_UPDATES, true);
-        }
         Project project = ProjectManager.getInstance().getCurrentProject();
         if (project.getAuthor() != null) {
             String connectionEmail = project.getAuthor().getLogin();
