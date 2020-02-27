@@ -175,7 +175,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         azureCredIdentity_<%=cid%> = clientId_<%=cid%> + "@" + oauthEndpoint_<%=cid%>;
         azureCredName_<%=cid%> = "talend_ADLCredential_" + randomIdentifier_<%=cid%>;
 <%
-    } else {
+    } else {//ADLS Gen2 & Blob Storage
 %>
         azureCredIdentity_<%=cid%> = "talend";
         azureCredName_<%=cid%> = "talend_AzureStorageCredential_" + randomIdentifier_<%=cid%>;
@@ -373,6 +373,11 @@ skeleton="../templates/db_output_bulk.skeleton"
             if ("ADLS".equals(storageType)) {
 %>    
                 stmtCreateExtDataSource_<%=cid%>.execute("CREATE EXTERNAL DATA SOURCE " + azureExtDataSrc_<%=cid%> + " WITH (TYPE=HADOOP, LOCATION = 'adl://" + azureAccountName_<%=cid%> + ".azuredatalakestore.net', CREDENTIAL = " + azureCredName_<%=cid%> + ")");
+<%
+            }else if ("ADLS_GEN2".equals(storageType)) {
+                boolean enableSSL = "true".equals(ElementParameterParser.getValue(node,"__ENABLE_SSL__"));
+%>    
+                stmtCreateExtDataSource_<%=cid%>.execute("CREATE EXTERNAL DATA SOURCE " + azureExtDataSrc_<%=cid%> + " WITH (TYPE=HADOOP, LOCATION = 'abfs<%=(enableSSL?"s":"")%>://" + azureContainer_<%=cid%> + "@" + azureAccountName_<%=cid%>  + ".dfs.core.windows.net', CREDENTIAL = " + azureCredName_<%=cid%> + ")");
 <%
             } else {
 %>    
