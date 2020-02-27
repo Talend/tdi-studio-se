@@ -539,7 +539,6 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
         if (getConnection().getJSONFilePath() == null || !(new File(getConnection().getJSONFilePath()).exists())
                 && JSONUtil.tempJSONXsdPath == null) {
             previewInformationLabel.setText("   " + "The file path must be specified");
-            previewInformationLabel.setText("   " + "The settings must be completed to show the preview");
             previewInformationLabel.getParent().layout();
             return;
         }
@@ -655,7 +654,6 @@ public class JSONFileStep2Form extends AbstractJSONFileStepForm implements IRefr
                 errorMessage);
         log.error("Preview error. Some settings must be changed.\\nNote\\: Preview errors are generally due to a wrong encoding setting. "
                 + " " + errorMessage);
-        previewInformationLabel.getParent().layout();
 
     }
 
