@@ -25,12 +25,15 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.talend.commons.ui.utils.PathUtils;
 import org.talend.commons.utils.platform.PluginChecker;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.repository.model.preview.IPreview;
 import org.talend.core.utils.CsvArray;
 import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.i18n.Messages;
 import org.talend.metadata.managment.ui.preview.AsynchronousPreviewHandler;
 import org.talend.metadata.managment.ui.preview.ProcessDescription;
+import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.repository.model.json.JSONFileConnection;
 import org.talend.repository.model.json.SchemaTarget;
 
@@ -97,9 +100,18 @@ public class JSONShadowProcessHelper {
      * @return ProcessDescription
      */
     public static ProcessDescription getProcessDescription(final JSONFileConnection connection, String tempJsonFile) {
+        ContextType contextType = null;
+        if (connection.isContextMode()) {
+            contextType = ConnectionContextHelper.getContextTypeForContextMode(connection);
+        }
         ProcessDescription processDescription = new ProcessDescription();
         processDescription.setFilepath(TalendQuoteUtils.addQuotes(PathUtils.getPortablePath(tempJsonFile)));
-        processDescription.setLoopQuery(TalendQuoteUtils.addQuotes(connection.getSchema().get(0).getAbsoluteXPathQuery()));
+        
+        String xpathQuery = connection.getSchema().get(0).getAbsoluteXPathQuery();
+        if (contextType != null && xpathQuery != null) {
+            xpathQuery = ContextParameterUtils.getOriginalValue(contextType, xpathQuery);
+        }
+        processDescription.setLoopQuery(TalendQuoteUtils.addQuotes(xpathQuery));
         if (connection.getSchema().get(0).getLimitBoucle() != null
                 && !("").equals(connection.getSchema().get(0).getLimitBoucle()) //$NON-NLS-1$
                 && (connection.getSchema().get(0).getLimitBoucle().intValue()) != 0) {
@@ -121,8 +133,12 @@ public class JSONShadowProcessHelper {
         }
         processDescription.setReadbyMode(connection.getReadbyMode());
         processDescription.setMapping(mapping);
-        if (connection.getEncoding() != null && !("").equals(connection.getEncoding())) { //$NON-NLS-1$
-            processDescription.setEncoding(TalendQuoteUtils.addQuotes(connection.getEncoding()));
+        String encode = connection.getEncoding();
+        if (encode != null && !("").equals(encode)) { //$NON-NLS-1$
+            if (contextType != null) {
+                encode = ContextParameterUtils.getOriginalValue(contextType, encode);
+            }
+            processDescription.setEncoding(TalendQuoteUtils.addQuotes(encode));
         } else {
             processDescription.setEncoding(TalendQuoteUtils.addQuotes("UTF-8")); //$NON-NLS-1$
         }
