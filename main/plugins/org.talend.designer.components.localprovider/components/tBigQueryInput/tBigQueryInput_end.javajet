@@ -28,18 +28,8 @@ imports="
   	} else if (authMode.equals("SERVICEACCOUNT")) {
   	%>
   		}
-        <% if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {
-              if (isCustomTemporaryName) {
-%>
-                  bigquery_<%=cid%>.delete(com.google.cloud.bigquery.TableId.of(tempDataset_<%=cid%>, tempTable_<%=cid%>));
-<%
-              } else {
-%>
-                  com.google.cloud.bigquery.DatasetId datasetId_<%=cid%> = com.google.cloud.bigquery.DatasetId.of(<%=projectId%>, tempDataset_<%=cid%>);
-                  bigquery_<%=cid%>.delete(datasetId_<%=cid%>, com.google.cloud.bigquery.BigQuery.DatasetDeleteOption.deleteContents());
-<%
-              }
-          }
+        serviceAccountBigQueryUtil_<%=cid%>.cleanup();
+        <%
       } else {
           throw new IllegalArgumentException("authentication mode should be either \"SERVICEACCOUNT\" or \"OAUTH\", but it is " + authMode);
       }
