@@ -20,7 +20,7 @@ import java.util.List;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.components.ModifyComponentsAction;
 import org.talend.core.model.components.conversions.IComponentConversion;
-import org.talend.core.model.components.conversions.RenameComponentConversion;
+import org.talend.core.model.components.conversions.RenameETLJDBCComponentConversion;
 import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
@@ -51,7 +51,7 @@ public class RenameELTJDBCComponentsMigrationTask extends AbstractJobMigrationTa
             for (int i = 0; i < source.length; i++) {
                 final int j = i;
                 IComponentFilter filter = new NameComponentFilter(source[i]);
-                RenameComponentConversion renameConversion = new RenameComponentConversion(target[i]);
+                RenameETLJDBCComponentConversion renameConversion = new RenameETLJDBCComponentConversion(target[i], source[j]);
                 IComponentConversion changeNodeNameConversion = new IComponentConversion() {
 
                     public void transform(NodeType node) {

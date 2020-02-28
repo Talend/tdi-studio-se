@@ -12,14 +12,22 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.system.EnvironmentUtils;
+import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
@@ -122,6 +130,40 @@ public class JavaProcessorTest {
         Assert.assertTrue(Arrays.asList(cmd).contains(getLocalM2Path()));
 
         Assert.assertEquals(getLocalM2Path(), Arrays.asList(cmd).get(3));
+    }
+
+    @Test
+    public void testRemoveLowerVersionArtifacts() throws Exception{
+        List<ModuleNeeded> neededModules = new ArrayList<ModuleNeeded>();
+        Set<ModuleNeeded> highPriorityModuleNeeded = new HashSet<ModuleNeeded>();
+        neededModules.add(createModule("dom4j", "1.2.0"));
+        neededModules.add(createModule("dom4j", "1.3.0"));
+        neededModules.add(createModule("dom4j", "1.4.0"));
+
+        // can not remove 1.2.0
+        highPriorityModuleNeeded.add(createModule("dom4j", "1.2.0"));
+
+        // remove 1.3.0
+        JavaProcessor.removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
+        assertEquals(2, neededModules.size());
+        for (ModuleNeeded mod : neededModules) {
+            if (!mod.getModuleName().equals("dom4j-1.2.0.jar") && !mod.getModuleName().equals("dom4j-1.4.0.jar")) {
+                fail("shoud found 1.2.0 and 1.4.0 only");
+            }
+        }
+
+        // can remove 1.2.0
+        highPriorityModuleNeeded.clear();
+        // remove 1.2.0
+        JavaProcessor.removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
+        assertEquals(1, neededModules.size());
+        assertEquals("dom4j-1.4.0.jar", neededModules.get(0).getModuleName());
+    }
+
+    private ModuleNeeded createModule(String jarName, String version) {
+        String mvnURI = "mvn:org.dom4j/" + jarName + "/" + version;
+        ModuleNeeded module = new ModuleNeeded("test", jarName + "-" + version + ".jar", "test", true, null, null, mvnURI);
+        return module;
     }
 
     private String getLocalM2Path() {

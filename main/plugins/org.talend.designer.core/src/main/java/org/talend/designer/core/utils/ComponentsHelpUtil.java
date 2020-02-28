@@ -27,14 +27,28 @@ public class ComponentsHelpUtil {
 
     private static final String JVM_PARAM_ONLINE_HELP_VERSION = "online.help.version"; //$NON-NLS-1$
 
-    private static String INTERNAL_VERSION = VersionUtils.getInternalVersion();
+    private static String INTERNAL_VERSION = null;
 
-    private static boolean IS_RELEASE_VERSION = INTERNAL_VERSION.indexOf("-") < 0 //$NON-NLS-1$
-            || INTERNAL_VERSION.toLowerCase().indexOf("patch") >= 0;
+    private static Boolean IS_RELEASE_VERSION = null;
 
-    private static String PRODUCT_BASE_VERSION = INTERNAL_VERSION.substring(0, 3);
+    private static String PRODUCT_BASE_VERSION = null;
 
     private static Boolean IS_HELP_INSTALLED = null;
+
+    static {
+        initVersionData();
+    }
+
+    public static void initVersionData() {
+        if (INTERNAL_VERSION == null) {
+            INTERNAL_VERSION = VersionUtils.getInternalVersion();
+        }
+        if (IS_RELEASE_VERSION == null) {
+            IS_RELEASE_VERSION = INTERNAL_VERSION.indexOf("-") < 0 //$NON-NLS-1$
+                    || INTERNAL_VERSION.toLowerCase().indexOf("patch") >= 0;
+            PRODUCT_BASE_VERSION = INTERNAL_VERSION.substring(0, 3);
+        }
+    }
 
     public static boolean isUseOnLineHelp() {
         boolean isOffLineHelpInPre = DesignerPlugin.getDefault().getPreferenceStore()
@@ -92,5 +106,12 @@ public class ComponentsHelpUtil {
             language = Locale.getDefault().getLanguage();
         }
         return Locale.FRENCH.getLanguage().equals(language) ? "fr" : "en"; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public static void resetVersionData(String version) {
+        INTERNAL_VERSION = version;
+        IS_RELEASE_VERSION = null;
+        PRODUCT_BASE_VERSION = null;
+        initVersionData();
     }
 }

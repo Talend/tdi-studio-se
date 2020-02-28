@@ -3,7 +3,7 @@ Automatic-Module-Name: org.talend.libraries.sqlbuilder.jars
 Bundle-ManifestVersion: 2
 Bundle-Name: Jars
 Bundle-SymbolicName: org.talend.libraries.sqlbuilder.jars
-Bundle-Version: 7.3.1.qualifier
+Bundle-Version: 7.4.1.qualifier
 Fragment-Host: org.talend.libraries.sqlbuilder
 Eclipse-BundleShape: dir
 Bundle-ClassPath: .,
