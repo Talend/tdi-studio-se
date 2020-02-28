@@ -32,6 +32,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
+import org.talend.repository.utils.EmfModelUtils;
 
 /**
  * created by ycbai on 2015年5月15日 Detailled comment
@@ -40,6 +41,7 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
 public class BuildJobFactory {
 
     public static final Map<JobExportType, String> oldBuildTypeMap = new HashMap<JobExportType, String>();
+    private static final String T_REST_REQUEST = "tRESTRequest";
     private static final List<String> esbComponents;
     static {
         // from the extension point
@@ -101,15 +103,22 @@ public class BuildJobFactory {
         if (StringUtils.isEmpty(buildType)) {
             final Object type = processItem.getProperty().getAdditionalProperties()
                     .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
-            boolean esb = false;
-
+            boolean esb = false; //for esb consumer job and service
             if (processItem instanceof ProcessItem) {
-                for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
-                    if (o instanceof NodeType) {
-                        NodeType currentNode = (NodeType) o;
-                        if(esbComponents.contains(currentNode.getComponentName())) {
-                            esb = true;
-                            break;
+                if (null != EmfModelUtils.getComponentByName((ProcessItem) processItem, T_REST_REQUEST)) {
+                    if (type == null) {
+                        processItem.getProperty().getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE,
+                                oldBuildTypeMap.get(JobExportType.OSGI));
+                    }
+                    esb = true;
+                } else {
+                    for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
+                        if (o instanceof NodeType) {
+                            NodeType node = (NodeType) o;
+                            if (esbComponents.contains(node.getComponentName())) {
+                                esb = true;
+                                break;
+                            }
                         }
                     }
                 }
