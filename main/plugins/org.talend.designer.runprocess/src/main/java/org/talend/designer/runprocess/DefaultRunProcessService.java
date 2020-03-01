@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -104,7 +103,6 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.constants.Log4jPrefsConstants;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JarBuilder;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -578,18 +576,32 @@ public class DefaultRunProcessService implements IRunProcessService {
      */
     @Override
     public void updateLogFiles(ITalendProcessJavaProject talendJavaProject, boolean isLogForJob) {
+        String property = System.getProperty("enableLog4j2", "false");//$NON-NLS-1$
+        Boolean enableLog4j2 = Boolean.valueOf(property);
         // create the .prefs file and save log4j.xml and common-logging.properties's content into it
         if (!Log4jPrefsSettingManager.getInstance().isLog4jPrefsExist()) {
             Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_ENABLE_NODE,
                     Log4jUtil.isEnable() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-            Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
-                    getLogTemplate(LOG4J_VERSION2_FILEPATH));
-            Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.COMMON_LOGGING_NODE,
-                    getLogTemplate(RESOURCE_COMMONLOG_FILE_PATH));
-            Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
-                    Boolean.TRUE.toString());
-            Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT,
-                    Boolean.TRUE.toString());
+            if (enableLog4j2) {
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
+                        getLogTemplate(LOG4J_VERSION2_FILEPATH));
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.COMMON_LOGGING_NODE,
+                        getLogTemplate(RESOURCE_COMMONLOG_FILE_PATH));
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
+                        Boolean.TRUE.toString());
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT,
+                        Boolean.TRUE.toString());
+            } else {
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_CONTENT_NODE,
+                        getLogTemplate(Log4jPrefsConstants.LOG4JFILEPATH));
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.COMMON_LOGGING_NODE,
+                        getLogTemplate(RESOURCE_COMMONLOG_FILE_PATH));
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_SELECT_VERSION2,
+                        Boolean.FALSE.toString());
+                Log4jPrefsSettingManager.getInstance().createTalendLog4jPrefs(Log4jPrefsConstants.LOG4J_IS_NEW_PROJECT,
+                        Boolean.FALSE.toString());
+            }
+
         } else {
             Preferences log4j2SelectedPreferences = Log4jPrefsSettingManager.getInstance()
                     .getLog4jPreferences(Log4jPrefsConstants.LOG4J_SELECT_VERSION2, false);
