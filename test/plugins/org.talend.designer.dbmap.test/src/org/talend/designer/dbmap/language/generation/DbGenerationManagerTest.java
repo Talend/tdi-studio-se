@@ -159,13 +159,8 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         
         assertEquals(expression.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
-        expression = "'\"" + "+" + "(String)globalMap.get(\"BusinessDateStr\")" + "+" + "\" BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
-        String expect = "'\\\"" + "+" + "(String)globalMap.get(\\\"BusinessDateStr\\\")" + "+" + "\\\" BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
-        
-        assertEquals(expect.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
-        
         expression = "BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
-        expect = "BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
+        String expect = "BETWEEN PROD_GRP_DA.EFF_FRM_DT AND PROD_GRP_DA.EFF_TO_DT";
         assertEquals(expect.trim(), dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
         
         expression = "'" +"+"+"context.param1"+"+"+ "aaa";
@@ -191,6 +186,21 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
 
         expression = "COALESCE(test.name ,\"+globalMap.get(\"value2\")+\")";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "\" + (Integer)globalMap.get(\"G_ZERO_PNCHEVNT_SKEY\") + \"";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "COALESCE(emp_edited.emp_skey , \" + (Integer)globalMap.get(\"G_ZERO_EMP_SKEY\") + \")";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "COALESCE(from_punch.EMP_SKEY     , \" + (Integer)globalMap.get(\"G_ZERO_EMP_SKEY\") + \")";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "CASE WHEN \" + (String)globalMap.get(\"DSRC_TYP_DES\") + \" in ('Timecard Editor') AND from_punch.PNCHEVNT_DTM> from_punch.ENTERED_DTM THEN 1 ELSE 0 END";
+        assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
+
+        expression = "CASE WHEN \" + (String)globalMap.get(\"DSRC_TYP_DES\") + \" in ('Timecard Editor') THEN 1 ELSE 0 END";
         assertEquals(expression, dbManager.replaceAuotes(dbMapComponent, expression, quoParser, quote).trim());
     }
     

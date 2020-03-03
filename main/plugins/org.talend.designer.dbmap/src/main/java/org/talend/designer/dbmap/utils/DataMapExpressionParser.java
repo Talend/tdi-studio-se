@@ -46,7 +46,7 @@ public class DataMapExpressionParser {
     private static String TABLE_PATTERN = EXPRESSION + SEPARATOR;
 
     private static final String GLOBALMAP_PATTERN = "\\s*(\\(\\s*\\(\\s*String\\s*\\)\\s*globalMap\\s*\\.\\s*get\\s*\\(\\s*\\\"(.+?)\\\"\\s*\\)\\s*\\))\\s*";
-    private static final String GLOBALMAP_PATTERN_SIMPLE = "\\s*\\+globalMap.get\\s*\\(\\s*\\\"(.+?)\\\"\\s*\\)\\+\\s*";
+    private static final String GLOBALMAP_PATTERN_ALL = "\\s*\\+\\s*(\\(\\w*\\))?globalMap.get\\s*\\(\\s*\\\"(.+?)\\\"\\s*\\)\\s*\\+\\s*";
     
     private static final String GLOBALMAP_TABLE_EXPRESSION = "(" + GLOBALMAP_PATTERN + "\\." + GLOBALMAP_PATTERN + ")|("
             + TABLE_PATTERN + GLOBALMAP_PATTERN + ")|(" + GLOBALMAP_PATTERN + COLUMN_PATTERN + ")|" + GLOBALMAP_PATTERN;;
@@ -230,11 +230,11 @@ public class DataMapExpressionParser {
     
     public boolean isContainsGlobalMapExpression(String sqlQuery) {
         if (sqlQuery != null) {
-            recompilePatternIfNecessary(GLOBALMAP_PATTERN);
+            recompilePatternIfNecessary(GLOBALMAP_PATTERN_ALL);
             while (matcher.contains(sqlQuery, pattern)) {
                 return true;
             }
-            recompilePatternIfNecessary(GLOBALMAP_PATTERN_SIMPLE);
+            recompilePatternIfNecessary(GLOBALMAP_PATTERN);
             while (matcher.contains(sqlQuery, pattern)) {
                 return true;
             }
