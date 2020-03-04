@@ -15,6 +15,7 @@ package org.talend.designer.core.generic.model;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.InvocationTargetException;
+import java.net.ProxySelector;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,6 +31,7 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.swt.dialogs.ErrorDialogWidthDetailArea;
+import org.talend.commons.utils.network.TalendProxySelector;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
@@ -498,11 +500,27 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
                     monitor.beginTask(taskName, IProgressMonitor.UNKNOWN);
                     try {
                         exceptionResult = null;
+                        if (Boolean.getBoolean(TalendProxySelector.PROP_PRINT_LOGS)) {
+                            ExceptionHandler.log(
+                                    "Before tcompv0 service call: ProxySelector.getDefault() -> " + ProxySelector.getDefault());
+                            ExceptionHandler.log("http.proxyHost -> " + System.getProperty("http.proxyHost"));
+                        }
                         toDo();
+                        if (Boolean.getBoolean(TalendProxySelector.PROP_PRINT_LOGS)) {
+                            ExceptionHandler.log(
+                                    "After tcompv0 service call: ProxySelector.getDefault() -> " + ProxySelector.getDefault());
+                            ExceptionHandler.log("http.proxyHost -> " + System.getProperty("http.proxyHost"));
+                        }
                     } catch (Throwable e) {
                         result.set(false);
                         exceptionResult = new InvocationTargetException(e);
                         throw exceptionResult;
+                    } finally {
+                        if (Boolean.getBoolean(TalendProxySelector.PROP_PRINT_LOGS)) {
+                            ExceptionHandler.log(
+                                    "Finally tcompv0 service call: ProxySelector.getDefault() -> " + ProxySelector.getDefault());
+                            ExceptionHandler.log("http.proxyHost -> " + System.getProperty("http.proxyHost"));
+                        }
                     }
                     result.set(true);
                 }
@@ -568,6 +586,7 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
         this.drivedByForm = drivedByForm;
     }
 
+    @Override
     public Property getProperty() {
         NamedThing content = widget.getContent();
         if (content instanceof Property) {
