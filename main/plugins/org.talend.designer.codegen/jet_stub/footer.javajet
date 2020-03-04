@@ -515,6 +515,8 @@
 				System.getProperties().stringPropertyNames().stream()
 					.filter(it -> it.startsWith("monitoring.audit.logger.properties."))
 					.forEach(key -> properties_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("monitoring.audit.logger.properties.".length()), System.getProperty(key)));
+					
+					org.apache.log4j.Logger.getLogger("audit").setLevel(org.apache.log4j.Level.DEBUG);
 
 				auditLogger_<%=jobCatcherNode.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(properties_<%=jobCatcherNode.getUniqueName()%>);
 			}
