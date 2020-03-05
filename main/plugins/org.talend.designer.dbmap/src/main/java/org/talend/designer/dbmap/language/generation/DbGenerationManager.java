@@ -636,7 +636,7 @@ public abstract class DbGenerationManager {
                 int lstSizeOutTableEntries = metadataTableEntries.size();
                 for (int i = 0; i < lstSizeOutTableEntries; i++) {
                     ExternalDbMapEntry dbMapEntry = metadataTableEntries.get(i);
-                    String columnEntry = outTableName + DbMapSqlConstants.DOT + dbMapEntry.getName();
+                    String columnEntry = dbMapEntry.getName();
                     String expression = dbMapEntry.getExpression();
                     expression = initExpression(component, dbMapEntry);
                     expression = addQuoteForSpecialChar(expression, component);
@@ -683,13 +683,6 @@ public abstract class DbGenerationManager {
             // From
             appendSqlQuery(sb, tabSpaceString);
             appendSqlQuery(sb, DbMapSqlConstants.FROM);
-            appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-            appendSqlQuery(sb, targetSchemaTable);
-            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
-
-            // Inner Join
-            appendSqlQuery(sb, tabSpaceString);
-            appendSqlQuery(sb, DbMapSqlConstants.INNER_JOIN);
 
             List<ExternalDbMapTable> inputTables = data.getInputTables();
             // load input table in hash
@@ -717,19 +710,14 @@ public abstract class DbGenerationManager {
                 if (language.unuseWithExplicitJoin().contains(joinType) && !explicitJoin) {
                     appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                     appendSqlQuery(sb, inputTable.getTableName());
-                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                    appendSqlQuery(sb, inputTable.getAlias());
+                    String alias = inputTable.getAlias();
+                    if (org.apache.commons.lang.StringUtils.isNotEmpty(alias)) {
+                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                        appendSqlQuery(sb, alias);
+                    }
                 }
             }
 
-            // On
-            if (org.apache.commons.lang.StringUtils.isNotEmpty(keyColumn)) {
-                appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
-                appendSqlQuery(sb, tabSpaceString);
-                appendSqlQuery(sb, DbMapSqlConstants.ON);
-                appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                appendSqlQuery(sb, keyColumn);
-            }
             // where
             StringBuilder sbWhere = new StringBuilder();
             this.tabSpaceString = DEFAULT_TAB_SPACE_STRING;
