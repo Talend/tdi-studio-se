@@ -1987,16 +1987,15 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 }
             }
         }
-        // special handle to add tCreateTable component for db , except hive/impala/JDBC
-        boolean isHive = EDatabaseTypeName.HIVE.getDisplayName().toUpperCase().equals(rcSetting.toString());
-        boolean isImpala = EDatabaseTypeName.IMPALA.getDisplayName().toUpperCase().equals(rcSetting.toString());
-        boolean isJDBC = EDatabaseTypeName.GENERAL_JDBC.name().toUpperCase().equals(rcSetting.toString());
-        if (item != null && item instanceof DatabaseConnectionItem && !isHive && !isImpala && !isJDBC) {
+        if (item != null && item instanceof DatabaseConnectionItem) {
             DatabaseConnectionItem databaseConnectionItem = (DatabaseConnectionItem) item;
             String typeName = databaseConnectionItem.getTypeName();
-            if (!EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equals(typeName)) {
-                IComponent createTableComponent = ComponentsFactoryProvider.getInstance().get("tCreateTable", //$NON-NLS-1$
-                        ComponentCategory.CATEGORY_4_DI.getName());
+            EmfComponent createTableComponent = (EmfComponent) ComponentsFactoryProvider.getInstance().get("tCreateTable", //$NON-NLS-1$
+                    ComponentCategory.CATEGORY_4_DI.getName());
+            Node node = new Node(createTableComponent);
+            IElementParameter elementParameter = node.getElementParameter("DBTYPE");
+            String[] listItemsDisplayName = elementParameter.getListItemsDisplayName();
+            if (ArrayUtils.contains(listItemsDisplayName, typeName)) {
                 neededComponents.add(createTableComponent);
             }
         }
