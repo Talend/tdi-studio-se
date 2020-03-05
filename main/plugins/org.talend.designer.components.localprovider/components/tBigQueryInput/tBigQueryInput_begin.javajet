@@ -395,13 +395,18 @@
 			    int colsLen_<%=cid %> = schema_<%=cid%>.getFields().size();
 			    for (int i = <%=dynamic_index-1%>; i < colsLen_<%=cid %>-<%=columnList.size()-dynamic_index%>; i++) {
 			    	routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
-			    	dynamicMetadata_<%=cid%>.setName(schema_<%=cid%>.getFields().get(i).getName());
+			    	com.google.cloud.bigquery.Field field_<%=cid%> = schema_<%=cid%>.getFields().get(i);
+			    	dynamicMetadata_<%=cid%>.setName(field_<%=cid%>.getName());
 			    	dynamicMetadata_<%=cid%>.setDbName(dynamicMetadata_<%=cid%>.getName());
-			    	com.google.cloud.bigquery.StandardSQLTypeName typeName_<%=cid%> = schema_<%=cid%>.getFields().get(i).getType().getStandardType();
-			    	String typeNameString_<%=cid%> = (typeName_<%=cid%> != null) ? typeName_<%=cid%>.name() : schema_<%=cid%>.getFields().get(i).getType().name();
+			    	com.google.cloud.bigquery.StandardSQLTypeName typeName_<%=cid%> = field_<%=cid%>.getType().getStandardType();
+			    	String typeNameString_<%=cid%> = (typeName_<%=cid%> != null) ? typeName_<%=cid%>.name() : field_<%=cid%>.getType().name();
+			    	if (field_<%=cid%>.getMode() == com.google.cloud.bigquery.Field.Mode.REPEATED) { // list of values.
+                		typeNameString_<%=cid%> = "ARRAY";
+					}
+
 			    	dynamicMetadata_<%=cid%>.setType(routines.system.Dynamic.getTalendTypeFromDBType("bigquery_id", typeNameString_<%=cid%>, 0, 0));
 			    	dynamicMetadata_<%=cid%>.setDbType(typeNameString_<%=cid%>);
-			    	dynamicMetadata_<%=cid%>.setNullable(schema_<%=cid%>.getFields().get(i).getMode() == com.google.cloud.bigquery.Field.Mode.NULLABLE);
+			    	dynamicMetadata_<%=cid%>.setNullable(field_<%=cid%>.getMode() == com.google.cloud.bigquery.Field.Mode.NULLABLE);
 			    	dynamicMetadata_<%=cid%>.setColumnPosition(i);
 			    	dcg_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
 			    }
