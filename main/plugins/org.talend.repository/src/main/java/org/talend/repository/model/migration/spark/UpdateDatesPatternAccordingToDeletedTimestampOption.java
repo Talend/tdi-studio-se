@@ -23,6 +23,7 @@ import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.ModifyComponentsAction;
 import org.talend.core.model.components.conversions.IComponentConversion;
 import org.talend.core.model.components.filters.NameComponentFilter;
+import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -87,15 +88,28 @@ public class UpdateDatesPatternAccordingToDeletedTimestampOption extends Abstrac
                 MetadataType metadata = (MetadataType) om;
                 for(Object oc : metadata.getColumn()){
                     ColumnType column = (ColumnType) oc;
-                    if(column.getType().equals("id_Date")) {
-                        if("true".equals(ComponentUtilities.getNodePropertyValue(node, CHECK_BOX_NAME))){
+                    if(column.getType().equals("id_Date") && isDateOrTimestamp(column)) {
+                        if(isBasicDatePattern(column) && "true".equals(ComponentUtilities.getNodePropertyValue(node, CHECK_BOX_NAME))){
                             column.setPattern("\"yyyy-MM-dd HH:mm:ss\"");
-                        } else if ("false".equals(ComponentUtilities.getNodePropertyValue(node, CHECK_BOX_NAME))) {
-                            column.setPattern("\"dd-MM-yyyy\"");
+                        } else if (!isBasicDatePattern(column) && "false".equals(ComponentUtilities.getNodePropertyValue(node, CHECK_BOX_NAME))) {
+                            column.setPattern("\"yyyy-MM-dd\"");
                         }
                     }
                 }
             }
+        }
+        
+        private boolean isBasicDatePattern(ColumnType column) {
+            List<String> basicPatterns = new ArrayList<String>(
+                    java.util.Arrays.asList("dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "dd/MM/yyyy", "MM/dd/yyyy"));
+            return basicPatterns.contains(column.getPattern().replaceAll("\"",""));
+        }
+        private boolean isDateOrTimestamp(ColumnType column) {
+            List<String> basicPatterns = new ArrayList<String>(
+                    java.util.Arrays.asList("dd-MM-yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "dd/MM/yyyy", "MM/dd/yyyy",
+                            "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss'000Z'", 
+                            "yyyy-MM-dd'T'HH:mm:ss.SSSSSS", "yyyy-MM-dd HH:mm:ss zzz", "yyyy-MM-dd HH:mm:ss.SSSXXX"));
+            return basicPatterns.contains(column.getPattern().replaceAll("\"",""));
         }
     }
 }
