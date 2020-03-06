@@ -279,12 +279,6 @@
 	<%
 	} else if (authMode.equals("SERVICEACCOUNT")) {
 	%>
-		final String PROJECT_ID_<%=cid%> = <%=projectId%>;
-		com.google.auth.oauth2.GoogleCredentials credentials_<%=cid%>;
-		java.io.File credentialsFile_<%=cid%> = new java.io.File(<%=credentialsFile%>);
-		try(java.io.FileInputStream credentialsStream_<%=cid%> = new java.io.FileInputStream(credentialsFile_<%=cid%>)) {
-		    credentials_<%=cid%> = com.google.auth.oauth2.ServiceAccountCredentials.fromStream(credentialsStream_<%=cid%>);
-		}
 
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/tBigQueryInput/ServiceAccountBigQueryHelper.javajet"%>
 
@@ -292,15 +286,9 @@
 			log.info("<%=cid%> - query " + <%=query%>);
 		<% } %>
 
-		ServiceAccountBigQueryUtil_<%=cid%> serviceAccountBigQueryUtil_<%=cid%> = new ServiceAccountBigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, <%=credentialsFile%>, "<%=resultSizeType%>", <%=tempDataset%>);
+		ServiceAccountBigQueryUtil_<%=cid%> serviceAccountBigQueryUtil_<%=cid%> = new ServiceAccountBigQueryUtil_<%=cid%>();
 
 		com.google.cloud.bigquery.Job job_<%=cid%> = serviceAccountBigQueryUtil_<%=cid%>.executeQuery(<%=query%>, <%=useLegacySql%>);
-
-		if (job_<%=cid%> == null) {
-			throw new RuntimeException("Job no longer exists");
-		} else if (job_<%=cid%>.getStatus().getError() != null) {
-			throw new RuntimeException(job_<%=cid%>.getStatus().getError().toString());
-		}
 
 		<%
 			if(isLog4jEnabled){
