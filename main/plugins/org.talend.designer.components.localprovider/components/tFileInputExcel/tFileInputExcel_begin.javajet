@@ -433,22 +433,18 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                             if(temp_row_<%=cid%>[i]!=null) {
                                 temp_row_<%=cid%>[i] = df_<%=cid %>.format(doubleCell_<%=cid%>);
                             }
-                          } else if(jxl.CellType.DATE== cell_<%=cid%>.getType()||jxl.CellType.DATE_FORMULA== cell_<%=cid%>.getType()){
-
-	                            		  	jxl.DateCell dc_<%= cid %> = (jxl.DateCell)cell_<%=cid%>;
-                            				java.util.Date date_<%= cid %> = dc_<%= cid %>.getDate();
-                        					temp_row_<%= cid %>[i] = sdf_<%= cid %>.format(date_<%= cid %>);
-
-                        } else{
-                            temp_row_<%= cid %>[i] = cell_<%=cid%>.getContents();
-                        }
-<%
-                    }else{
-%>
-                        temp_row_<%= cid %>[i] = cell_<%=cid%>.getContents();
+                          }
 <%
                     }
 %>
+                        if(jxl.CellType.DATE== cell_<%=cid%>.getType()||jxl.CellType.DATE_FORMULA== cell_<%=cid%>.getType()){
+
+                            jxl.DateCell dc_<%= cid %> = (jxl.DateCell)cell_<%=cid%>;
+                            java.util.Date date_<%= cid %> = dc_<%= cid %>.getDate();
+                            temp_row_<%= cid %>[i] = sdf_<%= cid %>.format(date_<%= cid %>);
+                        } else {
+                            temp_row_<%= cid %>[i] = cell_<%=cid%>.getContents();
+                        }
 
 				}else{
 					temp_row_<%= cid %>[i]="";
