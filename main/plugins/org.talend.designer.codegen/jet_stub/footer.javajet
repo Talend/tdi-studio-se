@@ -641,6 +641,11 @@
                         } else {
                         <%//}B1 block%>
 <%
+                        String typeToGenerate ="String";
+                        if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
+                           typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
+                        }
+                        
                         if (ctxParam.getType().equals("id_Password")) {
 %>
                             String pwd_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
@@ -658,13 +663,7 @@
                                 }
                             }
 <%
-                            continue;
-                        }
-                        String typeToGenerate ="String";
-                        if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
-                           typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
-                        }
-                        if(typeToGenerate.equals("java.util.Date")) {
+                        } else if(typeToGenerate.equals("java.util.Date")) {
 %>
                         try{
                             String context_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
