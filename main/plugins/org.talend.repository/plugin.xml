@@ -3329,6 +3329,15 @@
               name="RemovePigudfModulesMigrationTask"
               version="7.3.1">
         </projecttask>
+       <projecttask
+              beforeLogon="true"
+              breaks="7.3.1"
+              class="org.talend.repository.model.migration.ChangeDQComponentsLicenseKeyFieldTask"
+              description="Using LicenseKey Field in DQ Components"
+              id="org.talend.repository.model.migration.ChangeDQComponentsLicenseKeyFieldTask"
+              name="ChangeDQComponentsLicenseKeyFieldTask"
+              version="7.4.1">
+        </projecttask>
    </extension>
 
    <extension
