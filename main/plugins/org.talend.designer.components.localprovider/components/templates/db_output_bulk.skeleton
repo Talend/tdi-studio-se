@@ -2063,7 +2063,7 @@ public class CLASS {
                 }
                 setStmt.append("}\r\n");
             } else if("String".equals(typeToGenerate)) {
-                   if ("NVARCHAR".equalsIgnoreCase(column.dataType) || "NCHAR".equalsIgnoreCase(column.dataType)) {
+                   if ("NVARCHAR".equalsIgnoreCase(column.dataType) || "NCHAR".equalsIgnoreCase(column.dataType) || "NTEXT".equalsIgnoreCase(column.dataType)) {
                         boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
                         setStmt.append("String driver = null;\r\n");
                         if (useExistingConnection) {
