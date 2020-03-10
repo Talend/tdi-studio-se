@@ -28,6 +28,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.utils.security.StudioEncryption;
 
 /**
  * DOC xqliu class global comment. Detailled comment
@@ -105,6 +106,14 @@ public class ChangeDQComponentsLicenseKeyFieldTask extends AbstractJobMigrationT
         public void transform(NodeType node) {
             ElementParameterType nodeProperty = ComponentUtilities.getNodeProperty(node, "LICENSE_KEY");
             if (nodeProperty != null) {
+                String cleanPass =
+                        nodeProperty.getRawValue() == null ? nodeProperty.getValue() : nodeProperty.getRawValue();
+                if (cleanPass != null) {
+                    nodeProperty
+                            .setValue(StudioEncryption
+                                    .getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                                    .encrypt(cleanPass));
+                }
                 nodeProperty.setField(EParameterFieldType.LICENSEKEY.getName());
             }
         }
@@ -115,6 +124,14 @@ public class ChangeDQComponentsLicenseKeyFieldTask extends AbstractJobMigrationT
         public void transform(NodeType node) {
             ElementParameterType nodeProperty = ComponentUtilities.getNodeProperty(node, "LICENSE_KEY");
             if (nodeProperty != null) {
+                String cleanPass =
+                        nodeProperty.getRawValue() == null ? nodeProperty.getValue() : nodeProperty.getRawValue();
+                if (cleanPass != null) {
+                    nodeProperty
+                            .setValue(StudioEncryption
+                                    .getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                                    .encrypt(cleanPass));
+                }
                 nodeProperty.setField(EParameterFieldType.LICENSEKEY.getName());
             }
         }
@@ -125,6 +142,14 @@ public class ChangeDQComponentsLicenseKeyFieldTask extends AbstractJobMigrationT
         public void transform(NodeType node) {
             ElementParameterType nodeProperty = ComponentUtilities.getNodeProperty(node, "LICENSE");
             if (nodeProperty != null) {
+                String cleanPass =
+                        nodeProperty.getRawValue() == null ? nodeProperty.getValue() : nodeProperty.getRawValue();
+                if (cleanPass != null) {
+                    nodeProperty
+                            .setValue(StudioEncryption
+                                    .getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                                    .encrypt(cleanPass));
+                }
                 nodeProperty.setField(EParameterFieldType.LICENSEKEY.getName());
             }
         }
@@ -135,6 +160,14 @@ public class ChangeDQComponentsLicenseKeyFieldTask extends AbstractJobMigrationT
         public void transform(NodeType node) {
             ElementParameterType nodeProperty = ComponentUtilities.getNodeProperty(node, "API_KEY");
             if (nodeProperty != null) {
+                String cleanPass =
+                        nodeProperty.getRawValue() == null ? nodeProperty.getValue() : nodeProperty.getRawValue();
+                if (cleanPass != null) {
+                    nodeProperty
+                            .setValue(StudioEncryption
+                                    .getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                                    .encrypt(cleanPass));
+                }
                 nodeProperty.setField(EParameterFieldType.LICENSEKEY.getName());
             }
         }
@@ -145,6 +178,14 @@ public class ChangeDQComponentsLicenseKeyFieldTask extends AbstractJobMigrationT
         public void transform(NodeType node) {
             ElementParameterType nodeProperty = ComponentUtilities.getNodeProperty(node, "API_KEY");
             if (nodeProperty != null) {
+                String cleanPass =
+                        nodeProperty.getRawValue() == null ? nodeProperty.getValue() : nodeProperty.getRawValue();
+                if (cleanPass != null) {
+                    nodeProperty
+                            .setValue(StudioEncryption
+                                    .getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                                    .encrypt(cleanPass));
+                }
                 nodeProperty.setField(EParameterFieldType.LICENSEKEY.getName());
             }
         }
@@ -155,6 +196,14 @@ public class ChangeDQComponentsLicenseKeyFieldTask extends AbstractJobMigrationT
         public void transform(NodeType node) {
             ElementParameterType nodeProperty = ComponentUtilities.getNodeProperty(node, "API_KEY");
             if (nodeProperty != null) {
+                String cleanPass =
+                        nodeProperty.getRawValue() == null ? nodeProperty.getValue() : nodeProperty.getRawValue();
+                if (cleanPass != null) {
+                    nodeProperty
+                            .setValue(StudioEncryption
+                                    .getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                                    .encrypt(cleanPass));
+                }
                 nodeProperty.setField(EParameterFieldType.LICENSEKEY.getName());
             }
         }
@@ -165,6 +214,14 @@ public class ChangeDQComponentsLicenseKeyFieldTask extends AbstractJobMigrationT
         public void transform(NodeType node) {
             ElementParameterType nodeProperty = ComponentUtilities.getNodeProperty(node, "LICENSEKEY");
             if (nodeProperty != null) {
+                String cleanPass =
+                        nodeProperty.getRawValue() == null ? nodeProperty.getValue() : nodeProperty.getRawValue();
+                if (cleanPass != null) {
+                    nodeProperty
+                            .setValue(StudioEncryption
+                                    .getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                                    .encrypt(cleanPass));
+                }
                 nodeProperty.setField(EParameterFieldType.LICENSEKEY.getName());
             }
         }
