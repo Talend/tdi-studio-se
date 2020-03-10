@@ -1100,7 +1100,6 @@ public abstract class DbGenerationManager {
      */
     private boolean buildCondition(DbMapComponent component, StringBuilder sbWhere, ExternalDbMapTable table,
             boolean isFirstClause, ExternalDbMapEntry dbMapEntry, boolean writeCr, boolean isSqlQuery) {
-        String originExpression = dbMapEntry.getExpression();
         String expression = initExpression(component, dbMapEntry);
         IDbOperator dbOperator = getOperatorsManager().getOperatorFromValue(dbMapEntry.getOperator());
         boolean operatorIsSet = dbOperator != null;
@@ -1155,7 +1154,7 @@ public abstract class DbGenerationManager {
                 appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE, isSqlQuery);
                 appendSqlQuery(sbWhere, DbMapSqlConstants.RIGHT_COMMENT, isSqlQuery);
             } else if (expressionIsSet) {
-                String exp = replaceVariablesForExpression(component, originExpression);
+                String exp = replaceVariablesForExpression(component, expression);
                 appendSqlQuery(sbWhere, exp, isSqlQuery);
                 appendSqlQuery(sbWhere, getSpecialLeftJoin(table), isSqlQuery);
             }
@@ -1480,10 +1479,10 @@ public abstract class DbGenerationManager {
     }
 
     protected String replaceAuotes(DbMapComponent component, String expression, String quoParser, String quote) {
+        if (isComplexExpression(component, expression)) {
+            return expression;
+        }
         if(!expression.contains("'")){
-            if (isComplexExpression(component, expression)) {
-                return expression;
-            }
             return expression.replaceAll(quoParser,"\\\\" +quote); //$NON-NLS-1$;
         }
         
