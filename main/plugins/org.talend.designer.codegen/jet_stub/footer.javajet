@@ -530,9 +530,19 @@
             String warningMessageFormat = "Null value will be used for context parameter %s: %s";
             for (IContextParameter ctxParam :params)
             {
-				%>
-				    context.setContextType("<%=ctxParam.getName()%>", "<%=ctxParam.getType()%>");
-				<%
+            %>
+                context.setContextType("<%=ctxParam.getName()%>", "<%=ctxParam.getType()%>");
+                if(context.getStringValue("<%=ctxParam.getName()%>") == null) {
+                    context.<%=ctxParam.getName()%> = null;
+                } else {
+                <%//}B1 block%>
+                
+                <%
+                String typeToGenerate ="String";
+                if(!(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
+                    typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
+                }
+                
             	if (ctxParam.getType().equals("id_Password")) {
             %>
             		String pwd_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
@@ -550,14 +560,7 @@
             			}
             		}
             <%
-            		continue;
-            	}
-                String typeToGenerate ="String";
-                if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value")))
-                {
-                   typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
-                }
-                if(typeToGenerate.equals("java.util.Date"))
+                } else if(typeToGenerate.equals("java.util.Date"))
                 {
 
             %>
@@ -621,6 +624,10 @@
               }
              <%
                 }
+%>
+            <%//{B1 block%>
+            }
+<%
             }
             %>
         } catch (java.io.IOException ie) {

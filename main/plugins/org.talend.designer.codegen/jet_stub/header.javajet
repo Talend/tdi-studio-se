@@ -289,6 +289,15 @@ if(isRunInMultiThread){
 			}
 			<% } %>
 		}
+		
+		//if the stored or passed value is "<TALEND_NULL>" string, it mean null
+		public String getStringValue(String key) {
+			String origin_value = this.getProperty(key);
+			if(NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY.equals(origin_value)) {
+				return null;
+			}
+			return origin_value;
+		}
 
 <%
 		for (IContextParameter ctxParam :params)
