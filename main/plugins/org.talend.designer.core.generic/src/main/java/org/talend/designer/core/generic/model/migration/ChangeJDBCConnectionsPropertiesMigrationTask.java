@@ -47,7 +47,6 @@ public class ChangeJDBCConnectionsPropertiesMigrationTask extends AbstractMigrat
      */
     @Override
     public boolean isApplicableOnItems() {
-        // TODO Auto-generated method stub
         return false;
     }
     
@@ -70,7 +69,6 @@ public class ChangeJDBCConnectionsPropertiesMigrationTask extends AbstractMigrat
                 if (dbType == null || !dbType.equals("JDBC")) {
                     return ExecutionResult.NOTHING_TO_DO;
                 }
-//                connection.setCompProperties(properties.toSerialized());
                 String compProperties = connection.getCompProperties();
                 if (StringUtils.isEmpty(compProperties)) {
                     dbConnection.setDatabaseType(dbType);
@@ -118,9 +116,6 @@ public class ChangeJDBCConnectionsPropertiesMigrationTask extends AbstractMigrat
                     connection.setCompProperties(properties.toSerialized());
                     try {
                         if (isContextMode) {
-                            // for context mode JDBC connection, the value of DriverJar context parameter need to be
-                            // changed
-                            // <jarName>.jar => "mvn:org.talend.libraries/<jarName>/6.0.0-SNAPSHOT/jar"
                             String contextId = dbConnection.getContextId();
                             ContextItem contextItem = ContextUtils.getContextItemById2(contextId);
                             if (contextItem != null) {
