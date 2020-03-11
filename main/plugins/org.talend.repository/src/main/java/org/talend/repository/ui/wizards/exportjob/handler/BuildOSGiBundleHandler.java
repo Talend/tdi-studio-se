@@ -74,7 +74,7 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
     @Override
     public IProcessor generateJobFiles(IProgressMonitor monitor) throws Exception {
         IProcessor processor = super.generateJobFiles(monitor);
-
+        cleanBundelResources(monitor);
         // Generate class before the final build goal, JobJavaScriptOSGIForESBManager.createAnalyzer needs the classes
         // to compute import-package for the manifest.mf. TalendJavaProjectManager.getTalendJobJavaProject is always
         // disabled MavenNature when create project(false), it will stop jdt to compile, and imporve this part will help
@@ -102,6 +102,15 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
         }
 
         return processor;
+    }
+
+    private void cleanBundelResources(IProgressMonitor monitor) throws CoreException {
+        // clean up bundel resources folder if needed
+        for (IResource resource : talendProcessJavaProject.getBundleResourcesFolder().members()) {
+            if (resource.exists()) {
+                resource.delete(true, monitor);
+            }
+        }
     }
 
     /*
