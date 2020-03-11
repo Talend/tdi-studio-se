@@ -10,11 +10,12 @@ import org.eclipse.emf.common.util.EList;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.context.ContextUtils;
-import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
+import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.services.IGenericDBService;
@@ -23,11 +24,9 @@ import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
-import org.talend.migration.AbstractMigrationTask;
-import org.talend.migration.IProjectMigrationTask;
 import org.talend.utils.security.CryptoMigrationUtil;
 
-public class ChangeJDBCConnectionsPropertiesMigrationTask extends AbstractMigrationTask implements IProjectMigrationTask {
+public class ChangeJDBCConnectionsPropertiesMigrationTask extends AbstractJobMigrationTask {
 
     /*
      * (non-Javadoc)
@@ -36,20 +35,17 @@ public class ChangeJDBCConnectionsPropertiesMigrationTask extends AbstractMigrat
      */
     @Override
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2020, 3, 10, 16, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2020, 3, 11, 16, 0, 0);
         return gc.getTime();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.migration.IProjectMigrationTask#isApplicableOnItems()
-     */
     @Override
-    public boolean isApplicableOnItems() {
-        return false;
+    public List<ERepositoryObjectType> getTypes() {
+        List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
+        toReturn.add(ERepositoryObjectType.JDBC);
+        return toReturn;
     }
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -57,7 +53,7 @@ public class ChangeJDBCConnectionsPropertiesMigrationTask extends AbstractMigrat
      * org.talend.core.model.properties.Item)
      */
     @Override
-    public ExecutionResult execute(Project project, Item item) {
+    public ExecutionResult execute(Item item) {
         if (item instanceof DatabaseConnectionItem) {
             ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
             DatabaseConnectionItem connectionItem = (DatabaseConnectionItem) item;
@@ -187,27 +183,4 @@ public class ChangeJDBCConnectionsPropertiesMigrationTask extends AbstractMigrat
         }
 
     }
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
-     */
-    @Override
-    public ExecutionResult execute(Project project) {
-        
-        return ExecutionResult.NOTHING_TO_DO;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project, boolean)
-     */
-    @Override
-    public ExecutionResult execute(Project project, boolean doSave) {
-        return execute(project);
-    }
-
-
-
 }

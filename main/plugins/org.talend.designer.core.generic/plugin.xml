@@ -84,7 +84,7 @@
              name="NewJDBCConnectionMigrationTask"
              version="7.0.1">
        </projecttask>
-       <projecttask
+      <projecttask
              beforeLogon="false"
              breaks="7.4.0"
              class="org.talend.designer.core.generic.model.migration.ChangeJDBCConnectionsPropertiesMigrationTask"
