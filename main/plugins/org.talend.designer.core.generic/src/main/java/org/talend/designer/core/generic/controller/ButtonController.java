@@ -67,7 +67,10 @@ public class ButtonController extends AbstractElementPropertySectionController {
         IElementParameter parameter = (IElementParameter) button.getData();
         if(button.getText() != null && button.getText().equals(TEST_CONNECTION)){
             chooseContext();
-            loadJars(parameter);
+            boolean result = loadJars(parameter);
+            if (!result) {
+                return null;
+            }
         }
 
         if (parameter != null) {
@@ -94,27 +97,27 @@ public class ButtonController extends AbstractElementPropertySectionController {
                 null, false);
     }
 
-    private void loadJars(IElementParameter parameter){
+    private boolean loadJars(IElementParameter parameter) {
         ILibraryManagerService librairesManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
                 ILibraryManagerService.class);
         if(librairesManagerService == null){
-            return;
+            return false;
         }
         if(!(parameter instanceof GenericElementParameter)){
-            return;
+            return false;
         }
         GenericElementParameter gPara = (GenericElementParameter) parameter;
         ComponentProperties rootPro = gPara.getRootProperties();
         if(rootPro == null){
-            return;
+            return false;
         }
         Properties connPro = rootPro.getProperties("connection"); //$NON-NLS-1$
         if(connPro == null){
-            return;
+            return false;
         }
         Properties drivers = connPro.getProperties("driverTable"); //$NON-NLS-1$
         if(drivers == null){
-            return;
+            return false;
         }
         List<String> jars = new ArrayList<String>();
         for(NamedThing thing : drivers.getProperties()){
@@ -134,7 +137,8 @@ public class ButtonController extends AbstractElementPropertySectionController {
 
             }
         }
-        librairesManagerService.retrieve(jars, ExtractMetaDataUtils.getInstance().getJavaLibPath(), new NullProgressMonitor());
+        return librairesManagerService.retrieve(jars, ExtractMetaDataUtils.getInstance().getJavaLibPath(),
+                new NullProgressMonitor());
     }
 
     @Override
