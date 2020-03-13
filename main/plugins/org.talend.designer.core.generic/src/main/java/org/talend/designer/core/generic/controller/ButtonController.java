@@ -67,8 +67,8 @@ public class ButtonController extends AbstractElementPropertySectionController {
         IElementParameter parameter = (IElementParameter) button.getData();
         if(button.getText() != null && button.getText().equals(TEST_CONNECTION)){
             chooseContext();
-            boolean result = loadJars(parameter);
-            if (!result) {
+            Boolean result = loadJars(parameter);
+            if (result != null && !result) {
                 return null;
             }
         }
@@ -97,27 +97,27 @@ public class ButtonController extends AbstractElementPropertySectionController {
                 null, false);
     }
 
-    private boolean loadJars(IElementParameter parameter) {
+    private Boolean loadJars(IElementParameter parameter) {
         ILibraryManagerService librairesManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
                 ILibraryManagerService.class);
         if(librairesManagerService == null){
-            return false;
+            return null;
         }
         if(!(parameter instanceof GenericElementParameter)){
-            return false;
+            return null;
         }
         GenericElementParameter gPara = (GenericElementParameter) parameter;
         ComponentProperties rootPro = gPara.getRootProperties();
         if(rootPro == null){
-            return false;
+            return null;
         }
         Properties connPro = rootPro.getProperties("connection"); //$NON-NLS-1$
         if(connPro == null){
-            return false;
+            return null;
         }
         Properties drivers = connPro.getProperties("driverTable"); //$NON-NLS-1$
         if(drivers == null){
-            return false;
+            return null;
         }
         List<String> jars = new ArrayList<String>();
         for(NamedThing thing : drivers.getProperties()){
