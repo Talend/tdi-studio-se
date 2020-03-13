@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.fieldassist.DecoratedField;
@@ -60,6 +61,9 @@ import org.talend.designer.core.ui.editor.properties.controllers.AbstractElement
 public class ComponentRefController extends AbstractElementPropertySectionController {
 
     private Map<String, String> labelToValueMap = new HashMap<>();
+
+    private String[] componentsName = new String[] { "tJDBCClose", "tJDBCRollback", "tJDBCCommit", "tSnowflakeClose", //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
+            "tSnowflakeRollback", "tSnowflakeCommit", "tMarkLogicClose" }; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 
     public ComponentRefController(IDynamicProperty dp) {
         super(dp);
@@ -286,7 +290,11 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
 
         // First item is this component (see also createComboCommand)
         // FIXME - I18N for this message
-        itemsLabel.add("Use this Component");
+        String showName = "Use this Component"; //$NON-NLS-1$
+        if (ArrayUtils.contains(componentsName, currentNode.getComponent().getName())) {
+            showName = "<none>"; //$NON-NLS-1$
+        }
+        itemsLabel.add(showName);
         itemsValue.add(currentNode.getUniqueName());
         String selectedValue;
         Object referenceType = props.referenceType.getValue();

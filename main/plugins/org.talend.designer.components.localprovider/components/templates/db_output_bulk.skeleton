@@ -2062,7 +2062,13 @@ public class CLASS {
                     setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.DATE);\r\n");
                 }
                 setStmt.append("}\r\n");
-            } else {
+            } else if("String".equals(typeToGenerate)) {
+                   if ("NVARCHAR".equalsIgnoreCase(column.dataType) || "NCHAR".equalsIgnoreCase(column.dataType)) {
+                        setStmt.append(prefix + cid + ".setNString(" + index + dynamic + ", " + incomingConnName + "." + column.getName() + ");\r\n");
+                   } else {
+                        setStmt.append(prefix + cid + ".setString(" + index + dynamic + ", " + incomingConnName + "." + column.getName() + ");\r\n");
+                   }
+            }else {
                 setStmt.append(prefix + cid + ".set" + typeToGenerate + "(" + index + dynamic + ", " + incomingConnName + "." + column.getName() + ");\r\n");
             }
             if(isObject) {
