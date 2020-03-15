@@ -55,6 +55,7 @@ import org.talend.core.model.metadata.builder.connection.ConditionType;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.RuleType;
 import org.talend.core.model.metadata.builder.connection.ValidationRulesConnection;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.AbstractConnection;
 import org.talend.core.model.process.AbstractExternalNode;
 import org.talend.core.model.process.AbstractNode;
@@ -109,6 +110,7 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.JavaProcessUtil;
+import org.talend.designer.core.utils.JobSettingUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -1149,6 +1151,7 @@ public class DataProcess implements IGeneratingProcess {
                     }
                 }
             }
+            JobSettingUtil.setImplicitParameter(targetNode, duplicatedProcess);
         }
     }
 
