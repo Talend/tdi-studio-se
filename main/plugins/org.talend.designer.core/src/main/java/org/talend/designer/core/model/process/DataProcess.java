@@ -48,6 +48,7 @@ import org.talend.core.model.components.IMultipleComponentConnection;
 import org.talend.core.model.components.IMultipleComponentItem;
 import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.components.IMultipleComponentParameter;
+import org.talend.core.model.genhtml.IJobSettingConstants;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.metadata.MetadataToolHelper;
@@ -1151,7 +1152,13 @@ public class DataProcess implements IGeneratingProcess {
                     }
                 }
             }
-            JobSettingUtil.setImplicitParameter(targetNode, duplicatedProcess);
+            boolean tcomp = (targetNode.getComponent() != null)
+                    && (targetNode.getComponent().getComponentType() == EComponentType.GENERIC);
+            boolean dbImplict = (Boolean)duplicatedProcess
+                    .getElementParameter(IJobSettingConstants.FROM_DATABASE_FLAG_IMPLICIT_CONTEXT).getValue();
+            if(tcomp && dbImplict) {
+                JobSettingUtil.setTCOMImplicitParameter(targetNode, duplicatedProcess);
+            }
         }
     }
 

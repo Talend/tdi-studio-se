@@ -29,7 +29,7 @@ import org.talend.designer.core.model.components.EParameterName;
  */
 public class JobSettingUtil {
     
-    public static void setImplicitParameter(INode targetNode, IProcess process) {
+    public static void setTCOMImplicitParameter(INode targetNode, IProcess process) {
         if (targetNode.getElementParameter(EParameterName.LOCAL_SERVICE_NAME.getName()) != null) {
             targetNode.getElementParameter(EParameterName.LOCAL_SERVICE_NAME.getName())
                     .setValue(process.getElementParameter(IJobSettingConstants.LOCAL_SERVICE_NAME_IMPLICIT_CONTEXT).getValue());
