@@ -94,7 +94,6 @@ if (!isParallelize) {
                     <%
                }
              %>
-			 /* TRYTYTY <%=dbmsId%> */
             <%dbLog.table().createTry(dbLog.varForTableName("tableName", dbmsId));%>
             <%
             if(isDynamic) {
