@@ -124,6 +124,7 @@ import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.process.ProcessUpdateManager.ContextItemParamMap;
 import org.talend.designer.core.ui.editor.update.UpdateCheckResult;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
@@ -1027,16 +1028,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     && param.getCategory() == category) {
                                 param.setRepositoryValueUsed(true);
                                 param.setReadOnly(true);
-
-                                if (StringUtils.equals(param.getName(), EParameterName.DATABRICKS_CLOUD_PROVIDER.getName())
-                                        || StringUtils.equals(param.getName(),
-                                                EParameterName.DATABRICKS_USE_TRANSIENT_CLUSTER.getName())
-                                        || StringUtils.equals(param.getName(),
-                                                EParameterName.DATABRICKS_USE_PRODUCTION_MODE.getName())) {
-                                    param.setRepositoryValueUsed(false);
-                                    param.setReadOnly(false);
-                                }
-
                             }
                         }
                         // for context mode(bug 5198)
