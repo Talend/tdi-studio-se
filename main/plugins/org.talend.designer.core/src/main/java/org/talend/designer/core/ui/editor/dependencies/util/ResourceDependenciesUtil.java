@@ -310,6 +310,21 @@ public class ResourceDependenciesUtil {
         }
     }
 
+    public static String getJobExecuteResourceFilePath(JobResourceDependencyModel model, IRepositoryViewObject jobObject,
+            String jobLabel,
+            String resourceVersion) {
+        String path = null;
+        String extResPath = getProcessFolder(jobObject) + jobLabel.toLowerCase() + SRC_EXTRESOURCE_FOLDER;
+        String filePath = getResourcePath(model, jobLabel, resourceVersion);
+        IProject proProject = getWorkspaceProject(jobObject.getProperty());
+        if (proProject == null) {
+            return path;
+        }
+
+        path = proProject.getFile(new Path(extResPath + SEG_TAG + filePath)).getLocation().toOSString();
+        return path;
+    }
+
     private static IProject getWorkspaceProject(EObject object) {
         IProject project = null;
         try {

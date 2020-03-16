@@ -110,6 +110,51 @@ public class ResourcesDependenciesService implements IResourcesDependenciesServi
     }
 
     @Override
+    public String getFullResourcePathForContext(IProcess process, String resourceContextValue) {
+        String resPath = null;
+        if (process instanceof IProcess2) {
+            IProcess2 process2 = (IProcess2) process;
+            Property property = process2.getProperty();
+            if (StringUtils.isBlank(resourceContextValue)) {
+                return resPath;
+            }
+            try {
+                // context value: resourceId | resourceVersion
+                String[] parts = resourceContextValue.split("\\|");
+                if (parts.length > 1) {
+                    IRepositoryViewObject resourceObject = null;
+                    ProxyRepositoryFactory instance = ProxyRepositoryFactory.getInstance();
+                    if (RelationshipItemBuilder.LATEST_VERSION.equals(parts[1])) {
+                        resourceObject = instance.getLastVersion(parts[0]);
+                    } else {
+                        resourceObject = instance.getSpecificVersion(parts[0], parts[1], true);
+                    }
+                    IRepositoryViewObject jobObject = instance.getSpecificVersion(property.getId(), property.getVersion(), true);
+                    if (resourceObject != null && jobObject != null) {
+                        JobResourceDependencyModel model = new JobResourceDependencyModel(
+                                (ResourceItem) resourceObject.getProperty().getItem());
+                        StringBuffer joblabel = new StringBuffer();
+                        if (StringUtils.isNotBlank(property.getItem().getState().getPath())) {
+                            joblabel.append(property.getItem().getState().getPath() + "/");
+                        }
+                        joblabel.append(property.getLabel() + "_" + property.getVersion());
+                        resPath = ResourceDependenciesUtil.getJobExecuteResourceFilePath(model, jobObject, joblabel.toString(),
+                                parts[1]);
+                        // to check if file exist, if not copy it
+                        ResourceDependenciesUtil.copyToExtResourceFolder(model, property.getId(), property.getVersion(), parts[1],
+                                null);
+                    }
+
+                }
+
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        return resPath;
+    }
+
+    @Override
     public String getResourceItemFilePath(String resourceContextValue) {
         String[] resParts = resourceContextValue.split("\\|");
         if (resParts.length > 1) {
