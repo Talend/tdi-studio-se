@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.junit.After;
 import org.junit.Assert;
@@ -155,6 +156,34 @@ public class ResourceDependenciesUtilTest {
         String resourcePath = ResourceDependenciesUtil.getResourcePath(model, jobLabel, null);
         Assert.assertEquals(expectResult, resourcePath);
 
+    }
+
+    @Test
+    public void testGetJobExecuteResourceFilePath() {
+        String technicalLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+        Property jobProperty = processItem.getProperty();
+        JobResourceDependencyModel model = new JobResourceDependencyModel(item);
+        String jobLabel = jobProperty.getLabel() + "_" + jobProperty.getVersion();
+        String projectLocation = null;
+        IRepositoryViewObject jobObject = null;
+        try {
+            jobObject = ProxyRepositoryFactory.getInstance().getSpecificVersion(jobProperty.getId(),
+                    jobProperty.getVersion(), true);
+            projectLocation = ResourceUtils.getProject(technicalLabel).getLocation().toOSString();
+        } catch (PersistenceException e) {
+            e.printStackTrace();
+            fail("Test ResourceDependenciesUtilTest.testGetJobExecuteResourceFilePath() failure");
+        }
+        Assert.assertNotNull(jobObject);
+        Assert.assertNotNull(projectLocation);
+        String relativeResourcePath = technicalLabel.toLowerCase() + "/test_0_1/resources/myResource_0.1.txt";
+        IPath expectPath = new Path(projectLocation + "/" + ResourceDependenciesUtil.getProcessFolder(jobObject)
+                + jobLabel.toLowerCase()
+                + "/src/main/ext-resources/" + relativeResourcePath);
+        IPath fullResourcePath = new Path(
+                ResourceDependenciesUtil.getJobExecuteResourceFilePath(model, jobObject, jobLabel, null));
+        Assert.assertEquals(expectPath.toOSString(), fullResourcePath.toOSString());
+        
     }
 
 

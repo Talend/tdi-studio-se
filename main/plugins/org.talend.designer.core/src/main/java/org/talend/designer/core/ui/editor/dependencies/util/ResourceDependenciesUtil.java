@@ -396,7 +396,7 @@ public class ResourceDependenciesUtil {
         }
     }
 
-    private static String getProcessFolder(IRepositoryViewObject jobObject) {
+    public static String getProcessFolder(IRepositoryViewObject jobObject) {
         String folder = jobObject.getRepositoryObjectType().getFolder();
         return POMS_JOBS_FOLDER + folder + "/";
     }
