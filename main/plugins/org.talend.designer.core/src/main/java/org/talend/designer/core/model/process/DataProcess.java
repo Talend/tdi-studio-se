@@ -775,6 +775,8 @@ public class DataProcess implements IGeneratingProcess {
         		// This happens in case of virtual tHMap_Out component in first position (see prepareAllMultipleComponentNodes)
         		continue;
         	}
+        	boolean tcomp = (nodeSource.getComponent() != null)
+                    && (nodeSource.getComponent().getComponentType() == EComponentType.GENERIC);
             for (IMultipleComponentConnection curConnec : curItem.getOutputConnections()) {
 
                 AbstractNode nodeTarget;
@@ -783,8 +785,13 @@ public class DataProcess implements IGeneratingProcess {
 
                 DataConnection dataConnec = new DataConnection();
                 dataConnec.setActivate(graphicalNode.isActivate());
-                dataConnec.setLineStyle(EConnectionType.getTypeFromName(curConnec.getConnectionType()));
-                dataConnec.setConnectorName(curConnec.getConnectionType());
+                EConnectionType style = EConnectionType.getTypeFromName(curConnec.getConnectionType());
+                dataConnec.setLineStyle(style);
+                if(tcomp) {
+                    dataConnec.setConnectorName(style.getCategory().name());
+                }else {
+                    dataConnec.setConnectorName(curConnec.getConnectionType());
+                }
                 if (nodeSource.getMetadataList() != null) {
                     dataConnec.setMetadataTable(nodeSource.getMetadataList().get(0));
                 }
@@ -1102,6 +1109,8 @@ public class DataProcess implements IGeneratingProcess {
                 if ((sourceNode != null) && (targetNode != null)) {
                     sourceFound = false;
                     targetFound = false;
+                    boolean tcomp = (targetNode.getComponent() != null)
+                            && (targetNode.getComponent().getComponentType() == EComponentType.GENERIC);
                     IElementParameter paramSource = null, paramTarget = null;
                     for (int i = 0; i < sourceNode.getElementParameters().size() && !sourceFound; i++) {
                         if (sourceNode.getElementParameters().get(i).getName().equals(param.getSourceValue())) {
@@ -1111,16 +1120,27 @@ public class DataProcess implements IGeneratingProcess {
                     }
 
                     for (int i = 0; i < targetNode.getElementParameters().size() && !targetFound; i++) {
-                        if (targetNode.getElementParameters().get(i).getName().equals(param.getTargetValue())) {
+                        boolean dbImplict = (Boolean)duplicatedProcess
+                                .getElementParameter(IJobSettingConstants.FROM_DATABASE_FLAG_IMPLICIT_CONTEXT).getValue();
+                        if(tcomp && dbImplict) {
+                            String sourceValue = param.getSourceValue();
+                            String targetParaName = JobSettingUtil.getTCOMParameterNameMap().get(sourceValue);
+                            if(targetNode.getElementParameters().get(i).getName().equals(targetParaName)) {
+                                paramTarget = targetNode.getElementParameters().get(i);
+                                targetFound = true;
+                            }
+                        }else if (targetNode.getElementParameters().get(i).getName().equals(param.getTargetValue())) {
                             paramTarget = targetNode.getElementParameters().get(i);
                             targetFound = true;
                         }
                     }
                     if ((paramSource != null) && (paramTarget != null)) {
-                        paramTarget.setDefaultClosedListValue(paramSource.getDefaultClosedListValue());
-                        paramTarget.setListItemsDisplayCodeName(paramSource.getListItemsDisplayCodeName());
-                        paramTarget.setListItemsValue(paramSource.getListItemsValue());
-
+                        if(!tcomp) {
+                            paramTarget.setDefaultClosedListValue(paramSource.getDefaultClosedListValue());
+                            paramTarget.setListItemsDisplayCodeName(paramSource.getListItemsDisplayCodeName());
+                            paramTarget.setListItemsValue(paramSource.getListItemsValue());
+                        }
+                        
                         // adjust destination value based on the connector name.(only apply to multi-input virtual
                         // component)
                         if (multipleComponentManager.isSetConnector() && param.getSourceComponent().equals("self") //$NON-NLS-1$
@@ -1142,7 +1162,19 @@ public class DataProcess implements IGeneratingProcess {
                     targetFound = false;
                     IElementParameter paramTarget = null;
                     for (int i = 0; i < targetNode.getElementParameters().size() && !targetFound; i++) {
-                        if (targetNode.getElementParameters().get(i).getName().equals(param.getTargetValue())) {
+                        
+                        boolean tcomp = (targetNode.getComponent() != null)
+                                && (targetNode.getComponent().getComponentType() == EComponentType.GENERIC);
+                        boolean dbImplict = (Boolean)duplicatedProcess
+                                .getElementParameter(IJobSettingConstants.FROM_DATABASE_FLAG_IMPLICIT_CONTEXT).getValue();
+                        if(tcomp && dbImplict) {
+                            String sourceValue = param.getSourceValue();
+                            String targetParaName = JobSettingUtil.getTCOMParameterNameMap().get(sourceValue);
+                            if(targetNode.getElementParameters().get(i).getName().equals(targetParaName)) {
+                                paramTarget = targetNode.getElementParameter(targetParaName);
+                                targetFound = true;
+                            }
+                        }else if (targetNode.getElementParameters().get(i).getName().equals(param.getTargetValue())) {
                             paramTarget = targetNode.getElementParameters().get(i);
                             targetFound = true;
                         }
@@ -1151,13 +1183,6 @@ public class DataProcess implements IGeneratingProcess {
                         paramTarget.setValue(param.getSourceValue());
                     }
                 }
-            }
-            boolean tcomp = (targetNode.getComponent() != null)
-                    && (targetNode.getComponent().getComponentType() == EComponentType.GENERIC);
-            boolean dbImplict = (Boolean)duplicatedProcess
-                    .getElementParameter(IJobSettingConstants.FROM_DATABASE_FLAG_IMPLICIT_CONTEXT).getValue();
-            if(tcomp && dbImplict) {
-                JobSettingUtil.setTCOMImplicitParameter(targetNode, duplicatedProcess);
             }
         }
     }

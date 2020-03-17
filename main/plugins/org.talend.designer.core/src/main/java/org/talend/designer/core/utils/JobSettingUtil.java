@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.utils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -98,6 +99,19 @@ public class JobSettingUtil {
                 }
             }
         }
+    }
+    
+    public static Map<String, String> getTCOMParameterNameMap(){
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(IJobSettingConstants.USER_IMPLICIT_CONTEXT, EConnectionParameterName.GENERIC_USERNAME.getDisplayName());
+        map.put(IJobSettingConstants.PASS_IMPLICIT_CONTEXT, EConnectionParameterName.GENERIC_PASSWORD.getDisplayName());
+        map.put(IJobSettingConstants.DRIVER_CLASS_IMPLICIT_CONTEXT, EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName());
+        map.put(IJobSettingConstants.DRIVER_JAR_IMPLICIT_CONTEXT, EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName());
+        map.put(IJobSettingConstants.DBTABLE_IMPLICIT_CONTEXT, EConnectionParameterName.GENERIC_TABLENAME.getDisplayName());
+        map.put(IJobSettingConstants.URL_IMPLICIT_CONTEXT, EConnectionParameterName.GENERIC_URL.getDisplayName());
+        map.put(IJobSettingConstants.QUERY_CONDITION_IMPLICIT_CONTEXT, "sql");
+        map.put("QUERY", "sql");
+        return map;
     }
 
 }
