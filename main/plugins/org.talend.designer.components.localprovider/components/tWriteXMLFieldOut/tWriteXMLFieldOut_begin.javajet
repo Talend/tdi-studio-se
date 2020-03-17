@@ -212,7 +212,7 @@ class NestXMLTool_<%=cid%>{
 <%
     if (!isAllowEmpty && ignoreServiceAttributes) {
 %>
-        private List<String> serviceAttributeNames = new java.util.ArrayList<>();
+        private java.util.Set<String> serviceAttributeNames = new java.util.HashSet<>();
         {
             serviceAttributeNames.add("type");
             serviceAttributeNames.add("class");
@@ -258,7 +258,7 @@ class NestXMLTool_<%=cid%>{
 			}
 
             boolean noSignificantDataAnnotationsExist = root.attributes().size() == 0 <%if (!isAllowEmpty && ignoreServiceAttributes) {%>|| isOnlyServiceAttributesDeclared(root.attributes()) <% } %>;
-            if (root.content().size() == 0 
+            if (root.content().isEmpty()
                 && noSignificantDataAnnotationsExist && root.declaredNamespaces().size() == 0) {
                 if(root.getParent()!=null){
                     root.getParent().remove(root);
