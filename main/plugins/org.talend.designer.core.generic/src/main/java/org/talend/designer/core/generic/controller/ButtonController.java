@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
@@ -57,6 +58,8 @@ import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
  */
 public class ButtonController extends AbstractElementPropertySectionController {
 
+    private static Logger log = Logger.getLogger(ButtonController.class);
+
     private static final String TEST_CONNECTION = "Test connection"; //$NON-NLS-1$
 
     public ButtonController(IDynamicProperty dp) {
@@ -69,6 +72,16 @@ public class ButtonController extends AbstractElementPropertySectionController {
             chooseContext();
             Boolean result = loadJars(parameter);
             if (result != null && !result) {
+                log.info("JDBC Test connection install needed module is canceled");
+                StackTraceElement[] stackElements = new Throwable().getStackTrace();
+                if(stackElements != null)
+                {
+                    for(int i = 0; i < stackElements.length; i++)
+                    {
+                        log.info(stackElements[i]);
+                    }
+                }
+                log.info("End print stack trace");
                 return null;
             }
         }
