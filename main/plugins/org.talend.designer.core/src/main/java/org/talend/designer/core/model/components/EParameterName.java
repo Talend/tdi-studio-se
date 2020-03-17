@@ -385,10 +385,7 @@ public enum EParameterName {
     ACTIVE_DATABASE_DELIMITED_IDENTIFIERS("Active database delimited identifiers"), //$NON-NLS-1$
 
     // for tDataprepRun
-    PREPARATION_ID("PREPARATION_ID"),
-
-    // for databricks
-    DATABRICKS_CLOUD_PROVIDER("DATABRICKS_CLOUD_PROVIDER");
+    PREPARATION_ID("PREPARATION_ID");
 
     private String displayName;
 
