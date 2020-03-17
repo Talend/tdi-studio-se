@@ -257,9 +257,9 @@ class NestXMLTool_<%=cid%>{
 				removeEmptyElement(tmp);
 			}
 
-            boolean noSignificantDataAnnotationsExist = root.attributes().size() == 0 <%if (!isAllowEmpty && ignoreServiceAttributes) {%>|| isOnlyServiceAttributesDeclared(root.attributes()) <% } %>;
+            boolean noSignificantDataAnnotationsExist = root.attributes().isEmpty() <%if (!isAllowEmpty && ignoreServiceAttributes) {%>|| isOnlyServiceAttributesDeclared(root.attributes()) <% } %>;
             if (root.content().isEmpty()
-                && noSignificantDataAnnotationsExist && root.declaredNamespaces().size() == 0) {
+                && noSignificantDataAnnotationsExist && root.declaredNamespaces().isEmpty()) {
                 if(root.getParent()!=null){
                     root.getParent().remove(root);
                 }
