@@ -313,9 +313,11 @@ public class GEFPasteAction extends SelectionAction {
                         (org.talend.designer.core.ui.editor.process.Process) editor.getProcess(), gefPoint);
                 mpc.setSelectedSubjobs(subjobParts);
                 mpc.setSelectedExpandedJoblet(expandedJobletNodes);
+                mpc.setCheckNodeExist(false);
                 execute(mpc);
             } else if (nodeParts.size() != 0) {
                 NodesPasteCommand cmd = new NodesPasteCommand(nodeParts, editor.getProcess(), gefPoint);
+                cmd.setCheckNodeExist(false);
                 cmd.setSelectedSubjobs(subjobParts);
                 cmd.setSelectedExpandedJoblet(expandedJobletNodes);
                 execute(cmd);
