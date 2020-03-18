@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.avro.Schema;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.lang.ArrayUtils;
@@ -51,7 +52,9 @@ import org.talend.core.model.components.IMultipleComponentParameter;
 import org.talend.core.model.genhtml.IJobSettingConstants;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTable;
+import org.talend.core.model.metadata.MetadataToolAvroHelper;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.ConditionType;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.RuleType;
@@ -947,7 +950,9 @@ public class DataProcess implements IGeneratingProcess {
             updateVirtualComponentProperties(graphicalNode.getComponentProperties(), curItem, curNode);
 
             curNode.setActivate(graphicalNode.isActivate());
-
+            
+            boolean curNodetcomp = (curNode.getComponent() != null)
+                    && (curNode.getComponent().getComponentType() == EComponentType.GENERIC);
             IMetadataTable newMetadata = null;
             if (multipleComponentManager.isSetConnector()) {
                 newMetadata = graphicalNode.getMetadataFromConnector(multipleComponentManager.getConnector()).clone();
@@ -974,6 +979,19 @@ public class DataProcess implements IGeneratingProcess {
             }
             if (newMetadata != null) {
                 newMetadata.setTableName(uniqueName);
+                try {
+                    if(curNodetcomp) {
+                        newMetadata.setAttachedConnector("MAIN");
+                        ComponentProperties tcomp_properties = curNode.getComponentProperties();
+                        Schema schema = MetadataToolAvroHelper.convertToAvro(ConvertionHelper.convert(newMetadata));
+                        tcomp_properties.setValue("main.schema", schema);
+                        tcomp_properties.setValue("schemaFlow.schema", schema);
+                    }
+                } catch (Exception e) {
+                    //do nothing
+                }
+                
+                
             }
             if (graphicalNode.isDesignSubjobStartNode()) {
                 curNode.setDesignSubjobStartNode(null);
