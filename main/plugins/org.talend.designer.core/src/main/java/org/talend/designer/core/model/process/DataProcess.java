@@ -1189,7 +1189,7 @@ public class DataProcess implements IGeneratingProcess {
                             String sourceValue = param.getSourceValue();
                             String targetParaName = JobSettingUtil.getTCOMParameterNameMap().get(sourceValue);
                             if(targetNode.getElementParameters().get(i).getName().equals(targetParaName)) {
-                                paramTarget = targetNode.getElementParameter(targetParaName);
+                                paramTarget = targetNode.getElementParameters().get(i);
                                 targetFound = true;
                             }
                         }else if (targetNode.getElementParameters().get(i).getName().equals(param.getTargetValue())) {
