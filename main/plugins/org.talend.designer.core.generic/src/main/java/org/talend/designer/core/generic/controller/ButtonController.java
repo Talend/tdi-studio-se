@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
@@ -72,16 +73,7 @@ public class ButtonController extends AbstractElementPropertySectionController {
             chooseContext();
             Boolean result = loadJars(parameter);
             if (result != null && !result) {
-                log.info("JDBC Test connection install needed module is canceled");
-                StackTraceElement[] stackElements = new Throwable().getStackTrace();
-                if(stackElements != null)
-                {
-                    for(int i = 0; i < stackElements.length; i++)
-                    {
-                        log.info(stackElements[i]);
-                    }
-                }
-                log.info("End print stack trace");
+                log.log(Priority.INFO, "JDBC Test connection install needed module is canceled", new Exception());
                 return null;
             }
         }
