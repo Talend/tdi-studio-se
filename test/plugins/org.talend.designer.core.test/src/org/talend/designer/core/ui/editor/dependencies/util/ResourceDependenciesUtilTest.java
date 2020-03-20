@@ -45,6 +45,7 @@ import org.talend.core.model.properties.User;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.resources.ResourceItem;
 import org.talend.core.model.resources.ResourcesFactory;
+import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
@@ -141,7 +142,8 @@ public class ResourceDependenciesUtilTest {
     public void testCreateDependency() {
 
         Property itemproperty = item.getProperty();
-        String jobLabel = processItem.getProperty().getLabel() + "_" + processItem.getProperty().getVersion();
+        String jobLabel = JavaResourcesHelper.getJobFolderName(processItem.getProperty().getLabel(),
+                processItem.getProperty().getVersion());
         Assert.assertEquals("myResource", ResourceDependenciesUtil.createDependency(itemproperty.getId(),
                 itemproperty.getVersion(), jobLabel, process).toString());
 
@@ -152,7 +154,8 @@ public class ResourceDependenciesUtilTest {
     	String projectName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel().toLowerCase();
         String expectResult = projectName+"/test_0_1/resources/myResource_0.1.txt";
         JobResourceDependencyModel model = new JobResourceDependencyModel(item);
-        String jobLabel = processItem.getProperty().getLabel() + "_" + processItem.getProperty().getVersion();
+        String jobLabel = JavaResourcesHelper.getJobFolderName(processItem.getProperty().getLabel(),
+                processItem.getProperty().getVersion());
         String resourcePath = ResourceDependenciesUtil.getResourcePath(model, jobLabel, null);
         Assert.assertEquals(expectResult, resourcePath);
 
@@ -163,7 +166,6 @@ public class ResourceDependenciesUtilTest {
         String technicalLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
         Property jobProperty = processItem.getProperty();
         JobResourceDependencyModel model = new JobResourceDependencyModel(item);
-        String jobLabel = jobProperty.getLabel() + "_" + jobProperty.getVersion();
         String projectLocation = null;
         IRepositoryViewObject jobObject = null;
         try {
@@ -178,10 +180,10 @@ public class ResourceDependenciesUtilTest {
         Assert.assertNotNull(projectLocation);
         String relativeResourcePath = technicalLabel.toLowerCase() + "/test_0_1/resources/myResource_0.1.txt";
         IPath expectPath = new Path(projectLocation + "/" + ResourceDependenciesUtil.getProcessFolder(jobObject)
-                + jobLabel.toLowerCase()
-                + "/src/main/ext-resources/" + relativeResourcePath);
+                + "test_0.1/src/main/ext-resources/" + relativeResourcePath);
         IPath fullResourcePath = new Path(
-                ResourceDependenciesUtil.getJobExecuteResourceFilePath(model, jobObject, jobLabel, null));
+                ResourceDependenciesUtil.getJobExecuteResourceFilePath(model, jobProperty,
+                        JavaResourcesHelper.getJobFolderName(jobProperty.getLabel(), jobProperty.getVersion()), null));
         Assert.assertEquals(expectPath.toOSString(), fullResourcePath.toOSString());
         
     }
@@ -237,7 +239,7 @@ public class ResourceDependenciesUtilTest {
             String jobProjectFolderName = property.getLabel().toLowerCase() + "_" + property.getVersion();
             // resource path: aa\test_0_1\resources\myResource_0.1.txt
             String resourcePath = ResourceDependenciesUtil.getResourcePath(model,
-                    property.getLabel() + "_" + property.getVersion(), null);
+                    JavaResourcesHelper.getJobFolderName(property.getLabel(), property.getVersion()), null);
             ResourceDependenciesUtil.copyToExtResourceFolder(resourceObject, property.getId(), property.getVersion(), null, null);
             // copy to location:
             // AA\poms\jobs\process\test_0.1\src\main\ext-resources\aa\test_0_1\resources\myResource_0.1.txt
@@ -252,7 +254,7 @@ public class ResourceDependenciesUtilTest {
             String jobProjectFolderName2 = property2.getLabel().toLowerCase() + "_" + property2.getVersion();
             // resource path: aa\Ttest_0_1\resources\myResource_0.1.txt
             String resourcePath2 = ResourceDependenciesUtil.getResourcePath(model,
-                    property2.getLabel() + "_" + property2.getVersion(), null);
+                    JavaResourcesHelper.getJobFolderName(property2.getLabel(), property2.getVersion()), null);
             ResourceDependenciesUtil.copyToExtResourceFolder(resourceObject, property2.getId(), property2.getVersion(), null,
                     null);
             // copy to location:
