@@ -238,4 +238,22 @@ public class ExpressionTest {
                         "!DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, #LINK@NODE.CONNECTION.HIVE_VERSION].doSupportUseDatanodeHostname[]",
                         params, paramNode));
     }
+
+    @Test
+    public void testIsThereCondition() {
+        assertTrue(Expression.isThereCondition("a=1 and b=2", "and"));
+        assertTrue(Expression.isThereCondition("A=1 AND B=2", "and"));
+        assertFalse(Expression.isThereCondition("a=1 or b=2", "and"));
+
+        assertTrue(Expression.isThereCondition("a=1 or b=2", "or"));
+        assertTrue(Expression.isThereCondition("A=1 OR B=2", "or"));
+        assertFalse(Expression.isThereCondition("a=1 and b=2", "or"));
+
+        assertFalse(Expression.isThereCondition("a=1", "and"));
+        assertFalse(Expression.isThereCondition("a=1", "or"));
+
+        assertFalse(Expression.isThereCondition("standard='aaa'", "and"));
+        assertFalse(Expression.isThereCondition("story='aaa'", "or"));
+    }
+
 }
