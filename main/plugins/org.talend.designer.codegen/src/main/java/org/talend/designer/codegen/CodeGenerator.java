@@ -358,10 +358,8 @@ public class CodeGenerator implements ICodeGenerator {
                                 // for runtime
                                 if (!ProcessorUtilities.isExportConfig()) {
                                     contextPar.setType(JavaTypesManager.FILE.getId());
-                                    resourcePathForContext = resourceService.getFullResourcePathForContext(process, value);
-                                } else {
-                                    resourcePathForContext = resourceService.getResourcePathForContext(process, value);
                                 }
+                                resourcePathForContext = resourceService.getResourcePathForContext(process, value);
                             } else {
                                 // for PreviewFileInputContentDataProcess run
                                 resourcePathForContext = resourceService.getResourceItemFilePath(contextPar.getValue());
