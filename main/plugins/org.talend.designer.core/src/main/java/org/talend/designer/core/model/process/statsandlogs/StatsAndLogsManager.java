@@ -57,6 +57,7 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.DataConnection;
 import org.talend.designer.core.model.process.DataNode;
 import org.talend.designer.core.ui.preferences.StatsAndLogsConstants;
+import org.talend.designer.core.utils.JobSettingUtil;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 
 /**
@@ -997,7 +998,7 @@ public class StatsAndLogsManager {
             IElementParameter elePara = connectionNode
                     .getElementParameter(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName());
             Object value = process.getElementParameter(EParameterName.DRIVER_JAR.getName()).getValue();
-            getMVNDriverJar(elePara, value);
+            JobSettingUtil.getMVNDriverJar(elePara, value);
             elePara.setValue(value);
         }
 
@@ -1057,30 +1058,6 @@ public class StatsAndLogsManager {
                     .setValue(process.getElementParameter(EParameterName.PASS.getName()).getValue());
         }
 
-    }
-
-    private static void getMVNDriverJar(IElementParameter elePara, Object value) {
-        IGenericDBService dbService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-            dbService = GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
-        }
-        if (dbService == null) {
-            return;
-        }
-
-        if (value instanceof List) {
-            List objs = (List) value;
-            for (Object obj : objs) {
-                if (obj instanceof Map) {
-                    Map map = (Map) obj;
-                    String driver = (String) map.get("drivers");
-                    if (elePara.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())) {
-                        driver = dbService.getMVNPath(driver);
-                    }
-                    map.put("drivers", driver);
-                }
-            }
-        }
     }
 
     private static DataNode createLogsNode(boolean useFile, boolean console, String dbOutput) {
