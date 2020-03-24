@@ -165,7 +165,7 @@ public class FOXUI {
         xmlToSchemaSash = new SashForm(mainComposite, SWT.HORIZONTAL | SWT.SMOOTH);
         xmlToSchemaSash.setLayoutData(new GridData(GridData.FILL_BOTH));
         xmlToSchemaSash.setBackgroundMode(SWT.INHERIT_FORCE);
-        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+        if (Platform.OS_MACOSX.equals(Platform.getOS()) || Platform.OS_LINUX.equals(Platform.getOS())) {
             xmlToSchemaSash.setSashWidth((mainComposite.getShell().getBounds().width) / 5);
         }
         canModify = externalNode.getProcess().isReadOnly();
@@ -190,7 +190,7 @@ public class FOXUI {
         footerComp = new FooterComposite(mainComposite, SWT.NONE, foxManager);
         xmlViewer.expandToLevel(3);
         linker.createLinks();
-        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+        if (Platform.OS_MACOSX.equals(Platform.getOS()) || Platform.OS_LINUX.equals(Platform.getOS())) {
             mainComposite.getShell().addControlListener(new ControlListener() {
 
                 @Override
