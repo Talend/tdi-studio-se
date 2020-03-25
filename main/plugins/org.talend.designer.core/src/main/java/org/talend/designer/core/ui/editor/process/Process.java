@@ -504,7 +504,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         param.setDisplayName(EParameterName.LOG4J_RUN_LEVEL.getDisplayName());
         param.setNumRow(99);
         param.setShow(false);
-        param.setDefaultValue(param.getValue());
+        param.setValue("Info");
         addElementParameter(param);
 
         param = new ElementParameter(this);
