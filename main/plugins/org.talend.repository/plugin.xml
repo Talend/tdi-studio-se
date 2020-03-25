@@ -3328,7 +3328,25 @@
               id="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
               name="RemovePigudfModulesMigrationTask"
               version="7.3.1">
-        </projecttask>
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.1"
+              class="org.talend.repository.model.migration.ChangeDQComponentsLicenseKeyFieldTask"
+              description="Using LicenseKey Field in DQ Components"
+              id="org.talend.repository.model.migration.ChangeDQComponentsLicenseKeyFieldTask"
+              name="ChangeDQComponentsLicenseKeyFieldTask"
+              version="7.4.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.RenameSQLDWHMigrationTask"
+             description="Rename tSQLDWHXXX components to tAzureSynapseXXX"
+             id="org.talend.repository.model.migration.RenameSQLDWHMigrationTask"
+             name="RenameSQLDWHMigrationTask"
+             version="7.4.1">
+       </projecttask>
    </extension>
 
    <extension

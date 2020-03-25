@@ -1095,7 +1095,8 @@ public class JobSettingsManager {
             String dbType = getDatabaseTypeFromParameter(process);
             if (dbType != null) {
                 // TDI-18161:the SQL script's syntax is not right because of the implicit context of General JDBC.
-                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())) {
+                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName()) 
+                        || dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
                     dbType = findRealDbTypeForJDBC(process, dbType);
                 }
 

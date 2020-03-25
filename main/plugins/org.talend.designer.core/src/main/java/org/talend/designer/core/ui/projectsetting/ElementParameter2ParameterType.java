@@ -272,7 +272,7 @@ public class ElementParameter2ParameterType {
                                         tableValues.add(lineValues);
                                     }
                                     String elemValue = elementValue.getValue();
-                                    if (tmpParam != null && EParameterFieldType.PASSWORD.equals(tmpParam.getFieldType())) {
+                                    if (tmpParam != null && EParameterFieldType.isPassword(tmpParam.getFieldType())) {
                                         elemValue = elementValue.getRawValue();
                                     }
                                     lineValues.put(elementValue.getElementRef(), elemValue);
@@ -283,7 +283,7 @@ public class ElementParameter2ParameterType {
                                 }
                             }
                             elemParam.setPropertyValue(pTypeName, tableValues);
-                        } else if (param.getFieldType().equals(EParameterFieldType.PASSWORD)) {
+                        } else if (EParameterFieldType.isPassword(param.getFieldType())) {
                             param.setValue(pType.getRawValue());
                         } else if (param.getFieldType().equals(EParameterFieldType.ENCODING_TYPE)) {
                             // fix for bug 2193
@@ -468,7 +468,7 @@ public class ElementParameter2ParameterType {
                             }
                         }
                     }
-                    if (tmpParam != null && tmpParam.getFieldType().equals(EParameterFieldType.PASSWORD)) {
+                    if (tmpParam != null && EParameterFieldType.isPassword(tmpParam.getFieldType())) {
                         elementValue.setValue(strValue, true);
                     } else {
                         elementValue.setValue(strValue);

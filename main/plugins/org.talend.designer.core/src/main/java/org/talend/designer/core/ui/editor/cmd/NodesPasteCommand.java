@@ -109,6 +109,8 @@ public class NodesPasteCommand extends Command {
     private boolean isJobletRefactor = false;
 
     private boolean isJunitCreate = false;
+    
+    private boolean isCheckNodeExist = true;
 
     /**
      * Getter for isJunitCreate.
@@ -385,7 +387,7 @@ public class NodesPasteCommand extends Command {
         // create the nodes
         for (NodePart copiedNodePart : nodeParts) {
             IGraphicalNode copiedNode = (IGraphicalNode) copiedNodePart.getModel();
-            if (!containNodeInProcess(copiedNode)) {
+            if (this.isCheckNodeExist && !containNodeInProcess(copiedNode)) {
                 continue;
             }
             IComponent component = ComponentsFactoryProvider.getInstance().get(copiedNode.getComponent().getName(),
@@ -1008,4 +1010,16 @@ public class NodesPasteCommand extends Command {
     public void setSelectedExpandedJoblet(List<NodePart> selectedExpandedJoblet) {
         this.selectedExpandedJoblet = selectedExpandedJoblet;
     }
+
+    
+    public boolean isCheckNodeExist() {
+        return isCheckNodeExist;
+    }
+
+    
+    public void setCheckNodeExist(boolean isCheckNodeExist) {
+        this.isCheckNodeExist = isCheckNodeExist;
+    }
+    
+    
 }
