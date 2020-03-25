@@ -111,7 +111,7 @@
 	      NUM_ROW="1"
 	      NB_LINES="5"
 	      GROUP="ASSUME_ROLE_CONFIG"
-	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
 	    >
 	    </PARAMETER>
 	    
@@ -120,7 +120,7 @@
 	      FIELD="TEXT"
 	      NUM_ROW="1"
 	      GROUP="ASSUME_ROLE_CONFIG"
-	      SHOW_IF="(ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
+	      SHOW_IF="isShow[SET_STS_ENDPOINT] AND (SET_STS_ENDPOINT == 'true')"
 	    >
 	      <DEFAULT>""</DEFAULT>
 	    </PARAMETER>
