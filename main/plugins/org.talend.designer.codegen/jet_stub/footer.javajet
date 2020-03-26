@@ -872,10 +872,19 @@ if(execStat) {
         }
 %>
 
+<%
+//2. load implicit contextload
+ if(implicit_Context != null) {
+%>
+<%=createCallProcess(implicit_Context, className, false) %>
+<%
+ }
+%>
+
 this.globalResumeTicket = true;//to run tPreJob
 
 <%
-//2. run pre-job
+//3. run pre-job
  if(!prejobNodes.isEmpty()) {
     for(INode preNode:prejobNodes) {
 %>
@@ -898,16 +907,6 @@ this.globalResumeTicket = true;//to run tPreJob
 <%
  }
 %>
-
-<%
-//3. load implicit contextload
- if(implicit_Context != null) {
-%>
-<%=createCallProcess(implicit_Context, className, false) %>
-<%
- }
-%>
-
 
 <%
         //4. flush the begin msg
