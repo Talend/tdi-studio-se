@@ -518,6 +518,24 @@ public class LoginHelper {
         prefManipulator.setLastProject(project.getTechnicalLabel());
         saveLastConnBean(connBean);
 
+        try {
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
+                final ICoreTisService service = (ICoreTisService) GlobalServiceRegister.getDefault().getService(
+                        ICoreTisService.class);
+                if (service != null) {// if in TIS then update the bundle status according to the project type
+                    if (!service.validProject(project, needRestartForLocal)) {
+                        isRestart = true;
+                        return true;
+                    }
+                }// else not in TIS so ignor caus we may not have a licence so we do not know which bundles belong to
+                 // DI, DQ or MDM
+            }
+        } catch (PersistenceException e) {
+            CommonExceptionHandler.process(e);
+            MessageDialog.openError(getUsableShell(), getUsableShell().getText(), e.getMessage());
+            return false;
+        }
+
         // Check user library connection
         try {
             if (!factory.isLocalConnectionProvider() && !factory.getRepositoryContext().isOffline()) {
@@ -545,24 +563,6 @@ public class LoginHelper {
             }
         } catch (PersistenceException e1) {
             CommonExceptionHandler.process(e1);
-        }
-
-        try {
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreTisService.class)) {
-                final ICoreTisService service = (ICoreTisService) GlobalServiceRegister.getDefault()
-                        .getService(ICoreTisService.class);
-                if (service != null) {// if in TIS then update the bundle status according to the project type
-                    if (!service.validProject(project, needRestartForLocal)) {
-                        isRestart = true;
-                        return true;
-                    }
-                } // else not in TIS so ignor caus we may not have a licence so we do not know which bundles belong to
-                  // DI, DQ or MDM
-            }
-        } catch (PersistenceException e) {
-            CommonExceptionHandler.process(e);
-            MessageDialog.openError(getUsableShell(), getUsableShell().getText(), e.getMessage());
-            return false;
         }
 
         final Shell shell = getUsableShell();
