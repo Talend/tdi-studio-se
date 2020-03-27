@@ -46,6 +46,8 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -678,6 +680,9 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     }
                     checkErrors();
                     validateUpdate();
+                    if (errorManager.isHasAuthException()) {
+                        handleOpenConnectionsDialog(true);
+                    }
                 } catch (PersistenceException e) {
                     CommonExceptionHandler.process(e);
                 } catch (JSONException e) {
@@ -858,40 +863,18 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    ConnectionsDialog connectionsDialog = new ConnectionsDialog(getShell());
-                    int open = connectionsDialog.open();
-                    if (open == Window.OK) {
-                        List<ConnectionBean> storedConnections = connectionsDialog.getConnections();
-                        loginHelper.setStoredConnections(storedConnections);
-                        loginHelper.saveConnections();
-                        fillUIContentsWithBusyCursor();
-                        final ConnectionBean connection = getConnection();
-                        if (connection == null) {
-                            checkErrors();
-                            return;
-                        }
-                        // beforeConnBean = connection;
+                handleOpenConnectionsDialog(false);
+            }
+        });
 
-                        updateServerFields();
+        finishButton.addPaintListener(new PaintListener() {
 
-                        // Validate data
-                        if (validateFields()) {
-                            fillUIProjectListWithBusyCursor();
-                            validateProject();
-                        }
-                        checkErrors();
-                        validateUpdate();
-                    } else if (!LoginHelper.isRemotesConnection(getConnection())) {
-                        fillUIProjectListWithBusyCursor();
-                        validateProject();
-                        checkErrors();
-                    }
-                    // setStatusArea();
-                } catch (PersistenceException e1) {
-                    CommonExceptionHandler.process(e1);
-                } catch (JSONException e2) {
-                    CommonExceptionHandler.process(e2);
+            @Override
+            public void paintControl(PaintEvent e) {
+                finishButton.removePaintListener(this);
+                // for start, page showed complete
+                if (errorManager.isHasAuthException()) {
+                    handleOpenConnectionsDialog(true);
                 }
             }
         });
@@ -900,6 +883,10 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                // reset flag to connect again
+                errorManager.setAuthException(null);
+                errorManager.setHasAuthException(false);
+
                 loginFetchLicenseHelper.cancelAndClearFetchJobs();
                 LoginProjectPage.this.selectedProjectBeforeRefresh = getProject() == null ? null : getProject().getLabel();
                 // Validate data
@@ -917,6 +904,9 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 }
                 setRepositoryContextInContext();
                 LoginProjectPage.this.selectedProjectBeforeRefresh = null;
+                if (errorManager.isHasAuthException()) {
+                    handleOpenConnectionsDialog(true);
+                }
             }
         });
 
@@ -1017,14 +1007,72 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         } else {
             // should save before login, since svn related codes will read them
             saveLastUsedProjectAndBranch();
-            boolean isLogInOk = loginHelper.logIn(getConnection(), getProject());
+            boolean isLogInOk = loginHelper.logIn(getConnection(), getProject(), errorManager);
             if (isLogInOk) {
                 LoginHelper.setAlwaysAskAtStartup(alwaysAsk.getSelection());
                 loginDialog.okPressed();
             } else {
                 fillUIProjectListWithBusyCursor();
                 revertUpdateStatus();
+                if (errorManager.isHasAuthException()) {
+                    handleOpenConnectionsDialog(true);
+                }
             }
+        }
+    }
+
+    public void handleOpenConnectionsDialog(boolean showError) {
+        try {
+            if (showError && errorManager.isHasAuthException()) {
+                String[] dialogButtonLabels = new String[] { IDialogConstants.YES_LABEL, IDialogConstants.CANCEL_LABEL };
+                MessageDialog dialog = new ExceptionMessageDialog(getShell(),
+                        Messages.getString("LoginProjectPage.errorMessageTitle"), null, //$NON-NLS-1$
+                        Messages.getString("LoginProjectPage.authorizationErrorMessage"), MessageDialog.ERROR, //$NON-NLS-1$
+                        dialogButtonLabels, 0, errorManager.getAuthException());
+                if (dialog.open() == Window.CANCEL) {
+                    return;
+                }
+            }
+            ConnectionsDialog connectionsDialog = new ConnectionsDialog(getShell(), getConnection(),
+                    errorManager.isHasAuthException());
+            int open = connectionsDialog.open();
+            if (open == Window.OK) {
+                List<ConnectionBean> storedConnections = connectionsDialog.getConnections();
+                loginHelper.setStoredConnections(storedConnections);
+                loginHelper.saveConnections();
+                // reset flag to connect again
+                errorManager.setAuthException(null);
+                errorManager.setHasAuthException(false);
+                fillUIContentsWithBusyCursor();
+                final ConnectionBean connection = getConnection();
+                if (connection == null) {
+                    checkErrors();
+                    return;
+                }
+                // beforeConnBean = connection;
+
+                updateServerFields();
+
+                // Validate data
+                if (validateFields()) {
+                    fillUIProjectListWithBusyCursor();
+                    validateProject();
+                }
+                checkErrors();
+                validateUpdate();
+                if (errorManager.isHasAuthException()) {
+                    handleOpenConnectionsDialog(true);
+                }
+            } else if (!LoginHelper.isRemotesConnection(getConnection())) {
+                fillUIProjectListWithBusyCursor();
+                validateProject();
+                checkErrors();
+            }
+            // setStatusArea();
+        } catch (PersistenceException e1) {
+            CommonExceptionHandler.process(e1);
+        } catch (JSONException e2) {
+            CommonExceptionHandler.process(e2);
         }
     }
 
@@ -1211,7 +1259,12 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     protected void refreshNecessaryVisible(boolean isRemote) {
         boolean isSVNPluginLoaded = PluginChecker.isSVNProviderPluginLoaded();
 
-        refreshCreateSandboxProjectVisible(isNeedSandboxProject());
+        boolean needSandboxProject = isRemote;
+        if (!errorManager.isHasAuthException()) {
+            // connect administrator exist error, avoid check isNeedSandboxProject from remote
+            needSandboxProject = isNeedSandboxProject();
+        }
+        refreshCreateSandboxProjectVisible(needSandboxProject);
         refreshImportLocalProjectVisible(!isRemote);
         refreshImportDemoProjectVisible(!isRemote);
         refreshCreateNewProjectVisible(!isRemote);
@@ -1220,7 +1273,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         Control projectListAreaBottomControl = null;
         if (isSVNPluginLoaded) {
             if (isRemote) {
-                if (isNeedSandboxProject()) {
+                if (needSandboxProject) {
                     projectListAreaBottomControl = createSandBoxProject;
                 } else {
                     projectListAreaBottomControl = navigateArea;
@@ -1420,6 +1473,10 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     }
 
     protected void validateUpdate() throws JSONException {
+        if (errorManager.isHasAuthException()) {
+            // can't connect to remote
+            return;
+        }
         final ConnectionBean currentBean = getConnection();
         String repositoryId = null;
         // at 1st time open the studio there are no bean at all,so need avoid NPE
@@ -1722,7 +1779,10 @@ public class LoginProjectPage extends AbstractLoginActionPage {
      */
     protected void fillUIProjectList() {
 
-        Project[] projects = loginHelper.getProjects(getConnection(), errorManager);
+        Project[] projects = null;
+        if (!errorManager.isHasAuthException()) {
+            projects = loginHelper.getProjects(getConnection(), errorManager);
+        }
         if (projects == null) {
             projects = new Project[0];
         }

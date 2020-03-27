@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
+import org.talend.commons.exception.ClientException;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.InformException;
 import org.talend.commons.exception.LoginException;
@@ -486,6 +487,10 @@ public class LoginHelper {
     }
 
     public boolean logIn(ConnectionBean connBean, final Project project) {
+        return logIn(connBean, project, null);
+    }
+
+    public boolean logIn(ConnectionBean connBean, final Project project, ErrorManager errorManager) {
         final ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         final boolean needRestartForLocal = needRestartForLocal(connBean);
         if (connBean == null || project == null || project.getLabel() == null) {
@@ -543,8 +548,14 @@ public class LoginHelper {
                     }
                 }
             }
-        } catch (PersistenceException e1) {
+        } catch (Exception e1) {
             CommonExceptionHandler.process(e1);
+            if (isAuthorizationException(e1) && errorManager != null) {
+                errorManager.setHasAuthException(true);
+                errorManager.setAuthException(e1);
+                errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + ":\n" + e1.getMessage());//$NON-NLS-1$ //$NON-NLS-2$
+                return false;
+            }
         }
 
         try {
@@ -605,6 +616,11 @@ public class LoginHelper {
             } else if (e.getTargetException() instanceof InformException) {
                 Display.getDefault().syncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
                         Messages.getString("LoginDialog.logonDenyTitle"), e.getTargetException().getLocalizedMessage()));
+            } else if (isAuthorizationException(e.getTargetException()) && errorManager != null) {
+                errorManager.setHasAuthException(true);
+                errorManager.setAuthException(e.getTargetException());
+                errorManager.setErrMessage(
+                        Messages.getString("LoginComposite.errorMessages1") + ":\n" + e.getTargetException().getMessage());//$NON-NLS-1$ //$NON-NLS-2$
             } else {
                 MessageBoxExceptionHandler.process(e.getTargetException(), getUsableShell());
             }
@@ -624,6 +640,17 @@ public class LoginHelper {
         }
 
         return true;
+    }
+
+    public static boolean isAuthorizationException(Throwable exception) {
+        boolean flag = false;
+        if (exception instanceof ClientException) {
+            ClientException e = (ClientException) exception;
+            if (e.getHttpCode() != null && e.getHttpCode() == 401) {
+                flag = true;
+            }
+        }
+        return flag;
     }
 
     public void saveUpdateStatus(Project project) throws JSONException {
@@ -755,6 +782,10 @@ public class LoginHelper {
 
             initialized = true;
         } catch (Throwable e) {
+            if (isAuthorizationException(e)) {
+                errorManager.setHasAuthException(true);
+                errorManager.setAuthException(e);
+            }
             projects = new Project[0];
             if (errorManager != null) {
                 errorManager.setErrMessage(Messages.getString("LoginComposite.errorMessages1") + newLine + e.getMessage());//$NON-NLS-1$
