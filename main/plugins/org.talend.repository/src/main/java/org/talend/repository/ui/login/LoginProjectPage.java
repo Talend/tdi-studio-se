@@ -883,6 +883,10 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                // reset flag to connect again
+                errorManager.setAuthException(null);
+                errorManager.setHasAuthException(false);
+
                 loginFetchLicenseHelper.cancelAndClearFetchJobs();
                 LoginProjectPage.this.selectedProjectBeforeRefresh = getProject() == null ? null : getProject().getLabel();
                 // Validate data
@@ -900,6 +904,9 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 }
                 setRepositoryContextInContext();
                 LoginProjectPage.this.selectedProjectBeforeRefresh = null;
+                if (errorManager.isHasAuthException()) {
+                    handleOpenConnectionsDialog(true);
+                }
             }
         });
 
