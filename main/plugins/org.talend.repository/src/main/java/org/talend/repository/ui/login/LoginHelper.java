@@ -617,6 +617,7 @@ public class LoginHelper {
                 Display.getDefault().syncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
                         Messages.getString("LoginDialog.logonDenyTitle"), e.getTargetException().getLocalizedMessage()));
             } else if (isAuthorizationException(e.getTargetException()) && errorManager != null) {
+                errorManager.setHasAuthException(true);
                 errorManager.setAuthException(e.getTargetException());
                 errorManager.setErrMessage(
                         Messages.getString("LoginComposite.errorMessages1") + ":\n" + e.getTargetException().getMessage());//$NON-NLS-1$ //$NON-NLS-2$
