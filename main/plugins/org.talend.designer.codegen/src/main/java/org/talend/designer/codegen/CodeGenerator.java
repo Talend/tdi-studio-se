@@ -66,6 +66,7 @@ import org.talend.designer.codegen.model.CodeGeneratorEmittersPoolFactory;
 import org.talend.designer.codegen.model.CodeGeneratorInternalTemplatesFactoryProvider;
 import org.talend.designer.codegen.proxy.JetProxy;
 import org.talend.designer.core.generic.model.Component;
+import org.talend.designer.runprocess.ProcessorUtilities;
 
 /**
  * CodeGenerator.
@@ -353,8 +354,12 @@ public class CodeGenerator implements ICodeGenerator {
                                     .getDefault().getService(IResourcesDependenciesService.class);
                             String resourcePathForContext = null;
                             if (process instanceof IProcess2) {
-                                resourcePathForContext = resourceService.getResourcePathForContext(process,
-                                        contextPar.getValue());
+                                String value = contextPar.getValue();
+                                // for runtime
+                                if (!ProcessorUtilities.isExportConfig()) {
+                                    contextPar.setType(JavaTypesManager.FILE.getId());
+                                }
+                                resourcePathForContext = resourceService.getResourcePathForContext(process, value);
                             } else {
                                 // for PreviewFileInputContentDataProcess run
                                 resourcePathForContext = resourceService.getResourceItemFilePath(contextPar.getValue());

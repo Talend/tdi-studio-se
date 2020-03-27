@@ -84,7 +84,7 @@
       REQUIRED="true"
       NUM_ROW="4"
     >
-      <DEFAULT>TalendDate.getDate("yyyyMMdd-hhmmss") + "_" + (counter_tPOP_1 + 1) + ".mail"</DEFAULT>
+      <DEFAULT>TalendDate.getDate("yyyyMMdd-hhmmss") + "_" + java.util.UUID.randomUUID().toString().substring(0, 16) + ".mail"</DEFAULT>
     </PARAMETER>
 
     <PARAMETER

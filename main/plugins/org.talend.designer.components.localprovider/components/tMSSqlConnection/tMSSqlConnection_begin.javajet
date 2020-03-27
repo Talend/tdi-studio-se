@@ -69,3 +69,5 @@ imports="
 	globalMap.put("conn_<%=cid%>",conn_<%=cid%>);
 	
 	globalMap.put("shareIdentitySetting_<%=cid%>",  <%=ElementParameterParser.getValue(node, "__SHARE_IDENTITY_SETTING__")%>);
+
+	globalMap.put("driver_<%=cid%>", "<%=ElementParameterParser.getValue(node, "__DRIVER__")%>");

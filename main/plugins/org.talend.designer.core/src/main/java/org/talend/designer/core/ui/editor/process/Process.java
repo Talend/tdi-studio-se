@@ -504,7 +504,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         param.setDisplayName(EParameterName.LOG4J_RUN_LEVEL.getDisplayName());
         param.setNumRow(99);
         param.setShow(false);
-        param.setDefaultValue(param.getValue());
+        param.setValue("Info");
         addElementParameter(param);
 
         param = new ElementParameter(this);
@@ -1217,7 +1217,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                             }
                         }
                     }
-                    if (tmpParam != null && tmpParam.getFieldType().equals(EParameterFieldType.PASSWORD)) {
+                    if (tmpParam != null && EParameterFieldType.isPassword(tmpParam.getFieldType())) {
                         elementValue.setValue(strValue, true);
                     } else {
                         elementValue.setValue(strValue);
@@ -1249,7 +1249,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                     pType.getElementValue().add(elementValue);
                 }
             }
-        } else if (param.getFieldType().equals(EParameterFieldType.PASSWORD) && value instanceof String) {
+        } else if (EParameterFieldType.isPassword(param.getFieldType()) && value instanceof String) {
             pType.setRawValue((String) value);
         } else {
             if (value == null) {
@@ -1515,7 +1515,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         }
 
                         String elemValue = elementValue.getValue();
-                        if (tmpParam != null && EParameterFieldType.PASSWORD.equals(tmpParam.getFieldType())) {
+                        if (tmpParam != null && EParameterFieldType.isPassword(tmpParam.getFieldType())) {
                             elemValue = elementValue.getRawValue();
                         }
                         if (elementValue.isHexValue() && elemValue != null) {
@@ -1580,7 +1580,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
                 elemParam.setPropertyValue(key, value);
                 // end of fix for bug 2193
-            } else if (param.getFieldType().equals(EParameterFieldType.PASSWORD)) {
+            } else if (EParameterFieldType.isPassword(param.getFieldType())) {
                 boolean generic = false;
                 IComponent component = null;
                 if (elemParam instanceof Node) {

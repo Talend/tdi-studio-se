@@ -98,7 +98,7 @@ public final class ParameterUtilTool {
         String paramValue = paramType.getValue();
         if (paramName != null && paramValue != null) {
             // Check param name
-        	if (EParameterFieldType.PASSWORD.getName().equals(paramType.getField())) {
+            if (EParameterFieldType.isPassword(paramType.getField())) {
                 // we should always depend on getRawValue to get clear password
                 return paramType.getRawValue();
             }

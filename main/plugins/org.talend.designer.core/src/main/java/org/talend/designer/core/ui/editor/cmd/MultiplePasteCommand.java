@@ -42,6 +42,8 @@ public class MultiplePasteCommand extends CompoundCommand {
     private NodesPasteCommand nodeCmd;
 
     private NotesPasteCommand noteCmd;
+    
+    private boolean isCheckNodeExist = true;
 
     public MultiplePasteCommand(List<NodePart> nodeParts, List<NoteEditPart> noteParts, Process process, Point cursorLocation) {
         // List<NodePart> nodePartList = new ArrayList<NodePart>();
@@ -67,6 +69,8 @@ public class MultiplePasteCommand extends CompoundCommand {
      */
     @Override
     public void execute() {
+        nodeCmd.setCheckNodeExist(isCheckNodeExist);
+        
         AbstractMultiPageTalendEditor multiPageTalendEditor = (AbstractMultiPageTalendEditor) PlatformUI.getWorkbench()
                 .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
         GraphicalViewer viewer = multiPageTalendEditor.getTalendEditor().getViewer();
@@ -85,7 +89,7 @@ public class MultiplePasteCommand extends CompoundCommand {
             for (EditPart editPart : (List<EditPart>) processPart.getChildren()) {
                 if (editPart instanceof NodePart) {
                     Node currentNode = (Node) editPart.getModel();
-                    if (nodeCmd.getNodeContainerList().contains(currentNode.getNodeContainer())) {
+                    if (nodeCmd.getNodeContainerList().contains(currentNode.getNodeContainer()) || !isCheckNodeExist) {
                         sel.add(editPart);
                     }
                 } else if (editPart instanceof NoteEditPart) {
@@ -150,4 +154,13 @@ public class MultiplePasteCommand extends CompoundCommand {
         nodeCmd.setSelectedExpandedJoblet(selectedExpandedJoblet);
     }
 
+    
+    public boolean isCheckNodeExist() {
+        return isCheckNodeExist;
+    }
+
+    
+    public void setCheckNodeExist(boolean isCheckNodeExist) {
+        this.isCheckNodeExist = isCheckNodeExist;
+    }
 }
