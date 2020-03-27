@@ -22,8 +22,24 @@ imports="
 	class DBInputBeginUtil extends DefaultDBInputUtil{
 	    
 		public void setURL(INode node) {
-%>
+			%>
 			String dbProperties_<%=cid%> = <%=dbproperties%>;
+			<%
+			boolean isTeradataFastExport = node.isVirtualGenerateNode() && cid.matches("^.*?tTeradataFastExport_\\d+_In$");
+			if(isTeradataFastExport)  {//need to correct the jdbc parameters for jdbc url as TYPE=FASTEXPORT is necessary for isTeradataFastExport component
+%>
+				final String necessaryParam_<%=cid%> = "TYPE=FASTEXPORT";
+				if(dbProperties_<%=cid%> == null || dbProperties_<%=cid%>.trim().length() == 0) {
+					dbProperties_<%=cid%> = necessaryParam_<%=cid%>;
+				} else if(!routines.system.StringUtils.containsIgnoreCase(dbProperties_<%=cid%>, necessaryParam_<%=cid%>)) {
+					dbProperties_<%=cid%> = dbProperties_<%=cid%> + "," + necessaryParam_<%=cid%>;
+				}
+				
+				String url_<%=cid%> = "jdbc:teradata://" + <%=dbhost%> + "/DATABASE=" + <%=dbname%> + "," + dbProperties_<%=cid%>;
+<%
+				return;
+			}
+%>
 			String url_<%=cid%> = null;
 			if(dbProperties_<%=cid%> == null || dbProperties_<%=cid%>.trim().length() == 0) {
 				url_<%=cid %> = "jdbc:teradata://" + <%=dbhost%> + "/DATABASE=" + <%=dbname%>;    
