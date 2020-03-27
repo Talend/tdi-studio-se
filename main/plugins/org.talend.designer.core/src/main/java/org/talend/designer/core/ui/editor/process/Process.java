@@ -2343,12 +2343,12 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 String componentName = unNode.getComponentName();
                 if (!isCurrentProject && !componentName.contains(":")) {
                     componentName = ProjectManager.getInstance().getProject(this.getProperty()).getLabel() + ":" + componentName; //$NON-NLS-1$
-                } else if (jobletUtil.matchExpression(componentName)) {
+                } else if (jobletUtil.matchExpression(componentName) && !jobletUtil.isStrictJoblet()) {
                     String[] names = componentName.split(":"); //$NON-NLS-1$
                     componentName = names[1];
                 }
                 IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, componentsType);
-                if (component == null && jobletUtil.isJoblet(unNode)) {
+                if (component == null && jobletUtil.isJoblet(unNode) && !jobletUtil.isStrictJoblet()) {
                     component = ComponentsFactoryProvider.getInstance().getJobletComponent(componentName, componentsType);
                 }
                 if (component != null) {
