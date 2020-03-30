@@ -40,9 +40,8 @@ public class StandardJobNodePropertyTester extends AbstractNodeTester {
             ProjectRepositoryNode root = (ProjectRepositoryNode) repositoryNode.getRoot();
             // FIXME, only load the related plugin, then can display the standard node, else same TOS, only Job Designs
             // with standard job by default, and be children directly.
-            if (root != null
-                    && (PluginChecker.isStormPluginLoader() || PluginChecker.isMapReducePluginLoader() || PluginChecker
-                            .isJobLetPluginLoaded())) {
+            if ((repositoryNode instanceof ProjectRepositoryNode || root != null) && (PluginChecker.isStormPluginLoader()
+                    || PluginChecker.isMapReducePluginLoader() || PluginChecker.isJobLetPluginLoaded())) {
                 return true;
             }
         }
