@@ -15,7 +15,6 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
- * </p>
  * <ul>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.DBMapperTableEntry#getName <em>Name</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.DBMapperTableEntry#getExpression <em>Expression</em>}</li>
@@ -24,6 +23,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.DBMapperTableEntry#isJoin <em>Join</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.DBMapperTableEntry#getOperator <em>Operator</em>}</li>
  * </ul>
+ * </p>
  *
  * @see org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage#getDBMapperTableEntry()
  * @model
