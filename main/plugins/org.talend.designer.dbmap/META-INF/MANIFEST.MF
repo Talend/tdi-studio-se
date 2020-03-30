@@ -67,5 +67,4 @@ Export-Package: org.talend.designer.dbmap,
  org.talend.designer.dbmap.utils.problems
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Eclipse-RegisterBuddy: org.talend.testutils
