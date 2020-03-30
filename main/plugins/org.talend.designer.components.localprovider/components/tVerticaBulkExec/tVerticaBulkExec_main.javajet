@@ -68,17 +68,27 @@ java.io.FileInputStream fis_<%=cid %> = (java.io.FileInputStream)<%=connName %>.
 java.io.FileInputStream fis_<%=cid %> = null;
 <%
     }
+    
+    boolean isUpdate = ("UPDATE".equals(dataAction) && columnList != null && columnList.size() > 0);
+    if(isUpdate) {
+%>
+    String tmpTableName_<%=cid%>= "tmp_<%=cid%>" + pid + Thread.currentThread().getId();
+    if(dbschema_<%=cid%>!= null && !dbschema_<%=cid%>.trim().isEmpty()) {
+        tmpTableName_<%=cid%> = dbschema_<%=cid%>+ "." + tmpTableName_<%=cid%>;
+    }
+<%
+    }
 %>
 try{
 <%
-if(("UPDATE").equals(dataAction)) {
+if(("UPDATE").equals(dataAction)) {//TODO use isUpdate, now only follow refactor way
 %>
 java.sql.Statement stmtCreateTmp_<%=cid%> = conn_<%=cid%>.createStatement();
 <%if(isLog4jEnabled){%>
 log.info("<%=cid%> - Creating temp table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>." );
 <%}%>
 
-stmtCreateTmp_<%=cid%>.execute(sql_create_tmpdb);
+stmtCreateTmp_<%=cid%>.execute(sql_create_tmpdb_<%=cid%>);
 <%if(isLog4jEnabled){%>
     log.info("<%=cid%> - Create temp table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
 <%}%>
@@ -121,15 +131,12 @@ if(("INSERT").equals(dataAction) || columnList != null && columnList.size() > 0)
 
 }
 
-if(("UPDATE").equals(dataAction) && columnList != null && columnList.size() > 0) {
+if(isUpdate) {
 %>
-    String tmpTableName_<%=cid%>= "tmp_<%=cid%>" + pid + Thread.currentThread().getId();
     if(dbschema_<%=cid%>== null || dbschema_<%=cid%>.trim().length() == 0) {
         tableName_<%=cid%>=<%=table%>;
-    }
-    else {
-        tableName_<%=cid%>= dbschema_<%=cid%>+ "." +<%=table%>;
-        tmpTableName_<%=cid%>=dbschema_<%=cid%>+ "." + tmpTableName_<%=cid%>;
+    } else {
+        tableName_<%=cid%>= dbschema_<%=cid%>+ "." + <%=table%>;
     }
     java.sql.Statement stmtUpdateBulk_<%=cid%>= conn_<%=cid%>.createStatement();
 <%
@@ -147,15 +154,14 @@ if(("UPDATE").equals(dataAction) && columnList != null && columnList.size() > 0)
 %>
 
     stmtUpdateBulk_<%=cid%>.close();
-    tableName_<%=cid%>= tmpTableName_<%=cid%>;
 <%
 }
 %>
 }finally{
-
 <%
-    if(("UPDATE").equals(dataAction) && columnList != null && columnList.size() > 0) {
+    if(isUpdate) {
 %>
+        tableName_<%=cid%>= tmpTableName_<%=cid%>;
         java.sql.Statement stmtTmpDrop_<%=cid%> = conn_<%=cid%>.createStatement();
 <%
         if(isLog4jEnabled){

@@ -180,7 +180,7 @@ if(("UPDATE").equals(dataAction)) {
 	    	tableName_<%=cid%> = dbschema_<%=cid%> + "." + tableName_<%=cid%>;
 		}
 
-		String sql_create_tmpdb = "<%=manager.getCreateTableSQL(stmtStructure)%>)";
+		String sql_create_tmpdb_<%=cid%> = "<%=manager.getCreateTableSQL(stmtStructure)%>)";
 
 <%
 	}

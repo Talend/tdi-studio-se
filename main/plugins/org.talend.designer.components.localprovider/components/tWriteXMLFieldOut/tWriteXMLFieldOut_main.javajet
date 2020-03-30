@@ -263,21 +263,28 @@ class GenerateToolByDom4j{
 		if(<%tool.getValue(node);%>!=null){
 			nestXMLTool_<%=cid%> .setText(<%=currEleName%>_<%=cid%>,<%tool.getValue(node);%>);
 <%
+
+                boolean hasCustomAttrs = false;
+                for (XMLNode attribute : node.attributes) {
+                    if (!"type".equals(attribute.name) && !"class".equals(attribute.name)) {
+                    %>
+                    // Node <%= node.name %> has custom attribute <%= attribute.name %>
+                    <%
+                        hasCustomAttrs = true;
+                        break;
+                    }
+                }
 			if(istWriteJSONField && allowEmptyStrings) {
-				if (javaType == JavaTypesManager.STRING) {
+				if (javaType == JavaTypesManager.STRING 
+                    && (!hasCustomAttrs)
+                    && (node.elements == null || node.elements.size() == 0)) {
 				%>
 			<%=currEleName%>_<%=cid%>.addAttribute("type", "string");
 			<%=currEleName%>_<%=cid%>.addAttribute("class", "string");
 				<%
 				}
 			}
-                boolean hasCustomAttrs = false;
-                for (XMLNode attribute : node.attributes) {
-                    if (!"type".equals(attribute.name) && !"class".equals(attribute.name)) {
-                        hasCustomAttrs = true;
-                        break;
-                    }
-                }
+
 
                 if (istWriteJSONField && !isQuoteAllValues && !hasCustomAttrs) {
                     if (javaType == JavaTypesManager.BOOLEAN) {
