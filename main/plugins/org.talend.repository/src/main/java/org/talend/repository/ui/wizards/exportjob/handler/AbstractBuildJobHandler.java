@@ -13,11 +13,7 @@
 package org.talend.repository.ui.wizards.exportjob.handler;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.BooleanUtils;
@@ -33,11 +29,9 @@ import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
-import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Project;
-import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
@@ -48,6 +42,7 @@ import org.talend.core.runtime.repository.build.IBuildResourcesProvider;
 import org.talend.core.runtime.util.ParametersUtil;
 import org.talend.core.services.ICoreTisService;
 import org.talend.designer.maven.model.TalendMavenConstants;
+import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
@@ -389,19 +384,9 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         parameters.put(VERSION, version);
         parameters.put(OBJ_PROCESS_JAVA_PROJECT, talendProcessJavaProject);
 
-        //
-        List<Item> dependenciesItems = new ArrayList<Item>();
-        Collection<IRepositoryViewObject> allProcessDependencies = ProcessUtils
-                .getAllProcessDependencies(Arrays.asList(processItem));
-        if (!allProcessDependencies.isEmpty()) {
-            for (IRepositoryViewObject repositoryObject : allProcessDependencies) {
-                dependenciesItems.add(repositoryObject.getProperty().getItem());
-            }
-            parameters.put(OBJ_ITEM_DEPENDENCIES, dependenciesItems);
-        }
-
         // generate sources
-        generateJobFiles(monitor);
+        IProcessor processor = generateJobFiles(monitor);
+        parameters.put(OBJ_ITEM_DEPENDENCIES, processor.getBuildChildrenJobs());
 
         // export items
         if (ParametersUtil.hasBoolFlag(parameters, OPTION_ITEMS)) {
