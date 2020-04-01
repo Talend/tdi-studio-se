@@ -12,9 +12,6 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.generation;
 
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1005,7 +1002,11 @@ public abstract class DbGenerationManager {
                 query = query + " \""; //$NON-NLS-1$
             } else {
                 if (query.trim().endsWith("+ \"")) { //$NON-NLS-1$
-                    query = query.substring(0, query.lastIndexOf("+ \"")); //$NON-NLS-1$
+                    if (DEFAULT_TAB_SPACE_STRING.equals(this.tabSpaceString)) {
+                        query = query.substring(0, query.lastIndexOf("+ \"")); //$NON-NLS-1$
+                    } else {
+                        query = query + "\""; //$NON-NLS-1$
+                    }
                 }
             }
         }
