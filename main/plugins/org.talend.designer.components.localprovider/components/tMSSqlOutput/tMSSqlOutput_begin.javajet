@@ -69,7 +69,9 @@ skeleton="../templates/db_output_bulk.skeleton"
     boolean isEnableDebug = ("true").equals(ElementParameterParser.getValue(node,"__ENABLE_DEBUG_MODE__"));
     boolean usingStatsLogs=cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("talendMeter_DB");
     boolean useBatchSize = "true".equals(ElementParameterParser.getValue(node,"__USE_BATCH_SIZE__"));
-	String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
+    String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
+
+    boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 
     String rejectConnName = null;
     List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
