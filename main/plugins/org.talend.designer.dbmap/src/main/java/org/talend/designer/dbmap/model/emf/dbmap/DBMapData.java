@@ -17,12 +17,12 @@ import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.DBMapData#getVarTables <em>Var Tables</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.DBMapData#getInputTables <em>Input Tables</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.DBMapData#getOutputTables <em>Output Tables</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage#getDBMapData()
  * @model
