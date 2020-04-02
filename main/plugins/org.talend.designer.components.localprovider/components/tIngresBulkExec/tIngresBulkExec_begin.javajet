@@ -362,6 +362,9 @@
 						try {
 							while((line = reader.readLine()) != null) {
 							}
+							if(Thread.interrupted()){
+								return;
+							}
 						} finally {
 							reader.close();
 						}
@@ -392,6 +395,9 @@
 								<%
 							}
 							%>
+							if(Thread.interrupted()){
+								return;
+							}
 							}
 						} finally {
 							reader.close();
@@ -406,7 +412,9 @@
 
 			chmod_<%=cid %>.waitFor();
 			chmodnormal_<%=cid%>.interrupt();
+			chmodnormal_<%=cid%>.join();
 			chmoderror_<%=cid%>.interrupt();
+			chmoderror_<%=cid%>.join();
 		}
 		final Process ps_<%=cid %> = runtime_<%=cid%>.exec(executableFilePath_<%=cid %>);
 		<%
@@ -439,6 +447,9 @@
 						<%
 					}
 					%>
+					if(Thread.interrupted()){
+						return;
+					}
 					}
 				} finally {
 					reader.close();
@@ -470,6 +481,9 @@
 						<%
 						}
 						%>
+						if(Thread.interrupted()){
+							return;
+						}
 					}
 				} finally {
 					reader.close();
@@ -483,7 +497,9 @@
 	error_<%=cid%>.start();
 	ps_<%=cid %>.waitFor();
 	normal_<%=cid%>.interrupt();
+	normal_<%=cid%>.join();
 	error_<%=cid%>.interrupt();
+	error_<%=cid%>.join();
 	<%
 	if(isLog4jEnabled){
 	%>

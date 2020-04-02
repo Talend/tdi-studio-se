@@ -690,6 +690,9 @@ Thread normal_<%=cid %> = new Thread() {
                         <%
                     }
                     %>
+					if(Thread.interrupted()){
+						return;
+					}
                 }
             } finally {
                  reader.close();
@@ -722,6 +725,9 @@ Thread error_<%=cid %> = new Thread() {
                        <%
                    }
                    %>
+					if(Thread.interrupted()){
+						return;
+					}
                }
             } finally {
                 reader.close();
@@ -741,8 +747,9 @@ int exitCode_<%=cid%> = process_<%=cid %>.exitValue();
 
 
 normal_<%=cid %>.interrupt();
-
+normal_<%=cid %>.join();
 error_<%=cid %>.interrupt();
+error_<%=cid %>.join();
 
 if ("true".equals((String)globalMap.get("<%=cid%>_SQLLOAD_ERROR"))) {
     throw new TalendException(new java.lang.Exception() , "<%=cid%>" , globalMap);
