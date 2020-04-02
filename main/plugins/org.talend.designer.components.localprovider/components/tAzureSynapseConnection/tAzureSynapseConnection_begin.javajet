@@ -5,47 +5,54 @@ imports="
     org.talend.designer.codegen.config.CodeGeneratorArgument
 " 
 %>
-	<%@ include file="../templates/DB/HelpClass/HelpClass.javajet"%>
+    <%@ include file="../templates/DB/HelpClass/HelpClass.javajet"%>
 <%
-	class ConnectionUtil extends DefaultConnectionUtil{
-	
-		public void createURL(INode node) {
-			super.createURL(node);
-			String driver = ElementParameterParser.getValue(node, "__DRIVER__");
+    class ConnectionUtil extends DefaultConnectionUtil{
+
+        public void createURL(INode node) {
+            super.createURL(node);
+            String driver = ElementParameterParser.getValue(node, "__DRIVER__");
+            boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 %>
 <%
-			if(driver.equals("JTDS")) {
+            if(driver.equals("JTDS")) {
 %>
-			String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ;
+            String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ;
 <%
-			} else {
-%>		    
-		    String url_<%=cid %> = "jdbc:sqlserver://" + <%=dbhost%> ;
-<%
-			}
+            } else {
 %>
-		String port_<%=cid%> = <%=dbport%>;
-		String dbname_<%=cid%> = <%=dbname%> ;
-    	if (!"".equals(port_<%=cid%>)) {
-    		url_<%=cid %> += ":" + <%=dbport%>;
-    	}
-    	if (!"".equals(dbname_<%=cid%>)) {
-    		<%
-			if(driver.equals("JTDS")) {
-%>
-				url_<%=cid%> += "//" + <%=dbname%>; 
+            String url_<%=cid %> = "jdbc:sqlserver://" + <%=dbhost%> ;
 <%
-			} else {
-%>		    
-		    	url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
-<%
-			}
+            }
 %>
-    	}
-		url_<%=cid%> += ";applicationName=Talend;" + <%=dbproperties%>;  
-<%	
-		}
-	
+            String port_<%=cid%> = <%=dbport%>;
+            String dbname_<%=cid%> = <%=dbname%> ;
+            if (!"".equals(port_<%=cid%>)) {
+                url_<%=cid %> += ":" + <%=dbport%>;
+            }
+            if (!"".equals(dbname_<%=cid%>)) {
+<%
+                if(driver.equals("JTDS")) {
+%>
+                    url_<%=cid%> += "//" + <%=dbname%>; 
+<%
+                } else {
+%>
+                    url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
+<%
+                }
+%>
+            }
+            url_<%=cid%> += ";applicationName=Talend;" + <%=dbproperties%>;
+<%
+            if (useActiveDirectoryAuth) {
+%>
+                url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+                url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+            }
+        }
+
 		public String getDirverClassName(INode node){
 			String driver = ElementParameterParser.getValue(node, "__DRIVER__");
 			if(driver.equals("JTDS")) {

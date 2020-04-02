@@ -81,7 +81,9 @@ skeleton="../templates/db_output_bulk.skeleton"
     String compressionType = null;
     
     String serdeMethod = ElementParameterParser.getValue(node,"__SERDE_METHOD__");
-    
+
+    boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
+
     if (isCompress) {
         if ("DELIMITED_TEXT".equals(loadFileFormat)) {
             compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_TEXT__");
@@ -243,6 +245,14 @@ skeleton="../templates/db_output_bulk.skeleton"
         if (!"".equals(dbname_<%=cid%>)) {
         url_<%=cid%> += ";database=" + <%=dbname%>; 
         }
+
+<%
+        if (useActiveDirectoryAuth) {
+%>
+            url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+<%
+        }
+%>
         url_<%=cid%> += ";applicationName=Talend;" + <%=dbproperties%>;
         dbUser_<%=cid %> = <%=dbuser%>;
 

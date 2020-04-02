@@ -13,15 +13,18 @@ imports="
 " 
 %>
 	<%@ include file="../templates/DB/Input/HelpClass.javajet"%>
+   
 <%
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
 	
 		private String driver;
+        private boolean useActiveDirectoryAuth = false;
 	
 		public void beforeComponentProcess(INode node){
 			super.beforeComponentProcess(node);
 	    	cid = node.getUniqueName();
+            useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 %>
 			org.talend.designer.components.util.mssql.MSSqlGenerateTimestampUtil mssqlGTU_<%=cid%> = org.talend.designer.components.util.mssql.MSSqlUtilFactory.getMSSqlGenerateTimestampUtil();
 			
@@ -84,6 +87,14 @@ imports="
 			}
 %>
 		    }
+<%
+            if (useActiveDirectoryAuth) {
+%>
+                url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+                url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+            }
+%>
 		    url_<%=cid%> += ";applicationName=Talend;" + <%=dbproperties%>;
 		    String dbschema_<%=cid%> = <%=dbschema%>;
 <%		
