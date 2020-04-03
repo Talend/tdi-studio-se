@@ -981,7 +981,7 @@ public class JobSettingsManager {
             return Collections.emptyList();
         }
 
-        IComponent tContextLoadComponent = new JobContextLoadComponent(fileFlag, dbInput);
+        IComponent tContextLoadComponent = new JobContextLoadComponent(fileFlag, dbInput, process.getComponentsType());
 
         final String uniqueName = "Implicit_Context"; //$NON-NLS-1$
         DataNode tContextLoadNode = new DataNode(tContextLoadComponent, uniqueName);
