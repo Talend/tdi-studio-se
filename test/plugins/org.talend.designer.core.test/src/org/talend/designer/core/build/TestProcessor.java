@@ -494,6 +494,11 @@ public class TestProcessor implements IProcessor {
         return null;
     }
 
+    @Override
+    public Set<ModuleNeeded> getTestcaseNeededModules() {
+        return null;
+    }
+
     /*
      * (non-Javadoc)
      *

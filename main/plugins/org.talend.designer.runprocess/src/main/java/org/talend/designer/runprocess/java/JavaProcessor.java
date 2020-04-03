@@ -92,6 +92,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.RuntimeExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
@@ -127,6 +128,7 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.codegen.ICodeGenerator;
@@ -208,6 +210,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     protected Set<JobInfo> buildChildrenJobs;
 
     protected Set<JobInfo> buildFirstChildrenJobs;
+
+    protected Set<ModuleNeeded> testCaseNeededModules;
 
     private final ITalendProcessJavaProject talendJavaProject;
 
@@ -326,6 +330,25 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         return childrenJobs;
     }
 
+    @Override
+    public Set<ModuleNeeded> getTestcaseNeededModules() {
+        if (testCaseNeededModules == null || testCaseNeededModules.isEmpty()) {
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+                ITestContainerProviderService testcontainerService = (ITestContainerProviderService) GlobalServiceRegister
+                        .getDefault().getService(ITestContainerProviderService.class);
+                if (getProperty() != null && getProperty().getItem() instanceof ProcessItem) {
+                    try {
+                        testCaseNeededModules = testcontainerService
+                                .getAllJobTestcaseModules((ProcessItem) getProperty().getItem());
+                    } catch (PersistenceException e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+            }
+        }
+        return testCaseNeededModules;
+    }
+
     /*
      * Initialization of the variable codePath and contextPath.
      *
@@ -363,6 +386,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         }
         if (buildFirstChildrenJobs != null) {
             buildFirstChildrenJobs.clear();
+        }
+        if (testCaseNeededModules != null) {
+            testCaseNeededModules.clear();
         }
 
         ITalendProcessJavaProject tProcessJavaProject = getTalendJavaProject();
