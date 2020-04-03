@@ -15,6 +15,7 @@ package org.talend.designer.core.model.process.jobsettings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EList;
@@ -36,9 +37,11 @@ import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.INodeReturn;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.temp.ECodePart;
+import org.talend.core.runtime.services.IGenericService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.components.MultipleComponentConnection;
 import org.talend.designer.core.model.components.MultipleComponentManager;
 import org.talend.designer.core.model.components.MultipleGenricComponentManager;
@@ -205,7 +208,8 @@ public class JobContextLoadComponent implements IComponent {
     }
 
     private boolean isTcompv0() {
-        return component != null && EComponentType.GENERIC == component.getComponentType();
+        return component != null
+                && Optional.ofNullable(IGenericService.getService()).map(s -> s.isTcompv0(component)).orElse(Boolean.FALSE);
     }
 
     /*
@@ -466,8 +470,17 @@ public class JobContextLoadComponent implements IComponent {
         IElementParameter newParam = new ElementParameter(node);
         newParam.setName(JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName()));
         newParam.setFieldType(EParameterFieldType.TABLE);
-        newParam.setListItemsDisplayName(new String[0]);
-        newParam.setListItemsDisplayCodeName(new String[0]);
+        if (isTcompv0()) {
+            /**
+             * seems that tcompv0 will check the list using the display name when generating codes:
+             * GenericTableUtils#setTableValues
+             */
+            newParam.setListItemsDisplayName(new String[0]);
+            newParam.setListItemsDisplayCodeName(new String[0]);
+        } else {
+            newParam.setListItemsDisplayName(new String[] { EmfComponent.TEXT_BUILTIN, EmfComponent.TEXT_REPOSITORY });
+            newParam.setListItemsDisplayCodeName(new String[] { EmfComponent.BUILTIN, EmfComponent.REPOSITORY });
+        }
         elemParamList.add(newParam);
 
         newParam = new ElementParameter(node);
