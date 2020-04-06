@@ -91,7 +91,7 @@ public class CSVReader {
         else {
             this.lineEnd = lineEnd;
             if (lineEnd != null && lineEnd.length() != 1) {
-                log.warn("Line end params {} is too long", lineEnd);
+                log.warn("Line end params {} must be single character", lineEnd);
             }
         }
         return this;
@@ -219,7 +219,7 @@ public class CSVReader {
                             this.endRecord();
                         } else {
                             if ((!warningNonRFC) && currentChar != ' ' && currentChar != '\t' && currentChar != '\r') {
-                                log.warn("CSV source '{}' is not conform to RFC, some data will be ignore.", this.sb.toString());
+                                log.warn("CSV source '{}' is not conform to RFC, some data will be ignored.", this.sb.toString());
                                 warningNonRFC = true;
                             }
                             if(this.storeRawRecord) {
@@ -297,7 +297,7 @@ public class CSVReader {
                         } else {
                             deleteTrailNoUseChars = true;
                             if ((!warningNonRFC) && currentChar != ' ' && currentChar != '\t' && currentChar != '\r') {
-                                log.warn("CSV source '{}' is not conform to RFC, some data will be ignore.", this.sb.toString());
+                                log.warn("CSV source '{}' is not conform to RFC, some data will be ignored.", this.sb.toString());
                                 warningNonRFC = true;
                             }
                             if(this.storeRawRecord) {
