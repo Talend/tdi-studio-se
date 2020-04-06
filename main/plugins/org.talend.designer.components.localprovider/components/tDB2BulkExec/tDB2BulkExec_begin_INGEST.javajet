@@ -557,9 +557,6 @@ String mergeClause = ElementParameterParser.getValue(node, "__MERGE_CLAUSE__");
                                try {
                                    while((line = reader.readLine()) != null) {
                                       System.out.println(line);
-									  if(Thread.interrupted()){
-										  return;
-									  }
                                    }
                                } finally {
                                     reader.close();
@@ -579,9 +576,6 @@ String mergeClause = ElementParameterParser.getValue(node, "__MERGE_CLAUSE__");
                                try {
                                    while((line = reader.readLine()) != null) {
 										System.err.println(line);
-										if(Thread.interrupted()){
-											return;
-										}
                                    }
                                } finally {
                                    reader.close();
@@ -593,9 +587,7 @@ String mergeClause = ElementParameterParser.getValue(node, "__MERGE_CLAUSE__");
                    };
                    error_<%=cid %>.start();
                    process_<%=cid %>.waitFor();
-					normal_<%=cid %>.interrupt();
 					normal_<%=cid %>.join();
-					error_<%=cid %>.interrupt();
 					error_<%=cid %>.join();
                    java.nio.file.Files.delete(new java.io.File(scriptPath_<%= cid %>).toPath());
                 <%

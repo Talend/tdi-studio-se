@@ -96,9 +96,6 @@ final Process ps_<%=cid %> = runtime_<%=cid %>.exec(sb_<%=cid %>);
 					try {
 						while ((line = reader.readLine()) != null) {
 							System.out.println(line);
-							if(Thread.interrupted()){
-								return;
-							}
 						}
 					} finally {
 						reader.close();
@@ -118,9 +115,6 @@ final Process ps_<%=cid %> = runtime_<%=cid %>.exec(sb_<%=cid %>);
 					try {
 						while ((line = reader.readLine()) != null) {
 							System.err.println(line);
-							if(Thread.interrupted()){
-								return;
-							}
 						}
 					} finally {
 						reader.close();
@@ -131,11 +125,8 @@ final Process ps_<%=cid %> = runtime_<%=cid %>.exec(sb_<%=cid %>);
 			}
 		};
 		error_<%=cid %>.start();
-
 		ps_<%=cid %>.waitFor();
-		normal_<%=cid %>.interrupt();
 		normal_<%=cid %>.join();
-		error_<%=cid %>.interrupt();
 		error_<%=cid %>.join();
 		
 <%	if(("true").equals(ElementParameterParser.getValue(node, "__ADD_EOF__"))){
