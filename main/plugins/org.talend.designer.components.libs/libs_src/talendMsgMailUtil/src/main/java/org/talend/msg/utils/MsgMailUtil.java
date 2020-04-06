@@ -89,7 +89,7 @@ public class MsgMailUtil {
 
 	private String getUniqueFileName(String fileName,  File dir){
 
-		int num = 2;
+		int num = 1;
 		final String ext = getFileExtension(fileName);
 		final String name = getFileName(fileName);
 		File file = new File(dir, fileName);

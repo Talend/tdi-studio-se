@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.libraries</groupId>
-	<artifactId>talendMsgMailUtil</artifactId>
+	<artifactId>talendMsgMailUtil-1.2-20200406</artifactId>
 	<name>talendMsgMailUtil</name>
-	<version>1.2</version>
+	<version>6.0.0</version>
 	<packaging>jar</packaging>
 	
 	<properties>
