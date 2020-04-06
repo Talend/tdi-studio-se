@@ -3328,6 +3328,15 @@
               id="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
               name="RemovePigudfModulesMigrationTask"
               version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.4.0"
+              class="org.talend.repository.model.migration.CreateContextLinkMigrationTask"
+              description="Create context link file"
+              id="org.talend.repository.model.migration.CreateContextLinkMigrationTask"
+              name="CreateContextLinkMigrationTask"
+              version="7.4.1">
        </projecttask>
        <projecttask
               beforeLogon="false"
@@ -3347,6 +3356,7 @@
              name="RenameSQLDWHMigrationTask"
              version="7.4.1">
        </projecttask>
+>>>>>>> refs/remotes/origin/master
    </extension>
 
    <extension
