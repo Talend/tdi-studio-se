@@ -85,11 +85,12 @@ public class CSVReader {
     
     public CSVReader setLineEnd(final String lineEnd) {
         if ("\n".equals(lineEnd) || "\r\n".equals(lineEnd)) {
+            // classic line end (linux or windows), treat by default.
             this.lineEnd = null;
         }
         else {
             this.lineEnd = lineEnd;
-            if (lineEnd != null && lineEnd.length() > 1) {
+            if (lineEnd != null && lineEnd.length() != 1) {
                 log.warn("Line end params {} is too long", lineEnd);
             }
         }
