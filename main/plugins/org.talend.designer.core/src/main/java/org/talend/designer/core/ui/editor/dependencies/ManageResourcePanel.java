@@ -14,7 +14,6 @@ package org.talend.designer.core.ui.editor.dependencies;
 
 import java.util.Collection;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -58,6 +57,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.resources.ResourceItem;
+import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.context.CustomDialogCellEditor;
 import org.talend.core.ui.context.model.table.ContextTableTabChildModel;
@@ -256,12 +256,8 @@ public class ManageResourcePanel extends Composite {
                 }
                 JobResourceDependencyModel model = new JobResourceDependencyModel((ResourceItem) item);
                 Property property = process.getProperty();
-                StringBuffer joblabel = new StringBuffer();
-                if (StringUtils.isNotBlank(property.getItem().getState().getPath())) {
-                    joblabel.append(property.getItem().getState().getPath() + "/");
-                }
-                joblabel.append(property.getLabel() + "_" + property.getVersion());
-                model.setResourceDepPath(ResourceDependenciesUtil.getResourcePath(model, joblabel.toString(), null));
+                String jobLabel = JavaResourcesHelper.getJobFolderName(property.getLabel(), property.getVersion());
+                model.setResourceDepPath(ResourceDependenciesUtil.getResourcePath(model, jobLabel, null));
                 getInput().add(model);
                 resourcesTV.refresh();
                 resourcesTV.setSelection(new StructuredSelection(model));
@@ -362,13 +358,9 @@ public class ManageResourcePanel extends Composite {
             final JobResourceDependencyModel model = (JobResourceDependencyModel) element;
             if (!model.getSelectedVersion().equals(value)) {
                 Property property = process.getProperty();
-                StringBuffer joblabel = new StringBuffer();
-                if (StringUtils.isNotBlank(property.getItem().getState().getPath())) {
-                    joblabel.append(property.getItem().getState().getPath() + "/");
-                }
-                joblabel.append(property.getLabel() + "_" + property.getVersion());
+                String jobLabel = JavaResourcesHelper.getJobFolderName(property.getLabel(), property.getVersion());
                 model.setSelectedVersion((String) value);
-                model.setResourceDepPath(ResourceDependenciesUtil.getResourcePath(model, joblabel.toString(), (String) value));
+                model.setResourceDepPath(ResourceDependenciesUtil.getResourcePath(model, jobLabel, (String) value));
                 getViewer().update(element, null);
                 try {
                     IRepositoryViewObject repoObject = ProxyRepositoryFactory.getInstance()
