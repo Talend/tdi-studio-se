@@ -1126,7 +1126,6 @@ public class JobSettingsManager {
                     query = query.replaceAll("(?i)\bkey\b", //$NON-NLS-1$
                             "\\\\" + quoteByDBType + "key\\\\" + quoteByDBType); //$NON-NLS-1$  //$NON-NLS-2$
                 }
-                // query = "SELECT `context_TUP_26388`.`key`, `context_TUP_26388`.`value` FROM `context_TUP_26388`";
                 tContextLoadNode.getElementParameter(JobSettingsConstants.QUERY).setValue(query);
             }
         }
