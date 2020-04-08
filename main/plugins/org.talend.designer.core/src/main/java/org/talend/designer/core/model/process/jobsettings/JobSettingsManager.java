@@ -1095,7 +1095,8 @@ public class JobSettingsManager {
             String dbType = getDatabaseTypeFromParameter(process);
             if (dbType != null) {
                 // TDI-18161:the SQL script's syntax is not right because of the implicit context of General JDBC.
-                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())) {
+                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())
+                        || dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
                     dbType = findRealDbTypeForJDBC(process, dbType);
                 }
 
@@ -1125,6 +1126,7 @@ public class JobSettingsManager {
                     query = query.replaceAll("(?i)\bkey\b", //$NON-NLS-1$
                             "\\\\" + quoteByDBType + "key\\\\" + quoteByDBType); //$NON-NLS-1$  //$NON-NLS-2$
                 }
+                // query = "SELECT `context_TUP_26388`.`key`, `context_TUP_26388`.`value` FROM `context_TUP_26388`";
                 tContextLoadNode.getElementParameter(JobSettingsConstants.QUERY).setValue(query);
             }
         }
