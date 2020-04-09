@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage;
 import org.talend.designer.dbmap.model.emf.dbmap.FilterEntry;
-import org.talend.designer.dbmap.model.tableentry.FilterTableEntry;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Filter Entry</b></em>'. <!-- end-user-doc -->
@@ -68,7 +67,7 @@ public class FilterEntryImpl extends EObjectImpl implements FilterEntry {
      */
     protected String expression = EXPRESSION_EDEFAULT;
 
-    protected static final String FILTER_KIND_EDEFAULT = FilterTableEntry.WHERE_FILTER;
+    protected static final String FILTER_KIND_EDEFAULT = null;
 
     protected String filterKind = FILTER_KIND_EDEFAULT;
 
