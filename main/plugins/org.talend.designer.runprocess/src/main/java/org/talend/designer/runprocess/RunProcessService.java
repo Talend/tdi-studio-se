@@ -41,7 +41,6 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.designer.core.ui.action.SaveJobBeforeRunAction;
 import org.talend.designer.runprocess.i18n.Messages;
-import org.talend.designer.runprocess.java.JavaProcessorUtilities;
 import org.talend.designer.runprocess.ui.actions.RunProcessAction;
 
 /**
@@ -503,6 +502,11 @@ public class RunProcessService implements IRunProcessService {
     @Override
     public boolean isSelectLog4j2() {
         return delegateService.isSelectLog4j2();
+    }
+
+    @Override
+    public boolean isCIMode() {
+        return delegateService.isCIMode();
     }
 
 }
