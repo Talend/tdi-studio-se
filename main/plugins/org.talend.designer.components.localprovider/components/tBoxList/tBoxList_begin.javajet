@@ -115,7 +115,9 @@ if(!"true".equals(useExistingConn)){
 	com.box.boxjavalibv2.dao.BoxFolder <%=cid%>_rootFolder = <%=cid%>_client.getFoldersManager().getFolder("0", null);
 	com.box.boxjavalibv2.dao.BoxItem <%=cid%>_boxItem;
 
-	if (org.apache.commons.lang3.StringUtils.substringBefore(<%=cid%>_path, "/").equals("All Files")) {
+	int <%=cid%>_slashPosition = <%=cid%>_path.indexOf("/");
+	String <%=cid%>_rootFolderName = <%=cid%>_slashPosition == -1 ? <%=cid%>_path : <%=cid%>_path.substring(0, <%=cid%>_slashPosition);
+	if (<%=cid%>_rootFolderName.equals("All Files")) {
 		List<String> <%=cid%>_pathItems = new java.util.ArrayList<String>(java.util.Arrays.asList(<%=cid%>_path.split("/")));
 		<%=cid%>_pathItems.remove(0);
 		try {
