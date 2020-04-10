@@ -1930,7 +1930,26 @@ if(columnList != null && columnList.size() > 0) {
         if(!("true").equals(useExistingConn)) {
             if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
                 %>
-                commitCounter_<%=cid%>++;
+			/* FIX for TDI-30522   - Begin */
+			if(deletedCount_<%=cid%> != deletedCountRef_<%=cid%>) {
+				wasRowProcessed_<%=cid%> = true;
+				deletedCountRef_<%=cid%> = deletedCount_<%=cid%>;
+			} else if(updatedCount_<%=cid%> != updatedCountRef_<%=cid%>) {
+				wasRowProcessed_<%=cid%> = true;
+				updatedCountRef_<%=cid%> = updatedCount_<%=cid%>;
+			} else if(insertedCount_<%=cid%> != insertedCountRef_<%=cid%>){
+				wasRowProcessed_<%=cid%> = true;
+				insertedCountRef_<%=cid%> = insertedCount_<%=cid%>;
+			} else {
+				wasRowProcessed_<%=cid%> = false;
+			}
+			
+			if(wasRowProcessed_<%=cid%>){
+				commitCounter_<%=cid%> = 1;
+			} else {
+				commitCounter_<%=cid%> = 0;
+			}
+			/* FIX for TDI-30522   - End */
 
                 if(commitEvery_<%=cid%> <= commitCounter_<%=cid%>) {
 
