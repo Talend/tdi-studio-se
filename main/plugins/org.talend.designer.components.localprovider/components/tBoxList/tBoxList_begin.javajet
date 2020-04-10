@@ -115,7 +115,7 @@ if(!"true".equals(useExistingConn)){
 	com.box.boxjavalibv2.dao.BoxFolder <%=cid%>_rootFolder = <%=cid%>_client.getFoldersManager().getFolder("0", null);
 	com.box.boxjavalibv2.dao.BoxItem <%=cid%>_boxItem;
 
-	if (org.apache.commons.lang.StringUtils.substringBefore(<%=cid%>_path, "/").equals("All Files")) {
+	if (org.apache.commons.lang3.StringUtils.substringBefore(<%=cid%>_path, "/").equals("All Files")) {
 		List<String> <%=cid%>_pathItems = new java.util.ArrayList<String>(java.util.Arrays.asList(<%=cid%>_path.split("/")));
 		<%=cid%>_pathItems.remove(0);
 		try {
@@ -127,7 +127,7 @@ if(!"true".equals(useExistingConn)){
 		throw new Exception("<%=cid%> - " + "The path to file or directory was not found in " + <%=cid%>_path);
 	}
 
-	java.util.List<com.box.boxjavalibv2.dao.BoxItem>  <%=cid%>_items = new java.util.ArrayList<com.box.boxjavalibv2.dao.BoxItem>();
+	java.util.List<com.box.boxjavalibv2.dao.BoxItem>  <%=cid%>_items = new java.util.ArrayList<>();
 	if (<%=cid%>_boxItem.getType().equals("folder")) {
 		com.box.boxjavalibv2.dao.BoxFolder <%=cid%>_boxFolder = (com.box.boxjavalibv2.dao.BoxFolder) <%=cid%>_boxItem;
 		<%if(includeSubDirectories) {%>
