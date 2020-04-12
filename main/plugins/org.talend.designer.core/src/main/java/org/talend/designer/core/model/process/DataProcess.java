@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.avro.Schema;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.lang.ArrayUtils;
@@ -50,7 +51,9 @@ import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.components.IMultipleComponentParameter;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTable;
+import org.talend.core.model.metadata.MetadataToolAvroHelper;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.ConditionType;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.RuleType;
@@ -88,6 +91,7 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.runtime.services.IGenericService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
@@ -780,8 +784,13 @@ public class DataProcess implements IGeneratingProcess {
 
                 DataConnection dataConnec = new DataConnection();
                 dataConnec.setActivate(graphicalNode.isActivate());
-                dataConnec.setLineStyle(EConnectionType.getTypeFromName(curConnec.getConnectionType()));
-                dataConnec.setConnectorName(curConnec.getConnectionType());
+                EConnectionType style = EConnectionType.getTypeFromName(curConnec.getConnectionType());
+                dataConnec.setLineStyle(style);
+                if (isTcompv0(nodeSource.getComponent())) {
+                    dataConnec.setConnectorName(style.getCategory().name());
+                } else {
+                    dataConnec.setConnectorName(curConnec.getConnectionType());
+                }
                 if (nodeSource.getMetadataList() != null) {
                     dataConnec.setMetadataTable(nodeSource.getMetadataList().get(0));
                 }
@@ -964,6 +973,12 @@ public class DataProcess implements IGeneratingProcess {
             }
             if (newMetadata != null) {
                 newMetadata.setTableName(uniqueName);
+                if (isTcompv0(curNode.getComponent())) {
+                    newMetadata.setAttachedConnector("MAIN");
+                    ComponentProperties tcomp_properties = curNode.getComponentProperties();
+                    Schema schema = MetadataToolAvroHelper.convertToAvro(ConvertionHelper.convert(newMetadata));
+                    tcomp_properties.setValue("main.schema", schema);
+                }
             }
             if (graphicalNode.isDesignSubjobStartNode()) {
                 curNode.setDesignSubjobStartNode(null);
@@ -1017,6 +1032,10 @@ public class DataProcess implements IGeneratingProcess {
         }
     }
 
+    private boolean isTcompv0(IComponent component) {
+        return component != null
+                && Optional.ofNullable(IGenericService.getService()).map(s -> s.isTcompv0(component)).orElse(Boolean.FALSE);
+    }
     private void updateVirtualComponentProperties(ComponentProperties componentProperties, IMultipleComponentItem curItem,
             INode curNode) {
         if (componentProperties instanceof VirtualComponentProperties) {
