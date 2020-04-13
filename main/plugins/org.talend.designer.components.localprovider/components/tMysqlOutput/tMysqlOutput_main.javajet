@@ -1824,6 +1824,7 @@ if(columnList != null && columnList.size() > 0) {
         if (extendedInsert && ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) && ("INSERT").equals(dataAction)) {
             if(!("").equals(numPerInsert ) && !("0").equals(numPerInsert )) {
             %>
+				boolean wasRowAddedToBatch_<%=cid%> = false;
                 if ( batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>) {
                 <%if ( (rejectConnName==null)) {
                 %>
@@ -1840,6 +1841,7 @@ if(columnList != null && columnList.size() > 0) {
                         <%
                         }
                         %>
+						wasRowAddedToBatch_<%=cid%> = true;
                 }catch (java.sql.BatchUpdateException e){
                     <%if(("true").equals(dieOnError)) {
                     %>
@@ -1876,7 +1878,7 @@ if(columnList != null && columnList.size() > 0) {
             %>
                 if ( batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>) {
                 <%if (rejectConnName==null) {
-                %>
+				%>
                 try {
                         int countSum_<%=cid%> = 0;
                         <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
@@ -1930,26 +1932,9 @@ if(columnList != null && columnList.size() > 0) {
         if(!("true").equals(useExistingConn)) {
             if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
                 %>
-			/* FIX for TDI-30522   - Begin */
-			if(deletedCount_<%=cid%> != deletedCountRef_<%=cid%>) {
-				wasRowProcessed_<%=cid%> = true;
-				deletedCountRef_<%=cid%> = deletedCount_<%=cid%>;
-			} else if(updatedCount_<%=cid%> != updatedCountRef_<%=cid%>) {
-				wasRowProcessed_<%=cid%> = true;
-				updatedCountRef_<%=cid%> = updatedCount_<%=cid%>;
-			} else if(insertedCount_<%=cid%> != insertedCountRef_<%=cid%>){
-				wasRowProcessed_<%=cid%> = true;
-				insertedCountRef_<%=cid%> = insertedCount_<%=cid%>;
-			} else {
-				wasRowProcessed_<%=cid%> = false;
-			}
-			
-			if(wasRowProcessed_<%=cid%>){
-				commitCounter_<%=cid%> = 1;
-			} else {
-				commitCounter_<%=cid%> = 0;
-			}
-			/* FIX for TDI-30522   - End */
+				if(wasRowAddedToBatch_<%=cid%>){
+					commitCounter_<%=cid%>++;
+				}
 
                 if(commitEvery_<%=cid%> <= commitCounter_<%=cid%>) {
 

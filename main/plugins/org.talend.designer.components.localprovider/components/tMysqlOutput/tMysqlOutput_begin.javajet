@@ -144,13 +144,9 @@ int nb_line_inserted_<%=cid%> = 0;
 int nb_line_deleted_<%=cid%> = 0;
 int nb_line_rejected_<%=cid%> = 0;
 
-boolean wasRowProcessed_<%=cid%> = false;
 int deletedCount_<%=cid%>=0;
-int deletedCountRef_<%=cid%>=0;
 int updatedCount_<%=cid%>=0;
-int updatedCountRef_<%=cid%>=0;
 int insertedCount_<%=cid%>=0;
-int insertedCountRef_<%=cid%>=0;
 
 int rejectedCount_<%=cid%>=0;
 
