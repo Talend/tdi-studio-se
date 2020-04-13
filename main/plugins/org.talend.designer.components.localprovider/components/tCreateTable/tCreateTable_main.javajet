@@ -898,10 +898,11 @@ class MSSQLManager extends Manager {
     private boolean useExistingConnection;
     private String connection;
     private String driver;
+    private boolean useADAuth;
     
     private static final String SEPARATOR = ";";
     
-    public MSSQLManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, boolean useExistingConnection, String connection, String cid, String driver, String additionalParams) {
+    public MSSQLManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, boolean useExistingConnection, String connection, String cid, String driver, String additionalParams, boolean useADAuth) {
         super(dbName, tableName, userName, cid, additionalParams);
         this.host = host;
         this.port = port;
@@ -909,6 +910,7 @@ class MSSQLManager extends Manager {
         this.useExistingConnection = useExistingConnection;
         this.connection = connection;
         this.driver = driver;
+        this.useADAuth = useADAuth;
     }
     protected String getDriver() {
     	if("JTDS".equals(driver)) {
@@ -930,7 +932,14 @@ class MSSQLManager extends Manager {
     	} else {
     		connectionUrl.append(" + \";databaseName=\" + ");
     	}
-    	connectionUrl.append(dbName);    	
+    	connectionUrl.append(dbName);
+
+        if ("MSSQL_PROP".equals(driver) && useADAuth) {
+            connectionUrl.append(" + \";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword\"");
+            connectionUrl.append(" + \";database=\" + ");
+            connectionUrl.append(dbName);
+        }
+
     	return connectionUrl.toString();
     }
     public String getSeparator(){
@@ -2239,7 +2248,8 @@ class ManagerFactory {
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_MSSQL__"));
             String driver = ElementParameterParser.getValue(node, "__MSSQL_DRIVER__");
-            manager = new MSSQLManager(host, port, dbName,dbSchema, tableName, userName, useExistingConnection, connection, cid, driver, additionalParams);
+            boolean useADAuth = ("true").equals(ElementParameterParser.getValue(node, "__MSSQL_ACTIVE_DIR_AUTH__"));
+            manager = new MSSQLManager(host, port, dbName,dbSchema, tableName, userName, useExistingConnection, connection, cid, driver, additionalParams, useADAuth);
         } else if(("MYSQL").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
