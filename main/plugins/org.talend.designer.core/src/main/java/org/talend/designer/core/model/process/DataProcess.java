@@ -88,7 +88,6 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.runtime.services.IGenericDBService;
-import org.talend.core.runtime.services.IGenericService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
@@ -1019,10 +1018,6 @@ public class DataProcess implements IGeneratingProcess {
         }
     }
 
-    private boolean isTcompv0(IComponent component) {
-        return component != null
-                && Optional.ofNullable(IGenericService.getService()).map(s -> s.isTcompv0(component)).orElse(Boolean.FALSE);
-    }
     private void updateVirtualComponentProperties(ComponentProperties componentProperties, IMultipleComponentItem curItem,
             INode curNode) {
         if (componentProperties instanceof VirtualComponentProperties) {
