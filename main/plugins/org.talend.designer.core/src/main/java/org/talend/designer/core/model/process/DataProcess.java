@@ -780,7 +780,7 @@ public class DataProcess implements IGeneratingProcess {
                 DataConnection dataConnec = new DataConnection();
                 dataConnec.setActivate(graphicalNode.isActivate());
                 dataConnec.setLineStyle(EConnectionType.getTypeFromName(curConnec.getConnectionType()));
-                dataConnec.setConnectorName(curConnec.getConnectionType());
+                dataConnec.setConnectorName(curConnec.getConnectorName());
                 if (nodeSource.getMetadataList() != null) {
                     dataConnec.setMetadataTable(nodeSource.getMetadataList().get(0));
                 }
@@ -1013,6 +1013,7 @@ public class DataProcess implements IGeneratingProcess {
                 curNode.setActivate(false);
                 curNode.setStart(false);
             }
+            curItem.updateNode(curNode, graphicalNode);
         }
     }
 
