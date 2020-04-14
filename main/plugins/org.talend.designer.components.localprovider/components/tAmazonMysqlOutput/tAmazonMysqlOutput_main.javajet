@@ -1618,6 +1618,7 @@ if(columnList != null && columnList.size() > 0) {
     	if (extendedInsert && "MYSQL_5".equals(dbVersion) && ("INSERT").equals(dataAction)) {
     		if(!("").equals(numPerInsert ) && !("0").equals(numPerInsert )) {
     		%>
+    			boolean wasRowAddedToBatch_<%=cid%> = false;
     			if ( batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>) {
                 <%if ( (rejectConnName==null)) {
                 %>
@@ -1634,6 +1635,7 @@ if(columnList != null && columnList.size() > 0) {
             	    	<%
             	    	}
             	    	%>
+            	    	wasRowAddedToBatch_<%=cid%> = true;
                 }catch (java.sql.BatchUpdateException e){
                 	<%if(("true").equals(dieOnError)) {
                 	%>
@@ -1667,6 +1669,7 @@ if(columnList != null && columnList.size() > 0) {
     	}
     	if (useBatch) {
     		%>
+    			boolean wasRowAddedToBatch_<%=cid%> = true;
     			if ((batchSize_<%=cid%> > 0) && (batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>)) {
                 try {
 						int countSum_<%=cid%> = 0;
@@ -1714,7 +1717,9 @@ if(columnList != null && columnList.size() > 0) {
     	if(!("true").equals(useExistingConn)) {
     		if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
     		    %>
-        	    commitCounter_<%=cid%>++;
+                if(wasRowAddedToBatch_<%=cid%>){
+                    commitCounter_<%=cid%>++;
+                }
                 if(commitEvery_<%=cid%> <= commitCounter_<%=cid%>) {
                 <%
                 boolean extendedInsertByBatch = extendedInsert && "MYSQL_5".equals(dbVersion) && "INSERT".equals(dataAction);
