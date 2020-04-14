@@ -1824,7 +1824,7 @@ if(columnList != null && columnList.size() > 0) {
         if (extendedInsert && ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) && ("INSERT").equals(dataAction)) {
             if(!("").equals(numPerInsert ) && !("0").equals(numPerInsert )) {
             %>
-				boolean wasRowAddedToBatch_<%=cid%> = false;
+                boolean wasRowAddedToBatch_<%=cid%> = false;
                 if ( batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>) {
                 <%if ( (rejectConnName==null)) {
                 %>
@@ -1841,7 +1841,7 @@ if(columnList != null && columnList.size() > 0) {
                         <%
                         }
                         %>
-						wasRowAddedToBatch_<%=cid%> = true;
+                        wasRowAddedToBatch_<%=cid%> = true;
                 }catch (java.sql.BatchUpdateException e){
                     <%if(("true").equals(dieOnError)) {
                     %>
@@ -1876,9 +1876,10 @@ if(columnList != null && columnList.size() > 0) {
         if (useBatchSize && ("MYSQL_8".equals(dbVersion) || "MYSQL_5".equals(dbVersion) || "MARIADB".equals(dbVersion)) &&(rejectConnName==null)&& (("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction))) {
             if(!("").equals(batchSize) && !("0").equals(batchSize)) {
             %>
+                boolean wasRowAddedToBatch_<%=cid%> = true;
                 if ( batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>) {
                 <%if (rejectConnName==null) {
-				%>
+                %>
                 try {
                         int countSum_<%=cid%> = 0;
                         <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
@@ -1932,9 +1933,9 @@ if(columnList != null && columnList.size() > 0) {
         if(!("true").equals(useExistingConn)) {
             if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
                 %>
-				if(wasRowAddedToBatch_<%=cid%>){
-					commitCounter_<%=cid%>++;
-				}
+                if(wasRowAddedToBatch_<%=cid%>){
+                    commitCounter_<%=cid%>++;
+                }
 
                 if(commitEvery_<%=cid%> <= commitCounter_<%=cid%>) {
 
