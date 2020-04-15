@@ -398,6 +398,11 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
+    public IFolder getJavaProjectExternalResourcesFolder(IProcess process) {
+        return (IFolder) delegateService.getJavaProjectExternalResourcesFolder(process);
+    }
+    
+    @Override
     public void updateProjectPomWithTemplate() {
         delegateService.updateProjectPomWithTemplate();
     }
@@ -497,6 +502,11 @@ public class RunProcessService implements IRunProcessService {
     @Override
     public boolean isSelectLog4j2() {
         return delegateService.isSelectLog4j2();
+    }
+
+    @Override
+    public boolean isCIMode() {
+        return delegateService.isCIMode();
     }
 
 }

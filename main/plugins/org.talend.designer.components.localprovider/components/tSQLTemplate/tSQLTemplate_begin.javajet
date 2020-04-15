@@ -18,7 +18,7 @@ imports="
     
     String conn = "conn_" + connection;
     if ("SNOWFLAKE".equals(dbType)) {
-       conn = connection + "_Connection";
+       conn = connection + "_connection";
     }
 %>
 java.sql.Connection conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");

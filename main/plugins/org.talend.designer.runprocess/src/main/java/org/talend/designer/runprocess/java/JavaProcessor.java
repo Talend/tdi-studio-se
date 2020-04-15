@@ -1430,13 +1430,6 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             basePath.append(getClassPath(routineOutputPath));
             basePath.append(classPathSeparator);
 
-            if (ProcessUtils.isRequiredPigUDFs(process)) {
-                ITalendProcessJavaProject pigudfsProject = TalendJavaProjectManager
-                        .getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
-                IPath pigudfsOutputPath = pigudfsProject.getOutputFolder().getLocation();
-                basePath.append(getClassPath(pigudfsOutputPath));
-                basePath.append(classPathSeparator);
-            }
 
             if (ProcessUtils.isRequiredBeans(process)) {
                 ITalendProcessJavaProject beansProject = TalendJavaProjectManager
@@ -1498,6 +1491,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             }
         }
 
+        // remove lower version of same artifact
+        removeLowerVersionArtifacts(neededModules, highPriorityModuleNeeded);
+
         StringBuffer libPath = new StringBuffer();
         if (isExportConfig() || isRunAsExport()) {
             boolean hasLibPrefix = libPrefixPath.length() > 0;
@@ -1541,7 +1537,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 } else if (hasSapjco3 || hasSapidoc3) {
                     libPath.append(jarPath.toPortableString()).append(classPathSeparator);
                 } else {
-                    libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
+                    libPath.append(PomUtil.getArtifactFullPath(artifact)).append(classPathSeparator);
                 }
             }
         }
@@ -1551,6 +1547,40 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             libPath.deleteCharAt(lastSep);
         }
         return libPath.toString();
+    }
+
+    public static void removeLowerVersionArtifacts(List<ModuleNeeded> neededModules, Set<ModuleNeeded> highPriorityModuleNeeded) {
+        // remove lower version of same artifact
+        Set<ModuleNeeded> toBeDeletedSet = new HashSet<ModuleNeeded>();
+        Map<String, ModuleNeeded> keepModules = new HashMap<String, ModuleNeeded>();
+        Iterator<ModuleNeeded> moduleIter = neededModules.iterator();
+        while (moduleIter.hasNext()) {
+            ModuleNeeded module = moduleIter.next();
+            MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(module.getMavenUri(), true);
+            if (artifact != null) {
+                String key = artifact.getGroupId() + ":" + artifact.getArtifactId();
+                ModuleNeeded checkedModule = keepModules.get(key);
+                if (checkedModule != null) {
+                    MavenArtifact checkedArtifact = MavenUrlHelper.parseMvnUrl(checkedModule.getMavenUri(), true);
+                    if (MavenArtifact.compareVersion(artifact.getVersion(), checkedArtifact.getVersion()) > 0) {
+                        keepModules.put(key, module);
+                        toBeDeletedSet.add(checkedModule);
+                    } else {
+                        keepModules.put(key, checkedModule);
+                        toBeDeletedSet.add(module);
+                    }
+                } else {
+                    keepModules.put(key, module);
+                }
+            }
+        }
+
+        // delete
+        for (ModuleNeeded mod : toBeDeletedSet) {
+            if (!highPriorityModuleNeeded.contains(mod)) {
+                neededModules.remove(mod);
+            }
+        }
     }
 
     private int compareSapjco3Version(String jarPath) {
@@ -2016,6 +2046,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 return;
             }
             Item item = property.getItem();
+            if (item == null) {
+                // may be a guess schema process
+                return;
+            }
             IFolder externalResourcesFolder = tProcessJvaProject.getExternalResourcesFolder();
             IFolder resourcesFolder = tProcessJvaProject.getResourcesFolder();
             String jobClassPackageFolder = JavaResourcesHelper.getJobClassPackageFolder(item, false);

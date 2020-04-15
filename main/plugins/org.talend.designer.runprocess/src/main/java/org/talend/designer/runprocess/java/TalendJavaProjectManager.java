@@ -109,10 +109,7 @@ public class TalendJavaProjectManager {
                             IFolder code = createFolderIfNotExist(poms.getFolder(DIR_CODES), monitor);
                             // routines
                             createFolderIfNotExist(code.getFolder(DIR_ROUTINES), monitor);
-                            // pigudfs
-                            if (ProcessUtils.isRequiredPigUDFs(null)) {
-                                createFolderIfNotExist(code.getFolder(DIR_PIGUDFS), monitor);
-                            }
+
                             // beans
                             if (ProcessUtils.isRequiredBeans(null)) {
                                 createFolderIfNotExist(code.getFolder(DIR_BEANS), monitor);
@@ -628,10 +625,7 @@ public class TalendJavaProjectManager {
 
     private static void generatePom(Item item, int option, IProcessor processor) throws Exception {
         if (processor instanceof MavenJavaProcessor) {
-            LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
-            LastGenerationInfo.getInstance().clearHighPriorityModuleNeeded();
-            // Need to clear modules per job cache
-            LastGenerationInfo.getInstance().clearModulesNeededPerJob();
+            LastGenerationInfo.getInstance().clearCaches();
             // Gen poms only
             ((MavenJavaProcessor) processor).generatePom(option);
         }

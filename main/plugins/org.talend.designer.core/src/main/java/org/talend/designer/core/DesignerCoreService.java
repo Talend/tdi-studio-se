@@ -106,6 +106,7 @@ import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.ui.actions.routines.CreateRoutineAction;
+import org.talend.repository.ui.utils.UpdateLog4jJarUtils;
 
 /**
  * Detailled comment <br/>
@@ -882,5 +883,10 @@ public class DesignerCoreService implements IDesignerCoreService {
     @Override
     public boolean isNeedContextInJar(IProcess process) {
         return new BigDataJobUtil(process).needsToHaveContextInsideJar();
+    }
+    
+    @Override
+    public String[] getNeedRemoveModulesForLog4j() {
+        return UpdateLog4jJarUtils.NEEDREMOVEMODULES;
     }
 }

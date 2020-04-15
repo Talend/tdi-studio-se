@@ -130,7 +130,9 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.handlers.IHandlerService;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.internal.e4.compatibility.ActionBars;
+import org.eclipse.ui.internal.help.WorkbenchHelpSystem;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -226,6 +228,7 @@ import org.talend.designer.core.ui.views.CodeView;
 import org.talend.designer.core.ui.views.jobsettings.JobSettings;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
+import org.talend.designer.core.utils.ComponentsHelpUtil;
 import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.model.RepositoryConstants;
@@ -247,6 +250,11 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
     // retreive method and field in a static way to avoid doing it everytime they are called and improve perf
     static {
         try {
+            IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+            if (helpSystem instanceof WorkbenchHelpSystem) {
+                WorkbenchHelpSystem workbenchHelpSystem = (WorkbenchHelpSystem) helpSystem;
+                workbenchHelpSystem.setDesiredHelpSystemId("org.talend.designer.core.TalendHelpUI"); //$NON-NLS-1$
+            }
             splitterField = GraphicalEditorWithFlyoutPalette.class.getDeclaredField("splitter"); //$NON-NLS-1$
             splitterField.setAccessible(true);
 
@@ -555,7 +563,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                     if (repoObjectView != null && repoObjectView.getProperty() != null) {
                         Item currentItem = repoObjectView.getProperty().getItem();
                         if (isMRServiceRegistered) {
-                            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault().getService(
+                            IMRProcessService mrService = GlobalServiceRegister.getDefault().getService(
                                     IMRProcessService.class);
 
                             if (mrService.isMapReduceItem(currentItem)) {
@@ -565,7 +573,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                             }
                         }
                         if (isStormServiceRegistered) {
-                            IStormProcessService stormService = (IStormProcessService) GlobalServiceRegister.getDefault()
+                            IStormProcessService stormService = GlobalServiceRegister.getDefault()
                                     .getService(IStormProcessService.class);
 
                             if (stormService.isStormItem(currentItem)) {
@@ -604,7 +612,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
             if (isneedReload) {
                 // / See bug 4821
-                ((ILibrariesService) GlobalServiceRegister.getDefault().getService(ILibrariesService.class))
+                GlobalServiceRegister.getDefault().getService(ILibrariesService.class)
                         .updateModulesNeededForCurrentJob(getProcess());
             }
 
@@ -651,7 +659,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         JobSettings.switchToCurJobSettingsView();
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+            ITestContainerProviderService testContainerService = GlobalServiceRegister
                     .getDefault().getService(ITestContainerProviderService.class);
             if (testContainerService != null) {
                 testContainerService.switchToCurTestContainerView();
@@ -925,7 +933,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         IAction zoomOut = new ZoomOutAction(root.getZoomManager());
         getActionRegistry().registerAction(zoomIn);
         getActionRegistry().registerAction(zoomOut);
-        IHandlerService service = (IHandlerService) getEditorSite().getService(IHandlerService.class);
+        IHandlerService service = getEditorSite().getService(IHandlerService.class);
         service.activateHandler(zoomIn.getActionDefinitionId(), new ActionHandler(zoomIn));
 
         service.activateHandler(zoomOut.getActionDefinitionId(), new ActionHandler(zoomOut));
@@ -1376,7 +1384,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
         super.dispose();
         AbstractMultiPageTalendEditor parentEditor = getParent();
-        if (parentEditor != null && !parentEditor.isKeepPropertyLocked()) {
+        if (parentEditor != null && !parentEditor.isKeepPropertyLocked() && getProcess() != null) {
             ((Process) getProcess()).dispose();
         }
         // process = null;
@@ -1693,7 +1701,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
                                 EConnectionType connectionType = EConnectionType.FLOW_MAIN;
                                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-                                    ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister
+                                    ICamelDesignerCoreService camelService = GlobalServiceRegister
                                             .getDefault().getService(ICamelDesignerCoreService.class);
                                     if (camelService.isRouteBuilderNode(node)) {
                                         connectionType = camelService.getTargetConnectionType(node);
@@ -1714,7 +1722,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                                 // FIXME perhaps, this is not good fix, need check it later
                                 // bug 21411
                                 if (PluginChecker.isJobLetPluginLoaded()) {
-                                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                                    IJobletProviderService service = GlobalServiceRegister.getDefault()
                                             .getService(IJobletProviderService.class);
                                     if (service != null && service.isJobletComponent(targetConnection.getTarget())) {
                                         if (targetConnection.getTarget() instanceof Node) {
@@ -2159,46 +2167,49 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
      */
     public KeyHandler getCommonKeyHandler() {
         if (sharedKeyHandler == null) {
-            sharedKeyHandler = new KeyHandler();
-            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F1, 0), new Action() {
-
-                @Override
-                public void run() {
-                    ISelection selection = getGraphicalViewer().getSelection();
-                    if (selection != null) {
-                        if (selection instanceof IStructuredSelection) {
-
-                            Object input = ((IStructuredSelection) selection).getFirstElement();
-                            Node node = null;
-                            if (input instanceof NodeTreeEditPart) {
-                                NodeTreeEditPart nTreePart = (NodeTreeEditPart) input;
-                                node = (Node) nTreePart.getModel();
-                            } else {
-                                if (input instanceof NodePart) {
-                                    EditPart editPart = (EditPart) input;
-                                    node = (Node) editPart.getModel();
-                                }
-                            }
-                            if (node != null) {
-
-                                String helpLink = (String) node.getPropertyValue(EParameterName.HELP.getName());
-                                String requiredHelpLink = ((Process) node.getProcess()).getBaseHelpLink()
-                                        + node.getComponent().getName();
-                                if (helpLink == null || "".equals(helpLink) || !requiredHelpLink.equals(helpLink)) {
-                                    helpLink = ((Process) node.getProcess()).getBaseHelpLink() + node.getComponent().getName();
-                                }
-                                PlatformUI.getWorkbench().getHelpSystem().displayHelp(helpLink);
-                            }
-                        }
-                    }
-                }
-            });
+            sharedKeyHandler = new TalendEditorKeyHandler();
             sharedKeyHandler.put(KeyStroke.getPressed(SWT.DEL, 0), getActionRegistry().getAction(ActionFactory.DELETE.getId()));
             // deactivate the F2 shortcut as it's not used anymore
             // sharedKeyHandler.put(KeyStroke.getPressed(SWT.F2, 0),
             // getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT));
         }
         return sharedKeyHandler;
+    }
+
+    protected void displayHelp() {
+
+        ISelection selection = getGraphicalViewer().getSelection();
+        if (selection != null) {
+            if (selection instanceof IStructuredSelection) {
+
+                Object input = ((IStructuredSelection) selection).getFirstElement();
+                Node node = null;
+                if (input instanceof NodeTreeEditPart) {
+                    NodeTreeEditPart nTreePart = (NodeTreeEditPart) input;
+                    node = (Node) nTreePart.getModel();
+                } else {
+                    if (input instanceof NodePart) {
+                        EditPart editPart = (EditPart) input;
+                        node = (Node) editPart.getModel();
+                    }
+                }
+                if (node != null) {
+                    if (ComponentsHelpUtil.isUseOnLineHelp()) {
+                        if (!node.isJoblet() && node.getComponent() != null && node.getComponent().isLoaded()
+                                && node.getComponent().isMadeByTalend()) {
+                            ComponentsHelpUtil.openLineHelp(node.getComponent().getDisplayName());
+                        }
+                    } else {
+                        String helpLink = (String) node.getPropertyValue(EParameterName.HELP.getName());
+                        String requiredHelpLink = ((Process) node.getProcess()).getBaseHelpLink() + node.getComponent().getName();
+                        if (helpLink == null || "".equals(helpLink) || !requiredHelpLink.equals(helpLink)) {
+                            helpLink = ((Process) node.getProcess()).getBaseHelpLink() + node.getComponent().getName();
+                        }
+                        PlatformUI.getWorkbench().getHelpSystem().displayHelp(helpLink);
+                    }
+                }
+            }
+        }
     }
 
     protected TalendEditorDropTargetListener talendEditorDropTargetListener = null;
@@ -2478,4 +2489,19 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
     public boolean isReadOnly() {
         return this.readOnly;
     }
+
+    class TalendEditorKeyHandler extends KeyHandler {
+
+        @Override
+        public boolean keyPressed(KeyEvent event) {
+            if (event != null && SWT.F1 == event.keyCode && 0 == event.stateMask) {
+                displayHelp();
+                event.doit = false;
+                return true;
+            } else {
+                return super.keyPressed(event);
+            }
+        }
+    }
 }
+

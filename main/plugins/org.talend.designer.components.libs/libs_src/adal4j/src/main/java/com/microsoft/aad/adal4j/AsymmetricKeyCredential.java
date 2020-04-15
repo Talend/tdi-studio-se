@@ -1,28 +1,32 @@
-/*******************************************************************************
- * Copyright © Microsoft Open Technologies, Inc.
- * 
- * All Rights Reserved
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- * ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
- * PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
- * 
- * See the Apache License, Version 2.0 for the specific language
- * governing permissions and limitations under the License.
- ******************************************************************************/
+// Copyright (c) Microsoft Corporation.
+// All rights reserved.
+//
+// This code is licensed under the MIT License.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 package com.microsoft.aad.adal4j;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.Key;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
@@ -65,17 +69,37 @@ public final class AsymmetricKeyCredential {
         }
 
         if (key == null) {
-            throw new NullPointerException("PrivateKey");
+            throw new NullPointerException("PrivateKey is null or empty");
         }
 
         this.clientId = clientId;
         this.key = key;
 
-        if (((RSAPrivateKey) key).getModulus().bitLength() < MIN_KEYSIZE_IN_BITS) {
-            throw new IllegalArgumentException(
-                    "certificate key size must be at least "
-                            + MIN_KEYSIZE_IN_BITS);
+        if (key instanceof RSAPrivateKey) {
+            if(((RSAPrivateKey) key).getModulus().bitLength() < MIN_KEYSIZE_IN_BITS) {
+                throw new IllegalArgumentException(
+                        "certificate key size must be at least " + MIN_KEYSIZE_IN_BITS);
+            }
         }
+        else if("sun.security.mscapi.RSAPrivateKey".equals(key.getClass().getName())){
+            try {
+                Method method = key.getClass().getMethod("length");
+                method.setAccessible(true);
+                if ((int)method.invoke(key)< MIN_KEYSIZE_IN_BITS) {
+                    throw new IllegalArgumentException(
+                            "certificate key size must be at least " + MIN_KEYSIZE_IN_BITS);
+                }
+            } catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                throw new RuntimeException("error accessing sun.security.mscapi.RSAPrivateKey length: "
+                        + ex.getMessage());
+            }
+        }
+        else{
+            throw new IllegalArgumentException(
+                    "certificate key must be an instance of java.security.interfaces.RSAPrivateKey or" +
+                            " sun.security.mscapi.RSAPrivateKey");
+        }
+
         this.publicCertificate = publicCertificate;
     }
 
@@ -91,9 +115,9 @@ public final class AsymmetricKeyCredential {
     /**
      * Base64 encoded hash of the the public certificate.
      * 
-     * @return base64 endoded string
-     * @throws CertificateEncodingException
-     * @throws NoSuchAlgorithmException
+     * @return base64 encoded string
+     * @throws CertificateEncodingException if an encoding error occurs
+     * @throws NoSuchAlgorithmException if requested algorithm is not available in the environment
      */
     public String getPublicCertificateHash()
             throws CertificateEncodingException, NoSuchAlgorithmException {
@@ -104,21 +128,19 @@ public final class AsymmetricKeyCredential {
     /**
      * Base64 encoded public certificate.
      * 
-     * @return base64 endoded string
-     * @throws CertificateEncodingException
-     * @throws NoSuchAlgorithmException
+     * @return base64 encoded string
+     * @throws CertificateEncodingException if an encoding error occurs
      */
-    public String getPublicCertificate()
-            throws CertificateEncodingException, NoSuchAlgorithmException {
+    public String getPublicCertificate() throws CertificateEncodingException {
         return Base64.encodeBase64String(this.publicCertificate.getEncoded());
     }
-    
+
     /**
      * Returns private key of the credential.
      * 
      * @return private key.
      */
-    public Key getKey() {
+    public PrivateKey getKey() {
         return key;
     }
 
@@ -129,23 +151,21 @@ public final class AsymmetricKeyCredential {
      *            Identifier of the client requesting the token.
      * @param pkcs12Certificate
      *            PKCS12 certificate stream containing public and private key.
-     *            Caller is responsible to handling the inputstream.
+     *            Caller is responsible for handling the input stream.
      * @param password
      *            certificate password
      * @return KeyCredential instance
-     * @throws KeyStoreException
-     * @throws NoSuchProviderException
-     * @throws NoSuchAlgorithmException
-     * @throws CertificateException
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws UnrecoverableKeyException
+     * @throws KeyStoreException {@link KeyStoreException}
+     * @throws NoSuchProviderException {@link NoSuchProviderException}
+     * @throws NoSuchAlgorithmException {@link NoSuchAlgorithmException}
+     * @throws CertificateException {@link CertificateException}
+     * @throws IOException {@link IOException}
+     * @throws UnrecoverableKeyException {@link UnrecoverableKeyException}
      */
     public static AsymmetricKeyCredential create(final String clientId,
             final InputStream pkcs12Certificate, final String password)
             throws KeyStoreException, NoSuchProviderException,
-            NoSuchAlgorithmException, CertificateException,
-            FileNotFoundException, IOException, UnrecoverableKeyException {
+            NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException {
         final KeyStore keystore = KeyStore.getInstance("PKCS12", "SunJSSE");
         keystore.load(pkcs12Certificate, password.toCharArray());
         final Enumeration<String> aliases = keystore.aliases();
@@ -173,12 +193,9 @@ public final class AsymmetricKeyCredential {
         return new AsymmetricKeyCredential(clientId, key, publicCertificate);
     }
 
-    private static byte[] getHash(final byte[] inputBytes)
-            throws NoSuchAlgorithmException, CertificateEncodingException {
+    private static byte[] getHash(final byte[] inputBytes) throws NoSuchAlgorithmException {
         final MessageDigest md = MessageDigest.getInstance("SHA-1");
         md.update(inputBytes);
         return md.digest();
-
     }
-
 }

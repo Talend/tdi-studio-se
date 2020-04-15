@@ -2062,7 +2062,26 @@ public class CLASS {
                     setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.DATE);\r\n");
                 }
                 setStmt.append("}\r\n");
-            } else {
+            } else if("String".equals(typeToGenerate)) {
+                   if ("NVARCHAR".equalsIgnoreCase(column.dataType) || "NCHAR".equalsIgnoreCase(column.dataType) || "NTEXT".equalsIgnoreCase(column.dataType)) {
+                        boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+                        setStmt.append("String driver = null;\r\n");
+                        if (useExistingConnection) {
+                            String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+                            setStmt.append("driver = ((String)globalMap.get(\"driver_" + connection + "\"));\r\n");
+                        } else {
+                            setStmt.append("driver = \"" + ElementParameterParser.getValue(node, "__DRIVER__") +"\";\r\n");
+                        }
+
+                        setStmt.append("if (\"MSSQL_PROP\".equals(driver)) {\r\n");
+                            setStmt.append(prefix + cid + ".setNString(" + index + dynamic + ", " + incomingConnName + "." + column.getName() + ");\r\n");
+                        setStmt.append("} else {\r\n");
+                            setStmt.append(prefix + cid + ".setString(" + index + dynamic + ", " + incomingConnName + "." + column.getName() + ");\r\n");
+                        setStmt.append("}\r\n");
+                   } else {
+                        setStmt.append(prefix + cid + ".setString(" + index + dynamic + ", " + incomingConnName + "." + column.getName() + ");\r\n");
+                   }
+            }else {
                 setStmt.append(prefix + cid + ".set" + typeToGenerate + "(" + index + dynamic + ", " + incomingConnName + "." + column.getName() + ");\r\n");
             }
             if(isObject) {
@@ -2685,7 +2704,7 @@ public class CLASS {
             } else if(typeToGenerate.equals("Date")) {
                 setStmt.append("if(" + incomingConnName + "." + column.getName() + " != null) {\r\n");
                 boolean isTSWithTZ = dbType.matches("TIMESTAMP WITH TIME ZONE");
-                if(isTSWithTZ && ("ORACLE_10".equals(dbVersion) || "ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion))){
+                if(isTSWithTZ && ("ORACLE_10".equals(dbVersion) || "ORACLE_11".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion) )){
                     setStmt.append("if("+ incomingConnName + "." + column.getName() + " instanceof TalendTimestampWithTZ){\r\n");
                     setStmt.append("((oracle.jdbc.OraclePreparedStatement)" + prefix + cid + ").setTIMESTAMPTZ(" + index + dynamic +  ", new oracle.sql.TIMESTAMPTZ(conn_" + cid + ", ((TalendTimestampWithTZ)"+ incomingConnName + "." + column.getName() +").getTimestamp(),((TalendTimestampWithTZ)"+ incomingConnName + "." + column.getName() +").getCalendar()));\r\n");
                     setStmt.append("}else{");
@@ -4466,9 +4485,9 @@ public class CLASS {
         }  
     }
     
-    public class SQLDWHManager extends MSSQLManager{
+    public class AzureSynapseManager extends MSSQLManager{
         
-        public SQLDWHManager(String cid) {
+        public AzureSynapseManager(String cid) {
             super(cid);
         }
         
@@ -5089,8 +5108,8 @@ public class CLASS {
             } else if(dbmsId.equalsIgnoreCase(MAXDB)) {
                 manager = new MaxDBManager(cid);
             } else if(dbmsId.equalsIgnoreCase(MSSQL)) {
-                if(cid != null && cid.indexOf("DWHBulkExec") > -1){
-                    manager = new SQLDWHManager(cid);
+                if(cid != null && cid.indexOf("tAzureSynapseBulkExec") > -1){
+                    manager = new AzureSynapseManager(cid);
                 }else{
                     manager = new MSSQLManager(cid); 
                 }

@@ -883,21 +883,6 @@ public class ComponentsUtils {
                 propertyParameter.setShow(false);
             }
         }
-        IElementParameter parent = refPara.getParentParameter();
-        Widget parentWidget = null;
-        if (parent != null) {
-            parentWidget = ((GenericElementParameter) parent).getWidget();
-        }
-        for (IElementParameter param : refPara.getElement().getElementParameters()) {
-            if (param instanceof GenericElementParameter) {
-                widget.setHidden();
-                if (param.getName().startsWith("connection")) {
-                    param.setShow(false);
-                    continue;
-                }
-                param.setShow(parentWidget == null ? !widget.isHidden() : !parentWidget.isHidden() && !widget.isHidden());
-            }
-        }
     }
 
     public static void setPropertiesPepositoryValue(ComponentProperties componentProperties, String paramName) {

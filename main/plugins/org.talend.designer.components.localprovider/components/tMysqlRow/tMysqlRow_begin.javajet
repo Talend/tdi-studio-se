@@ -23,11 +23,14 @@ imports="
 			}
 			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
-				String url_<%=cid%> = "<%=jdbcURL%>://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+				String url_<%=cid%> = "<%=jdbcURL%>://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?allowLoadLocalInfile=true";
 <%
 	        } else {
+				if (!dbproperties.contains("allowLoadLocalInfile")) {
+					dbproperties += " + \"&allowLoadLocalInfile=true\"";
+				}
 %>
-				String url_<%=cid%> = "<%=jdbcURL%>://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+				String url_<%=cid%> = "<%=jdbcURL%>://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%> ;
 <%
 	        }		
 		}

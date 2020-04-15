@@ -390,6 +390,10 @@
             mapping="TEXT"
             name="Text"/>
       <generator
+            class="org.talend.designer.core.ui.editor.properties.controllers.generator.NumberLimitTextGenerator"
+            mapping="NUMBERLIMITTEXT"
+            name="NumberLimitText"/>
+      <generator
             class="org.talend.designer.core.ui.editor.properties.controllers.generator.ComboGenerator"
             mapping="CLOSED_LIST"
             name="Combo"/>
@@ -901,5 +905,13 @@
                 class="org.talend.designer.core.ui.preferences.PreferencePreInitailizeTask"
                 priority="normal">
           </loginTask>
+       </extension>
+       <extension
+             id="TalendHelpUI"
+             name="org.talend.designer.core.ui.help.TalendHelpUI"
+             point="org.eclipse.ui.helpSupport">
+          <config
+                class="org.talend.designer.core.ui.help.TalendHelpUI">
+          </config>
        </extension>
 </plugin>

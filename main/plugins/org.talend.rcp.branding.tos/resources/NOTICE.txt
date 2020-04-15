@@ -1,5 +1,5 @@
 Talend Open Studio for Data Integration
-Copyright (c) 2006-2019 Talend Inc. - www.talend.com
+Copyright (c) 2006-2020 Talend Inc. - www.talend.com
 All rights reserved.
 
 

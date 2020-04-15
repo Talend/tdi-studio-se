@@ -47,7 +47,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		}
 		if (((AbstractNode)node).getParallelIterator() != null) {
 		%>
-			synchronized ((Object[])globalMap.get("lockWrite_<%=((AbstractNode)node).getParallelIterator()%>")) {
+			synchronized (fileName_<%=cid %>.intern()) {
 		<% 
 		}
 		if (isParallelize) {

@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.swt.custom.CTabFolder;
@@ -807,6 +808,14 @@ public class SQLBuilderRepositoryNodeManager {
 
         connection.setDBRootPath(parameters.getDirectory());
         connection.setDbVersionString(parameters.getDbVersion());
+
+        Map<String, String> params = parameters.getParameters();
+        if (params != null && params.size() > 0) {
+            Set<Entry<String, String>> collection = params.entrySet();
+            for (Entry<String, String> para : collection) {
+                connection.getParameters().put(para.getKey(), para.getValue());
+            }
+        }
 
         return connection;
     }

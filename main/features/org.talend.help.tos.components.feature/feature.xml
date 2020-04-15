@@ -2,7 +2,7 @@
 <feature
       id="org.talend.help.tos.components.feature"
       label="Talend COMPONENTS help feature"
-      version="7.3.1.qualifier"
+      version="7.4.1.qualifier"
       provider-name=".Talend SA.">
 
    <description url="http://www.example.com/description">

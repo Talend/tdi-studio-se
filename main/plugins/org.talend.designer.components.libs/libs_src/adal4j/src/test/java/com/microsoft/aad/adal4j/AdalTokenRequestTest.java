@@ -1,22 +1,26 @@
-/*******************************************************************************
- * Copyright © Microsoft Open Technologies, Inc.
- * 
- * All Rights Reserved
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- * ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
- * PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
- * 
- * See the Apache License, Version 2.0 for the specific language
- * governing permissions and limitations under the License.
- ******************************************************************************/
+// Copyright (c) Microsoft Corporation.
+// All rights reserved.
+//
+// This code is licensed under the MIT License.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 package com.microsoft.aad.adal4j;
 
 import java.io.IOException;
@@ -25,30 +29,69 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import com.nimbusds.oauth2.sdk.*;
+import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
+import com.nimbusds.oauth2.sdk.auth.ClientSecretPost;
+import com.nimbusds.oauth2.sdk.auth.Secret;
+import com.nimbusds.oauth2.sdk.http.CommonContentTypes;
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
+import com.nimbusds.oauth2.sdk.id.ClientID;
+import com.nimbusds.oauth2.sdk.util.JSONObjectUtils;
 import net.minidev.json.JSONObject;
-
 import org.easymock.EasyMock;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
-import com.nimbusds.oauth2.sdk.AuthorizationGrant;
-import com.nimbusds.oauth2.sdk.ParseException;
-import com.nimbusds.oauth2.sdk.SerializeException;
-import com.nimbusds.oauth2.sdk.TokenErrorResponse;
-import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
-import com.nimbusds.oauth2.sdk.auth.ClientSecretPost;
-import com.nimbusds.oauth2.sdk.auth.Secret;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
-import com.nimbusds.oauth2.sdk.id.ClientID;
-import com.nimbusds.oauth2.sdk.util.JSONObjectUtils;
-
 @Test(groups = { "checkin" })
 @PrepareForTest(TokenErrorResponse.class)
 public class AdalTokenRequestTest extends AbstractAdalTests {
+
+    @Test
+    public void executeOAuthRequest_SCBadRequestErrorInteractionRequired_AdalClaimsChallengeExceptionThrown()
+            throws SerializeException,
+            ParseException, AuthenticationException, IOException,
+            java.text.ParseException, URISyntaxException {
+
+        AuthorizationGrant ag = new AuthorizationCodeGrant(
+                new AuthorizationCode("code"),
+                new URI("http://my.redirect.com"));
+        AdalOAuthAuthorizationGrant grant = new AdalOAuthAuthorizationGrant(ag, (String) null);
+
+        AdalTokenRequest request = PowerMock.createPartialMock(
+                AdalTokenRequest.class, new String[]{"toOAuthRequest"},
+                new URL("http://login.windows.net"), null, grant, null, null, null);
+        AdalOAuthRequest adalOAuthHttpRequest = PowerMock
+                .createMock(AdalOAuthRequest.class);
+
+        HTTPResponse httpResponse = new HTTPResponse(HTTPResponse.SC_BAD_REQUEST);
+
+        String claims = "{\\\"access_token\\\":{\\\"polids\\\":{\\\"essential\\\":true,\\\"values\\\":[\\\"5ce770ea-8690-4747-aa73-c5b3cd509cd4\\\"]}}}";
+
+        String content = "{\"error\":\"interaction_required\"," +
+                "\"error_description\":\"AADSTS50076: description\\r\\nCorrelation ID: 3a...5a\\r\\nTimestamp:2017-07-15 02:35:05Z\"," +
+                "\"error_codes\":[50076]," +
+                "\"timestamp\":\"2017-07-15 02:35:05Z\"," +
+                "\"trace_id\":\"0788...000\"," +
+                "\"correlation_id\":\"3a...95a\"," +
+                "\"claims\":\"" + claims + "\"}";
+        httpResponse.setContent(content);
+        httpResponse.setContentType(CommonContentTypes.APPLICATION_JSON);
+
+        EasyMock.expect(request.toOAuthRequest()).andReturn(adalOAuthHttpRequest).times(1);
+        EasyMock.expect(adalOAuthHttpRequest.send()).andReturn(httpResponse).times(1);
+
+        PowerMock.replay(request, adalOAuthHttpRequest);
+
+        try {
+            request.executeOAuthRequestAndProcessResponse();
+            Assert.fail("Expected AdalClaimsChallengeException was not thrown");
+        } catch (AdalClaimsChallengeException ex) {
+            Assert.assertEquals(claims.replace("\\", ""), ex.getClaims());
+        }
+        PowerMock.verifyAll();
+    }
 
     @Test(expectedExceptions = SerializeException.class, expectedExceptionsMessageRegExp = "The endpoint URI is not specified")
     public void testNullUri() throws SerializeException, ParseException,
@@ -59,11 +102,11 @@ public class AdalTokenRequestTest extends AbstractAdalTests {
         final AuthorizationGrant ag = new AuthorizationCodeGrant(
                 new AuthorizationCode("code"),
                 new URI("http://my.redirect.com"));
-        final AdalAuthorizatonGrant grant = new AdalAuthorizatonGrant(ag,
+        final AdalOAuthAuthorizationGrant grant = new AdalOAuthAuthorizationGrant(ag,
                 (String) null);
         final ClientDataHttpHeaders cdhh = new ClientDataHttpHeaders("corr-id");
         final AdalTokenRequest request = new AdalTokenRequest(null, ca, grant,
-                cdhh.getReadonlyHeaderMap());
+                cdhh.getReadonlyHeaderMap(), null, null);
         Assert.assertNotNull(request);
         request.executeOAuthRequestAndProcessResponse();
     }
@@ -76,12 +119,12 @@ public class AdalTokenRequestTest extends AbstractAdalTests {
         final AuthorizationGrant ag = new AuthorizationCodeGrant(
                 new AuthorizationCode("code"),
                 new URI("http://my.redirect.com"));
-        final AdalAuthorizatonGrant grant = new AdalAuthorizatonGrant(ag,
+        final AdalOAuthAuthorizationGrant grant = new AdalOAuthAuthorizationGrant(ag,
                 (String) null);
         final ClientDataHttpHeaders cdhh = new ClientDataHttpHeaders("corr-id");
         final AdalTokenRequest request = new AdalTokenRequest(new URL(
                 "http://login.windows.net"), ca, grant,
-                cdhh.getReadonlyHeaderMap());
+                cdhh.getReadonlyHeaderMap(), null, null);
         Assert.assertNotNull(request);
     }
 
@@ -94,12 +137,12 @@ public class AdalTokenRequestTest extends AbstractAdalTests {
         final AuthorizationGrant ag = new AuthorizationCodeGrant(
                 new AuthorizationCode("code"),
                 new URI("http://my.redirect.com"));
-        final AdalAuthorizatonGrant grant = new AdalAuthorizatonGrant(ag,
+        final AdalOAuthAuthorizationGrant grant = new AdalOAuthAuthorizationGrant(ag,
                 (String) null);
         final ClientDataHttpHeaders cdhh = new ClientDataHttpHeaders("corr-id");
         final AdalTokenRequest request = new AdalTokenRequest(new URL(
                 "http://login.windows.net"), ca, grant,
-                cdhh.getReadonlyHeaderMap());
+                cdhh.getReadonlyHeaderMap(), null, null);
         Assert.assertNotNull(request);
         final AdalOAuthRequest req = request.toOAuthRequest();
         Assert.assertNotNull(req);
@@ -116,10 +159,10 @@ public class AdalTokenRequestTest extends AbstractAdalTests {
         final AuthorizationGrant ag = new AuthorizationCodeGrant(
                 new AuthorizationCode("code"),
                 new URI("http://my.redirect.com"));
-        final AdalAuthorizatonGrant grant = new AdalAuthorizatonGrant(ag,
+        final AdalOAuthAuthorizationGrant grant = new AdalOAuthAuthorizationGrant(ag,
                 (String) null);
         final AdalTokenRequest request = new AdalTokenRequest(new URL(
-                "http://login.windows.net"), null, grant, null);
+                "http://login.windows.net"), null, grant, null, null, null);
         Assert.assertNotNull(request);
         final AdalOAuthRequest req = request.toOAuthRequest();
         Assert.assertNotNull(req);
@@ -132,12 +175,12 @@ public class AdalTokenRequestTest extends AbstractAdalTests {
         final AuthorizationGrant ag = new AuthorizationCodeGrant(
                 new AuthorizationCode("code"),
                 new URI("http://my.redirect.com"));
-        final AdalAuthorizatonGrant grant = new AdalAuthorizatonGrant(ag,
+        final AdalOAuthAuthorizationGrant grant = new AdalOAuthAuthorizationGrant(ag,
                 (String) null);
 
         final AdalTokenRequest request = PowerMock.createPartialMock(
                 AdalTokenRequest.class, new String[] { "toOAuthRequest" },
-                new URL("http://login.windows.net"), null, grant, null);
+                new URL("http://login.windows.net"), null, grant, null, null, null);
         final AdalOAuthRequest adalOAuthHttpRequest = PowerMock
                 .createMock(AdalOAuthRequest.class);
         final HTTPResponse httpResponse = PowerMock
@@ -181,12 +224,12 @@ public class AdalTokenRequestTest extends AbstractAdalTests {
         final AuthorizationGrant ag = new AuthorizationCodeGrant(
                 new AuthorizationCode("code"),
                 new URI("http://my.redirect.com"));
-        final AdalAuthorizatonGrant grant = new AdalAuthorizatonGrant(ag,
+        final AdalOAuthAuthorizationGrant grant = new AdalOAuthAuthorizationGrant(ag,
                 (String) null);
 
         final AdalTokenRequest request = PowerMock.createPartialMock(
                 AdalTokenRequest.class, new String[] { "toOAuthRequest" },
-                new URL("http://login.windows.net"), null, grant, null);
+                new URL("http://login.windows.net"), null, grant, null, null, null);
         final AdalOAuthRequest adalOAuthHttpRequest = PowerMock
                 .createMock(AdalOAuthRequest.class);
         final HTTPResponse httpResponse = PowerMock
@@ -200,6 +243,16 @@ public class AdalTokenRequestTest extends AbstractAdalTests {
         final TokenErrorResponse errorResponse = PowerMock
                 .createMock(TokenErrorResponse.class);
 
+        final ErrorObject errorObject = PowerMock.createMock(ErrorObject.class);
+
+        EasyMock.expect(errorObject.getCode())
+                .andReturn("unknown").times(1);
+        EasyMock.expect(errorObject.getHTTPStatusCode())
+                .andReturn(402).times(1);
+
+        EasyMock.expect(errorResponse.getErrorObject())
+                .andReturn(errorObject).times(1);
+
         PowerMock.mockStaticPartial(TokenErrorResponse.class, "parse");
         PowerMock.createPartialMock(TokenErrorResponse.class, "parse");
         EasyMock.expect(TokenErrorResponse.parse(httpResponse))
@@ -212,11 +265,12 @@ public class AdalTokenRequestTest extends AbstractAdalTests {
                 .times(1);
 
         PowerMock.replay(request, adalOAuthHttpRequest, httpResponse,
-                TokenErrorResponse.class, jsonObj, errorResponse);
+                TokenErrorResponse.class, errorObject, jsonObj, errorResponse);
         try {
             request.executeOAuthRequestAndProcessResponse();
             PowerMock.verifyAll();
-        } finally {
+        }
+        finally {
             PowerMock.reset(request, adalOAuthHttpRequest, httpResponse,
                     TokenErrorResponse.class, jsonObj, errorResponse);
         }

@@ -3721,7 +3721,7 @@ public class Node extends Element implements IGraphicalNode {
         List<IConnection> subjobLinks = (List<IConnection>) this.getIncomingConnections(EConnectionType.ON_SUBJOB_OK);
         subjobLinks.addAll(this.getIncomingConnections(EConnectionType.ON_SUBJOB_ERROR));
         if(!subjobLinks.isEmpty() && !this.getUniqueName().equals(this.getDesignSubjobStartNode().getUniqueName())){
-        	String errorMessage = Messages.getString("Node.notSubjobStartNode", this.getUniqueName()); //$NON-NLS-1$
+            String errorMessage = Messages.getString("Node.notSubjobStartNode2", this.getUniqueName()); //$NON-NLS-1$
             Problems.add(ProblemStatus.WARNING, this, errorMessage);
         }
         

@@ -27,7 +27,7 @@ if (!isParallelize) {
         setQueryTimeOut = "true".equals(ElementParameterParser.getValue(node,"__SET_QUERY_TIMEOUT__"));
         queryTimeOutInSeconds = ElementParameterParser.getValue(node,"__QUERY_TIMEOUT_IN_SECONDS__");
     }
-
+	
     if(!("NONE").equals(tableAction)) {
         if(("DROP_CREATE").equals(tableAction)) {
         %>
@@ -39,9 +39,9 @@ if (!isParallelize) {
                     <%
                }
              %>
-            <%dbLog.table().dropTry(dbLog.var("tableName"));%>
+            <%dbLog.table().dropTry(dbLog.varForTableName("tableName", dbmsId));%>
                 stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>" <%=(useCascade ? " + \" cascade\"" : "")%>);
-            <%dbLog.table().dropDone(dbLog.var("tableName"));%>
+            <%dbLog.table().dropDone(dbLog.varForTableName("tableName", dbmsId));%>
             }
             <%
                 if (TERADATA.equalsIgnoreCase(dbmsId)) {
@@ -58,7 +58,7 @@ if (!isParallelize) {
                     <%
                }
              %>
-            <%dbLog.table().createTry(dbLog.var("tableName"));%>
+            <%dbLog.table().createTry(dbLog.varForTableName("tableName", dbmsId));%>
             <%
                 if(isDynamic) {
                 List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -81,7 +81,7 @@ if (!isParallelize) {
             <%
             }
             %>
-            <%dbLog.table().createDone(dbLog.var("tableName"));%>
+            <%dbLog.table().createDone(dbLog.varForTableName("tableName", dbmsId));%>
             }
         <%
         } else if(("CREATE").equals(tableAction)) {
@@ -94,7 +94,7 @@ if (!isParallelize) {
                     <%
                }
              %>
-            <%dbLog.table().createTry(dbLog.var("tableName"));%>
+            <%dbLog.table().createTry(dbLog.varForTableName("tableName", dbmsId));%>
             <%
             if(isDynamic) {
                 List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -117,7 +117,7 @@ if (!isParallelize) {
             <%
             }
             %>
-            <%dbLog.table().createDone(dbLog.var("tableName"));%>
+            <%dbLog.table().createDone(dbLog.varForTableName("tableName", dbmsId));%>
             }
         <%
         } else if(("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
@@ -334,7 +334,7 @@ if (!isParallelize) {
                                             <%
                                        }
                                      %>
-                                    <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                                    <%dbLog.table().createTry(dbLog.varForTableName("tableName", dbmsId));%>
                                     <%
                                     if(isDynamic) {
                                         List<? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -357,7 +357,7 @@ if (!isParallelize) {
                                     <%
                                     }
                                     %>
-                                    <%dbLog.table().createDone(dbLog.var("tableName"));%>
+                                    <%dbLog.table().createDone(dbLog.varForTableName("tableName", dbmsId));%>
                                     }
                                 }
                             <%
@@ -372,9 +372,9 @@ if (!isParallelize) {
                                                 <%
                                            }
                                      %>
-                                        <%dbLog.table().dropTry(dbLog.var("tableName"));%>
+                                        <%dbLog.table().dropTry(dbLog.varForTableName("tableName", dbmsId));%>
                                         stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>" <%=(useCascade ? " + \" cascade\"" : "")%>);
-                                        <%dbLog.table().dropDone(dbLog.var("tableName"));%>
+                                        <%dbLog.table().dropDone(dbLog.varForTableName("tableName", dbmsId));%>
                                     }
                                     <%
                                         if (TERADATA.equalsIgnoreCase(dbmsId)) {
@@ -392,7 +392,7 @@ if (!isParallelize) {
                                         <%
                                    }
                                  %>
-                                <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                                <%dbLog.table().createTry(dbLog.varForTableName("tableName", dbmsId));%>
                                 <%
                                 if(isDynamic) {
                                     List<? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -415,7 +415,7 @@ if (!isParallelize) {
                                 <%
                                 }
                                 %>
-                                <%dbLog.table().createDone(dbLog.var("tableName"));%>
+                                <%dbLog.table().createDone(dbLog.varForTableName("tableName", dbmsId));%>
                                 }
                             <%
                             }
@@ -443,9 +443,9 @@ if (!isParallelize) {
                     <%
                }
              %>
-            <%dbLog.table().clearTry(dbLog.var("tableName"));%>
+            <%dbLog.table().clearTry(dbLog.varForTableName("tableName", dbmsId));%>
                 stmtClear_<%=cid%>.executeUpdate("<%=manager.getDeleteTableSQL()%>");
-            <%dbLog.table().clearDone(dbLog.var("tableName"));%>
+            <%dbLog.table().clearDone(dbLog.varForTableName("tableName", dbmsId));%>
             }
         <%
         }else if(("TRUNCATE").equals(tableAction)) {
@@ -473,7 +473,7 @@ if (!isParallelize) {
                     <%
                }
              %>
-            <%dbLog.table().truncateTry(dbLog.var("tableName"));%>
+            <%dbLog.table().truncateTry(dbLog.varForTableName("tableName", dbmsId));%>
             <%if(DB2.equalsIgnoreCase(dbmsId)){%>
                 conn_<%=cid%>.commit();
             <%}%>
@@ -483,7 +483,7 @@ if (!isParallelize) {
                         conn_<%=cid%>.commit();
                     }
             <%}%>
-            <%dbLog.table().truncateDone(dbLog.var("tableName"));%>
+            <%dbLog.table().truncateDone(dbLog.varForTableName("tableName", dbmsId));%>
                 deletedCount_<%=cid%> += rsTruncCountNumber_<%=cid%>;
             }
         <%
@@ -492,12 +492,12 @@ if (!isParallelize) {
             try (java.sql.Statement stmtTruncCount_<%=cid%> = conn_<%=cid%>.createStatement();
                 java.sql.ResultSet rsTruncCount_<%=cid%> = stmtTruncCount_<%=cid%>.executeQuery("<%=manager.getSelectionSQL()%>");
                 java.sql.Statement stmtTrunc_<%=cid%> = conn_<%=cid%>.createStatement()) {
-            <%dbLog.table().truncateReuseStorageTry(dbLog.var("tableName"));%>
+            <%dbLog.table().truncateReuseStorageTry(dbLog.varForTableName("tableName", dbmsId));%>
             <%if(DB2.equalsIgnoreCase(dbmsId)){%>
                 conn_<%=cid%>.commit();
             <%}%>
                 stmtTrunc_<%=cid%>.executeUpdate("<%=manager.getTruncateReuseStroageTableSQL()%>");
-            <%dbLog.table().truncateReuseStorageDone(dbLog.var("tableName"));%>
+            <%dbLog.table().truncateReuseStorageDone(dbLog.varForTableName("tableName", dbmsId));%>
                 while(rsTruncCount_<%=cid%>.next()) {
                     deletedCount_<%=cid%> += rsTruncCount_<%=cid%>.getInt(1);
                 }

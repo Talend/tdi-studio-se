@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.collections.BidiMap;
@@ -36,6 +37,7 @@ import org.talend.components.api.properties.VirtualComponentProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.hadoop.HadoopConfJarBean;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
 import org.talend.core.model.components.ComponentCategory;
@@ -779,7 +781,7 @@ public class DataProcess implements IGeneratingProcess {
                 DataConnection dataConnec = new DataConnection();
                 dataConnec.setActivate(graphicalNode.isActivate());
                 dataConnec.setLineStyle(EConnectionType.getTypeFromName(curConnec.getConnectionType()));
-                dataConnec.setConnectorName(curConnec.getConnectionType());
+                dataConnec.setConnectorName(curConnec.getConnectorName());
                 if (nodeSource.getMetadataList() != null) {
                     dataConnec.setMetadataTable(nodeSource.getMetadataList().get(0));
                 }
@@ -1012,6 +1014,7 @@ public class DataProcess implements IGeneratingProcess {
                 curNode.setActivate(false);
                 curNode.setStart(false);
             }
+            curItem.updateNode(curNode, graphicalNode);
         }
     }
 
@@ -3266,8 +3269,8 @@ public class DataProcess implements IGeneratingProcess {
         if (!hadoopClusterService.isUseDynamicConfJar(hadoopClusterItemId)) {
             return null;
         }
-        String confsJarName = hadoopClusterService.getCustomConfsJarName(hadoopClusterItemId, false, false);
-        if (confsJarName == null) {
+        Optional<HadoopConfJarBean> confJarBean = hadoopClusterService.getCustomConfsJar(hadoopClusterItemId, false, false);
+        if (!confJarBean.isPresent()) {
             return null;
         }
         IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, componentCategory.getName());
@@ -3283,7 +3286,21 @@ public class DataProcess implements IGeneratingProcess {
                 clusterIdParam.setValue(hadoopClusterItemId);
             }
             IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB"); //$NON-NLS-1$
-            confLibParam.setValue(TalendTextUtils.addQuotes(confsJarName));
+            confLibParam.setValue(TalendTextUtils.addQuotes(confJarBean.get().getCustomConfJarName()));
+            IElementParameter setConfParam = confNode.getElementParameter("SET_HADOOP_CONF"); //$NON-NLS-1$
+            if (setConfParam != null) {
+                setConfParam.setValue(Boolean.valueOf(confJarBean.get().isOverrideCustomConf()));
+            }
+            IElementParameter confPathParam = confNode.getElementParameter("HADOOP_CONF_SPECIFIC_JAR"); //$NON-NLS-1$
+            if (confPathParam != null) {
+                String jarPath = null;
+                if (confJarBean.get().isContextMode()) {
+                    jarPath = confJarBean.get().getOverrideCustomConfPath();
+                } else {
+                    jarPath = TalendTextUtils.addQuotes(confJarBean.get().getOriginalOverrideCustomConfPath());
+                }
+                confPathParam.setValue(jarPath);
+            }
             return confNode;
         }
         return null;
@@ -3441,7 +3458,6 @@ public class DataProcess implements IGeneratingProcess {
         ((Process) duplicatedProcess).setGeneratingProcess(this);
         ((Process) duplicatedProcess).setProcessModified(false);
         ((Process) duplicatedProcess).setNeededRoutines(process.getNeededRoutines());
-        ((Process) duplicatedProcess).setNeededPigudf(process.getNeededPigudf());
         ((Process) duplicatedProcess).setEditor(editor);
         List<RoutinesParameterType> routines = null;
         if (process instanceof Process) {

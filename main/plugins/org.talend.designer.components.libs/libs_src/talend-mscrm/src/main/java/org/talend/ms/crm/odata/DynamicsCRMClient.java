@@ -12,19 +12,6 @@
 // ============================================================================
 package org.talend.ms.crm.odata;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.naming.AuthenticationException;
-import javax.naming.ServiceUnavailableException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -44,6 +31,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.util.EntityUtils;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.ODataClientErrorException;
+import org.apache.olingo.client.api.communication.request.retrieve.EdmMetadataRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
@@ -68,6 +56,18 @@ import org.talend.ms.crm.odata.authentication.IAuthStrategy;
 import org.talend.ms.crm.odata.httpclientfactory.DefaultHttpClientState;
 import org.talend.ms.crm.odata.httpclientfactory.IHttpClientFactoryObserver;
 import org.talend.ms.crm.odata.httpclientfactory.IHttpclientFactoryObservable;
+
+import javax.naming.AuthenticationException;
+import javax.naming.ServiceUnavailableException;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Client for accessing Dynamics CRM Online using the Web API
@@ -155,7 +155,6 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
     /**
      * Create EntitySet Iterator request
      *
-     * @param entirySet entirySet the EntitySet name which you want to retrieve records
      * @param queryOption
      * @return EntitySet iterator request
      */
@@ -174,17 +173,43 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
             uriBuilder.filter(queryOption.getFilter());
         }
         ODataEntitySetRequest<ClientEntitySet> request = odataClient.getRetrieveRequestFactory()
-                .getEntitySetRequest(uriBuilder.build());
+                                                                    .getEntitySetRequest(uriBuilder.build());
 
         this.authStrategy.configureRequest(request);
 
         return request;
     }
 
+    public EdmMetadataRequest createMetadataRetrieveRequest() {
+        EdmMetadataRequest request = odataClient.getRetrieveRequestFactory()
+                                                .getMetadataRequest(serviceRootURL);
+        this.authStrategy.configureRequest(request);
+        return request;
+    }
+
+    public ODataEntitySetRequest<ClientEntitySet> createEntitySetRetrieveRequest() {
+        URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment("EntityDefinitions").select("EntitySetName,LogicalName");
+        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = odataClient.getRetrieveRequestFactory().getEntitySetRequest(uriBuilder.build());
+        this.authStrategy.configureRequest(entitySetRequest);
+        return entitySetRequest;
+    }
+
+    public ODataEntitySetRequest<ClientEntitySet> createEndpointsNamesRequest(){
+        URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL);
+        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = odataClient.getRetrieveRequestFactory().getEntitySetRequest(uriBuilder.build());
+        this.authStrategy.configureRequest(entitySetRequest);
+        return entitySetRequest;
+    }
+
+    public ODataEntitySetRequest<ClientEntitySet> createRequest(URIBuilder uriBuilder) {
+        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = odataClient.getRetrieveRequestFactory().getEntitySetRequest(uriBuilder.build());
+        this.authStrategy.configureRequest(entitySetRequest);
+        return entitySetRequest;
+    }
+
     /**
      * Retrieve records from EntitySet
      *
-     * @param entitySet the EntitySet name which you want to retrieve records
      * @param queryOption
      * @return the entity set iterator object
      *
@@ -218,7 +243,6 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
     /**
      * Create entity
      *
-     * @param entitySet entitySet the EntitySet name which you want to create record
      * @param entity provided content for create
      *
      * @throws ServiceUnavailableException
@@ -233,27 +257,52 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      * Update entity with provided content.
      * The PATCH method is used, so only given properties are updated.
      * Navigation link properties that must be set to null are updated by another DELETE calls.
+     * Navigation link properties are saved during {@link #addEntityNavigationLink(ClientEntity, String, String, String, boolean, boolean)}
+     * method call
      *
      * @param entity The payload containing properties to update
      * @param keySegment The id of the entity to update
      *
      * @throws ServiceUnavailableException
+     *
+     * @deprecated use {@link #updateEntity(ClientEntity, String, List)} instead with a list of navigation links list instead;
      */
+    @Deprecated
     public HttpResponse updateEntity(ClientEntity entity, String keySegment) throws ServiceUnavailableException {
+        HttpResponse response = updateEntity(entity, keySegment, this.navigationLinksToNull);
+        this.navigationLinksToNull.clear();
+        return response;
+    }
+
+    /**
+     * Update entity with provided content.
+     * The PATCH method is used, so only given properties are updated.
+     * Navigation link properties that must be set to null are updated by another DELETE calls.
+     *
+     * @param entity The payload containing properties to update
+     * @param keySegment The id of the entity to update
+     * @param navigationLinksToDelete list of navigation link names to delete
+     *
+     * @throws ServiceUnavailableException
+     */
+    public HttpResponse updateEntity(ClientEntity entity, String keySegment, List<String> navigationLinksToDelete) throws ServiceUnavailableException {
         URIBuilder updateURIBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
-                .appendKeySegment(UUID.fromString(keySegment));
+                                                 .appendKeySegment(UUID.fromString(keySegment));
         HttpEntity httpEntity = convertToHttpEntity(entity);
         HttpResponse updateHttpResponse =  createAndExecuteRequest(updateURIBuilder.build(), httpEntity, HttpMethod.PATCH);
 
         // No need to test the updateHttpResponse code since it is returned only if it's a success.
         // The deletion of navigation links will be done only if the previous update doesn't throw an exception.
-        this.deleteNavigationLinksToNull(keySegment);
+        this.deleteNavigationLinksToNull(keySegment, navigationLinksToDelete);
 
         return updateHttpResponse;
     }
 
-    protected void deleteNavigationLinksToNull(String keySegment) throws ServiceUnavailableException {
-        for(String navigationLinkName : this.navigationLinksToNull){
+    protected void deleteNavigationLinksToNull(String keySegment, List<String> navigationLinksToNull) throws ServiceUnavailableException {
+        if(navigationLinksToNull == null || navigationLinksToNull.isEmpty()) {
+            return;
+        }
+        for(String navigationLinkName : navigationLinksToNull){
             this.deleteNavigationLink(navigationLinkName, keySegment);
         }
     }
@@ -261,14 +310,13 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
     /**
      * Deleted entity by key
      *
-     * @param entitySet entitySet the EntitySet name which you want to delete records
      * @param keySegment Entity key segment
      *
      * @throws ServiceUnavailableException
      */
     public HttpResponse deleteEntity(String keySegment) throws ServiceUnavailableException {
         URIBuilder deleteURIBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
-                .appendKeySegment(UUID.fromString(keySegment));
+                                                 .appendKeySegment(UUID.fromString(keySegment));
 
         return createAndExecuteRequest(deleteURIBuilder.build(), null, HttpMethod.DELETE);
     }
@@ -285,9 +333,9 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
      */
     public HttpResponse deleteNavigationLink(String navigationLinkName, String keySegment) throws ServiceUnavailableException {
         URIBuilder deleteNavLinkURIBuilder = odataClient.newURIBuilder(serviceRootURL)
-                                                    .appendEntitySetSegment(entitySet)
-                                                    .appendKeySegment(UUID.fromString(keySegment))
-                                                    .appendNavigationSegment(navigationLinkName).appendRefSegment();
+                                                        .appendEntitySetSegment(entitySet)
+                                                        .appendKeySegment(UUID.fromString(keySegment))
+                                                        .appendNavigationSegment(navigationLinkName).appendRefSegment();
 
         return createAndExecuteRequest(deleteNavLinkURIBuilder.build(), null, HttpMethod.DELETE);
     }
@@ -304,7 +352,7 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
         uriBuilder.addQueryOption(QueryOption.SELECT, "EntitySetName,LogicalName");
         uriBuilder.filter("EntitySetName eq '" + entitySetName + "'");
         ODataEntitySetIteratorRequest<ClientEntitySet, ClientEntity> request = odataClient.getRetrieveRequestFactory()
-                .getEntitySetIteratorRequest(uriBuilder.build());
+                                                                                          .getEntitySetIteratorRequest(uriBuilder.build());
         this.authStrategy.configureRequest(request);
 
         ODataRetrieveResponse<ClientEntitySetIterator<ClientEntitySet, ClientEntity>> response = request.execute();
@@ -382,6 +430,43 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
             // Retains all navigation links to delete (set to null)
             navigationLinksToNull.add(navigationLinkName);
         }
+    }
+
+    /**
+     * Try to add navigation link to entity.
+     * @param navigationLinkName extracted navigation link(see {@link #extractNavigationLinkName(String)})
+     * @param entity to be updated
+     * @param lookupEntitySet entity set referred by navigation link
+     * @param linkedEntityId id of the referred entity
+     * @param emptyLookupIntoNull if empty lookup values should be converted to null values
+     * @param ignoreNull if null values should be skipped
+     * @return true if the link was added or skipped, false if it should be deleted with a separate call.
+     */
+    public boolean addOrSkipEntityNavigationLink(ClientEntity entity, String lookupEntitySet, String navigationLinkName,
+            String linkedEntityId, boolean emptyLookupIntoNull, boolean ignoreNull){
+        // If value is empty and emptyLookupIntoNull, then set the value to null to unlink the navigation (set to null)
+        if(emptyLookupIntoNull && linkedEntityId != null && linkedEntityId.isEmpty()){
+            linkedEntityId = null;
+        }
+
+        // If ignore null is set and the value is null, then don't update/delete this navigation link
+        if(ignoreNull && linkedEntityId == null){
+            return true;
+        }
+
+        if (linkedEntityId != null) {
+            try {
+                entity.getNavigationLinks().add(odataClient.getObjectFactory().newEntityNavigationLink(navigationLinkName,
+                        new URI(lookupEntitySet + "(" + linkedEntityId + ")")));
+            } catch (URISyntaxException e) {
+                throw new HttpClientException(e);
+            }
+        }
+        else{
+            // Retains all navigation links to delete (set to null)
+            return false;
+        }
+        return true;
     }
 
     public int getNbNavigationLinkToRemove(){

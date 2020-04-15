@@ -454,8 +454,15 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 		        		IMetadataTable table = connection.getMetadataTable();
 						List<IMetadataColumn> listColumns = table.getListColumns();
                     	for (IMetadataColumn column : listColumns) {
-							%>this.<%= connection.getName() %>__<%= column.getLabel() %> = <%= connection.getName() %>.<%= column.getLabel() %>;
+                    		if ("Dynamic".equals(JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable()))) {
+							%>
+								this.<%= connection.getName() %>__<%= column.getLabel() %> = (routines.system.Dynamic) <%= connection.getName() %>.<%= column.getLabel() %>.clone();
 	                		<%
+	                		} else {
+	                		%>
+	                			this.<%= connection.getName() %>__<%= column.getLabel() %> = <%= connection.getName() %>.<%= column.getLabel() %>;
+	                		<%
+	                		}
                 		}
                 	}
                 	%>
@@ -463,10 +470,15 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
                     sizeNextColumns = nextColumnsKeys.size();
                     for (int iColumn = 0; iColumn < sizeNextColumns; iColumn++) { // T_TM_B_104
                     	IMetadataColumn column = nextColumnsKeys.get(iColumn);
-
-						%>this.exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %> = exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %>;
+						if ("Dynamic".equals(JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable()))) {
+						%>
+							this.exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %> = (routines.system.Dynamic) exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %>.clone();
 						<%
-                    
+						} else {
+						%>
+							this.exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %> = exprKey_<%= nextInputTable.getName() %>__<%=column.getLabel() %>;
+						<%
+                    	}
                     } // T_TM_B_104
                     %>
                 }
@@ -653,14 +665,25 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 					
 					<%
 				} else {
-					typeToGenerate =JavaTypesManager.getTypeToGenerate(column.getTalendType(), false);
-					typeToGenerate=typeToGenerate.substring(0,1).toUpperCase()+typeToGenerate.substring(1);
+					typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), false);
+					typeToGenerate = typeToGenerate.substring(0,1).toUpperCase()+typeToGenerate.substring(1);
 					%>
 			            length = dis.readByte();
            				if (length == -1) {
            	    			this.<%= connection.getName() %>__<%= column.getLabel() %> = null;
            				} else {
-           					this.<%= connection.getName() %>__<%= column.getLabel() %> = dis.read<%= typeToGenerate %>();
+           					<%
+           						if ("Dynamic".equals(typeToGenerate)) {
+           							hasAtLeastOneObjectType = true;
+           					%>
+           							this.<%= connection.getName() %>__<%= column.getLabel() %> = (<%= typeToGenerate %>) dis.readObject();
+           					<%
+           						} else {
+           					%>
+           							this.<%= connection.getName() %>__<%= column.getLabel() %> = dis.read<%= typeToGenerate %>();
+           					<%
+           						}
+           					%>
            				}
 					<%
 				}
@@ -727,14 +750,25 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 					
 					<%
 				} else {
-					typeToGenerate =JavaTypesManager.getTypeToGenerate(column.getTalendType(), false);
-					typeToGenerate=typeToGenerate.substring(0,1).toUpperCase()+typeToGenerate.substring(1);
+					typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), false);
+					typeToGenerate = typeToGenerate.substring(0,1).toUpperCase()+typeToGenerate.substring(1);
 					%>
 			            length = dis.readByte();
            				if (length == -1) {
            	    			this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> = null;
            				} else {
-           					this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> = dis.read<%= typeToGenerate %>();
+           					<%
+           						if ("Dynamic".equals(typeToGenerate)) {
+           							hasAtLeastOneObjectType = true;
+           					%>
+           							this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> = (<%= typeToGenerate %>) dis.readObject();
+           					<%
+           						} else {
+           					%>
+           							this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> = dis.read<%= typeToGenerate %>();
+           					<%
+           						}
+           					%>
            				}
 					<%
 				}
@@ -832,7 +866,17 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 			                dos.writeByte(-1);
 						} else {
                				dos.writeByte(0);
-           			    	dos.write<%= typeToGenerate %>(this.<%= connection.getName() %>__<%= column.getLabel() %>);
+           			    	<%
+           						if ("Dynamic".equals(typeToGenerate)) {
+           					%>
+           							dos.writeObject(this.<%= connection.getName() %>__<%= column.getLabel() %>);
+           					<%
+           						} else {
+           					%>
+           							dos.write<%= typeToGenerate %>(this.<%= connection.getName() %>__<%= column.getLabel() %>);
+           					<%
+           						}
+           					%>
 		            	}
 					<%
 				
@@ -893,7 +937,17 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 			                dos.writeByte(-1);
 						} else {
                				dos.writeByte(0);
-           			    	dos.write<%= typeToGenerate %>(this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %>);
+           			    	<%
+           						if ("Dynamic".equals(typeToGenerate)) {
+           					%>
+           							dos.writeObject(this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %>);
+           					<%
+           						} else {
+           					%>
+           							dos.write<%= typeToGenerate %>(this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %>);
+           					<%
+           						}
+           					%>
 		            	}
 					<%
 				

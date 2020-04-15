@@ -108,6 +108,21 @@
         exist_tSQLDB = true;
     }
 
+
+    String[] tcompV0Components = new String[] {
+        "tAzureStorageConnection",
+        "tGoogleDriveConnection",
+        "tMarketoConnection",
+        "tSnowflakeConnection",
+        "tSalesforceConnection",
+        "tNetsuiteConnection",
+        "tMarkLogicConnection"
+    };
+    List<INode> tcompV0ComponentsList =  new ArrayList<INode>();
+    for (String tcompV0Component : tcompV0Components) {
+        tcompV0ComponentsList.addAll((List<INode>)process.getNodesOfType(tcompV0Component));
+    }
+
     boolean exist_tSCP = false;
     List<INode> scpComponentsList = (List<INode>)process.getNodesOfType("tSCPConnection");
     if (scpComponentsList.size() > 0) {
@@ -166,6 +181,8 @@
     if (salesforceComponentsList.size() > 0) {
         exist_tSalesforce = true;
     }
+
+    List<INode> snowflakeComponentsList = (List<INode>)process.getNodesOfType("tSnowflakeConnection");
 
     boolean exist_tSAP= false;
     List<INode> sapComponentsList = (List<INode>)process.getNodesOfType("tSAPConnection");
@@ -619,7 +636,16 @@
                         } //endIf
 %>
                         context.setContextType("<%=ctxParam.getName()%>", "<%=ctxParam.getType()%>");
+                        if(context.getStringValue("<%=ctxParam.getName()%>") == null) {
+                            context.<%=ctxParam.getName()%> = null;
+                        } else {
+                        <%//}B1 block%>
 <%
+                        String typeToGenerate ="String";
+                        if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
+                           typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
+                        }
+                        
                         if (ctxParam.getType().equals("id_Password")) {
 %>
                             String pwd_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
@@ -637,13 +663,7 @@
                                 }
                             }
 <%
-                            continue;
-                        }
-                        String typeToGenerate ="String";
-                        if( !(ctxParam.getType().equals("id_File") || ctxParam.getType().equals("id_Directory") ||ctxParam.getType().equals("id_List Of Value"))) {
-                           typeToGenerate=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true);
-                        }
-                        if(typeToGenerate.equals("java.util.Date")) {
+                        } else if(typeToGenerate.equals("java.util.Date")) {
 %>
                         try{
                             String context_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
@@ -702,6 +722,10 @@
                             }
 <%
                         }
+%>
+                        <%//{B1 block%>
+                        }
+<%
                     }
 %>
                 } <%/*close last method*/%>
@@ -872,20 +896,6 @@ if(execStat) {
         }
 %>
 
-<%if (hadoopClusterIds.size() > 1) {%>
-    System.err.println("Only one hadoop configuration is allowed in one job!");
-<%}%>
-
-<%
-// run tHadoopConfManager component if there is it.
- if(!hadoopConfNodes.isEmpty()) {
-    INode hadoopConfNode = hadoopConfNodes.get(0);
-%>
-<%=createCallProcess(hadoopConfNode, className, false) %>
-<%
- }
-%>
-
 <%
 //2. load implicit contextload
  if(implicit_Context != null) {
@@ -908,6 +918,19 @@ this.globalResumeTicket = true;//to run tPreJob
  }
 %>
 
+<%if (hadoopClusterIds.size() > 1) {%>
+    System.err.println("Only one hadoop configuration is allowed in one job!");
+<%}%>
+
+<%
+// run tHadoopConfManager component if there is it.
+ if(!hadoopConfNodes.isEmpty()) {
+    INode hadoopConfNode = hadoopConfNodes.get(0);
+%>
+<%=createCallProcess(hadoopConfNode, className, false) %>
+<%
+ }
+%>
 
 <%
         //4. flush the begin msg
@@ -1501,12 +1524,14 @@ if (execStat) {
 <%      } %>
 <%      for (INode existNode : existComponentsList) { %>
             connections.put("col_<%=existNode.getUniqueName()%>", globalMap.get("col_<%=existNode.getUniqueName()%>"));
-<%      } %>
+<%      }
 
-<%      for (INode salesforceNode : salesforceComponentsList) { %>
-            connections.put("conn_<%=salesforceNode.getUniqueName()%>", globalMap.get("conn_<%=salesforceNode.getUniqueName()%>"));
-<%      } %>
-<%      for (INode sapNode : sapComponentsList) { %>
+        for (INode tcompV0ConnectionNode : tcompV0ComponentsList) { %>
+            connections.put("<%=tcompV0ConnectionNode.getUniqueName()%>_connection", globalMap.get("<%=tcompV0ConnectionNode.getUniqueName()%>_connection"));
+            connections.put("<%=tcompV0ConnectionNode.getUniqueName()%>_COMPONENT_RUNTIME_PROPERTIES", globalMap.get("<%=tcompV0ConnectionNode.getUniqueName()%>_COMPONENT_RUNTIME_PROPERTIES"));
+<%      }
+
+        for (INode sapNode : sapComponentsList) { %>
             connections.put("conn_<%=sapNode.getUniqueName()%>", globalMap.get("conn_<%=sapNode.getUniqueName()%>"));
 <%      } %>
 <%      for (INode gsNode : gsComponentsList) { %>

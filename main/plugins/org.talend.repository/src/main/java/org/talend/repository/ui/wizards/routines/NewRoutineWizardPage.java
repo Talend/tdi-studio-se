@@ -135,9 +135,6 @@ public class NewRoutineWizardPage extends PropertiesWizardPage {
             list.addAll(processList);
         }
 
-        // pig udf
-        list.addAll(loadRepViewObjectWithOtherTypes(ERepositoryObjectType.PIG_UDF));
-
         // list for jobscript
         list.addAll(loadRepViewObjectWithOtherTypes(ERepositoryObjectType.JOB_SCRIPT));
 

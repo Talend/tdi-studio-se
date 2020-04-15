@@ -57,7 +57,6 @@
 		<ITEMS DEFAULT="MYSQL_8">
 			<ITEM NAME="MYSQL_8" VALUE="MYSQL_8" />
 			<ITEM NAME="MYSQL_5" VALUE="MYSQL_5" />
-			<ITEM NAME="MYSQL_4" VALUE="MYSQL_4" />
 			<ITEM NAME="MARIADB" VALUE="MARIADB" />
 		</ITEMS>
 	</PARAMETER>
@@ -452,10 +451,9 @@
 
   <CODEGENERATION>
     <IMPORTS>
-      <IMPORT NAME="Mysql_Driver8"  MODULE="mysql-connector-java-8.0.12.jar" MVN="mvn:mysql/mysql-connector-java/8.0.12" REQUIRED_IF="(DB_VERSION == 'MYSQL_8') AND (USE_EXISTING_CONNECTION == 'false')" />
+      <IMPORT NAME="Mysql_Driver8"  MODULE="mysql-connector-java-8.0.18.jar" MVN="mvn:mysql/mysql-connector-java/8.0.18" REQUIRED_IF="(DB_VERSION == 'MYSQL_8') AND (USE_EXISTING_CONNECTION == 'false')" />
       <IMPORT NAME="Mysql_Driver5"  MODULE="mysql-connector-java-5.1.30-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0"   REQUIRED_IF="(DB_VERSION == 'MYSQL_5') AND (USE_EXISTING_CONNECTION == 'false')" />
-      <IMPORT NAME="Mysql_Driver4"  MODULE="mysql-connector-java-3.1.14-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-3.1.14-bin/6.0.0"  REQUIRED_IF="(DB_VERSION == 'MYSQL_4') AND (USE_EXISTING_CONNECTION == 'false')" />
-      <IMPORT NAME="Mysql_MARIADB" MODULE="mariadb-java-client-2.2.1.jar" MVN="mvn:org.mariadb.jdbc/mariadb-java-client/2.2.1"  REQUIRED_IF="(DB_VERSION == 'MARIADB') AND (USE_EXISTING_CONNECTION == 'false')" />
+      <IMPORT NAME="Mysql_MARIADB" MODULE="mariadb-java-client-2.5.3.jar" MVN="mvn:org.mariadb.jdbc/mariadb-java-client/2.5.3"  REQUIRED_IF="(DB_VERSION == 'MARIADB') AND (USE_EXISTING_CONNECTION == 'false')" />
     </IMPORTS>
   </CODEGENERATION>
 

@@ -88,10 +88,6 @@ public class JavaProcessUtil {
 
         // call recursive function to get all dependencies from job & subjobs
         getNeededModules(process, searchItems, modulesNeeded, options);
-        Set<ModuleNeeded> childrenModules = null;
-        if (!BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CHILDREN)) {
-            childrenModules = getChildrenModulesFromProcess(process, searchItems);
-        }
         /*
          * Remove duplicates in the modulesNeeded list after having prioritize the modules. Details in the
          * ModuleNeededComparator class.
@@ -123,8 +119,7 @@ public class JavaProcessUtil {
             new BigDataJobUtil(process).removeExcludedModules(modulesNeeded);
         }
 
-        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, childrenModules,
-                Log4jPrefsSettingManager.getInstance().isSelectLog4j2(), process);
+        UpdateLog4jJarUtils.addLog4jToModuleList(modulesNeeded, Log4jPrefsSettingManager.getInstance().isSelectLog4j2(), process);
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
@@ -184,12 +179,18 @@ public class JavaProcessUtil {
             getModulesInTable(process, elementParameter, modulesNeeded);
         }
 
+        boolean addDefault = false;
         if (process instanceof IProcess2) {
             Item item = ((IProcess2) process).getProperty().getItem();
-            if (item instanceof ProcessItem) {
+            if (item == null) {
+                addDefault = true;
+            } else if (item instanceof ProcessItem) {
                 modulesNeeded.addAll(ModulesNeededProvider.getModulesNeededForProcess((ProcessItem) item, process));
             }
         } else {
+            addDefault = true;
+        }
+        if (addDefault) {
             Set<ModuleNeeded> optionalJarsOnlyForRoutines = new HashSet<ModuleNeeded>();
             optionalJarsOnlyForRoutines.addAll(ModulesNeededProvider.getSystemRunningModules());
             modulesNeeded.addAll(optionalJarsOnlyForRoutines);
@@ -320,6 +321,10 @@ public class JavaProcessUtil {
     }
 
     public static String getHadoopClusterItemId(INode node) {
+        return getHadoopClusterItemId(node, true);
+    }
+
+    public static String getHadoopClusterItemId(INode node, boolean ignore) {
         IHadoopClusterService hadoopClusterService = HadoopRepositoryUtil.getHadoopClusterService();
         if (hadoopClusterService == null) {
             return null;
@@ -334,7 +339,7 @@ public class JavaProcessUtil {
         }
         Map<String, IElementParameter> childParameters = propertyElementParameter.getChildParameters();
         String propertyType = (String) childParameters.get(EParameterName.PROPERTY_TYPE.getName()).getValue();
-        if (!EmfComponent.REPOSITORY.equals(propertyType)) {
+        if (ignore && !EmfComponent.REPOSITORY.equals(propertyType)) {
             return null;
         }
         IElementParameter propertyParam = childParameters.get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());

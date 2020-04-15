@@ -25,6 +25,17 @@ class BasicLogUtil{
     public String var(String varName){
         return varName + "_" + this.cid;
     }
+	
+	public String varForTableName(String varName, String dbmsId) {
+		if ("id_MSSQL".equals(dbmsId) || cid.startsWith("tMSSQL")) {
+			return "\"[\" +" + var(varName) + " + \"]\"";
+		} else if ("ibmdb2_id".equals(dbmsId) || "redshift_id".equals(dbmsId) || "postgres_id".equals(dbmsId) || cid.startsWith("tDB2") || 
+			cid.startsWith("tRedshift") || cid.startsWith("tGreenplum")){
+			return new StringBuilder().append("\"\\\"\" +").append(var(varName)).append("+ \"\\\"\"").toString();
+		} else {
+			return var(varName);
+		}
+	}
     public String str(String content){
         return "\"" + content + "\"";
     }

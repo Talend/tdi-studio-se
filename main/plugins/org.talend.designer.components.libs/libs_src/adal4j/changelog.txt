@@ -1,5 +1,74 @@
+Version 1.6.4
+=============
+- updated oauth2-oidc-sdk to 6.5
+- removed use sun.security.util.Length API
+
+Version 1.6.3
+=============
+- added client headers to user realm request
+
+Version 1.6.2
+=============
+- updated oauth2-oidc-sdk to 5.63.4
+
+Version 1.6.1
+=============
+- updated javax.servlet-api to 4.0.1, oauth2-oidc-sdk to 5.63.3, commons-codec to 1.11
+- switch from Travis CI to VSTS
+
+Version 1.6.0
+=============
+- added support for certificates in on-behalf-of api
+- added jti (JWT ID) claim to JWT
+
+Version 1.5.0
+=============
+- added device code flow api
+- added pii logging flag
+- updated gson to version 2.8.0 and slf4j to version 1.7.21
+
+Version 1.4.0
+=============
+- pii (personal identifiable information) Logger added
+- adding support for integrated authentication
+
+Version 1.3.0
+=============
+- acquireTokenUsingRefreshToken(string clientId, string resource) api added
+- update nimbus sdk to version 5.24.1
+- throwing AdalClaimsChallengeException when claims challenge error occurs during token acquisition
+- switching to MIT Licenses
+- adding tenant id to User Info
+- adding sample of SSLTunnelSocketFactory with proxy auth
+- bug fixes
+
+Version 1.2.0
+=============
+- adding support for RSA keys produced by SunMSCAPI provider
+- log  details about non 200 http responses
+
+Version 1.1.3
+=============
+- Fixed XXE security bugs.
+
+Version 1.1.2
+=============
+- Added support for SSLSocketFactory.
+
+Version 1.1.1
+=============
+- Hotfix release to handle error stream in case of 404.
+
+Version 1.1.0
+=============
+- Several bug fixes
+- Added raw id_token in AuthenticationResult
+- Fixed several typos
+- Added support for WSTRUST2005
+- Added option to configure proxy for authentication context
+
 Version 1.0.1
-==============
+=============
 GA release of the API to support
--  server-2-server flows
+- server-2-server flows
 - resource owner grant flow for command line apps

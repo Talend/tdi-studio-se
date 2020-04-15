@@ -85,13 +85,11 @@ import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
-import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.ui.context.nattableTree.ContextNatTableUtils;
 import org.talend.core.ui.export.ArchiveFileExportOperationFullPath;
@@ -1431,17 +1429,6 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
 
         if (!ensureTargetIsValid()) {
             return false;
-        }
-
-        if (ensureLog4jSettingIsValid()) {
-            MessageDialog dialog = new MessageDialog(getShell(), "Question", null,
-                    Messages.getString("Log4jSettingPage.IlleagalBuild"), MessageDialog.QUESTION,
-                    new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL }, 0);
-            dialog.open();
-            int result = dialog.getReturnCode();
-            if (result != MessageDialog.OK) {
-                return false;
-            }
         }
 
         JobExportType jobExportType = getCurrentExportType1();

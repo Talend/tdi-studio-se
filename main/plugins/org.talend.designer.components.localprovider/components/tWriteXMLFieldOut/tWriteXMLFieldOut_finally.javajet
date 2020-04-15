@@ -38,6 +38,12 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 	if (listGroupby_<%=cid%> != null) {
 		globalMap.put("<%=virtualTargetCid%>_FINISH" + (listGroupby_<%=cid%>==null?"":listGroupby_<%=cid%>.hashCode()), "true");
 	}
+	// workaround for 37349 - in case of normal execution it will pass normally
+	// in case it fails and handle by catch - it will wait for child thread finish
+	Thread txf_<%=cid%> = (Thread) globalMap.get("wrtXMLFieldIn_<%=cid%>");
+	if ( txf_<%=cid%> != null) {
+		txf_<%=cid%>.join();
+	}
 <%
 }
 %>

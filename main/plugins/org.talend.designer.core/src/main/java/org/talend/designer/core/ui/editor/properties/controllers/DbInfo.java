@@ -264,6 +264,7 @@ public class DbInfo {
                     || EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersion)
                     || EDatabaseVersion4Drivers.VERTICA_6_1_X.getVersionValue().equals(dbVersion)
                     || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion)
+                    || EDatabaseVersion4Drivers.VERTICA_7_1_X.getVersionValue().equals(dbVersion)
                     || EDatabaseVersion4Drivers.VERTICA_9.getVersionValue().equals(dbVersion)) {
                 driverClassName = EDatabase4DriverClassName.VERTICA2.getDriverClass();
             }

@@ -1147,7 +1147,7 @@ class OracleManager extends Manager {
         this.additionalParams = additionalParams;
     }
     protected String getDriver() {
-        return ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion)) ?
+        return ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) || "ORACLE_18".equals(dbVersion) ) ?
             "oracle.jdbc.OracleDriver" : "oracle.jdbc.driver.OracleDriver";
     }
     public String getSpecificConnectionURL() {
@@ -2103,7 +2103,7 @@ class SnowflaketManager extends Manager {
         StringBuilder javaCode = new StringBuilder();
         if(useExistingConnection) {
             javaCode.append(retrieveTable());
-            javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"" + connection + "_Connection\");");
+            javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"" + connection + "_connection\");");
         } else {
             javaCode.append(super.getConnection());
         }

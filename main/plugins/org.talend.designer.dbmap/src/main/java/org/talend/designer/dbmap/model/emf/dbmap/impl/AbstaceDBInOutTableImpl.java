@@ -15,8 +15,6 @@ import org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage;
  * <!-- begin-user-doc -->
  * An implementation of the model object '<em><b>Abstace DB In Out Table</b></em>'.
  * <!-- end-user-doc -->
- * <p>
- * </p>
  *
  * @generated
  */

@@ -1,28 +1,33 @@
-/*******************************************************************************
- * Copyright © Microsoft Open Technologies, Inc.
- * 
- * All Rights Reserved
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- * ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
- * PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
- * 
- * See the Apache License, Version 2.0 for the specific language
- * governing permissions and limitations under the License.
- ******************************************************************************/
+// Copyright (c) Microsoft Corporation.
+// All rights reserved.
+//
+// This code is licensed under the MIT License.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and / or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 package com.microsoft.aad.adal4j;
 
-import java.security.interfaces.RSAPrivateKey;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -50,33 +55,33 @@ final class JwtHelper {
             throw new IllegalArgumentException("credential is null");
         }
 
-        final JWTClaimsSet claimsSet = new AdalJWTClaimsSet();
-        final List<String> audience = new ArrayList<String>();
-        audience.add(jwtAudience);
-        claimsSet.setAudience(audience);
-        claimsSet.setIssuer(credential.getClientId());
         final long time = System.currentTimeMillis();
-        claimsSet.setNotBeforeTime(new Date(time));
-        claimsSet
-                .setExpirationTime(new Date(
-                        time
+
+        final JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .audience(Collections.singletonList(jwtAudience))
+                .issuer(credential.getClientId())
+                .jwtID(UUID.randomUUID().toString())
+                .notBeforeTime(new Date(time))
+                .expirationTime(new Date(time
                                 + AuthenticationConstants.AAD_JWT_TOKEN_LIFETIME_SECONDS
-                                * 1000));
-        claimsSet.setSubject(credential.getClientId());
-        SignedJWT jwt = null;
+                                * 1000))
+                .subject(credential.getClientId())
+                .build();
+
+        SignedJWT jwt;
         try {
             JWSHeader.Builder builder = new Builder(JWSAlgorithm.RS256);
             List<Base64> certs = new ArrayList<Base64>();
             certs.add(new Base64(credential.getPublicCertificate()));
             builder.x509CertChain(certs);
             builder.x509CertThumbprint(new Base64URL(credential
-                  .getPublicCertificateHash()));
+                    .getPublicCertificateHash()));
             jwt = new SignedJWT(builder.build(), claimsSet);
-            final RSASSASigner signer = new RSASSASigner(
-                    (RSAPrivateKey) credential.getKey());
+            final RSASSASigner signer = new RSASSASigner(credential.getKey());
 
             jwt.sign(signer);
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             throw new AuthenticationException(e);
         }
 

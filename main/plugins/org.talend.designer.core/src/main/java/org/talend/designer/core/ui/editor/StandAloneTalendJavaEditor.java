@@ -317,8 +317,7 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
                     Image titleImage = null;
                     if (ERepositoryObjectType.SQLPATTERNS == repositoryNode.getObjectType()) {
                         titleImage = ImageProvider.getImage(ECoreImage.METADATA_SQLPATTERN_ICON_EDITOR);
-                    } else if (ERepositoryObjectType.ROUTINES == repositoryNode.getObjectType()
-                            || ERepositoryObjectType.PIG_UDF == repositoryNode.getObjectType()) {
+                    } else if (ERepositoryObjectType.ROUTINES == repositoryNode.getObjectType()) {
                         titleImage = ImageProvider.getImage(ECoreImage.ROUTINE_EDITOR_ICON);
                     } else {
                         titleImage = ImageProvider.getImage(repositoryNode.getIcon());

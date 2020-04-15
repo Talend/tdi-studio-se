@@ -145,8 +145,7 @@ public class SetupProcessDependenciesRoutinesDialog extends Dialog {
                     .getProxyRepositoryFactory();
             List<IRepositoryViewObject> allRoutineItemObjects = proxyRepositoryFactory.getAll(project,
                     ERepositoryObjectType.ROUTINES, RoutinesUtil.allowDeletedRoutine());
-            allRoutineItemObjects.addAll(proxyRepositoryFactory.getAll(project, ERepositoryObjectType.PIG_UDF,
-                    RoutinesUtil.allowDeletedRoutine()));
+
             for (IRepositoryViewObject obj : allRoutineItemObjects) {
                 Property property = obj.getProperty();
                 if (project.equals(ProjectManager.getInstance().getCurrentProject())) {

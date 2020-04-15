@@ -80,6 +80,7 @@ import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.IESBMicroService;
 import org.talend.core.service.IESBRouteService;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
@@ -726,6 +727,12 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
+    public IFolder getJavaProjectExternalResourcesFolder(IProcess process) {
+        ITalendProcessJavaProject talendProject = getTalendJobJavaProject(((Process) process).getProperty());
+        return talendProject.getExternalResourcesFolder();        
+    }
+    
+    @Override
     public void updateProjectPomWithTemplate() {
         try {
             ProjectPomManager manager = new ProjectPomManager();
@@ -815,9 +822,6 @@ public class DefaultRunProcessService implements IRunProcessService {
     public void buildCodesJavaProject(IProgressMonitor monitor) {
         try {
             AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES);
-            if (ProcessUtils.isRequiredPigUDFs(null)) {
-                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.PIG_UDF);
-            }
             if (ProcessUtils.isRequiredBeans(null)) {
                 AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
             }
@@ -871,10 +875,6 @@ public class DefaultRunProcessService implements IRunProcessService {
         IProgressMonitor monitor = new NullProgressMonitor();
         installRefCodeProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
 
-        if (ProcessUtils.isRequiredPigUDFs(null, refProject)) {
-            installRefCodeProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
-        }
-
         if (ProcessUtils.isRequiredBeans(null, refProject)) {
             installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
         }
@@ -900,9 +900,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     
     private void deleteRefProjects(Project refProject, AggregatorPomsHelper refHelper) throws Exception {
         IProgressMonitor monitor = new NullProgressMonitor();
-        deleteRefProject(ERepositoryObjectType.ROUTINES, refHelper, monitor);
-        deleteRefProject(ERepositoryObjectType.PIG_UDF, refHelper, monitor);
-        deleteRefProject(ERepositoryObjectType.valueOf("BEANS"), refHelper, monitor); //$NON-NLS-1$
+        for (ERepositoryObjectType codeType : ERepositoryObjectType.getAllTypesOfCodes()) {
+            // use getAllTypesOfCodes to avoid NPE
+            // the ERepositoryObjectType may not load on current license
+            deleteRefProject(codeType, refHelper, monitor);
+        }
 
     }
     
@@ -990,6 +992,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     @Override
     public boolean isSelectLog4j2() {
         return Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
+    }
+
+    @Override
+    public boolean isCIMode() {
+        return ProcessorUtilities.isCIMode();
     }
 
 }

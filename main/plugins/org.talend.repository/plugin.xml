@@ -3096,15 +3096,6 @@
         <projecttask
               beforeLogon="false"
               breaks="7.1.0"
-              class="org.talend.repository.model.migration.spark.UseSqlDateTypeInDataframesTask"
-              description="Keep Date type for component impacted by change from Date to Timestamp"
-              id="org.talend.repository.model.migration.spark.UseSqlDateTypeInDataframesTask"
-              name="UseSqlDateTypeInDataframesTask"
-              version="7.1.1">
-        </projecttask>
-        <projecttask
-              beforeLogon="false"
-              breaks="7.1.0"
               class="org.talend.repository.model.migration.MySQLDefaultDBVersion"
               description="If job doesn't have DB version, it will be set to v5"
               id="org.talend.repository.model.migration.MySQLDefaultDBVersion"
@@ -3311,6 +3302,51 @@
               name="ChangeDefaultValueTDI36397"
               version="7.3.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ChangeDBVersionValue4BonitaComponentsTDI43395"
+              description="change db version values for bonita"
+              id="org.talend.repository.model.migration.ChangeDBVersionValue4BonitaComponentsTDI43395"
+              name="ChangeDBVersionValue4BonitaComponentsTDI43395"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.spark.UpdateDatesPatternAccordingToDeletedTimestampOption"
+              description="change schema pattern according to deleted option"
+              id="org.talend.repository.model.migration.spark.UpdateDatesPatternAccordingToDeletedTimestampOption"
+              name="UpdateDatesPatternAccordingToDeletedTimestampOption"
+              version="7.3.1">                     
+       </projecttask>
+       <projecttask
+              beforeLogon="true"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
+              description="Remove pigudf modules"
+              id="org.talend.repository.model.migration.RemovePigudfModulesMigrationTask"
+              name="RemovePigudfModulesMigrationTask"
+              version="7.3.1">
+       </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.3.1"
+              class="org.talend.repository.model.migration.ChangeDQComponentsLicenseKeyFieldTask"
+              description="Using LicenseKey Field in DQ Components"
+              id="org.talend.repository.model.migration.ChangeDQComponentsLicenseKeyFieldTask"
+              name="ChangeDQComponentsLicenseKeyFieldTask"
+              version="7.4.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.4.0"
+             class="org.talend.repository.model.migration.RenameSQLDWHMigrationTask"
+             description="Rename tSQLDWHXXX components to tAzureSynapseXXX"
+             id="org.talend.repository.model.migration.RenameSQLDWHMigrationTask"
+             name="RenameSQLDWHMigrationTask"
+             version="7.4.1">
+       </projecttask>
    </extension>
 
    <extension
@@ -3407,6 +3443,14 @@
         name="log4j-1.2-api-2.12.1.jar"
         mvn_uri="mvn:org.apache.logging.log4j/log4j-1.2-api/2.12.1"
         uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2-api-2.12.1.jar">
+      </libraryNeeded>
+      
+      <libraryNeeded
+        context="plugin:org.talend.librariesmanager"
+        id="slf4j-api-1.7.25.jar"
+        name="slf4j-api-1.7.25.jar"
+        mvn_uri="mvn:org.slf4j/slf4j-api/1.7.25"
+        uripath="platform:/plugin/org.talend.librariesmanager/lib/slf4j-api-1.7.25.jar">
       </libraryNeeded>         
    </extension>
    <!--

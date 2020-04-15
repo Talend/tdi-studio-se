@@ -43,6 +43,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.model.process.DataNode;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
@@ -206,10 +207,7 @@ public class SettingVisitor implements PropertyVisitor {
     @Override
     public void visit(final PropertyNode node) {
         // skip 'configuration.dataSet.csvConfiguration.csvSchema' field in 'azure-dls-gen2' component
-        if (element != null && element instanceof Node && ((Node)element).getComponent() != null &&
-                (((Node)element).getComponent().getName().equals("AzureAdlsGen2Input") ||
-                ((Node)element).getComponent().getName().equals("AzureAdlsGen2Output")) &&
-                node.getProperty().getPath().equals("configuration.dataSet.csvConfiguration.csvSchema")) {
+        if (isNodeAzureDlsGen2CsvSchema(node)) {
             return;
         }
 
@@ -271,6 +269,29 @@ public class SettingVisitor implements PropertyVisitor {
             }
             buildUpdate(node);
         }
+    }
+
+    /**
+     * Checks if propery is an Azure DLS Gen2 csvSchema field
+     * This is a temporary workaround introduced by TDI-43010 and TDI-43851
+     *
+     * @param node current PropertyNode
+     *
+     * @return true if propery is an Azure DLS Gen2 csvSchema field
+     */
+    private boolean isNodeAzureDlsGen2CsvSchema(final PropertyNode node) {
+        return element != null && (//
+                // components
+                (element instanceof Node && ((Node) element).getComponent() != null &&
+                  (((Node) element).getComponent().getName().equals("AzureAdlsGen2Input") ||
+                   ((Node) element).getComponent().getName().equals("AzureAdlsGen2Output")) &&
+                  node.getProperty().getPath().equals("configuration.dataSet.csvConfiguration.csvSchema"))
+                ||
+                // metadata editor
+                (element instanceof DataNode && ((DataNode) element).getComponent() != null &&
+                  ((DataNode) element).getComponent().getName().equals("") &&
+                  node.getProperty().getPath().equals("configuration.csvConfiguration.csvSchema"))
+        );
     }
 
     /**
@@ -519,7 +540,7 @@ public class SettingVisitor implements PropertyVisitor {
         parameter.setDisplayName(node.getProperty().getDisplayName());
         parameter.setFieldType(node.getFieldType());
         parameter.setName(node.getProperty().getPath());
-        parameter.setRepositoryValue(node.getProperty().getPath());
+        // parameter.setRepositoryValue(node.getProperty().getPath());
         parameter.setNumRow(node.getLayout(form).getPosition());
         parameter.setShow(true);
         String defaultValue = node.getProperty().getDefaultValue();
@@ -530,6 +551,7 @@ public class SettingVisitor implements PropertyVisitor {
         parameter.setRequired(node.getProperty().isRequired());
         if (TaCoKitElementParameter.class.isInstance(parameter)) {
             final TaCoKitElementParameter taCoKitElementParameter = TaCoKitElementParameter.class.cast(parameter);
+            taCoKitElementParameter.setPropertyNode(node);
             taCoKitElementParameter.updateValueOnly(defaultValue);
             if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
                 taCoKitElementParameter.setRegistValidatorCallback(new Callable<Void>() {

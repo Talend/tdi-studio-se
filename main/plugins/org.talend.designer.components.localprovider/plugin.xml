@@ -213,12 +213,11 @@
          	name="zookeeper-3.4.5-cdh5.4.0.jar" mvn_uri="mvn:org.talend.libraries/zookeeper-3.4.5-cdh5.4.0/6.0.0"
          	uripath="platform:/plugin/org.talend.libraries.zookeeper/lib/zookeeper-3.4.5-cdh5.4.0.jar">
     	</libraryNeeded>
-
+    	
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.pig"
         	id="pig-withouthadoop-cdh5.4-lastest"
-         	name="pig-0.12.0-cdh5.4.0-withouthadoop.jar" mvn_uri="mvn:org.talend.libraries/pig-0.12.0-cdh5.4.0-withouthadoop/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.pig/lib/pig-0.12.0-cdh5.4.0-withouthadoop.jar">
+         	name="pig-0.12.0-cdh5.4.0-withouthadoop.jar" mvn_uri="mvn:org.talend.libraries/pig-0.12.0-cdh5.4.0-withouthadoop/6.0.0">         	
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -440,8 +439,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.pig"
         	id="pig-withouthadoop-cdh5.1-lastest"
-         	name="pig-0.12.0-cdh5.1.2-withouthadoop.jar" mvn_uri="mvn:org.talend.libraries/pig-0.12.0-cdh5.1.2-withouthadoop/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.pig/lib/pig-0.12.0-cdh5.1.2-withouthadoop.jar">
+         	name="pig-0.12.0-cdh5.1.2-withouthadoop.jar" mvn_uri="mvn:org.talend.libraries/pig-0.12.0-cdh5.1.2-withouthadoop/6.0.0">        	
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -785,15 +783,13 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.pig"
             id="pig-HDP_2_3"
-            name="pig-0.15.0.2.3.2.0-2950-core-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-0.15.0.2.3.2.0-2950-core-h2/6.1.0"
-            uripath="platform:/plugin/org.talend.libraries.pig/lib/pig-0.15.0.2.3.2.0-2950-core-h2.jar">
+            name="pig-0.15.0.2.3.2.0-2950-core-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-0.15.0.2.3.2.0-2950-core-h2/6.1.0">         
         </libraryNeeded>
 
         <libraryNeeded
             context="plugin:org.talend.libraries.pig"
             id="piggybank-hdp2.3.jar"
-            name="piggybank-hdp2.3.jar" mvn_uri="mvn:org.talend.libraries/piggybank-hdp2.3/6.1.0"
-            uripath="platform:/plugin/org.talend.libraries.pig/lib/piggybank-hdp2.3.jar">
+            name="piggybank-hdp2.3.jar" mvn_uri="mvn:org.talend.libraries/piggybank-hdp2.3/6.1.0">       
         </libraryNeeded>
 
         <libraryNeeded
@@ -1050,8 +1046,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.pig"
         	id="pig-withouthadoop-hdp2.2-lastest"
-         	name="pig-0.14.0.2.2.0.0-2041-core-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-0.14.0.2.2.0.0-2041-core-h2/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.pig/lib/pig-0.14.0.2.2.0.0-2041-core-h2.jar">
+         	name="pig-0.14.0.2.2.0.0-2041-core-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-0.14.0.2.2.0.0-2041-core-h2/6.0.0">     	
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -1267,8 +1262,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.pig"
             id="pig-withouthadoop-emr400-latest"
-            name="pig-0.14.0-amzn-0-core-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-0.14.0-amzn-0-core-h2/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.pig/lib/pig-0.14.0-amzn-0-core-h2.jar">
+            name="pig-0.14.0-amzn-0-core-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-0.14.0-amzn-0-core-h2/6.0.0">          
         </libraryNeeded>
 
         <libraryNeeded
@@ -1474,8 +1468,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.pig"
         	id="pig-withouthadoop-mapr-4.0.X-lastest"
-         	name="pig-withouthadoop-0.12.1-mapr-1408-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-withouthadoop-0.12.1-mapr-1408-h2/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.pig/lib/pig-withouthadoop-0.12.1-mapr-1408-h2.jar">
+         	name="pig-withouthadoop-0.12.1-mapr-1408-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-withouthadoop-0.12.1-mapr-1408-h2/6.0.0">        	
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -1558,8 +1551,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.pig"
             id="pig-withouthadoop-mapr-4.1.X-lastest"
-            name="pig-core-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-core-h2/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.pig/lib/pig-core-h2.jar">
+            name="pig-core-h2.jar" mvn_uri="mvn:org.talend.libraries/pig-core-h2/6.0.0">      
         </libraryNeeded>
 
         <libraryNeeded
@@ -1984,8 +1976,7 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.pig"
         	id="snappy-java-1.0.5.jar"
-         	name="snappy-java-1.0.5.jar" mvn_uri="mvn:org.talend.libraries/snappy-java-1.0.5/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.pig/lib/snappy-java-1.0.5.jar">
+         	name="snappy-java-1.0.5.jar" mvn_uri="mvn:org.talend.libraries/snappy-java-1.0.5/6.0.0">       	
     	</libraryNeeded>
 
     	<libraryNeeded
@@ -2038,22 +2029,19 @@
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.pig"
         	id="piggybank-cdh5.1.jar"
-         	name="piggybank-cdh5.1.jar" mvn_uri="mvn:org.talend.libraries/piggybank-cdh5.1/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.pig/lib/piggybank-cdh5.1.jar">
+         	name="piggybank-cdh5.1.jar" mvn_uri="mvn:org.talend.libraries/piggybank-cdh5.1/6.0.0">        	
     	</libraryNeeded>
 
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.pig"
         	id="piggybank-cdh5.4.jar"
-         	name="piggybank-cdh5.4.jar" mvn_uri="mvn:org.talend.libraries/piggybank-cdh5.4/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.pig/lib/piggybank-cdh5.4.jar">
+         	name="piggybank-cdh5.4.jar" mvn_uri="mvn:org.talend.libraries/piggybank-cdh5.4/6.0.0">         	
     	</libraryNeeded>
 
     	<libraryNeeded
 	   		context="plugin:org.talend.libraries.pig"
         	id="piggybank-hdp2.2.jar"
-         	name="piggybank-hdp2.2.jar" mvn_uri="mvn:org.talend.libraries/piggybank-hdp2.2/6.0.0"
-         	uripath="platform:/plugin/org.talend.libraries.pig/lib/piggybank-hdp2.2.jar">
+         	name="piggybank-hdp2.2.jar" mvn_uri="mvn:org.talend.libraries/piggybank-hdp2.2/6.0.0">         	
     	</libraryNeeded>
 
     	<libraryNeeded

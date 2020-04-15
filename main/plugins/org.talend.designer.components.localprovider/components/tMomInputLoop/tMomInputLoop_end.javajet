@@ -173,8 +173,9 @@
 					}
 					%>
 				}
-				
-				qMgr_<%=cid%>.backout();
+                if (Integer.valueOf(remoteQ_<%=cid%>.getCurrentDepth()).equals(0)) {
+                    qMgr_<%=cid%>.backout();
+                }
 			}
 		<%
 		} else if(isRollback) {

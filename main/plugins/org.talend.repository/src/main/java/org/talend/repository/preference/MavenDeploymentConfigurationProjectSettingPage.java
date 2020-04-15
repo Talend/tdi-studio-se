@@ -590,15 +590,12 @@ public class MavenDeploymentConfigurationProjectSettingPage extends ProjectSetti
         String KEY = "modules"; //$NON-NLS-1$
         String CODES = TalendJavaProjectConstants.DIR_CODES;
         String ROUTINES = TalendJavaProjectConstants.DIR_ROUTINES;
-        String PIGUDF = TalendJavaProjectConstants.DIR_PIGUDFS;
         String BEANS = TalendJavaProjectConstants.DIR_BEANS;
         String SEPARATOR = "|"; //$NON-NLS-1$
         String SLASH = "/"; //$NON-NLS-1$
         modules.put(KEY + SEPARATOR + "ci", "../" + TalendJavaProjectConstants.FILE_POM_CI_BUILDER); //$NON-NLS-1$ //$NON-NLS-2$
         modules.put(KEY + SEPARATOR + ROUTINES, "../../" + CODES + SLASH + ROUTINES); //$NON-NLS-1$
-        if (ProcessUtils.isRequiredPigUDFs(null)) {
-            modules.put(KEY + SEPARATOR + PIGUDF, "../../" + CODES + SLASH + PIGUDF); //$NON-NLS-1$
-        }
+
         if (ProcessUtils.isRequiredBeans(null)) {
             modules.put(KEY + SEPARATOR + BEANS, "../../" + CODES + SLASH + BEANS); //$NON-NLS-1$
         }
