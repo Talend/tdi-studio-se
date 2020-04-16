@@ -3215,6 +3215,15 @@
               name="RenameTCOMPCouchbaseMigrationTask"
               version="7.2.1">
         </projecttask>
+        <projecttask
+             beforeLogon="false"
+             breaks="7.2.0"
+             class="org.talend.repository.model.migration.SpecialUpdateELTTableNameMigrationTask"
+             description="Update ELT table name"
+             id="org.talend.repository.model.migration.SpecialUpdateELTTableNameMigrationTask"
+             name="SpecialUpdateELTTableNameMigrationTask"
+             version="7.2.1">
+       </projecttask>
    </extension>
 
    <extension
