@@ -24,63 +24,54 @@ import org.talend.designer.dbmap.model.emf.dbmap.VarTable;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- * 
  * @generated
  */
 public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private EClass dbMapDataEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private EClass dbMapperTableEntryEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private EClass abstractDBDataMapTableEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private EClass abstaceDBInOutTableEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private EClass varTableEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private EClass inputTableEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private EClass outputTableEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private EClass filterEntryEClass = null;
@@ -104,32 +95,28 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private static boolean isInited = false;
 
     /**
      * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
-     * 
-     * <p>
-     * This method is used to initialize {@link DbmapPackage#eINSTANCE} when that field is accessed. Clients should not
-     * invoke it directly. Instead, they should simply access that field to obtain the package. <!-- begin-user-doc -->
+     *
+     * <p>This method is used to initialize {@link DbmapPackage#eINSTANCE} when that field is accessed.
+     * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
+     * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * 
      * @see #eNS_URI
      * @see #createPackageContents()
      * @see #initializePackageContents()
      * @generated
      */
     public static DbmapPackage init() {
-        if (isInited) {
-            return (DbmapPackage) EPackage.Registry.INSTANCE.getEPackage(DbmapPackage.eNS_URI);
-        }
+        if (isInited) return (DbmapPackage)EPackage.Registry.INSTANCE.getEPackage(DbmapPackage.eNS_URI);
 
         // Obtain or create and register package
-        DbmapPackageImpl theDbmapPackage = (DbmapPackageImpl) (EPackage.Registry.INSTANCE.get(eNS_URI) instanceof DbmapPackageImpl ? EPackage.Registry.INSTANCE
-                .get(eNS_URI) : new DbmapPackageImpl());
+        Object registeredDbmapPackage = EPackage.Registry.INSTANCE.get(eNS_URI);
+        DbmapPackageImpl theDbmapPackage = registeredDbmapPackage instanceof DbmapPackageImpl ? (DbmapPackageImpl)registeredDbmapPackage : new DbmapPackageImpl();
 
         isInited = true;
 
@@ -152,7 +139,6 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -162,37 +148,33 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EReference getDBMapData_VarTables() {
-        return (EReference) dbMapDataEClass.getEStructuralFeatures().get(0);
+        return (EReference)dbMapDataEClass.getEStructuralFeatures().get(0);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EReference getDBMapData_InputTables() {
-        return (EReference) dbMapDataEClass.getEStructuralFeatures().get(1);
+        return (EReference)dbMapDataEClass.getEStructuralFeatures().get(1);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EReference getDBMapData_OutputTables() {
-        return (EReference) dbMapDataEClass.getEStructuralFeatures().get(2);
+        return (EReference)dbMapDataEClass.getEStructuralFeatures().get(2);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -202,67 +184,60 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getDBMapperTableEntry_Name() {
-        return (EAttribute) dbMapperTableEntryEClass.getEStructuralFeatures().get(0);
+        return (EAttribute)dbMapperTableEntryEClass.getEStructuralFeatures().get(0);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getDBMapperTableEntry_Expression() {
-        return (EAttribute) dbMapperTableEntryEClass.getEStructuralFeatures().get(1);
+        return (EAttribute)dbMapperTableEntryEClass.getEStructuralFeatures().get(1);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getDBMapperTableEntry_Type() {
-        return (EAttribute) dbMapperTableEntryEClass.getEStructuralFeatures().get(2);
+        return (EAttribute)dbMapperTableEntryEClass.getEStructuralFeatures().get(2);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getDBMapperTableEntry_Nullable() {
-        return (EAttribute) dbMapperTableEntryEClass.getEStructuralFeatures().get(3);
+        return (EAttribute)dbMapperTableEntryEClass.getEStructuralFeatures().get(3);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getDBMapperTableEntry_Join() {
-        return (EAttribute) dbMapperTableEntryEClass.getEStructuralFeatures().get(4);
+        return (EAttribute)dbMapperTableEntryEClass.getEStructuralFeatures().get(4);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getDBMapperTableEntry_Operator() {
-        return (EAttribute) dbMapperTableEntryEClass.getEStructuralFeatures().get(5);
+        return (EAttribute)dbMapperTableEntryEClass.getEStructuralFeatures().get(5);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -272,57 +247,51 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getAbstractDBDataMapTable_Name() {
-        return (EAttribute) abstractDBDataMapTableEClass.getEStructuralFeatures().get(0);
+        return (EAttribute)abstractDBDataMapTableEClass.getEStructuralFeatures().get(0);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getAbstractDBDataMapTable_Minimized() {
-        return (EAttribute) abstractDBDataMapTableEClass.getEStructuralFeatures().get(1);
+        return (EAttribute)abstractDBDataMapTableEClass.getEStructuralFeatures().get(1);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getAbstractDBDataMapTable_Readonly() {
-        return (EAttribute) abstractDBDataMapTableEClass.getEStructuralFeatures().get(2);
+        return (EAttribute)abstractDBDataMapTableEClass.getEStructuralFeatures().get(2);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EReference getAbstractDBDataMapTable_DBMapperTableEntries() {
-        return (EReference) abstractDBDataMapTableEClass.getEStructuralFeatures().get(3);
+        return (EReference)abstractDBDataMapTableEClass.getEStructuralFeatures().get(3);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getAbstractDBDataMapTable_TableName() {
-        return (EAttribute) abstractDBDataMapTableEClass.getEStructuralFeatures().get(4);
+        return (EAttribute)abstractDBDataMapTableEClass.getEStructuralFeatures().get(4);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -332,7 +301,6 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -342,7 +310,6 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -352,27 +319,24 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getInputTable_JoinType() {
-        return (EAttribute) inputTableEClass.getEStructuralFeatures().get(0);
+        return (EAttribute)inputTableEClass.getEStructuralFeatures().get(0);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getInputTable_Alias() {
-        return (EAttribute) inputTableEClass.getEStructuralFeatures().get(1);
+        return (EAttribute)inputTableEClass.getEStructuralFeatures().get(1);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -382,17 +346,15 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EReference getOutputTable_FilterEntries() {
-        return (EReference) outputTableEClass.getEStructuralFeatures().get(0);
+        return (EReference)outputTableEClass.getEStructuralFeatures().get(0);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -402,22 +364,20 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getFilterEntry_Name() {
-        return (EAttribute) filterEntryEClass.getEStructuralFeatures().get(0);
+        return (EAttribute)filterEntryEClass.getEStructuralFeatures().get(0);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public EAttribute getFilterEntry_Expression() {
-        return (EAttribute) filterEntryEClass.getEStructuralFeatures().get(1);
+        return (EAttribute)filterEntryEClass.getEStructuralFeatures().get(1);
     }
 
     @Override
@@ -427,31 +387,27 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     public DbmapFactory getDbmapFactory() {
-        return (DbmapFactory) getEFactoryInstance();
+        return (DbmapFactory)getEFactoryInstance();
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private boolean isCreated = false;
 
     /**
-     * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but
-     * its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Creates the meta-model objects for the package.  This method is
+     * guarded to have no affect on any invocation but its first.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
     public void createPackageContents() {
-        if (isCreated) {
-            return;
-        }
+        if (isCreated) return;
         isCreated = true;
 
         // Create classes and their features
@@ -494,21 +450,18 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     private boolean isInitialized = false;
 
     /**
-     * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any
-     * invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Complete the initialization of the package and its meta-model.  This
+     * method is guarded to have no affect on any invocation but its first.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
     public void initializePackageContents() {
-        if (isInitialized) {
-            return;
-        }
+        if (isInitialized) return;
         isInitialized = true;
 
         // Initialize package
@@ -517,8 +470,7 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
         setNsURI(eNS_URI);
 
         // Obtain other dependent packages
-        TalendFilePackage theTalendFilePackage = (TalendFilePackage) EPackage.Registry.INSTANCE
-                .getEPackage(TalendFilePackage.eNS_URI);
+        TalendFilePackage theTalendFilePackage = (TalendFilePackage)EPackage.Registry.INSTANCE.getEPackage(TalendFilePackage.eNS_URI);
 
         // Create type parameters
 
@@ -533,75 +485,40 @@ public class DbmapPackageImpl extends EPackageImpl implements DbmapPackage {
 
         // Initialize classes and features; add operations and parameters
         initEClass(dbMapDataEClass, DBMapData.class, "DBMapData", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getDBMapData_VarTables(), this.getVarTable(), null, "VarTables", null, 0, -1, DBMapData.class,
-                !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-                !IS_DERIVED, IS_ORDERED);
-        initEReference(getDBMapData_InputTables(), this.getInputTable(), null, "InputTables", null, 0, -1, DBMapData.class,
-                !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-                !IS_DERIVED, IS_ORDERED);
-        initEReference(getDBMapData_OutputTables(), this.getOutputTable(), null, "OutputTables", null, 0, -1, DBMapData.class,
-                !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-                !IS_DERIVED, IS_ORDERED);
+        initEReference(getDBMapData_VarTables(), this.getVarTable(), null, "VarTables", null, 0, -1, DBMapData.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getDBMapData_InputTables(), this.getInputTable(), null, "InputTables", null, 0, -1, DBMapData.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getDBMapData_OutputTables(), this.getOutputTable(), null, "OutputTables", null, 0, -1, DBMapData.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        initEClass(dbMapperTableEntryEClass, DBMapperTableEntry.class, "DBMapperTableEntry", !IS_ABSTRACT, !IS_INTERFACE,
-                IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getDBMapperTableEntry_Name(), ecorePackage.getEString(), "name", null, 0, 1, DBMapperTableEntry.class,
-                !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getDBMapperTableEntry_Expression(), ecorePackage.getEString(), "expression", null, 0, 1,
-                DBMapperTableEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-                !IS_DERIVED, !IS_ORDERED);
-        initEAttribute(getDBMapperTableEntry_Type(), ecorePackage.getEString(), "type", null, 0, 1, DBMapperTableEntry.class,
-                !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getDBMapperTableEntry_Nullable(), ecorePackage.getEBoolean(), "nullable", null, 0, 1,
-                DBMapperTableEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-                !IS_DERIVED, !IS_ORDERED);
-        initEAttribute(getDBMapperTableEntry_Join(), ecorePackage.getEBoolean(), "join", null, 0, 1, DBMapperTableEntry.class,
-                !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getDBMapperTableEntry_Operator(), ecorePackage.getEString(), "operator", null, 0, 1,
-                DBMapperTableEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-                !IS_DERIVED, IS_ORDERED);
+        initEClass(dbMapperTableEntryEClass, DBMapperTableEntry.class, "DBMapperTableEntry", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getDBMapperTableEntry_Name(), ecorePackage.getEString(), "name", null, 0, 1, DBMapperTableEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getDBMapperTableEntry_Expression(), ecorePackage.getEString(), "expression", null, 0, 1, DBMapperTableEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+        initEAttribute(getDBMapperTableEntry_Type(), ecorePackage.getEString(), "type", null, 0, 1, DBMapperTableEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getDBMapperTableEntry_Nullable(), ecorePackage.getEBoolean(), "nullable", null, 0, 1, DBMapperTableEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+        initEAttribute(getDBMapperTableEntry_Join(), ecorePackage.getEBoolean(), "join", null, 0, 1, DBMapperTableEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getDBMapperTableEntry_Operator(), ecorePackage.getEString(), "operator", null, 0, 1, DBMapperTableEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        initEClass(abstractDBDataMapTableEClass, AbstractDBDataMapTable.class, "AbstractDBDataMapTable", !IS_ABSTRACT,
-                !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getAbstractDBDataMapTable_Name(), ecorePackage.getEString(), "name", null, 0, 1,
-                AbstractDBDataMapTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-                !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getAbstractDBDataMapTable_Minimized(), ecorePackage.getEBoolean(), "minimized", null, 0, 1,
-                AbstractDBDataMapTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-                !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getAbstractDBDataMapTable_Readonly(), ecorePackage.getEBoolean(), "readonly", null, 0, 1,
-                AbstractDBDataMapTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-                !IS_DERIVED, IS_ORDERED);
-        initEReference(getAbstractDBDataMapTable_DBMapperTableEntries(), this.getDBMapperTableEntry(), null,
-                "DBMapperTableEntries", null, 0, -1, AbstractDBDataMapTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-                IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getAbstractDBDataMapTable_TableName(), ecorePackage.getEString(), "tableName", null, 0, 1,
-                AbstractDBDataMapTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-                !IS_DERIVED, IS_ORDERED);
+        initEClass(abstractDBDataMapTableEClass, AbstractDBDataMapTable.class, "AbstractDBDataMapTable", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getAbstractDBDataMapTable_Name(), ecorePackage.getEString(), "name", null, 0, 1, AbstractDBDataMapTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getAbstractDBDataMapTable_Minimized(), ecorePackage.getEBoolean(), "minimized", null, 0, 1, AbstractDBDataMapTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getAbstractDBDataMapTable_Readonly(), ecorePackage.getEBoolean(), "readonly", null, 0, 1, AbstractDBDataMapTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getAbstractDBDataMapTable_DBMapperTableEntries(), this.getDBMapperTableEntry(), null, "DBMapperTableEntries", null, 0, -1, AbstractDBDataMapTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getAbstractDBDataMapTable_TableName(), ecorePackage.getEString(), "tableName", null, 0, 1, AbstractDBDataMapTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        initEClass(abstaceDBInOutTableEClass, AbstaceDBInOutTable.class, "AbstaceDBInOutTable", !IS_ABSTRACT, !IS_INTERFACE,
-                IS_GENERATED_INSTANCE_CLASS);
+        initEClass(abstaceDBInOutTableEClass, AbstaceDBInOutTable.class, "AbstaceDBInOutTable", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         initEClass(varTableEClass, VarTable.class, "VarTable", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         initEClass(inputTableEClass, InputTable.class, "InputTable", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getInputTable_JoinType(), ecorePackage.getEString(), "joinType", null, 0, 1, InputTable.class,
-                !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getInputTable_Alias(), ecorePackage.getEString(), "alias", null, 0, 1, InputTable.class, !IS_TRANSIENT,
-                !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getInputTable_JoinType(), ecorePackage.getEString(), "joinType", null, 0, 1, InputTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getInputTable_Alias(), ecorePackage.getEString(), "alias", null, 0, 1, InputTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(outputTableEClass, OutputTable.class, "OutputTable", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getOutputTable_FilterEntries(), this.getFilterEntry(), null, "FilterEntries", null, 0, -1,
-                OutputTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-                IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getOutputTable_FilterEntries(), this.getFilterEntry(), null, "FilterEntries", null, 0, -1, OutputTable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(filterEntryEClass, FilterEntry.class, "FilterEntry", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getFilterEntry_Name(), ecorePackage.getEString(), "name", null, 0, 1, FilterEntry.class, !IS_TRANSIENT,
-                !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getFilterEntry_Expression(), ecorePackage.getEString(), "expression", null, 0, 1, FilterEntry.class,
-                !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getFilterEntry_FilterKind(), ecorePackage.getEString(), "filterKind", null, 0, 1, FilterEntry.class,
-                !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getFilterEntry_Name(), ecorePackage.getEString(), "name", null, 0, 1, FilterEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getFilterEntry_Expression(), ecorePackage.getEString(), "expression", null, 0, 1, FilterEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getFilterEntry_FilterKind(), ecorePackage.getEString(), "filterKind", null, 0, 1, FilterEntry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         // Create resource
         createResource(eNS_URI);

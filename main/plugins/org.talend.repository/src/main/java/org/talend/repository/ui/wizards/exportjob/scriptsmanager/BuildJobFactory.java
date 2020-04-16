@@ -88,7 +88,7 @@ public class BuildJobFactory {
 
         // if null, will try to find the type from item for build type.
         if (StringUtils.isEmpty(buildType)) {
-            final Object type = processItem.getProperty().getAdditionalProperties()
+            Object type = processItem.getProperty().getAdditionalProperties()
                     .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
             boolean esb = false;
 
@@ -105,6 +105,9 @@ public class BuildJobFactory {
                             NodeType currentNode = (NodeType) o;
                             if (BuildJobConstants.esbComponents.contains(currentNode.getComponentName())) {
                                 esb = true;
+                                if (type == null || "STANDALONE".equals(type)) {
+                                    type = "OSGI";
+                                }
                                 break;
                             }
                         }

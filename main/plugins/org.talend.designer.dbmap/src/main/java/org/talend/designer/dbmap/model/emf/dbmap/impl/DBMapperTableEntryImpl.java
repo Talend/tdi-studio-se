@@ -22,6 +22,7 @@ import org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.DBMapperTableEntryImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.DBMapperTableEntryImpl#getExpression <em>Expression</em>}</li>
@@ -30,7 +31,6 @@ import org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage;
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.DBMapperTableEntryImpl#isJoin <em>Join</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.DBMapperTableEntryImpl#getOperator <em>Operator</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -417,7 +417,7 @@ public class DBMapperTableEntryImpl extends EObjectImpl implements DBMapperTable
     public String toString() {
         if (eIsProxy()) return super.toString();
 
-        StringBuffer result = new StringBuffer(super.toString());
+        StringBuilder result = new StringBuilder(super.toString());
         result.append(" (name: ");
         result.append(name);
         result.append(", expression: ");

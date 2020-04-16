@@ -18,14 +18,13 @@ import java.io.IOException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.debug.ui.DebugUITools;
-import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 import org.talend.commons.ui.runtime.CommonUIPlugin;
 import org.talend.commons.ui.swt.colorstyledtext.ColorManager;
@@ -212,5 +211,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         store.setDefault(TalendDesignerPrefConstants.PALETTE_SETTINGS_SEARCH_RESULT_LIMIT_FROM_HELP, 10);
 
         store.setDefault(ITalendCorePrefConstants.PERFORMANCE_JAVA_PROCESS_CODE_FORMATE_TIMEOUT, 30);
+        // Exchange
+        PlatformUI.getPreferenceStore().setDefault(ITalendCorePrefConstants.EXCHANGE_DOWNLOADED_CHECK_UPDATES, true);
     }
 }

@@ -66,7 +66,7 @@ public class MsgMailUtil {
 			throws IOException {
 		String fileName = attachment.getAttachFileName().toString();
 		if (attachment.getAttachLongFileName() != null) {
-			fileName = attachment.getAttachLongFileName().toString();
+			fileName = getUniqueFileName(attachment.getAttachLongFileName().toString(), dir);
 		}
 
 		File attachedFile = new File(dir, fileName);
@@ -85,6 +85,30 @@ public class MsgMailUtil {
 				fileOut.close();
 			}
 		}
+	}
+
+	private String getUniqueFileName(String fileName,  File dir){
+
+		int num = 1;
+		final String ext = getFileExtension(fileName);
+		final String name = getFileName(fileName);
+		File file = new File(dir, fileName);
+		while (file.exists()) {
+			num++;
+			file = new File(dir, name + "_" + num + ext);
+		}
+		return file.getName();
+	}
+
+	public static String getFileExtension(final String path) {
+		if (path != null && path.lastIndexOf('.') != -1) {
+			return path.substring(path.lastIndexOf('.'));
+		}
+		return null;
+	}
+
+	public static String getFileName(String fileName) {
+		return fileName.substring(0, fileName.lastIndexOf('.'));
 	}
 
 	public Object processMessage(String mailPart) throws ChunkNotFoundException {

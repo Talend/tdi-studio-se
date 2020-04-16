@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.4-20200303</version>
+	<version>3.4-20200330</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>
@@ -14,6 +14,7 @@
 		<odata.version>4.5.0</odata.version>
         <slf4j.version>1.7.12</slf4j.version>
 		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
+		<axis2.version>1.7.9</axis2.version>
 	</properties>
 	
 	<distributionManagement>
@@ -43,7 +44,7 @@
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
 			<artifactId>axis2-xmlbeans</artifactId>
-			<version>1.7.4</version>
+			<version>${axis2.version}</version>
 		</dependency>
 		<dependency>
     		<groupId>log4j</groupId>
@@ -63,7 +64,7 @@
 		<dependency>
     		<groupId>org.apache.axis2</groupId>
     		<artifactId>axis2-transport-http</artifactId>
-    		<version>1.7.4</version>
+    		<version>${axis2.version}</version>
 		</dependency>
 		
 		<dependency>

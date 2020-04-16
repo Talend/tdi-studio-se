@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.AbstractDBDataMapTable#getName <em>Name</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.AbstractDBDataMapTable#isMinimized <em>Minimized</em>}</li>
@@ -24,7 +25,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.AbstractDBDataMapTable#getDBMapperTableEntries <em>DB Mapper Table Entries</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.AbstractDBDataMapTable#getTableName <em>Table Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage#getAbstractDBDataMapTable()
  * @model

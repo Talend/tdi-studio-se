@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecore:EPackage xmi:version="2.0"
-    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="dbmap"
-    nsURI="http://www.talend.org/dbmap" nsPrefix="TalendDBMap">
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="dbmap" nsURI="http://www.talend.org/dbmap" nsPrefix="TalendDBMap">
   <eClassifiers xsi:type="ecore:EClass" name="DBMapData" eSuperTypes="../../org.talend.model/model/TalendFile.ecore#//AbstractExternalData">
     <eStructuralFeatures xsi:type="ecore:EReference" name="VarTables" upperBound="-1"
         eType="#//VarTable" containment="true"/>
@@ -42,5 +40,6 @@
   <eClassifiers xsi:type="ecore:EClass" name="FilterEntry">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="expression" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="filterKind" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
 </ecore:EPackage>

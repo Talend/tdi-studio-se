@@ -11,6 +11,13 @@
             class="org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage"
             genModel="model/dbmap.genmodel"/>
    </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated dbmap -->
+      <parser
+            type="dbmap"
+            class="org.talend.designer.dbmap.model.emf.dbmap.util.DbmapResourceFactoryImpl"/>
+   </extension>
    <extension
          point="org.talend.core.migrationTask">
       <projecttask

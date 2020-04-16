@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
@@ -57,6 +59,8 @@ import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
  */
 public class ButtonController extends AbstractElementPropertySectionController {
 
+    private static Logger log = Logger.getLogger(ButtonController.class);
+
     private static final String TEST_CONNECTION = "Test connection"; //$NON-NLS-1$
 
     public ButtonController(IDynamicProperty dp) {
@@ -67,7 +71,11 @@ public class ButtonController extends AbstractElementPropertySectionController {
         IElementParameter parameter = (IElementParameter) button.getData();
         if(button.getText() != null && button.getText().equals(TEST_CONNECTION)){
             chooseContext();
-            loadJars(parameter);
+            Boolean result = loadJars(parameter);
+            if (result != null && !result) {
+                log.log(Priority.INFO, "JDBC Test connection install needed module is canceled", new Exception());
+                return null;
+            }
         }
 
         if (parameter != null) {
@@ -94,27 +102,27 @@ public class ButtonController extends AbstractElementPropertySectionController {
                 null, false);
     }
 
-    private void loadJars(IElementParameter parameter){
+    private Boolean loadJars(IElementParameter parameter) {
         ILibraryManagerService librairesManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
                 ILibraryManagerService.class);
         if(librairesManagerService == null){
-            return;
+            return null;
         }
         if(!(parameter instanceof GenericElementParameter)){
-            return;
+            return null;
         }
         GenericElementParameter gPara = (GenericElementParameter) parameter;
         ComponentProperties rootPro = gPara.getRootProperties();
         if(rootPro == null){
-            return;
+            return null;
         }
         Properties connPro = rootPro.getProperties("connection"); //$NON-NLS-1$
         if(connPro == null){
-            return;
+            return null;
         }
         Properties drivers = connPro.getProperties("driverTable"); //$NON-NLS-1$
         if(drivers == null){
-            return;
+            return null;
         }
         List<String> jars = new ArrayList<String>();
         for(NamedThing thing : drivers.getProperties()){
@@ -134,7 +142,8 @@ public class ButtonController extends AbstractElementPropertySectionController {
 
             }
         }
-        librairesManagerService.retrieve(jars, ExtractMetaDataUtils.getInstance().getJavaLibPath(), new NullProgressMonitor());
+        return librairesManagerService.retrieve(jars, ExtractMetaDataUtils.getInstance().getJavaLibPath(),
+                new NullProgressMonitor());
     }
 
     @Override

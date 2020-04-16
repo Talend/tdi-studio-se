@@ -279,98 +279,24 @@
 	<%
 	} else if (authMode.equals("SERVICEACCOUNT")) {
 	%>
-		com.google.auth.oauth2.GoogleCredentials credentials_<%=cid%>;
-		java.io.File credentialsFile_<%=cid%> = new java.io.File(<%=credentialsFile%>);
-		try(java.io.FileInputStream credentialsStream_<%=cid%> = new java.io.FileInputStream(credentialsFile_<%=cid%>)) {
-		    credentials_<%=cid%> = com.google.auth.oauth2.ServiceAccountCredentials.fromStream(credentialsStream_<%=cid%>);
-		}
 
-		String query_<%=cid%> = <%=query%>;
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/tBigQueryInput/ServiceAccountBigQueryHelper.javajet"%>
+
 		<% if(isLog4jEnabled) { %>
 			log.info("<%=cid%> - query " + <%=query%>);
 		<% } %>
 
-		com.google.cloud.bigquery.BigQuery bigquery_<%=cid%> = com.google.cloud.bigquery.BigQueryOptions.newBuilder()
-				.setCredentials(credentials_<%=cid%>)
-				.setProjectId(<%=projectId%>)
-				.build()
-				.getService();
+		ServiceAccountBigQueryUtil_<%=cid%> serviceAccountBigQueryUtil_<%=cid%> = new ServiceAccountBigQueryUtil_<%=cid%>();
 
-		com.google.cloud.bigquery.QueryJobConfiguration.Builder queryConfiguration_<%=cid%> = com.google.cloud.bigquery.QueryJobConfiguration.newBuilder(<%=query%>).setUseLegacySql(<%=useLegacySql%>);
+		com.google.cloud.bigquery.Job job_<%=cid%> = serviceAccountBigQueryUtil_<%=cid%>.executeQuery(<%=query%>, <%=useLegacySql%>);
 
-     <%if (resultSizeType.equals("LARGE") || resultSizeType.equals("AUTO")) {
-          if (isCustomTemporaryName) {%>
-              String tempDataset_<%=cid%> = <%=tempDataset%>;
-<%            if(isLog4jEnabled){	%>
-                  log.info("<%=cid%> - temporary Dataset name : " + tempDataset_<%=cid%>);
-<%
-              }
-          } else {
-%>
-          com.google.cloud.bigquery.QueryJobConfiguration jobConfDryRun_<%=cid%> = queryConfiguration_<%=cid%> .setDryRun(true).build();
-          com.google.cloud.bigquery.Job jobDryRun_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(jobConfDryRun_<%=cid%>));
-
-          String queryLocation_<%=cid%> =jobDryRun_<%=cid%>.getJobId().getLocation();
-          String location_<%=cid%> = queryLocation_<%=cid%> == null ? "US" : queryLocation_<%=cid%>;
-          String tempDataset_<%=cid%> = java.util.UUID.randomUUID().toString().replaceAll("-", "")
-             + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt())
-             + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
-
-              <% if(isLog4jEnabled){	%>
-                  log.info("<%=cid%> - query location :" + queryLocation_<%=cid%>);
-                  log.info("<%=cid%> - temporary dataset location :" + location_<%=cid%>);
-                  log.info("<%=cid%> - temporary Dataset name : " + tempDataset_<%=cid%>);
-
-              <% } %>
-
-         com.google.cloud.bigquery.DatasetInfo datasetInfo_<%=cid%> = com.google.cloud.bigquery.DatasetInfo.newBuilder(tempDataset_<%=cid%>).setLocation(location_<%=cid%>).build();
-         com.google.cloud.bigquery.Dataset dataset_<%=cid%> = bigquery_<%=cid%> .create(datasetInfo_<%=cid%>);
-<%
-         }
-%>
-          String tempTable_<%=cid%> = java.util.UUID.randomUUID().toString().replaceAll("-", "")
-             + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt())
-             + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
-          <% if(isLog4jEnabled){	%>
-              log.info("<%=cid%> - temporary table name : " + tempTable_<%=cid%>);
-<%
-            }
-%>
-         queryConfiguration_<%=cid%>
-             .setDryRun(false)
-             .setAllowLargeResults(true)
-             .setDestinationTable(com.google.cloud.bigquery.TableId.of(tempDataset_<%=cid%>, tempTable_<%=cid%>));
-
-         com.google.cloud.bigquery.JobId jobId_<%=cid%>  = com.google.cloud.bigquery.JobId
-						.newBuilder().setProject(<%=projectId%>)
-						.setJob(java.util.UUID.randomUUID().toString())
-						.build();
-
-		       <% if(isLog4jEnabled){ %>
-			     log.info("<%=cid%> - job location : " + jobId_<%=cid%>.getLocation());
-		      <% } %>
-		 <% } else { %>
-		    com.google.cloud.bigquery.JobId jobId_<%=cid%> = com.google.cloud.bigquery.JobId.of(<%=projectId%>,java.util.UUID.randomUUID().toString());
-
-	   <% } %>
-	       com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.newBuilder(queryConfiguration_<%=cid%>.build()).setJobId(jobId_<%=cid%>).build());
-
-
-		<% if(isLog4jEnabled) {	%>
-			log.info("<%=cid%> - Sending job " + jobId_<%=cid%> + " with query: " + <%=query%>);
-		<% } %>
-
-		job_<%=cid%> = job_<%=cid%>.waitFor();
-
-		if (job_<%=cid%> == null) {
-			throw new RuntimeException("Job no longer exists");
-		} else if (job_<%=cid%>.getStatus().getError() != null) {
-			throw new RuntimeException(job_<%=cid%>.getStatus().getError().toString());
-		}
-
-		<% if(isLog4jEnabled) { %>
-			log.info("<%=cid%> - Job " + jobId_<%=cid%> + " finished successfully.");
-		<% } %>
+		<%
+			if(isLog4jEnabled){
+		%>
+			log.info("<%=cid%> - Retrieving records from dataset.");
+		<%
+			}
+		%>
 		com.google.cloud.bigquery.TableResult result_<%=cid%> = job_<%=cid%>.getQueryResults();
 		//Dynamic start
 
