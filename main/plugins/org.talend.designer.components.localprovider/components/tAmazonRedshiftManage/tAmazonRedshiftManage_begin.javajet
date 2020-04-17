@@ -24,7 +24,9 @@
 	String user = ElementParameterParser.getValue(node, "__USER__");
 	String node_type = ElementParameterParser.getValue(node, "__NODE_TYPE__");
 	String node_count = ElementParameterParser.getValue(node, "__NODE_COUNT__");
-	if (node_count.isEmpty()) node_count = "1";
+	if (node_count.isEmpty()) {
+	    node_count = "1";
+	}
 	
 	boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
@@ -91,8 +93,11 @@
     		
     		.withNodeType(<%=node_type%>);
     		
-		if (<%=node_count%> > 1) request_<%=cid%> = request_<%=cid%>.withNumberOfNodes(<%=node_count%>);
-		else request_<%=cid%> = request_<%=cid%>.withClusterType("single-node");
+		if (<%=node_count%> > 1) {
+		    request_<%=cid%> = request_<%=cid%>.withNumberOfNodes(<%=node_count%>);
+		} else {
+		    request_<%=cid%> = request_<%=cid%>.withClusterType("single-node");
+		}
 					
 		//advanced settings
 		<%if(parameterUtil.isValid(parameter_group_name)) {%>
