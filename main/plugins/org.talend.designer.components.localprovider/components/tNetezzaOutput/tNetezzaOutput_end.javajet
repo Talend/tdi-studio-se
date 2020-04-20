@@ -7,6 +7,7 @@ imports="
 	org.talend.core.model.metadata.IMetadataTable
     org.talend.core.model.metadata.MappingTypeRetriever
     org.talend.core.model.metadata.MetadataTalendType
+	org.talend.core.model.process.IProcess
 	java.util.List
 	java.util.ArrayList
 	java.util.Map
@@ -19,6 +20,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	dbLog = new DBLogUtil(node);
+	IProcess process = node.getProcess();
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	String cid = node.getUniqueName();
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
@@ -27,6 +29,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     List<Map<String, String>> fieldOptions = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__FIELD_OPTIONS__");
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
+	boolean setAutoCommit = false;
 	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 	String tableName = ElementParameterParser.getValue(node,"__TABLE__");
     String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
@@ -38,6 +41,16 @@ skeleton="../templates/db_output_bulk.skeleton"
 	    IConnection rejectConn = rejectConns.get(0);
 	    rejectConnName = rejectConn.getName();
 	}
+
+    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+    if(useExistingConn) {
+        List<? extends INode> nodes = process.getNodesOfType("tNetezzaConnection");
+        for (INode ne:nodes) {
+            if (connection.equals(ne.getUniqueName())) {
+                setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+            }
+        }
+    }
 
 	boolean useBatch = (rejectConnName == null)
 	                   && (

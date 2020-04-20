@@ -9,6 +9,7 @@ imports="
 	org.talend.core.model.metadata.MappingTypeRetriever
 	org.talend.core.model.metadata.MetadataTalendType
 	org.talend.core.model.process.IConnection
+	org.talend.core.model.process.IProcess
 	java.util.ArrayList
 	java.util.HashMap
 	java.util.List
@@ -23,9 +24,12 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	String cid = node.getUniqueName();
 	dbLog = new DBLogUtil(node);
+	IProcess process = node.getProcess();
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
 
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
+
+	boolean setAutoCommit = false;
 
 	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 
@@ -48,6 +52,16 @@ skeleton="../templates/db_output_bulk.skeleton"
     }
 
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+
+    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+    if(useExistingConn) {
+        List<? extends INode> nodes = process.getNodesOfType("tRedshiftConnection");
+        for (INode ne:nodes) {
+            if (connection.equals(ne.getUniqueName())) {
+                setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+            }
+        }
+    }
 
     boolean isDynamic = false;
     List<IMetadataTable> metadatas = node.getMetadataList();
