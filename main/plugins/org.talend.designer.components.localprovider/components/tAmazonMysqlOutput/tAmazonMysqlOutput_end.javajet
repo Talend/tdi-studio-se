@@ -58,6 +58,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             if (connection.equals(ne.getUniqueName())) {
                 dbVersion = ElementParameterParser.getValue(ne, "__DB_VERSION__");
                 setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+                break;
             }
         }
     } else {

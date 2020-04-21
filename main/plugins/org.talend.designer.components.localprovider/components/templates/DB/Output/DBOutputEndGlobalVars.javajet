@@ -53,8 +53,6 @@ imports="
 
 	<%
 	if(!useExistingConnection || (useExistingConnection && setAutoCommit)){
-		%>
-		<%
 		if (("INSERT").equals(dataAction)) {
 			dbLog.state().logInsertedLines(dbLog.var("nb_line_inserted"));
 		}else if (("UPDATE").equals(dataAction)) {
@@ -67,10 +65,8 @@ imports="
 		}else if("INSERT_OR_UPDATE".equals(dataAction)){
 			dbLog.state().logInsertedLines(dbLog.var("nb_line_inserted"));
 			dbLog.state().logUpdatedLines(dbLog.var("nb_line_update"));
-		}%>
-	<%
-	}%>
-	<%
+		}
+	}
 	if(rejectConnName != null) {
 		dbLog.state().logRejectedLines(dbLog.var("nb_line_rejected"));
 	}

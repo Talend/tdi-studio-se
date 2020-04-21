@@ -45,6 +45,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         for (INode ne:nodes) {
             if (connection.equals(ne.getUniqueName())) {
                 setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+                break;
             }
         }
     }

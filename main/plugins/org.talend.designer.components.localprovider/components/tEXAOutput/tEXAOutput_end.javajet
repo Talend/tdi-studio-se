@@ -5,7 +5,7 @@ imports="
     org.talend.core.model.process.INode
     org.talend.core.model.process.ElementParameterParser
     org.talend.core.model.process.IConnection
-	org.talend.core.model.process.IProcess
+    org.talend.core.model.process.IProcess
     java.util.List
 "
 %>
@@ -39,13 +39,14 @@ imports="
         IConnection rejectConn = rejectConns.get(0);
         rejectConnName = rejectConn.getName();
     }
-	
+
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
     if(useExistingConn) {
         List<? extends INode> nodes = process.getNodesOfType("tEXAConnection");
         for (INode ne:nodes) {
             if (connection.equals(ne.getUniqueName())) {
                 setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+                break;
             }
         }
     }

@@ -56,13 +56,14 @@ skeleton="../templates/db_output_bulk.skeleton"
         IConnection conn = conns.get(0);
         incomingConnName = conn.getName();
     }
-	
+
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
     if(useExistingConn) {
         List<? extends INode> nodes = process.getNodesOfType("tMSSqlConnection");
         for (INode ne:nodes) {
             if (connection.equals(ne.getUniqueName())) {
                 setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+                break;
             }
         }
     }

@@ -34,13 +34,14 @@ imports="
         IConnection rejectConn = rejectConns.get(0);
         rejectConnName = rejectConn.getName();
     }
-	
+
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
     if(useExistingConn) {
         List<? extends INode> nodes = process.getNodesOfType("tDB2Connection");
         for (INode ne:nodes) {
             if (connection.equals(ne.getUniqueName())) {
                 setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+                break;
             }
         }
     }
