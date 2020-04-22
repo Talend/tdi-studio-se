@@ -645,7 +645,7 @@ if(columnList != null && columnList.size() > 0) {
 
     if(incomingConnName != null && columnList != null){
         %>
-		boolean wasRowProcessedOK_<%=cid%>;
+		boolean wasRowProcessedOK_<%=cid%> = false;
         whetherReject_<%=cid%> = false;
         <%
         if(("INSERT").equals(dataAction)) {
