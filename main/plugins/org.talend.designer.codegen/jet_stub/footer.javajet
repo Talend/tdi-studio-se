@@ -733,34 +733,39 @@
 <%
                         } else if(typeToGenerate.equals("java.util.Date")) {
 %>
-                        try{
                             String context_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
-                            if (context_<%=ctxParam.getName()%>_value == null){
-                                context_<%=ctxParam.getName()%>_value = "";
-                            }
-                            int context_<%=ctxParam.getName()%>_pos = context_<%=ctxParam.getName()%>_value.indexOf(";");
-                            String context_<%=ctxParam.getName()%>_pattern =  "yyyy-MM-dd HH:mm:ss";
-                            if(context_<%=ctxParam.getName()%>_pos > -1){
-                                context_<%=ctxParam.getName()%>_pattern = context_<%=ctxParam.getName()%>_value.substring(0, context_<%=ctxParam.getName()%>_pos);
-                                context_<%=ctxParam.getName()%>_value = context_<%=ctxParam.getName()%>_value.substring(context_<%=ctxParam.getName()%>_pos + 1);
-                            }
+                            try{
+                                if (context_<%=ctxParam.getName()%>_value == null){
+                                    context_<%=ctxParam.getName()%>_value = "";
+                                }
+                                int context_<%=ctxParam.getName()%>_pos = context_<%=ctxParam.getName()%>_value.indexOf(";");
+                                String context_<%=ctxParam.getName()%>_pattern =  "yyyy-MM-dd HH:mm:ss";
+                                if(context_<%=ctxParam.getName()%>_pos > -1){
+                                    context_<%=ctxParam.getName()%>_pattern = context_<%=ctxParam.getName()%>_value.substring(0, context_<%=ctxParam.getName()%>_pos);
+                                    context_<%=ctxParam.getName()%>_value = context_<%=ctxParam.getName()%>_value.substring(context_<%=ctxParam.getName()%>_pos + 1);
+                                }
 
-                            context.<%=ctxParam.getName()%>=(java.util.Date)(new java.text.SimpleDateFormat(context_<%=ctxParam.getName()%>_pattern).parse(context_<%=ctxParam.getName()%>_value));
+                                context.<%=ctxParam.getName()%>=(java.util.Date)(new java.text.SimpleDateFormat(context_<%=ctxParam.getName()%>_pattern).parse(context_<%=ctxParam.getName()%>_value));
 
-                        } catch(ParseException e) {
+                            } catch(ParseException e) {
+                                try { <% /*try to check if date passed as long also*/ %>
+                                    long context_<%=ctxParam.getName()%>_longValue = Long.valueOf(context_<%=ctxParam.getName()%>_value);
+                                    context.<%=ctxParam.getName()%> = new java.util.Date(context_<%=ctxParam.getName()%>_longValue);
+                                } catch (NumberFormatException cantParseToLongException) {
 <%
-                            if (isLog4jEnabled) {
+                                    if (isLog4jEnabled) {
 %>
-                                log.warn(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+                                        log.warn(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", "Can't parse date string: " + e.getMessage() + " and long: " + cantParseToLongException.getMessage()));
 <%
-                            } else {
+                                    } else {
 %>
-                                System.err.println(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", e.getMessage()));
+                                        System.err.println(String.format("<%=warningMessageFormat %>", "<%=ctxParam.getName() %>", "Can't parse date string: " + e.getMessage() + " and long: " + cantParseToLongException.getMessage()));
 <%
+                                    }
+%>
+                                    context.<%=ctxParam.getName()%>=null;
+                                }
                             }
-%>
-                            context.<%=ctxParam.getName()%>=null;
-                        }
 <%
                         } else if(typeToGenerate.equals("Object")||typeToGenerate.equals("String")||typeToGenerate.equals("java.lang.String")) {
 %>
