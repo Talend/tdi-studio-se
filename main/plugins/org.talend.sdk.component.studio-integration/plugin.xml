@@ -118,6 +118,10 @@
            class="org.talend.sdk.component.studio.service.TaCoKitUpdateService"
            serviceId="ITaCoKitUpdateService">
      </Service>
+    <Service
+      class="org.talend.sdk.component.studio.service.TaCoKitDependencyService"
+      serviceId="ITaCoKitDependencyService">
+    </Service>
   </extension>
   <extension
         point="org.talend.designer.core.generators">
@@ -308,4 +312,7 @@
     <Service serviceId="IGenericWizardService" class="org.talend.sdk.component.studio.metadata.WizardRegistry" />
   </extension>
   -->
+  <extension point="org.talend.core.runtime.buildExport_provider">
+    <dependenciesProvider class="org.talend.sdk.component.studio.provider.TacokitExportDependenciesProvider"></dependenciesProvider>
+  </extension>
 </plugin>
