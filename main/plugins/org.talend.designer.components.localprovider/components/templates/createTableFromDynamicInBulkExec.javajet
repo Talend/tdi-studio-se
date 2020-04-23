@@ -39,7 +39,21 @@ if (guessSchemaFromFile){
 	%>
 }
 String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
-String queryForExec = "CREATE TABLE " + tableName_<%=cid%> + " (" + columnsPart + ")";
+
+//Escape table name
+String queryForExec = "";
+<%
+if (MSSQL.equalsIgnoreCase(dbmsId)){
+%>
+	queryForExec = "CREATE TABLE " + "[" + tableName_<%=cid%> + "] (" + columnsPart + ")";
+<%
+} else {
+%>
+	queryForExec = "CREATE TABLE " + tableName_<%=cid%> + " (" + columnsPart + ")";
+<%
+}
+%>
+
 <%if(isLog4jEnabled_tableAction){%>
 	log.debug("<%=cid%> - Creating table with query: " + queryForExec);
 <%}%>
