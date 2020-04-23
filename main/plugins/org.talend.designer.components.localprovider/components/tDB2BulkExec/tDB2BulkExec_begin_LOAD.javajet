@@ -112,17 +112,21 @@ Character field_separator_<%=cid %> = (<%=field_separator%>).charAt(0);
         <%
         if(isLog4jEnabled_tableAction && isMessagesOnServer) {
         	%>
-	        java.sql.ResultSet rs_<%=cid%> = callStmt_<%=cid%>.getResultSet();
-        	String mgsSQL_<%=cid%> = null;
-        	if (rs_<%=cid%>.next()) {
-        		mgsSQL_<%=cid%> = rs_<%=cid%>.getString("MSG_RETRIEVAL");
-	        }
-	        callStmt_<%=cid%> = conn_<%=cid%>.prepareCall(mgsSQL_<%=cid%>);
-	        callStmt_<%=cid%>.execute();
-	        java.sql.ResultSet rs2_<%=cid%> = callStmt_<%=cid%>.getResultSet();
-	        while (rs2_<%=cid%>.next()) {
-	        	log.info("<%=cid%> - " + rs2_<%=cid%>.getString(1)+":"+rs2_<%=cid%>.getString(2).replaceAll("\n",""));
-	        }
+        	try {
+		        java.sql.ResultSet rs_<%=cid%> = callStmt_<%=cid%>.getResultSet();
+	        	String mgsSQL_<%=cid%> = null;
+	        	if (rs_<%=cid%>.next()) {
+	        		mgsSQL_<%=cid%> = rs_<%=cid%>.getString("MSG_RETRIEVAL");
+		        }
+		        callStmt_<%=cid%> = conn_<%=cid%>.prepareCall(mgsSQL_<%=cid%>);
+		        callStmt_<%=cid%>.execute();
+		        java.sql.ResultSet rs2_<%=cid%> = callStmt_<%=cid%>.getResultSet();
+		        while (rs2_<%=cid%>.next()) {
+		        	log.info("<%=cid%> - " + rs2_<%=cid%>.getString(1)+":"+rs2_<%=cid%>.getString(2).replaceAll("\n",""));
+		        }
+			} catch (java.sql.SQLException sqle) {
+				log.error("<%=cid%> - Some errors occurred while executing the SQL to retrieve messages on server.");
+			}
         	<%
         }
         %>
@@ -184,17 +188,21 @@ Character field_separator_<%=cid %> = (<%=field_separator%>).charAt(0);
             <%
 	        if(isLog4jEnabled_tableAction && isMessagesOnServer) {
 	        	%>
-		        java.sql.ResultSet rs_<%=cid%> = callStmt_<%=cid%>.getResultSet();
-	        	String mgsSQL_<%=cid%> = null;
-	        	if (rs_<%=cid%>.next()) {
-	        		mgsSQL_<%=cid%> = rs_<%=cid%>.getString("MSG_RETRIEVAL");
-		        }
-		        callStmt_<%=cid%> = conn_<%=cid%>.prepareCall(mgsSQL_<%=cid%>);
-		        callStmt_<%=cid%>.execute();
-		        java.sql.ResultSet rs2_<%=cid%> = callStmt_<%=cid%>.getResultSet();
-		        while(rs2_<%=cid%>.next()){
-		        	log.info("<%=cid%> - " + rs2_<%=cid%>.getString(1)+":"+rs2_<%=cid%>.getString(2).replaceAll("\n",""));
-		        }
+	        	try {
+			        java.sql.ResultSet rs_<%=cid%> = callStmt_<%=cid%>.getResultSet();
+		        	String mgsSQL_<%=cid%> = null;
+		        	if (rs_<%=cid%>.next()) {
+		        		mgsSQL_<%=cid%> = rs_<%=cid%>.getString("MSG_RETRIEVAL");
+			        }
+			        callStmt_<%=cid%> = conn_<%=cid%>.prepareCall(mgsSQL_<%=cid%>);
+			        callStmt_<%=cid%>.execute();
+			        java.sql.ResultSet rs2_<%=cid%> = callStmt_<%=cid%>.getResultSet();
+			        while(rs2_<%=cid%>.next()){
+			        	log.info("<%=cid%> - " + rs2_<%=cid%>.getString(1)+":"+rs2_<%=cid%>.getString(2).replaceAll("\n",""));
+			        }
+			    } catch (java.sql.SQLException sqle) {
+					log.error("<%=cid%> - Some errors occurred while executing the SQL to retrieve messages on server.");
+				}
 	        	<%
 	        }
 	        %>
