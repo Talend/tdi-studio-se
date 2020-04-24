@@ -362,7 +362,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 %>
 	        }
 	        try{
-				int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
+	        	int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 	        	insertedCount_<%=cid%> += processedCount_<%=cid%>;
 	        	rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
 	        }catch(java.lang.Exception e){
