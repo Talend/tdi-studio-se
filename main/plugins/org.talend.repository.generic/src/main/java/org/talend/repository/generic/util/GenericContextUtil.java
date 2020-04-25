@@ -156,7 +156,7 @@ public class GenericContextUtil {
         updateComponentProperties(connection, componentProperties);
     }
 
-    private static void findOutPropertiesToUpdate(ComponentProperties componentProperties, Map<String, String> contextVarMap) {
+    private static void findOutPropertiesToUpdate(Properties componentProperties, Map<String, String> contextVarMap) {
         for (NamedThing namedThing : componentProperties.getProperties()) {
             if (namedThing==null) {
                 continue;
@@ -164,14 +164,14 @@ public class GenericContextUtil {
             if (namedThing instanceof Property) {
                 Property property = (Property) namedThing;
                 Object paramValue = property.getStoredValue();
-                if (GenericTypeUtils.isStringType(property) && paramValue != null) {
+                if (paramValue != null) {
                     String newVlue = contextVarMap.get(paramValue.toString());
                     if (newVlue != null) {
                         property.setValue(newVlue);
                     }
                 }
-            }else if (namedThing instanceof ComponentProperties) {
-                ComponentProperties compProp = (ComponentProperties) namedThing;
+            } else if (namedThing instanceof Properties) {
+                Properties compProp = (Properties) namedThing;
                 findOutPropertiesToUpdate(compProp, contextVarMap);
             }
         }
