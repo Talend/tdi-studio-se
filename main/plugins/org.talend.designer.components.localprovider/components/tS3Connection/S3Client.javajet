@@ -298,7 +298,7 @@
 						<%if(set_signingRegion){%>
 						.withRegion(<%=signingRegion%>)
 						<%}else{%>
-						.withRegion("us-east-1")
+						.withRegion(com.amazonaws.regions.Regions.DEFAULT_REGION)
 						<%}%>
 						
 					<%}%>
