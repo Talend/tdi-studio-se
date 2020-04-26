@@ -43,5 +43,6 @@ final String cid = node.getUniqueName();
             }
         }
     }
+    globalMap.put("<%=cid %>_NB_LINE", nbLineInput_<%=cid%>);
     globalMap.remove("mapper_<%=cid%>");
     globalMap.remove("input_<%=cid%>");
