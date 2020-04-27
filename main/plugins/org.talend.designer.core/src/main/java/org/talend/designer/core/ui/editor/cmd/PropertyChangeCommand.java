@@ -328,6 +328,10 @@ public class PropertyChangeCommand extends Command {
             }
         }
 
+        if ("tCreateTable".equals(elem.getPropertyValue(EParameterName.COMPONENT_NAME.getName())) && "DBTYPE".equals(propName)) {//$NON-NLS-1$ //$NON-NLS-2$
+            IElementParameter propertyParam = elem.getElementParameter("PROPERTY");//$NON-NLS-1$
+            propertyParam.setRepositoryValue("DATABASE:" + newValue);//$NON-NLS-1$
+        }
         // add for bug TDI-26632 by fwang in 11 July, 2013. can't edit parameters if use repository connection.
         IElementParameter propertyTypeParam = elem.getElementParameter(EParameterName.PROPERTY_TYPE.getName());
         IElementParameter repositoryTypeParam = elem.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());

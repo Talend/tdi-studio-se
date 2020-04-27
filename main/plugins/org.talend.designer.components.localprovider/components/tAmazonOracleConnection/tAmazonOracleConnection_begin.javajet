@@ -75,6 +75,7 @@ imports="
 <%
 			}
 %>
+		globalMap.put("conn_<%=cid%>", conn_<%=cid%>);
 <%
 		}
 		
@@ -132,7 +133,6 @@ imports="
 
 	<%@ include file="../templates/DB/AbstractDBConnection.javajet"%>
 
-	globalMap.put("conn_" + "<%=cid%>",conn_<%=cid%>);
 	globalMap.put("dbschema_" + "<%=cid%>", <%=dbschema%>);
 	globalMap.put("username_" + "<%=cid%>",<%=dbuser%>);
 	globalMap.put("password_" + "<%=cid%>",dbPwd_<%=cid%>);

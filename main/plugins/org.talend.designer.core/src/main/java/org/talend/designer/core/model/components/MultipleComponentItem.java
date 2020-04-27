@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.talend.core.model.components.IMultipleComponentConnection;
 import org.talend.core.model.components.IMultipleComponentItem;
+import org.talend.core.model.process.INode;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
@@ -67,4 +68,10 @@ public class MultipleComponentItem implements IMultipleComponentItem {
     public void setComponent(String component) {
         this.component = component;
     }
+
+    @Override
+    public void updateNode(INode newNode, INode oldNode) {
+        // nothing to do
+    }
+
 }

@@ -51,6 +51,8 @@ if((columnList != null && columnList.size() > 0) || "CLEAR".equals(tableAction) 
     java.lang.StringBuilder position2 = new java.lang.StringBuilder();
     java.lang.StringBuilder position3 = new java.lang.StringBuilder();
 
+	boolean isMessagesOnServer = false;
+
     for(java.util.Map<String, String> option : options) {
         String key = option.get("KEY");
         String value = option.get("VALUE");
@@ -60,6 +62,10 @@ if((columnList != null && columnList.size() > 0) || "CLEAR".equals(tableAction) 
             if ("1".equals(keySplit[1])) {
                 position1.append(keySplit[0]).append(" ").append(value).append(" ");
             } else if ("2".equals(keySplit[1])) {
+            
+            	if ("MESSAGES".equals(keySplit[0]) && "ON SERVER".equals(value)) {
+					isMessagesOnServer = true;
+				}
                 if ("MODIFIED BY".equals(keySplit[0])) {
                     position2.append(" ").append(value).append(" ");
                 } else {
@@ -103,6 +109,27 @@ Character field_separator_<%=cid %> = (<%=field_separator%>).charAt(0);
         callStmt_<%=cid%> = conn_<%=cid%>.prepareCall(sql_<%=cid%>);
         callStmt_<%=cid%>.setString(1, param_<%=cid%>);
         callStmt_<%=cid%>.execute();
+        <%
+        if(isLog4jEnabled_tableAction && isMessagesOnServer) {
+        	%>
+        	try {
+		        java.sql.ResultSet rs_<%=cid%> = callStmt_<%=cid%>.getResultSet();
+	        	String mgsSQL_<%=cid%> = null;
+	        	if (rs_<%=cid%>.next()) {
+	        		mgsSQL_<%=cid%> = rs_<%=cid%>.getString("MSG_RETRIEVAL");
+		        }
+		        callStmt_<%=cid%> = conn_<%=cid%>.prepareCall(mgsSQL_<%=cid%>);
+		        callStmt_<%=cid%>.execute();
+		        java.sql.ResultSet rs2_<%=cid%> = callStmt_<%=cid%>.getResultSet();
+		        while (rs2_<%=cid%>.next()) {
+		        	log.info("<%=cid%> - " + rs2_<%=cid%>.getString(1)+":"+rs2_<%=cid%>.getString(2).replaceAll("\n",""));
+		        }
+			} catch (java.sql.SQLException sqle) {
+				log.error("<%=cid%> - Some errors occurred while executing the SQL to retrieve messages on server.");
+			}
+        	<%
+        }
+        %>
         callStmt_<%=cid%>.close();
         <%
         if(isLog4jEnabled_tableAction){
@@ -158,6 +185,27 @@ Character field_separator_<%=cid %> = (<%=field_separator%>).charAt(0);
             callStmt_<%=cid%> = conn_<%=cid%>.prepareCall(sql_<%=cid%>);
             callStmt_<%=cid%>.setString(1, param_<%=cid%>);
             callStmt_<%=cid%>.execute();
+            <%
+	        if(isLog4jEnabled_tableAction && isMessagesOnServer) {
+	        	%>
+	        	try {
+			        java.sql.ResultSet rs_<%=cid%> = callStmt_<%=cid%>.getResultSet();
+		        	String mgsSQL_<%=cid%> = null;
+		        	if (rs_<%=cid%>.next()) {
+		        		mgsSQL_<%=cid%> = rs_<%=cid%>.getString("MSG_RETRIEVAL");
+			        }
+			        callStmt_<%=cid%> = conn_<%=cid%>.prepareCall(mgsSQL_<%=cid%>);
+			        callStmt_<%=cid%>.execute();
+			        java.sql.ResultSet rs2_<%=cid%> = callStmt_<%=cid%>.getResultSet();
+			        while(rs2_<%=cid%>.next()){
+			        	log.info("<%=cid%> - " + rs2_<%=cid%>.getString(1)+":"+rs2_<%=cid%>.getString(2).replaceAll("\n",""));
+			        }
+			    } catch (java.sql.SQLException sqle) {
+					log.error("<%=cid%> - Some errors occurred while executing the SQL to retrieve messages on server.");
+				}
+	        	<%
+	        }
+	        %>
             callStmt_<%=cid%>.close();
             <%if(isLog4jEnabled_tableAction){%>
                 log.info("<%=cid%> - Bulk insert data into <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has finished.");

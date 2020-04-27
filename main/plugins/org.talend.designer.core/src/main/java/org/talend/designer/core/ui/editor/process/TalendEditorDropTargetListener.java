@@ -1987,6 +1987,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 }
             }
         }
+        
         if (item != null && item instanceof DatabaseConnectionItem) {
             DatabaseConnectionItem databaseConnectionItem = (DatabaseConnectionItem) item;
             String typeName = databaseConnectionItem.getTypeName();
@@ -1995,7 +1996,9 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             Node node = new Node(createTableComponent);
             IElementParameter elementParameter = node.getElementParameter("DBTYPE");
             String[] listItemsDisplayName = elementParameter.getListItemsDisplayName();
-            if (ArrayUtils.contains(listItemsDisplayName, typeName)) {
+            String[] listItemsValue = elementParameter.getListItemsDisplayCodeName();
+            EDatabaseTypeName dbTypeName = EDatabaseTypeName.getTypeFromDbType(typeName);
+            if (ArrayUtils.contains(listItemsDisplayName, typeName)||ArrayUtils.contains(listItemsValue, dbTypeName.getXMLType())) {
                 neededComponents.add(createTableComponent);
             }
         }

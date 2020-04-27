@@ -83,6 +83,7 @@ import org.talend.repository.generic.ui.DynamicComposite;
 import org.talend.repository.generic.ui.context.ContextComposite;
 import org.talend.repository.generic.ui.context.handler.GenericContextHandler;
 import org.talend.repository.generic.update.GenericUpdateManager;
+import org.talend.repository.generic.util.GenericContextUtil;
 import org.talend.repository.generic.util.GenericWizardServiceFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
@@ -450,6 +451,11 @@ public class GenericDBService implements IGenericDBService{
             return ERepositoryObjectType.METADATA_CONNECTIONS;
         }
         return type;
+    }
+
+    @Override
+    public void updateCompPropertiesForContextMode(Connection connection, Map<String, String> contextVarMap) {
+        GenericContextUtil.updateCompPropertiesForContextMode(connection, contextVarMap);
     }
 
 }

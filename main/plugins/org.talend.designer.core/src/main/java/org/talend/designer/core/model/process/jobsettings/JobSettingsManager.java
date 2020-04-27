@@ -981,7 +981,7 @@ public class JobSettingsManager {
             return Collections.emptyList();
         }
 
-        IComponent tContextLoadComponent = new JobContextLoadComponent(fileFlag, dbInput);
+        IComponent tContextLoadComponent = new JobContextLoadComponent(fileFlag, dbInput, process.getComponentsType());
 
         final String uniqueName = "Implicit_Context"; //$NON-NLS-1$
         DataNode tContextLoadNode = new DataNode(tContextLoadComponent, uniqueName);
@@ -1095,7 +1095,8 @@ public class JobSettingsManager {
             String dbType = getDatabaseTypeFromParameter(process);
             if (dbType != null) {
                 // TDI-18161:the SQL script's syntax is not right because of the implicit context of General JDBC.
-                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())) {
+                if (dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())
+                        || dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
                     dbType = findRealDbTypeForJDBC(process, dbType);
                 }
 

@@ -85,6 +85,14 @@ if(useExistingConnection) {
 			}
 	%>
     }
+<%
+    if (driver.equals("MSSQL_PROP") && useActiveDirectoryAuth) {
+%>
+        url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+        url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+    }
+%>
     url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
     dbUser_<%=cid %> = <%=dbuser%>;
 

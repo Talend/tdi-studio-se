@@ -1,0 +1,60 @@
+<%@ jet
+%>
+routines.system.Dynamic dynamicColumn = (Dynamic)globalMap.get("<%=dynamicComponentName%>" + "_DYNAMIC");
+boolean guessSchemaFromFile = (Boolean)globalMap.get("<%=dynamicComponentName%>" + "_DYNAMIC_GSFF");
+
+//We should do nothing when tSetDynamicSchema doesn't guess schema from file
+//If guessSchemaFromFile = true we can modify columns metadata
+if (guessSchemaFromFile){
+	<%
+	if (MSSQL.equalsIgnoreCase(dbmsId)){
+	%>
+		for (DynamicMetadata column : dynamicColumn.metadatas){
+			<%
+			int floatLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__FLOAT_LENGTH_FOR_DYNAMIC__"));
+			int varcharLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__VARCHAR_LENGTH_FOR_DYNAMIC__"));
+			%>
+			if (column.getType().equals("id_Double")){
+				column.setLength(<%=floatLengthForDynamic%>);
+			} else if (column.getType().equals("id_String")){
+				column.setLength(<%=varcharLengthForDynamic%>);
+			} else if (column.getType().equals("id_Boolean")){
+				column.setType("id_String");
+				column.setLength(5);
+			}
+		}
+	<%
+	} else if (VERTICA.equalsIgnoreCase(dbmsId)) {
+	%>
+		for (DynamicMetadata column : dynamicColumn.metadatas){
+			<%
+			int varcharLengthForDynamic = Integer.parseInt(ElementParameterParser.getValue(node, "__VARCHAR_LENGTH_FOR_DYNAMIC__"));
+			%>
+			if (column.getType().equals("id_String")){
+				column.setLength(<%=varcharLengthForDynamic%>);
+			}
+		}
+	<%
+	}
+	%>
+}
+String columnsPart = DynamicUtils.getCreateTableSQL(dynamicColumn, "<%=dbmsId==null?"":dbmsId.toLowerCase()%>");
+
+//Escape table name
+String queryForExec = "";
+<%
+if (MSSQL.equalsIgnoreCase(dbmsId)){
+%>
+	queryForExec = "CREATE TABLE " + "[" + tableName_<%=cid%> + "] (" + columnsPart + ")";
+<%
+} else {
+%>
+	queryForExec = "CREATE TABLE " + tableName_<%=cid%> + " (" + columnsPart + ")";
+<%
+}
+%>
+
+<%if(isLog4jEnabled_tableAction){%>
+	log.debug("<%=cid%> - Creating table with query: " + queryForExec);
+<%}%>
+stmtCreate_<%=cid%>.execute(queryForExec);

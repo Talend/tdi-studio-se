@@ -249,6 +249,8 @@ public class JavaProcessUtil {
         }
         // in case of multiple Version jars in customize modules, descendOrder
         highPriorityLinkedSet.addAll(descendingOrderModuleList(jdbcCustomizeModulesSet));
+        LastGenerationInfo.getInstance().setHighPriorityModuleNeededPerJob(process.getId(), process.getVersion(),
+                highPriorityLinkedSet);
         LastGenerationInfo.getInstance().setHighPriorityModuleNeeded(process.getId(), process.getVersion(),
                 highPriorityLinkedSet);
 

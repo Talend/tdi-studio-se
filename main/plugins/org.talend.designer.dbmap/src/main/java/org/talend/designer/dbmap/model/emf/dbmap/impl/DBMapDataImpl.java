@@ -32,12 +32,12 @@ import org.talend.designer.dbmap.model.emf.dbmap.VarTable;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.DBMapDataImpl#getVarTables <em>Var Tables</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.DBMapDataImpl#getInputTables <em>Input Tables</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.DBMapDataImpl#getOutputTables <em>Output Tables</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

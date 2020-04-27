@@ -504,7 +504,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         param.setDisplayName(EParameterName.LOG4J_RUN_LEVEL.getDisplayName());
         param.setNumRow(99);
         param.setShow(false);
-        param.setDefaultValue(param.getValue());
+        param.setValue("Info");
         addElementParameter(param);
 
         param = new ElementParameter(this);
@@ -1217,7 +1217,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                             }
                         }
                     }
-                    if (tmpParam != null && tmpParam.getFieldType().equals(EParameterFieldType.PASSWORD)) {
+                    if (tmpParam != null && EParameterFieldType.isPassword(tmpParam.getFieldType())) {
                         elementValue.setValue(strValue, true);
                     } else {
                         elementValue.setValue(strValue);
@@ -1249,7 +1249,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                     pType.getElementValue().add(elementValue);
                 }
             }
-        } else if (param.getFieldType().equals(EParameterFieldType.PASSWORD) && value instanceof String) {
+        } else if (EParameterFieldType.isPassword(param.getFieldType()) && value instanceof String) {
             pType.setRawValue((String) value);
         } else {
             if (value == null) {
@@ -1396,9 +1396,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         loadElementParameters(elemParam, pType, param, pType.getName(), paraValue, false);
                     } else {
                         boolean canAddElementParameter = false;
+                        boolean isActiveDatabase = false;
                         String paramName = pType.getName();
                         if (EParameterName.ACTIVE_DATABASE_DELIMITED_IDENTIFIERS.getName().equals(paramName)) {
                             canAddElementParameter = true;
+                            isActiveDatabase = true;
                         }
                         if (canAddElementParameter) {
                             param = new ElementParameter(elemParam);
@@ -1406,6 +1408,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                             param.setName(pType.getName());
                             param.setCategory(EComponentCategory.TECHNICAL);
                             String fieldName = pType.getField();
+                            if (isActiveDatabase && fieldName == null) {
+                            	fieldName = EParameterFieldType.TEXT.getName();
+                            }
                             EParameterFieldType fieldType = null;
                             if (StringUtils.isNotBlank(fieldName)) {
                                 fieldType = EParameterFieldType.valueOf(fieldName);
@@ -1515,7 +1520,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         }
 
                         String elemValue = elementValue.getValue();
-                        if (tmpParam != null && EParameterFieldType.PASSWORD.equals(tmpParam.getFieldType())) {
+                        if (tmpParam != null && EParameterFieldType.isPassword(tmpParam.getFieldType())) {
                             elemValue = elementValue.getRawValue();
                         }
                         if (elementValue.isHexValue() && elemValue != null) {
@@ -1580,7 +1585,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
                 elemParam.setPropertyValue(key, value);
                 // end of fix for bug 2193
-            } else if (param.getFieldType().equals(EParameterFieldType.PASSWORD)) {
+            } else if (EParameterFieldType.isPassword(param.getFieldType())) {
                 boolean generic = false;
                 IComponent component = null;
                 if (elemParam instanceof Node) {
@@ -2395,12 +2400,12 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 String componentName = unNode.getComponentName();
                 if (!isCurrentProject && !componentName.contains(":")) {
                     componentName = ProjectManager.getInstance().getProject(this.getProperty()).getLabel() + ":" + componentName; //$NON-NLS-1$
-                } else if (jobletUtil.matchExpression(componentName)) {
+                } else if (jobletUtil.matchExpression(componentName) && !jobletUtil.isStrictJoblet()) {
                     String[] names = componentName.split(":"); //$NON-NLS-1$
                     componentName = names[1];
                 }
                 IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, componentsType);
-                if (component == null && jobletUtil.isJoblet(unNode)) {
+                if (component == null && jobletUtil.isJoblet(unNode) && !jobletUtil.isStrictJoblet()) {
                     component = ComponentsFactoryProvider.getInstance().getJobletComponent(componentName, componentsType);
                 }
                 if (component != null) {

@@ -69,7 +69,6 @@ imports="
 
 	<%@ include file="../templates/DB/AbstractDBConnection.javajet"%>
 	
-	globalMap.put("conn_<%=cid %>", conn_<%=cid %>);
 	globalMap.put("host_<%=cid%>", <%=dbhost%>);
 	globalMap.put("port_<%=cid%>", <%=dbport%>);
 	globalMap.put("db_<%=cid%>", <%=dbname%>);

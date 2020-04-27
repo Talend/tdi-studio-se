@@ -42,7 +42,6 @@ imports="
    // schemas are always in upper case letters
 	globalMap.put("schema_" + "<%=cid%>",<%=dbschema%>);
     // provide the connection for further usage in other components
-	globalMap.put("conn_" + "<%=cid%>",conn_<%=cid%>);
 	globalMap.put("host_" + "<%=cid%>", <%=dbhost%>); 
 	globalMap.put("port_" + "<%=cid%>", <%=dbport%>);
 	globalMap.put("username_" + "<%=cid%>", <%=dbuser%>); 

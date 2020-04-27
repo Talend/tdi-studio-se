@@ -18,11 +18,16 @@ import static org.talend.repository.utils.MavenVersionUtils.getDefaultVersion;
 import static org.talend.repository.utils.MavenVersionUtils.isAdditionalPropertiesNull;
 import static org.talend.repository.utils.MavenVersionUtils.isValidMavenVersion;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -68,10 +73,12 @@ import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.runtime.repository.build.BuildType;
 import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.ui.editor.ProcessEditorInput;
 import org.talend.designer.core.ui.editor.cmd.MavenDeploymentValueChangeCommand;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.maven.utils.PomIdsHelper;
+import org.talend.repository.utils.EmfModelUtils;
 
 public class DeploymentComposite extends AbstractTabComposite {
 
@@ -301,13 +308,30 @@ public class DeploymentComposite extends AbstractTabComposite {
             if (showBuildType) {
                 Map<String, Object> parameters = new HashMap<String, Object>();
                 parameters.put(getObjectType(), getObject());
-                final BuildType[] validBuildTypes = BuildExportManager.getInstance().getValidBuildTypes(parameters);
-                buildTypeCombo.setInput(validBuildTypes);
+                BuildType[] validBuildTypes = BuildExportManager.getInstance().getValidBuildTypes(parameters);
+                // preventing the 'Standalone' type to show up as Deployment option for Jobs with tRouteInput
+                try {
+                     IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance()
+                            .getLastVersion(isService ? serviceItem.getProperty().getId() : process.getId());
+                     ProcessItem pi = (ProcessItem) obj.getProperty().getItem();
+                     if(checkRouteInputExistInJob(pi)){
+                        for(int i=0; i<validBuildTypes.length; i++) {
+                            if("STANDALONE".equals(validBuildTypes[i].getName())) {
+                               validBuildTypes = (BuildType[]) ArrayUtils.remove(validBuildTypes, i);
+                            }
+                        }
+                     }
+                  } catch (PersistenceException e) {
+                        ExceptionHandler.process(e);
+                }
+
+                final BuildType[] buildTypes = validBuildTypes;
+                buildTypeCombo.setInput(buildTypes);
                 buildTypeControl.setEnabled(true);
                 String buildType = (String) get(getObject(), TalendProcessArgumentConstant.ARG_BUILD_TYPE);
                 BuildType foundType = null;
                 if (buildType != null) {
-                    for (BuildType t : validBuildTypes) {
+                    for (BuildType t : buildTypes) {
                         if (t.getName().equals(buildType)) {
                             foundType = t;
                             break;
@@ -320,6 +344,29 @@ public class DeploymentComposite extends AbstractTabComposite {
                 buildTypeCombo.setSelection(new StructuredSelection(foundType));
             }
         }
+    }
+
+    private boolean checkRouteInputExistInJob(ProcessItem pi) {
+       if (pi == null || pi.getProcess() == null) {
+          return false;
+       }
+        EList<?> nodes = pi.getProcess().getNode();
+        Iterator<?> iterator = nodes.iterator();
+        while (iterator.hasNext()) {
+           Object next = iterator.next();
+           if (!(next instanceof NodeType)) {
+              continue;
+           }
+           NodeType nt = (NodeType) next;
+           if(!EmfModelUtils.isComponentActive(nt) && !EmfModelUtils.computeCheckElementValue("ACTIVATE", nt)){
+              continue;
+           }
+           String componentName = nt.getComponentName();
+           if ("tRouteInput".equals(componentName)) {
+              return true;
+           }
+       }
+       return false;
     }
 
     private boolean isShowBuildType() {

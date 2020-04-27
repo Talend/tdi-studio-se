@@ -12,10 +12,10 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>{@link org.talend.designer.dbmap.model.emf.dbmap.OutputTable#getFilterEntries <em>Filter Entries</em>}</li>
- * </ul>
  * </p>
+ * <ul>
+ *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.OutputTable#getFilterEntries <em>Filter Entries</em>}</li>
+ * </ul>
  *
  * @see org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage#getOutputTable()
  * @model
@@ -24,14 +24,14 @@ import org.eclipse.emf.common.util.EList;
 public interface OutputTable extends AbstaceDBInOutTable {
 
     /**
-     * Returns the value of the '<em><b>Filter Entries</b></em>' containment reference list. The list contents are of
-     * type {@link org.talend.designer.dbmap.model.emf.dbmap.FilterEntry}. <!-- begin-user-doc -->
+     * Returns the value of the '<em><b>Filter Entries</b></em>' containment reference list.
+     * The list contents are of type {@link org.talend.designer.dbmap.model.emf.dbmap.FilterEntry}.
+     * <!-- begin-user-doc -->
      * <p>
      * If the meaning of the '<em>Filter Entries</em>' containment reference list isn't clear, there really should be
      * more of a description here...
      * </p>
      * <!-- end-user-doc -->
-     * 
      * @return the value of the '<em>Filter Entries</em>' containment reference list.
      * @see org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage#getOutputTable_FilterEntries()
      * @model containment="true"

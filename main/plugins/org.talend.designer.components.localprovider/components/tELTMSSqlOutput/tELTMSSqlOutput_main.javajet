@@ -77,6 +77,7 @@ imports="
 	    boolean useExistingConn = false;
 	    String dbproperties = null;
 	    String driver = "JTDS";
+        boolean useActiveDirectoryAuth = false;
         if(previousNode != null) {
 	        dbhost = ElementParameterParser.getValue(previousNode, "__HOST__");
 	        dbport = ElementParameterParser.getValue(previousNode, "__PORT__");
@@ -85,6 +86,7 @@ imports="
 	    	useExistingConn = ("true").equals(ElementParameterParser.getValue(previousNode, "__USE_EXISTING_CONNECTION__"));
 	    	dbproperties = ElementParameterParser.getValue(previousNode, "__PROPERTIES__");
 	    	driver = ElementParameterParser.getValue(previousNode, "__DRIVER__");
+            useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(previousNode, "__ACTIVE_DIR_AUTH__"));
         }
 
         String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
@@ -129,6 +131,14 @@ if(useExistingConn) {
     	url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
     	<%}%>
     }
+<%
+    if (driver.equals("MSSQL_PROP") && useActiveDirectoryAuth) {
+%>
+        url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+        url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+    }
+%>
     url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
     String dbUser_<%=cid %> = <%=dbuser%>;
 

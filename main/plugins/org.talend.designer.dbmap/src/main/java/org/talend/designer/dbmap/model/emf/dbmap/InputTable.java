@@ -14,11 +14,11 @@ package org.talend.designer.dbmap.model.emf.dbmap;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.InputTable#getJoinType <em>Join Type</em>}</li>
  *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.InputTable#getAlias <em>Alias</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage#getInputTable()
  * @model

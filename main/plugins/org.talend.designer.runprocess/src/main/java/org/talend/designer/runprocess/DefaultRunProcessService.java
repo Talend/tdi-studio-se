@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -104,7 +103,6 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.constants.Log4jPrefsConstants;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JarBuilder;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -994,6 +992,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     @Override
     public boolean isSelectLog4j2() {
         return Log4jPrefsSettingManager.getInstance().isSelectLog4j2();
+    }
+
+    @Override
+    public boolean isCIMode() {
+        return ProcessorUtilities.isCIMode();
     }
 
 }

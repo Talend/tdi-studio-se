@@ -776,6 +776,8 @@ class DatabaseTypeFilter extends ViewerFilter {
                         databaseType = EDatabaseTypeName.ORACLE_OCI.getXmlName();
                     } else if (databaseType.equals(EDatabaseTypeName.MSSQL.getDisplayName())) {
                         databaseType = EDatabaseTypeName.MSSQL.getXmlName(); // for component
+                    } else if (databaseType.equals(EDatabaseTypeName.REDSHIFT_SSO.getDisplayName())) {
+                        databaseType = EDatabaseTypeName.REDSHIFT_SSO.getXmlName(); // for component
                     } else {
                         databaseType = EDatabaseTypeName.getTypeFromDbType(databaseType).getProduct();
                     }

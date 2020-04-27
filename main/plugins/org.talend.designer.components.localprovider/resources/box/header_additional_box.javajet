@@ -158,6 +158,21 @@ if(hasBox){
 
         return folder;
     }
+
+	private static com.box.boxjavalibv2.dao.BoxItem getBoxItemRecursively(List<String> pathItems, com.box.boxjavalibv2.dao.BoxItem item, com.box.boxjavalibv2.BoxClient client) throws Exception {
+		if (pathItems.isEmpty()) {
+			return item;
+		} else {
+			String itemName = pathItems.remove(0);
+			com.box.boxjavalibv2.dao.BoxFolder folder = (com.box.boxjavalibv2.dao.BoxFolder) item;
+			for (com.box.boxjavalibv2.dao.BoxTypedObject obj : folder.getItemCollection().getEntries()) {
+				if (obj.getValue("name").equals(itemName)) {
+					return getBoxItemRecursively(pathItems, client.getBoxItemsManager().getItem(obj.getId(), null, com.box.boxjavalibv2.dao.BoxResourceType.valueOf(obj.getType().toUpperCase())), client);
+				}
+			}
+			throw new Exception("The item " + itemName + " was not found in the directory " + folder.getName());
+		}
+	}
 	
 	private java.util.List<com.box.boxjavalibv2.dao.BoxItem> getChildrenRecursively(com.box.boxjavalibv2.BoxClient client, com.box.boxjavalibv2.dao.BoxFolder folder,
 					 java.util.List<com.box.boxjavalibv2.dao.BoxItem> list, boolean withFolders, boolean withFiles) throws Exception

@@ -17,40 +17,40 @@ imports="
 		CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 		INode node = (INode)codeGenArgument.getArgument();
 		String cid = node.getUniqueName();
-		
+
 		String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 		String accessToken = ElementParameterParser.getValue(node, "__ACCESS_TOKEN__");
 		String refreshToken = ElementParameterParser.getValue(node, "__REFRESH_TOKEN__");
-		
+
 		String clientId = ElementParameterParser.getValue(node, "__CLIENT_ID__");
 		String clientSecret = ElementParameterParser.getValue(node, "__CLIENT_SECRET__");
-		
+
 		String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	    String connectionKey = "\"conn_" + connection+"\"";
-		
+
 		String path = ElementParameterParser.getValue(node, "__PATH__");
 		String filelistType = ElementParameterParser.getValue(node, "__LIST_MODE__");
 		boolean includeSubDirectories = "true".equals(ElementParameterParser.getValue(node, "__INCLUDSUBDIR__"));
-		
+
 		final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 				log4jFileUtil.componentStartInfo(node);
-		
+
 		List<IMetadataTable> metadatas = node.getMetadataList();
 		IMetadataTable metadata = null;
 		if ((metadatas!=null)&&(metadatas.size()>0)) {
-			metadata = metadatas.get(0);    
+			metadata = metadatas.get(0);
 	    }
-		
+
 		List< ? extends IConnection> outputConnections = node.getOutgoingSortedConnections();
-		
-        String dataOutputConnection = null;	
+
+        String dataOutputConnection = null;
 	    for(IConnection conn : outputConnections) {
 	        if(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
 	        	dataOutputConnection = conn.getName();
 	        	break;
 	        } // if(conn) end
 	    } // for(conns) end
-		
+
 %>
 <%
 if(!"true".equals(useExistingConn)){
@@ -105,115 +105,81 @@ if(!"true".equals(useExistingConn)){
     <%=cid%>_client.authenticate(new com.box.boxjavalibv2.dao.BoxOAuthToken(<%=cid%>_map));
 }
 <%
-	} else {
+} else {
 %>
 	com.box.boxjavalibv2.BoxClient <%=cid%>_client = (com.box.boxjavalibv2.BoxClient)globalMap.get(<%=connectionKey%>);
 <%
 }
 %>
 	String <%=cid%>_path = normalizePath(<%=path%>);
-	boolean <%=cid%>_hasError = false;
-	String <%=cid%>_name = getFolderFromPath(<%=cid%>_path);
-	com.box.boxjavalibv2.dao.BoxFile <%=cid%>_boxFile = null;
-	com.box.boxjavalibv2.dao.BoxFolder <%=cid%>_boxFolder = null;
-	if ((<%=cid%>_name.equals("All Files") && (<%=cid%>_path.isEmpty() || <%=cid%>_path == null)))
-	{
-		<%=cid%>_boxFolder = <%=cid%>_client.getFoldersManager().getFolder("0",null);	
-	}
-	else
-	{
-		com.box.restclientv2.requestsbase.BoxDefaultRequestObject <%=cid%>_requestObject = new com.box.restclientv2.requestsbase.BoxDefaultRequestObject();
-			if (<%=cid%>_name.equals("All Files") || <%=cid%>_path.equals("All Files"))
-			{
-				<%=cid%>_boxFolder = <%=cid%>_client.getFoldersManager().getFolder("0", null);
-			}
-			else
-			{
-                String parentPath = normalizePath(<%=cid%>_path.replace(<%=cid%>_name, ""));
-                
-                <%=cid%>_boxFolder = <%=cid%>_client.getFoldersManager().getFolder("0", <%=cid%>_requestObject);
-                
-                if ("All Files".equals(parentPath)) {
-                    
-                    for (com.box.boxjavalibv2.dao.BoxTypedObject <%=cid%>_boxTypedObject : <%=cid%>_boxFolder.getItemCollection().getEntries()) {
-                        if (<%=cid%>_boxTypedObject.getValue("name").equals(<%=cid%>_name)) {
-                            if ("folder".equals(<%=cid%>_boxTypedObject.getType())) {
-                                <%=cid%>_boxFolder = <%=cid%>_client.getFoldersManager().getFolder(<%=cid%>_boxTypedObject.getId(), <%=cid%>_requestObject);
-                            } else {
-                                <%=cid%>_boxFile = <%=cid%>_client.getFilesManager().getFile(<%=cid%>_boxTypedObject.getId(),<%=cid%>_requestObject);
-                            }
-                        }
-                    }
+	com.box.boxjavalibv2.dao.BoxFolder <%=cid%>_rootFolder = <%=cid%>_client.getFoldersManager().getFolder("0", null);
+	com.box.boxjavalibv2.dao.BoxItem <%=cid%>_boxItem;
 
-                } else {
-
-                    List<String> <%=cid%>_paths = new java.util.ArrayList<String>(java.util.Arrays.asList(parentPath.split("/")));
-
-                    <%=cid%>_boxFolder = getBoxFolderRecursively(<%=cid%>_paths, <%=cid%>_boxFolder, <%=cid%>_client);
-                }
-			}
-	}
-
-	if (<%=cid%>_boxFile == null && <%=cid%>_boxFolder == null)
-	{
-		throw new Exception("<%=cid%> - " + "No file or directory found in " + <%=path%>);
-	}
-	else if (<%=cid%>_boxFolder != null)
-	{
-		java.util.List<com.box.boxjavalibv2.dao.BoxItem>  <%=cid%>_children = new java.util.ArrayList<com.box.boxjavalibv2.dao.BoxItem>();
-<%if(includeSubDirectories){%>
-	<%if(filelistType.equalsIgnoreCase("Directories")){%>
-		<%=cid%>_children = getChildrenRecursively(<%=cid%>_client, <%=cid%>_boxFolder, <%=cid%>_children, true, false);
-	<%} else if (filelistType.equalsIgnoreCase("Files")){%>		
-		<%=cid%>_children = getChildrenRecursively(<%=cid%>_client, <%=cid%>_boxFolder, <%=cid%>_children, false, true);
-	<%} else {%>
-		<%=cid%>_children = getChildrenRecursively(<%=cid%>_client, <%=cid%>_boxFolder, <%=cid%>_children, true, true);
-	<%}%>
-<%}%>
-<%else{%>
-		for (com.box.boxjavalibv2.dao.BoxTypedObject obj : <%=cid%>_boxFolder.getItemCollection().getEntries())
-		{
-	<%if(filelistType.equalsIgnoreCase("Directories")){%>
-			if(obj.getType().equals("folder"))
-			{
-				com.box.boxjavalibv2.dao.BoxFolder folder = <%=cid%>_client.getFoldersManager().getFolder(obj.getId(), null);
-				<%=cid%>_children.add(folder);
-			}
-	<%} else if (filelistType.equalsIgnoreCase("Files")){%>
-			if (obj.getType().equals("file"))
-			{
-				com.box.boxjavalibv2.dao.BoxFile file = <%=cid%>_client.getFilesManager().getFile(obj.getId(), null);
-				<%=cid%>_children.add(file);
-			}
-	<%} else {%>
-			if(obj.getType().equals("folder"))
-			{
-				com.box.boxjavalibv2.dao.BoxFolder folder = <%=cid%>_client.getFoldersManager().getFolder(obj.getId(), null);
-				<%=cid%>_children.add(folder);
-			}
-			else if (obj.getType().equals("file"))
-			{
-				com.box.boxjavalibv2.dao.BoxFile file = <%=cid%>_client.getFilesManager().getFile(obj.getId(), null);
-				<%=cid%>_children.add(file);
-			}
-	<%}%>
-			
-			
+	int <%=cid%>_slashPosition = <%=cid%>_path.indexOf("/");
+	String <%=cid%>_rootFolderName = <%=cid%>_slashPosition == -1 ? <%=cid%>_path : <%=cid%>_path.substring(0, <%=cid%>_slashPosition);
+	if (<%=cid%>_rootFolderName.equals("All Files")) {
+		List<String> <%=cid%>_pathItems = new java.util.ArrayList<String>(java.util.Arrays.asList(<%=cid%>_path.split("/")));
+		<%=cid%>_pathItems.remove(0);
+		try {
+			<%=cid%>_boxItem = getBoxItemRecursively(<%=cid%>_pathItems, <%=cid%>_rootFolder, <%=cid%>_client);
+		} catch (Exception e) {
+			throw new Exception("<%=cid%> - " + "The path to file or directory was not found in " + <%=cid%>_path, e);
 		}
-<%}%>
-		
-		for (com.box.boxjavalibv2.dao.BoxItem <%=cid%>_item : <%=cid%>_children)
-		{
-			String <%=cid%>_itemPath = getBoxItemPath(<%=cid%>_item);
-			globalMap.put("<%=cid%>_NAME", <%=cid%>_item.getName());
-			globalMap.put("<%=cid%>_ID", <%=cid%>_item.getId());
-			globalMap.put("<%=cid%>_FILE_PATH", <%=cid%>_itemPath);
-			globalMap.put("<%=cid%>_FILE_DIRECTORY", <%=cid%>_itemPath + <%=cid%>_item.getName());
-			globalMap.put("<%=cid%>_TYPE",<%=cid%>_item.getType());
-			globalMap.put("<%=cid%>_LAST_MODIFIED", <%=cid%>_item.getModifiedAt());
-			globalMap.put("<%=cid%>_SIZE", <%=cid%>_item.getSize());
-	
-		
-		
-			
-			
+	} else {
+		throw new Exception("<%=cid%> - " + "The path to file or directory was not found in " + <%=cid%>_path);
+	}
+
+	java.util.List<com.box.boxjavalibv2.dao.BoxItem>  <%=cid%>_items = new java.util.ArrayList<>();
+	if (<%=cid%>_boxItem.getType().equals("folder")) {
+		com.box.boxjavalibv2.dao.BoxFolder <%=cid%>_boxFolder = (com.box.boxjavalibv2.dao.BoxFolder) <%=cid%>_boxItem;
+		<%if(includeSubDirectories) {%>
+			<%if(filelistType.equalsIgnoreCase("Directories")) {%>
+				<%=cid%>_items = getChildrenRecursively(<%=cid%>_client, <%=cid%>_boxFolder, <%=cid%>_items, true, false);
+			<%} else if (filelistType.equalsIgnoreCase("Files")) {%>
+				<%=cid%>_items = getChildrenRecursively(<%=cid%>_client, <%=cid%>_boxFolder, <%=cid%>_items, false, true);
+			<%} else {%>
+				<%=cid%>_items = getChildrenRecursively(<%=cid%>_client, <%=cid%>_boxFolder, <%=cid%>_items, true, true);
+			<%}%>
+		<%} else {%>
+			for (com.box.boxjavalibv2.dao.BoxTypedObject obj : <%=cid%>_boxFolder.getItemCollection().getEntries())
+			{
+				<%if(filelistType.equalsIgnoreCase("Directories")) {%>
+						if(obj.getType().equals("folder"))
+						{
+							com.box.boxjavalibv2.dao.BoxFolder folder = <%=cid%>_client.getFoldersManager().getFolder(obj.getId(), null);
+							<%=cid%>_items.add(folder);
+						}
+				<%} else if (filelistType.equalsIgnoreCase("Files")) {%>
+						if (obj.getType().equals("file"))
+						{
+							com.box.boxjavalibv2.dao.BoxFile file = <%=cid%>_client.getFilesManager().getFile(obj.getId(), null);
+							<%=cid%>_items.add(file);
+						}
+				<%} else {%>
+						if(obj.getType().equals("folder"))
+						{
+							com.box.boxjavalibv2.dao.BoxFolder folder = <%=cid%>_client.getFoldersManager().getFolder(obj.getId(), null);
+							<%=cid%>_items.add(folder);
+						}
+						else if (obj.getType().equals("file"))
+						{
+							com.box.boxjavalibv2.dao.BoxFile file = <%=cid%>_client.getFilesManager().getFile(obj.getId(), null);
+							<%=cid%>_items.add(file);
+						}
+				<%}%>
+			}
+		<%}%>
+	} else if (<%=cid%>_boxItem.getType().equals("file")) {
+		com.box.boxjavalibv2.dao.BoxFile <%=cid%>_boxFile = (com.box.boxjavalibv2.dao.BoxFile) <%=cid%>_boxItem;
+		<%=cid%>_items.add(<%=cid%>_boxFile);
+	}
+
+	for (com.box.boxjavalibv2.dao.BoxItem <%=cid%>_item : <%=cid%>_items) {
+		String <%=cid%>_itemPath = getBoxItemPath(<%=cid%>_item);
+		globalMap.put("<%=cid%>_NAME", <%=cid%>_item.getName());
+		globalMap.put("<%=cid%>_ID", <%=cid%>_item.getId());
+		globalMap.put("<%=cid%>_FILE_PATH", <%=cid%>_itemPath);
+		globalMap.put("<%=cid%>_FILE_DIRECTORY", <%=cid%>_itemPath + <%=cid%>_item.getName());
+		globalMap.put("<%=cid%>_TYPE",<%=cid%>_item.getType());
+		globalMap.put("<%=cid%>_LAST_MODIFIED", <%=cid%>_item.getModifiedAt());
+		globalMap.put("<%=cid%>_SIZE", <%=cid%>_item.getSize());

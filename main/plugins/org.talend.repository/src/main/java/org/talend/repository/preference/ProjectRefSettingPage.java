@@ -76,6 +76,9 @@ import org.talend.core.model.repository.SVNConstant;
 import org.talend.core.model.utils.RepositoryManagerHelper;
 import org.talend.core.repository.model.ProjectRepositoryNode;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.runtime.projectsetting.IProjectSettingPreferenceConstants;
+import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
 import org.talend.repository.ProjectManager;
@@ -111,6 +114,8 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     private Button removeButton;
 
     private Button addButton;
+    
+    private Button strictButton;
 
     private Project[] allProjects;
 
@@ -165,10 +170,6 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         listGroup.setLayout(new GridLayout(2, false));
         listGroup.setText(Messages.getString("ReferenceProjectSetupPage.ListGroup"));//$NON-NLS-1$
 
-        Group addGroup = new Group(form, SWT.None);
-        addGroup.setLayout(new GridLayout(3, false));
-        addGroup.setText(Messages.getString("ReferenceProjectSetupPage.AddGroup"));//$NON-NLS-1$
-
         viewer = new ListViewer(listGroup, SWT.H_SCROLL | SWT.V_SCROLL);
         viewer.setLabelProvider(new ReferenceProjectLabelProvider());
         viewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -200,12 +201,21 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
                 removeProjectReference();
             }
         });
+        
+        Group addGroup = new Group(form, SWT.None);
+        addGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
+        addGroup.setLayout(new GridLayout(1, false));
+        addGroup.setText(Messages.getString("ReferenceProjectSetupPage.AddGroup"));//$NON-NLS-1$
+        
+        Composite addCom = new Composite(addGroup, SWT.NULL);
+        addCom.setLayout(new GridLayout(3, false));
+        addCom.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        Label projectLabel = new Label(addGroup, SWT.None);
+        Label projectLabel = new Label(addCom, SWT.None);
         projectLabel.setLayoutData(new GridData());
         projectLabel.setText(Messages.getString("ReferenceProjectSetupPage.LabelProject"));//$NON-NLS-1$
 
-        projectCombo = new Combo(addGroup, SWT.BORDER);
+        projectCombo = new Combo(addCom, SWT.BORDER);
         projectCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         projectCombo.setEnabled(false);
         projectCombo.addSelectionListener(new SelectionAdapter() {
@@ -222,7 +232,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
                 updateAddButtonStatus();
             }
         });
-        Button refreshButton = new Button(addGroup, SWT.None);
+        Button refreshButton = new Button(addCom, SWT.None);
         refreshButton.setLayoutData(new GridData());
         refreshButton.setEnabled(!isReadOnly);
         refreshButton.setImage(ImageProvider.getImage(EImage.REFRESH_ICON));
@@ -236,11 +246,11 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
             }
         });
 
-        Label branchLabel = new Label(addGroup, SWT.None);
+        Label branchLabel = new Label(addCom, SWT.None);
         branchLabel.setLayoutData(new GridData());
         branchLabel.setText(Messages.getString("ReferenceProjectSetupPage.LabelBranch"));//$NON-NLS-1$
 
-        branchCombo = new Combo(addGroup, SWT.BORDER);
+        branchCombo = new Combo(addCom, SWT.BORDER);
         branchCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         branchCombo.setEnabled(false);
         branchCombo.addSelectionListener(new SelectionAdapter() {
@@ -252,7 +262,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
             }
         });
 
-        addButton = new Button(addGroup, SWT.None);
+        addButton = new Button(addCom, SWT.None);
         addButton.setLayoutData(new GridData());
         addButton.setImage(ImageProvider.getImage(EImage.ADD_ICON));
         addButton.setToolTipText(Messages.getString("ReferenceProjectSetupPage.ButtonTooltipAdd")); //$NON-NLS-1$
@@ -264,6 +274,22 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
                 addProjectReference();
             }
         });
+        
+        Composite strCom = new Composite(addGroup, SWT.NULL);
+        GridLayout layout = new GridLayout(1, false);
+        strCom.setLayout(layout);
+        
+        strictButton = new Button(strCom, SWT.CHECK);
+        strictButton.setLayoutData(new GridData());
+        strictButton.setText(Messages.getString("ReferenceProjectSetupPage.ButtonTooltipStrict")); //$NON-NLS-1$
+        boolean strict = false;
+        ProjectPreferenceManager projectPreferenceManager = CoreRuntimePlugin.getInstance()
+                .getProjectPreferenceManager();
+        if(projectPreferenceManager != null) {
+            strict = projectPreferenceManager.getBoolean(
+                    IProjectSettingPreferenceConstants.USE_STRICT_REFERENCE_JOBLET);
+        }
+        strictButton.setSelection(strict);
 
         form.setWeights(new int[] { 1, 1 });
 
@@ -572,6 +598,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
             if (!validate()) {
                 return false;
             }
+            
             if (checkOtherEditorsOpened()) {
                 return false;
             }
@@ -634,6 +661,15 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
             repositoryWorkUnit.setForceTransaction(true);
             ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(repositoryWorkUnit);
         }
+        
+        ProjectPreferenceManager projectPreferenceManager = CoreRuntimePlugin.getInstance()
+                .getProjectPreferenceManager();
+        if(projectPreferenceManager != null && strictButton != null) {
+            projectPreferenceManager.setValue(IProjectSettingPreferenceConstants.USE_STRICT_REFERENCE_JOBLET, 
+                    strictButton.getSelection());
+            projectPreferenceManager.save();
+        }
+        
         if (errorException != null) {
             return false;
         }

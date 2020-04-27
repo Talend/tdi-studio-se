@@ -15,6 +15,7 @@ package org.talend.repository.ui.processor;
 import org.eclipse.jface.viewers.Viewer;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
+import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -229,7 +230,10 @@ public class RepositoryTypeProcessor extends SingleTypeProcessor {
                     if (hidenTypeSelection) {
                         return true;
                     }
-                    if (!MetadataTalendType.sameDBProductType(neededDbType, currentDbType)) {
+                    
+                    String currentXmlType = EDatabaseTypeName.getTypeFromDbType(currentDbType).getXMLType();
+					if (!MetadataTalendType.sameDBProductType(neededDbType, currentDbType)
+							&& !MetadataTalendType.sameDBProductType(neededDbType, currentXmlType)) {
                         return false;
                     }
                     if(isGeneric && connection.getCompProperties() == null){

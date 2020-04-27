@@ -54,4 +54,3 @@ imports="
 
 	globalMap.put("schema_" + "<%=cid%>",<%=dbschema%>);
 
-	globalMap.put("conn_" + "<%=cid%>",conn_<%=cid%>);

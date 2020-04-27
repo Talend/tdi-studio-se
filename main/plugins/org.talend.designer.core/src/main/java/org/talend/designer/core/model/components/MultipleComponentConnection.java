@@ -31,9 +31,20 @@ public class MultipleComponentConnection implements IMultipleComponentConnection
 
     String connectionType;
 
+    String connectorName;
+
     public MultipleComponentConnection(String cType, String targetName) {
         connectionType = cType;
         nameTarget = targetName;
+        connectorName = cType;
+    }
+
+    public String getConnectorName() {
+        return connectorName;
+    }
+
+    public void setConnectorName(String connectorName) {
+        this.connectorName = connectorName;
     }
 
     /*

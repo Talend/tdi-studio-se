@@ -77,17 +77,36 @@ public class MultipleComponentManager implements IMultipleComponentManager {
         return currentItem;
     }
 
+    public void addItem(IMultipleComponentItem currentItem) {
+        String name = currentItem.getName();
+        if (name.equals(inputName)) {
+            input = currentItem;
+        }
+        if (name.equals(outputName)) {
+            output = currentItem;
+        }
+        itemList.add(currentItem);
+    }
+
     /*
      * (non-Javadoc)
      *
      * @see org.talend.core.model.components.IMultipleComponentManager#addParam(java.lang.String, java.lang.String)
      */
     public void addParam(String source, String target) {
-        paramList.add(new MultipleComponentParameter(source, target));
+        paramList.add(createMultiCompParam(source, target));
     }
 
     public void addValue(String target, String value) {
-        paramList.add(new MultipleComponentParameterValue(target, value));
+        paramList.add(createMultiCompParamValue(target, value));
+    }
+
+    protected IMultipleComponentParameter createMultiCompParam(String target, String value) {
+        return new MultipleComponentParameter(target, value, getParamSeperator());
+    }
+
+    protected IMultipleComponentParameter createMultiCompParamValue(String target, String value) {
+        return new MultipleComponentParameterValue(target, value, getParamSeperator());
     }
 
     public void validateItems() {
@@ -168,6 +187,11 @@ public class MultipleComponentManager implements IMultipleComponentManager {
      */
     public boolean isLookupMode() {
         return this.lookupMode;
+    }
+
+    @Override
+    public String getParamSeperator() {
+        return ".";
     }
 
 }

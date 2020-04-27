@@ -23,6 +23,7 @@ String dbuser = ElementParameterParser.getValue(node, "__USER__");
 
 String spName = ElementParameterParser.getValue(node, "__SP_NAME__");
 boolean isFunction = ("true").equals(ElementParameterParser.getValue(node, "__IS_FUNCTION__"));
+boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 
 List<Map<String, String>> spArgs = (List<Map<String,String>>) ElementParameterParser.getObjectValue(node, "__SP_ARGS__");
 %>

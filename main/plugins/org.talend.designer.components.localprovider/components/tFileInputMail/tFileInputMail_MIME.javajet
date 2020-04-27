@@ -216,12 +216,11 @@
                         if(!path.endsWith("/")){
                             path = path + "/";
                         }
-                        path = path + attachFileName;
-                        <% if(isLog4jEnabled){ %>
-                                log.info("<%= cid %> - Extracted attachment: '" + attachFileName + "'.");
-                        <% } %>
 
-                        java.io.File attachFile = new java.io.File(path);
+                        java.io.File attachFile = getUniqueFileName(attachFileName,new java.io.File(path));
+						                        <% if(isLog4jEnabled){ %>
+                                log.info("<%= cid %> - Extracted attachment: '" + attachFile.getName() + "'.");
+                        <% } %>
                         java.io.BufferedOutputStream out = new java.io.BufferedOutputStream(new java.io.FileOutputStream(attachFile));
                         java.io.BufferedInputStream in = new java.io.BufferedInputStream(mpart.getInputStream());
                         int buffer = 0;
@@ -233,6 +232,30 @@
                         in.close();
                     }
                 }
+				
+				private java.io.File getUniqueFileName(String fileName,  java.io.File dir){
+
+							int num = 1;
+							final String ext = getFileExtension(fileName);
+							final String name = getFileName(fileName);
+							java.io.File file = new java.io.File(dir, fileName);
+							while (file.exists()) {
+								num++;
+								file = new java.io.File(dir, name + "_" + num + ext);
+							}
+							return file;
+				}
+
+				private  String getFileExtension(final String path) {
+							if (path != null && path.lastIndexOf('.') != -1) {
+								return path.substring(path.lastIndexOf('.'));
+							}
+							return null;
+				}
+
+				private  String getFileName(String fileName) {
+							return fileName.substring(0, fileName.lastIndexOf('.'));
+				}
 
                 // recursively process body parts
                 void processPart(javax.mail.Part part) throws javax.mail.MessagingException, IOException {

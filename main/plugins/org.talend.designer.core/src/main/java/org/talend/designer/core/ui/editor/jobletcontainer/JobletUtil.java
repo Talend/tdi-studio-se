@@ -47,6 +47,9 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.editor.RepositoryEditorInput;
+import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.runtime.projectsetting.IProjectSettingPreferenceConstants;
+import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.services.ISVNProviderService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -98,6 +101,15 @@ public class JobletUtil {
             }
         }
         return false;
+    }
+    
+    public boolean isStrictJoblet() {
+        ProjectPreferenceManager projectPreferenceManager = CoreRuntimePlugin.getInstance()
+                .getProjectPreferenceManager();
+        if(projectPreferenceManager == null) {
+            return false;
+        }
+        return projectPreferenceManager.getBoolean(IProjectSettingPreferenceConstants.USE_STRICT_REFERENCE_JOBLET);
     }
 
     public List<INodeConnector> createConnectors(INode node, IProcess2 process) {

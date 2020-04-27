@@ -1,0 +1,119 @@
+<%@ jet 
+imports="
+			org.talend.core.model.process.INode 
+			org.talend.core.model.process.ElementParameterParser 
+			org.talend.designer.codegen.config.CodeGeneratorArgument
+		" 
+%>
+<%@ include file="../templates/DB/Row/HelpClass.javajet"%>
+<%
+
+	class DBRowBeginUtil extends DefaultDBRowUtil{
+	
+		private String driver;
+        private boolean useActiveDirectoryAuth = false;
+	
+		public void beforeComponentProcess(INode node){
+			super.beforeComponentProcess(node);
+			cid = node.getUniqueName();
+			this.driver = ElementParameterParser.getValue(node, "__DRIVER__");
+            this.useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
+	    }
+	    
+	    public void afterUseExistConnection(INode node) {
+	    	super.afterUseExistConnection(node);
+	    	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+			String conn = "conn_" + connection;
+			String schema = "dbschema_" + connection;
+			INode connectionNode = null; 
+			for (INode processNode : node.getProcess().getGeneratingNodes()) { 
+				if(connection.equals(processNode.getUniqueName())) { 
+					connectionNode = processNode; 
+					break; 
+				} 
+			}
+			driver = ElementParameterParser.getValue(connectionNode,"__DRIVER__");
+	    }
+	    
+		public void setURL(INode node) {
+		%>
+			String port_<%=cid%> = <%=dbport%>;
+		    String dbname_<%=cid%> = <%=dbname%> ;
+		    <%
+			if(driver.equals("JTDS")) {
+			%>
+			String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ;
+			<%
+			} else {
+			%>		    
+		    String url_<%=cid %> = "jdbc:sqlserver://" + <%=dbhost%> ;
+			<%
+			}
+			%>
+		    if (!"".equals(port_<%=cid%>)) {
+		    	url_<%=cid %> += ":" + <%=dbport%>;
+		    }
+		    if (!"".equals(dbname_<%=cid%>)) {
+		   	<%
+				if(driver.equals("JTDS")) {
+			%>
+				url_<%=cid%> += "//" + <%=dbname%>; 
+			<%
+				} else {
+			%>
+		    	url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
+			<%
+				}
+			%>
+		    }
+<%
+            if (useActiveDirectoryAuth) {
+%>
+                url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+                url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+            }
+%>
+		    url_<%=cid%> += ";applicationName=Talend;" + <%=dbproperties%>;
+		<%
+		}
+		
+		public String getDirverClassName(INode node){
+			if(driver.equals("JTDS")) {
+				return "net.sourceforge.jtds.jdbc.Driver";
+			}
+			return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+		}
+		
+		public void afterConnection(INode node){
+			String identityInsert = ElementParameterParser.getValue(node, "__IDENTITY_INSERT__");
+		    if(("true").equals(identityInsert)) {	
+	    		String tableName = ElementParameterParser.getValue(node,"__TABLE__");
+				boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+				if(useExistingConnection) {
+					String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+					String schema = "dbschema_" + connection;
+					%>
+					String dbschema_<%=cid%> = (String)globalMap.get("<%=schema%>");
+				<%
+				} else {
+					String dbschema = ElementParameterParser.getValue(node, "__DB_SCHEMA__");
+				    %>
+					String dbschema_<%=cid%> = <%=dbschema%>;
+	    		<%
+	    		}
+				%>
+		        String  tableName_<%=cid%> = null;
+		        if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
+		            tableName_<%=cid%> = "[" + <%=tableName%> + "]";
+		        } else {
+		            tableName_<%=cid%> = "[" + dbschema_<%=cid%> + "].[" + <%=tableName%> + "]";
+		        }
+		        stmt_<%=cid %>.execute("SET IDENTITY_INSERT "+ tableName_<%=cid%> +" ON");
+			<%
+		    }
+		}
+	}
+	dbRowBeginUtil = new DBRowBeginUtil();
+%>
+<%@ include file="../templates/DB/Row/AbstractDBRowBegin.javajet"%>

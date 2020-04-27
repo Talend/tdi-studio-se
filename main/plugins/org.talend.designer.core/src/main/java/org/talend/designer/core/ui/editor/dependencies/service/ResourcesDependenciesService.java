@@ -38,6 +38,7 @@ import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.resources.ResourceItem;
+import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.service.IResourcesDependenciesService;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
@@ -45,6 +46,7 @@ import org.talend.designer.core.ui.editor.dependencies.dialog.DependenciesResour
 import org.talend.designer.core.ui.editor.dependencies.model.JobResourceDependencyModel;
 import org.talend.designer.core.ui.editor.dependencies.util.ResourceDependenciesUtil;
 import org.talend.designer.maven.tools.BuildCacheManager;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
 
 public class ResourcesDependenciesService implements IResourcesDependenciesService {
@@ -89,12 +91,12 @@ public class ResourcesDependenciesService implements IResourcesDependenciesServi
                     if (repoObject != null) {
                         JobResourceDependencyModel model = new JobResourceDependencyModel(
                                 (ResourceItem) repoObject.getProperty().getItem());
-                        StringBuffer joblabel = new StringBuffer();
-                        if (StringUtils.isNotBlank(property.getItem().getState().getPath())) {
-                            joblabel.append(property.getItem().getState().getPath() + "/");
+                        String jobLabel = JavaResourcesHelper.getJobFolderName(property.getLabel(), property.getVersion());
+                        if (ProcessorUtilities.isExportConfig()) {
+                            resPath = ResourceDependenciesUtil.getResourcePath(model, jobLabel, parts[1]);
+                        }else {
+                            resPath = ResourceDependenciesUtil.getJobExecuteResourceFilePath(model, property, jobLabel, parts[1]);
                         }
-                        joblabel.append(property.getLabel() + "_" + property.getVersion());
-                        resPath = ResourceDependenciesUtil.getResourcePath(model, joblabel.toString(), parts[1]);
                         // to check if file exist, if not copy it
                         ResourceDependenciesUtil.copyToExtResourceFolder(model, property.getId(), property.getVersion(), parts[1],
                                 null);
