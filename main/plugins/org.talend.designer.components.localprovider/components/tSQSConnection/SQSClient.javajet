@@ -140,7 +140,7 @@
 	        		for(int tagInfoListIndex = 0; tagInfoListIndex < tagInfoListSize; tagInfoListIndex++){
 	        			String tagKey = tagInfoList.get(tagInfoListIndex).get("TAG_KEY");
 	        			String tagValue = tagInfoList.get(tagInfoListIndex).get("TAG_VALUE");
-	        			boolean tagTransitive = tagInfoList.get(tagInfoListIndex).get("TAG_TRANSITIVE");
+	        			String tagTransitive = tagInfoList.get(tagInfoListIndex).get("TAG_TRANSITIVE");
 	        %>
 	        			tagList_<%=cid%>.add(new com.amazonaws.services.securitytoken.model.Tag().withKey(<%=tagKey%>).withValue(<%=tagValue%>));
 	       	<%
