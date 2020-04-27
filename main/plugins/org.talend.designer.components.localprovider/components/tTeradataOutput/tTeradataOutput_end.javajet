@@ -26,7 +26,7 @@ imports="
     String useBatchSize = ElementParameterParser.getValue(node, "__USE_BATCH_SIZE__");
     boolean setAutoCommit = false;
     String useBatchAndUseConn = ElementParameterParser.getValue(node,"__USE_BATCH_AND_USE_CONN__");
-    boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
     String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 

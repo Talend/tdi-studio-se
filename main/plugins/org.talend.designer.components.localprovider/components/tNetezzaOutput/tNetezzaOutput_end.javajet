@@ -30,7 +30,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
 	boolean setAutoCommit = false;
-	String useExistingConnection = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 	String tableName = ElementParameterParser.getValue(node,"__TABLE__");
     String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	boolean useBatchSize = ("true").equals(ElementParameterParser.getValue(node,"__USE_BATCH_SIZE__"));
@@ -145,7 +145,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	    %>
     resourceMap.put("statementClosed_<%=cid%>", true);
     <%
-	if(!("true").equals(useExistingConnection))
+	if(!useExistingConnection)
 	{
 		if(!("").equals(commitEvery) && !("0").equals(commitEvery))
 		{

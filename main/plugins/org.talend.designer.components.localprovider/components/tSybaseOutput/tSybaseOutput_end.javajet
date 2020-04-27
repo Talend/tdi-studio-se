@@ -22,7 +22,7 @@ imports="
 
     boolean setAutoCommit = false;
 
-    boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
     String tableName = ElementParameterParser.getValue(node,"__TABLE__");
 

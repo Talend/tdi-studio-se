@@ -22,7 +22,7 @@ imports="
 	
 	boolean setAutoCommit = false;
 
-	String useExistingConnection = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
     String dieOnError = ElementParameterParser.getValue(node,"__DIE_ON_ERROR__");
 
@@ -146,7 +146,7 @@ imports="
     %>
     resourceMap.put("statementClosed_<%=cid%>", true);
     <%
-    if(!("true").equals(useExistingConnection)) {
+    if(!useExistingConnection) {
         %>
         if(conn_<%=cid%> != null && !conn_<%=cid%>.isClosed()) {
             <%

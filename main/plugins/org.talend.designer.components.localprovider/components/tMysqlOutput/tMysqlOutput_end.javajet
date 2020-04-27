@@ -46,7 +46,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	
     boolean setAutoCommit = false;
     
-    boolean useExistingConnection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));;
 
 	boolean extendedInsert = false;
 
