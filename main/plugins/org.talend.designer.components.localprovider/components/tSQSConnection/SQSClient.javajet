@@ -170,7 +170,7 @@
 						<%if(set_signingRegion){%>
 						.withRegion(<%=signingRegion%>)
 						<%}else{%>
-						.withRegion(com.amazonaws.regions.Regions.DEFAULT_REGION)
+						.withRegion(com.amazonaws.regions.Regions.US_EAST_1)
 						<%}%>
 						
 					<%}%>
