@@ -22,7 +22,7 @@ imports="
 	
 	boolean setAutoCommit = false;
 
-	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+	String useExistingConnection = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 
     String dieOnError = ElementParameterParser.getValue(node,"__DIE_ON_ERROR__");
 
@@ -36,7 +36,7 @@ imports="
     }
 
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-    if(useExistingConn) {
+    if(useExistingConnection) {
         List<? extends INode> nodes = process.getNodesOfType("tFirebirdConnection");
         for (INode ne:nodes) {
             if (connection.equals(ne.getUniqueName())) {
@@ -146,7 +146,7 @@ imports="
     %>
     resourceMap.put("statementClosed_<%=cid%>", true);
     <%
-    if(!("true").equals(useExistingConn)) {
+    if(!("true").equals(useExistingConnection)) {
         %>
         if(conn_<%=cid%> != null && !conn_<%=cid%>.isClosed()) {
             <%

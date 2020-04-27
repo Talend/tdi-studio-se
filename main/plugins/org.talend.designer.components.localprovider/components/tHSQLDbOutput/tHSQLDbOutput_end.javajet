@@ -15,7 +15,8 @@ imports="
 	String cid = node.getUniqueName();
 	dbLog = new DBLogUtil(node);
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
-	
+	boolean setAutoCommit = false;
+	boolean useExistingConnection = false;
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
 	
     if(!("").equals(commitEvery)&&!("0").equals(commitEvery)){

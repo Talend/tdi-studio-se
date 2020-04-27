@@ -26,7 +26,7 @@ imports="
     String useBatchSize = ElementParameterParser.getValue(node, "__USE_BATCH_SIZE__");
     boolean setAutoCommit = false;
     String useBatchAndUseConn = ElementParameterParser.getValue(node,"__USE_BATCH_AND_USE_CONN__");
-    boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
     String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 
@@ -42,7 +42,7 @@ imports="
     }
 
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-    if(useExistingConn) {
+    if(useExistingConnection) {
         List<? extends INode> nodes = process.getNodesOfType("tTeradataConnection");
         for (INode ne:nodes) {
             if (connection.equals(ne.getUniqueName())) {
@@ -53,7 +53,7 @@ imports="
     }
 
     boolean useBatch = true;
-    if(useExistingConn){
+    if(useExistingConnection){
         useBatch = (rejectConnName == null)
                        && (
                             ("INSERT").equals(dataAction) || ("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)
@@ -189,7 +189,7 @@ imports="
 %>
     resourceMap.put("statementClosed_<%=cid%>", true);
 <%
-    if(!useExistingConn){
+    if(!useExistingConnection){
         if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
             %>
             if (commitCounter_<%=cid%> > 0) {

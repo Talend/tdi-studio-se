@@ -22,7 +22,7 @@ imports="
 
     boolean setAutoCommit = false;
 
-    boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
     String tableName = ElementParameterParser.getValue(node,"__TABLE__");
 
@@ -41,7 +41,7 @@ imports="
     }
 
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-    if(useExistingConn) {
+    if(useExistingConnection) {
         List<? extends INode> nodes = process.getNodesOfType("tSybaseConnection");
         for (INode ne:nodes) {
             if (connection.equals(ne.getUniqueName())) {
@@ -158,7 +158,7 @@ imports="
         <%
     }
 
-    if(!useExistingConn){
+    if(!useExistingConnection){
         if(!("").equals(commitEvery) && !("0").equals(commitEvery)){
             %>
         if (commitCounter_<%=cid%> > 0) {
