@@ -98,7 +98,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		isSpecifyIdentityKey = false;
 	}
     String identityKey = ElementParameterParser.getValue(node, "__IDENTITY_FIELD__");
-	if(identityInsert && useExistingConnectionection ) {
+	if(identityInsert && useExistingConnection) {
         %>
 		if ( isShareIdentity_<%=cid%> ) {
 			String setIdentityInsertONSQL_<%=cid%> = "SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON";
