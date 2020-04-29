@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.language.ECodeLanguage;
@@ -165,9 +166,19 @@ public class GenericContextUtil {
                 Property property = (Property) namedThing;
                 Object paramValue = property.getStoredValue();
                 if (paramValue != null) {
-                    String newVlue = contextVarMap.get(paramValue.toString());
-                    if (newVlue != null) {
-                        property.setValue(newVlue);
+                    if (GenericTypeUtils.isListStringType(property)) {
+                        List<String> listString = (List<String>) paramValue;
+                        for (int i = 0; i < listString.size(); i++) {
+                            String str = listString.get(i);
+                            if (StringUtils.isNotBlank(str) && contextVarMap.get(str) != null) {
+                                listString.set(i, contextVarMap.get(str));
+                            }
+                        }
+                    } else {
+                        String newVlue = contextVarMap.get(paramValue.toString());
+                        if (newVlue != null) {
+                            property.setValue(newVlue);
+                        }
                     }
                 }
             } else if (namedThing instanceof Properties) {
