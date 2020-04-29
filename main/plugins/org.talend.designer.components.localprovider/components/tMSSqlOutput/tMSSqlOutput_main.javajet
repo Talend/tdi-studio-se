@@ -1305,13 +1305,12 @@ if(incomingConnName != null && columnList != null){
                     <%
                 }
                 %>
-					<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                     insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmtInsert_<%=cid %>.executeUpdate();
 					nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
     			}else{
     				nb_line_<%=cid%>++;
-    				<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
+    				
     				<%dbLog.data().updating(dbLog.var("nb_line"));%>
     			}
                 } catch(java.lang.Exception e) {
@@ -1347,7 +1346,9 @@ if(incomingConnName != null && columnList != null){
                         }
                     }
                     %>
-                }
+                } finally {
+				    <%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
+				}
             <%
 
         } else if (("DELETE").equals(dataAction)) {
