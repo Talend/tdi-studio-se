@@ -45,7 +45,7 @@ import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
-import org.talend.core.model.context.ContextLinkService;
+import org.talend.core.model.context.link.ContextLinkService;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Project;
 import org.talend.core.model.properties.PropertiesPackage;

@@ -18,7 +18,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.core.model.context.ContextLinkService;
+import org.talend.core.model.context.link.ContextLinkService;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 
