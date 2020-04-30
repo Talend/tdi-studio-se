@@ -41,13 +41,13 @@ import org.talend.core.ITDQPatternService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
-import org.talend.core.model.context.ContextLinkService;
-import org.talend.core.model.context.ContextParamLink;
 import org.talend.core.model.context.ContextUtils;
-import org.talend.core.model.context.ItemContextLink;
 import org.talend.core.model.context.JobContext;
 import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.context.JobContextParameter;
+import org.talend.core.model.context.link.ContextLinkService;
+import org.talend.core.model.context.link.ContextParamLink;
+import org.talend.core.model.context.link.ItemContextLink;
 import org.talend.core.model.metadata.IEbcdicConstant;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -88,9 +88,7 @@ import org.talend.core.model.properties.FileItem;
 import org.talend.core.model.properties.GenericSchemaConnectionItem;
 import org.talend.core.model.properties.HeaderFooterConnectionItem;
 import org.talend.core.model.properties.Item;
-import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.LinkRulesItem;
-import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RulesItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -409,7 +407,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         ContextItemParamMap builtInMap = new ContextItemParamMap();
         Set<String> builtInSet = new HashSet<String>();
 
-        Map<ContextItem, Map<String, String>> repositoryRenamedMap = new HashMap<ContextItem, Map<String, String>>();
+        // Map<ContextItem, Map<String, String>> repositoryRenamedMap = ((JobContextManager) contextManager)
+        // .getRepositoryRenamedMap();
+        Map<Item, Map<String, String>> repositoryRenamedMap = new HashMap<Item, Map<String, String>>();
 
         ContextItemParamMap deleteParams = new ContextItemParamMap();
 
@@ -419,7 +419,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
         List<IProcess2> openedProcesses = UpdateManagerUtils.getOpenedProcess();
 
-        Map<ContextItem, Set<String>> existedParams = new HashMap<ContextItem, Set<String>>();
+        Map<Item, Set<String>> existedParams = new HashMap<Item, Set<String>>();
+
+        Map<String, Item> tempItemMap = new HashMap<String, Item>();
         ItemContextLink itemContextLink = null;
         try {
             itemContextLink = ContextLinkService.getInstance().loadContextLink(getProcess().getProperty().getId());
@@ -435,55 +437,29 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     refContextIds.add(source);
                     ContextParamLink paramLink = null;
                     if (itemContextLink != null) {
-                        paramLink = itemContextLink.findContextParamLink(param.getSource(), context.getName(), param.getName());
+                        paramLink = itemContextLink.findContextParamLinkByName(param.getSource(), context.getName(), param.getName());
                     }
-                    ContextItem contextItem = findContextItem(allContextItem, source);
-                    boolean builtin = true;
-                    if (contextItem instanceof ContextItem) {
-                        final ContextType contextType = ContextUtils.getContextTypeByName((ContextItem) contextItem,
-                                context.getName(), true);
-                        if (paramLink != null && contextType != null) {// Compare use UUID
-                            ContextParameterType contextParameterType = ContextUtils.getContextParameterTypeByUUId(contextType,
-                                    paramLink.getId());
-                            if (contextParameterType != null) {
-                                if (!StringUtils.equals(contextParameterType.getName(), paramName)) {
-                                    Map<String, String> renameMap = repositoryRenamedMap.get(contextItem);
-                                    if (renameMap == null) {
-                                        renameMap = new HashMap<String, String>();
-                                        repositoryRenamedMap.put(contextItem, renameMap);
-                                    }
-                                    renameMap.put(contextParameterType.getName(), paramName);
-                                } else {
-                                    ContextItem repositoryContext = (ContextItem) contextItem;
-                                    if (existedParams.get(contextItem) == null) {
-                                        existedParams.put(repositoryContext, new HashSet<String>());
-                                    }
-                                    existedParams.get(repositoryContext).add(paramName);
-                                    if (onlySimpleShow
-                                            || !ContextUtils.samePropertiesForContextParameter(param, contextParameterType)) {
-                                        unsameMap.add(contextItem, paramName);
-                                    }
-                                }
-                                builtin = false;
-                            } else {
-                                // delete context variable
-                                if (ContextUtils.isPropagateContextVariable()) {
-                                    deleteParams.add(contextItem, paramName);
-                                    builtin = false;
-                                }
-                            }
+
+                    Item item = tempItemMap.get(source);
+                    if (item == null) {
+                        item = findContextItem(allContextItem, source);
+                        tempItemMap.put(source, item);
+                    }
+                    if (item != null) {
+                        boolean builtin = true;
+                        final ContextType contextType = ContextUtils.getContextTypeByName(item, context.getName());
+                        builtin = compareContextParameter(item, contextType, param, paramLink, repositoryRenamedMap,
+                                existedParams, unsameMap, deleteParams, onlySimpleShow);
+                        if (!builtin && StringUtils.equals(source, getProcess().getProperty().getId())) {
+                            builtin = true;
                         }
-                    } else if (contextItem instanceof JobletProcessItem) {
-                        builtin = false;
-                    } else if (contextItem instanceof ProcessItem) {
-                        builtin = false;
-                    }
-                    if (builtin) {
-                        // built in
-                        if (contextItem != null) {
-                            builtInMap.add(contextItem, paramName);
-                        } else {
-                            builtInSet.add(paramName);
+                        if (builtin) {
+                            // built in
+                            if (item != null) {
+                                builtInMap.add(item, paramName);
+                            } else {
+                                builtInSet.add(paramName);
+                            }
                         }
                     }
                 }
@@ -575,25 +551,74 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         return contextResults;
     }
 
-    private ContextItem findContextItem(List<ContextItem> allContextItem, String source) {
+    private boolean compareContextParameter(Item contextItem, ContextType contextType, IContextParameter param,
+            ContextParamLink paramLink, Map<Item, Map<String, String>> repositoryRenamedMap, Map<Item, Set<String>> existedParams,
+            ContextItemParamMap unsameMap, ContextItemParamMap deleteParams, boolean onlySimpleShow) {
+        boolean builtin = true;
+        String paramId = getParamId(param, paramLink);
+        if (paramId != null && contextType != null) {// Compare use UUID
+            ContextParameterType contextParameterType = null;
+            contextParameterType = ContextUtils.getContextParameterTypeById(contextType, paramId,
+                    contextItem instanceof ContextItem);
+            String paramName = param.getName();
+            if (contextParameterType != null) {
+                if (!StringUtils.equals(contextParameterType.getName(), paramName)) {
+                    Map<String, String> renameMap = repositoryRenamedMap.get(contextItem);
+                    if (renameMap == null) {
+                        renameMap = new HashMap<String, String>();
+                        repositoryRenamedMap.put(contextItem, renameMap);
+                    }
+                    renameMap.put(contextParameterType.getName(), paramName);
+                } else {
+                    if (existedParams.get(contextItem) == null) {
+                        existedParams.put(contextItem, new HashSet<String>());
+                    }
+                    existedParams.get(contextItem).add(paramName);
+                    if (onlySimpleShow || !ContextUtils.samePropertiesForContextParameter(param, contextParameterType)) {
+                        unsameMap.add(contextItem, paramName);
+                    }
+                }
+                builtin = false;
+            } else {
+                // delete context variable
+                if (ContextUtils.isPropagateContextVariable()) {
+                    deleteParams.add(contextItem, paramName);
+                    builtin = false;
+                }
+            }
+        }
+        return builtin;
+    }
+
+    private static String getParamId(IContextParameter param, ContextParamLink paramLink) {
+        if (paramLink != null) {
+            return paramLink.getId();
+        }
+        if (param != null) {
+            return param.getInternalId();
+        }
+        return null;
+    }
+
+    private Item findContextItem(List<ContextItem> allContextItem, String source) {
         for (ContextItem contextItem : allContextItem) {
             if (StringUtils.equals(contextItem.getProperty().getId(), source)) {
                 return contextItem;
             }
         }
-        return null;
+        Item item = ContextUtils.getRepositoryContextItemById(source);
+        return item;
     }
 
-    private void checkNewAddParameterForRef(Map<ContextItem, Set<String>> existedParams, final IContextManager contextManager,
+    private void checkNewAddParameterForRef(Map<Item, Set<String>> existedParams, final IContextManager contextManager,
             boolean isPropagateContextVariable) {
         if (!isPropagateContextVariable) {
             return;
         }
 
-        Map<ContextItem, Set<String>> newParametersMap = ((JobContextManager) contextManager).getNewParametersMap();
-        for (ContextItem contextItem : existedParams.keySet()) {
-            ContextType contextType = ContextUtils.getContextTypeByName((ContextItem) contextItem,
-                    contextItem.getDefaultContext(), true);
+        Map<Item, Set<String>> newParametersMap = ((JobContextManager) contextManager).getNewParametersMap();
+        for (Item contextItem : existedParams.keySet()) {
+            ContextType contextType = ContextUtils.getContextTypeByName(contextItem, null);
             List<ContextParameterType> contextParameter = contextType.getContextParameter();
             Set<String> existedParName = existedParams.get(contextItem);
             for (ContextParameterType parameterType : contextParameter) {
@@ -626,7 +651,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             ContextItemParamMap deleteParams, final List<ContextItem> allContextItem, Set<String> refContextIds) {
         if (ContextUtils.isPropagateContextVariable()) {
             // check newly added parameter
-            Map<ContextItem, Set<String>> newParametersMap = ((JobContextManager) contextManager).getNewParametersMap();
+            Map<Item, Set<String>> newParametersMap = ((JobContextManager) contextManager).getNewParametersMap();
             if (newParametersMap != null) {
                 // improve lookup speed
                 Map<String, ContextItem> contextItemsMap = new HashMap<String, ContextItem>();
@@ -2527,7 +2552,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     private List<UpdateResult> checkParameterContextMode(final List<? extends IElementParameter> parameters,
             ConnectionItem connItem, EComponentCategory category, Map<Object, Object> contextData) {
         List<UpdateResult> contextResults = new ArrayList<UpdateResult>();
-
+        Map<String, String> renamedMap = ContextUtils.getContextParamterRenamedMap(process.getProperty().getItem());
         if (connItem != null && parameters != null) {
             ConnectionContextHelper.checkContextMode(connItem);
             Connection connection = connItem.getConnection();
@@ -2539,8 +2564,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     EcoreUtil.resolveAll(contextItem);
                     if (contextItem != null) {
                         // find added variables
+
                         Set<String> addedVars = ConnectionContextHelper.checkAndAddContextVariables(contextItem, neededVars,
-                                process.getContextManager(), false);
+                                process.getContextManager(), false, renamedMap);
                         if (addedVars != null && !addedVars.isEmpty()) {
                             UpdateCheckResult result = new UpdateCheckResult(addedVars);
                             String remark = UpdateRepositoryUtils.getRepositorySourceName(connItem);
@@ -2830,6 +2856,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 // case RELOAD:
                 tmpResults = checkJobletNodesPropertyChanger();
                 break;
+            // case JOBLET_CONTEXT:
+            // tmpResults = checkProcessletContext(onlySimpleShow);
+            // break;
             case RELOAD:
                 tmpResults = checkJobletNodeReload(onlySimpleShow);
                 break;
