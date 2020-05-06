@@ -407,8 +407,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         ContextItemParamMap builtInMap = new ContextItemParamMap();
         Set<String> builtInSet = new HashSet<String>();
 
-        // Map<ContextItem, Map<String, String>> repositoryRenamedMap = ((JobContextManager) contextManager)
-        // .getRepositoryRenamedMap();
         Map<Item, Map<String, String>> repositoryRenamedMap = new HashMap<Item, Map<String, String>>();
 
         ContextItemParamMap deleteParams = new ContextItemParamMap();
