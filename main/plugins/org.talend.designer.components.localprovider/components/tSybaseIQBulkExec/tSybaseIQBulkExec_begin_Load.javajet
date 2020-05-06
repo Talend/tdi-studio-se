@@ -36,7 +36,7 @@ if(useExistingConn) {
                 }
                 else{
 %>
-                        String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=host %> + ":" + <%=port %> + ";DatabaseName" + <%=dbName %> + ";" + <%=dbproperties%>;
+                        String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=host %> + ":" + <%=port %> + ";DatabaseName=" + <%=dbName %> + ";" + <%=dbproperties%>;
 <%
                 }
 %>
