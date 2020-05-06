@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.expressionbuilder.test.shadow;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +36,7 @@ import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.runprocess.shadow.ObjectElementParameter;
 import org.talend.core.model.runprocess.shadow.TextElementParameter;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.rowgenerator.PluginUtils;
 import org.talend.designer.rowgenerator.RowGeneratorComponent;
 import org.talend.designer.rowgenerator.data.Function;
@@ -132,7 +132,7 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
                 }
             } catch (NumberFormatException e1) {
                 for (Variable var : variables) {
-                    expression = renameValues(expression, var.getName(), "\"" + var.getValue() + "\"");//$NON-NLS-1$ //$NON-NLS-2$
+                    expression = renameValues(expression, var.getName(), TalendQuoteUtils.addQuotesIfNotExist(var.getValue()));
                 }
             }
             value.put(RowGeneratorComponent.ARRAY, "\"\"+(" + expression + ")+\"\""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -191,7 +191,13 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
     }
 
     private String renameVaribleValue(String newValue, String type) {
-        if (newValue == null || newValue.equals("null")) {
+        if (newValue == null) {
+            return newValue;
+        }
+        if (JavaTypesManager.STRING.getLabel().equals(type)) {
+            return TalendQuoteUtils.addQuotesIfNotExist(newValue);
+        }
+        if (newValue.equals("null")) { //$NON-NLS-1$
             return newValue;
         }
         if (JavaTypesManager.BIGDECIMAL.getLabel().equals(type)) {

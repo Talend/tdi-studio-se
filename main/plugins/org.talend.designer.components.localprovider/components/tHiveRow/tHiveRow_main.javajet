@@ -227,8 +227,13 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 	}
 	%>
 	try {
-		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/SetQueryName.javajet"%>
-		<%		
+		<%
+		boolean setApplicationName=ElementParameterParser.getBooleanValue(node, "__SET_APPLICATION_NAME__");
+		if (setApplicationName) {
+			%>
+			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/SetQueryName.javajet"%>
+			<%
+		}
 		if (usePrepareStatement) {
 		
 			for (Map<String, String> param : prepareStatementParameters) {

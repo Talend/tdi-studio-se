@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -83,6 +84,7 @@ import org.talend.repository.generic.ui.DynamicComposite;
 import org.talend.repository.generic.ui.context.ContextComposite;
 import org.talend.repository.generic.ui.context.handler.GenericContextHandler;
 import org.talend.repository.generic.update.GenericUpdateManager;
+import org.talend.repository.generic.util.GenericContextUtil;
 import org.talend.repository.generic.util.GenericWizardServiceFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
@@ -450,6 +452,26 @@ public class GenericDBService implements IGenericDBService{
             return ERepositoryObjectType.METADATA_CONNECTIONS;
         }
         return type;
+    }
+
+    @Override
+    public void updateCompPropertiesForContextMode(Connection connection, Map<String, String> contextVarMap) {
+        GenericContextUtil.updateCompPropertiesForContextMode(connection, contextVarMap);
+    }
+
+    @Override
+    public List<ERepositoryObjectType> getAllGenericMetadataDBRepositoryType() {
+        List<ERepositoryObjectType> repoTypes = new ArrayList<ERepositoryObjectType>();
+        IGenericWizardInternalService internalService = new GenericWizardInternalService();
+        // already init RepositoryObjectType in GenericWizardService#createNodesFromComponentService
+        Set<ComponentWizardDefinition> wizardDefinitions = internalService.getComponentService().getTopLevelComponentWizards();
+        for (ComponentWizardDefinition componentWizardDefinition : wizardDefinitions) {
+            ERepositoryObjectType repoType = ERepositoryObjectType.valueOf(componentWizardDefinition.getName());
+            if (repoType != null) {
+                repoTypes.add(repoType);
+            }
+        }
+        return repoTypes;
     }
 
 }
