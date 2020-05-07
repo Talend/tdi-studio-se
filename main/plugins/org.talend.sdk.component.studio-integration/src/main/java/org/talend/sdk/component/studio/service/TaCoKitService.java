@@ -20,6 +20,7 @@ import java.util.Optional;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.service.ITaCoKitService;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.ServerManager;
@@ -66,6 +67,15 @@ public class TaCoKitService implements ITaCoKitService {
     @Override
     public boolean isTaCoKitCar(File file, IProgressMonitor monitor) throws Exception {
         return ITaCoKitUpdateService.getInstance().isCar(file, monitor);
+    }
+
+    @Override
+    public boolean isTaCoKitType(Object repoType) {
+        if (repoType instanceof ERepositoryObjectType) {
+            return TaCoKitUtil.isTaCoKitType((ERepositoryObjectType) repoType);
+        } else {
+            throw new IllegalArgumentException("Currently only support ERepositoryObjectType, please implement it if needed");
+        }
     }
 
     @Override
