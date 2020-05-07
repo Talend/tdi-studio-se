@@ -536,7 +536,6 @@
 			
 			com.google.cloud.bigquery.Schema schema_<%=cid%> = com.google.cloud.bigquery.Schema.of(fields_<%=cid%>);
 			com.google.cloud.bigquery.TableInfo tableInfo_<%=cid%> = com.google.cloud.bigquery.TableInfo.newBuilder(tableId_<%=cid%>, com.google.cloud.bigquery.StandardTableDefinition.of(schema_<%=cid%>)).build();
-			table_<%=cid%> = bigquery_<%=cid%>.create(tableInfo_<%=cid%>);
 			loadJobBuilder_<%=cid%>.setSchema(schema_<%=cid%>);
 		}
 		
