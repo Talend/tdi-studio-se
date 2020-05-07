@@ -27,4 +27,6 @@ public interface IDbOperator extends IDbKeyWord {
     public abstract String getOperator();
 
     public abstract String getAssociatedExpression();
+    
+    public abstract String getName();
 }
