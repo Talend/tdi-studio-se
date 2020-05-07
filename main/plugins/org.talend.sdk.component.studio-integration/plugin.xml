@@ -315,19 +315,4 @@
   <extension point="org.talend.core.runtime.buildExport_provider">
     <dependenciesProvider class="org.talend.sdk.component.studio.provider.TacokitExportDependenciesProvider"></dependenciesProvider>
   </extension>
-  <extension
-        point="org.talend.repository.gitmerge.conflictAutoMerge">
-     <conflictExtractor
-           clazz="org.talend.sdk.component.studio.automerge.extractor.TaCoKitConflictExtractor"
-           description="Automatically merge some tacokit metadata conflict like password"
-           id="extractor.tacokit"
-           type="path">
-     </conflictExtractor>
-     <conflictAnalyser
-           clazz="org.talend.sdk.component.studio.automerge.analyser.TaCoKitConflictAnalyser"
-           description="Automatically merge some tacokit metadata conflict like password"
-           extractorIDs="extractor.tacokit, extractor.knownTalendItemConflicts"
-           id="analyser.tacokit">
-     </conflictAnalyser>
-  </extension>
 </plugin>
