@@ -202,6 +202,8 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
             }
         } else if (JavaTypesManager.DATE.getLabel().equals(type)) {
             newValue = " ParserUtils.parseTo_Date(" + (newValue.equals("") ? "\"\"" : newValue) + ", \"dd-MM-yyyy\")";
+        } else if (JavaTypesManager.INTEGER.getLabel().contains(type)) {
+            newValue = " new " + JavaTypesManager.INTEGER.getNullableClass().getName() + "(" + newValue + ")";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         return newValue;
     }
