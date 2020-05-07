@@ -42,6 +42,7 @@ import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.context.ContextUtils;
+import org.talend.core.model.context.ContextUtils.ContextItemParamMap;
 import org.talend.core.model.context.JobContext;
 import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.context.JobContextParameter;
@@ -440,13 +441,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
                     Item item = tempItemMap.get(source);
                     if (item == null) {
-                        item = findContextItem(allContextItem, source);
+                        item = ContextUtils.findContextItem(allContextItem, source);
                         tempItemMap.put(source, item);
                     }
                     if (item != null) {
                         boolean builtin = true;
                         final ContextType contextType = ContextUtils.getContextTypeByName(item, context.getName());
-                        builtin = compareContextParameter(item, contextType, param, paramLink, repositoryRenamedMap,
+                        builtin = ContextUtils
+                                .compareContextParameter(item, contextType, param, paramLink, repositoryRenamedMap,
                                 existedParams, unsameMap, deleteParams, onlySimpleShow);
                         if (!builtin && StringUtils.equals(source, getProcess().getProperty().getId())) {
                             builtin = true;
@@ -549,64 +551,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         return contextResults;
     }
 
-    private boolean compareContextParameter(Item contextItem, ContextType contextType, IContextParameter param,
-            ContextParamLink paramLink, Map<Item, Map<String, String>> repositoryRenamedMap, Map<Item, Set<String>> existedParams,
-            ContextItemParamMap unsameMap, ContextItemParamMap deleteParams, boolean onlySimpleShow) {
-        boolean builtin = true;
-        String paramId = getParamId(param, paramLink);
-        if (paramId != null && contextType != null) {// Compare use UUID
-            ContextParameterType contextParameterType = null;
-            contextParameterType = ContextUtils.getContextParameterTypeById(contextType, paramId,
-                    contextItem instanceof ContextItem);
-            String paramName = param.getName();
-            if (contextParameterType != null) {
-                if (!StringUtils.equals(contextParameterType.getName(), paramName)) {
-                    Map<String, String> renameMap = repositoryRenamedMap.get(contextItem);
-                    if (renameMap == null) {
-                        renameMap = new HashMap<String, String>();
-                        repositoryRenamedMap.put(contextItem, renameMap);
-                    }
-                    renameMap.put(contextParameterType.getName(), paramName);
-                } else {
-                    if (existedParams.get(contextItem) == null) {
-                        existedParams.put(contextItem, new HashSet<String>());
-                    }
-                    existedParams.get(contextItem).add(paramName);
-                    if (onlySimpleShow || !ContextUtils.samePropertiesForContextParameter(param, contextParameterType)) {
-                        unsameMap.add(contextItem, paramName);
-                    }
-                }
-                builtin = false;
-            } else {
-                // delete context variable
-                if (ContextUtils.isPropagateContextVariable()) {
-                    deleteParams.add(contextItem, paramName);
-                    builtin = false;
-                }
-            }
-        }
-        return builtin;
-    }
 
-    private static String getParamId(IContextParameter param, ContextParamLink paramLink) {
-        if (paramLink != null) {
-            return paramLink.getId();
-        }
-        if (param != null) {
-            return param.getInternalId();
-        }
-        return null;
-    }
-
-    private Item findContextItem(List<ContextItem> allContextItem, String source) {
-        for (ContextItem contextItem : allContextItem) {
-            if (StringUtils.equals(contextItem.getProperty().getId(), source)) {
-                return contextItem;
-            }
-        }
-        Item item = ContextUtils.getRepositoryContextItemById(source);
-        return item;
-    }
 
     private void checkNewAddParameterForRef(Map<Item, Set<String>> existedParams, final IContextManager contextManager,
             boolean isPropagateContextVariable) {
@@ -2875,39 +2820,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     @Override
     public boolean executeUpdates(List<UpdateResult> results) {
         return UpdateManagerUtils.executeUpdates(results, false, true, true);
-    }
-
-    /**
-     *
-     * DOC hcw ProcessUpdateManager class global comment. Detailled comment
-     */
-    static class ContextItemParamMap {
-
-        private Map<Item, Set<String>> map = new HashMap<Item, Set<String>>();
-
-        public void add(Item item, String param) {
-            Set<String> params = map.get(item);
-            if (params == null) {
-                params = new HashSet<String>();
-                map.put(item, params);
-            }
-            params.add(param);
-        }
-
-        @SuppressWarnings("unchecked")
-        public Set<String> get(Item item) {
-            Set<String> params = map.get(item);
-            return (params == null) ? Collections.EMPTY_SET : params;
-
-        }
-
-        public boolean isEmpty() {
-            return map.isEmpty();
-        }
-
-        public Set<Item> getContexts() {
-            return map.keySet();
-        }
     }
 
     private void setConfigrationForReadOnlyJob(UpdateCheckResult result) {
