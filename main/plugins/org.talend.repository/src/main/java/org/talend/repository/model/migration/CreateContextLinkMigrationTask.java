@@ -19,11 +19,14 @@ import java.util.List;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.context.link.ContextLinkService;
+import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 
-public class CreateContextLinkMigrationTask extends UnifyPasswordEncryption4ItemMigrationTask {
+public class CreateContextLinkMigrationTask extends AbstractItemMigrationTask {
 
+    protected ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
     @Override
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
