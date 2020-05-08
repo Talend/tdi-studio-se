@@ -1228,7 +1228,19 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 } else {
                     localM2Path = localM2Path + PomUtil.getLocalRepositoryPath();
                 }
-                asList.add(3, localM2Path);
+                // https://jira.talendforge.org/browse/TUP-27053
+                int idx = -1;
+                for (int i = 0; i < asList.size(); i++) {
+                    if (asList.get(i).equals("-cp")) {
+                        idx = i;
+                        break;
+                    }
+                }
+                if (idx > -1) {
+                    asList.add(idx, localM2Path);
+                } else {
+                    throw new ProcessorException("Can not insert localM2Path");
+                }
             }
             return asList.toArray(new String[0]);
         }
