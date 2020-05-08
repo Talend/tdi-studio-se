@@ -25,7 +25,7 @@ public class DocumentExtractor {
 	 * @param name
 	 * @return
 	 */
-    private String replaceNamespace(String name) {
+    static String replaceNamespace(String name) {
         return name.replace("/", "_-");
     }
 	

@@ -28,7 +28,7 @@ public class DocumentHelper {
 	}
 
 	public void setFunctionName(String name) {
-		root = doc.addElement(name);
+		root = doc.addElement(DocumentExtractor.replaceNamespace(name));
 	}
 
 	private void correctInput() {
@@ -55,20 +55,20 @@ public class DocumentHelper {
 		}
 		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
-			changing.addElement(name).setText(value);
+			changing.addElement(DocumentExtractor.replaceNamespace(name)).setText(value);
 		} else {
 			correctInput();
-			input.addElement(name).setText(value);
+			input.addElement(DocumentExtractor.replaceNamespace(name)).setText(value);
 		}
 	}
 
 	public void addStructParameter(String name, SAPParameterType parameter_type) {
 		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
-			currentStruct = changing.addElement(name);
+			currentStruct = changing.addElement(DocumentExtractor.replaceNamespace(name));
 		} else {
 			correctInput();
-			currentStruct = input.addElement(name);
+			currentStruct = input.addElement(DocumentExtractor.replaceNamespace(name));
 		}
 	}
 
@@ -76,19 +76,19 @@ public class DocumentHelper {
 		if(value == null) {
 			value = "";
 		}
-		currentStruct.addElement(name).setText(value);
+		currentStruct.addElement(DocumentExtractor.replaceNamespace(name)).setText(value);
 	}
 
 	public void addTableParameter(String name, SAPParameterType parameter_type) {
 		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
-			currentTable = changing.addElement(name);
+			currentTable = changing.addElement(DocumentExtractor.replaceNamespace(name));
 		} else if(parameter_type == SAPParameterType.TABLES) {
 			correctTables();
-			currentTable = tables.addElement(name);
+			currentTable = tables.addElement(DocumentExtractor.replaceNamespace(name));
 		} else {
 			correctInput();
-			currentTable = input.addElement(name);
+			currentTable = input.addElement(DocumentExtractor.replaceNamespace(name));
 		}
 	}
 
@@ -100,7 +100,7 @@ public class DocumentHelper {
 		if(value == null) {
 			value = "";
 		}
-		currentRow.addElement(name).setText(value);
+		currentRow.addElement(DocumentExtractor.replaceNamespace(name)).setText(value);
 	}
 
 	public Document getDocument() {
@@ -109,7 +109,7 @@ public class DocumentHelper {
 
 	public static void main(String[] args) throws IOException {
 		DocumentHelper helper = new DocumentHelper();
-		helper.setFunctionName("READ_TABLE_FUNCTION");
+		helper.setFunctionName("/CMT/TLND_TABLE");
 
 		helper.addSingleParameter("ID", "1", SAPParameterType.CHANGING);
 		helper.addSingleParameter("NAME", "gaoyan", SAPParameterType.IMPORT);
@@ -149,7 +149,7 @@ public class DocumentHelper {
 //		writer.write(doc);
 //		System.out.println(sw.toString());
 		
-		DocumentExtractor ext = new DocumentExtractor(doc,"READ_TABLE_FUNCTION");
+		DocumentExtractor ext = new DocumentExtractor(doc,"/CMT/TLND_TABLE");
 		String single = ext.getSingleResult("ID");
 		System.out.println(single);
 		
