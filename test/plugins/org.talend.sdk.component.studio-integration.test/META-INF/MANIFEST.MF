@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SDK studio-integration test
 Bundle-SymbolicName: org.talend.sdk.component.studio-integration.test
-Bundle-Version: 7.3.2.qualifier
+Bundle-Version: 7.3.1.qualifier
 Fragment-Host: org.talend.sdk.component.studio-integration
 Automatic-Module-Name: org.talend.sdk.component.studio-integration.test
 Bundle-Vendor: .Talend SA.
