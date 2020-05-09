@@ -89,7 +89,7 @@ public class CreateContextLinkMigrationTaskTest {
                 ProcessItem processItem = (ProcessItem) object.getProperty().getItem();
                 ProcessType processType = processItem.getProcess();
                 if (processType.getContext().size() > 0) {
-                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLink(processItem);
+                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLinkFromJson(processItem);
                     assertNotNull(contextLink);
                     for (Object obj : processType.getContext()) {
                         if (obj instanceof ContextType) {
@@ -111,7 +111,7 @@ public class CreateContextLinkMigrationTaskTest {
                 JobletProcessItem processItem = (JobletProcessItem) object.getProperty().getItem();
                 ProcessType processType = processItem.getJobletProcess();
                 if (processType.getContext().size() > 0) {
-                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLink(processItem);
+                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLinkFromJson(processItem);
                     assertNotNull(contextLink);
                     for (Object obj : processType.getContext()) {
                         if (obj instanceof ContextType) {
@@ -134,7 +134,7 @@ public class CreateContextLinkMigrationTaskTest {
                 ProcessItem processItem = (ProcessItem) object.getProperty().getItem();
                 ProcessType processType = processItem.getProcess();
                 if (processType.getContext().size() > 0) {
-                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLink(processItem);
+                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLinkFromJson(processItem);
                     assertNotNull(contextLink);
                     for (Object obj : processType.getContext()) {
                         if (obj instanceof ContextType) {
@@ -156,7 +156,7 @@ public class CreateContextLinkMigrationTaskTest {
                 ProcessItem processItem = (ProcessItem) object.getProperty().getItem();
                 ProcessType processType = processItem.getProcess();
                 if (processType.getContext().size() > 0) {
-                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLink(processItem);
+                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLinkFromJson(processItem);
                     assertNotNull(contextLink);
                     for (Object obj : processType.getContext()) {
                         if (obj instanceof ContextType) {
@@ -178,7 +178,7 @@ public class CreateContextLinkMigrationTaskTest {
                 ProcessItem processItem = (ProcessItem) object.getProperty().getItem();
                 ProcessType processType = processItem.getProcess();
                 if (processType.getContext().size() > 0) {
-                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLink(processItem);
+                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLinkFromJson(processItem);
                     assertNotNull(contextLink);
                     for (Object obj : processType.getContext()) {
                         if (obj instanceof ContextType) {
@@ -200,7 +200,7 @@ public class CreateContextLinkMigrationTaskTest {
                 ConnectionItem connectionItem = (ConnectionItem) object.getProperty().getItem();
                 Connection connection = connectionItem.getConnection();
                 if (connection != null && connection.isContextMode()) {
-                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLink(connectionItem);
+                    ItemContextLink contextLink = ContextLinkService.getInstance().loadContextLinkFromJson(connectionItem);
                     assertNotNull(contextLink);
                     compareContextLink(contextLink, connectionItem.getConnection().getContextName());
                 }
@@ -231,7 +231,7 @@ public class CreateContextLinkMigrationTaskTest {
                 IRepositoryViewObject repObj = factory.getLastVersion(item.getItemId());
                 if (repObj != null) {
                     factory.deleteObjectPhysical(repObj);
-                    ContextLinkService.getInstance().deleteContextLink(repObj.getProperty().getItem());
+                    ContextLinkService.getInstance().deleteContextLinkJsonFile(repObj.getProperty().getItem());
                 }
             }
             importedItems = null;
