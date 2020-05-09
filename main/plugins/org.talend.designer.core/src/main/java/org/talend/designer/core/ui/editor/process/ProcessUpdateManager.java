@@ -423,7 +423,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         Map<String, Item> tempItemMap = new HashMap<String, Item>();
         ItemContextLink itemContextLink = null;
         try {
-            itemContextLink = ContextLinkService.getInstance().loadContextLink(getProcess().getProperty().getId());
+            itemContextLink = ContextLinkService.getInstance().loadContextLink(getProcess().getProperty().getItem());
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
         }
@@ -2799,9 +2799,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 // case RELOAD:
                 tmpResults = checkJobletNodesPropertyChanger();
                 break;
-            // case JOBLET_CONTEXT:
-            // tmpResults = checkProcessletContext(onlySimpleShow);
-            // break;
             case RELOAD:
                 tmpResults = checkJobletNodeReload(onlySimpleShow);
                 break;
