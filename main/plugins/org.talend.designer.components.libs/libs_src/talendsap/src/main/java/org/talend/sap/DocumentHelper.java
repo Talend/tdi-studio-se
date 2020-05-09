@@ -28,7 +28,7 @@ public class DocumentHelper {
 	}
 
 	public void setFunctionName(String name) {
-		root = doc.addElement(DocumentExtractor.replaceNamespace(name));
+		root = doc.addElement(SAPXMLCoder.encode(name));
 	}
 
 	private void correctInput() {
@@ -55,20 +55,20 @@ public class DocumentHelper {
 		}
 		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
-			changing.addElement(DocumentExtractor.replaceNamespace(name)).setText(value);
+			changing.addElement(SAPXMLCoder.encode(name)).setText(value);
 		} else {
 			correctInput();
-			input.addElement(DocumentExtractor.replaceNamespace(name)).setText(value);
+			input.addElement(SAPXMLCoder.encode(name)).setText(value);
 		}
 	}
 
 	public void addStructParameter(String name, SAPParameterType parameter_type) {
 		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
-			currentStruct = changing.addElement(DocumentExtractor.replaceNamespace(name));
+			currentStruct = changing.addElement(SAPXMLCoder.encode(name));
 		} else {
 			correctInput();
-			currentStruct = input.addElement(DocumentExtractor.replaceNamespace(name));
+			currentStruct = input.addElement(SAPXMLCoder.encode(name));
 		}
 	}
 
@@ -76,19 +76,19 @@ public class DocumentHelper {
 		if(value == null) {
 			value = "";
 		}
-		currentStruct.addElement(DocumentExtractor.replaceNamespace(name)).setText(value);
+		currentStruct.addElement(SAPXMLCoder.encode(name)).setText(value);
 	}
 
 	public void addTableParameter(String name, SAPParameterType parameter_type) {
 		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
-			currentTable = changing.addElement(DocumentExtractor.replaceNamespace(name));
+			currentTable = changing.addElement(SAPXMLCoder.encode(name));
 		} else if(parameter_type == SAPParameterType.TABLES) {
 			correctTables();
-			currentTable = tables.addElement(DocumentExtractor.replaceNamespace(name));
+			currentTable = tables.addElement(SAPXMLCoder.encode(name));
 		} else {
 			correctInput();
-			currentTable = input.addElement(DocumentExtractor.replaceNamespace(name));
+			currentTable = input.addElement(SAPXMLCoder.encode(name));
 		}
 	}
 
@@ -100,7 +100,7 @@ public class DocumentHelper {
 		if(value == null) {
 			value = "";
 		}
-		currentRow.addElement(DocumentExtractor.replaceNamespace(name)).setText(value);
+		currentRow.addElement(SAPXMLCoder.encode(name)).setText(value);
 	}
 
 	public Document getDocument() {
