@@ -63,6 +63,15 @@ skeleton="../templates/db_output_bulk.skeleton"
     String azureFolder = ElementParameterParser.getValue(node, "__AZURE_LOCATION__");
     boolean isCompress = "true".equals(ElementParameterParser.getValue(node, "__COMPRESS__"));
     
+    String DistributionOption = ElementParameterParser.getValue(node,"__DISTRIBUTION__");
+    String DistributionColumnName = ElementParameterParser.getValue(node,"__DISTRIBUTION_COLUMN_NAME__");
+    String TableOption = ElementParameterParser.getValue(node,"__TABLE_OPTION__");
+    String IndexColumns = ElementParameterParser.getValue(node,"__INDEX_COLUMNS__");
+    boolean isEnabled_Partition = "true".equals(ElementParameterParser.getValue(node, "__PARTITION__"));
+    String PartitionColumnName = ElementParameterParser.getValue(node,"__PARTITION_COLUMN_NAME__");
+    String PartitionRange = ElementParameterParser.getValue(node,"__PARTITION_COLUMN_NAME_RANGE__");
+    String PartitionValues = ElementParameterParser.getValue(node,"__PARTITION_VALUES__");
+    
 %>
 
 <%
@@ -86,6 +95,10 @@ skeleton="../templates/db_output_bulk.skeleton"
     
     String randomIdentifier_<%=cid%> = java.util.UUID.randomUUID().toString().replaceAll("-","");
     String azureExtFileFormat_<%=cid%> = "talend_FileFormat_" + randomIdentifier_<%=cid%>;
+    
+    String dwDistributionOptions_<%=cid%> = "";
+    String dwTableOptions_<%=cid%> = "";
+    String dwPartition_<%=cid%> = "";
 <%
     // NOT AAD
     if(passwordFieldName != null){
@@ -98,6 +111,48 @@ skeleton="../templates/db_output_bulk.skeleton"
         final String azureAccessKey_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
 <%
         }
+    }
+    if(("DROP_CREATE").equals(tableAction) || ("CREATE").equals(tableAction) || ("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {   
+    
+        // DW Table Options
+        if("CLUSTERED_COLUMNSTORE_INDEX".equals(TableOption)){
+%>    
+            dwTableOptions_<%=cid%> = "CLUSTERED COLUMNSTORE INDEX, ";
+<%
+        }else if("HEAP".equals(TableOption)){
+%>    
+            dwTableOptions_<%=cid%> = "HEAP, ";
+<%
+        }else if("CLUSTERED_INDEX".equals(TableOption)){
+%>    
+            dwTableOptions_<%=cid%> = "CLUSTERED INDEX (" + <%=IndexColumns%> + "), ";
+<%
+        }
+        // DW Table Options END
+
+        // DW Distribution Options
+        if("ROUND_ROBIN".equals(DistributionOption)){
+%>    
+            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = ROUND_ROBIN";
+<%
+        }else if("REPLICATE".equals(DistributionOption)){
+%>    
+            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = REPLICATE";
+<%
+        }else if("HASH".equals(DistributionOption)){
+%>    
+            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = HASH(" + <%=DistributionColumnName%> + ")";
+<%
+        }
+        // DW Distribution Options END
+
+        // DW Table Partition
+        if(isEnabled_Partition){
+%>
+            dwPartition_<%=cid%> = ", PARTITION ( [" + <%=PartitionColumnName%> + "] RANGE <%=PartitionRange%> FOR VALUES (" + <%=PartitionValues%> + ") )";    
+<%
+        }
+        // DW Table Partition END
     }
 %>
     String azureAccountName_<%=cid%> = <%=accountName%>;
@@ -196,14 +251,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         String rejectType = ElementParameterParser.getValue(node,"__REJECT_TYPE__");
         String rejectValue = ElementParameterParser.getValue(node,"__REJECT_VALUE__");
         String rejectSampleValue = ElementParameterParser.getValue(node,"__REJECT_SAMPLE_VALUE__");    
-        String DistributionOption = ElementParameterParser.getValue(node,"__DISTRIBUTION__");
-        String DistributionColumnName = ElementParameterParser.getValue(node,"__DISTRIBUTION_COLUMN_NAME__");
-        String TableOption = ElementParameterParser.getValue(node,"__TABLE_OPTION__");
-        String IndexColumns = ElementParameterParser.getValue(node,"__INDEX_COLUMNS__");
-        boolean isEnabled_Partition = "true".equals(ElementParameterParser.getValue(node, "__PARTITION__"));
-        String PartitionColumnName = ElementParameterParser.getValue(node,"__PARTITION_COLUMN_NAME__");
-        String PartitionRange = ElementParameterParser.getValue(node,"__PARTITION_COLUMN_NAME_RANGE__");
-        String PartitionValues = ElementParameterParser.getValue(node,"__PARTITION_VALUES__");
+        
         // External Table Reject Options END
         boolean dateFormat = "true".equals(ElementParameterParser.getValue(node,"__DATE_FORMAT__"));
         String fieldSeparator = ElementParameterParser.getValueWithUIFieldKey(node,"__FIELDSEPARATOR__","FIELDSEPARATOR");
@@ -243,9 +291,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         String ext_tableName_<%=cid%> = null;
         String azureExtDataSrc_<%=cid%> = "talend_DataSource_" + randomIdentifier_<%=cid%>;
         String azureFileLoadType_<%=cid%> = "<%=loadFileFormat%>";
-        String dwDistributionOptions_<%=cid%> = "";
-        String dwTableOptions_<%=cid%> = "";
-        String dwPartition_<%=cid%> = "";
+        
 <%
         if ("ADLS".equals(storageType)) {
 %>
@@ -278,50 +324,6 @@ skeleton="../templates/db_output_bulk.skeleton"
             externalTableRejectOptions_<%=cid%> += ",REJECT_SAMPLE_VALUE = " + <%=rejectSampleValue%>;
 <%    
         }
-    }
-
-    if(("DROP_CREATE").equals(tableAction) || ("CREATE").equals(tableAction) || ("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {   
-    
-        // DW Table Options
-        if("CLUSTERED_COLUMNSTORE_INDEX".equals(TableOption)){
-%>    
-            dwTableOptions_<%=cid%> = "CLUSTERED COLUMNSTORE INDEX, ";
-<%
-        }else if("HEAP".equals(TableOption)){
-%>    
-            dwTableOptions_<%=cid%> = "HEAP, ";
-<%
-        }else if("CLUSTERED_INDEX".equals(TableOption)){
-%>    
-            dwTableOptions_<%=cid%> = "CLUSTERED INDEX (" + <%=IndexColumns%> + "), ";
-<%
-        }
-        // DW Table Options END
-
-        // DW Distribution Options
-        if("ROUND_ROBIN".equals(DistributionOption)){
-%>    
-            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = ROUND_ROBIN";
-<%
-        }else if("REPLICATE".equals(DistributionOption)){
-%>    
-            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = REPLICATE";
-<%
-        }else if("HASH".equals(DistributionOption)){
-%>    
-            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = HASH(" + <%=DistributionColumnName%> + ")";
-<%
-        }
-        // DW Distribution Options END
-
-        // DW Table Partition
-        if(isEnabled_Partition){
-%>
-            dwPartition_<%=cid%> = ", PARTITION ( [" + <%=PartitionColumnName%> + "] RANGE <%=PartitionRange%> FOR VALUES (" + <%=PartitionValues%> + ") )";    
-<%
-        }
-        // DW Table Partition END
-        
     }
 
     if(columnList != null && columnList.size()>0) {
@@ -899,7 +901,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                     
                                     java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
                                     <%dbLog.table().createTry(dbLog.var("tableName"));%>
-                                    stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+                                    stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
                                     <%dbLog.table().createDone(dbLog.var("tableName"));%>
                                     stmtCreate_<%=cid%>.close();
             <%
@@ -908,7 +910,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             %>
                                     java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
                                     <%dbLog.table().createTry(dbLog.var("tableName"));%>
-                                    stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+                                    stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
                                     <%dbLog.table().createDone(dbLog.var("tableName"));%>
                                     stmtCreate_<%=cid%>.close();
             <%
@@ -931,7 +933,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                                         if(!whetherExist_<%=cid%>) {
                                             java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
                                             <%dbLog.table().createTry(dbLog.var("tableName"));%>
-                                            stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+                                            stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
                                             <%dbLog.table().createDone(dbLog.var("tableName"));%>
                                             stmtCreate_<%=cid%>.close();
                                         }
@@ -947,7 +949,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                                         }
                                         java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
                                         <%dbLog.table().createTry(dbLog.var("tableName"));%>
-                                        stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+                                        stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
                                         <%dbLog.table().createDone(dbLog.var("tableName"));%>
                                         stmtCreate_<%=cid%>.close();
             <%
