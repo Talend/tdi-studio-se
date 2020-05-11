@@ -250,7 +250,7 @@
 			for (INode jobStructureCatcher : jobCatcherNodes) {
 			%>
 			if(enableLogStash) {
-				<%=jobStructureCatcher.getUniqueName() %>.addCM("<%=node.getUniqueName()%>", "<%=node.getComponent().getName()%>");
+				<%=jobStructureCatcher.getUniqueName() %>.addCM("<%=node.getUniqueName()%>", "<%=node.getLabel()%>", "<%=node.getComponent().getName()%>");
 				<%=jobStructureCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
 			}
 			<%

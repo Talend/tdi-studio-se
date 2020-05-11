@@ -31,6 +31,16 @@ public class JobContextBuilder {
     }
     
     /**
+     * component label, default is unique name like "tXMLMap_1", but user can adjust it in studio to any value
+     * @param connectorType
+     * @return self
+     */
+    public JobContextBuilder connectorLabel(String connectorLabel) {
+        builder.with("connectorLabel", connectorLabel);
+        return this;
+    }
+    
+    /**
      * component type like "tXMLMap"
      * @param connectorType
      * @return self
@@ -41,7 +51,7 @@ public class JobContextBuilder {
     }
     
     /**
-     * component type like "tXMLMap_1"
+     * component unique name like "tXMLMap_1"
      * @param connectorType
      * @return self
      */
