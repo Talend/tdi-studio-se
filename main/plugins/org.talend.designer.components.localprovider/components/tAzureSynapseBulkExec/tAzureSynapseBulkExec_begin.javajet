@@ -788,7 +788,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     String fileType = ElementParameterParser.getValue(node,"__FILE_TYPE__");
     String firstRow = ElementParameterParser.getValue(node,"__FIRST_ROW__");
     if(firstRow==null || firstRow.isEmpty()){
-        firstRow = "\"\"";
+        firstRow = "1";
     }
     // csv format
     String fieldQuote = ElementParameterParser.getValue(node,"__FIELD_QUOTE__");
@@ -804,18 +804,12 @@ skeleton="../templates/db_output_bulk.skeleton"
         rowTerminator = "\"\"";
     }
     String copyCsvDateFormat = ElementParameterParser.getValue(node,"__COPY_CSV_DATE_FORMAT__");
-    if(copyCsvDateFormat==null || copyCsvDateFormat.isEmpty()){
-        copyCsvDateFormat = "\"\"";
-    }
     String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
-    if(encoding==null || encoding.isEmpty()){
-        encoding = "\"\"";
-    }
     // csv end
     boolean identityInsert = "true".equals(ElementParameterParser.getValue(node,"__IDENTITY_INSERTE__"));
     String maxErrors = ElementParameterParser.getValue(node,"__MAX_ERRORS__");
     if(maxErrors==null || maxErrors.isEmpty()){
-        maxErrors = "\"\"";
+        maxErrors = "0";
     }
     String errorFile = ElementParameterParser.getValue(node,"__ERROR_FILE__");
     if(errorFile==null || errorFile.isEmpty()){
@@ -824,7 +818,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     String compressionType = null;
     if (isCompress) {
         if ("CSV".equals(fileType)) { //TODO recheck
-            compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_TEXT__");
+            //compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_TEXT__");
+            compressionType = "GZIP";
         } else if ("ORC".equals(fileType)) {
             compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_ORC__");
         } else if ("PARQUET".equals(fileType)) {
@@ -850,8 +845,6 @@ skeleton="../templates/db_output_bulk.skeleton"
     String fieldQuote_<%=cid%> = <%=fieldQuote%>;
     String fieldTerminator_<%=cid%> = <%=fieldTerminator%>;
     String rowTerminator_<%=cid%> = <%=rowTerminator%>;
-    String copyCsvDateFormat_<%=cid%> = <%=copyCsvDateFormat%>;
-    String encoding_<%=cid%> = <%=encoding%>;
     String errorFile_<%=cid%> = <%=errorFile%>;
 <%
     }
@@ -1091,22 +1084,30 @@ skeleton="../templates/db_output_bulk.skeleton"
                             if(rowTerminator_<%=cid%>!=null && !rowTerminator_<%=cid%>.isEmpty()){
                                 copySQL_<%=cid%>.append(",ROWTERMINATOR = '"+ rowTerminator_<%=cid%> +"' ");
                             }
-                            if(copyCsvDateFormat_<%=cid%>!=null && !copyCsvDateFormat_<%=cid%>.isEmpty()){
-                                copySQL_<%=cid%>.append(",DATEFORMAT = '"+ copyCsvDateFormat_<%=cid%> +"' ");
+                            if(firstRow_<%=cid%>!=null && firstRow_<%=cid%> > 1){
+                                copySQL_<%=cid%>.append(",FIRSTROW = '"+ firstRow_<%=cid%> +"' ");
                             }
-                            if(encoding_<%=cid%>!=null && !encoding_<%=cid%>.isEmpty()){
-                                copySQL_<%=cid%>.append(",ENCODING = '"+ encoding_<%=cid%> +"' ");
+<%
+                            if(!"SESSION_DATEFORMAT".equals(copyCsvDateFormat)){
+%>
+                                copySQL_<%=cid%>.append(",DATEFORMAT = '"+ <%=copyCsvDateFormat%> +"' ");
+<%
                             }
+%>
+
+                            copySQL_<%=cid%>.append(",ENCODING = '"+ <%=encoding%> +"' ");
                             if(errorFile_<%=cid%>!=null && !errorFile_<%=cid%>.isEmpty()){
                                 copySQL_<%=cid%>.append(",ERRORFILE = '"+ errorFile_<%=cid%> +"' ");
                             }
                             //TODO check the COMPRESSION
 <%
+                                if(isCompress){
+%>
+                                    copySQL_<%=cid%>.append(",COMPRESSION = '<%=compressionType%>' ");
+<%
+                                }
                             }
 %>
-                            if(firstRow_<%=cid%>!=null && firstRow_<%=cid%> > 1){
-                                copySQL_<%=cid%>.append(",FIRSTROW = '"+ firstRow_<%=cid%> +"' ");
-                            }
                             if(maxErrors_<%=cid%>!=null && maxErrors_<%=cid%> > 0){
                                 copySQL_<%=cid%>.append(",MAXERRORS = '"+ maxErrors_<%=cid%> +"' ");
                             }
