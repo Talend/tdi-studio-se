@@ -96,5 +96,59 @@ public class JobContextBuilder {
     public Context build() {
         return builder.build();
     }
-
+    
+    /**
+     * source connector id
+     * @return
+     */
+    public JobContextBuilder sourceId(String sourceId) {
+        builder.with("sourceId", sourceId);
+        return this;
+    }
+    
+    /**
+     * source connector label
+     * @return
+     */
+    public JobContextBuilder sourceLabel(String sourceLabel) {
+        builder.with("sourceLabel", sourceLabel);
+        return this;
+    }
+    
+    /**
+     * source connector name
+     * @return
+     */
+    public JobContextBuilder sourceConnectorName(String sourceConnectorName) {
+        builder.with("sourceConnectorName", sourceConnectorName);
+        return this;
+    }
+    
+    /**
+     * target connector id
+     * @return
+     */
+    public JobContextBuilder targetId(String targetId) {
+        builder.with("targetId", targetId);
+        return this;
+    }
+    
+    /**
+     * target connector label
+     * @return
+     */
+    public JobContextBuilder targetLabel(String targetLabel) {
+        builder.with("targetLabel", targetLabel);
+        return this;
+    }
+    
+    /**
+     * target connector name
+     * @return
+     */
+    public JobContextBuilder targetConnectorName(String targetConnectorName) {
+        builder.with("targetConnectorName", targetConnectorName);
+        return this;
+    }
+    
 }

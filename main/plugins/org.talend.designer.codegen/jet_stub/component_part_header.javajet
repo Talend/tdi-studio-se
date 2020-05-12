@@ -178,16 +178,35 @@
 	}
 	
 	if((codePart.equals(ECodePart.MAIN))&&(stat || logstashCurrent)&&connSet.size()>0){
+		INode jobStructureCatcher = jobCatcherNodes.get(0);//about performance monitor, no way to support more than one job catcher component, also that is not necessary
+		String subrocessName4Catcher = jobStructureCatcher.getDesignSubjobStartNode().getUniqueName();
+	
 		if(!node.getComponent().useMerge()) {
 			if(stat && logstashCurrent) {
 			%>
-			runStat.updateStatAndLog(execStat,enableLogStash,iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+			if(runStat.update(execStat,enableLogStash,iterateId,1,1
+				<%for(IConnection con : connSet){
+					INode source = con.getSource();
+					String sourceNodeId = source.getUniqueName();
+					String sourceNodeLabel = source.getLabel();
+					String sourceNodeComponent = source.getComponent().getName();
+				%>
+					,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getLabel()%>","<%=node.getComponent().getName()%>"
+				<%}%>
+			)) {
+				<%=subrocessName4Catcher %>Process(globalMap);
+			}
 			<%
 			} else {
 				if(stat) {
 					%>
 					if(execStat){
-						runStat.updateStatOnConnection(iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+						runStat.updateStatOnConnection(iterateId,1,1
+						<%for(IConnection con : connSet){
+						%>
+							,"<%=con.getUniqueName()%>"
+						<%}%>
+						);
 					}
 					<%
 				}
@@ -195,7 +214,18 @@
 				if(logstashCurrent) {
 					%>
 					if(enableLogStash) {
-						runStat.log(iterateId,1,1<%for(IConnection con : connSet){%>,"<%=con.getUniqueName()%>"<%}%>);
+						if(runStat.updateLog(iterateId,1,1
+						<%for(IConnection con : connSet){
+							INode source = con.getSource();
+							String sourceNodeId = source.getUniqueName();
+							String sourceNodeLabel = source.getLabel();
+							String sourceNodeComponent = source.getComponent().getName();
+						%>
+							,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getLabel()%>","<%=node.getComponent().getName()%>"
+						<%}%>
+						)) {
+							<%=subrocessName4Catcher %>Process(globalMap);
+						}
 					}
 					<%
 				}
@@ -205,18 +235,40 @@
 				if(connection.getUniqueName().equals((String)codeGenArgument.getIncomingName())){
 					if(stat && logstashCurrent) {
 					%>
-					runStat.updateStatAndLog(execStat,enableLogStash,iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+					if(runStat.update(execStat,enableLogStash,iterateId,1,1
+						<%for(IConnection con : connSet){
+							if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>
+							,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getLabel()%>","<%=node.getComponent().getName()%>"
+							<%}
+						}%>
+					)) {
+						<%=subrocessName4Catcher %>Process(globalMap);
+					}
 					<%
 					} else {
 						if(stat) {%>
 						if(execStat){
-							runStat.updateStatOnConnection(iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+							runStat.updateStatOnConnection(iterateId,1,1
+								<%for(IConnection con : connSet){
+									if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>
+									,"<%=con.getUniqueName()%>"
+									<%}
+								}%>
+							);
 						}
 						<%}
 						
 						if(logstashCurrent) {%>
 						if(enableLogStash) {
-							runStat.log(iterateId,1,1<%for(IConnection con : connSet){if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>,"<%=con.getUniqueName()%>"<%}}%>);
+							if(runStat.updateLog(iterateId,1,1
+								<%for(IConnection con : connSet){
+									if(con.getUniqueName().equals((String)codeGenArgument.getIncomingName())){%>
+									,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getLabel()%>","<%=node.getComponent().getName()%>"
+									<%}
+								}%>
+							)) {
+								<%=subrocessName4Catcher %>Process(globalMap);
+							}
 						}
 						<%}
 					}

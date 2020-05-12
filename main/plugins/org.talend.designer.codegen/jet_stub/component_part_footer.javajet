@@ -91,7 +91,7 @@ if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
 	 			for (INode jobStructureCatcher : jobCatcherNodes) {
 	 			%>
 			 		if(runStat.updateStatAndLog(execStat,enableLogStash,resourceMap,iterateId,"<%=con.getUniqueName()%>",2,0,
-			 			<%=jobStructureCatcher.getUniqueName()%>,"<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getLabel()%>","<%=node.getComponent().getName()%>","<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>")) {
+			 			"<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getLabel()%>","<%=node.getComponent().getName()%>","<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>")) {
 						<%=jobStructureCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
 					}
 				<%
@@ -119,7 +119,7 @@ if((codePart.equals(ECodePart.END))&&(stat || logstashCurrent)){
 		 			for (INode jobStructureCatcher : jobCatcherNodes) {
 		 			%>
 				 		if(runStat.log(resourceMap,iterateId,"<%=con.getUniqueName()%>",2,0,
-				 			<%=jobStructureCatcher.getUniqueName()%>,"<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getLabel()%>","<%=node.getComponent().getName()%>","<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>")) {
+				 			"<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getLabel()%>","<%=node.getComponent().getName()%>","<%="REJECT".equals(con.getConnectorName()) ? "reject" : "output"%>")) {
 							<%=jobStructureCatcher.getDesignSubjobStartNode().getUniqueName() %>Process(globalMap);
 						}
 					<%

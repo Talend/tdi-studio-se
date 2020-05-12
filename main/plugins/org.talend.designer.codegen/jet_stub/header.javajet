@@ -390,7 +390,11 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 		}
 	}
 	boolean enableLogStash = jobCatcherNode != null;
-	if (stats || enableLogStash) {
+	if (enableLogStash) {
+%>
+private RunStat runStat = new RunStat(<%=jobCatcherNode.getUniqueName() %>);
+<%
+	} else if(stats) {
 %>
 private RunStat runStat = new RunStat();
 <%
