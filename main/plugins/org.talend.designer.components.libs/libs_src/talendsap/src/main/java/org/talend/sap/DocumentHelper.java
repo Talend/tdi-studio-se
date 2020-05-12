@@ -28,7 +28,7 @@ public class DocumentHelper {
 	}
 
 	public void setFunctionName(String name) {
-		root = doc.addElement(name);
+		root = doc.addElement(SAPXMLCoder.encode(name));
 	}
 
 	private void correctInput() {
@@ -55,20 +55,20 @@ public class DocumentHelper {
 		}
 		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
-			changing.addElement(name).setText(value);
+			changing.addElement(SAPXMLCoder.encode(name)).setText(value);
 		} else {
 			correctInput();
-			input.addElement(name).setText(value);
+			input.addElement(SAPXMLCoder.encode(name)).setText(value);
 		}
 	}
 
 	public void addStructParameter(String name, SAPParameterType parameter_type) {
 		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
-			currentStruct = changing.addElement(name);
+			currentStruct = changing.addElement(SAPXMLCoder.encode(name));
 		} else {
 			correctInput();
-			currentStruct = input.addElement(name);
+			currentStruct = input.addElement(SAPXMLCoder.encode(name));
 		}
 	}
 
@@ -76,19 +76,19 @@ public class DocumentHelper {
 		if(value == null) {
 			value = "";
 		}
-		currentStruct.addElement(name).setText(value);
+		currentStruct.addElement(SAPXMLCoder.encode(name)).setText(value);
 	}
 
 	public void addTableParameter(String name, SAPParameterType parameter_type) {
 		if (parameter_type == SAPParameterType.CHANGING) {
 			correctChanging();
-			currentTable = changing.addElement(name);
+			currentTable = changing.addElement(SAPXMLCoder.encode(name));
 		} else if(parameter_type == SAPParameterType.TABLES) {
 			correctTables();
-			currentTable = tables.addElement(name);
+			currentTable = tables.addElement(SAPXMLCoder.encode(name));
 		} else {
 			correctInput();
-			currentTable = input.addElement(name);
+			currentTable = input.addElement(SAPXMLCoder.encode(name));
 		}
 	}
 
@@ -100,66 +100,11 @@ public class DocumentHelper {
 		if(value == null) {
 			value = "";
 		}
-		currentRow.addElement(name).setText(value);
+		currentRow.addElement(SAPXMLCoder.encode(name)).setText(value);
 	}
 
 	public Document getDocument() {
 		return doc;
 	}
 
-	public static void main(String[] args) throws IOException {
-		DocumentHelper helper = new DocumentHelper();
-		helper.setFunctionName("READ_TABLE_FUNCTION");
-
-		helper.addSingleParameter("ID", "1", SAPParameterType.CHANGING);
-		helper.addSingleParameter("NAME", "gaoyan", SAPParameterType.IMPORT);
-
-		helper.addStructParameter("INFO", SAPParameterType.CHANGING);
-		helper.addStructChildParameter("ID", "2");
-		helper.addStructChildParameter("NAME", "wangwei");
-
-		helper.addStructParameter("INFO1", SAPParameterType.IMPORT);
-		helper.addStructChildParameter("ID1", "4");
-		helper.addStructChildParameter("NAME1", "momo");
-
-		helper.addTableParameter("TABLE1", SAPParameterType.TABLES);
-		for (int i = 0; i < 200000; i++) {
-			helper.addTableRow();
-			helper.addTableRowChildParameter("c1", i + "");
-			helper.addTableRowChildParameter("c2", "wangwei" + i);
-			helper.addTableRowChildParameter("c3", "wangwei" + i);
-			helper.addTableRowChildParameter("c4", "wangwei" + i);
-			helper.addTableRowChildParameter("c5", "wangwei" + i);
-			helper.addTableRowChildParameter("c6", "wangwei" + i);
-			helper.addTableRowChildParameter("c7", "wangwei" + i);
-			helper.addTableRowChildParameter("c8", "wangwei" + i);
-		}
-
-		helper.addTableParameter("TABLE2", SAPParameterType.TABLES);
-		for (int i = 0; i < 2; i++) {
-			helper.addTableRow();
-			helper.addTableRowChildParameter("ID4", i + "");
-			helper.addTableRowChildParameter("NAME4", "gaoyan" + i);
-		}
-
-//		StringWriter sw = new StringWriter();
-//		OutputFormat format = OutputFormat.createPrettyPrint();
-//		XMLWriter writer = new XMLWriter(sw, format);
-		Document doc = helper.getDocument();
-//		writer.write(doc);
-//		System.out.println(sw.toString());
-		
-		DocumentExtractor ext = new DocumentExtractor(doc,"READ_TABLE_FUNCTION");
-		String single = ext.getSingleResult("ID");
-		System.out.println(single);
-		
-		List<String> struct = ext.getStructureResult("INFO", Arrays.asList("ID","NAME"));
-		System.out.println(struct);
-		
-		List<List<String>> table = ext.getTableResult("TABLE1", Arrays.asList("c1","c2","c3","c4","c5","c6","c7","c8"));
-		for(List<String> row : table) {
-			System.out.println(row);
-		}
-
-	}
 }
