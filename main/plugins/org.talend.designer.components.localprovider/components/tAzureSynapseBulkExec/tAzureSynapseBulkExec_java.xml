@@ -93,7 +93,7 @@
 		</PARAMETER>
 		
 		<PARAMETER NAME="LOAD_METHOD" FIELD="CLOSED_LIST" REQUIRED="true" NUM_ROW="90">
-            <ITEMS DEFAULT="POLYBASE">
+            <ITEMS DEFAULT="COPY">
                 <ITEM NAME="POLYBASE" VALUE="POLYBASE" />
                 <ITEM NAME="COPY" VALUE="COPY"/>
             </ITEMS>
