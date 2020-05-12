@@ -179,7 +179,7 @@
 	
 	if((codePart.equals(ECodePart.MAIN))&&(stat || logstashCurrent)&&connSet.size()>0){
 		INode jobStructureCatcher = jobCatcherNodes.get(0);//about performance monitor, no way to support more than one job catcher component, also that is not necessary
-		String subrocessName4Catcher = jobStructureCatcher.getDesignSubjobStartNode().getUniqueName();
+		String subprocessName4Catcher = jobStructureCatcher.getDesignSubjobStartNode().getUniqueName();
 	
 		if(!node.getComponent().useMerge()) {
 			if(stat && logstashCurrent) {
@@ -194,7 +194,7 @@
 					,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getLabel()%>","<%=node.getComponent().getName()%>"
 				<%}%>
 			)) {
-				<%=subrocessName4Catcher %>Process(globalMap);
+				<%=subprocessName4Catcher %>Process(globalMap);
 			}
 			<%
 			} else {
@@ -224,7 +224,7 @@
 							,"<%=con.getUniqueName()%>","<%=sourceNodeId%>","<%=sourceNodeLabel%>","<%=sourceNodeComponent%>","<%=node.getUniqueName()%>","<%=node.getLabel()%>","<%=node.getComponent().getName()%>"
 						<%}%>
 						)) {
-							<%=subrocessName4Catcher %>Process(globalMap);
+							<%=subprocessName4Catcher %>Process(globalMap);
 						}
 					}
 					<%
@@ -242,7 +242,7 @@
 							<%}
 						}%>
 					)) {
-						<%=subrocessName4Catcher %>Process(globalMap);
+						<%=subprocessName4Catcher %>Process(globalMap);
 					}
 					<%
 					} else {
@@ -267,7 +267,7 @@
 									<%}
 								}%>
 							)) {
-								<%=subrocessName4Catcher %>Process(globalMap);
+								<%=subprocessName4Catcher %>Process(globalMap);
 							}
 						}
 						<%}
