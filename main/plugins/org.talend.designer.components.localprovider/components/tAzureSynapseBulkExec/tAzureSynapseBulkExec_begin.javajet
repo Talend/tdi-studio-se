@@ -783,6 +783,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
     String endpointSuffix = ElementParameterParser.getValue(node,"__ENDPOINT_SUFFIX__");
     List<Map<String,String>> externalPaths = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__EXTERNAL_LOCATIONS__");
+    boolean specifyFieldsMapping = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_FIELDS_MAPPING__"));
+    List<Map<String,String>> fieldsMapping = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COLUMN_MAP_FIELD__");
     String fileType = ElementParameterParser.getValue(node,"__FILE_TYPE__");
     String firstRow = ElementParameterParser.getValue(node,"__FIRST_ROW__");
     if(firstRow==null || firstRow.isEmpty()){
@@ -858,7 +860,6 @@ skeleton="../templates/db_output_bulk.skeleton"
     Integer maxErrors_<%=cid%> = <%=maxErrors%>;
     
 <%
-    if(columnList != null && columnList.size()>0) {
         manager = getManager(dbmsId, cid);
         String ending="";
         if(!"CSV".equals(fileType)){
@@ -891,6 +892,15 @@ skeleton="../templates/db_output_bulk.skeleton"
                         try{
             <%
                             if(!("NONE").equals(tableAction)) {
+                                if(("DROP_CREATE").equals(tableAction) || ("CREATE").equals(tableAction) || ("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
+                                    if(columnList == null || columnList.size()<= 0) {
+%>
+                                        if(true){
+                                            throw new RuntimeException("Can't create table with empty schema!");
+                                        }
+<%
+                                    }
+                                }
                                 if(("DROP_CREATE").equals(tableAction)) {
             %>
                                     java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
@@ -898,22 +908,29 @@ skeleton="../templates/db_output_bulk.skeleton"
                                     stmtDrop_<%=cid%>.execute("DROP TABLE [" + tableName_<%=cid%> + "]");
                                     <%dbLog.table().dropDone(dbLog.var("tableName"));%>
                                     stmtDrop_<%=cid%>.close();
-                    
+<%
+                                    if(columnList != null && columnList.size()>0) {
+%>
                                     java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
                                     <%dbLog.table().createTry(dbLog.var("tableName"));%>
                                     stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
                                     <%dbLog.table().createDone(dbLog.var("tableName"));%>
                                     stmtCreate_<%=cid%>.close();
+<%
+                                    }
+%>
             <%
             
                                 } else if(("CREATE").equals(tableAction)) {
-            %>
+                                    if(columnList != null && columnList.size()>0) {
+%>
                                     java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
                                     <%dbLog.table().createTry(dbLog.var("tableName"));%>
                                     stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
                                     <%dbLog.table().createDone(dbLog.var("tableName"));%>
                                     stmtCreate_<%=cid%>.close();
             <%
+                                    }
                                 } else if(("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
                                     boolean tableNameCaseSensitive=false;
             %>
@@ -929,7 +946,8 @@ skeleton="../templates/db_output_bulk.skeleton"
                                     isExistStmt_<%=cid%>.close();
             <%
                                     if(("CREATE_IF_NOT_EXISTS").equals(tableAction)) {
-             %>
+                                        if(columnList != null && columnList.size()>0) {
+    %>
                                         if(!whetherExist_<%=cid%>) {
                                             java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
                                             <%dbLog.table().createTry(dbLog.var("tableName"));%>
@@ -938,6 +956,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                                             stmtCreate_<%=cid%>.close();
                                         }
             <%
+                                        }
                                     } else {
             %>
                                         if(whetherExist_<%=cid%>) {
@@ -947,12 +966,16 @@ skeleton="../templates/db_output_bulk.skeleton"
                                             <%dbLog.table().dropDone(dbLog.var("tableName"));%>
                                             stmtDrop_<%=cid%>.close();
                                         }
+<%
+                                        if(columnList != null && columnList.size()>0) {
+%>
                                         java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
                                         <%dbLog.table().createTry(dbLog.var("tableName"));%>
                                         stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
                                         <%dbLog.table().createDone(dbLog.var("tableName"));%>
                                         stmtCreate_<%=cid%>.close();
             <%
+                                        }
                                     }
                                 } else if(("CLEAR").equals(tableAction)) {
             %>
@@ -991,7 +1014,36 @@ skeleton="../templates/db_output_bulk.skeleton"
             %>
                             StringBuilder copySQL_<%=cid%> = new StringBuilder(); 
                             copySQL_<%=cid%>.append("COPY INTO [" +  tableName_<%=cid%> + "] ");
-                            // column list TODO
+<%
+                            if(specifyFieldsMapping){
+	                            if(columnList != null && columnList.size()>0) {
+%>
+                                    copySQL_<%=cid%>.append("(");
+<%
+                                    for(int columnIndex = 0;columnIndex<columnList.size();columnIndex++){
+	                                    IMetadataColumn column = columnList.get(columnIndex);
+	                                    String fieldIndex = fieldsMapping.get(columnIndex).get("FIELD_INDEX");
+	                                    if(columnIndex != 0){
+%>
+                                            copySQL_<%=cid%>.append(",");
+<%
+	                                    }
+ %>
+                                        copySQL_<%=cid%>.append("<%=column.getOriginalDbColumnName() %>");
+                                        // TODO support default value
+<%
+                                        if(fieldIndex != null && !fieldIndex.isEmpty()){
+%>
+                                        copySQL_<%=cid%>.append(" <%=fieldIndex%>");
+<%
+                                        }
+	                                }
+%>
+                                    copySQL_<%=cid%>.append(")");
+<%
+                                }
+                            }
+%>
                             copySQL_<%=cid%>.append("");
                             //external localtion
                             copySQL_<%=cid%>.append("FROM ");
@@ -1133,7 +1185,6 @@ skeleton="../templates/db_output_bulk.skeleton"
                         }
                     
             <%
-    }
 }
 
     if(!useExistingConnection) {
