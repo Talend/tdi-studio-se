@@ -110,7 +110,6 @@ public class JavaProcessorTest {
         String[] cmd = processor.getCommandLine();
         Assert.assertTrue(Arrays.asList(cmd).contains(getLocalM2Path()));
 
-        Assert.assertEquals(getLocalM2Path(), Arrays.asList(cmd).get(3));
     }
 
     @Test
@@ -129,7 +128,6 @@ public class JavaProcessorTest {
         String[] cmd = processor.getCommandLine();
         Assert.assertTrue(Arrays.asList(cmd).contains(getLocalM2Path()));
 
-        Assert.assertEquals(getLocalM2Path(), Arrays.asList(cmd).get(3));
     }
 
     @Test

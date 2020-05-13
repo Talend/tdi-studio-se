@@ -779,6 +779,11 @@
             SHOW_IF="((isShow[SET_HADOOP_LOGIN]) AND (SET_HADOOP_LOGIN=='true'))">
             <DEFAULT>"kerberos"</DEFAULT>
         </PARAMETER>
+        
+        <PARAMETER NAME="SET_APPLICATION_NAME" FIELD="CHECK" NUM_ROW="110"
+			SHOW="true">
+			<DEFAULT>true</DEFAULT>
+		</PARAMETER>
 
 	</ADVANCED_PARAMETERS>
 

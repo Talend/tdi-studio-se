@@ -85,7 +85,7 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
 			}
 			else{
 %>
-				String connectionString_<%=cid %> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName" + <%=dbname %> + ";" + <%=dbproperties%>;
+				String connectionString_<%=cid %> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName=" + <%=dbname %> + ";" + <%=dbproperties%>;
 <%
 			}
             }
