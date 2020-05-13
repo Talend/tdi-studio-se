@@ -402,6 +402,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     private List<UpdateResult> checkContext(boolean onlySimpleShow) {
         List<UpdateResult> contextResults = new ArrayList<UpdateResult>();
         final IContextManager contextManager = getProcess().getContextManager();
+        final String defaultContextName = contextManager.getDefaultContext().getName();
         // record the unsame
         ContextItemParamMap unsameMap = new ContextItemParamMap();
         // built in
@@ -449,7 +450,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         final ContextType contextType = ContextUtils.getContextTypeByName(item, context.getName());
                         builtin = ContextUtils
                                 .compareContextParameter(item, contextType, param, paramLink, repositoryRenamedMap,
-                                existedParams, unsameMap, deleteParams, onlySimpleShow);
+                                        existedParams, unsameMap, deleteParams, onlySimpleShow,
+                                        StringUtils.equals(context.getName(), defaultContextName));
                         if (!builtin && StringUtils.equals(source, getProcess().getProperty().getId())) {
                             builtin = true;
                         }
