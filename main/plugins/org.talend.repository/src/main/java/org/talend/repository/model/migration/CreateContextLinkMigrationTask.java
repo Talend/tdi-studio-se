@@ -15,18 +15,28 @@ package org.talend.repository.model.migration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.context.link.ContextLinkService;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 
 public class CreateContextLinkMigrationTask extends AbstractItemMigrationTask {
 
+    private static final Logger LOGGER = Logger.getLogger(CreateContextLinkMigrationTask.class);
+
     protected ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+
     @Override
     public List<ERepositoryObjectType> getTypes() {
         List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
@@ -46,6 +56,46 @@ public class CreateContextLinkMigrationTask extends AbstractItemMigrationTask {
     public ExecutionResult execute(Item item) {
         boolean modified = false;
         try {
+            List<ContextType> contextTypeList = ContextUtils.getAllContextType(item);
+            if (contextTypeList != null && contextTypeList.size() > 0) {
+                Map<String, Item> idToItemMap = new HashMap<String, Item>();
+                for (ContextType contextType : contextTypeList) {
+                    for (Object obj : contextType.getContextParameter()) {
+                        if (obj instanceof ContextParameterType) {
+                            ContextParameterType paramType = (ContextParameterType) obj;
+                            if (!ContextUtils.isBuildInParameter(paramType)) {
+                                String repoId = paramType.getRepositoryContextId();
+                                Item repoItem = idToItemMap.get(repoId);
+                                if (repoItem == null) {
+                                    repoItem = ContextUtils.getRepositoryContextItemById(repoId);
+                                    idToItemMap.put(repoId, repoItem);
+                                }
+                                if (repoItem != null) {
+                                    if (!(repoItem instanceof ContextItem)) {
+                                        ContextType repoContextType = ContextUtils.getContextTypeByName(repoItem,
+                                                contextType.getName());
+                                        if (repoContextType != null) {
+                                            ContextParameterType repoParamType = ContextUtils
+                                                    .getContextParameterTypeByName(repoContextType, paramType.getName());
+                                            if (repoParamType != null) {
+                                                paramType.setInternalId(repoParamType.getInternalId());
+                                            } else {
+                                                LOGGER.error("Can't find context repotory parameter type repo:" + repoId
+                                                        + " parameter name:" + paramType.getName());
+                                            }
+                                        } else {
+                                            LOGGER.error("Can't find context repotory context type repo:" + repoId
+                                                    + " parameter name:" + contextType.getName());
+                                        }
+                                    }
+                                } else {
+                                    LOGGER.error("Can't find context repotory item:" + repoId);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             modified = ContextLinkService.getInstance().saveContextLink(item);
         } catch (Exception ex) {
             ExceptionHandler.process(ex);

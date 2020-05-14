@@ -29,7 +29,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorReference;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.components.IComponentConstants;
@@ -98,7 +97,6 @@ import org.talend.core.model.update.AbstractUpdateManager;
 import org.talend.core.model.update.EUpdateItemType;
 import org.talend.core.model.update.EUpdateResult;
 import org.talend.core.model.update.IUpdateItemType;
-import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.model.update.UpdateManagerHelper;
 import org.talend.core.model.update.UpdateResult;
 import org.talend.core.model.update.UpdatesConstants;
@@ -448,10 +446,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     if (item != null) {
                         boolean builtin = true;
                         final ContextType contextType = ContextUtils.getContextTypeByName(item, context.getName());
-                        builtin = ContextUtils
-                                .compareContextParameter(item, contextType, param, paramLink, repositoryRenamedMap,
-                                        existedParams, unsameMap, deleteParams, onlySimpleShow,
-                                        StringUtils.equals(context.getName(), defaultContextName));
+                        if (contextType != null) {
+                            builtin = ContextUtils.compareContextParameter(item, contextType, param, paramLink,
+                                    repositoryRenamedMap, existedParams, unsameMap, deleteParams, onlySimpleShow,
+                                    StringUtils.equals(context.getName(), defaultContextName));
+                        }
                         if (!builtin && StringUtils.equals(source, getProcess().getProperty().getId())) {
                             builtin = true;
                         }
@@ -552,8 +551,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         }
         return contextResults;
     }
-
-
 
     private void checkNewAddParameterForRef(Map<Item, Set<String>> existedParams, final IContextManager contextManager,
             boolean isPropagateContextVariable) {
@@ -663,34 +660,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             }
         }
         return filterBuildInList;
-    }
-
-    private static boolean isOpenedProcess(Process curProcess) {
-        IEditorReference[] reference = RepositoryUpdateManager.getEditors();
-        List<IProcess2> openedProcessList = CorePlugin.getDefault().getDesignerCoreService().getOpenedProcess(reference);
-        for (IProcess2 process : openedProcessList) {
-            Property property = curProcess.getProperty();
-            if (process.getId().equals(property.getId()) && process.getName().equals(property.getLabel())
-                    && process.getVersion().equals(property.getVersion())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static String getRenamedVarName(final String varName, Map<String, String> renamedMap) {
-        if (varName == null || renamedMap == null || renamedMap.isEmpty()) {
-            return null;
-        }
-
-        Set<String> keySet = renamedMap.keySet();
-        for (String newName : keySet) {
-            String oldName = renamedMap.get(newName);
-            if (varName.equals(oldName)) {
-                return newName;
-            }
-        }
-        return null;
     }
 
     /*
