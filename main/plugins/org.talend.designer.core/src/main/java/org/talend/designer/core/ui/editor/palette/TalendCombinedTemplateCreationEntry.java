@@ -97,4 +97,8 @@ public class TalendCombinedTemplateCreationEntry extends CombinedTemplateCreatio
     public String getComponentName() {
         return component.getName();
     }
+
+    public IComponent getComponent() {
+        return component;
+    }
 }

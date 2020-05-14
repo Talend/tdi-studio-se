@@ -1,5 +1,7 @@
 package org.talend.designer.core.assist;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,11 +29,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.keys.IBindingService;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.IProcess2;
 import org.talend.designer.core.DesignerPlugin;
+import org.talend.designer.core.model.components.StitchPseudoComponent;
 import org.talend.designer.core.ui.editor.PaletteComponentFactory;
+import org.talend.designer.core.ui.editor.StitchDataLoaderConstants;
 import org.talend.designer.core.ui.editor.cmd.CreateNodeContainerCommand;
 import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
 import org.talend.designer.core.ui.editor.connections.ConnectionFigure;
@@ -254,15 +260,34 @@ public class TalendEditorComponentCreationAssist {
     }
 
     protected void acceptProposal(IComponent component) {
-        // String componentName = assistText.getText().trim();
-        org.eclipse.swt.graphics.Point componentLocation = assistText.getLocation();
-        componentLocation.y += assistText.getLineHeight();
-        disposeAssistText();
-        Object createdNode = createComponent(component, componentLocation);
-        selectComponent(createdNode);
+        if (StitchDataLoaderConstants.CONNECTOR_FAMILY_NAME.equals(component.getOriginalFamilyName())) {
+            disposeAssistText();
+            openBrowser(component);
+        } else {
+            org.eclipse.swt.graphics.Point componentLocation = assistText.getLocation();
+            componentLocation.y += assistText.getLineHeight();
+            disposeAssistText();
+            Object createdNode = createComponent(component, componentLocation);
+            selectComponent(createdNode);
+        }
     }
 
-    private void selectComponent(Object createdNode) {
+    private void openBrowser(IComponent component) {
+        if (component != null && component instanceof StitchPseudoComponent) {
+            StitchPseudoComponent stitchPseudoComponent = (StitchPseudoComponent) component;
+            try {
+                final URL compURL =
+                        new URL(stitchPseudoComponent.getConnectorURL() + StitchDataLoaderConstants.UTM_PARAM_SUFFIX);
+                PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL(compURL);
+            } catch (PartInitException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+	}
+
+	private void selectComponent(Object createdNode) {
         Object nodePart = graphicViewer.getEditPartRegistry().get(createdNode);
         if (nodePart != null && nodePart instanceof NodePart) {
             graphicViewer.select((EditPart) nodePart);

@@ -13,6 +13,8 @@
 package org.talend.designer.core.ui.editor;
 
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.HashMap;
@@ -104,6 +106,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.DisposeEvent;
@@ -124,6 +127,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IKeyBindingService;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.SubActionBars;
 import org.eclipse.ui.actions.ActionFactory;
@@ -183,6 +187,7 @@ import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.ITalendEditor;
 import org.talend.designer.core.assist.TalendEditorComponentCreationUtil;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.StitchPseudoComponent;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.NodePartKeyHander;
 import org.talend.designer.core.ui.action.ConnectionSetAsMainRef;
@@ -212,7 +217,9 @@ import org.talend.designer.core.ui.editor.nodes.NodePart;
 import org.talend.designer.core.ui.editor.notes.Note;
 import org.talend.designer.core.ui.editor.outline.NodeTreeEditPart;
 import org.talend.designer.core.ui.editor.outline.ProcessTreePartFactory;
+import org.talend.designer.core.ui.editor.palette.TalendCombinedTemplateCreationEntry;
 import org.talend.designer.core.ui.editor.palette.TalendDrawerEditPart;
+import org.talend.designer.core.ui.editor.palette.TalendEntryEditPart;
 import org.talend.designer.core.ui.editor.palette.TalendFlyoutPaletteComposite;
 import org.talend.designer.core.ui.editor.palette.TalendPaletteDrawer;
 import org.talend.designer.core.ui.editor.palette.TalendPaletteHelper;
@@ -1590,6 +1597,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
         private int moveOffset = DEFAULT_MOVE_OFFSET;
 
+        private IComponent previousComponent = null;
+
         /**
          * bqian TalendEditDomain constructor comment.
          *
@@ -1637,6 +1646,31 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                     CreationTool tool = (CreationTool) getActiveTool();
                     updateNodeOnLink(tool);
                 }
+
+                IComponent newComponent = null;
+                StructuredSelection newSelection = (StructuredSelection) viewer.getSelection();
+                if (!newSelection.isEmpty() && newSelection.getFirstElement() instanceof TalendEntryEditPart) {
+                    TalendEntryEditPart editPart = (TalendEntryEditPart) newSelection.getFirstElement();
+                    TalendCombinedTemplateCreationEntry entry =
+                            (TalendCombinedTemplateCreationEntry) editPart.getModel();
+                    newComponent = entry.getComponent();
+                }
+
+                if (newComponent != null && newComponent instanceof StitchPseudoComponent) {
+                    if (newComponent.equals(previousComponent)) {
+                        StitchPseudoComponent stitchPseudoComponent = (StitchPseudoComponent) newComponent;
+                        try {
+                            final URL compURL = new URL(stitchPseudoComponent.getConnectorURL()
+                                    + StitchDataLoaderConstants.UTM_PARAM_SUFFIX);
+                            PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL(compURL);
+                        } catch (PartInitException e) {
+                            e.printStackTrace();
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                previousComponent = newComponent;
             }
         }
 
