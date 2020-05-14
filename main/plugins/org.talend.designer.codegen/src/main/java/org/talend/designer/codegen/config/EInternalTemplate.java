@@ -60,6 +60,7 @@ public enum EInternalTemplate {
     // just to have compiled templates
     FOOTER_ROUTE("footer_route", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     HEADER_ROUTE("header_route", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
+    MICROSERVICE_APP_SECURITY("microservice_app_security","0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     CAMEL_RUNIF("camel_run_if", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     CAMEL_SPECIALLINKS("camel_speciallinks", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     MICROSERVICE_APP("microservice_app", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
