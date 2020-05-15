@@ -84,7 +84,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         }
     }else{// Copy command
         String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
-        if (!"AAD".equals(authMethod)) {
+        if ("KEY".equals(authMethod)) {
             passwordFieldName = "__SECRET_KEY__";
         }
     }
@@ -781,6 +781,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     } 
 }else{
     String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
+    String sasToken = ElementParameterParser.getValue(node,"__SAS_TOKEN__");
     String endpointSuffix = ElementParameterParser.getValue(node,"__ENDPOINT_SUFFIX__");
     List<Map<String,String>> externalPaths = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__EXTERNAL_LOCATIONS__");
     boolean specifyFieldsMapping = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_FIELDS_MAPPING__"));
@@ -1027,7 +1028,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
                                         if(fieldIndex != null && !fieldIndex.isEmpty()){
 %>
-                                        copySQL_<%=cid%>.append(" <%=fieldIndex%>");
+                                        copySQL_<%=cid%>.append(" "+<%=fieldIndex%>);
 <%
                                         }
 	                                }
@@ -1068,9 +1069,14 @@ skeleton="../templates/db_output_bulk.skeleton"
                             copySQL_<%=cid%>.append("FILE_FORMAT = "+azureExtFileFormat_<%=cid%>+" ");
 <%
 							}
-                            if(!"AAD".equals(authMethod)){
+                            if("KEY".equals(authMethod)){
 %>
                             copySQL_<%=cid%>.append(",CREDENTIAL=(IDENTITY= '"+azureCredIdentity_<%=cid%>+"', SECRET='"+azureAccessKey_<%=cid%>+"')");
+<%
+                            }
+                            if("SAS".equals(authMethod)){
+%>
+                            copySQL_<%=cid%>.append(",CREDENTIAL=(IDENTITY= '"+azureCredIdentity_<%=cid%>+"', SECRET='"+<%=sasToken%>+"')");
 <%
                             }
                             if("CSV".equals(fileType)){
@@ -1096,11 +1102,14 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 
                             copySQL_<%=cid%>.append(",ENCODING = '"+ <%=encoding%> +"' ");
-                            if(errorFile_<%=cid%>!=null && !errorFile_<%=cid%>.isEmpty()){
-                                copySQL_<%=cid%>.append(",ERRORFILE = '"+ errorFile_<%=cid%> +"' ");
-                            }
-                            //TODO check the COMPRESSION
 <%
+                                if(!"KEY".equals(authMethod)){
+%>
+		                            if(errorFile_<%=cid%>!=null && !errorFile_<%=cid%>.isEmpty()){
+		                                copySQL_<%=cid%>.append(",ERRORFILE = '"+ errorFile_<%=cid%> +"' ");
+		                            }
+<%
+                                }
                                 if(isCompress){
 %>
                                     copySQL_<%=cid%>.append(",COMPRESSION = '<%=compressionType%>' ");
