@@ -369,6 +369,10 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                         event.detail = DND.DROP_NONE;
                     } else if (selectItem instanceof RoutineItem) {
                         event.detail = DND.DROP_NONE;
+                    } else if (selectItem instanceof ProcessItem) {
+                        if(isRefused(object)){
+                            event.detail = DND.DROP_NONE;
+                        }
                     } else if (selectItem instanceof FolderItem) {
                         event.detail = DND.DROP_NONE;
                     }
@@ -439,6 +443,18 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             }
 
         }
+    }
+
+    private boolean isRefused(IRepositoryViewObject viewObject) {
+        IProcess2 process = editor.getProcess();
+        Item item = process.getProperty().getItem();
+        ERepositoryObjectType editorItemType = ERepositoryObjectType.getItemType(item);
+
+        ERepositoryObjectType dragType = viewObject.getRepositoryObjectType();
+        boolean refused = (dragType == ERepositoryObjectType.PROCESS_ROUTE || dragType == ERepositoryObjectType.PROCESS_ROUTELET)
+                && (editorItemType == ERepositoryObjectType.PROCESS || editorItemType == ERepositoryObjectType.PROCESS_MR
+                        || editorItemType == ERepositoryObjectType.PROCESS_STORM);
+        return refused;
     }
 
     @Override
