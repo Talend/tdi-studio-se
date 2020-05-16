@@ -182,6 +182,10 @@ public final class Expression {
     }
     
     protected static boolean isAndOr(String expression, String condition) {
+    	if(expression == null ) {
+    		return false;
+    	}
+    	expression = expression.toLowerCase();
     	if(!expression.contains(condition)) {
     		return false;
     	}
