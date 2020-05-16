@@ -102,7 +102,7 @@ public final class Expression {
         String suffixReg = "[ ]*[ (](.*)"; //$NON-NLS-1$
         String reg = "[^a-zA-Z]"; //$NON-NLS-1$
         try {
-            andPattern = compiler.compile(prefixReg);
+        	andPattern = compiler.compile(prefixReg + AND + suffixReg);
             orPattern = compiler.compile(prefixReg + OR + suffixReg);
             pattern = compiler.compile(reg);
         } catch (MalformedPatternException e) {
