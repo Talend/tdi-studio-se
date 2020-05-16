@@ -281,12 +281,14 @@ public class ExpressionTest {
         assertFalse(Expression.isThereCondition("standard='aaa'", "and"));
         assertFalse(Expression.isThereCondition("story='aaa'", "or"));
         
-        assertTrue(Expression.isThereCondition("(a=1)or(b=2)", "and"));
+        assertTrue(Expression.isThereCondition("(a=1)and(b=2)", "and"));
         assertTrue(Expression.isThereCondition("{A=1}AND{B=2}", "and"));
         assertFalse(Expression.isThereCondition("1or8=2", "and"));
+        assertTrue(Expression.isThereCondition("(a=1)and(b=2)and(c=3)", "and"));
 
         assertTrue(Expression.isThereCondition("&a=1%or#b=2-", "or"));
         assertTrue(Expression.isThereCondition("A=1_OR!B=2", "or"));
         assertFalse(Expression.isThereCondition("a=1=and9b=2", "or"));
+        assertTrue(Expression.isThereCondition("&a=1%or#b=2-or#c=3-", "or"));
     }
 }
