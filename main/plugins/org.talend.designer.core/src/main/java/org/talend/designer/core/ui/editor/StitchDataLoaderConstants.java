@@ -14,7 +14,9 @@ package org.talend.designer.core.ui.editor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +25,9 @@ import java.util.concurrent.CompletableFuture;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.StitchPseudoComponent;
 import org.talend.utils.json.JSONArray;
 import org.talend.utils.json.JSONException;
@@ -37,36 +41,47 @@ public class StitchDataLoaderConstants {
 
     public static final String STITCH_DATA_CONNECTOR_JSON_URL = "https://www.stitchdata.com/integrations.json";
 
-    public static final String UTM_PARAM_SUFFIX =
-            "?utm_medium=tos&utm_source=talend&utm_campaign=toscomponent&utm_content=trystitch";
-
     private static final String DEFAULT_CONNECTOR_LIST_FILE_PATH = "stitch_connectors.json";
 
-    public static List<StitchPseudoComponent> DATA_WAREHOUSE_LIST = Collections.emptyList();
+    private static String utmParamSuffix = StringUtils.EMPTY;
 
-    public static List<StitchPseudoComponent> INTEGRATION_SOURCE_LIST = Collections.emptyList();
+    private static List<StitchPseudoComponent> integrationSourceList = Collections.emptyList();
+
+    private static List<StitchPseudoComponent> dataWarehouseList = Collections.emptyList();
 
     static {
-        // load latest stitch pseudo connectors asynchronously
+        // load latest stitch pseudo connectors and UTM parameters asynchronously
         CompletableFuture.runAsync(new Runnable() {
 
             @Override
             public void run() {
-                loadStitchPseudoComponents();
+                loadLatestStitchPseudoComponents();
             }
         });
     }
 
-    private static void loadStitchPseudoComponents() {
+    public static String getUTMParamSuffix() {
+        return utmParamSuffix;
+    }
+
+    protected static List<StitchPseudoComponent> getIntegrationSourceList() {
+        return integrationSourceList;
+    }
+
+    protected static List<StitchPseudoComponent> getDataWarehouseList() {
+        return dataWarehouseList;
+    }
+
+    private static void loadLatestStitchPseudoComponents() {
         try {
             URL stitchConnectorURL = new URL(STITCH_DATA_CONNECTOR_JSON_URL);
             HttpsURLConnection con = (HttpsURLConnection) stitchConnectorURL.openConnection();
             InputStream ins = con.getInputStream();
             String resourceString = IOUtils.toString(ins, "UTF-8");
             ins.close();
-
-            loadStitchPseudoComponentsFromJsonString(resourceString);
+            readFromJsonString(resourceString);
         } catch (IOException | JSONException e) {
+            // fallback to default connector list
             loadDefaultStitchConnectorList();
         }
     }
@@ -75,54 +90,67 @@ public class StitchDataLoaderConstants {
         try {
             InputStream ins = StitchDataLoaderConstants.class.getResourceAsStream(DEFAULT_CONNECTOR_LIST_FILE_PATH);
             String resourceString = IOUtils.toString(ins, "UTF-8");
-            loadStitchPseudoComponentsFromJsonString(resourceString);
-
+            readFromJsonString(resourceString);
         } catch (IOException | JSONException e) {
+            integrationSourceList = Collections.emptyList();
+            dataWarehouseList = Collections.emptyList();
+            utmParamSuffix = StringUtils.EMPTY;
             ExceptionHandler.process(e);
         }
     }
 
-    private static void loadStitchPseudoComponentsFromJsonString(String jsonString) throws JSONException {
+    private static String encodeValue(String value) throws UnsupportedEncodingException {
+        return URLEncoder.encode(value, "UTF-8");
+    }
+
+    private static void readFromJsonString(String jsonString) throws JSONException, UnsupportedEncodingException {
         if (jsonString != null) {
             JSONObject jsonObj = new JSONObject(jsonString);
 
-            JSONArray stitchSourcesArray = jsonObj.getJSONArray("stitch-sources");
-            List<StitchPseudoComponent> sourceComponentList = new ArrayList<>();
-            for (int i = 0; i < stitchSourcesArray.length(); i++) {
-                JSONObject obj = stitchSourcesArray.getJSONObject(i);
-                final String connectorName = obj.getString("name");
-                final String url = obj.getString("url");
-                final String description = getDescriptionForSource(connectorName);
-                sourceComponentList.add(new StitchPseudoComponent(connectorName, url, description));
+            JSONArray stitchSourcesArray = jsonObj.optJSONArray("stitch-sources");
+            if (stitchSourcesArray != null) {
+                List<StitchPseudoComponent> sourceComponentList = new ArrayList<>();
+                for (int i = 0; i < stitchSourcesArray.length(); i++) {
+                    JSONObject obj = stitchSourcesArray.getJSONObject(i);
+                    final String connectorName = obj.getString("name");
+                    final String url = obj.getString("url");
+                    final String description = getDescriptionForSource(connectorName);
+                    sourceComponentList.add(new StitchPseudoComponent(connectorName, url, description));
+                }
+                integrationSourceList = sourceComponentList;
             }
-            INTEGRATION_SOURCE_LIST = sourceComponentList;
 
-            JSONArray stitchDestinationsArray = jsonObj.getJSONArray("stitch-destinations");
-            List<StitchPseudoComponent> destinationComponentList = new ArrayList<>();
-            for (int i = 0; i < stitchDestinationsArray.length(); i++) {
-                JSONObject obj = stitchDestinationsArray.getJSONObject(i);
-                final String connectorName = obj.getString("name");
-                final String url = obj.getString("url");
-                final String description = getDescriptionForDestination(connectorName);
-                destinationComponentList.add(new StitchPseudoComponent(connectorName, url, description));
+            JSONArray stitchDestinationsArray = jsonObj.optJSONArray("stitch-destinations");
+            if (stitchDestinationsArray != null) {
+                List<StitchPseudoComponent> destinationComponentList = new ArrayList<>();
+                for (int i = 0; i < stitchDestinationsArray.length(); i++) {
+                    JSONObject obj = stitchDestinationsArray.getJSONObject(i);
+                    final String connectorName = obj.getString("name");
+                    final String url = obj.getString("url");
+                    final String description = getDescriptionForDestination(connectorName);
+                    destinationComponentList.add(new StitchPseudoComponent(connectorName, url, description));
+                }
+                dataWarehouseList = destinationComponentList;
             }
-            DATA_WAREHOUSE_LIST = destinationComponentList;
+
+            JSONObject utmParamObject = jsonObj.optJSONObject("utm-params");
+            if (utmParamObject != null) {
+                StringBuilder utmBuilder = new StringBuilder();
+                utmBuilder.append("?utm_medium=").append(encodeValue(utmParamObject.getString("utm_medium")));
+                utmBuilder.append("&utm_source=").append(encodeValue(utmParamObject.getString("utm_source")));
+                utmBuilder.append("&utm_campaign=").append(encodeValue(utmParamObject.getString("utm_campaign")));
+                utmBuilder.append("&utm_content=").append(encodeValue(utmParamObject.getString("utm_content")));
+                utmParamSuffix = utmBuilder.toString();
+            }
         }
     }
 
     private static String getDescriptionForSource(String connectorName) {
-        final String description = String
-                .format("Extract %s data and ingest it in the cloud destination of your choice using Stitch Data Loader.\n" //
-                        + "Select this option to open your browser and try it for free.", connectorName);
-
-        return description;
+        return Messages.getString("StitchDataLoaderConstants.descriptionForIntegrationSource", connectorName);
     }
 
     private static String getDescriptionForDestination(String connectorName) {
-        final String description = String
-                .format("Ingest data from over 100 popular sources to %s using Stitch Data Loader. \n" //
-                        + "Select this option to open your browser and try it for free.", connectorName);
-
-        return description;
+        return Messages.getString("StitchDataLoaderConstants.descriptionForDataWarehouseDestination", connectorName);
     }
+
 }

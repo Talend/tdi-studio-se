@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.EditPart;
@@ -32,6 +33,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.keys.IBindingService;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.IProcess2;
 import org.talend.designer.core.DesignerPlugin;
@@ -260,9 +262,10 @@ public class TalendEditorComponentCreationAssist {
     }
 
     protected void acceptProposal(IComponent component) {
-        if (StitchDataLoaderConstants.CONNECTOR_FAMILY_NAME.equals(component.getOriginalFamilyName())) {
+        if (component != null && component instanceof StitchPseudoComponent) {
             disposeAssistText();
-            openBrowser(component);
+            final StitchPseudoComponent stitchPseudoComponent = (StitchPseudoComponent) component;
+            openBrowser(stitchPseudoComponent);
         } else {
             org.eclipse.swt.graphics.Point componentLocation = assistText.getLocation();
             componentLocation.y += assistText.getLineHeight();
@@ -272,20 +275,26 @@ public class TalendEditorComponentCreationAssist {
         }
     }
 
-    private void openBrowser(IComponent component) {
-        if (component != null && component instanceof StitchPseudoComponent) {
-            StitchPseudoComponent stitchPseudoComponent = (StitchPseudoComponent) component;
-            try {
-                final URL compURL =
-                        new URL(stitchPseudoComponent.getConnectorURL() + StitchDataLoaderConstants.UTM_PARAM_SUFFIX);
-                PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL(compURL);
-            } catch (PartInitException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
+    private void openBrowser(StitchPseudoComponent component) {
+        try {
+            final URL compURL = new URL(component.getConnectorURL() + StitchDataLoaderConstants.getUTMParamSuffix());
+
+            CompletableFuture.runAsync(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(200);
+                        PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL(compURL);
+                    } catch (InterruptedException | PartInitException e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
+            });
+        } catch (MalformedURLException e) {
+            ExceptionHandler.process(e);
         }
-	}
+    }
 
 	private void selectComponent(Object createdNode) {
         Object nodePart = graphicViewer.getEditPartRegistry().get(createdNode);
