@@ -142,9 +142,9 @@ import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.gmf.draw2d.AnimatableZoomManager;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageUtils;
 import org.talend.commons.utils.workbench.preferences.GlobalConstant;
@@ -1647,30 +1647,33 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                     updateNodeOnLink(tool);
                 }
 
-                IComponent newComponent = null;
-                StructuredSelection newSelection = (StructuredSelection) viewer.getSelection();
+                final StructuredSelection newSelection = (StructuredSelection) viewer.getSelection();
                 if (!newSelection.isEmpty() && newSelection.getFirstElement() instanceof TalendEntryEditPart) {
                     TalendEntryEditPart editPart = (TalendEntryEditPart) newSelection.getFirstElement();
                     TalendCombinedTemplateCreationEntry entry =
                             (TalendCombinedTemplateCreationEntry) editPart.getModel();
-                    newComponent = entry.getComponent();
-                }
-
-                if (newComponent != null && newComponent instanceof StitchPseudoComponent) {
-                    if (newComponent.equals(previousComponent)) {
-                        StitchPseudoComponent stitchPseudoComponent = (StitchPseudoComponent) newComponent;
-                        try {
-                            final URL compURL = new URL(stitchPseudoComponent.getConnectorURL()
-                                    + StitchDataLoaderConstants.UTM_PARAM_SUFFIX);
-                            PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL(compURL);
-                        } catch (PartInitException e) {
-                            e.printStackTrace();
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
+                    IComponent newComponent = entry.getComponent();
+                    if (newComponent != null && newComponent instanceof StitchPseudoComponent) {
+                        if (newComponent.equals(previousComponent)) { // check if we are clicking on it for a 2nd time
+                            StitchPseudoComponent stitchPseudoComponent = (StitchPseudoComponent) newComponent;
+                            try {
+                                final URL compURL = new URL(stitchPseudoComponent.getConnectorURL()
+                                        + StitchDataLoaderConstants.getUTMParamSuffix());
+                                PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL(compURL);
+                            } catch (PartInitException | MalformedURLException e) {
+                                ExceptionHandler.process(e);
+                            }
+                            previousComponent = null; // remove the registered selection
+                        } else { // if it's the first time selecting a stitch connector
+                            previousComponent = newComponent; // register the first click
                         }
+                        super.mouseUp(mouseEvent, viewer); // simulate the release of button to avoid dropping on canvas
+                    } else { // user click at another component after a stitch component
+                        previousComponent = null; // remove the registered selection
                     }
+                } else { // user clicks at somewhere outside the palette: the canvas for instance
+                    previousComponent = null; // remove the registered selection
                 }
-                previousComponent = newComponent;
             }
         }
 

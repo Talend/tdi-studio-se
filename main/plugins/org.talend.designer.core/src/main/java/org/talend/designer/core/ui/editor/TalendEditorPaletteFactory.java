@@ -529,16 +529,14 @@ public final class TalendEditorPaletteFactory {
 
     private static List<IComponent> getStitchPseudoComponents(String lowerCasedKeyword) {
         List<IComponent> componentList = new ArrayList<>();
-        if (lowerCasedKeyword != null) {
-            for (StitchPseudoComponent compo : StitchDataLoaderConstants.INTEGRATION_SOURCE_LIST) {
-                if (compo.getName().toLowerCase().contains(lowerCasedKeyword)) {
-                    componentList.add(compo);
-                }
+        for (StitchPseudoComponent compo : StitchDataLoaderConstants.getIntegrationSourceList()) {
+            if (lowerCasedKeyword == null || compo.getName().toLowerCase().contains(lowerCasedKeyword)) {
+                componentList.add(compo);
             }
-            for (StitchPseudoComponent compo : StitchDataLoaderConstants.DATA_WAREHOUSE_LIST) {
-                if (compo.getName().toLowerCase().contains(lowerCasedKeyword)) {
-                    componentList.add(compo);
-                }
+        }
+        for (StitchPseudoComponent compo : StitchDataLoaderConstants.getDataWarehouseList()) {
+            if (lowerCasedKeyword == null || compo.getName().toLowerCase().contains(lowerCasedKeyword)) {
+                componentList.add(compo);
             }
         }
         return componentList;

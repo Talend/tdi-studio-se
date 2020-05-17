@@ -86,4 +86,9 @@ public class StitchPseudoComponent extends DummyComponent {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return String.format("StitchPseudoComponent[%s]", getName());
+    }
+
 }
