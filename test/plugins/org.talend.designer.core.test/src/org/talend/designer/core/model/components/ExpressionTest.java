@@ -238,7 +238,7 @@ public class ExpressionTest {
                         "!DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, #LINK@NODE.CONNECTION.HIVE_VERSION].doSupportUseDatanodeHostname[]",
                         params, paramNode));
     }
-
+    
     @Test
     public void testIsThereCondition() {
         assertTrue(Expression.isThereCondition("a=1 and b=2", "and"));
@@ -254,6 +254,25 @@ public class ExpressionTest {
 
         assertFalse(Expression.isThereCondition("standard='aaa'", "and"));
         assertFalse(Expression.isThereCondition("story='aaa'", "or"));
+        
     }
+    
+    @Test
+    public void testIsAndOr() {
+    	assertTrue(Expression.isAndOr("(a=1)and(b=2)", "and"));
+        assertTrue(Expression.isAndOr("{A=1}AND{B=2}", "and"));
+        assertFalse(Expression.isAndOr("1or8=2", "and"));
+        assertTrue(Expression.isAndOr("(a=1)and(b=2)and(c=3)", "and"));
+        assertTrue(Expression.isAndOr("stand(a=1)and(b=2)and(c=3)", "and"));
+        
+        assertFalse(Expression.isAndOr("standard='aaa'", "and"));
+        assertFalse(Expression.isAndOr("story='aaa'", "or"));
 
+        assertTrue(Expression.isAndOr("&a=1%or#b=2-", "or"));
+        assertTrue(Expression.isAndOr("A=1_OR!B=2", "or"));
+        assertFalse(Expression.isAndOr("a=1=and9b=2", "or"));
+        assertTrue(Expression.isAndOr("strory&a=1%or#b=2-or#c=3-", "or"));
+        assertTrue(Expression.isAndOr("&a=1%or#b=2-or#c=3-", "or"));
+    }
+    
 }
