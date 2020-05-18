@@ -3348,6 +3348,15 @@
              version="7.4.1">
        </projecttask>
        <projecttask
+              beforeLogon="false"
+              breaks="7.4.0"
+              class="org.talend.repository.model.migration.UpdatetPersonatorOutputSchemaTask"
+              description="Update the output schema of tPersonator"
+              id="org.talend.repository.model.migration.UpdatetPersonatorOutputSchemaTask"
+              name="UpdatetPersonatorOutputSchemaTask"
+              version="7.4.1">
+       </projecttask>
+       <projecttask
              beforeLogon="false"
              breaks="7.4.0"
              class="org.talend.repository.model.migration.ChangeDefaultLoadMethod4tSynapseBulkExec"
