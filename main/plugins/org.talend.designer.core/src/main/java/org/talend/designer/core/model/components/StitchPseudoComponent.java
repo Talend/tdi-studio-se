@@ -22,6 +22,8 @@ public class StitchPseudoComponent extends DummyComponent {
 
     private String description;
 
+    private String familyName;
+
     private static final ImageDescriptor STITCH_ICON_DESCRIPTOR_32 =
             DesignerPlugin.getImageDescriptor("icons/stitch_data_loader_32.png");
 
@@ -31,10 +33,11 @@ public class StitchPseudoComponent extends DummyComponent {
     private static final ImageDescriptor STITCH_ICON_DESCRIPTOR_16 =
             DesignerPlugin.getImageDescriptor("icons/stitch_data_loader_16.png");
 
-    public StitchPseudoComponent(String componentName, String connectorURL, String description) {
+    public StitchPseudoComponent(String componentName, String category, String connectorURL, String description) {
         super(componentName);
         this.connectorURL = connectorURL;
         this.description = description;
+        this.familyName = StitchDataLoaderConstants.CONNECTOR_FAMILY_NAME + "/" + category;
     }
 
     public String getConnectorURL() {
@@ -68,12 +71,12 @@ public class StitchPseudoComponent extends DummyComponent {
 
     @Override
     public String getOriginalFamilyName() {
-        return StitchDataLoaderConstants.CONNECTOR_FAMILY_NAME;
+        return familyName;
     }
 
     @Override
     public String getTranslatedFamilyName() {
-        return StitchDataLoaderConstants.CONNECTOR_FAMILY_NAME;
+        return familyName;
     }
 
     @Override

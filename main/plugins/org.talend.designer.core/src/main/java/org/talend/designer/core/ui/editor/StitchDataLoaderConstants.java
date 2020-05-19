@@ -112,10 +112,7 @@ public class StitchDataLoaderConstants {
                 List<StitchPseudoComponent> sourceComponentList = new ArrayList<>();
                 for (int i = 0; i < stitchSourcesArray.length(); i++) {
                     JSONObject obj = stitchSourcesArray.getJSONObject(i);
-                    final String connectorName = obj.getString("name");
-                    final String url = obj.getString("url");
-                    final String description = getDescriptionForSource(connectorName);
-                    sourceComponentList.add(new StitchPseudoComponent(connectorName, url, description));
+                    sourceComponentList.add(createComponentFromJsonObject(obj));
                 }
                 integrationSourceList = sourceComponentList;
             }
@@ -125,10 +122,7 @@ public class StitchDataLoaderConstants {
                 List<StitchPseudoComponent> destinationComponentList = new ArrayList<>();
                 for (int i = 0; i < stitchDestinationsArray.length(); i++) {
                     JSONObject obj = stitchDestinationsArray.getJSONObject(i);
-                    final String connectorName = obj.getString("name");
-                    final String url = obj.getString("url");
-                    final String description = getDescriptionForDestination(connectorName);
-                    destinationComponentList.add(new StitchPseudoComponent(connectorName, url, description));
+                    destinationComponentList.add(createComponentFromJsonObject(obj));
                 }
                 dataWarehouseList = destinationComponentList;
             }
@@ -143,6 +137,14 @@ public class StitchDataLoaderConstants {
                 utmParamSuffix = utmBuilder.toString();
             }
         }
+    }
+
+    private static StitchPseudoComponent createComponentFromJsonObject(JSONObject obj) throws JSONException {
+        final String connectorName = obj.getString("name");
+        final String category = obj.getString("category");
+        final String url = obj.getString("url");
+        final String description = getDescriptionForSource(connectorName);
+        return new StitchPseudoComponent(connectorName, category, url, description);
     }
 
     private static String getDescriptionForSource(String connectorName) {
