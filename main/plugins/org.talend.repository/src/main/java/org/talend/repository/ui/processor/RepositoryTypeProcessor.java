@@ -62,7 +62,7 @@ public class RepositoryTypeProcessor extends SingleTypeProcessor {
 
     @Override
     protected ERepositoryObjectType getType() {
-        final String repositoryType = getRepositoryType();
+        String repositoryType = getRepositoryType();
 
         if (repositoryType == null) { // all
             return ERepositoryObjectType.METADATA;
@@ -96,7 +96,12 @@ public class RepositoryTypeProcessor extends SingleTypeProcessor {
             return ERepositoryObjectType.METADATA_WSDL_SCHEMA;
         }
         if (repositoryType.equals(ERepositoryCategoryType.SALESFORCE.getName())) {
-            return ERepositoryObjectType.METADATA_SALESFORCE_SCHEMA;
+            if (isGeneric) {
+                return ERepositoryObjectType.METADATA_SALESFORCE_SCHEMA;
+            } else {
+                // Javajet components: tSalesforceEinsteinBulkExec/tSalesforceEinsteinOutputBulkExec
+                repositoryType = repositoryType.toLowerCase();
+            }
         }
 
         if (repositoryType.startsWith(ERepositoryCategoryType.DATABASE.getName())) {
@@ -136,7 +141,7 @@ public class RepositoryTypeProcessor extends SingleTypeProcessor {
         // http://jira.talendforge.org/browse/TESB-5218 LiXiaopeng
         if (repositoryType.equals("SERVICES:OPERATION") || repositoryType.equals("WEBSERVICE")) { //$NON-NLS-1$
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-                IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                IESBService service = GlobalServiceRegister.getDefault().getService(IESBService.class);
                 return service.getServicesType();
             }
         }

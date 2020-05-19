@@ -105,6 +105,7 @@ if(currentRowCount_<%=cid %> > 0){
 		}
 %>  
     	nestXMLTool_<%=cid%>.replaceDefaultNameSpace(doc_<%=cid%>.getRootElement());
+    	nestXMLTool_<%=cid%>.removeWhiteSpaceTextNode(doc_<%=cid %>.getRootElement());
 <%
 		if(!("true").equals(outputAsXSD) && !("true").equals(allowEmpty)){
 %>

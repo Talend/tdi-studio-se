@@ -97,6 +97,7 @@ import org.talend.core.model.update.AbstractUpdateManager;
 import org.talend.core.model.update.EUpdateItemType;
 import org.talend.core.model.update.EUpdateResult;
 import org.talend.core.model.update.IUpdateItemType;
+import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.model.update.UpdateManagerHelper;
 import org.talend.core.model.update.UpdateResult;
 import org.talend.core.model.update.UpdatesConstants;
@@ -666,7 +667,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      * check job settings parameters.
      */
     private List<UpdateResult> checkMainParameters(EUpdateItemType type, boolean onlySimpleShow,
-            Map<Object, Object> contextData) {
+            Map<Object, Object> contextData) throws PersistenceException {
         List<UpdateResult> mainResults = new ArrayList<UpdateResult>();
         switch (type) {
         case JOB_PROPERTY_MAPREDUCE:
@@ -859,12 +860,12 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     private List<UpdateResult> checkJobSettingsParameters(EComponentCategory category, EUpdateItemType type,
-            boolean onlySimpleShow) {
+            boolean onlySimpleShow) throws PersistenceException {
         return checkJobSettingsParameters(category, type, onlySimpleShow, new HashMap<Object, Object>());
     }
 
     private List<UpdateResult> checkJobSettingsParameters(EComponentCategory category, EUpdateItemType type,
-            boolean onlySimpleShow, Map<Object, Object> contextData) {
+            boolean onlySimpleShow, Map<Object, Object> contextData) throws PersistenceException {
         List<UpdateResult> jobSettingsResults = new ArrayList<UpdateResult>();
         final IElementParameter propertyTypeParam = getProcess().getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE,
                 category);
@@ -1012,7 +1013,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      */
     @SuppressWarnings("unchecked")
     private List<UpdateResult> checkNodesParameters(EUpdateItemType type, boolean onlySimpleShow,
-            Map<Object, Object> contextData) {
+            Map<Object, Object> contextData) throws PersistenceException {
         List<UpdateResult> nodesResults = new ArrayList<UpdateResult>();
         for (Node node : (List<Node>) getProcess().getGraphicalNodes()) {
             switch (type) {
@@ -1776,9 +1777,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      *
      * @param node
      * @return true if the data have been modified
+     * @throws PersistenceException
      */
     @SuppressWarnings("unchecked")
-    private List<UpdateResult> checkNodePropertiesFromRepository(final Node node, boolean onlySimpleShow) {
+    private List<UpdateResult> checkNodePropertiesFromRepository(final Node node, boolean onlySimpleShow)
+            throws PersistenceException {
         return checkNodePropertiesFromRepository(node, onlySimpleShow, new HashMap<Object, Object>());
     }
 
@@ -1788,10 +1791,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      *
      * @param node
      * @return true if the data have been modified
+     * @throws PersistenceException
      */
     @SuppressWarnings("unchecked")
     private List<UpdateResult> checkNodePropertiesFromRepository(final Node node, boolean onlySimpleShow,
-            Map<Object, Object> contextData) {
+            Map<Object, Object> contextData) throws PersistenceException {
         if (node == null) {
             return Collections.emptyList();
         }
@@ -2462,13 +2466,16 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
      * ggu Comment method "checkParameterContextMode".
      *
      * for bug 5198
+     * 
+     * @throws PersistenceException
      */
     private List<UpdateResult> checkParameterContextMode(final List<? extends IElementParameter> parameters,
-            ConnectionItem connItem, EComponentCategory category, Map<Object, Object> contextData) {
+            ConnectionItem connItem, EComponentCategory category, Map<Object, Object> contextData) throws PersistenceException {
         List<UpdateResult> contextResults = new ArrayList<UpdateResult>();
         Map<String, String> renamedMap = ContextUtils.getContextParamterRenamedMap(process.getProperty().getItem());
         if (connItem != null && parameters != null) {
             ConnectionContextHelper.checkContextMode(connItem);
+            RepositoryUpdateManager.updateConnectionContextParam(connItem);
             Connection connection = connItem.getConnection();
             if (connection.isContextMode()) {
                 Set<String> neededVars = ConnectionContextHelper.retrieveContextVar(parameters, connection, category,
@@ -2748,14 +2755,22 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             case NODE_SAP_IDOC:
             case NODE_SAP_FUNCTION:
             case NODE_VALIDATION_RULE:
-                tmpResults = checkNodesParameters(type, onlySimpleShow, contextData);
+                try {
+                    tmpResults = checkNodesParameters(type, onlySimpleShow, contextData);
+                } catch (PersistenceException ex) {
+
+                }
                 break;
             case JOB_PROPERTY_EXTRA:
             case JOB_PROPERTY_STATS_LOGS:
             case JOB_PROPERTY_HEADERFOOTER:
             case JOB_PROPERTY_STORM:
             case JOB_PROPERTY_MAPREDUCE:
-                tmpResults = checkMainParameters(type, onlySimpleShow, contextData);
+                try {
+                    tmpResults = checkMainParameters(type, onlySimpleShow, contextData);
+                } catch (PersistenceException ex) {
+                    ExceptionHandler.process(ex);
+                }
                 break;
             case CONTEXT:
                 tmpResults = checkContext(onlySimpleShow);
