@@ -75,8 +75,10 @@ public class StitchDataLoaderConstants {
     private static void loadLatestStitchPseudoComponents() {
         try {
             URL stitchConnectorURL = new URL(STITCH_DATA_CONNECTOR_JSON_URL);
-            HttpsURLConnection con = (HttpsURLConnection) stitchConnectorURL.openConnection();
-            InputStream ins = con.getInputStream();
+            HttpsURLConnection urlc = (HttpsURLConnection) stitchConnectorURL.openConnection();
+            urlc.setConnectTimeout(2000);
+            urlc.setReadTimeout(2000);
+            InputStream ins = urlc.getInputStream();
             String resourceString = IOUtils.toString(ins, "UTF-8");
             ins.close();
             readFromJsonString(resourceString);
