@@ -1,5 +1,5 @@
 {
-  "last-updated": "2020-05-15 03:42:20 +0000",
+  "last-updated": "2020-05-19 02:44:16 +0000",
   "utm-params": {
     "utm_medium": "tos",
     "utm_source": "talend",
@@ -9,668 +9,675 @@
   "stitch-sources": [
     {
       "name": "AdRoll",
+      "category": "Advertising",
       "slug": "adroll",
       "url": "https://www.stitchdata.com/integrations/adroll"
     },
     {
       "name": "AfterShip",
+      "category": "Business",
       "slug": "aftership",
       "url": "https://www.stitchdata.com/integrations/aftership"
     },
     {
-      "name": "Amazon Aurora MySQL",
-      "slug": "amazon-aurora",
-      "url": "https://www.stitchdata.com/integrations/amazon-aurora"
-    },
-    {
-      "name": "Amazon Aurora PostgreSQL",
-      "slug": "amazon-aurora-postgresql",
-      "url": "https://www.stitchdata.com/integrations/amazon-aurora-postgresql"
-    },
-    {
       "name": "Amazon RDS for MariaDB",
+      "category": "Databases",
       "slug": "amazon-rds-mariadb",
       "url": "https://www.stitchdata.com/integrations/amazon-rds-mariadb"
     },
     {
-      "name": "Amazon RDS for MySQL",
-      "slug": "amazon-rds-mysql",
-      "url": "https://www.stitchdata.com/integrations/amazon-rds-mysql"
-    },
-    {
-      "name": "Amazon RDS for Oracle Database",
-      "slug": "amazon-rds-oracle",
-      "url": "https://www.stitchdata.com/integrations/amazon-rds-oracle"
-    },
-    {
       "name": "Amazon RDS for PostgreSQL",
+      "category": "Databases",
       "slug": "amazon-rds-postgresql",
       "url": "https://www.stitchdata.com/integrations/amazon-rds-postgresql"
     },
     {
       "name": "Amazon RDS for SQL Server",
+      "category": "Databases",
       "slug": "amazon-rds-sqlserver",
       "url": "https://www.stitchdata.com/integrations/amazon-rds-sqlserver"
     },
     {
       "name": "Amazon S3 CSV",
+      "category": "Analytics",
       "slug": "s3-csv",
       "url": "https://www.stitchdata.com/integrations/s3-csv"
     },
     {
       "name": "Amplitude",
+      "category": "Analytics",
       "slug": "amplitude",
       "url": "https://www.stitchdata.com/integrations/amplitude"
     },
     {
       "name": "AppsFlyer",
+      "category": "Analytics",
       "slug": "appsflyer",
       "url": "https://www.stitchdata.com/integrations/appsflyer"
     },
     {
       "name": "Asana",
+      "category": "Business",
       "slug": "asana",
       "url": "https://www.stitchdata.com/integrations/asana"
     },
     {
       "name": "Autopilot",
+      "category": "Business",
       "slug": "autopilot",
       "url": "https://www.stitchdata.com/integrations/autopilot"
     },
     {
       "name": "Autopilot Activities",
+      "category": "Automation",
       "slug": "autopilot-activities",
       "url": "https://www.stitchdata.com/integrations/autopilot-activities"
     },
     {
       "name": "BigCommerce",
+      "category": "eCommerce",
       "slug": "bigcommerce",
       "url": "https://www.stitchdata.com/integrations/bigcommerce"
     },
     {
       "name": "Braintree",
+      "category": "Business",
       "slug": "braintree",
       "url": "https://www.stitchdata.com/integrations/braintree"
     },
     {
       "name": "Branch",
+      "category": "Business",
       "slug": "branch",
       "url": "https://www.stitchdata.com/integrations/branch"
     },
     {
       "name": "COVID-19 Public Data",
+      "category": "Analytics",
       "slug": "covid-19",
       "url": "https://www.stitchdata.com/integrations/covid-19"
     },
     {
       "name": "Campaign Manager",
+      "category": "Advertising",
       "slug": "doubleclick-campaign-manager",
       "url": "https://www.stitchdata.com/integrations/doubleclick-campaign-manager"
     },
     {
       "name": "Campaign Monitor",
+      "category": "Email",
       "slug": "campaign-monitor",
       "url": "https://www.stitchdata.com/integrations/campaign-monitor"
     },
     {
       "name": "Chargebee",
+      "category": "Business",
       "slug": "chargebee",
       "url": "https://www.stitchdata.com/integrations/chargebee"
     },
     {
       "name": "Close",
+      "category": "CRM",
       "slug": "close-io",
       "url": "https://www.stitchdata.com/integrations/close-io"
     },
     {
       "name": "Club Speed",
+      "category": "eCommerce",
       "slug": "clubspeed",
       "url": "https://www.stitchdata.com/integrations/clubspeed"
     },
     {
       "name": "Codat",
+      "category": "Business",
       "slug": "codat",
       "url": "https://www.stitchdata.com/integrations/codat"
     },
     {
       "name": "Contentful",
+      "category": "CRM",
       "slug": "contentful",
       "url": "https://www.stitchdata.com/integrations/contentful"
     },
     {
       "name": "Customer.io",
+      "category": "Email",
       "slug": "customer-io",
       "url": "https://www.stitchdata.com/integrations/customer-io"
     },
     {
       "name": "Delighted",
+      "category": "Automation",
       "slug": "delighted",
       "url": "https://www.stitchdata.com/integrations/delighted"
     },
     {
       "name": "Deputy",
+      "category": "Business",
       "slug": "deputy",
       "url": "https://www.stitchdata.com/integrations/deputy"
     },
     {
       "name": "Desk.com",
+      "category": "Support",
       "slug": "desk-com",
       "url": "https://www.stitchdata.com/integrations/desk-com"
     },
     {
       "name": "Drip",
+      "category": "Automation",
       "slug": "drip",
       "url": "https://www.stitchdata.com/integrations/drip"
     },
     {
       "name": "Eloqua",
+      "category": "Automation",
       "slug": "eloqua",
       "url": "https://www.stitchdata.com/integrations/eloqua"
     },
     {
-      "name": "FTP/SFTP/FTPS",
-      "slug": "ftp-sftp-ftps",
-      "url": "https://www.stitchdata.com/integrations/ftp-sftp-ftps"
-    },
-    {
       "name": "Facebook Ads",
+      "category": "Advertising",
       "slug": "facebook-ads",
       "url": "https://www.stitchdata.com/integrations/facebook-ads"
     },
     {
       "name": "FormKeep",
+      "category": "Automation",
       "slug": "formkeep",
       "url": "https://www.stitchdata.com/integrations/formkeep"
     },
     {
       "name": "Freshdesk",
+      "category": "Email",
       "slug": "freshdesk",
       "url": "https://www.stitchdata.com/integrations/freshdesk"
     },
     {
       "name": "Front",
+      "category": "Email",
       "slug": "frontapp",
       "url": "https://www.stitchdata.com/integrations/frontapp"
     },
     {
       "name": "FullStory",
+      "category": "Analytics",
       "slug": "fullstory",
       "url": "https://www.stitchdata.com/integrations/fullstory"
     },
     {
       "name": "GitHub",
+      "category": "Business",
       "slug": "github",
       "url": "https://www.stitchdata.com/integrations/github"
     },
     {
       "name": "GitLab",
+      "category": "Business",
       "slug": "gitlab",
       "url": "https://www.stitchdata.com/integrations/gitlab"
     },
     {
       "name": "Google Ads",
+      "category": "Advertising",
       "slug": "adwords",
       "url": "https://www.stitchdata.com/integrations/adwords"
     },
     {
       "name": "Google Analytics",
+      "category": "Analytics",
       "slug": "google-analytics",
       "url": "https://www.stitchdata.com/integrations/google-analytics"
     },
     {
       "name": "Google Cloud SQL MySQL",
+      "category": "Databases",
       "slug": "google-cloud-sql",
       "url": "https://www.stitchdata.com/integrations/google-cloud-sql"
     },
     {
       "name": "Google Cloud SQL PostgreSQL",
+      "category": "Databases",
       "slug": "google-cloud-sql-postgresql",
       "url": "https://www.stitchdata.com/integrations/google-cloud-sql-postgresql"
     },
     {
       "name": "Google Ecommerce",
+      "category": "Analytics",
       "slug": "google-ecommerce",
       "url": "https://www.stitchdata.com/integrations/google-ecommerce"
     },
     {
       "name": "Google Sheets",
+      "category": "Analytics",
       "slug": "google-sheets",
       "url": "https://www.stitchdata.com/integrations/google-sheets"
     },
     {
       "name": "Harvest",
+      "category": "Business",
       "slug": "harvest",
       "url": "https://www.stitchdata.com/integrations/harvest"
     },
     {
       "name": "Harvest Forecast",
+      "category": "Business",
       "slug": "harvest-forecast",
       "url": "https://www.stitchdata.com/integrations/harvest-forecast"
     },
     {
       "name": "Heap",
+      "category": "Analytics",
       "slug": "heap",
       "url": "https://www.stitchdata.com/integrations/heap"
     },
     {
       "name": "Help Scout",
+      "category": "Support",
       "slug": "helpscout",
       "url": "https://www.stitchdata.com/integrations/helpscout"
     },
     {
       "name": "Heroku",
+      "category": "Databases",
       "slug": "heroku",
       "url": "https://www.stitchdata.com/integrations/heroku"
     },
     {
       "name": "HubSpot",
+      "category": "Email",
       "slug": "hubspot",
       "url": "https://www.stitchdata.com/integrations/hubspot"
     },
     {
       "name": "IBM Db2",
+      "category": "Databases",
       "slug": "db2",
       "url": "https://www.stitchdata.com/integrations/db2"
     },
     {
       "name": "Import API",
+      "category": "Business",
       "slug": "import-api",
       "url": "https://www.stitchdata.com/integrations/import-api"
     },
     {
       "name": "Intacct",
+      "category": "Business",
       "slug": "intacct",
       "url": "https://www.stitchdata.com/integrations/intacct"
     },
     {
       "name": "Intercom",
+      "category": "Support",
       "slug": "intercom",
       "url": "https://www.stitchdata.com/integrations/intercom"
     },
     {
       "name": "Invoiced",
+      "category": "eCommerce",
       "slug": "invoiced",
       "url": "https://www.stitchdata.com/integrations/invoiced"
     },
     {
       "name": "Iterable",
+      "category": "Email",
       "slug": "iterable",
       "url": "https://www.stitchdata.com/integrations/iterable"
     },
     {
       "name": "Jira",
+      "category": "Support",
       "slug": "jira",
       "url": "https://www.stitchdata.com/integrations/jira"
     },
     {
       "name": "Klaviyo",
+      "category": "Email",
       "slug": "klaviyo",
       "url": "https://www.stitchdata.com/integrations/klaviyo"
     },
     {
       "name": "Listrak",
+      "category": "CRM",
       "slug": "listrak",
       "url": "https://www.stitchdata.com/integrations/listrak"
     },
     {
       "name": "LivePerson",
+      "category": "CRM",
       "slug": "liveperson",
       "url": "https://www.stitchdata.com/integrations/liveperson"
     },
     {
       "name": "Magento",
+      "category": "Databases",
       "slug": "magento",
       "url": "https://www.stitchdata.com/integrations/magento"
     },
     {
       "name": "Mailchimp",
+      "category": "Business",
       "slug": "mailchimp",
       "url": "https://www.stitchdata.com/integrations/mailchimp"
     },
     {
       "name": "Mailjet",
+      "category": "Email",
       "slug": "mailjet",
       "url": "https://www.stitchdata.com/integrations/mailjet"
     },
     {
       "name": "Mambu",
+      "category": "Business",
       "slug": "mambu",
       "url": "https://www.stitchdata.com/integrations/mambu"
     },
     {
       "name": "MariaDB",
+      "category": "Databases",
       "slug": "mariadb",
       "url": "https://www.stitchdata.com/integrations/mariadb"
     },
     {
-      "name": "Marketo",
-      "slug": "marketo-bulk",
-      "url": "https://www.stitchdata.com/integrations/marketo-bulk"
-    },
-    {
       "name": "Microsoft Advertising (Bing Ads)",
+      "category": "Advertising",
       "slug": "bing-ads",
       "url": "https://www.stitchdata.com/integrations/bing-ads"
     },
     {
       "name": "Microsoft Azure SQL Server Database",
+      "category": "Databases",
       "slug": "microsoft-azure",
       "url": "https://www.stitchdata.com/integrations/microsoft-azure"
     },
     {
-      "name": "Microsoft SQL Server",
-      "slug": "sql-server",
-      "url": "https://www.stitchdata.com/integrations/sql-server"
-    },
-    {
       "name": "Mixpanel",
+      "category": "Analytics",
       "slug": "mixpanel",
       "url": "https://www.stitchdata.com/integrations/mixpanel"
     },
     {
-      "name": "MongoDB",
-      "slug": "mongodb",
-      "url": "https://www.stitchdata.com/integrations/mongodb"
-    },
-    {
-      "name": "MySQL",
-      "slug": "mysql",
-      "url": "https://www.stitchdata.com/integrations/mysql"
-    },
-    {
-      "name": "Netsuite",
-      "slug": "netsuite",
-      "url": "https://www.stitchdata.com/integrations/netsuite"
-    },
-    {
       "name": "Onfleet",
+      "category": "eCommerce",
       "slug": "onfleet",
       "url": "https://www.stitchdata.com/integrations/onfleet"
     },
     {
-      "name": "Oracle",
-      "slug": "oracle",
-      "url": "https://www.stitchdata.com/integrations/oracle"
-    },
-    {
       "name": "Oracle Netsuite Bronto Marketing Platform",
+      "category": "Email",
       "slug": "bronto",
       "url": "https://www.stitchdata.com/integrations/bronto"
     },
     {
       "name": "Outbrain",
+      "category": "Advertising",
       "slug": "outbrain",
       "url": "https://www.stitchdata.com/integrations/outbrain"
     },
     {
       "name": "Pardot",
+      "category": "Email",
       "slug": "pardot",
       "url": "https://www.stitchdata.com/integrations/pardot"
     },
     {
       "name": "Particle",
+      "category": "Automation",
       "slug": "particle",
       "url": "https://www.stitchdata.com/integrations/particle"
     },
     {
       "name": "Pepperjam",
+      "category": "Business",
       "slug": "pepperjam",
       "url": "https://www.stitchdata.com/integrations/pepperjam"
     },
     {
       "name": "Pinterest Ads",
+      "category": "eCommerce",
       "slug": "pinterest-ads",
       "url": "https://www.stitchdata.com/integrations/pinterest-ads"
     },
     {
       "name": "Pipedrive",
+      "category": "CRM",
       "slug": "pipedrive",
       "url": "https://www.stitchdata.com/integrations/pipedrive"
     },
     {
       "name": "Platform Purple",
+      "category": "Advertising",
       "slug": "platform-purple",
       "url": "https://www.stitchdata.com/integrations/platform-purple"
     },
     {
-      "name": "PostgreSQL",
-      "slug": "postgresql",
-      "url": "https://www.stitchdata.com/integrations/postgresql"
-    },
-    {
       "name": "Quick Base",
+      "category": "Business",
       "slug": "quick-base",
       "url": "https://www.stitchdata.com/integrations/quick-base"
     },
     {
       "name": "Quickbooks Online",
+      "category": "Business",
       "slug": "quickbooks-online",
       "url": "https://www.stitchdata.com/integrations/quickbooks-online"
     },
     {
       "name": "ReCharge",
+      "category": "eCommerce",
       "slug": "recharge",
       "url": "https://www.stitchdata.com/integrations/recharge"
     },
     {
       "name": "Recurly",
+      "category": "Payments",
       "slug": "recurly",
       "url": "https://www.stitchdata.com/integrations/recurly"
     },
     {
       "name": "Referral SaaSquatch",
+      "category": "Business",
       "slug": "referral-saasquatch",
       "url": "https://www.stitchdata.com/integrations/referral-saasquatch"
     },
     {
       "name": "Responsys",
+      "category": "Business",
       "slug": "responsys",
       "url": "https://www.stitchdata.com/integrations/responsys"
     },
     {
       "name": "Revinate",
+      "category": "CRM",
       "slug": "revinate",
       "url": "https://www.stitchdata.com/integrations/revinate"
     },
     {
       "name": "RingCentral",
+      "category": "Business",
       "slug": "ringcentral",
       "url": "https://www.stitchdata.com/integrations/ringcentral"
     },
     {
-      "name": "SFTP",
-      "slug": "sftp",
-      "url": "https://www.stitchdata.com/integrations/sftp"
-    },
-    {
-      "name": "Salesforce",
-      "slug": "salesforce",
-      "url": "https://www.stitchdata.com/integrations/salesforce"
-    },
-    {
-      "name": "Salesforce Marketing Cloud",
-      "slug": "salesforce-marketing-cloud",
-      "url": "https://www.stitchdata.com/integrations/salesforce-marketing-cloud"
-    },
-    {
       "name": "Segment",
+      "category": "Analytics",
       "slug": "segment",
       "url": "https://www.stitchdata.com/integrations/segment"
     },
     {
       "name": "Selligent",
+      "category": "CRM",
       "slug": "selligent",
       "url": "https://www.stitchdata.com/integrations/selligent"
     },
     {
       "name": "SendGrid",
+      "category": "Email",
       "slug": "sendgrid",
       "url": "https://www.stitchdata.com/integrations/sendgrid"
     },
     {
       "name": "SendGrid Core",
+      "category": "Email",
       "slug": "sendgrid-core",
       "url": "https://www.stitchdata.com/integrations/sendgrid-core"
     },
     {
       "name": "Sendwithus",
+      "category": "Email",
       "slug": "sendwithus",
       "url": "https://www.stitchdata.com/integrations/sendwithus"
     },
     {
       "name": "ShipHero",
+      "category": "Business",
       "slug": "shiphero",
       "url": "https://www.stitchdata.com/integrations/shiphero"
     },
     {
       "name": "Shippo",
+      "category": "Business",
       "slug": "shippo",
       "url": "https://www.stitchdata.com/integrations/shippo"
     },
     {
       "name": "Shopify",
+      "category": "Business",
       "slug": "shopify",
       "url": "https://www.stitchdata.com/integrations/shopify"
     },
     {
       "name": "SparkPost",
+      "category": "Email",
       "slug": "sparkpost",
       "url": "https://www.stitchdata.com/integrations/sparkpost"
     },
     {
       "name": "Square",
+      "category": "Payments",
       "slug": "square",
       "url": "https://www.stitchdata.com/integrations/square"
     },
     {
       "name": "Stripe",
+      "category": "Payments",
       "slug": "stripe",
       "url": "https://www.stitchdata.com/integrations/stripe"
     },
     {
       "name": "SurveyMonkey",
+      "category": "Business",
       "slug": "surveymonkey",
       "url": "https://www.stitchdata.com/integrations/surveymonkey"
     },
     {
       "name": "Taboola",
+      "category": "Business",
       "slug": "taboola",
       "url": "https://www.stitchdata.com/integrations/taboola"
     },
     {
       "name": "Toggl",
+      "category": "Business",
       "slug": "platform.toggl",
       "url": "https://www.stitchdata.com/integrations/platform.toggl"
     },
     {
       "name": "Trello",
+      "category": "Business",
       "slug": "trello",
       "url": "https://www.stitchdata.com/integrations/trello"
     },
     {
       "name": "Typeform",
+      "category": "eCommerce",
       "slug": "typeform",
       "url": "https://www.stitchdata.com/integrations/typeform"
     },
     {
       "name": "Urban Airship",
+      "category": "Automation",
       "slug": "urban-airship",
       "url": "https://www.stitchdata.com/integrations/urban-airship"
     },
     {
       "name": "UserVoice",
+      "category": "Analytics",
       "slug": "uservoice",
       "url": "https://www.stitchdata.com/integrations/uservoice"
     },
     {
       "name": "Vero",
+      "category": "Email",
       "slug": "vero",
       "url": "https://www.stitchdata.com/integrations/vero"
     },
     {
       "name": "Webhooks",
+      "category": "Automation",
       "slug": "webhooks",
       "url": "https://www.stitchdata.com/integrations/webhooks"
     },
     {
-      "name": "Workday RaaS",
-      "slug": "workday-raas",
-      "url": "https://www.stitchdata.com/integrations/workday-raas"
-    },
-    {
       "name": "Xero",
+      "category": "Business",
       "slug": "xero",
       "url": "https://www.stitchdata.com/integrations/xero"
     },
     {
       "name": "Yotpo",
+      "category": "Business",
       "slug": "yotpo",
       "url": "https://www.stitchdata.com/integrations/yotpo"
     },
     {
       "name": "Zapier",
+      "category": "Automation",
       "slug": "zapier",
       "url": "https://www.stitchdata.com/integrations/zapier"
     },
     {
       "name": "Zendesk Chat",
+      "category": "Support",
       "slug": "zendesk-chat",
       "url": "https://www.stitchdata.com/integrations/zendesk-chat"
     },
     {
       "name": "Zendesk Support",
+      "category": "Support",
       "slug": "zendesk",
       "url": "https://www.stitchdata.com/integrations/zendesk"
     },
     {
       "name": "Zuora",
+      "category": "Business",
       "slug": "zuora",
       "url": "https://www.stitchdata.com/integrations/zuora"
     }
   ],
   "stitch-destinations": [
     {
-      "name": "Amazon Redshift",
-      "slug": "amazon-redshift",
-      "url": "https://www.stitchdata.com/data-warehouses/amazon-redshift"
-    },
-    {
-      "name": "Amazon S3",
-      "slug": "amazon-s3",
-      "url": "https://www.stitchdata.com/data-warehouses/amazon-s3"
-    },
-    {
       "name": "Delta Lake on Databricks",
+      "category": "Data Warehouse",
       "slug": "databricks-delta",
       "url": "https://www.stitchdata.com/data-warehouses/databricks-delta"
     },
     {
-      "name": "Google BigQuery",
-      "slug": "google-bigquery",
-      "url": "https://www.stitchdata.com/data-warehouses/google-bigquery"
-    },
-    {
       "name": "Microsoft Azure Synapse Analytics",
+      "category": "Data Warehouse",
       "slug": "azure-sql-data-warehouse",
       "url": "https://www.stitchdata.com/data-warehouses/azure-sql-data-warehouse"
     },
     {
       "name": "Panoply",
+      "category": "Data Warehouse",
       "slug": "panoply",
       "url": "https://www.stitchdata.com/data-warehouses/panoply"
     },
     {
-      "name": "PostgreSQL",
-      "slug": "postgresql",
-      "url": "https://www.stitchdata.com/data-warehouses/postgresql"
-    },
-    {
-      "name": "Snowflake",
-      "slug": "snowflake",
-      "url": "https://www.stitchdata.com/data-warehouses/snowflake"
-    },
-    {
       "name": "data.world",
+      "category": "Data Warehouse",
       "slug": "dataworld",
       "url": "https://www.stitchdata.com/data-warehouses/dataworld"
     }
