@@ -105,7 +105,7 @@ if(useExistingConnection) {
 			}
 			else {
 %>
-			String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + host_<%=cid%> + ":" + port_<%=cid%> + ";DatabaseName" + db_<%=cid%> + ";" + <%=dbproperties%>;
+			String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + host_<%=cid%> + ":" + port_<%=cid%> + ";DatabaseName=" + db_<%=cid%> + ";" + <%=dbproperties%>;
 <%
 			}
 		}

@@ -44,7 +44,14 @@
 			xmlns:tns="${endpoint.serviceNamespace}"
 			serviceName="tns:${endpoint.serviceName}"
 #end
-			address="${endpoint.address}">
+
+#if (!$endpoint.useContextBean)
+	address="${endpoint.address}">
+#end
+
+#if ($endpoint.useContextBean)
+	address="#contextBean">
+#end			
 		<jaxrs:serviceBeans>
 			<ref component-id="serviceBean" />
 		</jaxrs:serviceBeans>
@@ -185,5 +192,10 @@
 ]]#
 #end
 
-
+#if ($endpoint.useContextBean)
+	<bean id="contextBean" class="${job.className}.ContextBean" factory-method="getContext">
+		<argument value="${endpoint.defaultContext}" />
+		<argument value="${endpoint.address}" />
+	</bean>
+#end
 </blueprint>

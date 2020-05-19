@@ -58,6 +58,10 @@ public class CheckJobResourceDeleteReference extends AbstractCheckDeleteItemRefe
         try {
             for (Relation relation : relations) {
                 IRepositoryViewObject relatedObj = factory.getSpecificVersion(relation.getId(), relation.getVersion(), true);
+                if (relatedObj == null) {
+                    // redundant relation
+                    continue;
+                }
                 final Property property = relatedObj.getProperty();
                 final Item item = property.getItem();
                 String resRelatedVersion = getResourceRelatedVersion(resourceId, relatedObj);
