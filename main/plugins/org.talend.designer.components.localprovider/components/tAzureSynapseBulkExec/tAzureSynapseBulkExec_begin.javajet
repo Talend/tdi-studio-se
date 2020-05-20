@@ -22,16 +22,6 @@ skeleton="../templates/db_output_bulk.skeleton"
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
 
-    String storageType = ElementParameterParser.getValue(node, "__AZURE_STORAGE__");
-    String accountName = ElementParameterParser.getValue(node, "__ACCOUNT_NAME__");
-    
-    String clientId = ElementParameterParser.getValue(node, "__CLIENT_ID__");
-    String oauthEndpoint = ElementParameterParser.getValue(node, "__ENDPOINT__");    
-    
-    String container = ElementParameterParser.getValue(node, "__CONTAINER__");
-
-    String azureFolder = ElementParameterParser.getValue(node, "__AZURE_LOCATION__");
-    
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 %>
 
@@ -62,152 +52,120 @@ skeleton="../templates/db_output_bulk.skeleton"
     
     String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
     
-    String fieldSeparator = ElementParameterParser.getValueWithUIFieldKey(node,"__FIELDSEPARATOR__","FIELDSEPARATOR");
-    
-    String loadFileFormat = ElementParameterParser.getValue(node,"__IMPORT_TYPE__");
-    
-    boolean dateFormat = "true".equals(ElementParameterParser.getValue(node,"__DATE_FORMAT__"));
-    
-    String datePattern = ElementParameterParser.getValue(node,"__DATE_PATTERN__");
-    
-    boolean useStringDelimiter = "true".equals(ElementParameterParser.getValue(node,"__USE_STRING_DELIMITER__"));
-    
-    String stringDelimiter = ElementParameterParser.getValueWithUIFieldKey(node,"__STRINGDELIMITER__","STRINGDELIMITER");
-        
-    boolean isTypeDefault = "true".equals(ElementParameterParser.getValue(node,"__USE_TYPE_DEFAULT__"));
-    
-    boolean isCompress = "true".equals(ElementParameterParser.getValue(node, "__COMPRESS__"));
-    
-    String compressionType = null;
-    
-    String serdeMethod = ElementParameterParser.getValue(node,"__SERDE_METHOD__");
-
     boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 
-    if (isCompress) {
-        if ("DELIMITED_TEXT".equals(loadFileFormat)) {
-            compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_TEXT__");
-        } else if ("HIVE_RCFILE".equals(loadFileFormat)) {
-            compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_RC__");
-        } else if ("HIVE_ORC".equals(loadFileFormat)) {
-            compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_ORC__");
-        } else if ("PARQUET".equals(loadFileFormat)) {
-            compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_PARQUET__");
-        }
-    }
+    // PolyBase & Copy shared config
+    boolean isPolyBase = "POLYBASE".equals(ElementParameterParser.getValue(node,"__LOAD_METHOD__"));
     
-    String fileFormatType= null;
-    if ("DELIMITED_TEXT".equals(loadFileFormat)) {
-        fileFormatType = "DelimitedText";
-    } else if ("HIVE_RCFILE".equals(loadFileFormat)) {
-        fileFormatType = "RCFILE";
-    } else if ("HIVE_ORC".equals(loadFileFormat)) {
-        fileFormatType = "ORC";
-    } else if ("PARQUET".equals(loadFileFormat)) {
-        fileFormatType = "PARQUET";
-    }
-    // External Table Reject Options
-    
-    boolean isEnabledExtTableOptions = "true".equals(ElementParameterParser.getValue(node, "__EXT_TABLE_OPTIONS__"));
-    
-    String rejectType = ElementParameterParser.getValue(node,"__REJECT_TYPE__");
-    
-    String rejectValue = ElementParameterParser.getValue(node,"__REJECT_VALUE__");
-    
-    String rejectSampleValue = ElementParameterParser.getValue(node,"__REJECT_SAMPLE_VALUE__");    
+    String storageType = ElementParameterParser.getValue(node, "__AZURE_STORAGE__");
+    String accountName = ElementParameterParser.getValue(node, "__ACCOUNT_NAME__");
+    String container = ElementParameterParser.getValue(node, "__CONTAINER__");
+    String azureFolder = ElementParameterParser.getValue(node, "__AZURE_LOCATION__");
+    boolean isCompress = "true".equals(ElementParameterParser.getValue(node, "__COMPRESS__"));
     
     String DistributionOption = ElementParameterParser.getValue(node,"__DISTRIBUTION__");
-    
     String DistributionColumnName = ElementParameterParser.getValue(node,"__DISTRIBUTION_COLUMN_NAME__");
-    
     String TableOption = ElementParameterParser.getValue(node,"__TABLE_OPTION__");
-    
     String IndexColumns = ElementParameterParser.getValue(node,"__INDEX_COLUMNS__");
-    
     boolean isEnabled_Partition = "true".equals(ElementParameterParser.getValue(node, "__PARTITION__"));
-    
     String PartitionColumnName = ElementParameterParser.getValue(node,"__PARTITION_COLUMN_NAME__");
-    
     String PartitionRange = ElementParameterParser.getValue(node,"__PARTITION_COLUMN_NAME_RANGE__");
-    
     String PartitionValues = ElementParameterParser.getValue(node,"__PARTITION_VALUES__");
-    
-    // External Table Reject Options END
     
 %>
 
-    final String OUT_DELIM_<%=cid %> = <%=fieldSeparator %>;
-    
-    String randomIdentifier_<%=cid%> = java.util.UUID.randomUUID().toString().replaceAll("-","");
-    
-    String azureCredIdentity_<%=cid%> = "";
-    String azureCredName_<%=cid%> = "";
-    String azureContainer_<%=cid%> = "";    
-    
+<%
+    String passwordFieldName = null;
+    if(isPolyBase){
+        if ("ADLS".equals(storageType)) {
+            passwordFieldName = "__PRINCIPAL_KEY__";
+        }else{
+            passwordFieldName = "__SECRET_KEY__";
+        }
+    }else{// Copy command
+        String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
+        if ("KEY".equals(authMethod)) {
+            passwordFieldName = "__SECRET_KEY__";
+        }
+    }
+%>
     String dbschema_<%=cid%> = null;
-    //external tableName
-    String ext_tableName_<%=cid%> = null;
-
     String tableName_<%=cid%> = null;
     String azureFolder_<%=cid%> = <%=azureFolder%>;
     
-    String clientId_<%=cid%> = <%=clientId%>;
-    String oauthEndpoint_<%=cid%> = <%=oauthEndpoint%>;
-    
-<%
-    String passwordFieldName = "";
-    if ("ADLS".equals(storageType)) {
-        passwordFieldName = "__PRINCIPAL_KEY__";
-    }else{
-        passwordFieldName = "__SECRET_KEY__";
-    }
-    if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
-%> 
-        final String azureAccessKey_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
-<%
-    } else {
-        
-%>
-        final String azureAccessKey_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
-<%
-    }
-     
-    if ("ADLS".equals(storageType)) {
-%>
-        azureCredIdentity_<%=cid%> = clientId_<%=cid%> + "@" + oauthEndpoint_<%=cid%>;
-        azureCredName_<%=cid%> = "talend_ADLCredential_" + randomIdentifier_<%=cid%>;
-<%
-    } else {//ADLS Gen2 & Blob Storage
-%>
-        azureCredIdentity_<%=cid%> = "talend";
-        azureCredName_<%=cid%> = "talend_AzureStorageCredential_" + randomIdentifier_<%=cid%>;
-        azureContainer_<%=cid%> = <%=container%>;
-<%
-    }
-%>
-    
-    String azureAccountName_<%=cid%> = <%=accountName%>;
-    String azureExtDataSrc_<%=cid%> = "talend_DataSource_" + randomIdentifier_<%=cid%>;
+    String randomIdentifier_<%=cid%> = java.util.UUID.randomUUID().toString().replaceAll("-","");
     String azureExtFileFormat_<%=cid%> = "talend_FileFormat_" + randomIdentifier_<%=cid%>;
-    
-    String azureFileLoadType_<%=cid%> = "<%=loadFileFormat%>";
     
     String dwDistributionOptions_<%=cid%> = "";
     String dwTableOptions_<%=cid%> = "";
     String dwPartition_<%=cid%> = "";
+<%
+    // NOT AAD
+    if(passwordFieldName != null){
+        if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
+%> 
+        final String azureAccessKey_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+<%
+        } else {
+%>
+        final String azureAccessKey_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+<%
+        }
+    }
+    if(("DROP_CREATE").equals(tableAction) || ("CREATE").equals(tableAction) || ("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {   
+    
+        // DW Table Options
+        if("CLUSTERED_COLUMNSTORE_INDEX".equals(TableOption)){
+%>    
+            dwTableOptions_<%=cid%> = "CLUSTERED COLUMNSTORE INDEX, ";
+<%
+        }else if("HEAP".equals(TableOption)){
+%>    
+            dwTableOptions_<%=cid%> = "HEAP, ";
+<%
+        }else if("CLUSTERED_INDEX".equals(TableOption)){
+%>    
+            dwTableOptions_<%=cid%> = "CLUSTERED INDEX (" + <%=IndexColumns%> + "), ";
+<%
+        }
+        // DW Table Options END
 
+        // DW Distribution Options
+        if("ROUND_ROBIN".equals(DistributionOption)){
+%>    
+            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = ROUND_ROBIN";
+<%
+        }else if("REPLICATE".equals(DistributionOption)){
+%>    
+            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = REPLICATE";
+<%
+        }else if("HASH".equals(DistributionOption)){
+%>    
+            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = HASH(" + <%=DistributionColumnName%> + ")";
+<%
+        }
+        // DW Distribution Options END
+
+        // DW Table Partition
+        if(isEnabled_Partition){
+%>
+            dwPartition_<%=cid%> = ", PARTITION ( [" + <%=PartitionColumnName%> + "] RANGE <%=PartitionRange%> FOR VALUES (" + <%=PartitionValues%> + ") )";    
+<%
+        }
+        // DW Table Partition END
+    }
+%>
+    String azureAccountName_<%=cid%> = <%=accountName%>;
 <%
     List<IMetadataColumn> columnList = getColumnList(node);
     List<Column> stmtStructure = null;
     Manager manager = null;
-
     boolean isDynamic = false;
     List<IMetadataTable> metadatas = node.getMetadataList();
     if ((metadatas!=null)&&(metadatas.size()>0)) {
         IMetadataTable metadata = metadatas.get(0);
     
     }
-
     if(columnList != null && columnList.size() > 0) {
         stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null);
     }
@@ -215,7 +173,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 
     //BEGIN CONNECTION Code 
-    
     java.sql.Connection conn_<%=cid%> = null;
 <%
     boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
@@ -282,16 +239,81 @@ skeleton="../templates/db_output_bulk.skeleton"
     dbLog.commit().logAutoCommit("conn_"+cid+".getAutoCommit()");
 %>
     if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
+        tableName_<%=cid%> = <%=table%>;
+    } else {
+        tableName_<%=cid%> = dbschema_<%=cid%> + "].[" + <%=table%>;
+    }
+<%
+    // PolyBase
+    if(isPolyBase){
+        // External Table Reject Options
+        boolean isEnabledExtTableOptions = "true".equals(ElementParameterParser.getValue(node, "__EXT_TABLE_OPTIONS__"));
+        String rejectType = ElementParameterParser.getValue(node,"__REJECT_TYPE__");
+        String rejectValue = ElementParameterParser.getValue(node,"__REJECT_VALUE__");
+        String rejectSampleValue = ElementParameterParser.getValue(node,"__REJECT_SAMPLE_VALUE__");    
+        
+        // External Table Reject Options END
+        boolean dateFormat = "true".equals(ElementParameterParser.getValue(node,"__DATE_FORMAT__"));
+        String fieldSeparator = ElementParameterParser.getValueWithUIFieldKey(node,"__FIELDSEPARATOR__","FIELDSEPARATOR");
+        String loadFileFormat = ElementParameterParser.getValue(node,"__IMPORT_TYPE__");
+        String datePattern = ElementParameterParser.getValue(node,"__DATE_PATTERN__");
+        boolean useStringDelimiter = "true".equals(ElementParameterParser.getValue(node,"__USE_STRING_DELIMITER__"));
+        String stringDelimiter = ElementParameterParser.getValueWithUIFieldKey(node,"__STRINGDELIMITER__","STRINGDELIMITER");
+        boolean isTypeDefault = "true".equals(ElementParameterParser.getValue(node,"__USE_TYPE_DEFAULT__"));
+        String serdeMethod = ElementParameterParser.getValue(node,"__SERDE_METHOD__");
+        
+        String compressionType = null;
+        if (isCompress) {
+            if ("DELIMITED_TEXT".equals(loadFileFormat)) {
+                compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_TEXT__");
+            } else if ("HIVE_RCFILE".equals(loadFileFormat)) {
+                compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_RC__");
+            } else if ("HIVE_ORC".equals(loadFileFormat)) {
+                compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_ORC__");
+            } else if ("PARQUET".equals(loadFileFormat)) {
+                compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_PARQUET__");
+            }
+        }
+        String fileFormatType= null;
+        if ("DELIMITED_TEXT".equals(loadFileFormat)) {
+            fileFormatType = "DelimitedText";
+        } else if ("HIVE_RCFILE".equals(loadFileFormat)) {
+            fileFormatType = "RCFILE";
+        } else if ("HIVE_ORC".equals(loadFileFormat)) {
+            fileFormatType = "ORC";
+        } else if ("PARQUET".equals(loadFileFormat)) {
+            fileFormatType = "PARQUET";
+        }
+        String clientId = ElementParameterParser.getValue(node, "__CLIENT_ID__");
+        String oauthEndpoint = ElementParameterParser.getValue(node, "__ENDPOINT__");
+%>
+        final String OUT_DELIM_<%=cid %> = <%=fieldSeparator %>;
+        String ext_tableName_<%=cid%> = null;
+        String azureExtDataSrc_<%=cid%> = "talend_DataSource_" + randomIdentifier_<%=cid%>;
+        String azureFileLoadType_<%=cid%> = "<%=loadFileFormat%>";
+        
+<%
+        if ("ADLS".equals(storageType)) {
+%>
+        String clientId_<%=cid%> = <%=clientId%>;
+        String oauthEndpoint_<%=cid%> = <%=oauthEndpoint%>;
+        String azureCredIdentity_<%=cid%> = clientId_<%=cid%> + "@" + oauthEndpoint_<%=cid%>;
+        String azureCredName_<%=cid%> = "talend_ADLCredential_" + randomIdentifier_<%=cid%>;
+<%
+        } else {//ADLS Gen2 & Blob Storage
+%>
+        String azureCredIdentity_<%=cid%> = "talend";
+        String azureCredName_<%=cid%> = "talend_AzureStorageCredential_" + randomIdentifier_<%=cid%>;
+        String azureContainer_<%=cid%> = <%=container%>;
+<%
+        }
+%>
+    if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
         ext_tableName_<%=cid%> = <%=table%> + "_" + randomIdentifier_<%=cid%>;
     } else {
         ext_tableName_<%=cid%> = dbschema_<%=cid%> + "].[" + <%=table%> + "_" + randomIdentifier_<%=cid%>;
     }
 
-    if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
-        tableName_<%=cid%> = <%=table%>;
-    } else {
-        tableName_<%=cid%> = dbschema_<%=cid%> + "].[" + <%=table%>;
-    }
 <%
     if(isEnabledExtTableOptions){
 %>
@@ -302,50 +324,6 @@ skeleton="../templates/db_output_bulk.skeleton"
             externalTableRejectOptions_<%=cid%> += ",REJECT_SAMPLE_VALUE = " + <%=rejectSampleValue%>;
 <%    
         }
-    }
-
-    if(("DROP_CREATE").equals(tableAction) || ("CREATE").equals(tableAction) || ("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {   
-    
-        // DW Table Options
-        if("CLUSTERED_COLUMNSTORE_INDEX".equals(TableOption)){
-%>    
-            dwTableOptions_<%=cid%> = "CLUSTERED COLUMNSTORE INDEX, ";
-<%
-        }else if("HEAP".equals(TableOption)){
-%>    
-            dwTableOptions_<%=cid%> = "HEAP, ";
-<%
-        }else if("CLUSTERED_INDEX".equals(TableOption)){
-%>    
-            dwTableOptions_<%=cid%> = "CLUSTERED INDEX (" + <%=IndexColumns%> + "), ";
-<%
-        }
-        // DW Table Options END
-
-        // DW Distribution Options
-        if("ROUND_ROBIN".equals(DistributionOption)){
-%>    
-            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = ROUND_ROBIN";
-<%
-        }else if("REPLICATE".equals(DistributionOption)){
-%>    
-            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = REPLICATE";
-<%
-        }else if("HASH".equals(DistributionOption)){
-%>    
-            dwDistributionOptions_<%=cid%> = "DISTRIBUTION = HASH(" + <%=DistributionColumnName%> + ")";
-<%
-        }
-        // DW Distribution Options END
-
-        // DW Table Partition
-        if(isEnabled_Partition){
-%>
-            dwPartition_<%=cid%> = ", PARTITION ( [" + <%=PartitionColumnName%> + "] RANGE <%=PartitionRange%> FOR VALUES (" + <%=PartitionValues%> + ") )";    
-<%
-        }
-        // DW Table Partition END
-        
     }
 
     if(columnList != null && columnList.size()>0) {
@@ -801,6 +779,423 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
         }
     } 
+}else{
+    String authMethod = ElementParameterParser.getValue(node,"__AUTH_METHOD__");
+    String sasToken = ElementParameterParser.getValue(node,"__SAS_TOKEN__");
+    String endpointSuffix = ElementParameterParser.getValue(node,"__ENDPOINT_SUFFIX__");
+    List<Map<String,String>> externalPaths = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__EXTERNAL_LOCATIONS__");
+    boolean specifyFieldsMapping = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_FIELDS_MAPPING__"));
+    List<Map<String,String>> fieldsMapping = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COLUMN_MAP_FIELD__");
+    String fileType = ElementParameterParser.getValue(node,"__FILE_TYPE__");
+    String firstRow = ElementParameterParser.getValue(node,"__FIRST_ROW__");
+    if(firstRow==null || firstRow.isEmpty()){
+        firstRow = "1";
+    }
+    // csv format
+    String fieldQuote = ElementParameterParser.getValue(node,"__FIELD_QUOTE__");
+    if(fieldQuote==null || fieldQuote.isEmpty()){
+        fieldQuote = "\"\"";
+    }
+    String fieldTerminator = ElementParameterParser.getValue(node,"__FIELD_TERMINATOR__");
+    if(fieldTerminator==null || fieldTerminator.isEmpty()){
+        fieldTerminator = "\"\"";
+    }
+    String rowTerminator = ElementParameterParser.getValue(node,"__ROW_TERMINATOR__");
+    if(rowTerminator==null || rowTerminator.isEmpty()){
+        rowTerminator = "\"\"";
+    }
+    String copyCsvDateFormat = ElementParameterParser.getValue(node,"__COPY_CSV_DATE_FORMAT__");
+    String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
+    // csv end
+    boolean identityInsert = "true".equals(ElementParameterParser.getValue(node,"__IDENTITY_INSERTE__"));
+    String maxErrors = ElementParameterParser.getValue(node,"__MAX_ERRORS__");
+    if(maxErrors==null || maxErrors.isEmpty()){
+        maxErrors = "0";
+    }
+    String errorFile = ElementParameterParser.getValue(node,"__ERROR_FILE__");
+    if(errorFile==null || errorFile.isEmpty()){
+        errorFile = "\"\"";
+    }
+    String compressionType = null;
+    if (isCompress) {
+        if ("CSV".equals(fileType)) { //TODO recheck
+            //compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_TEXT__");
+            compressionType = "GZIP";
+        } else if ("ORC".equals(fileType)) {
+            compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_ORC__");
+        } else if ("PARQUET".equals(fileType)) {
+            compressionType = ElementParameterParser.getValue(node,"__COMPRESSION_PARQUET__");
+        }
+    }
+    if("SAS".equals(authMethod)){
+    %>
+    String azureCredIdentity_<%=cid%> = "Shared Access Signature";
+    <%
+    }else if("KEY".equals(authMethod)){
+    %>
+    String azureCredIdentity_<%=cid%> = "Storage Account Key";
+    <%
+    }else if("AAD".equals(authMethod)){
+    %>
+    // CREDENTIAL is not required for AAD
+    <%
+    }
+    if ("CSV".equals(fileType)) {
+%>
+
+    String fieldQuote_<%=cid%> = <%=fieldQuote%>;
+    String fieldTerminator_<%=cid%> = <%=fieldTerminator%>;
+    String rowTerminator_<%=cid%> = <%=rowTerminator%>;
+    String errorFile_<%=cid%> = <%=errorFile%>;
+<%
+    }
+%>
+    Integer firstRow_<%=cid%> = <%=firstRow%>;
+    Integer maxErrors_<%=cid%> = <%=maxErrors%>;
+    
+<%
+        manager = getManager(dbmsId, cid);
+        String ending="";
+        if(!"CSV".equals(fileType)){
+        // stores the file type and compression method for the external data
+        %>
+            boolean extFileFormatCreated_<%=cid%> = false;
+            StringBuilder cmdExtFileFormat_<%=cid%> = new StringBuilder(); 
+            java.sql.Statement stmtCreateExtFileFormat_<%=cid%> = conn_<%=cid%>.createStatement();
+	        cmdExtFileFormat_<%=cid%>.append("CREATE EXTERNAL FILE FORMAT ").append(azureExtFileFormat_<%=cid%>).append(" WITH (FORMAT_TYPE = <%=fileType%>");
+            <%
+            if (isCompress && compressionType != null){
+            %>
+                cmdExtFileFormat_<%=cid%>.append(", DATA_COMPRESSION = '<%=compressionType%>'");
+            <%
+            }
+            %>
+            cmdExtFileFormat_<%=cid%>.append(")");
+            stmtCreateExtFileFormat_<%=cid%>.execute(cmdExtFileFormat_<%=cid%>.toString());
+            stmtCreateExtFileFormat_<%=cid%>.close();
+            extFileFormatCreated_<%=cid%> = true;
+            <%
+            if(isLog4jEnabled) {
+            %>
+                log.info("<%=cid%> - Created External File Format: " + azureExtFileFormat_<%=cid%> + " successfully.");
+            <%
+            }
+        }
+            %>  
+                        // CREATE DW TABLE AND / OR INSERT INTO DW TABLE
+                        try{
+            <%
+                            if(!("NONE").equals(tableAction)) {
+                                if(("DROP_CREATE").equals(tableAction) || ("CREATE").equals(tableAction) || ("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
+                                    if(columnList == null || columnList.size()<= 0) {
+%>
+                                        if(true){
+                                            throw new RuntimeException("Can't create table with empty schema!");
+                                        }
+<%
+                                    }
+                                }
+                                if(("DROP_CREATE").equals(tableAction)) {
+            %>
+                                    java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
+                                    <%dbLog.table().dropTry(dbLog.var("tableName"));%>
+                                    stmtDrop_<%=cid%>.execute("DROP TABLE [" + tableName_<%=cid%> + "]");
+                                    <%dbLog.table().dropDone(dbLog.var("tableName"));%>
+                                    stmtDrop_<%=cid%>.close();
+<%
+                                    if(columnList != null && columnList.size()>0) {
+%>
+                                    java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
+                                    <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                                    stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
+                                    <%dbLog.table().createDone(dbLog.var("tableName"));%>
+                                    stmtCreate_<%=cid%>.close();
+<%
+                                    }
+%>
+            <%
+            
+                                } else if(("CREATE").equals(tableAction)) {
+                                    if(columnList != null && columnList.size()>0) {
+%>
+                                    java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
+                                    <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                                    stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
+                                    <%dbLog.table().createDone(dbLog.var("tableName"));%>
+                                    stmtCreate_<%=cid%>.close();
+            <%
+                                    }
+                                } else if(("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
+                                    boolean tableNameCaseSensitive=false;
+            %>
+                                    //check if table exists
+                                    java.sql.Statement isExistStmt_<%=cid%> = conn_<%=cid%>.createStatement();
+                                    boolean whetherExist_<%=cid%> = false;
+                                    try {
+                                        isExistStmt_<%=cid%>.execute("SELECT TOP 1 1 FROM [" +  tableName_<%=cid%> + "]" );
+                                        whetherExist_<%=cid%> = true;
+                                    } catch (java.lang.Exception e){
+                                        whetherExist_<%=cid%> = false;
+                                    }
+                                    isExistStmt_<%=cid%>.close();
+            <%
+                                    if(("CREATE_IF_NOT_EXISTS").equals(tableAction)) {
+                                        if(columnList != null && columnList.size()>0) {
+    %>
+                                        if(!whetherExist_<%=cid%>) {
+                                            java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
+                                            <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                                            stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
+                                            <%dbLog.table().createDone(dbLog.var("tableName"));%>
+                                            stmtCreate_<%=cid%>.close();
+                                        }
+            <%
+                                        }
+                                    } else {
+            %>
+                                        if(whetherExist_<%=cid%>) {
+                                            java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
+                                            <%dbLog.table().dropTry(dbLog.var("tableName"));%>
+                                            stmtDrop_<%=cid%>.execute("DROP TABLE [" + tableName_<%=cid%> + "]");
+                                            <%dbLog.table().dropDone(dbLog.var("tableName"));%>
+                                            stmtDrop_<%=cid%>.close();
+                                        }
+<%
+                                        if(columnList != null && columnList.size()>0) {
+%>
+                                        java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
+                                        <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                                        stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>) WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ")");
+                                        <%dbLog.table().createDone(dbLog.var("tableName"));%>
+                                        stmtCreate_<%=cid%>.close();
+            <%
+                                        }
+                                    }
+                                } else if(("CLEAR").equals(tableAction)) {
+            %>
+                                    java.sql.Statement stmtClear_<%=cid%> = conn_<%=cid%>.createStatement();
+                                    <%dbLog.table().clearTry(dbLog.var("tableName"));%>
+                                    stmtClear_<%=cid%>.executeUpdate("<%=manager.getDeleteTableSQL()%>");
+                                    <%dbLog.table().clearDone(dbLog.var("tableName"));%>
+                                    stmtClear_<%=cid%>.close();
+            <%
+                                } else if(("TRUNCATE").equals(tableAction)) {
+            %>
+                                    java.sql.Statement stmtTruncCount_<%=cid%> = conn_<%=cid%>.createStatement();
+                                    java.sql.ResultSet rsTruncCount_<%=cid%> = stmtTruncCount_<%=cid%>.executeQuery("<%=manager.getSelectionSQL()%>");
+                                    int rsTruncCountNumber_<%=cid%> = 0;
+                                    if(rsTruncCount_<%=cid%>.next()) {
+                                        rsTruncCountNumber_<%=cid%> = rsTruncCount_<%=cid%>.getInt(1);
+                                    }
+                                    rsTruncCount_<%=cid%>.close();
+                                    stmtTruncCount_<%=cid%>.close();
+                                    java.sql.Statement stmtTrunc_<%=cid%> = conn_<%=cid%>.createStatement();
+                                    <%dbLog.table().truncateTry(dbLog.var("tableName"));%>
+                                    stmtTrunc_<%=cid%>.executeUpdate("<%=manager.getTruncateTableSQL()%>");
+                                    <%dbLog.table().truncateDone(dbLog.var("tableName"));%>
+            <%
+                                    if(isLog4jEnabled) {
+            %>
+                                        log.info("<%=cid%> - Number of Rows Truncated : " + rsTruncCountNumber_<%=cid%> + ".");
+            <%
+                                    }
+            %>
+                                    stmtTrunc_<%=cid%>.close();
+            <%
+
+                                } 
+                            }
+            %>
+                            StringBuilder copySQL_<%=cid%> = new StringBuilder(); 
+                            copySQL_<%=cid%>.append("COPY INTO [" +  tableName_<%=cid%> + "] ");
+<%
+                            if(specifyFieldsMapping){
+	                            if(columnList != null && columnList.size()>0) {
+%>
+                                    copySQL_<%=cid%>.append("(");
+<%
+                                    for(int columnIndex = 0;columnIndex<columnList.size();columnIndex++){
+	                                    IMetadataColumn column = columnList.get(columnIndex);
+	                                    String fieldIndex = fieldsMapping.get(columnIndex).get("FIELD_INDEX");
+	                                    if(columnIndex != 0){
+%>
+                                            copySQL_<%=cid%>.append(",");
+<%
+	                                    }
+ %>
+                                        copySQL_<%=cid%>.append("<%=column.getOriginalDbColumnName() %>");
+                                        // TODO support default value
+<%
+                                        if(fieldIndex != null && !fieldIndex.isEmpty()){
+%>
+                                        copySQL_<%=cid%>.append(" "+<%=fieldIndex%>);
+<%
+                                        }
+	                                }
+%>
+                                    copySQL_<%=cid%>.append(")");
+<%
+                                }
+                            }
+%>
+                            copySQL_<%=cid%>.append("");
+                            //external localtion
+                            copySQL_<%=cid%>.append("FROM ");
+<%
+							int pathSize=externalPaths.size();
+							if(pathSize > 0){
+					            for(int pathIndex = 0;pathIndex<pathSize;pathIndex++){
+					                Map<String, String> externalPathMap = externalPaths.get(pathIndex);
+					                String externalPath = externalPathMap.get("EXTERNAL_LOCATION");
+					                if(pathIndex != 0){
+%>
+                                     copySQL_<%=cid%>.append(",");
+<%
+                                    }
+%>
+                                     copySQL_<%=cid%>.append("'https://"+<%=accountName %>+"."+<%=endpointSuffix %>+"/"+<%=container %>+"/"+<%=externalPath%>+"'");
+<%
+                                }
+							}
+%>
+                            copySQL_<%=cid%>.append(" WITH ( ");
+<%
+							if("CSV".equals(fileType)){
+%>
+                            copySQL_<%=cid%>.append("FILE_TYPE = 'CSV' ");
+<%
+							}else{
+%>
+                            copySQL_<%=cid%>.append("FILE_FORMAT = "+azureExtFileFormat_<%=cid%>+" ");
+<%
+							}
+                            if("KEY".equals(authMethod)){
+%>
+                            copySQL_<%=cid%>.append(",CREDENTIAL=(IDENTITY= '"+azureCredIdentity_<%=cid%>+"', SECRET='"+azureAccessKey_<%=cid%>+"')");
+<%
+                            }
+                            if("SAS".equals(authMethod)){
+%>
+                            copySQL_<%=cid%>.append(",CREDENTIAL=(IDENTITY= '"+azureCredIdentity_<%=cid%>+"', SECRET='"+<%=sasToken%>+"')");
+<%
+                            }
+                            if("CSV".equals(fileType)){
+%>
+                            if(fieldQuote_<%=cid%>!=null && !fieldQuote_<%=cid%>.isEmpty()){
+                                copySQL_<%=cid%>.append(",FIELDQUOTE = '"+ fieldQuote_<%=cid%> +"' ");
+                            }
+                            if(fieldTerminator_<%=cid%>!=null && !fieldTerminator_<%=cid%>.isEmpty()){
+                                copySQL_<%=cid%>.append(",FIELDTERMINATOR = '"+ fieldTerminator_<%=cid%> +"' ");
+                            }
+                            if(rowTerminator_<%=cid%>!=null && !rowTerminator_<%=cid%>.isEmpty()){
+                                copySQL_<%=cid%>.append(",ROWTERMINATOR = '"+ rowTerminator_<%=cid%> +"' ");
+                            }
+                            if(firstRow_<%=cid%>!=null && firstRow_<%=cid%> > 1){
+                                copySQL_<%=cid%>.append(",FIRSTROW = '"+ firstRow_<%=cid%> +"' ");
+                            }
+<%
+                            if(!"SESSION_DATEFORMAT".equals(copyCsvDateFormat)){
+%>
+                                copySQL_<%=cid%>.append(",DATEFORMAT = '"+ <%=copyCsvDateFormat%> +"' ");
+<%
+                            }
+%>
+
+                            copySQL_<%=cid%>.append(",ENCODING = '"+ <%=encoding%> +"' ");
+<%
+                                if(!"KEY".equals(authMethod)){
+%>
+		                            if(errorFile_<%=cid%>!=null && !errorFile_<%=cid%>.isEmpty()){
+		                                copySQL_<%=cid%>.append(",ERRORFILE = '"+ errorFile_<%=cid%> +"' ");
+		                            }
+<%
+                                }
+                                if(isCompress){
+%>
+                                    copySQL_<%=cid%>.append(",COMPRESSION = '<%=compressionType%>' ");
+<%
+                                }
+                            }
+%>
+                            if(maxErrors_<%=cid%>!=null && maxErrors_<%=cid%> > 0){
+                                copySQL_<%=cid%>.append(",MAXERRORS = '"+ maxErrors_<%=cid%> +"' ");
+                            }
+                            copySQL_<%=cid%>.append(",IDENTITY_INSERT = '<%=identityInsert?"ON":"OFF" %>'");
+                            String label_<%=cid%> = "COPY: ["+tableName_<%=cid%>+"] UniqueID: "+randomIdentifier_<%=cid%>;
+                            copySQL_<%=cid%>.append(") OPTION (LABEL = '"+label_<%=cid%>+"')");
+                            
+                            java.sql.Statement stmt_Copy<%=cid%> = conn_<%=cid%>.createStatement();
+<%
+
+                            if(isLog4jEnabled) {
+%>
+                                log.info("<%=cid%> - Starting COPY into table : [" + tableName_<%=cid%> + "].");
+<%
+                             }
+%>  
+				            stmt_Copy<%=cid%>.executeUpdate(copySQL_<%=cid%>.toString());
+				            stmt_Copy<%=cid%>.close();
+				            
+				            java.sql.Statement monitor_<%=cid%> = conn_<%=cid%>.createStatement();
+				            String monitorSql_<%=cid %>="SELECT r.command,sum(bytes_processed) AS bytes_processed,sum(rows_processed) AS rows_processed from sys.dm_pdw_exec_requests r JOIN sys.dm_pdw_dms_workers w ON r.[request_id] = w.request_id WHERE [label] = '"+label_<%=cid%>+"' and session_id = session_id() and type = 'WRITER' GROUP BY r.command ";
+				            java.sql.ResultSet result_<%=cid %> = monitor_<%=cid%>.executeQuery(monitorSql_<%=cid %>);
+				            int insertedCount_<%=cid%> = 0;
+				            if(result_<%=cid %>!=null){
+				                while(result_<%=cid %>.next()){
+				                    insertedCount_<%=cid%> = result_<%=cid %>.getInt(3);
+<%
+                            if(isLog4jEnabled) {
+%>
+                                    log.info("<%=cid%> - Copy command : " + result_<%=cid %>.getString(1) );
+                                    log.info("<%=cid%> - Bytes processed : " + result_<%=cid %>.getLong(2) );
+                                    log.info("<%=cid%> - Row processed : " + insertedCount_<%=cid%> );
+<%
+}
+%>
+				                }
+				            }
+				            monitor_<%=cid%>.close();
+				            globalMap.put("<%=cid%>_NB_LINE_INSERTED",insertedCount_<%=cid%>);
+				            
+<%
+                            if(isLog4jEnabled) {
+%>
+				                log.info("<%=cid%> - Copy into table : [" + tableName_<%=cid%> + "] completed successfully.");
+<%
+                            }
+            %>
+                        } catch (java.sql.SQLException e_<%=cid%>) {
+            <%
+                            if(isLog4jEnabled) {
+            %>
+                                log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+            <%
+                            }
+            %>
+                            throw e_<%=cid%>;
+                        }finally{
+<%
+                            if(!"CSV".equals(fileType)){
+%>
+                            if(extFileFormatCreated_<%=cid%>){
+	                            java.sql.Statement stmtDropExtFileFormat_<%=cid%> = conn_<%=cid%>.createStatement();
+	                            stmtDropExtFileFormat_<%=cid%>.execute("DROP EXTERNAL FILE FORMAT [" + azureExtFileFormat_<%=cid%> + "]");
+	                            stmtDropExtFileFormat_<%=cid%>.close();
+<%
+                                if(isLog4jEnabled) {
+%>
+                                    log.info("<%=cid%> - Dropped External File Format : [" + azureExtFileFormat_<%=cid%> + "] successfully.");
+<%
+                                }
+%>
+                            }
+<%
+                           }
+%>  
+                        }
+                    
+            <%
+}
 
     if(!useExistingConnection) {
 %>
