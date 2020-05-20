@@ -2059,7 +2059,7 @@ public class CLASS {
                 if ("TIME".equals(dbType)) {
                     setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.TIME);\r\n");
                 } else {
-                    setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.DATE);\r\n");
+                    setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.TIMESTAMP);\r\n");
                 }
                 setStmt.append("}\r\n");
             } else if("String".equals(typeToGenerate)) {
@@ -4486,21 +4486,31 @@ public class CLASS {
     }
     
     public class AzureSynapseManager extends MSSQLManager{
-        
+    
         public AzureSynapseManager(String cid) {
             super(cid);
         }
         
         public String getDropTableSQL() {
             StringBuilder dropTableSQL = new StringBuilder();
-            dropTableSQL.append("DROP EXTERNAL TABLE " + getLProtectedChar() + "\" + ext_tableName_" + cid + " + \"" + getRProtectedChar());
+            boolean isPolyBase = "POLYBASE".equals(ElementParameterParser.getValue(node,"__LOAD_METHOD__"));
+            if(isPolyBase){
+                dropTableSQL.append("DROP EXTERNAL TABLE " + getLProtectedChar() + "\" + ext_tableName_" + cid + " + \"" + getRProtectedChar());
+            }else{
+                dropTableSQL.append("DROP TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+            }
             return dropTableSQL.toString();
         }
         
         public String getCreateTableSQL(List<Column> columnList) {
             MappingTypeRetriever mappingType = MetadataTalendType.getMappingTypeRetriever(getDBMSId());
             StringBuilder createSQL = new StringBuilder();
-            createSQL.append("CREATE EXTERNAL TABLE " + getLProtectedChar() + "\" + ext_tableName_" + cid + " + \"" + getRProtectedChar() + "(");
+            boolean isPolyBase = "POLYBASE".equals(ElementParameterParser.getValue(node,"__LOAD_METHOD__"));
+            if(isPolyBase){
+                createSQL.append("CREATE EXTERNAL TABLE " + getLProtectedChar() + "\" + ext_tableName_" + cid + " + \"" + getRProtectedChar() + "(");
+            }else{
+                createSQL.append("CREATE TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar() + "(");
+            }
             List<String> pkList = new ArrayList<String>();
             int count = 0;
             String ending = ",";

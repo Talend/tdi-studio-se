@@ -28,11 +28,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.core.model.context.ContextLink;
-import org.talend.core.model.context.ContextLinkService;
-import org.talend.core.model.context.ContextParamLink;
 import org.talend.core.model.context.ContextUtils;
-import org.talend.core.model.context.ItemContextLink;
+import org.talend.core.model.context.link.ContextLink;
+import org.talend.core.model.context.link.ContextLinkService;
+import org.talend.core.model.context.link.ContextParamLink;
+import org.talend.core.model.context.link.ItemContextLink;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.ContextItem;
@@ -209,7 +209,7 @@ public class CreateContextLinkMigrationTaskTest {
     }
 
     private void compareContextLink(ItemContextLink processContextLink, String contextName) {
-        ContextLink contextLink = processContextLink.getContextLinkByName(contextName);
+        ContextLink contextLink = processContextLink.findContextLink(null, contextName);
         assertNotNull(contextLink);
         ContextItem contextItem = ContextUtils.getContextItemById2(contextLink.getRepoId());
         ContextType repoContextType = ContextUtils.getContextTypeByName(contextItem.getContext(), contextLink.getContextName());

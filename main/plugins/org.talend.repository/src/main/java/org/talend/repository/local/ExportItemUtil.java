@@ -45,7 +45,7 @@ import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
-import org.talend.core.model.context.ContextLinkService;
+import org.talend.core.model.context.link.ContextLinkService;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Project;
 import org.talend.core.model.properties.PropertiesPackage;
@@ -452,7 +452,7 @@ public class ExportItemUtil {
             String libAbsPath = new Path(destinationDirectory.toString()).append(libPath.toString()).toPortableString();
             for (String jarName : jarNameAndUrl.keySet()) {
                 if (repositoryBundleService.contains(jarName)) {
-                	String mavenUri =  jarNameAndUrl.get(jarName);
+                    String mavenUri =  jarNameAndUrl.get(jarName);
                     repositoryBundleService.retrieve(jarName, mavenUri, libAbsPath, new NullProgressMonitor());
                     toExport.put(new File(libAbsPath, jarName), libPath.append(jarName));
                 }

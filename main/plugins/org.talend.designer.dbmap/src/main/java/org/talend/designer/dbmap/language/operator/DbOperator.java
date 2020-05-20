@@ -76,5 +76,9 @@ public class DbOperator implements IDbOperator {
     public boolean isMonoOperand() {
         return monoOperand;
     }
+    
+    public String getName() {
+    	return this.name;
+    }
 
 }

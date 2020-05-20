@@ -69,7 +69,7 @@ public abstract class JavaScriptForESBWithMavenManager extends JobJavaScriptOSGI
             if ("".equals(resource.getDirectoryName())) { //$NON-NLS-1$
                 Map<String, Set<URL>> newResourcesMap = new HashMap<String, Set<URL>>();
                 for (String path : resource.getRelativePathList()) {
-                    if (path.startsWith("OSGI") || path.startsWith(FileConstants.META_INF_FOLDER_NAME)) { //$NON-NLS-1$
+                    if (path.startsWith("OSGI") || path.startsWith(FileConstants.META_INF_FOLDER_NAME)|| path.startsWith("TALEND-INF") || path.startsWith("MAVEN-INF")) { //$NON-NLS-1$
                         Set<URL> urls = resource.getResourcesByRelativePath(path);
                         // put OSGI_INF to /src/main/resources/
                         newResourcesMap.put(IMavenProperties.MAIN_RESOURCES_PATH + path, urls);

@@ -11,11 +11,13 @@ imports="
 	class DBRowBeginUtil extends DefaultDBRowUtil{
 	
 		private String driver;
+        private boolean useActiveDirectoryAuth = false;
 	
 		public void beforeComponentProcess(INode node){
 			super.beforeComponentProcess(node);
 			cid = node.getUniqueName();
 			this.driver = ElementParameterParser.getValue(node, "__DRIVER__");
+            this.useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 	    }
 	    
 	    public void afterUseExistConnection(INode node) {
@@ -58,12 +60,20 @@ imports="
 				url_<%=cid%> += "//" + <%=dbname%>; 
 			<%
 				} else {
-			%>		    
+			%>
 		    	url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
 			<%
 				}
 			%>
 		    }
+<%
+            if (useActiveDirectoryAuth) {
+%>
+                url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+                url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+            }
+%>
 		    url_<%=cid%> += ";applicationName=Talend;" + <%=dbproperties%>;
 		<%
 		}

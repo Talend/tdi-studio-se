@@ -24,6 +24,9 @@
 	String user = ElementParameterParser.getValue(node, "__USER__");
 	String node_type = ElementParameterParser.getValue(node, "__NODE_TYPE__");
 	String node_count = ElementParameterParser.getValue(node, "__NODE_COUNT__");
+	if (node_count.isEmpty()) {
+	    node_count = "1";
+	}
 	
 	boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
@@ -88,52 +91,46 @@
     		.withMasterUsername(<%=user%>)
     		.withMasterUserPassword(decryptedPwd_<%=cid%>)
     		
-    		.withNodeType(<%=node_type%>)
+    		.withNodeType(<%=node_type%>);
     		
-    		<%
-    		if(new Integer(node_count) > 1){
-    		%>
-    		.withNumberOfNodes(<%=node_count%>)
-    		<%
-    		} else {
-    		%>
-    		.withClusterType("single-node")
-    		<%
-    		}
-    		%>
-    		
-    		//advanced settings
-    		<%if(parameterUtil.isValid(parameter_group_name)) {%>
-    		.withClusterParameterGroupName(<%=parameter_group_name%>)
-    		<%}%>
-			
-			<%if(parameterUtil.isValid(subnet_group_name)) {%>
-			.withClusterSubnetGroupName(<%=subnet_group_name%>)
+		if (<%=node_count%> > 1) {
+		    request_<%=cid%> = request_<%=cid%>.withNumberOfNodes(<%=node_count%>);
+		} else {
+		    request_<%=cid%> = request_<%=cid%>.withClusterType("single-node");
+		}
+					
+		//advanced settings
+		<%if(parameterUtil.isValid(parameter_group_name)) {%>
+		request_<%=cid%> = request_<%=cid%>.withClusterParameterGroupName(<%=parameter_group_name%>);
+		<%}%>
+		
+		<%if(parameterUtil.isValid(subnet_group_name)) {%>
+		request_<%=cid%> = request_<%=cid%>.withClusterSubnetGroupName(<%=subnet_group_name%>);
+		<%}%>
+		
+		<%
+		if(publicly_accessible) {
+		%>
+			request_<%=cid%> = request_<%=cid%>.withPubliclyAccessible(true);
+			<%if(set_public_ip_address) {%>
+			request_<%=cid%> = request_<%=cid%>.withElasticIp(<%=elastic_ip%>);
 			<%}%>
-			
-			<%
-			if(publicly_accessible) {
-			%>
-				.withPubliclyAccessible(true)
-    			<%if(set_public_ip_address) {%>
-    			.withElasticIp(<%=elastic_ip%>)
-    			<%}%>
-			<%
-			} else {
-			%>
-				.withPubliclyAccessible(false)
-			<%
-			}
-			%>
-			
-			<%if(parameterUtil.isValid(availability_zone)) {%>
-			.withAvailabilityZone(<%=availability_zone%>)
-			<%}%>
-			
-			<%if(parameterUtil.isValid(vpc_security_groupids)) {%>
-			.withVpcSecurityGroupIds(<%=vpc_security_groupids%>.split(","))
-			<%}%>
-    	;
+		<%
+		} else {
+		%>
+			request_<%=cid%> = request_<%=cid%>.withPubliclyAccessible(false);
+		<%
+		}
+		%>
+		
+		<%if(parameterUtil.isValid(availability_zone)) {%>
+		request_<%=cid%> = request_<%=cid%>.withAvailabilityZone(<%=availability_zone%>);
+		<%}%>
+		
+		<%if(parameterUtil.isValid(vpc_security_groupids)) {%>
+		request_<%=cid%> = request_<%=cid%>.withVpcSecurityGroupIds(<%=vpc_security_groupids%>.split(","));
+		<%}%>
+    	
     
     	com.amazonaws.services.redshift.model.Cluster result_<%=cid%> = client_<%=cid%>.createCluster(request_<%=cid%>);
     	<%if(isLog4jEnabled) {%>

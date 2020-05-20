@@ -65,6 +65,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
 
     boolean  identityInsert= "true".equals(ElementParameterParser.getValue(node, "__IDENTITY_INSERT__"));
+    
+    boolean useActiveDirectoryAuth = "true".equals(ElementParameterParser.getValue(node, "__ACTIVE_DIR_AUTH__"));
 
     boolean isEnableDebug = ("true").equals(ElementParameterParser.getValue(node,"__ENABLE_DEBUG_MODE__"));
     boolean usingStatsLogs=cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("talendMeter_DB");
@@ -261,6 +263,14 @@ if(useExistingConnection) {
 			}
 	%>
     }
+<%
+    if (useActiveDirectoryAuth) {
+%>
+        url_<%=cid%> += ";encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;Authentication=ActiveDirectoryPassword";
+        url_<%=cid%> += ";database=" + <%=dbname%>;
+<%
+    }
+%>
     url_<%=cid%> += ";applicationName=Talend;" + <%=dbproperties%>;
     dbUser_<%=cid %> = <%=dbuser%>;
 

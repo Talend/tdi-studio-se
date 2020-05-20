@@ -73,6 +73,8 @@ public class ProcessChangeListener implements PropertyChangeListener {
                         caseMove(oldValue, newValue);
                     } else if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
                         caseDeleteForever(newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.AFTER_DELETE.getName())) {
+                        caseAfterDelete(newValue);
                     } else if (propertyName.equals(ERepositoryActionName.FOLDER_RENAME.getName())
                             || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_RENAME.getName())) {
                         caseFolderRename(oldValue, newValue);
@@ -181,7 +183,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
             if (property != null && property.getItem() != null) {
                 ITestContainerProviderService service = getTestContainerProviderService();
                 if (service != null && service.isTestContainerItem(property.getItem())) {
-                    // FIXME testcase should regenerate pom to remove extra dependencies.
+                    // done in caseAfterDelete()
                 } else if (isNeedUpdateItem(property.getItem())) {
                     // delete all version old job projects physically, won't check to remove parent folder
                     if (ProjectManager.getInstance().getCurrentProject().isLocal()) {
@@ -190,6 +192,26 @@ public class ProcessChangeListener implements PropertyChangeListener {
                 }
                 // check ref-project if exist same label routine
                 checkCodesAfterDeleteForever(property);
+            }
+        }
+    }
+
+    private void caseAfterDelete(Object newValue) {
+        // newValue: obj
+        if (newValue instanceof IRepositoryViewObject) {
+            Property property = ((IRepositoryViewObject) newValue).getProperty();
+            if (property != null && property.getItem() != null) {
+                ITestContainerProviderService service = getTestContainerProviderService();
+                if (service != null && service.isTestContainerItem(property.getItem())) {
+                    try {
+                        Item jobItem = service.getParentJobItem(property.getItem());
+                        if (jobItem != null) {
+                            TalendJavaProjectManager.generatePom(jobItem);
+                        }
+                    } catch (PersistenceException e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
             }
         }
     }
@@ -336,12 +358,24 @@ public class ProcessChangeListener implements PropertyChangeListener {
 
     private void caseCreateAndSave(String propertyName, Object newValue) {
         if (newValue instanceof Item) {
-            if (isNeedUpdateItem((Item) newValue)) {
+            Item item = (Item) newValue;
+            ITestContainerProviderService service = getTestContainerProviderService();
+            if (service != null && service.isTestContainerItem(item)) {
+                try {
+                    Item jobItem = service.getParentJobItem(item);
+                    if (jobItem != null) {
+                        item = jobItem;
+                    }
+                } catch (PersistenceException e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+            if (isNeedUpdateItem(item)) {
                 if (propertyName.equals(ERepositoryActionName.SAVE.getName())) {
                     TalendJavaProjectManager.generatePom((Item) newValue);
                 }
-            } else if (newValue instanceof RoutineItem) {
-                updateCodesChange((RoutineItem) newValue);
+            } else if (item instanceof RoutineItem) {
+                updateCodesChange((RoutineItem) item);
             }
         }
     }

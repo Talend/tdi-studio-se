@@ -77,6 +77,17 @@ public class MultipleComponentManager implements IMultipleComponentManager {
         return currentItem;
     }
 
+    public void addItem(IMultipleComponentItem currentItem) {
+        String name = currentItem.getName();
+        if (name.equals(inputName)) {
+            input = currentItem;
+        }
+        if (name.equals(outputName)) {
+            output = currentItem;
+        }
+        itemList.add(currentItem);
+    }
+
     /*
      * (non-Javadoc)
      *

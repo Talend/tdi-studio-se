@@ -62,6 +62,8 @@ class IndexedRecordToRowStructGenerator {
             %>
             boolean <%=codeVarIsDynamicInitialized%> = false;
             routines.system.Dynamic <%=codeVarDynamic%> = new routines.system.Dynamic();
+			//Workaround for TDI-44051, TcimpV0 do not need DbmsID
+			<%=codeVarDynamic%>.setDbmsId("<%=cid%>");
             <%
         }
 
@@ -115,10 +117,11 @@ class IndexedRecordToRowStructGenerator {
                 for (org.apache.avro.Schema.Field dynamicField_<%=cid%> : dynSchema_<%=cid%>.getFields()){
                     routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
                     org.apache.avro.Schema dynamicFieldSchema_<%=cid%> = dynamicField_<%=cid%>.schema();
+					String dbName = dynamicField_<%=cid%>.getProp("talend.field.dbColumnName");
                     // set name
                     dynamicMetadata_<%=cid%>.setName(dynamicField_<%=cid%>.name());
                     // set db name
-                    dynamicMetadata_<%=cid%>.setDbName(dynamicField_<%=cid%>.name());
+                    dynamicMetadata_<%=cid%>.setDbName(dbName==null?dynamicField_<%=cid%>.name():dbName);
                     // set nullable
                     if (org.talend.daikon.avro.AvroUtils.isNullable(dynamicFieldSchema_<%=cid%>)) {
                         dynamicMetadata_<%=cid%>.setNullable(true);

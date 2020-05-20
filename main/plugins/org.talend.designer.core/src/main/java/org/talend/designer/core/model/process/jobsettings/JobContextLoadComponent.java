@@ -17,17 +17,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.avro.Schema;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IMultipleComponentItem;
 import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.MetadataToolAvroHelper;
+import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
@@ -43,6 +48,7 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.components.MultipleComponentConnection;
+import org.talend.designer.core.model.components.MultipleComponentItem;
 import org.talend.designer.core.model.components.MultipleComponentManager;
 import org.talend.designer.core.model.components.MultipleGenricComponentManager;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants.ContextLoadInfo;
@@ -108,15 +114,38 @@ public class JobContextLoadComponent implements IComponent {
                 return;
             }
 
-            if (isTcompv0()) {
+            MultipleComponentConnection multiCompConnection = new MultipleComponentConnection(EConnectionType.FLOW_MAIN.getName(),
+                    CONTEXT_LOAD);
+            IMultipleComponentItem currentItem = null;
+            if (isTcompv0(component)) {
                 multipleComponentManager = new MultipleGenricComponentManager(DB_INPUT, CONTEXT_LOAD);
+                multiCompConnection.setConnectorName("MAIN");
+                currentItem = new MultipleComponentItem() {
+
+                    public void updateNode(INode newNode, INode oldNode) {
+                        super.updateNode(newNode, oldNode);
+                        if (newNode != null) {
+                            List<IMetadataTable> metadataList = newNode.getMetadataList();
+                            if (0 < metadataList.size() && isTcompv0(newNode.getComponent())) {
+                                IMetadataTable newMetadata = metadataList.get(0);
+                                newMetadata.setAttachedConnector("MAIN");
+                                ComponentProperties tcomp_properties = newNode.getComponentProperties();
+                                Schema schema = MetadataToolAvroHelper.convertToAvro(ConvertionHelper.convert(newMetadata));
+                                tcomp_properties.setValue("main.schema", schema);
+                            }
+                        }
+                    };
+                };
+                currentItem.setName(DB_INPUT);
+                currentItem.setComponent(dbComponent);
+
+                ((MultipleGenricComponentManager) multipleComponentManager).addItem(currentItem);
             } else {
                 multipleComponentManager = new MultipleComponentManager(DB_INPUT, CONTEXT_LOAD);
+                currentItem = multipleComponentManager.addItem(DB_INPUT, dbComponent);
             }
 
-            IMultipleComponentItem currentItem = multipleComponentManager.addItem(DB_INPUT, dbComponent);
-            currentItem.getOutputConnections()
-                    .add(new MultipleComponentConnection(EConnectionType.FLOW_MAIN.getName(), CONTEXT_LOAD));
+            currentItem.getOutputConnections().add(multiCompConnection);
 
             currentItem = multipleComponentManager.addItem(CONTEXT_LOAD, CONTEXTLOAD_COMPONENT);
 
@@ -207,9 +236,9 @@ public class JobContextLoadComponent implements IComponent {
         return false;
     }
 
-    private boolean isTcompv0() {
-        return component != null
-                && Optional.ofNullable(IGenericService.getService()).map(s -> s.isTcompv0(component)).orElse(Boolean.FALSE);
+    private boolean isTcompv0(IComponent comp) {
+        return comp != null
+                && Optional.ofNullable(IGenericService.getService()).map(s -> s.isTcompv0(comp)).orElse(Boolean.FALSE);
     }
 
     /*
@@ -292,7 +321,7 @@ public class JobContextLoadComponent implements IComponent {
 
             } else {
                 boolean initDefault = true;
-                if (isTcompv0()) {
+                if (isTcompv0(component)) {
                     if ("tJDBCInput".equalsIgnoreCase(dbComponent)) {
                         initDefault = false;
                         initTcompv0ParamMapping(self, multipleComponentManager);
@@ -470,7 +499,7 @@ public class JobContextLoadComponent implements IComponent {
         IElementParameter newParam = new ElementParameter(node);
         newParam.setName(JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName()));
         newParam.setFieldType(EParameterFieldType.TABLE);
-        if (isTcompv0()) {
+        if (isTcompv0(component)) {
             /**
              * seems that tcompv0 will check the list using the display name when generating codes:
              * GenericTableUtils#setTableValues

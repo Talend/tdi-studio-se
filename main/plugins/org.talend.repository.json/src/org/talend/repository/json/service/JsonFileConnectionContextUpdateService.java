@@ -24,8 +24,6 @@ public class JsonFileConnectionContextUpdateService extends AbstractRepositoryCo
         boolean isModified = false;
         if (conn.isContextMode()) {
             if (conn instanceof JSONFileConnection) {
-                oldValue = "context." + oldValue;
-                newValue = "context." + newValue;
                 JSONFileConnection jsonConn = (JSONFileConnection) conn;
                 boolean isInputModel = jsonConn.isInputModel();
                 if (isInputModel) {

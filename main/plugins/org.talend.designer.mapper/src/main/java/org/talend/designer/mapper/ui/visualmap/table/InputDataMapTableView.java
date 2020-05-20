@@ -515,6 +515,8 @@ public class InputDataMapTableView extends DataMapTableView {
         if (expressionCellEditor != null) {
             expressionCellEditor.focusLost();
         }
+        // for inputTable globalMap Expr cell editor
+        getTableViewerCreatorForGlobalMap().getTableViewer().applyEditorValue();
     }
 
     @Override

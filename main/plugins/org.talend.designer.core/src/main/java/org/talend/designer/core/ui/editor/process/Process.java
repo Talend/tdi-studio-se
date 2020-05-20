@@ -1396,9 +1396,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         loadElementParameters(elemParam, pType, param, pType.getName(), paraValue, false);
                     } else {
                         boolean canAddElementParameter = false;
+                        boolean isActiveDatabase = false;
                         String paramName = pType.getName();
                         if (EParameterName.ACTIVE_DATABASE_DELIMITED_IDENTIFIERS.getName().equals(paramName)) {
                             canAddElementParameter = true;
+                            isActiveDatabase = true;
                         }
                         if (canAddElementParameter) {
                             param = new ElementParameter(elemParam);
@@ -1406,6 +1408,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                             param.setName(pType.getName());
                             param.setCategory(EComponentCategory.TECHNICAL);
                             String fieldName = pType.getField();
+                            if (isActiveDatabase && fieldName == null) {
+                            	fieldName = EParameterFieldType.TEXT.getName();
+                            }
                             EParameterFieldType fieldType = null;
                             if (StringUtils.isNotBlank(fieldName)) {
                                 fieldType = EParameterFieldType.valueOf(fieldName);

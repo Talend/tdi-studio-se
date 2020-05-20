@@ -22,9 +22,14 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Test;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -147,6 +152,15 @@ public class ExpressionTest {
         }
     }
 
+    private ElementParameter createMockParameterWithLineInTable(String paramName, Map<String, Object> line) {
+        ElementParameter param = mock(ElementParameter.class);
+        when(param.getFieldType()).thenReturn(EParameterFieldType.TABLE);
+        when(param.getName()).thenReturn(paramName);
+        List<Map<String, Object>> list = Stream.of(line).collect(Collectors.toList());
+        when(param.getValue()).thenReturn(list);
+        return param;
+    }
+    
     @Test
     public void testEvaluateDistrib_simplecase() {
         List<IElementParameter> params = new ArrayList<>();
@@ -238,7 +252,19 @@ public class ExpressionTest {
                         "!DISTRIB[#LINK@NODE.CONNECTION.DISTRIBUTION, #LINK@NODE.CONNECTION.HIVE_VERSION].doSupportUseDatanodeHostname[]",
                         params, paramNode));
     }
-
+    
+    @Test
+    public void testEvaluateContains() {
+        List<IElementParameter> params = new ArrayList<>();
+        Map<String, Object> line  = new LinkedHashMap<String, Object>() {{
+            put("ADDITIONAL_ARGUMENT", "'hive.import'");
+            put("ADDITIONAL_VALUE", "'true'");
+        }};
+        ElementParameter param1 = createMockParameterWithLineInTable("ADDITIONAL_JAVA", line);
+        params.add(param1);
+        assertTrue(Expression.evaluateContains("ADDITIONAL_JAVA CONTAINS {ADDITIONAL_ARGUMENT='hive.import', ADDITIONAL_VALUE='true'}", params));
+    }    
+    
     @Test
     public void testIsThereCondition() {
         assertTrue(Expression.isThereCondition("a=1 and b=2", "and"));
@@ -254,6 +280,25 @@ public class ExpressionTest {
 
         assertFalse(Expression.isThereCondition("standard='aaa'", "and"));
         assertFalse(Expression.isThereCondition("story='aaa'", "or"));
+        
     }
+    
+    @Test
+    public void testIsAndOr() {
+    	assertTrue(Expression.isAndOr("(a=1)and(b=2)", "and"));
+        assertTrue(Expression.isAndOr("{A=1}AND{B=2}", "and"));
+        assertFalse(Expression.isAndOr("1or8=2", "and"));
+        assertTrue(Expression.isAndOr("(a=1)and(b=2)and(c=3)", "and"));
+        assertTrue(Expression.isAndOr("stand(a=1)and(b=2)and(c=3)", "and"));
+        
+        assertFalse(Expression.isAndOr("standard='aaa'", "and"));
+        assertFalse(Expression.isAndOr("story='aaa'", "or"));
 
+        assertTrue(Expression.isAndOr("&a=1%or#b=2-", "or"));
+        assertTrue(Expression.isAndOr("A=1_OR!B=2", "or"));
+        assertFalse(Expression.isAndOr("a=1=and9b=2", "or"));
+        assertTrue(Expression.isAndOr("strory&a=1%or#b=2-or#c=3-", "or"));
+        assertTrue(Expression.isAndOr("&a=1%or#b=2-or#c=3-", "or"));
+    }
+    
 }

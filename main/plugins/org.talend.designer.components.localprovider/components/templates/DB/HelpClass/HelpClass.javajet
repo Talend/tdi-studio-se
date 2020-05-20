@@ -63,7 +63,8 @@ imports="
 %>
 			String sharedConnectionName_<%=cid%> = <%=sharedConnectionName%>;
 			conn_<%=cid%> = <%=shareDBClass%>.getDBConnection("<%=this.getDirverClassName(node)%>",url_<%=cid%>,dbUser_<%=cid%> , dbPwd_<%=cid%> , sharedConnectionName_<%=cid%>);
-<%
+			globalMap.put("conn_<%=cid%>", conn_<%=cid%>);
+<%	
 		}
 		
 		public void createConnection(INode node) {
