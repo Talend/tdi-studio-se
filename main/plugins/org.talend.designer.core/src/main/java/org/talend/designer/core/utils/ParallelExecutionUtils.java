@@ -410,6 +410,9 @@ public class ParallelExecutionUtils {
                     break;
                 } else {
                     hasParInPreviousCon = isExistPreviousParCon((Node) con.getSource(), checkedSet);
+                    if (hasParInPreviousCon) {
+                        break;
+                    }
                 }
             }
         }
