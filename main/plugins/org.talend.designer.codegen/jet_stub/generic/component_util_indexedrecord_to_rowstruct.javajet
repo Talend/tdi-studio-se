@@ -62,8 +62,6 @@ class IndexedRecordToRowStructGenerator {
             %>
             boolean <%=codeVarIsDynamicInitialized%> = false;
             routines.system.Dynamic <%=codeVarDynamic%> = new routines.system.Dynamic();
-			//Workaround for TDI-44051, TcimpV0 do not need DbmsID
-			<%=codeVarDynamic%>.setDbmsId("<%=cid%>");
             <%
         }
 
@@ -117,11 +115,14 @@ class IndexedRecordToRowStructGenerator {
                 for (org.apache.avro.Schema.Field dynamicField_<%=cid%> : dynSchema_<%=cid%>.getFields()){
                     routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
                     org.apache.avro.Schema dynamicFieldSchema_<%=cid%> = dynamicField_<%=cid%>.schema();
-					String dbName = dynamicField_<%=cid%>.getProp("talend.field.dbColumnName");
                     // set name
-                    dynamicMetadata_<%=cid%>.setName(dynamicField_<%=cid%>.name());
+                    					if("true".equals(dynamicField_<%=cid%>.getProp("ENABLE_SPECIAL_TABLENAME"))){
+					    dynamicMetadata_<%=cid%>.setName(dynamicField_<%=cid%>.getProp("talend.field.dbColumnName"));
+					}else{
+					    dynamicMetadata_<%=cid%>.setName(dynamicField_<%=cid%>.name());
+					}
                     // set db name
-                    dynamicMetadata_<%=cid%>.setDbName(dbName==null?dynamicField_<%=cid%>.name():dbName);
+                    dynamicMetadata_<%=cid%>.setDbName(dynamicField_<%=cid%>.name());
                     // set nullable
                     if (org.talend.daikon.avro.AvroUtils.isNullable(dynamicFieldSchema_<%=cid%>)) {
                         dynamicMetadata_<%=cid%>.setNullable(true);
@@ -169,6 +170,14 @@ class IndexedRecordToRowStructGenerator {
             if (columnName.equals(dynamicColName)) {
             %>
                 java.util.Map<String, Object> dynamicValue_<%=cid%> = (java.util.Map<String, Object>) <%=codeVarSchemaEnforcer%>.get(<%=i%>);
+				org.apache.avro.Schema dynSchema_<%=cid%> = ((org.talend.codegen.enforcer.OutgoingDynamicSchemaEnforcer) <%=codeVarSchemaEnforcer%>).getDynamicFieldsSchema();
+                for (org.apache.avro.Schema.Field dynamicField_<%=cid%> : dynSchema_<%=cid%>.getFields()){
+					String name = dynamicField_<%=cid%>.name();
+					if("true".equals(dynamicField_<%=cid%>.getProp("ENABLE_SPECIAL_TABLENAME"))){
+							dynamicValue_<%=cid%>.put(dynamicField_<%=cid%>.getProp("talend.field.dbColumnName"), dynamicValue_<%=cid%>.get(name));
+							dynamicValue_<%=cid%>.remove(name);
+					}
+				}
                 for (java.util.Map.Entry<String, Object> dynamicValueEntry_<%=cid%> : dynamicValue_<%=cid%>.entrySet()) {
                     <%=codeVarDynamic%>.setColumnValue(<%=codeVarDynamic%>.getIndex(dynamicValueEntry_<%=cid%>.getKey()), dynamicValueEntry_<%=cid%>.getValue());
                 }
