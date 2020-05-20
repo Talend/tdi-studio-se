@@ -598,8 +598,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                 }
             }
 
-            getCommandStack().markSaveLocation();
             setDirty(false);
+            getCommandStack().markSaveLocation();
 
             boolean isneedReload = false;
             for (int i = 0; i < getProcess().getGraphicalNodes().size(); i++) {
