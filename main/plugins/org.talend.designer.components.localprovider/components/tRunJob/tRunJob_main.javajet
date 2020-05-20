@@ -246,6 +246,7 @@ String inputConnName = null;
 	    			}
 		  		}
 		  		%>
+		  		paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + System.getProperty("talend.component.manager.m2.repository"));
 			}
 			
 			<%
