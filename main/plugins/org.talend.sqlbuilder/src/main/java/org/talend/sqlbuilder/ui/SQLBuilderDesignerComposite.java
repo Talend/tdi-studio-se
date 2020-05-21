@@ -67,6 +67,12 @@ public class SQLBuilderDesignerComposite extends AbstractSQLEditorComposite {
         setRepositoryNode(node);
     }
 
+    @Override
+    protected void createGUIModificationQueryAction() {
+        super.createGUIModificationQueryAction();
+        guiModificationQueryAction.setDesigner(true);
+    }
+
     /**
      * qzhang Comment method "initialContent".
      *
