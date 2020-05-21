@@ -395,7 +395,7 @@ public class ParallelExecutionUtils {
 
     private static boolean isExistPreviousParCon(Node previousNode, Set<String> checkedSet) {
         boolean hasParInPreviousCon = false;
-        if (checkedSet.contains(previousNode.getUniqueName())) {
+        if (previousNode == null || checkedSet.contains(previousNode.getUniqueName())) {
             // already checked, return
             return hasParInPreviousCon;
         }
