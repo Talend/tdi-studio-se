@@ -257,7 +257,7 @@ public class ResourceContextHelper {
             // }
             factory.lock(object);
             ContextItem contextItem = (ContextItem) object.getProperty().getItem();
-            IContextManager contextManager = new JobContextManager(contextItem, contextItem.getDefaultContext());
+            IContextManager contextManager = new JobContextManager(contextItem.getContext(), contextItem.getDefaultContext());
             for (IContext context : contextManager.getListContext()) {
                 if (result != null) {
                     IContextParameter contextParameter = context.getContextParameter(result.getName());
