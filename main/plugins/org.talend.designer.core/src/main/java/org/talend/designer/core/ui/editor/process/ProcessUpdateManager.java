@@ -2485,7 +2485,10 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     EcoreUtil.resolveAll(contextItem);
                     if (contextItem != null) {
                         // find added variables
-
+                        // change back the old context name in neededVars , the renamed context should not be treated as
+                        // new added
+                        neededVars.removeAll(renamedMap.keySet());
+                        neededVars.addAll(renamedMap.values());
                         Set<String> addedVars = ConnectionContextHelper.checkAndAddContextVariables(contextItem, neededVars,
                                 process.getContextManager(), false, renamedMap);
                         if (addedVars != null && !addedVars.isEmpty()) {
