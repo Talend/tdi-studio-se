@@ -81,16 +81,16 @@ public class CreateContextLinkMigrationTask extends AbstractItemMigrationTask {
                                             if (repoParamType != null) {
                                                 paramType.setInternalId(repoParamType.getInternalId());
                                             } else {
-                                                LOGGER.error("Can't find context repotory parameter type repo:" + repoId
+                                                LOGGER.warn("Can't find context repotory parameter type repo:" + repoId
                                                         + " parameter name:" + paramType.getName());
                                             }
                                         } else {
-                                            LOGGER.error("Can't find context repotory context type repo:" + repoId
+                                            LOGGER.warn("Can't find context repotory context type repo:" + repoId
                                                     + " parameter name:" + contextType.getName());
                                         }
                                     }
                                 } else {
-                                    LOGGER.error("Can't find context repotory item:" + repoId);
+                                    LOGGER.warn("Can't find context repotory item:" + repoId);
                                 }
                             } else {
                                 if (StringUtils.isEmpty(paramType.getInternalId())) {
