@@ -31,7 +31,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -46,6 +45,7 @@ import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
+import org.talend.core.model.context.link.ContextLinkService;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Project;
 import org.talend.core.model.properties.PropertiesPackage;
@@ -74,20 +74,16 @@ public class ExportItemUtil {
 
     private ProjectManager pManager = ProjectManager.getInstance();
 
-    private IPath workspacePath;
-
     private boolean projectNameLowerCase;
 
     Map<IPath, Resource> projectResourcMap = new HashMap<IPath, Resource>();
 
     public ExportItemUtil() {
         project = pManager.getCurrentProject().getEmfProject();
-        workspacePath = new Path(Platform.getInstanceLocation().getURL().getPath());
     }
 
     public ExportItemUtil(Project project) {
         this.project = project;
-        workspacePath = new Path(Platform.getInstanceLocation().getURL().getPath());
     }
 
     public void setProjectNameAsLowerCase(boolean projectNameLowerCase) {
@@ -331,6 +327,8 @@ public class ExportItemUtil {
                 String label = item.getProperty().getLabel();
                 // project
                 addTalendProjectFile(toExport, destinationDirectory);
+                // Item context link file
+                addItemContextLinkFile(item.getProperty().getId(), toExport, destinationDirectory);
 
                 // tdm .settings/com.oaklandsw.base.projectProps
                 String technicalLabel = project.getTechnicalLabel();
@@ -517,6 +515,20 @@ public class ExportItemUtil {
                     copyAndAddResource(toExport, proMigrationTaskSourcePath, proMigrationTargetPath, proMigrationTaskRelativePath);
                 }
             }
+        }
+    }
+
+    private void addItemContextLinkFile(String itemId, Map<File, IPath> toExport, File destinationDirectory) throws IOException {
+        IPath proSourcePath = getProjectLocationPath(project.getTechnicalLabel());
+        IPath itemLinkRelatedPath = getProjectSettingFolderPath().append(File.separator)
+                .append(ContextLinkService.LINKS_FOLDER_NAME).append(File.separator)
+                .append(ContextLinkService.getLinkFileName(itemId));
+        File sourceItemLinkFile = new File(ContextLinkService.calLinksFilePath(proSourcePath.toPortableString(), itemId));
+        if (sourceItemLinkFile.exists()) {
+            IPath proTargetPath = new Path(destinationDirectory.getAbsolutePath()).append(getProjectOutputPath());
+            File targetItemLinkFile = new File(ContextLinkService.calLinksFilePath(proTargetPath.toPortableString(), itemId));
+            IPath sourceItemLinkPath = new Path(sourceItemLinkFile.getAbsolutePath());
+            copyAndAddResource(toExport, sourceItemLinkPath, new Path(targetItemLinkFile.getAbsolutePath()), itemLinkRelatedPath);
         }
     }
 

@@ -637,6 +637,30 @@ public final class JSONConnectionContextHelper {
         return varList;
     }
 
+    public static String getConnectionXPathQuery(JSONFileConnection conn) {
+        EList schema = conn.getSchema();
+        if (schema != null) {
+            Object object = schema.get(0);
+            if (object instanceof JSONXPathLoopDescriptor) {
+                JSONXPathLoopDescriptor loopDesc = (JSONXPathLoopDescriptor) object;
+                String absoluteXPathQuery = loopDesc.getAbsoluteXPathQuery();
+                return absoluteXPathQuery;
+            }
+        }
+        return null;
+    }
+
+    public static void setConnectionXPathQuery(JSONFileConnection conn, String newValue) {
+        EList schema = conn.getSchema();
+        if (schema != null) {
+            Object object = schema.get(0);
+            if (object instanceof JSONXPathLoopDescriptor) {
+                JSONXPathLoopDescriptor loopDesc = (JSONXPathLoopDescriptor) object;
+                loopDesc.setAbsoluteXPathQuery(newValue);
+            }
+        }
+    }
+
     static void setJSONFilePropertiesForContextMode(String prefixName, JSONFileConnection conn) {
         if (conn == null || prefixName == null) {
             return;
