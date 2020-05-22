@@ -12,13 +12,20 @@
 // ============================================================================
 package org.talend.repository.generic.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
+import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
+import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.serialize.SerializerDeserializer;
@@ -102,6 +109,91 @@ public class GenericContextUtilTest {
 
     private String getValidContextVarName(String paramName) {
         return paramName.replace(IGenericConstants.EXP_SEPARATOR, IGenericConstants.UNDERLINE_SEPARATOR);
+    }
+
+    @Test
+    public void testUpdateCompPropertiesForContextMode() {
+        DatabaseConnection dbconnection = ConnectionFactory.eINSTANCE.createDatabaseConnection();
+        String jdbcConnectProperties = getJDBCConnectProperties();
+        dbconnection.setCompProperties(jdbcConnectProperties);
+        ComponentProperties componentProperties = ComponentsUtils.getComponentPropertiesFromSerialized(jdbcConnectProperties,
+                dbconnection);
+        setComponentProperty(componentProperties, "name", "context.test_connection_name");
+        setComponentProperty(componentProperties, "jdbcUrl", "context.test_connection_jdbcUrl");
+        setComponentProperty(componentProperties, "drivers", "context.test_connection_drivers");
+        setComponentProperty(componentProperties, "userId", "context.test_connection_userId");
+        setComponentProperty(componentProperties, "password", "context.test_connection_password");
+
+        String serializedProperties = componentProperties.toSerialized();
+        dbconnection.setCompProperties(serializedProperties);
+
+        Map<String, String> changeMap = new HashMap<String, String>();
+        changeMap.put("context.test_connection_name", "context.test_connection_changedname");
+        changeMap.put("context.test_connection_jdbcUrl", "context.test_connection_changedjdbcUrl");
+        changeMap.put("context.test_connection_drivers", "context.test_connection_changeddrivers");
+        changeMap.put("context.test_connection_userId", "context.test_connection_changeduserId");
+        changeMap.put("context.test_connection_password", "context.test_connection_changedpassword");
+
+        GenericContextUtil.updateCompPropertiesForContextMode(dbconnection, changeMap);
+        ComponentProperties compProperties = ComponentsUtils
+                .getComponentPropertiesFromSerialized(dbconnection.getCompProperties(), dbconnection);
+        assertEquals("context.test_connection_changedname", getComponentProperty(compProperties, "name").getStoredValue());
+        assertEquals("context.test_connection_changedjdbcUrl", getComponentProperty(compProperties, "jdbcUrl").getStoredValue());
+        assertEquals("context.test_connection_changeddrivers", getComponentProperty(compProperties, "drivers").getStoredValue());
+        assertEquals("context.test_connection_changeduserId", getComponentProperty(compProperties, "userId").getStoredValue());
+        assertEquals("context.test_connection_changedpassword",
+                getComponentProperty(compProperties, "password").getStoredValue());
+    }
+
+    private static Property getComponentProperty(ComponentProperties componentProperties, String propertyname) {
+        List<Property> propertyList = new ArrayList<Property>();
+        findOutProperty(componentProperties, propertyname, propertyList);
+        return propertyList.get(0);
+    }
+
+    private static void setComponentProperty(ComponentProperties componentProperties, String propertyname, String propertyvalue) {
+        List<Property> propertyList = new ArrayList<Property>();
+        findOutProperty(componentProperties, propertyname, propertyList);
+        Property property = propertyList.get(0);
+        property.setStoredValue(propertyvalue);
+    }
+
+    private static void findOutProperty(Properties componentProperties, String propertyname, List<Property> result) {
+        for (NamedThing namedThing : componentProperties.getProperties()) {
+            if (namedThing instanceof Property) {
+                Property property = (Property) namedThing;
+                if (property.getName().equals(propertyname)) {
+                    result.add(property);
+                    return;
+                }
+            } else if (namedThing instanceof Properties) {
+                Properties compProp = (Properties) namedThing;
+                findOutProperty(compProp, propertyname, result);
+            }
+        }
+    }
+
+    private static String getJDBCConnectProperties() {
+        String compProperties = "{\"@type\":\"org.talend.components.jdbc.wizard.JDBCConnectionWizardProperties\","
+                + "\"name\":{\"@type\":\"org.talend.daikon.properties.property.StringProperty\",\"possibleValues2\":null,\"flags\":null,\"storedValue\":null,\"storedDefaultValue\":null,\""
+                + "children\":{\"@type\":\"java.util.ArrayList\"},\"taggedValues\":{\"@type\":\"java.util.HashMap\",\"SUPPORT_CONTEXT\":false,\"IS_DYNAMIC\":false,\"REPOSITORY_VALUE\":\"name\"},\"size\":-1,\"occurMinTimes\":1,\"occurMaxTimes\":1,"
+                + "\"precision\":0,\"pattern\":null,\"nullable\":false,\"possibleValues\":null,\"currentType\":\"java.lang.String\",\"name\":\"name\",\"tags\":null},\"repositoryLocation\":\"_W-ztsIcyEeqy_c-Mq47LSw\",\""
+                + "connection\":{\"jdbcUrl\":{\"@type\":\"org.talend.daikon.properties.property.StringProperty\",\"possibleValues2\":null,\"flags\":null,\"storedValue\":\"jdbc:\",\"storedDefaultValue\":null,\"children\":{\"@type\":\"java.util.ArrayList\"},"
+                + "\"taggedValues\":{\"@type\":\"java.util.HashMap\",\"SUPPORT_CONTEXT\":true,\"IS_DYNAMIC\":false,\"REPOSITORY_VALUE\":\"jdbcUrl\"},\"size\":-1,\"occurMinTimes\":1,\"occurMaxTimes\":1,\"precision\":0,\"pattern\":null,\"nullable\":false,"
+                + "\"possibleValues\":null,\"currentType\":\"java.lang.String\",\"name\":\"jdbcUrl\",\"tags\":null},\"driverTable\":{\"drivers\":{\"flags\":null,\"storedValue\":null,\"storedDefaultValue\":null,\"children\":{\"@type\":\"java.util.ArrayList\"},"
+                + "\"taggedValues\":{\"@type\":\"java.util.HashMap\",\"SUPPORT_CONTEXT\":true,\"IS_DYNAMIC\":false,\"REPOSITORY_VALUE\":\"drivers\"},\"size\":-1,\"occurMinTimes\":0,\"occurMaxTimes\":0,\"precision\":0,\"pattern\":null,\"nullable\":false,\"possibleValues\":null,"
+                + "\"currentType\":\"java.util.List&lt;java.lang.String&gt;\",\"name\":\"drivers\",\"tags\":null},\"name\":\"driverTable\",\"validationResult\":null,\"tags\":null},\"driverClass\":{\"@type\":\"org.talend.daikon.properties.property.StringProperty\",\"possibleValues2\":null,"
+                + "\"flags\":null,\"storedValue\":null,\"storedDefaultValue\":null,\"children\":{\"@type\":\"java.util.ArrayList\"},\"taggedValues\":{\"@type\":\"java.util.HashMap\",\"SUPPORT_CONTEXT\":true,\"IS_DYNAMIC\":false,\"REPOSITORY_VALUE\":\"driverClass\"},\"size\":-1,"
+                + "\"occurMinTimes\":1,\"occurMaxTimes\":1,\"precision\":0,\"pattern\":null,\"nullable\":false,\"possibleValues\":null,\"currentType\":\"java.lang.String\",\"name\":\"driverClass\",\"tags\":null},\"userPassword\":{\"useAuth\":{\"flags\":null,\"storedValue\":{\"@type\":\"boolean\","
+                + "\"value\":false},\"storedDefaultValue\":null,\"children\":{\"@type\":\"java.util.ArrayList\"},\"taggedValues\":{\"@type\":\"java.util.HashMap\",\"REPOSITORY_VALUE\":\"useAuth\"},\"size\":-1,\"occurMinTimes\":0,\"occurMaxTimes\":0,\"precision\":0,\"pattern\":null,\"nullable\":false,"
+                + "\"possibleValues\":null,\"currentType\":\"java.lang.Boolean\",\"name\":\"useAuth\",\"tags\":null},\"userId\":{\"@type\":\"org.talend.daikon.properties.property.StringProperty\",\"possibleValues2\":null,\"flags\":null,\"storedValue\":null,\"storedDefaultValue\":null,\"children\":{\"@type\":\"java.util.ArrayList\"},"
+                + "\"taggedValues\":{\"@type\":\"java.util.HashMap\",\"SUPPORT_CONTEXT\":true,\"IS_DYNAMIC\":false,\"REPOSITORY_VALUE\":\"userId\"},\"size\":-1,\"occurMinTimes\":1,\"occurMaxTimes\":1,\"precision\":0,\"pattern\":null,\"nullable\":false,\"possibleValues\":null,\"currentType\":\"java.lang.String\",\"name\":\"userId\","
+                + "\"tags\":null},\"password\":{\"@type\":\"org.talend.daikon.properties.property.StringProperty\",\"possibleValues2\":null,\"flags\":{\"@type\":\"java.util.RegularEnumSet\",\"@items\":[{\"@type\":\"org.talend.daikon.properties.property.Property$Flags\",\"name\":\"ENCRYPT\"},{\"@type\":\"org.talend.daikon.properties.property.Property$Flags\","
+                + "\"name\":\"SUPPRESS_LOGGING\"}]},\"storedValue\":null,\"storedDefaultValue\":null,\"children\":{\"@type\":\"java.util.ArrayList\"},\"taggedValues\":{\"@type\":\"java.util.HashMap\",\"SUPPORT_CONTEXT\":true,\"IS_DYNAMIC\":false,\"REPOSITORY_VALUE\":\"password\"},\"size\":-1,\"occurMinTimes\":1,\"occurMaxTimes\":1,"
+                + "\"precision\":0,\"pattern\":null,\"nullable\":false,\"possibleValues\":null,\"currentType\":\"java.lang.String\",\"name\":\"password\",\"tags\":null},\"needSwitch\":false,\"name\":\"userPassword\",\"validationResult\":null,\"tags\":null},\"useInWizard\":true,\"name\":\"connection\",\"validationResult\":null,"
+                + "\"tags\":null},\"mappingFile\":{\"@type\":\"org.talend.daikon.properties.property.StringProperty\",\"possibleValues2\":null,\"flags\":null,\"storedValue\":\"mysql_id\",\"storedDefaultValue\":null,\"children\":{\"@type\":\"java.util.ArrayList\"},\"taggedValues\":{\"@type\":\"java.util.HashMap\","
+                + "\"SUPPORT_CONTEXT\":true,\"IS_DYNAMIC\":false,\"REPOSITORY_VALUE\":\"mappingFile\"},\"size\":-1,\"occurMinTimes\":0,\"occurMaxTimes\":0,\"precision\":0,\"pattern\":null,\"nullable\":false,\"possibleValues\":null,\"currentType\":\"java.lang.String\",\"name\":\"mappingFile\",\"tags\":null},\"org.talend.daikon.properties.PropertiesImpl.name\":\"connection\",\"validationResult\":null,\"tags\":null}";
+        return compProperties;
     }
 
 }
