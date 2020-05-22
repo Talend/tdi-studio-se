@@ -1214,15 +1214,20 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         // vm args
         String[] cmd2 = addVMArguments(tmpParams.toArray(new String[0]), ignoreCustomJVMSetting);
 
+        String localM2Path = "-Dtalend.component.manager.m2.repository="; //$NON-NLS-1$
         if (isExportConfig()) { // only for export
             // add bat/sh header lines.
             List<String> list = extractAheadCommandSegments();
             list.addAll(Arrays.asList(cmd2));
+            if (isStandardJob() && isExternalUse()) {
+                // for dynamic/independent subjob
+                localM2Path += "../lib"; //$NON-NLS-1$
+                list.add(3, localM2Path);
+            }
             return list.toArray(new String[0]);
         } else {
             List<String> asList = convertArgsToList(cmd2);
-            if ((!isExternalUse() && isStandardJob()) || isGuessSchemaJob(property)) {
-                String localM2Path = "-Dtalend.component.manager.m2.repository="; //$NON-NLS-1$
+            if (isStandardJob() || isGuessSchemaJob(property)) {
                 if (EnvironmentUtils.isWindowsSystem()) {
                     localM2Path = localM2Path + PomUtil.getLocalRepositoryPath().replaceAll("%20", " "); //$NON-NLS-1$ //$NON-NLS-2$
                 } else {
