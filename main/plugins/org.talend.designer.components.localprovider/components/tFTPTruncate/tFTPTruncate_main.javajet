@@ -73,10 +73,10 @@
 			}	     
    		}  
 <%
-	} else if (ftps) {  /* ftps */ 
+	} else {  /* ftp+s */
 %>
 			globalMap.put("<%=cid %>_CURRENT_STATUS", "No file truncated.");
-			java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet(); 
+			java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet();
 			for (String key<%=cid %> : keySet<%=cid %>) {
 				<% /*prepare filemask*/ %>
 				String filemask<%=cid %> = key<%=cid %>;
@@ -188,44 +188,4 @@
 
 			<% /*return to root dir for next filemask*/ %>
 			ftp_<%=cid %>.changeWorkingDirectory(rootWorkDir_<%=cid %>);
-<%
-	} else {  /* ftp */ 
-%>
-		globalMap.put("<%=cid %>_CURRENT_STATUS", "No file truncated.");
-    	java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet(); 
-	    try {
-			for (String key<%=cid %> : keySet<%=cid %>) {     
-				String filemask<%=cid %> = key<%=cid %>; 
-				String dir<%=cid %> = null;
-				<%if(!useGlob) {//perl5 mode not support windows(\) path separator at the mask string%>
-    	    		String mask<%=cid %> = filemask<%=cid %>.replaceAll("\\\\", "/") ;
-				<%}else{%>
-					String mask<%=cid %> = filemask<%=cid %>;
-				<%}%>
-		    	int i<%=cid %> = mask<%=cid %>.lastIndexOf('/');
-				if (i<%=cid %>!=-1) {
-					dir<%=cid %> = mask<%=cid %>.substring(0, i<%=cid %>); 
-					mask<%=cid %> = mask<%=cid %>.substring(i<%=cid %>+1); 
-	    		}
-				if (dir<%=cid %>!=null && !"".equals(dir<%=cid %>)) ftp_<%=cid %>.chdir(dir<%=cid %>);
-		        <%if(!useGlob) {%>
-    				mask<%=cid %> = org.apache.oro.text.GlobCompiler.globToPerl5(mask<%=cid %>.toCharArray(), org.apache.oro.text.GlobCompiler.DEFAULT_MASK);
-		       	<%}%>
-				String[] listings<%=cid %> = ftp_<%=cid %>.dir(null, false);
-				for (int m<%=cid %> = 0; m<%=cid %> < listings<%=cid %>.length; m<%=cid %>++) {
-					if (listings<%=cid %>[m<%=cid %>].matches(mask<%=cid %>)) {
-						ftp_<%=cid %>.put(new ByteArrayInputStream(new byte[]{}), listings<%=cid %>[m<%=cid %>]);
-						globalMap.put("<%=cid %>_CURRENT_STATUS", "File truncate OK.");
-						<%if(isLog4jEnabled){%>
-							log.debug("<%=cid%> - '" + listings<%=cid %>[m<%=cid %>] + "' truncate ok.");
-						<%}%>
-						nb_file_<%=cid%>++;
-					}
-				}
-	   		}
-		}catch(com.enterprisedt.net.ftp.FTPException e){
-   			globalMap.put("<%=cid %>_CURRENT_STATUS", "File truncate fail.");
-	   		throw e;
-   		}
-		ftp_<%=cid %>.chdir(root<%=cid %>);
-<%}%>
+<%} %>

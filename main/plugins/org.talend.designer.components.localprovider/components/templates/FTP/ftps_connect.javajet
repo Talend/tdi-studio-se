@@ -1,6 +1,9 @@
 <%@ jet
 %>
 
+<%
+    String portToConnect = ftpsPort;
+%>
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftpsTrust.javajet"%>
     javax.net.ssl.SSLContext sslContext_<%=cid %> = null;
     javax.net.ssl.TrustManager[] trustManager_<%=cid %> = null;
@@ -49,35 +52,12 @@
             ftp_<%=cid %> = new org.talend.ftp.SSLSessionReuseFTPSClient(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
         }
 
-        ftp_<%=cid %>.setControlEncoding(<%=encoding %>);
-
         <%if(isLog4jEnabled){%>
             log.info("<%=cid%> -FTPS security Mode is <%=securityMode%>.");
-            log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
         <%}%>
 
-        if (connectionTimeout_<%=cid %> > 0) {
-            ftp_<%=cid %>.setDefaultTimeout(connectionTimeout_<%=cid %>);
-        }
-
-        ftp_<%=cid %>.connect(<%=host %>,<%=ftpsPort%>);
-        <%if(isLog4jEnabled){%>
-            log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
-        <%}%>
+        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/commons_net_create_connection.javajet"%>
         ftp_<%=cid %>.setRemoteVerificationEnabled(<%=useRemoteVerification %>);
-<%
-        passwordFieldName = cid.contains("Connection") ? "__PASS__" : "__PASSWORD__";
-%>
-
-        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-
-        boolean isLoginSuccessful_<%=cid %> = ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
-
-        if (!isLoginSuccessful_<%=cid %>) {
-            throw new RuntimeException("Login failed");
-        }
-
-        ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE);
 <%
         if (protectionBufferSize != null && !protectionBufferSize.isEmpty() ) {
 %>

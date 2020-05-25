@@ -16,23 +16,10 @@ String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 String remotedir = ElementParameterParser.getValue(node, "__REMOTEDIR__");
 String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
-boolean sftp = false;
 
 boolean usePerl5 = ("true").equals(ElementParameterParser.getValue(node, "__PERL5_REGEX__"));
 
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-if ("true".equals(useExistingConn)) {
-  List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
-
-  for (INode n : nodeList) {
-
-    if (n.getUniqueName().equals(connection)) {
-      sftp = "true".equals(ElementParameterParser.getValue(n, "__SFTP__"));
-    }
-  }
-} else {
-  sftp = "true".equals(ElementParameterParser.getValue(node, "__SFTP__"));
-}
 %>
 
 	try {
