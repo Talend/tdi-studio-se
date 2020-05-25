@@ -106,6 +106,11 @@ public class RunProcessContextManager {
     public void setActiveProcess(IProcess2 activeProcess, boolean refreshUI) {
         RunProcessContext tempActiveContext = findContext(activeProcess);
         if (tempActiveContext == null && activeProcess != null) {
+            if (activeProcess instanceof org.talend.designer.core.ui.editor.process.Process) {
+                org.talend.designer.core.ui.editor.process.Process prs =
+                        (org.talend.designer.core.ui.editor.process.Process) activeProcess;
+                prs.checkDifferenceWithRepository();
+            }
             tempActiveContext = getRunProcessContext(activeProcess);
         }
         if (!contexts.contains(tempActiveContext) && tempActiveContext != null) {

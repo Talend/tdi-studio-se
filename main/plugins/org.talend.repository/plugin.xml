@@ -3329,7 +3329,7 @@
               name="RemovePigudfModulesMigrationTask"
               version="7.3.1">
         </projecttask>
-       <projecttask
+        <projecttask
              beforeLogon="false"
              breaks="7.3.0"
              class="org.talend.repository.model.migration.RenameSQLDWHMigrationTask"
@@ -3346,6 +3346,15 @@
              id="org.talend.repository.model.migration.ChangeDefaultLoadMethod4tSynapseBulkExec"
              name="ChangeDefaultLoadMethod4tSynapseBulkExec"
              version="7.3.1">
+       </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.CreateContextLinkMigrationTask"
+              description="Create context link file"
+              id="org.talend.repository.model.migration.CreateContextLinkMigrationTask"
+              name="CreateContextLinkMigrationTask"
+              version="7.3.1">
        </projecttask>
    </extension>
 

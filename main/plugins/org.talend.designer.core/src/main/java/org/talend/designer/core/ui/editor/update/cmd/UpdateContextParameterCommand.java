@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.widgets.Display;
@@ -62,15 +61,6 @@ public class UpdateContextParameterCommand extends Command {
         this.result = result;
     }
 
-    private ContextType getDefaultContextType(ContextItem item) {
-        for (Object obj : item.getContext()) {
-            ContextType type = (ContextType) obj;
-            if (type.getName().equals(item.getDefaultContext())) {
-                return type;
-            }
-        }
-        return null;
-    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -91,9 +81,10 @@ public class UpdateContextParameterCommand extends Command {
         Map<String, ContextType> repoContextMap = new HashMap<String, ContextType>();
         String repoDefaultContextName = null;
         if (result.getParameter() != null) {
-            if (result.getParameter() instanceof ContextItem) {
-                EList<?> contextGroups = ((ContextItem) result.getParameter()).getContext();
-                repoDefaultContextName = ((ContextItem) result.getParameter()).getDefaultContext();
+            if (result.getParameter() instanceof Item) {
+                Item item = (Item) result.getParameter();
+                EList<?> contextGroups = ContextUtils.getAllContextType(item);
+                repoDefaultContextName = ContextUtils.getDefaultContextName(item);
                 for (Object contextGroup : contextGroups) {                                                                                                                                                                                                     
                     if (contextGroup instanceof ContextTypeImpl) {
                         String name = ((ContextTypeImpl) contextGroup).getName();
@@ -125,11 +116,11 @@ public class UpdateContextParameterCommand extends Command {
                 }
                 for (IContext context : listContext) {
                         for (IContextParameter param : context.getContextParameterList()) {
-                            ContextItem item = null;
+                        Item item = null;
                             if (names != null && names.contains(param.getName())) {
                                 switch (result.getResultType()) {
                                 case DELETE:
-                                    item = (ContextItem) result.getParameter();
+                                item = (Item) result.getParameter();
 
                                     if (item != null && item.getProperty().getId().equals(param.getSource())
                                             && result.isChecked()) {
@@ -147,7 +138,7 @@ public class UpdateContextParameterCommand extends Command {
                                         sourceContextName = repoDefaultContextName;
                                     }
                                 if (sourceContextName != null) {
-                                    item = (ContextItem) result.getParameter();
+                                    item = (Item) result.getParameter();
 
                                     if (item != null && item.getProperty().getId().equals(param.getSource())
                                             && result.isChecked()) {
@@ -161,7 +152,7 @@ public class UpdateContextParameterCommand extends Command {
                                 case RENAME:
                                     List<Object> parameter = (List<Object>) result.getParameter();
                                     if (parameter.size() >= 3) {
-                                        item = (ContextItem) parameter.get(0);
+                                    item = (Item) parameter.get(0);
                                         String sourceId = item.getProperty().getId();
                                         String oldName = (String) parameter.get(1);
                                         String newName = (String) parameter.get(2);
@@ -189,8 +180,8 @@ public class UpdateContextParameterCommand extends Command {
                         && result.isChecked()) {
                     IContext context = (IContext) updateObject;
                     String name = context.getName();
-                    if (!listContext.contains(context) && result.getParameter() instanceof ContextItem) {
-                        ContextItem item = (ContextItem) result.getParameter();
+                    if (!listContext.contains(context) && result.getParameter() instanceof Item) {
+                        Item item = (Item) result.getParameter();
 
                         JobContext newContext = new JobContext(name);
                         List<IContextParameter> newParamList = new ArrayList<IContextParameter>();
@@ -212,25 +203,12 @@ public class UpdateContextParameterCommand extends Command {
                             param = (JobContextParameter) contextParam.clone();
                             final Item contextItem = ContextUtils.getRepositoryContextItemById(param.getSource());
                             if (contextItem != null) {
-                                if (contextItem instanceof ContextItem) {
-                                    String defaultContextName = ((ContextItem) contextItem).getDefaultContext();
-                                    ContextTypeImpl defaultContext = null;
-                                    EList<?> contextGroups = ((ContextItem) contextItem).getContext();
-                                    for (Object contextGroup : contextGroups) {
-                                        if (contextGroup instanceof ContextTypeImpl) {
-                                            String conName = ((ContextTypeImpl) contextGroup).getName();
-                                            if (StringUtils.equals(defaultContextName, conName)) {
-                                                defaultContext = ((ContextTypeImpl) contextGroup);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    if (defaultContext != null) {
-                                        final ContextParameterType conParamType = ContextUtils
-                                                .getContextParameterTypeByName(defaultContext, param.getName());
-                                        if (conParamType != null) {
-                                            ContextUtils.updateParameter(conParamType, param);
-                                        }
+                                ContextType defaultContext = ContextUtils.getContextTypeByName(contextItem, null);
+                                if (defaultContext != null) {
+                                    final ContextParameterType conParamType = ContextUtils
+                                            .getContextParameterTypeByName(defaultContext, param.getName());
+                                    if (conParamType != null) {
+                                        ContextUtils.updateParameter(conParamType, param);
                                     }
                                 }
                             }
@@ -258,8 +236,8 @@ public class UpdateContextParameterCommand extends Command {
                 } else if (result.getResultType() == EUpdateResult.DELETE
                         && result.getUpdateType() == EUpdateItemType.CONTEXT_GROUP && result.isChecked()) {
                     IContext context = (IContext) updateObject;
-                    if (result.getParameter() instanceof ContextItem) {
-                        ContextItem item = (ContextItem) result.getParameter();
+                    if (result.getParameter() instanceof Item) {
+                        Item item = (Item) result.getParameter();
                         List<IContext> listC = new ArrayList<IContext>(listContext);
                         for (IContext con : listC) {
                             if (con.getName().equals(context.getName())) {
@@ -279,8 +257,8 @@ public class UpdateContextParameterCommand extends Command {
                     IContextManager contextManager = process.getContextManager();
                     Map<IContext, String> renameGroupContext = ((JobContextManager) contextManager).getRenameGroupContext();
                     String oldName = renameGroupContext.get(context);
-                    if (result.getParameter() instanceof ContextItem) {
-                        ContextItem item = (ContextItem) result.getParameter();
+                    if (result.getParameter() instanceof Item) {
+                        Item item = (Item) result.getParameter();
                         for (IContext con : listContext) {
                             if (con.getName().equals(oldName)) {
                                 for (IContextParameter oldParam : con.getContextParameterList()) {
@@ -343,7 +321,7 @@ public class UpdateContextParameterCommand extends Command {
         ContextItem item = (ContextItem) result.getParameter();
         // this job contains the repository context group
         if (contextItemList.contains(item)) {
-            ContextType contextType = getDefaultContextType(item);
+            ContextType contextType = ContextUtils.getContextTypeByName(item, null);
             for (String paramName : names) {
                 ContextParameterType contextParameterType = ContextUtils.getContextParameterTypeByName(contextType, paramName);
                 // check if there is a parameter with same name
