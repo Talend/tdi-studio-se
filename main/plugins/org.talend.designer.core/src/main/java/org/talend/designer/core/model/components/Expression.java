@@ -177,8 +177,9 @@ public final class Expression {
 
     protected static boolean isThereCondition(String expression, String condition) {
         expression = expression.toLowerCase();
-        if (!expression.contains(StringUtils.wrap(condition, StringUtils.SPACE))) {
-            // also exclude those like 'standard', "story"
+        if (!expression.contains(condition)) {
+            // FIXME need to find a way to exclude those like 'standard', "story", "doctor1"
+            // also make sure )and( still works
             return false;
         }
         if (AND.equals(condition) && conditionMatcher.matches(expression, andPattern)) {
