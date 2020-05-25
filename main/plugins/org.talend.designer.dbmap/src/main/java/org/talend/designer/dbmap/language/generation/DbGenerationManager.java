@@ -753,16 +753,8 @@ public abstract class DbGenerationManager {
 
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
-                IJoinType joinType = null;
-                if (i == 0) {
-                    joinType = AbstractDbLanguage.JOIN.NO_JOIN;
-                } else {
-                    joinType = language.getJoin(inputTable.getJoinType());
-                }
-                boolean commaCouldBeAdded = !explicitJoin && i > 0;
-                if (language.unuseWithExplicitJoin().contains(joinType) && !explicitJoin) {
-                    buildTableDeclaration(component, sb, inputTable, commaCouldBeAdded, false, false);
-                }
+                boolean commaCouldBeAdded = i > 0;
+                buildTableDeclaration(component, sb, inputTable, commaCouldBeAdded, false, false);
             }
 
             // where
@@ -771,7 +763,7 @@ public abstract class DbGenerationManager {
             boolean isFirstClause = true;
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
-                if (buildConditions(component, sbWhere, inputTable, false, isFirstClause, false)) {
+                if (buildConditions(isFirstClause, component, sbWhere, inputTable, false)) {
                     isFirstClause = false;
                 }
             }
@@ -1103,6 +1095,35 @@ public abstract class DbGenerationManager {
                 if (isFirstClause && conditionWritten) {
                     isFirstClause = false;
                 }
+            }
+        }
+        return atLeastOneConditionWritten;
+    }
+
+    /**
+     * build conditions for update case only DOC hzhao Comment method "buildConditions".
+     * 
+     * @param isFirstClause
+     * @param component
+     * @param sb
+     * @param inputTable
+     * @param isSqlQuert
+     * @return
+     */
+    protected boolean buildConditions(boolean isFirstClause, DbMapComponent component, StringBuilder sb,
+            ExternalDbMapTable inputTable,
+            boolean isSqlQuert) {
+        List<ExternalDbMapEntry> inputEntries = inputTable.getMetadataTableEntries();
+        int lstSizeEntries = inputEntries.size();
+        boolean atLeastOneConditionWritten = false;
+        for (int j = 0; j < lstSizeEntries; j++) {
+            ExternalDbMapEntry dbMapEntry = inputEntries.get(j);
+            boolean conditionWritten = buildCondition(component, sb, inputTable, isFirstClause, dbMapEntry, true, isSqlQuert);
+            if (conditionWritten) {
+                atLeastOneConditionWritten = true;
+            }
+            if (isFirstClause && conditionWritten) {
+                isFirstClause = false;
             }
         }
         return atLeastOneConditionWritten;

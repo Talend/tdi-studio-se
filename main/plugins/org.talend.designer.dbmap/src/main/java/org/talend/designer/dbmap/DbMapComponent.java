@@ -54,6 +54,7 @@ import org.talend.designer.dbmap.i18n.Messages;
 import org.talend.designer.dbmap.language.generation.DbGenerationManager;
 import org.talend.designer.dbmap.language.generation.GenericDbGenerationManager;
 import org.talend.designer.dbmap.language.hive.HiveGenerationManager;
+import org.talend.designer.dbmap.language.mssql.MssqlGenerationManager;
 import org.talend.designer.dbmap.language.mysql.MysqlGenerationManager;
 import org.talend.designer.dbmap.language.oracle.OracleGenerationManager;
 import org.talend.designer.dbmap.language.postgres.PostgresGenerationManager;
@@ -602,6 +603,8 @@ public class DbMapComponent extends AbstractMapComponent {
                 generationManager = new PostgresGenerationManager();
             } else if (value.contains("tELTHiveMap")) { //$NON-NLS-1$
                 generationManager = new HiveGenerationManager();
+            } else if (value.contains("tELTMSSqlMap")) {
+                generationManager = new MssqlGenerationManager();
             } else if (value.startsWith("tELT") && value.endsWith("Map")) //$NON-NLS-1$ //$NON-NLS-2$
             {
                 generationManager = new GenericDbGenerationManager();
