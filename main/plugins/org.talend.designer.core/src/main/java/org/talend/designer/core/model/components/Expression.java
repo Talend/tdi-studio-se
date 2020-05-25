@@ -93,18 +93,14 @@ public final class Expression {
 
     private static Pattern orPattern;
     
-    private static Pattern pattern;
-
     static {
         Perl5Compiler compiler = new Perl5Compiler();
         // example for the reg exp: (.*)[')][ ]*or[ ]*[\w(](.*)
         String prefixReg = "(.*)[') ][ ]*"; //$NON-NLS-1$
         String suffixReg = "[ ]*[ (](.*)"; //$NON-NLS-1$
-        String reg = "[^a-zA-Z]"; //$NON-NLS-1$
         try {
         	andPattern = compiler.compile(prefixReg + AND + suffixReg);
             orPattern = compiler.compile(prefixReg + OR + suffixReg);
-            pattern = compiler.compile(reg);
         } catch (MalformedPatternException e) {
             throw new RuntimeException(e);
         }
@@ -189,32 +185,17 @@ public final class Expression {
     	if(!expression.contains(condition)) {
     		return false;
     	}
-    	String[] exs = expression.split(condition);
-    	for(int i = 0; i<exs.length; i++){
-    		if((i&1)==1) {
-    			String ex0 = exs[i-1];
-    			String ex1 = exs[i];
-    			
-    			if(conditionMatcher.matches(String.valueOf(ex0.charAt(ex0.length() - 1)), pattern) &&
-    					conditionMatcher.matches(String.valueOf(ex1.charAt(0)), pattern)) {
-    				return true;
-    			}
-    			
-    			if(i+1<exs.length) {
-    				String ex2 = exs[i+1];
-    				if(conditionMatcher.matches(String.valueOf(ex2.charAt(0)), pattern) &&
-        					conditionMatcher.matches(String.valueOf(ex1.charAt(ex1.length() - 1)), pattern)) {
-        				return true;
-        			}
-    			}
-    		}
-    		
-    	}
+    	
+    	if (expression.contains(StringUtils.wrap(condition, StringUtils.SPACE)) || expression.contains(")" + condition + "(")) {
+        	// also exclude those like 'standard', "story" )or(    )and(
+        	return true; 
+        }
     	return false;
     }
 
     protected static boolean isThereCondition(String expression, String condition) {
         expression = expression.toLowerCase();
+        
         if(!isAndOr(expression, condition)) {
         	return false;
         }
