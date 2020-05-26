@@ -246,9 +246,12 @@ String inputConnName = null;
 	    			}
 		  		}
 		  		%>
-		  		paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + System.getProperty("talend.component.manager.m2.repository"));
 			}
-			
+
+			<% if(useIndependentProcess){ %>
+		  		paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + System.getProperty("talend.component.manager.m2.repository"));
+			<%}%>
+
 			<%
 			if(use_custom_jvm_setting) {
 			%>
