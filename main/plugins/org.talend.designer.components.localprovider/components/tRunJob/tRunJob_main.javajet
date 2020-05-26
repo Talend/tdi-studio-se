@@ -248,12 +248,12 @@ String inputConnName = null;
 		  		%>
 			}
 
-			<% if(useIndependentProcess){ %>
-			    String m2 = System.getProperty("talend.component.manager.m2.repository");
-		  		if (m2 != null){
-		  		  paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
-		  		}
-			<%}%>
+            <% if(useIndependentProcess){ %>
+                String m2 = System.getProperty("talend.component.manager.m2.repository");
+                if (m2 != null){
+                    paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
+                }
+            <%}%>
 
 			<%
 			if(use_custom_jvm_setting) {
