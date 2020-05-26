@@ -60,7 +60,7 @@ if(useExistingConn){
 		}
 		else{
 %>
-			String connectionString_<%=cid %> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName" + <%=dbname %> + ";" + <%=dbproperties%>;
+			String connectionString_<%=cid %> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName=" + <%=dbname %> + ";" + <%=dbproperties%>;
 <%
 		}
 	}

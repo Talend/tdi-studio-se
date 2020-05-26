@@ -208,6 +208,18 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
             }
         } else if (JavaTypesManager.DATE.getLabel().equals(type)) {
             newValue = " ParserUtils.parseTo_Date(" + (newValue.equals("") ? "\"\"" : newValue) + ", \"dd-MM-yyyy\")";
+        } else if (JavaTypesManager.INTEGER.getLabel().contains(type)) {
+            newValue = " new " + JavaTypesManager.INTEGER.getNullableClass().getName() + "(" + newValue + ")";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        } else if (JavaTypesManager.BYTE.getLabel().contains(type)) {
+            newValue = " new " + JavaTypesManager.BYTE.getNullableClass().getName() + "(" + "(byte)" + newValue + ")";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        } else if (JavaTypesManager.SHORT.getLabel().contains(type)) {
+            newValue = " new " + JavaTypesManager.SHORT.getNullableClass().getName() + "(" + "(short)" + newValue + ")";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        } else if (JavaTypesManager.FLOAT.getLabel().contains(type)) {
+            newValue = " new " + JavaTypesManager.FLOAT.getNullableClass().getName() + "(" + newValue + ")";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        } else if (JavaTypesManager.DOUBLE.getLabel().contains(type)) {
+            newValue = " new " + JavaTypesManager.DOUBLE.getNullableClass().getName() + "(" + newValue + ")";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        } else if (JavaTypesManager.LONG.getLabel().contains(type)) {
+            newValue = " new " + JavaTypesManager.LONG.getNullableClass().getName() + "(" + newValue + ")";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         return newValue;
     }

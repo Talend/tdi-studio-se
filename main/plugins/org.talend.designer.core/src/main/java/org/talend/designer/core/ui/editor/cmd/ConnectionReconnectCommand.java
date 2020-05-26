@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PlatformUI;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolHelper;
@@ -30,6 +31,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
@@ -125,6 +127,20 @@ public class ConnectionReconnectCommand extends Command {
         if (oldTarget.getJobletNode() != null) {
             return false;
         }
+        ITestContainerProviderService testContainerService = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+            testContainerService = (ITestContainerProviderService) GlobalServiceRegister.getDefault().getService(
+                    ITestContainerProviderService.class);
+            if (testContainerService != null) {
+                
+                if((testContainerService.isOriginalNode(oldSource) || testContainerService
+                        .isTestCaseComponent(oldSource.getComponent())) && (testContainerService.isOriginalNode(oldTarget) || testContainerService
+                                .isTestCaseComponent(oldTarget.getComponent()))) {
+                	return false;
+                }
+            }
+        }
+        
         if (newSource != null) {
             // remove the connection for the check
             connection.setPropertyValue(EParameterName.ACTIVATE.getName(), false);
