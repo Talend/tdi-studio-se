@@ -249,7 +249,10 @@ String inputConnName = null;
 			}
 
 			<% if(useIndependentProcess){ %>
-		  		paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + System.getProperty("talend.component.manager.m2.repository"));
+			    String m2 = System.getProperty("talend.component.manager.m2.repository");
+		  		if (m2 != null){
+		  		  paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
+		  		}
 			<%}%>
 
 			<%
