@@ -185,15 +185,6 @@ public class MssqlGenerationManager extends DbGenerationManager {
             // load input table in hash
             boolean explicitJoin = false;
             int lstSizeInputTables = inputTables.size();
-            Map<String, ExternalDbMapTable> nameToInputTable = new HashMap<String, ExternalDbMapTable>();
-            for (int i = 0; i < lstSizeInputTables; i++) {
-                ExternalDbMapTable inputTable = inputTables.get(i);
-                nameToInputTable.put(inputTable.getName(), inputTable);
-                IJoinType joinType = language.getJoin(inputTable.getJoinType());
-                if (!language.unuseWithExplicitJoin().contains(joinType) && i > 0) {
-                    explicitJoin = true;
-                }
-            }
 
             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
             appendSqlQuery(sb, tabSpaceString);
@@ -201,9 +192,15 @@ public class MssqlGenerationManager extends DbGenerationManager {
 
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
-                IJoinType joinType = null;
+                IJoinType joinType = language.getJoin(inputTable.getJoinType());
+                if (!language.unuseWithExplicitJoin().contains(joinType) && i > 0) {
+                    explicitJoin = true;
+                } else {
+                    explicitJoin = false;
+                }
                 if (i == 0) {
                     joinType = AbstractDbLanguage.JOIN.NO_JOIN;
+                    previousJoinType = joinType;
                 } else {
                     joinType = language.getJoin(inputTable.getJoinType());
                 }
@@ -218,7 +215,7 @@ public class MssqlGenerationManager extends DbGenerationManager {
                             buildTableDeclaration(component, sb, inputTables.get(i - 1), commaCouldBeAdded, crCouldBeAdded, true);
                             previousJoinType = joinType;
                         } else {
-                            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                            // appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
                             appendSqlQuery(sb, tabSpaceString);
                         }
                         appendSqlQuery(sb, DbMapSqlConstants.SPACE);
