@@ -3531,7 +3531,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                             }
                         }
 
-                        extendedTableModel.removeAll(copyedAllList);
+                        // avoid fire UIManager#handleEvent execute afterOperationListener
+                        // resize will fire focuseLost to applyEditorValue remove the columnViewEditorListener
+                        extendedTableModel.removeAll(copyedAllList, true, false);
                         for (IMetadataColumn metaColumnToAdd : columns) {
                             String label = metaColumnToAdd.getLabel();
                             String expression = oldMappingMap.get(label);
@@ -3539,7 +3541,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                                 metaColumnToAdd.setExpression(expression);
                             }
                         }
-                        extendedTableModel.addAll(columns);
+                        extendedTableModel.addAll(columns, true, false);
                         mapperManager.getUiManager().parseAllExpressionsForAllTables();
                         mapperManager.getUiManager().getOldMappingMap().clear();
                         oldMappingMap.clear();
