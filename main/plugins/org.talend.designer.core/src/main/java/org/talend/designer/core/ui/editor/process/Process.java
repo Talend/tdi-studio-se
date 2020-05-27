@@ -1719,7 +1719,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         }
         // getScreenshots().clear(); // once be saved, set the screenshot to null to free memory
         // getScreenshots().remove(PROCESS_SCREENSHOT_KEY);
-        contextManager.saveToEmf(processType.getContext());
+        contextManager.saveToEmf(processType.getContext(), true);
         // fixe for TDI-24876
         EmfHelper.removeProxy(processType);
         return processType;
