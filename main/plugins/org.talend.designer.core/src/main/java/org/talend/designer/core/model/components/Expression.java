@@ -92,14 +92,14 @@ public final class Expression {
     private static Pattern andPattern;
 
     private static Pattern orPattern;
-    
+
     static {
         Perl5Compiler compiler = new Perl5Compiler();
         // example for the reg exp: (.*)[')][ ]*or[ ]*[\w(](.*)
         String prefixReg = "(.*)[') ][ ]*"; //$NON-NLS-1$
         String suffixReg = "[ ]*[ (](.*)"; //$NON-NLS-1$
         try {
-        	andPattern = compiler.compile(prefixReg + AND + suffixReg);
+            andPattern = compiler.compile(prefixReg + AND + suffixReg);
             orPattern = compiler.compile(prefixReg + OR + suffixReg);
         } catch (MalformedPatternException e) {
             throw new RuntimeException(e);
@@ -174,28 +174,11 @@ public final class Expression {
         }
 
     }
-    
-    protected static boolean isAndOr(String expression, String condition) {
-    	if(expression == null ) {
-    		return false;
-    	}
-    	expression = expression.toLowerCase();
-    	if(!expression.contains(condition)) {
-    		return false;
-    	}
-    	
-    	if (expression.contains(StringUtils.wrap(condition, StringUtils.SPACE)) || expression.contains(")" + condition + "(")) {
-        	// also exclude those like 'standard', "story" )or(    )and(
-        	return true; 
-        }
-    	return false;
-    }
 
     protected static boolean isThereCondition(String expression, String condition) {
         expression = expression.toLowerCase();
-        
-        if(!isAndOr(expression, condition)) {
-        	return false;
+        if (!expression.contains(condition)) {
+            return false;
         }
         if (AND.equals(condition) && conditionMatcher.matches(expression, andPattern)) {
             return true;
