@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.custom.CTabItem;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.repository.model.IRepositoryNode;
@@ -26,11 +25,9 @@ import org.talend.repository.model.RepositoryNode;
 import org.talend.sqlbuilder.IConstants;
 import org.talend.sqlbuilder.Messages;
 import org.talend.sqlbuilder.SqlBuilderPlugin;
-import org.talend.sqlbuilder.editors.MultiPageSqlBuilderEditor;
 import org.talend.sqlbuilder.erdiagram.ui.ErDiagramDialog;
 import org.talend.sqlbuilder.repository.utility.EMFRepositoryNodeManager;
 import org.talend.sqlbuilder.ui.ISQLBuilderDialog;
-import org.talend.sqlbuilder.ui.SQLBuilderDialog;
 import org.talend.sqlbuilder.ui.SqlEditDialog;
 import org.talend.sqlbuilder.util.ImageUtil;
 import org.talend.sqlbuilder.util.QueryTokenizer;
@@ -69,6 +66,10 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
         this.dialog = dialog;
     }
 
+    public void setDesigner(boolean isDesigner) {
+        this.isDesigner = isDesigner;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -77,9 +78,9 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
     @Override
     public String getToolTipText() {
         if (isDesigner) {
-            return Messages.getString("GUIModificationQueryAction.TextDialog.TitleText"); //$NON-NLS-1$
+            return Messages.getString("GUIModificationQueryAction.TextEditorDialog.TitleText"); //$NON-NLS-1$
         }
-        return Messages.getString("GUIModificationQueryAction.ButtonText"); //$NON-NLS-1$
+        return Messages.getString("GUIModificationQueryAction.GraphicalEditorDialog.TitleText"); //$NON-NLS-1$
     }
 
     /*
@@ -100,9 +101,9 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
     @Override
     public String getText() {
         if (isDesigner) {
-            return Messages.getString("GUIModificationQueryAction.TextDialog.TitleText"); //$NON-NLS-1$
+            return Messages.getString("GUIModificationQueryAction.TextEditorDialog.TitleText"); //$NON-NLS-1$
         }
-        return Messages.getString("GUIModificationQueryAction.ButtonText"); //$NON-NLS-1$
+        return Messages.getString("GUIModificationQueryAction.GraphicalEditorDialog.TitleText"); //$NON-NLS-1$
     }
 
     /*
@@ -140,26 +141,11 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
         // if (isForce != null && !isForce.booleanValue()) {
         // return;
         // }
-        if (dialog instanceof SQLBuilderDialog) {
-            SQLBuilderDialog d = (SQLBuilderDialog) dialog;
-            final CTabItem selection = d.getEditorComposite().getTabFolder().getSelection();
-            if (selection.getData("KEY") instanceof MultiPageSqlBuilderEditor) { //$NON-NLS-1$
-                MultiPageSqlBuilderEditor editor = (MultiPageSqlBuilderEditor) selection.getData("KEY"); //$NON-NLS-1$
-                switch (editor.getActivePage()) {
-                case 1:
-                    isDesigner = true;
-                    break;
-                default:
-                    isDesigner = false;
-                    break;
-                }
-            }
-        }
 
         String query = null;
         if (isDesigner) {
             SqlEditDialog textDialog = new SqlEditDialog(dialog.getShell(), Messages
-                    .getString("GUIModificationQueryAction.TextDialog.TitleText"), currentSql, currentNode); //$NON-NLS-1$
+                    .getString("GUIModificationQueryAction.TextEditorDialog.TitleText"), currentSql, currentNode); //$NON-NLS-1$
             if (Window.OK == textDialog.open()) {
                 query = textDialog.getSql();
             }
@@ -182,7 +168,7 @@ public class GUIModificationQueryAction extends AbstractEditorAction {
             // Messages.getString("GUIModificationQueryAction.Information.Msg"), info); //$NON-NLS-1$
 
             ErDiagramDialog erDiagramDialog = new ErDiagramDialog(dialog.getShell(), Messages
-                    .getString("GUIModificationQueryAction.Dialog.TitleText"), currentNode); //$NON-NLS-1$
+                    .getString("GUIModificationQueryAction.GraphicalEditorDialog.TitleText"), currentNode); //$NON-NLS-1$
             erDiagramDialog.setDialog(dialog);
             erDiagramDialog.setNodes(selectedNodes);
             erDiagramDialog.setSqlText(currentSql);

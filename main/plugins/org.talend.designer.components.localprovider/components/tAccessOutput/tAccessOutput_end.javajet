@@ -17,6 +17,7 @@ imports="
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
 	
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
+	boolean setAutoCommit = false;
 	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
     if(("INSERT_OR_UPDATE").equals(dataAction)) {
