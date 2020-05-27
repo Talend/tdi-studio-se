@@ -86,6 +86,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     String dbVersion = "" ;
 
 	String numPerInsert = ElementParameterParser.getValue(node, "__NB_ROWS_PER_INSERT__");
+	
+	String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
 %>
 
 <%
@@ -338,7 +340,7 @@ if(columnList != null && columnList.size()>0) {
 	if(("INSERT").equals(dataAction)) {
 		if(!extendedInsert) {
 %>
-			java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
+			java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
 			resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 		} else { //entended insert
@@ -377,34 +379,34 @@ if(columnList != null && columnList.size()>0) {
 			}
 
 			String insert_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES " + extendInsertValueStmt_<%=cid%>.toString();
-			java.sql.PreparedStatement pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+			java.sql.PreparedStatement pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " +insert_<%=cid%>);
 			resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 		}
 	} else if (("UPDATE").equals(dataAction)) {
 	    %>
-	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
+	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
 	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	} else if (("INSERT_OR_UPDATE").equals(dataAction)) {
 	    %>
-	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM \"" + tableName_<%=cid%> + "\" WHERE <%=updateWhereStmt.toString()%>");
+	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "SELECT COUNT(1) FROM \"" + tableName_<%=cid%> + "\" WHERE <%=updateWhereStmt.toString()%>");
 	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
-	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement("INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
+	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
 	    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
-	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement("UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
+	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
 	    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 	    <%
 	} else if (("UPDATE_OR_INSERT").equals(dataAction)) {
 	    %>
-	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement("UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
+	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>");
 	    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
-	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement("INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
+	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)");
 	    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 	    <%
 	} else if (("DELETE").equals(dataAction)) {
 	    %>
-	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("DELETE FROM \"" + tableName_<%=cid%> + "\" WHERE <%=deleteWhereStmt.toString()%>");
+	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "DELETE FROM \"" + tableName_<%=cid%> + "\" WHERE <%=deleteWhereStmt.toString()%>");
 	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	}

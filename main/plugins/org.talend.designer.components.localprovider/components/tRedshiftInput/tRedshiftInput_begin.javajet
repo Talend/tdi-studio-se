@@ -90,6 +90,11 @@ imports="
                 stmt_<%=cid %>.setFetchSize(<%=cursorSize %>);
 <%
             }
+            
+    		public String getQueryString(INode node) {
+    			String trackerString = "\""+ org.talend.core.utils.TrackerUtil.getRedshiftTracker() + "\\n\" + ";
+    			return trackerString + super.getQueryString(node);
+    		}
 		}
 		
 		//-----------according schema type to generate ResultSet

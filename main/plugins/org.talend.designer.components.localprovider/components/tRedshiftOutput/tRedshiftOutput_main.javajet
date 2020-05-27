@@ -56,6 +56,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     boolean whereSupportNull = ElementParameterParser.getValue(node, "__SUPPORT_NULL_WHERE__").equals("true");
 
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
+    
+    String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
 
     String incomingConnName = null;
     List<IMetadataColumn> columnList = getColumnList(node);
@@ -141,7 +143,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 						}
 					}
 %>
-	    			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+	    			pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " +insert_<%=cid%>);
 	    			resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 				} else {
@@ -178,7 +180,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
               }
 %>
-                pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+                pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + insert_<%=cid%>);
                 resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
             	}
@@ -200,7 +202,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 					}
 				}
 %>
-				pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+				pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + update_<%=cid%>);
 				resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 			} else if (("INSERT_OR_UPDATE").equals(dataAction)) {
@@ -225,11 +227,11 @@ skeleton="../templates/db_output_bulk.skeleton"
 					}
 				}
 %>
-			    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM \"" + tableName_<%=cid%> + "\" WHERE <%=updateWhereStmt.toString()%>");
+			    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + "SELECT COUNT(1) FROM \"" + tableName_<%=cid%> + "\" WHERE <%=updateWhereStmt.toString()%>");
 			    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
-			    pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+			    pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + insert_<%=cid%>);
 			    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
-			    pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+			    pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + update_<%=cid%>);
 			    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 <%
 			} else if (("UPDATE_OR_INSERT").equals(dataAction)) {
@@ -255,15 +257,15 @@ skeleton="../templates/db_output_bulk.skeleton"
 					}
 				}
 %>
-			    pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+			    pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + update_<%=cid%>);
 			    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
-			    pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+			    pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + insert_<%=cid%>);
 			    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 <%
 			} else if (("DELETE").equals(dataAction)) {
 %>
 			    String delete_<%=cid%> = "DELETE FROM \"" + tableName_<%=cid%> + "\" WHERE <%=deleteWhereStmt.toString()%>";
-			    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(delete_<%=cid%>);
+			    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " + delete_<%=cid%>);
 			    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 <%
 			}

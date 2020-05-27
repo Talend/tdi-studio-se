@@ -2966,7 +2966,10 @@ public class CLASS {
          public String getCreateTableSQL(List<Column> columnList) {
             MappingTypeRetriever mappingType = MetadataTalendType.getMappingTypeRetriever(getDBMSId());
             StringBuilder createSQL = new StringBuilder();
-            createSQL.append("CREATE TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar() + "(");
+            
+        	String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
+        	
+            createSQL.append(redshiftTracker +" \\n " + "CREATE TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar() + "(");
             List<String> pkList = new ArrayList<String>();
             int count = 0;
             String ending = ",";
