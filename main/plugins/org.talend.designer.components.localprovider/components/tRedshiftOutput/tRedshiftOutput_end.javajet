@@ -48,6 +48,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     }
 
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+	
+    String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
 
     boolean isDynamic = false;
     List<IMetadataTable> metadatas = node.getMetadataList();
@@ -297,7 +299,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
         	}
 %>
-        	pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+        	pstmt_<%=cid %> =  conn_<%=cid%>.prepareStatement("<%=redshiftTracker%> \n " +insert_<%=cid%>);
 <%
 			int insertableCount = 0;
 			for(Column column : colStruct) {
