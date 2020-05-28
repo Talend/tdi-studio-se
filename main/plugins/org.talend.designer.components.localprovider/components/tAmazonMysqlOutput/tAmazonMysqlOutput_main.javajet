@@ -1355,7 +1355,7 @@ if(columnList != null && columnList.size() > 0) {
             try {
             	<%if(isEnableDebug){dbLog.data().sqlDebugPrint("globalMap.get(\""+cid+"_QUERY\")");}%>
                 int processedCount_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
-        	    deletedCount_<%=cid%> += processedCount_<%=cid%>;
+                deletedCount_<%=cid%> += processedCount_<%=cid%>;
                 rowsToCommitCount_<%=cid%> += processedCount_<%=cid%>;
             	nb_line_<%=cid%>++;
             	<%dbLog.data().deleting(dbLog.var("nb_line"));%>
@@ -1801,12 +1801,12 @@ if(columnList != null && columnList.size() > 0) {
                 <%
                 }
                 %>
-                	if(rowsToCommitCount_<%=cid%> != 0){
-                    	<%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
+                    if(rowsToCommitCount_<%=cid%> != 0){
+                    	<%dbLog.commit().commitTry(null, dbLog.var("rowsToCommitCount"));%>
                     	conn_<%=cid%>.commit();
                     	<%dbLog.commit().commitDone(null);%>
                     	rowsToCommitCount_<%=cid%> = 0;
-					}
+                    }
                 	commitCounter_<%=cid%>=0;
                 }
                 <%
