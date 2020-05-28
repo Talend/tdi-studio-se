@@ -1609,7 +1609,7 @@
               class="org.talend.repository.model.migration.ChangeMSSQLDBDefaultVersionMigrationTask"
               id="org.talend.repository.model.migration.ChangeMSSQLDBDefaultVersionMigrationTask"
               name="Change MSSQL Default DBVersion"
-              version="7.4.1">
+              version="7.3.1">
         </projecttask>
         <projecttask
               beforeLogon="false"
