@@ -56,7 +56,8 @@ public class ChangeDefaultDriverForMSSqlMigrationTask extends AbstractAllJobMigr
         final ProcessType processType = getProcessType(item);
         String[] compNames = { "tCreateTable", "tELTMSSqlMap", "tMSSqlBulkExec", "tMSSqlConnection", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         						"tMSSqlInput", "tMSSqlOutput", "tMSSqlOutputBulkExec", "tMSSqlRow", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        						"tMSSqlSCD", "tMSSqlSP", "tMSSqlCDC"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        						"tMSSqlSCD", "tMSSqlSP", "tMSSqlCDC", "tMSSqlInvalidRows", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        						"tMSSqlValidRows"}; //$NON-NLS-1$
 
         IComponentConversion conversion = new IComponentConversion() {
 
