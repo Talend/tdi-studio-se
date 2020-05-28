@@ -569,6 +569,12 @@ public class FileinToDelimitedProcess<K extends FileInputNode> extends Repositor
             // TODO Auto-generated method stub
             return false;
         }
+
+        @Override
+        public void saveToEmf(EList contextTypeList, boolean useInternalId) {
+            // TODO Auto-generated method stub
+
+        }
     }
 
     @Override
