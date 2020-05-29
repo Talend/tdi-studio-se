@@ -665,8 +665,8 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         // Check if generate Job Extra / Stats&Logs Setting Info
         if (item instanceof ProcessItem) {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)) {
-                IMRProcessService mrProcessService = GlobalServiceRegister.getDefault().getService(
-                        IMRProcessService.class);
+                IMRProcessService mrProcessService = (IMRProcessService) GlobalServiceRegister.getDefault()
+                        .getService(IMRProcessService.class);
                 generateExtraSetting = !mrProcessService.isMapReduceItem(item);
                 generateStatsLogsSetting = generateExtraSetting;
             } else if (isRouteProcess(item)) {
@@ -1251,8 +1251,8 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         }
         if (isRouteProcess(item)) {
             jobElement.addAttribute("type", "route");//$NON-NLS-1$//$NON-NLS-2$
-            ICamelDesignerCoreService camelService = GlobalServiceRegister.getDefault().getService(
-                    ICamelDesignerCoreService.class);
+            ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
+                    .getService(ICamelDesignerCoreService.class);
             camelService.appendRouteInfo2Doc(item, jobElement);
         }
         if (generateExtraSetting) {
@@ -1330,8 +1330,8 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
      */
     protected boolean isRouteProcess(Item item) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-            ICamelDesignerCoreService camelService = GlobalServiceRegister.getDefault().getService(
-                    ICamelDesignerCoreService.class);
+            ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
+                    .getService(ICamelDesignerCoreService.class);
             return camelService.isInstanceofCamel(item);
         }
         return false;
@@ -1559,15 +1559,15 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
      * @return
      */
     private String getFullProductName() {
-        IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
-                IBrandingService.class);
+        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+                .getService(IBrandingService.class);
 
         return brandingService.getFullProductName();
     }
 
     private String getProductVersionName() {
-        IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
-                IBrandingService.class);
+        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+                .getService(IBrandingService.class);
 
         return brandingService.getShortProductName() + IHTMLDocConstants.VERSION;
     }
@@ -1600,8 +1600,8 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         }
         // if (result == null) {
         result = new ByteArrayOutputStream(3072);
-        IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
-                IBrandingService.class);
+        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+                .getService(IBrandingService.class);
         ImageData imageData = brandingService.getLoginHImage().getImageData();
         new ByteArrayOutputStream();
 
