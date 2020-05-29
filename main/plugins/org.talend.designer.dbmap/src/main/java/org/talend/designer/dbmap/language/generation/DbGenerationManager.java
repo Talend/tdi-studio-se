@@ -763,7 +763,7 @@ public abstract class DbGenerationManager {
             boolean isFirstClause = true;
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
-                if (buildConditions(isFirstClause, component, sbWhere, inputTable, false)) {
+                if (buildConditions4Update(isFirstClause, component, sbWhere, inputTable, false)) {
                     isFirstClause = false;
                 }
             }
@@ -1110,7 +1110,7 @@ public abstract class DbGenerationManager {
      * @param isSqlQuert
      * @return
      */
-    protected boolean buildConditions(boolean isFirstClause, DbMapComponent component, StringBuilder sb,
+    protected boolean buildConditions4Update(boolean isFirstClause, DbMapComponent component, StringBuilder sb,
             ExternalDbMapTable inputTable,
             boolean isSqlQuert) {
         List<ExternalDbMapEntry> inputEntries = inputTable.getMetadataTableEntries();
@@ -1753,4 +1753,18 @@ public abstract class DbGenerationManager {
         this.useDelimitedIdentifiers = useDelimitedIdentifiers;
     }
 
+    public boolean isConditionChecked(DbMapComponent component, ExternalDbMapTable inputTable) {
+        List<ExternalDbMapEntry> inputEntries = inputTable.getMetadataTableEntries();
+        boolean atLeastOneConditionIsChecked = false;
+        for (ExternalDbMapEntry dbMapEntry : inputEntries) {
+            if (dbMapEntry.isJoin()) {
+                if (org.apache.commons.lang.StringUtils.isNotEmpty(dbMapEntry.getExpression())
+                        && org.apache.commons.lang.StringUtils.isNotEmpty(dbMapEntry.getOperator())) {
+                    atLeastOneConditionIsChecked = true;
+                    break;
+                }
+            }
+        }
+        return atLeastOneConditionIsChecked;
+    }
 }
