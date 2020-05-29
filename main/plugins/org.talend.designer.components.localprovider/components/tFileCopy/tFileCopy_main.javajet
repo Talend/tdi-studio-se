@@ -92,10 +92,12 @@
 									} else if(isLog4jEnabled) {
 %>
 										log.error("<%=cid%> - " + e.getMessage());
+										globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 <%
 									} else {
 %>
 										System.err.println("<%=cid%> - " + e.getMessage());
+										globalMap.put("<%=cid %>_ERROR_MESSAGE", e.getMessage());
 <%
 									}
 %>
@@ -122,10 +124,12 @@
 					} else if(isLog4jEnabled) {
 %>
 						log.error("<%=cid%>" +  errorMessageInputOutputErrorOccurs_<%=cid %>);
+						globalMap.put("<%=cid %>_ERROR_MESSAGE", errorMessageInputOutputErrorOccurs_<%=cid %>);
 <%
 					} else {
 %>
 						System.err.println(errorMessageInputOutputErrorOccurs_<%=cid %>);
+						globalMap.put("<%=cid %>_ERROR_MESSAGE", errorMessageInputOutputErrorOccurs_<%=cid %>);
 <%
 					}
 %>
@@ -158,10 +162,12 @@
 			} else if (isLog4jEnabled) {
 %>
 				log.error(errorMessageFileDoesnotExistsOrIsNotAFile_<%=cid%>);
+				globalMap.put("<%=cid %>_ERROR_MESSAGE", errorMessageFileDoesnotExistsOrIsNotAFile_<%=cid%>);
 <%
 			} else {
 %>
 				System.err.println(errorMessageFileDoesnotExistsOrIsNotAFile_<%=cid%>);
+				globalMap.put("<%=cid %>_ERROR_MESSAGE", errorMessageFileDoesnotExistsOrIsNotAFile_<%=cid%>);
 <%
 			}
 %>
@@ -225,10 +231,12 @@
 					} else if(isLog4jEnabled) {
 %>
 						log.error(errorMessageCouldNotRemoveFile_<%=cid%>);
+						globalMap.put("<%=cid %>_ERROR_MESSAGE", errorMessageCouldNotRemoveFile_<%=cid%>);
 <%
 					} else {
 %>
 						System.err.println(errorMessageCouldNotRemoveFile_<%=cid%> + "\n");
+						globalMap.put("<%=cid %>_ERROR_MESSAGE", errorMessageCouldNotRemoveFile_<%=cid%>);
 <%
 					}
 %>
@@ -253,5 +261,4 @@
 <%
 	}
 	
-%>        
-        
+%>
