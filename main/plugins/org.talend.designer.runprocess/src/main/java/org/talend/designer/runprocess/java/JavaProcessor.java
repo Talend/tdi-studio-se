@@ -1233,7 +1233,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 } else {
                     localM2Path = localM2Path + PomUtil.getLocalRepositoryPath();
                 }
-                asList.add(3, localM2Path);
+                asList.add(1, localM2Path);
             }
             return asList.toArray(new String[0]);
         }
