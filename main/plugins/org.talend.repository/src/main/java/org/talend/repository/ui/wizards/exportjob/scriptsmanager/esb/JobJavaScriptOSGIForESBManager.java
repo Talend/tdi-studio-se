@@ -595,6 +595,10 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         final String runtimeServicesContext = "/services"; //$NON-NLS-1$
         final String runtimeServicesContextFull = runtimeServicesContext + '/';
         String endpointUri = EmfModelUtils.computeTextElementValue("REST_ENDPOINT", restRequestComponent); //$NON-NLS-1$
+        if (endpointUri.contains("context.") || endpointUri.contains("(") || endpointUri.contains("+")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            // Since TESB-24998, endpointUri could be an expression with variables, does not need unquote
+            endpointUri = EmfModelUtils.computeTextElementValueWithoutUnquote("REST_ENDPOINT", restRequestComponent); //$NON-NLS-1$
+        }
         if (endpointUri.contains("context.")) {
             // TESB-24998 Add context bean in blueprint
             endpointInfo.put("useContextBean", true); //$NON-NLS-1$

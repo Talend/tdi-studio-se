@@ -19,13 +19,17 @@ imports="
 
 	dbLog = new DBLogUtil(node);
 
+	IProcess process = node.getProcess();
+
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
 
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
 
 	String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 
-	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+	boolean setAutoCommit = false;
+
+	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));;
 
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 
@@ -71,6 +75,16 @@ imports="
     IMetadataTable metadataTable = node.getMetadataFromConnector("REJECT");
     if(metadataTable != null) {
         rejectColumnList = metadataTable.getListColumns();
+    }
+
+    if(useExistingConnection) {
+        List<? extends INode> nodes = process.getNodesOfType("tOracleConnection");
+        for (INode ne:nodes) {
+            if (connection.equals(ne.getUniqueName())) {
+                setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+                break;
+            }
+        }
     }
 
     if (useSpatialOptions && (("DROP_CREATE").equals(tableAction) || ("CREATE").equals(tableAction)

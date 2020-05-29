@@ -328,8 +328,7 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
         clearTextAction = new ClearTextAction();
         clearTextAction.setEditor(this);
 
-        guiModificationQueryAction = new GUIModificationQueryAction(getRepositoryNode(), connParam, dialog);
-        guiModificationQueryAction.setEditor(this);
+        createGUIModificationQueryAction();
 
         contextModeAction = new ContextModeAction(getRepositoryNode(), connParam); // initialize hyWang's ACTION
 
@@ -353,6 +352,11 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
         coolBarMgr.add(new ToolBarContributionItem(contextToolBarMgr)); // add hyWang's toolbar to coolbar
 
         coolBarMgr.update(true);
+    }
+
+    protected void createGUIModificationQueryAction() {
+        guiModificationQueryAction = new GUIModificationQueryAction(getRepositoryNode(), connParam, dialog);
+        guiModificationQueryAction.setEditor(this);
     }
 
     /**
