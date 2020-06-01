@@ -265,7 +265,7 @@ String inputConnName = null;
 		}
 		%>
 		if(enableLogStash){
-			paraList_<%=cid %>.add("--monitoring="+enableLogStash);
+			paraList_<%=cid %>.add("--audit.enabled="+enableLogStash);
 		}
 		<%
 	}
