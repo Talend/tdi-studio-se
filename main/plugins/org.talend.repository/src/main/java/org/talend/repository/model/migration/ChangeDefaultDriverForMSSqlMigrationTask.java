@@ -66,23 +66,33 @@ public class ChangeDefaultDriverForMSSqlMigrationTask extends AbstractAllJobMigr
                 if (node == null) {
                     return;
                 }
-
-                ElementParameterType driverList = ComponentUtilities.getNodeProperty(node, "MSSQL_DRIVER"); //$NON-NLS-1$
+                
+                ElementParameterType driverList = null;
+                if ("tCreateTable".equals(node.getComponentName())) {
+                	driverList = ComponentUtilities.getNodeProperty(node, "MSSQL_DRIVER"); //$NON-NLS-1$
+                } else {
+                	driverList = ComponentUtilities.getNodeProperty(node, "DRIVER"); //$NON-NLS-1$
+                }
 
                 if (driverList == null) {
-                    ComponentUtilities.addNodeProperty(node, "MSSQL_DRIVER", "CLOSED_LIST"); //$NON-NLS-1$ //$NON-NLS-2$
-                    ComponentUtilities.setNodeValue(node, "MSSQL_DRIVER", "JTDS"); //$NON-NLS-1$ //$NON-NLS-2$
+                	if ("tCreateTable".equals(node.getComponentName())) {
+                		ComponentUtilities.addNodeProperty(node, "MSSQL_DRIVER", "CLOSED_LIST"); //$NON-NLS-1$ //$NON-NLS-2$
+                        ComponentUtilities.setNodeValue(node, "MSSQL_DRIVER", "JTDS"); //$NON-NLS-1$ //$NON-NLS-2$
+                	} else {
+                		ComponentUtilities.addNodeProperty(node, "DRIVER", "CLOSED_LIST"); //$NON-NLS-1$ //$NON-NLS-2$
+                		ComponentUtilities.setNodeValue(node, "DRIVER", "JTDS"); //$NON-NLS-1$ //$NON-NLS-2$
+                	}
                 }
             }
 
         };
-
+        
         for (String name : compNames) {
             IComponentFilter filter = new NameComponentFilter(name);
 
             try {
-                ModifyComponentsAction.searchAndModify(item, processType, filter,
-                        Arrays.<IComponentConversion> asList(conversion));
+        		ModifyComponentsAction.searchAndModify(item, processType, filter,
+        				Arrays.<IComponentConversion> asList(conversion));
             } catch (PersistenceException e) {
                 // TODO Auto-generated catch block
                 ExceptionHandler.process(e);
