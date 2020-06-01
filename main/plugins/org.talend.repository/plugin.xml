@@ -1605,7 +1605,7 @@
         </projecttask>
          <projecttask
               beforeLogon="false"
-              breaks="6.2.0"
+              breaks="7.3.0"
               class="org.talend.repository.model.migration.ChangeMSSQLDBDefaultVersionMigrationTask"
               id="org.talend.repository.model.migration.ChangeMSSQLDBDefaultVersionMigrationTask"
               name="Change MSSQL Default DBVersion"
