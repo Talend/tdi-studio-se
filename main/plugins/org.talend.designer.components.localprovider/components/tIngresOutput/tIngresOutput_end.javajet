@@ -4,6 +4,7 @@ imports="
 	org.talend.core.model.process.INode
 	org.talend.core.model.process.ElementParameterParser
 	org.talend.core.model.process.IConnection
+	org.talend.core.model.process.IProcess
 	java.util.List
 "
 %>
@@ -14,11 +15,14 @@ imports="
 
 	String cid = node.getUniqueName();
 	dbLog = new DBLogUtil(node);
+	IProcess process = node.getProcess();
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
 
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
 
-	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+	boolean setAutoCommit = false;
+
+	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
     String dieOnError = ElementParameterParser.getValue(node,"__DIE_ON_ERROR__");
 
@@ -31,13 +35,24 @@ imports="
         rejectConnName = rejectConn.getName();
     }
 
+    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+    if(useExistingConnection) {
+        List<? extends INode> nodes = process.getNodesOfType("tIngresConnection");
+        for (INode ne:nodes) {
+            if (connection.equals(ne.getUniqueName())) {
+                setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+                break;
+            }
+        }
+    }
+
     useBatch = (rejectConnName == null)
              && (
                   ("INSERT").equals(dataAction) || ("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)
                 )
              && useBatch;
 
-	if(!("true").equals(useExistingConn)) {
+	if(!useExistingConnection) {
 	    if(!("").equals(commitEvery)&&!("0").equals(commitEvery)){
 	        %>
 	    if (commitCounter_<%=cid%> > 0) {
@@ -132,7 +147,7 @@ imports="
                     %>
                 }
 <%
-    if(!("true").equals(useExistingConn)) {
+    if(!useExistingConnection) {
         if(!("").equals(commitEvery)&&!("0").equals(commitEvery)){
             %>
         if (commitCounter_<%=cid%> > 0) {
@@ -154,7 +169,7 @@ imports="
     %>
     resourceMap.put("statementClosed_<%=cid%>", true);
 <%
-	if(!("true").equals(useExistingConn)) {
+	if(!useExistingConnection) {
 %>
 	<%dbLog.conn().closeTry(null);%>
     conn_<%=cid%> .close();

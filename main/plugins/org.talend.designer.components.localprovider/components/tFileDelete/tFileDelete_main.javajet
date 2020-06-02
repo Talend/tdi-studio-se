@@ -85,6 +85,7 @@ if(either){
 			} else if(isLog4jEnabled) {
 %>
 				log.error("<%=cid%> - Fail to delete file : "+ path_<%=cid%>.getAbsolutePath());
+				globalMap.put("<%=cid %>_ERROR_MESSAGE", "The file " + path_<%=cid%>.getAbsolutePath() + " can't be deleted.");
 <%
 				}
 %>
@@ -110,6 +111,7 @@ if(either){
 			} else if(isLog4jEnabled) {
 %>
 				log.error("<%=cid%> - Fail to delete directory : "+ path_<%=cid%>.getAbsolutePath());
+				globalMap.put("<%=cid %>_ERROR_MESSAGE", "The directory " + path_<%=cid%>.getAbsolutePath() + " can not be deleted.");
 <%
 				}
 %>
@@ -125,6 +127,7 @@ if(either){
 		} else if(isLog4jEnabled) {
 %>
     		log.error("<%=cid%> - File or directory : "+ path_<%=cid%>.getAbsolutePath() + " does not exist or is invalid.");
+			globalMap.put("<%=cid %>_ERROR_MESSAGE", "File or directory : "+ path_<%=cid%>.getAbsolutePath() + " does not exist or is invalid.");
 <%
 		}
 %>
@@ -157,6 +160,7 @@ if(either){
 		} else if(isLog4jEnabled) {
 %>
 			log.error("<%=cid%> - Fail to delete directory : " + file<%=cid%>.getAbsolutePath());
+			globalMap.put("<%=cid %>_ERROR_MESSAGE", "Directory " + file<%=cid%>.getAbsolutePath() + " can not be deleted.");
 <%
 			}
 %>
@@ -171,6 +175,7 @@ if(either){
 		} else if(isLog4jEnabled) {
 %>
 			log.error("<%=cid%> - " + file<%=cid%>.getAbsolutePath() + " does not exist or is invalid or is not a directory.");
+			globalMap.put("<%=cid %>_ERROR_MESSAGE", "Directory " + file<%=cid%>.getAbsolutePath() + " does not exist or is invalid or is not a directory.");
 <%
 		}
 %>
@@ -200,6 +205,7 @@ if(either){
 			}else if(isLog4jEnabled) {
 %>
 			log.error("<%=cid%> - Fail to delete file : "+ file_<%=cid%>.getAbsolutePath());
+			globalMap.put("<%=cid %>_ERROR_MESSAGE", "File " + file_<%=cid%>.getAbsolutePath() + " can not be deleted.");
 <%
 			}
 %>
@@ -214,6 +220,7 @@ if(either){
 		} else if(isLog4jEnabled) {
 %>
 			log.error("<%=cid%> - " + file_<%=cid%>.getAbsolutePath() + " does not exist or is invalid or is not a file.");
+			globalMap.put("<%=cid %>_ERROR_MESSAGE", "File " + file_<%=cid%>.getAbsolutePath() + " does not exist or is invalid or is not a file.");
 <%
 		}
 %>
@@ -223,6 +230,3 @@ if(either){
 }
 
 %>
-    
-     
- 
