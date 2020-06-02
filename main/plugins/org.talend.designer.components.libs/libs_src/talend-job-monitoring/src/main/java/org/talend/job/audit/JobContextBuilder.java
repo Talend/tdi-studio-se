@@ -126,8 +126,8 @@ public class JobContextBuilder {
 	 * 
 	 * @return
 	 */
-	public JobContextBuilder sourceConnectorName(String sourceConnectorName) {
-		builder.with("sourceConnectorName", sourceConnectorName);
+	public JobContextBuilder sourceConnectorType(String sourceConnectorType) {
+		builder.with("sourceConnectorType", sourceConnectorType);
 		return this;
 	}
 
@@ -156,8 +156,8 @@ public class JobContextBuilder {
 	 * 
 	 * @return
 	 */
-	public JobContextBuilder targetConnectorName(String targetConnectorName) {
-		builder.with("targetConnectorName", targetConnectorName);
+	public JobContextBuilder targetConnectorType(String targetConnectorType) {
+		builder.with("targetConnectorType", targetConnectorType);
 		return this;
 	}
 
