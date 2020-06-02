@@ -540,11 +540,11 @@
 					.forEach(key -> properties_<%=jobCatcherNode.getUniqueName()%>.setProperty(key.substring("audit.logger.".length()), System.getProperty(key)));
 
 				<%if(isLog4j1Enabled) {%>
-				org.apache.log4j.Logger.getLogger(System.getProperty("root.logger")).setLevel(org.apache.log4j.Level.DEBUG);
+				org.apache.log4j.Logger.getLogger(properties_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger")).setLevel(org.apache.log4j.Level.DEBUG);
 				<%}%>
 				
 				<%if(isLog4j2Enabled) {%>
-				org.apache.logging.log4j.core.config.Configurator.setLevel(System.getProperty("root.logger"), org.apache.logging.log4j.Level.DEBUG);
+				org.apache.logging.log4j.core.config.Configurator.setLevel(properties_<%=jobCatcherNode.getUniqueName()%>.getProperty("root.logger"), org.apache.logging.log4j.Level.DEBUG);
 				<%}%>
 				auditLogger_<%=jobCatcherNode.getUniqueName()%> = org.talend.job.audit.JobEventAuditLoggerFactory.createJobAuditLogger(properties_<%=jobCatcherNode.getUniqueName()%>);
 			}
