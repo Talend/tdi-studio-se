@@ -53,6 +53,7 @@ import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.properties.controllers.ColumnListController;
 import org.talend.designer.core.ui.views.CodeView;
 import org.talend.designer.core.ui.views.properties.ComponentSettings;
+import org.talend.designer.core.utils.CopyMetadataTableUtil;
 
 /**
  * Command that will change the datas stored for an external node.
@@ -268,6 +269,10 @@ public class ExternalNodeChangeCommand extends Command {
                     ColumnListController.updateColumnList(sourceNode, columnNameChangeds, false);
                     if (empty) { // trace init
                         connection.initTraceParamters();
+                    }
+                    if(connection.getConnectorName() != null){
+                    	new CopyMetadataTableUtil().copyTable(connection.getMetadataTable(), 
+                        		sourceNode, connection.getConnectorName());
                     }
                 }
             }

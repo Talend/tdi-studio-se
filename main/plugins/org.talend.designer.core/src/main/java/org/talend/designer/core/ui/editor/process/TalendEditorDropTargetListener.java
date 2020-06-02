@@ -81,6 +81,7 @@ import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsService;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.IEbcdicConstant;
 import org.talend.core.model.metadata.IHL7Constant;
@@ -369,6 +370,10 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                         event.detail = DND.DROP_NONE;
                     } else if (selectItem instanceof RoutineItem) {
                         event.detail = DND.DROP_NONE;
+                    } else if (selectItem instanceof ProcessItem) {
+                        if(isRefused(object)){
+                            event.detail = DND.DROP_NONE;
+                        }
                     } else if (selectItem instanceof FolderItem) {
                         event.detail = DND.DROP_NONE;
                     }
@@ -439,6 +444,18 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             }
 
         }
+    }
+
+    private boolean isRefused(IRepositoryViewObject viewObject) {
+        IProcess2 process = editor.getProcess();
+        Item item = process.getProperty().getItem();
+        ERepositoryObjectType editorItemType = ERepositoryObjectType.getItemType(item);
+
+        ERepositoryObjectType dragType = viewObject.getRepositoryObjectType();
+        boolean refused = (dragType == ERepositoryObjectType.PROCESS_ROUTE || dragType == ERepositoryObjectType.PROCESS_ROUTELET)
+                && (editorItemType == ERepositoryObjectType.PROCESS || editorItemType == ERepositoryObjectType.PROCESS_MR
+                        || editorItemType == ERepositoryObjectType.PROCESS_STORM);
+        return refused;
     }
 
     @Override
@@ -800,9 +817,9 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                         // for bug 15608
                         // ConnectionContextHelper.addContextVarForJob(process, contextItem, contextManager);
                         // ConnectionContextHelper.checkAndAddContextsVarDND(contextItem, contextManager);
-
+                        Map<String, String> renamedMap = ContextUtils.getContextParamterRenamedMap(process.getProperty().getItem());
                         Set<String> addedVars = ConnectionContextHelper.checkAndAddContextVariables(contextItem, contextSet,
-                                process.getContextManager(), false);
+                                process.getContextManager(), false, renamedMap);
                         if (addedVars != null && !addedVars.isEmpty()
                                 && !ConnectionContextHelper.isAddContextVar(contextItem, contextManager, contextSet)) {
                             // show

@@ -8,6 +8,7 @@ imports="
     org.talend.core.model.metadata.MappingTypeRetriever
     org.talend.core.model.metadata.MetadataTalendType
 	org.talend.core.model.process.IConnection
+	org.talend.core.model.process.IProcess
 	java.util.List
 	java.util.ArrayList
 	java.util.Map
@@ -22,6 +23,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	String cid = node.getUniqueName();
 	dbLog = new DBLogUtil(node);
+	IProcess process = node.getProcess();
 	final String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
 
 	List<Map<String, String>> addCols =
@@ -32,11 +34,11 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
 
-	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+	boolean setAutoCommit = false;
+
+	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
     boolean  identityInsert= "true".equals(ElementParameterParser.getValue(node, "__IDENTITY_INSERT__"));
-
-    boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
     boolean ignoreDateOutofRange = ("true").equals(ElementParameterParser.getValue(node,"__IGNORE_DATE_OUTOF_RANGE__"));
     boolean useFieldOptions = ("true").equals(ElementParameterParser.getValue(node, "__USE_FIELD_OPTIONS__"));
@@ -51,6 +53,17 @@ skeleton="../templates/db_output_bulk.skeleton"
     if(conns!=null && conns.size()>0){
         IConnection conn = conns.get(0);
         incomingConnName = conn.getName();
+    }
+
+    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+    if(useExistingConnection) {
+        List<? extends INode> nodes = process.getNodesOfType("tMSSqlConnection");
+        for (INode ne:nodes) {
+            if (connection.equals(ne.getUniqueName())) {
+                setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+                break;
+            }
+        }
     }
 
     boolean isDynamic = false;
@@ -460,7 +473,7 @@ if(identityInsert){
 %>
     resourceMap.put("statementClosed_<%=cid%>", true);
     <%
-    if(!("true").equals(useExistingConn))
+    if(!useExistingConnection)
     {
         if(!("").equals(commitEvery) && !("0").equals(commitEvery))
         {

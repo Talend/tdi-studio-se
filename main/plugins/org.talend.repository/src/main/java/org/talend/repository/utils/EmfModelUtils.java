@@ -72,7 +72,22 @@ public class EmfModelUtils {
         }
         return unquote(cpType.getValue());
     }
-
+    
+    /**
+     * Compute Text field parameter value with a given parameter name without unquote
+     *
+     * @param paramName
+     * @param elementParameterTypes
+     * @return
+     */
+    public static final String computeTextElementValueWithoutUnquote(String paramName, NodeType node) {
+        ElementParameterType cpType = findElementParameterByName(paramName, node);
+        if (cpType == null) {
+            return "";
+        }
+        return cpType.getValue();
+    }
+    
     /**
      * Compute check field parameter value with a given parameter name
      *
