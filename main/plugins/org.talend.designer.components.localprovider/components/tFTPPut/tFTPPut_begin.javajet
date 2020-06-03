@@ -271,7 +271,6 @@ int nb_file_<%=cid%> = 0;
             String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 %>
             org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
-            String rootDir_<%=cid %> = null;
 <%
             if(("false").equals(useExistingConn)){
 %>
@@ -286,12 +285,11 @@ int nb_file_<%=cid%> = 0;
                         log.info("<%=cid%> - Uses an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
                     }
                 <%}%>
-
-                rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
 <%
             }
         } //common code for ftp and ftps:
 %>
+        String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
         String remotedir_<%=cid%> = (<%=remotedir%>).replaceAll("\\\\", "/");
 <%
         if(createDirIfNotExist) {
