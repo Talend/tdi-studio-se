@@ -35,6 +35,7 @@ imports="
 	
 	boolean useExistingS3Connection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION_S3__"));
 	String s3ConnectionCid = ElementParameterParser.getValue(node,"__CONNECTION_S3__");
+    String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
 	INode current_node = node;
 	if(useExistingS3Connection){
 		current_node = NodeUtil.getNodeByUniqueName(node.getProcess(),s3ConnectionCid,true);
@@ -247,7 +248,7 @@ imports="
 	;
 	
 	java.sql.Statement stmt_<%=cid %>=conn_<%=cid %>.createStatement();
-	stmt_<%=cid %>.execute(command_<%=cid%>.toString());
+	stmt_<%=cid %>.execute("<%=redshiftTracker%> \n " + command_<%=cid%>.toString());
 	<%if(log4jEnabled){%>
 		log.info("<%=cid%> - Finish unloading data to s3.");
 	<%}%>
