@@ -2955,6 +2955,8 @@ public class CLASS {
     }
     
     public class RedshiftManager extends PostgreManager {
+
+         String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
          public RedshiftManager(String cid) {
              super(cid);
          }
@@ -2962,12 +2964,34 @@ public class CLASS {
          protected String getDBMSId() {
              return REDSHIFT;
          }
+
+        public String getSelectionSQL() {
+            StringBuilder selectionSQL = new StringBuilder();
+            selectionSQL.append(redshiftTracker +" \\n " + "SELECT COUNT(1) FROM " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+            return selectionSQL.toString();
+        }
+        public String getDeleteTableSQL() {
+            StringBuilder deleteTableSQL = new StringBuilder();
+            deleteTableSQL.append(redshiftTracker +" \\n " + "DELETE FROM " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+            return deleteTableSQL.toString();
+        }
+        public String getTruncateTableSQL() {
+            StringBuilder truncateTableSQL = new StringBuilder();
+            truncateTableSQL.append(redshiftTracker +" \\n " + "TRUNCATE TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+            return truncateTableSQL.toString();
+        }
+
+        public String getDropTableSQL() {
+            StringBuilder dropTableSQL = new StringBuilder();
+            dropTableSQL.append(redshiftTracker +" \\n " + "DROP TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+            return dropTableSQL.toString();
+        }
          
          public String getCreateTableSQL(List<Column> columnList) {
             MappingTypeRetriever mappingType = MetadataTalendType.getMappingTypeRetriever(getDBMSId());
             StringBuilder createSQL = new StringBuilder();
             
-        	String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
+        	
         	
             createSQL.append(redshiftTracker +" \\n " + "CREATE TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar() + "(");
             List<String> pkList = new ArrayList<String>();
