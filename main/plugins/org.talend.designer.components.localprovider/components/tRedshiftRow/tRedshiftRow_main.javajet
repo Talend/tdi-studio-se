@@ -28,7 +28,6 @@ boolean usePrepareStatement = "true".equals(ElementParameterParser.getValue(node
 String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
 dbquery = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(dbquery);
 String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
-dbquery = trackerString +dbquery;
 List<Map<String, String>> prepareStatementParameters = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_PREPAREDSTATEMENT_PARAMETERS__");
 String use_NB_Line = ElementParameterParser.getValue(node, "__USE_NB_LINE__");
 String incomingConnName = null;
@@ -59,7 +58,7 @@ for(IConnection conn : outgoingConns) {
 }
 log4jCodeGenerateUtil.query(node);
 %>
-query_<%=cid %> = <%=dbquery%>;
+query_<%=cid %> ="<%=redshiftTracker%> \n " +  <%=dbquery%>;
 whetherReject_<%=cid%> = false;
 <%
 List<IMetadataTable> metadatas = node.getMetadataList();
