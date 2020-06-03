@@ -15,18 +15,18 @@ public class JobContextBuilder {
 		return new JobContextBuilder(ContextBuilder.create());
 	}
 
-	public JobContextBuilder jobName(String jobName) {
-		builder.with("jobName", jobName);
+	public JobContextBuilder jobName(String job_name) {
+		builder.with("job_name", job_name);
 		return this;
 	}
 
-	public JobContextBuilder jobVersion(String jobVersion) {
-		builder.with("jobVersion", jobVersion);
+	public JobContextBuilder jobVersion(String job_version) {
+		builder.with("job_version", job_version);
 		return this;
 	}
 
-	public JobContextBuilder jobId(String jobId) {
-		builder.with("jobId", jobId);
+	public JobContextBuilder jobId(String job_id) {
+		builder.with("job_id", job_id);
 		return this;
 	}
 
@@ -37,8 +37,8 @@ public class JobContextBuilder {
 	 * @param connectorType
 	 * @return self
 	 */
-	public JobContextBuilder connectorLabel(String connectorLabel) {
-		builder.with("connectorLabel", connectorLabel);
+	public JobContextBuilder connectorLabel(String connector_label) {
+		builder.with("connector_label", connector_label);
 		return this;
 	}
 
@@ -48,8 +48,8 @@ public class JobContextBuilder {
 	 * @param connectorType
 	 * @return self
 	 */
-	public JobContextBuilder connectorType(String connectorType) {
-		builder.with("connectorType", connectorType);
+	public JobContextBuilder connectorType(String connector_type) {
+		builder.with("connector_type", connector_type);
 		return this;
 	}
 
@@ -59,25 +59,25 @@ public class JobContextBuilder {
 	 * @param connectorType
 	 * @return self
 	 */
-	public JobContextBuilder connectorId(String connectorId) {
-		builder.with("connectorId", connectorId);
+	public JobContextBuilder connectorId(String connector_id) {
+		builder.with("connector_id", connector_id);
 		return this;
 	}
 
-	public JobContextBuilder rows(long rowCount) {
-		builder.with("rows", String.valueOf(rowCount));
+	public JobContextBuilder rows(long rows) {
+		builder.with("rows", String.valueOf(rows));
 		return this;
 	}
 
 	// output or reject
-	public JobContextBuilder connectionType(String connectionType) {
-		builder.with("connectionType", connectionType);
+	public JobContextBuilder connectionType(String connection_type) {
+		builder.with("connection_type", connection_type);
 		return this;
 	}
 
 	// like "row1"
-	public JobContextBuilder connectionName(String connectionName) {
-		builder.with("connectionName", connectionName);
+	public JobContextBuilder connectionName(String connection_name) {
+		builder.with("connection_name", connection_name);
 		return this;
 	}
 
@@ -106,8 +106,8 @@ public class JobContextBuilder {
 	 * 
 	 * @return
 	 */
-	public JobContextBuilder sourceId(String sourceId) {
-		builder.with("sourceId", sourceId);
+	public JobContextBuilder sourceId(String source_id) {
+		builder.with("source_id", source_id);
 		return this;
 	}
 
@@ -116,8 +116,8 @@ public class JobContextBuilder {
 	 * 
 	 * @return
 	 */
-	public JobContextBuilder sourceLabel(String sourceLabel) {
-		builder.with("sourceLabel", sourceLabel);
+	public JobContextBuilder sourceLabel(String source_label) {
+		builder.with("source_label", source_label);
 		return this;
 	}
 
@@ -126,8 +126,8 @@ public class JobContextBuilder {
 	 * 
 	 * @return
 	 */
-	public JobContextBuilder sourceConnectorType(String sourceConnectorType) {
-		builder.with("sourceConnectorType", sourceConnectorType);
+	public JobContextBuilder sourceConnectorType(String source_connector_type) {
+		builder.with("source_connector_type", source_connector_type);
 		return this;
 	}
 
@@ -136,8 +136,8 @@ public class JobContextBuilder {
 	 * 
 	 * @return
 	 */
-	public JobContextBuilder targetId(String targetId) {
-		builder.with("targetId", targetId);
+	public JobContextBuilder targetId(String target_id) {
+		builder.with("target_id", target_id);
 		return this;
 	}
 
@@ -146,8 +146,8 @@ public class JobContextBuilder {
 	 * 
 	 * @return
 	 */
-	public JobContextBuilder targetLabel(String targetLabel) {
-		builder.with("targetLabel", targetLabel);
+	public JobContextBuilder targetLabel(String target_label) {
+		builder.with("target_label", target_label);
 		return this;
 	}
 
@@ -156,8 +156,8 @@ public class JobContextBuilder {
 	 * 
 	 * @return
 	 */
-	public JobContextBuilder targetConnectorType(String targetConnectorType) {
-		builder.with("targetConnectorType", targetConnectorType);
+	public JobContextBuilder targetConnectorType(String target_connector_type) {
+		builder.with("target_connector_type", target_connector_type);
 		return this;
 	}
 
