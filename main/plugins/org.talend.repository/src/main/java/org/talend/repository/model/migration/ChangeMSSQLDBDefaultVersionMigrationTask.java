@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.properties.ConnectionItem;
@@ -29,8 +31,6 @@ import org.talend.migration.IMigrationTask.ExecutionResult;
 
 
 public class ChangeMSSQLDBDefaultVersionMigrationTask extends AbstractItemMigrationTask{
-
-    public final static String DEFAULT_VERSION = "JTDS";
 
     @Override
     public Date getOrder() {
@@ -48,9 +48,9 @@ public class ChangeMSSQLDBDefaultVersionMigrationTask extends AbstractItemMigrat
         ConnectionItem connectionItem = (ConnectionItem) item;
         DatabaseConnection connection = (DatabaseConnection) connectionItem.getConnection();
         if (connection != null) {
-        if (connection.getDatabaseType().equals("Microsoft SQL Server")) {
+        if (connection.getDatabaseType().equals(EDatabaseTypeName.MSSQL.getDisplayName())) {
             if (connection.getDbVersionString() == null) {
-                connection.setDbVersionString(DEFAULT_VERSION);
+                connection.setDbVersionString(EDatabaseVersion4Drivers.MSSQL.getVersionValue());
                 try {
                     ProxyRepositoryFactory.getInstance().save(item);
                 } catch (PersistenceException e) {
