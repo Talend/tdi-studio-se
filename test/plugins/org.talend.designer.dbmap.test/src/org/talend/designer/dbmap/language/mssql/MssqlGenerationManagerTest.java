@@ -972,4 +972,142 @@ public class MssqlGenerationManagerTest extends DbGenerationManagerTestHelper {
                 + "\nWHERE" + "\n  C.id = B.id\"";
         assertEquals(expectedQuery, query);
     }
+
+    /**
+     * 3tables join A cross join B cross join c a&b explicit join checked b&c unchecked DOC hzhao Comment method
+     * "testELTMapJoinWithUpdate".
+     */
+    @Test
+    public void testELTMapCrossJoin() {
+        dbManager = new MssqlGenerationManager();
+        String schema = "dbo";
+        String inputTable1 = "src1";
+        String inputTable2 = "src2";
+        String inputTable3 = "src3";
+        String outTable1 = "tar";
+
+        dbMapComponent = new DbMapComponent();
+
+        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
+
+        MetadataTable metadataTable = getMetadataTable(new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" });
+        metadataTable.setLabel(schema + "." + outTable1);
+        metadataList.add(metadataTable);
+
+        dbMapComponent.setMetadataList(metadataList);
+
+        // main table
+        ExternalDbMapData externalData = new ExternalDbMapData();
+        List<ExternalDbMapTable> inputs = new ArrayList<ExternalDbMapTable>();
+        List<ExternalDbMapTable> outputs = new ArrayList<ExternalDbMapTable>();
+        // main table
+        ExternalDbMapTable inputTable = new ExternalDbMapTable();
+        inputTable.setTableName(schema + "." + inputTable1);
+        inputTable.setName(schema + "." + inputTable1);
+        inputTable.setAlias("A");
+        List<ExternalDbMapEntry> entities = getMetadataEntities(new String[] { "newColumn", "newColumn1" }, new String[2]);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+
+        // lookup table
+        inputTable = new ExternalDbMapTable();
+        inputTable.setTableName(schema + "." + inputTable2);
+        inputTable.setName(schema + "." + inputTable2);
+        inputTable.setAlias("B");
+        entities = getMetadataEntities(new String[] { "newColumn", "newColumn1" }, new String[2]);
+        ExternalDbMapEntry newColumn = entities.get(0);
+        newColumn.setExpression("A.newColumn");
+        newColumn.setOperator("=");
+        inputTable.setJoinType(JOIN.CROSS_JOIN.name());
+        newColumn.setJoin(true);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+        // lookup talbe no.2
+        inputTable = new ExternalDbMapTable();
+        inputTable.setTableName(schema + "." + inputTable3);
+        inputTable.setName(schema + "." + inputTable3);
+        inputTable.setAlias("C");
+        entities = getMetadataEntities(new String[] { "id", "name" }, new String[2]);
+        ExternalDbMapEntry newColumn2 = entities.get(0);
+        newColumn2.setExpression("B.id");
+        newColumn2.setOperator("=");
+        inputTable.setJoinType(JOIN.CROSS_JOIN.name());
+        newColumn2.setJoin(false);
+        inputTable.setMetadataTableEntries(entities);
+        inputs.add(inputTable);
+        // output
+        ExternalDbMapTable outputTable = new ExternalDbMapTable();
+        outputTable.setName(schema + "." + outTable1);
+        outputTable.setTableName(schema + "." + outTable1);
+        String[] names = new String[] { "tarColumn", "tarColumn1" };
+        String[] expressions = new String[] { "A.newColumn", "A.newColumn1" };
+        outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
+        outputs.add(outputTable);
+
+        externalData.setInputTables(inputs);
+        externalData.setOutputTables(outputs);
+        dbMapComponent.setExternalData(externalData);
+
+        List<IConnection> incomingConnections = new ArrayList<IConnection>();
+        incomingConnections.add(
+                mockConnection(schema, inputTable1, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
+        incomingConnections.add(
+                mockConnection(schema, inputTable2, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
+        incomingConnections.add(
+                mockConnection(schema, inputTable3, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
+        dbMapComponent.setIncomingConnections(incomingConnections);
+
+        List<IConnection> outputConnections = new ArrayList<IConnection>();
+        Node map1 = mockNode(dbMapComponent);
+        IConnection connection = mockConnection(map1, schema, inputTable1, new String[] { "id", "name" });
+        targetComponent = ComponentsFactoryProvider.getInstance().get("tELTMSSqlOutput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        connection.getMetadataTable().getColumn("id").setLabel("newColumn");
+        connection.getMetadataTable().getColumn("name").setLabel("newColumn1");
+        // add target
+        DataNode output = new DataNode();
+        List<IElementParameter> paraList = new ArrayList<IElementParameter>();
+        ElementParameter param = new ElementParameter(output);
+        param.setName("USE_UPDATE_STATEMENT"); //$NON-NLS-1$
+        param.setValue("true"); //$NON-NLS-1$
+        paraList.add(param);
+        output.setElementParameters(paraList);
+        output.setComponent(targetComponent);
+
+        DataConnection dataConnection = new DataConnection();
+        dataConnection.setName(schema + "." + outTable1);
+        dataConnection.setActivate(true);
+        dataConnection.setLineStyle(EConnectionType.FLOW_MAIN);
+        dataConnection.setTarget(output);
+        IMetadataTable table = new MetadataTable();
+        table.setLabel(outTable1);
+        table.setTableName(outTable1);
+        List<IMetadataColumn> listColumns = new ArrayList<IMetadataColumn>();
+        for (String columnName : new String[] { "id", "name" }) {
+            IMetadataColumn column = new MetadataColumn();
+            column.setLabel(columnName);
+            column.setOriginalDbColumnName(columnName);
+            listColumns.add(column);
+        }
+        table.setListColumns(listColumns);
+        dataConnection.setMetadataTable(table);
+        // List<DataConnection> dataConnections = new ArrayList<>();
+        outputConnections.add(dataConnection);
+        outputConnections.add(connection);
+        dbMapComponent.setOutgoingConnections(outputConnections);
+
+        Process process = mock(Process.class);
+        when(process.getContextManager()).thenReturn(new JobContextManager());
+        dbMapComponent.setProcess(process);
+
+        IContextParameter lookupTableContext = new JobContextParameter();
+        lookupTableContext.setName("lookup");
+        lookupTableContext.setValue("lookupTable");
+        lookupTableContext.setType("String");
+        String query = dbManager.buildSqlSelect(dbMapComponent, schema + "." + outTable1);
+        String expectedQuery = "\"UPDATE dbo.tar\n" + "SET tarColumn = A.id,\n" + "tarColumn1 = A.name\n"
+                + "FROM\n \" +dbo+\".\"+src1+ \" A CROSS JOIN  \n\" +dbo+\".\"+src2+ \" B CROSS JOIN  \n\" +dbo+\".\"+src3+ \" C"
+                + "\nWHERE" + "\n  B.id = A.id\n  AND  C.id = B.id\"";
+        assertEquals(expectedQuery, query);
+    }
 }

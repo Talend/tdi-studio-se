@@ -763,7 +763,7 @@ public abstract class DbGenerationManager {
             boolean isFirstClause = true;
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
-                if (buildConditions4Update(isFirstClause, component, sbWhere, inputTable, false)) {
+                if (buildConditions4WhereClause(isFirstClause, component, sbWhere, inputTable, false)) {
                     isFirstClause = false;
                 }
             }
@@ -1110,7 +1110,7 @@ public abstract class DbGenerationManager {
      * @param isSqlQuert
      * @return
      */
-    protected boolean buildConditions4Update(boolean isFirstClause, DbMapComponent component, StringBuilder sb,
+    protected boolean buildConditions4WhereClause(boolean isFirstClause, DbMapComponent component, StringBuilder sb,
             ExternalDbMapTable inputTable,
             boolean isSqlQuert) {
         List<ExternalDbMapEntry> inputEntries = inputTable.getMetadataTableEntries();
@@ -1942,7 +1942,9 @@ public abstract class DbGenerationManager {
                         ExternalDbMapTable nextTable = null;
                         if (i < lstSizeInputTables) {
                             nextTable = inputTables.get(i);
-                            buildTableDeclaration(component, sb, nextTable, false, false, true);
+                                appendSqlQuery(sb, labelJoinType);
+                                appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                                buildTableDeclaration(component, sb, nextTable, false, true, true);
                         }
 
                     } else {
@@ -1973,8 +1975,17 @@ public abstract class DbGenerationManager {
             boolean isFirstClause = true;
             for (int i = 0; i < lstSizeInputTables; i++) {
                 ExternalDbMapTable inputTable = inputTables.get(i);
-                if (buildConditions(component, sbWhere, inputTable, false, isFirstClause, false)) {
-                    isFirstClause = false;
+                IJoinType joinType = language.getJoin(inputTable.getJoinType());
+                if (joinType == AbstractDbLanguage.JOIN.CROSS_JOIN) {
+                    // if join type is CROSS JOIN the condition will only in where clause no matter explicit join
+                    // checked or not
+                    if (buildConditions4WhereClause(isFirstClause, component, sbWhere, inputTable, false)) {
+                        isFirstClause = false;
+                    }
+                } else {
+                    if (buildConditions(component, sbWhere, inputTable, false, isFirstClause, false)) {
+                        isFirstClause = false;
+                    }
                 }
             }
             /*
