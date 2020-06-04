@@ -47,20 +47,25 @@ imports="
         globalMap.put("<%=cid %>_NB_LINE_DELETED",nb_line_deleted_<%=cid%>);
         globalMap.put("<%=cid %>_NB_LINE_REJECTED", nb_line_rejected_<%=cid%>);
     
+    <%
+    }
+    %>
+
 	<%
-	}
-	if (("INSERT").equals(dataAction)) {
-		dbLog.state().logInsertedLines(dbLog.var("nb_line_inserted"));
-	}else if (("UPDATE").equals(dataAction)) {
-		dbLog.state().logUpdatedLines(dbLog.var("nb_line_update"));
-	}else if (("DELETE").equals(dataAction)) {
-		dbLog.state().logDeletedLines(dbLog.var("nb_line_deleted"));
-	}else if("UPDATE_OR_INSERT".equals(dataAction)){
-		dbLog.state().logUpdatedLines(dbLog.var("nb_line_update"));
-		dbLog.state().logInsertedLines(dbLog.var("nb_line_inserted"));
-	}else if("INSERT_OR_UPDATE".equals(dataAction)){
-		dbLog.state().logInsertedLines(dbLog.var("nb_line_inserted"));
-		dbLog.state().logUpdatedLines(dbLog.var("nb_line_update"));
+	if(!useExistingConnection || (useExistingConnection && setAutoCommit)){
+		if (("INSERT").equals(dataAction)) {
+			dbLog.state().logInsertedLines(dbLog.var("nb_line_inserted"));
+		}else if (("UPDATE").equals(dataAction)) {
+			dbLog.state().logUpdatedLines(dbLog.var("nb_line_update"));
+		}else if (("DELETE").equals(dataAction)) {
+			dbLog.state().logDeletedLines(dbLog.var("nb_line_deleted"));
+		}else if("UPDATE_OR_INSERT".equals(dataAction)){
+			dbLog.state().logUpdatedLines(dbLog.var("nb_line_update"));
+			dbLog.state().logInsertedLines(dbLog.var("nb_line_inserted"));
+		}else if("INSERT_OR_UPDATE".equals(dataAction)){
+			dbLog.state().logInsertedLines(dbLog.var("nb_line_inserted"));
+			dbLog.state().logUpdatedLines(dbLog.var("nb_line_update"));
+		}
 	}
 	if(rejectConnName != null) {
 		dbLog.state().logRejectedLines(dbLog.var("nb_line_rejected"));

@@ -589,8 +589,8 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
             attri.setValue(IHTMLDocConstants.PICTUREFOLDERPATH + "pdf_" + jobName + IHTMLDocConstants.JOB_PREVIEW_PIC_SUFFIX); //$NON-NLS-1$
 
             List attributeList = document.selectNodes("/project/job/externalNodeComponents/component/@preview"); //$NON-NLS-1$
-            for (int i = 0; i < attributeList.size(); i++) {
-                Attribute at = (Attribute) attributeList.get(i);
+            for (Object element : attributeList) {
+                Attribute at = (Attribute) element;
                 String externalValue = at.getValue().substring(at.getValue().indexOf("/") + 1); //$NON-NLS-1$
                 String value = IHTMLDocConstants.PICTUREFOLDERPATH + "pdf_" + externalValue; //$NON-NLS-1$
                 at.setValue(value);
@@ -663,7 +663,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         // Check if generate Job Extra / Stats&Logs Setting Info
         if (item instanceof ProcessItem) {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)) {
-                IMRProcessService mrProcessService = (IMRProcessService) GlobalServiceRegister.getDefault().getService(
+                IMRProcessService mrProcessService = GlobalServiceRegister.getDefault().getService(
                         IMRProcessService.class);
                 generateExtraSetting = !mrProcessService.isMapReduceItem(item);
                 generateStatsLogsSetting = generateExtraSetting;
@@ -845,8 +845,8 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
         Map<String, String> nameValueMap = new HashMap<String, String>();
 
-        for (int i = 0; i < params.size(); i++) {
-            ElementParameterType param = (ElementParameterType) params.get(i);
+        for (Object param2 : params) {
+            ElementParameterType param = (ElementParameterType) param2;
             nameValueMap.put(param.getName(), ParameterValueUtil.getValue4Doc(param));
         }
         // Main settinparam info
@@ -1020,10 +1020,10 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
         Element contextListElement = DocumentHelper.createElement("contextList"); // Context root //$NON-NLS-1$
 
-        for (int i = 0, n = contexts.size(); i < n; i++) {
+        for (Object context2 : contexts) {
             // export single context infomation
             Element contextElement = DocumentHelper.createElement("context"); //$NON-NLS-1$
-            ContextType context = (ContextType) contexts.get(i);
+            ContextType context = (ContextType) context2;
 
             // Attributes
             contextElement.addAttribute("name", HTMLDocUtils.checkString(context.getName())); //$NON-NLS-1$
@@ -1032,13 +1032,13 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
             // Context parameters as children
             EList params = context.getContextParameter();
             if (params != null && !params.isEmpty()) {
-                for (int j = 0, k = params.size(); j < k; j++) {
+                for (Object param2 : params) {
                     /*
                      * <contextParameter comment="Give server name" name="server" prompt="Default Server "
                      * promptNeeded="false" repositoryContextId="_crJMkCCQEd2Oweh7yRMWjQ" type=""
                      * value="'192.168.0.109'"/>
                      */
-                    ContextParameterType param = (ContextParameterType) params.get(j);
+                    ContextParameterType param = (ContextParameterType) param2;
                     Element contextParamElement = DocumentHelper.createElement("contextParameter"); //$NON-NLS-1$
                     contextParamElement.addAttribute("name", HTMLDocUtils.checkString(param.getName())); //$NON-NLS-1$
                     contextParamElement.addAttribute("prompt", HTMLDocUtils.checkString(param.getPrompt())); //$NON-NLS-1$
@@ -1210,8 +1210,8 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
      */
     private void generateConnectionsInfo(Element jobElement, EList connectionList) {
         Element connectionsElement = jobElement.addElement("connections"); //$NON-NLS-1$
-        for (int j = 0; j < connectionList.size(); j++) {
-            ConnectionType type = (ConnectionType) connectionList.get(j);
+        for (Object element : connectionList) {
+            ConnectionType type = (ConnectionType) element;
             Element connectionElement = connectionsElement.addElement("connection"); //$NON-NLS-1$
             connectionElement.addAttribute("label", HTMLDocUtils.checkString(type.getLabel())); //$NON-NLS-1$
             connectionElement.addAttribute("lineStyle", HTMLDocUtils.checkString(type.getLineStyle() + "")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1249,7 +1249,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         }
         if (isRouteProcess(item)) {
             jobElement.addAttribute("type", "route");//$NON-NLS-1$//$NON-NLS-2$
-            ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
+            ICamelDesignerCoreService camelService = GlobalServiceRegister.getDefault().getService(
                     ICamelDesignerCoreService.class);
             camelService.appendRouteInfo2Doc(item, jobElement);
         }
@@ -1328,7 +1328,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
      */
     protected boolean isRouteProcess(Item item) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-            ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
+            ICamelDesignerCoreService camelService = GlobalServiceRegister.getDefault().getService(
                     ICamelDesignerCoreService.class);
             return camelService.isInstanceofCamel(item);
         }
@@ -1496,8 +1496,8 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
     protected void handleSourceAndTargetConnection(EList connectionList) {
         List<String> targetList = new ArrayList<String>();
         List<String> sourceList = new ArrayList<String>();
-        for (int j = 0; j < connectionList.size(); j++) {
-            ConnectionType type = (ConnectionType) connectionList.get(j);
+        for (Object element : connectionList) {
+            ConnectionType type = (ConnectionType) element;
             if (!targetConnectionMap.containsKey(type.getSource())) {
                 targetList = new ArrayList<String>();
             }
@@ -1507,10 +1507,13 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
             targetConnectionMap.put(type.getSource(), targetList);
 
-            if (!sourceConnectionMap.containsKey(type.getTarget())) {
-                sourceList = new ArrayList<String>();
+            sourceList = new ArrayList<String>();
+            if (sourceConnectionMap.containsKey(type.getTarget())) {
+                sourceList = sourceConnectionMap.get(type.getTarget());
             }
-            sourceList.add(type.getSource());
+            if (!sourceList.contains(type.getSource())) {
+                sourceList.add(type.getSource());
+            }
             sourceConnectionMap.put(type.getTarget(), sourceList);
         }
 
@@ -1554,14 +1557,14 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
      * @return
      */
     private String getFullProductName() {
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+        IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
 
         return brandingService.getFullProductName();
     }
 
     private String getProductVersionName() {
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+        IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
 
         return brandingService.getShortProductName() + IHTMLDocConstants.VERSION;
@@ -1595,7 +1598,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         }
         // if (result == null) {
         result = new ByteArrayOutputStream(3072);
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+        IBrandingService brandingService = GlobalServiceRegister.getDefault().getService(
                 IBrandingService.class);
         ImageData imageData = brandingService.getLoginHImage().getImageData();
         new ByteArrayOutputStream();

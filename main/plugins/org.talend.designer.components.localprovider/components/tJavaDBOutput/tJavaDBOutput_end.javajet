@@ -19,8 +19,9 @@ imports="
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
 	
 	String frameworkType = ElementParameterParser.getValue(node,"__FRAMEWORK_TYPE__");
-	
-	String connectionFlag = ElementParameterParser.getValue(node, "__CONNECTION_FLAG__");	
+	boolean setAutoCommit = false;
+	boolean useExistingConnection = false;
+	String connectionFlag = ElementParameterParser.getValue(node, "__CONNECTION_FLAG__");
     if(!("").equals(commitEvery)&&!("0").equals(commitEvery)){
         %>
     if (commitCounter_<%=cid%> > 0) {

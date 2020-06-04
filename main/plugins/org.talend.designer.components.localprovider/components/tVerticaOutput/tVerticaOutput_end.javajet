@@ -5,6 +5,7 @@ imports="
 	org.talend.core.model.process.ElementParameterParser
 	org.talend.core.model.utils.NodeUtil
 	org.talend.core.model.process.IConnection
+	org.talend.core.model.process.IProcess
 	java.util.List
 " 
 %>
@@ -12,22 +13,37 @@ imports="
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
-	
+
 	String cid = node.getUniqueName();
 	dbLog = new DBLogUtil(node);
+	IProcess process = node.getProcess();
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
-	
+
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
-	
+
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
-	
-	 boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+
+	boolean setAutoCommit = false;
+
+	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 	String rejectConnName = null;
 	List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
 	if(rejectConns != null && rejectConns.size() > 0) {
 		IConnection rejectConn = rejectConns.get(0);
 		rejectConnName = rejectConn.getName();
 	}
+
+	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	if(useExistingConnection) {
+		List<? extends INode> nodes = process.getNodesOfType("tVerticaConnection");
+		for (INode ne:nodes) {
+			if (connection.equals(ne.getUniqueName())) {
+				setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+				break;
+			}
+		}
+	}
+
 	boolean manualCommit = !useExistingConnection && !("0").equals(commitEvery);
 %>
 <%

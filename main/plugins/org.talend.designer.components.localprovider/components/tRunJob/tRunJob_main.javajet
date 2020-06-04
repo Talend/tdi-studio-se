@@ -185,7 +185,11 @@ String inputConnName = null;
 				for (int i = 0; i < commandLineWindows.length; i++) {
 					if (i == 0){
 		     	 	%>
-		      			paraList_<%=cid %>.add("<%=commandLineWindows[i]%>");
+                        paraList_<%=cid %>.add("<%=commandLineWindows[i]%>");
+                        String m2 = System.getProperty("talend.component.manager.m2.repository");
+                        if (m2 != null){
+                            paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
+                        }
 		      		<%
 					} else if (i > 0){
 		      			if (commandLineWindows[i].indexOf("\"") >= 0){
@@ -217,7 +221,11 @@ String inputConnName = null;
 				for (int i = 0; i < commandLineUnix.length; i++) {
 					if (i == 0){
 		      		%>
-						paraList_<%=cid %>.add("<%=commandLineUnix[i]%>");
+                        paraList_<%=cid %>.add("<%=commandLineUnix[i]%>");
+                        String m2 = System.getProperty("talend.component.manager.m2.repository");
+                        if (m2 != null){
+                            paraList_<%=cid %>.add("-Dtalend.component.manager.m2.repository=" + m2);
+                        }
 		      		<%
 		    		} else if (i > 0){
 		      			String param;
@@ -247,7 +255,7 @@ String inputConnName = null;
 		  		}
 		  		%>
 			}
-			
+
 			<%
 			if(use_custom_jvm_setting) {
 			%>
