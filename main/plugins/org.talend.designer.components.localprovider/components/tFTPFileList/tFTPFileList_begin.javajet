@@ -250,7 +250,6 @@ if (sftp) {// *** sftp *** //
         } else {
 %>
             ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
-            String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
 <%
         }
     } else { // *** ftp
@@ -275,6 +274,7 @@ if (sftp) {// *** sftp *** //
 %> 
     int nb_file_<%=cid%> = 0;
     org.apache.commons.net.ftp.FTPFile[] ftpFiles_<%=cid %> = null;
+    String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
     List<org.apache.commons.net.ftp.FTPFile> fileListTemp_<%=cid %> = new java.util.ArrayList<>();
 
     <%/*read files*/ %>
