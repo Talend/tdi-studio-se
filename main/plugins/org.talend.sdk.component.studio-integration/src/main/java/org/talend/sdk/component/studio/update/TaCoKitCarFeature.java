@@ -14,6 +14,9 @@ package org.talend.sdk.component.studio.update;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -152,16 +156,57 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
 
     @SuppressWarnings("nls")
     public boolean install(IProgressMonitor progress) throws Exception {
+        boolean success = false;
         String tckCarPath = getCar(progress).getCarFile().getAbsolutePath();
         String installationPath = URIUtil.toFile(URIUtil.toURI(Platform.getInstallLocation().getURL())).getAbsolutePath();
 
+        String command = deployToStudio(tckCarPath, installationPath);
+        success = execCarMain(progress, command);
+        if (!success) {
+            return false;
+        }
+
+        File config = new File(installationPath, "configuration/config.ini"); //$NON-NLS-1$
+        Properties configuration = new Properties();
+        try (InputStream stream = new FileInputStream(config)) {
+            configuration.load(stream);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+        String repositoryType = configuration.getProperty("maven.repository"); //$NON-NLS-1$
+        String m2RootFromContext = System.getProperty("maven.local.repository"); //$NON-NLS-1$
+        // zero-install CI mode
+        if (StringUtils.isNoneBlank(m2RootFromContext) && "global".equals(repositoryType)) {
+            File defaultM2Root = new File(System.getProperty("user.home"), ".m2/repository/");
+            // FIXME to avoid the bug from CarMain that can't install car to custom m2 when using global m2 repository.
+            if (!new File(m2RootFromContext).equals(defaultM2Root)) {
+                command = deployToM2(tckCarPath, m2RootFromContext);
+                success = execCarMain(progress, command);
+            }
+        }
+
+        return success;
+    }
+
+    private String deployToStudio(String tckCarPath, String installationPath) {
         StringBuilder commandBuilder = new StringBuilder();
         commandBuilder.append("java -jar "); //$NON-NLS-1$
         commandBuilder.append(StringUtils.wrap(tckCarPath, "\"")); //$NON-NLS-1$
         commandBuilder.append(" studio-deploy "); //$NON-NLS-1$
         commandBuilder.append(StringUtils.wrap(installationPath, "\"")); //$NON-NLS-1$
-        String command = commandBuilder.toString();
+        return commandBuilder.toString();
+    }
 
+    private String deployToM2(String tckCarPath, String m2Root) {
+        StringBuilder commandBuilder = new StringBuilder();
+        commandBuilder.append("java -jar "); //$NON-NLS-1$
+        commandBuilder.append(StringUtils.wrap(tckCarPath, "\"")); //$NON-NLS-1$
+        commandBuilder.append(" maven-deploy "); //$NON-NLS-1$
+        commandBuilder.append(StringUtils.wrap(m2Root, "\"")); //$NON-NLS-1$
+        return commandBuilder.toString();
+    }
+
+    private boolean execCarMain(IProgressMonitor progress, String command) throws Exception {
         String osName = System.getProperty("os.name"); //$NON-NLS-1$
         String[] cmd = new String[3];
         if (osName.startsWith("Windows")) { //$NON-NLS-1$
