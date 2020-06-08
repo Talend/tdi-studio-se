@@ -81,6 +81,7 @@ import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsService;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.IEbcdicConstant;
 import org.talend.core.model.metadata.IHL7Constant;
@@ -816,9 +817,9 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                         // for bug 15608
                         // ConnectionContextHelper.addContextVarForJob(process, contextItem, contextManager);
                         // ConnectionContextHelper.checkAndAddContextsVarDND(contextItem, contextManager);
-
+                        Map<String, String> renamedMap = ContextUtils.getContextParamterRenamedMap(process.getProperty().getItem());
                         Set<String> addedVars = ConnectionContextHelper.checkAndAddContextVariables(contextItem, contextSet,
-                                process.getContextManager(), false);
+                                process.getContextManager(), false, renamedMap);
                         if (addedVars != null && !addedVars.isEmpty()
                                 && !ConnectionContextHelper.isAddContextVar(contextItem, contextManager, contextSet)) {
                             // show

@@ -37,8 +37,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
 
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
+	
+	boolean setAutoCommit = false;
 
-	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
 	boolean extendedInsert = false;
 
@@ -50,11 +52,13 @@ skeleton="../templates/db_output_bulk.skeleton"
 
     String dbVersion = "" ;
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-    if(("true").equals(useExistingConn)) {
+    if(useExistingConnection) {
         List<? extends INode> nodes =  process.getNodesOfType("tAmazonMysqlConnection");
         for (INode ne:nodes) {
             if (connection.equals(ne.getUniqueName())) {
                 dbVersion = ElementParameterParser.getValue(ne, "__DB_VERSION__");
+                setAutoCommit = "true".equals(ElementParameterParser.getValue(ne, "__AUTO_COMMIT__"));
+                break;
             }
         }
     } else {
@@ -246,7 +250,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
     resourceMap.put("statementClosed_<%=cid%>", true);
 <%
-	if(!("true").equals(useExistingConn)){
+	if(!useExistingConnection){
 		if(!("").equals(commitEvery) && !("0").equals(commitEvery))
 		{
     		%>

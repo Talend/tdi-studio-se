@@ -536,6 +536,12 @@ public class FileinToXmlProcess<K extends FileInputNode> extends RepositoryObjec
             // TODO Auto-generated method stub
             return false;
         }
+
+        @Override
+        public void saveToEmf(EList contextTypeList, boolean useInternalId) {
+            // TODO Auto-generated method stub
+
+        }
     }
 
     @Override

@@ -49,6 +49,12 @@ imports="
 		public String getDirverClassName(INode node){
 			return "com.amazon.redshift.jdbc42.Driver";
 		}
+		
+		public String getQueryString(INode node) {
+
+			String trackerString = "\""+ org.talend.core.utils.TrackerUtil.getRedshiftTracker() + "\\n\" + ";
+			return trackerString + super.getQueryString(node);
+		}
 	}
 	dbRowBeginUtil = new DBRowBeginUtil();
 %>

@@ -36,6 +36,7 @@ import java.util.jar.JarFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.properties.Item;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -79,7 +80,9 @@ public class TacokitExportDependenciesProvider implements IBuildExportDependenci
         try {
             ITalendProcessJavaProject project = CorePlugin.getDefault().getRunProcessService()
                     .getTalendJobJavaProject(item.getProperty());
-            final String output = project.getResourcesFolder().getLocationURI().getPath();
+            final String output = EnvironmentUtils.isWindowsSystem() ?
+                    project.getResourcesFolder().getLocationURI().getPath().substring(1) :
+                    project.getResourcesFolder().getLocationURI().getPath();
             final Path m2 = findM2Path();
             final Path resM2 = Paths.get(output, TaCoKitConst.MAVEN_INF, "repository");
             final Path coordinates = Paths.get(output, TaCoKitConst.TALEND_INF, "plugins.properties");
@@ -161,7 +164,7 @@ public class TacokitExportDependenciesProvider implements IBuildExportDependenci
                 Files.copy(source, destination);
             }
             exportFileResource.addResource(destination.getParent().toString()
-                    .substring(destination.getParent().toString().indexOf("MAVEN-INF/")), destination.toUri().toURL());
+                    .substring(destination.getParent().toString().indexOf("MAVEN-INF")), destination.toUri().toURL());
         } catch (IOException e) {
             LOG.error("[copyJar] Something went wrong during jar copying...", e);
             throw new IllegalStateException(e);

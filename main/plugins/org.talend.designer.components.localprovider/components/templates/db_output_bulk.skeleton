@@ -415,12 +415,13 @@ public class CLASS {
                                 }
                                 createSQL.append(suffix);
                             } else {
+                                boolean isSpecialDBAndNotSetLength = (POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId())) && column.getColumn().getLength() == null;
                                 if (!lengthIgnored) {
-                                    if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
+                                    if (isSpecialDBAndNotSetLength) {
                                     } else { 
                                         prefix = "(";
                                         suffix = ") ";
-                                        createSQL.append(prefix + length);                                    
+                                        createSQL.append(prefix + length);
                                     }
                                 }
                                 if (!precisionIgnored) {
@@ -432,9 +433,11 @@ public class CLASS {
                                     } else {
                                         comma = ",";
                                     }
-                                    createSQL.append(comma + precision);
+                                    if(!isSpecialDBAndNotSetLength) {
+                                        createSQL.append(comma + precision);
+                                    }
                                 }
-                                if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
+                                if (isSpecialDBAndNotSetLength) {
                                 } else {
                                     createSQL.append(suffix);
                                 }
@@ -1588,12 +1591,9 @@ public class CLASS {
                                 createSQL.append(suffix);
                             } else {
                                 if (!lengthIgnored) {
-                                    if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
-                                    } else { 
-                                        prefix = "(";
-                                        suffix = ") ";
-                                        createSQL.append(prefix + length);                                    
-                                    }
+                                    prefix = "(";
+                                    suffix = ") ";
+                                    createSQL.append(prefix + length);                                    
                                 }
                                 if (!precisionIgnored) {
                                     prefix = (prefix.equals("") ? "(" : prefix);
@@ -1606,10 +1606,9 @@ public class CLASS {
                                     }
                                     createSQL.append(comma + precision);
                                 }
-                                if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
-                                } else {
-                                    createSQL.append(suffix);
-                                }
+                                
+                                createSQL.append(suffix);
+                                
                                 if(MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                                     createSQL.append("UNSIGNED");
                                 }
@@ -2190,12 +2189,9 @@ public class CLASS {
                                 createSQL.append(suffix);
                             } else {
                                 if (!lengthIgnored) {
-                                    if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
-                                    } else { 
-                                        prefix = "(";
-                                        suffix = ") ";
-                                        createSQL.append(prefix + getLengthStringRepresentation(dataType, length));
-                                    }
+                                    prefix = "(";
+                                    suffix = ") ";
+                                    createSQL.append(prefix + getLengthStringRepresentation(dataType, length));
                                 }
                                 if (!precisionIgnored) {
                                     prefix = (prefix.equals("") ? "(" : prefix);
@@ -2208,10 +2204,9 @@ public class CLASS {
                                     }
                                     createSQL.append(comma + precision);
                                 }
-                                if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
-                                } else {
-                                    createSQL.append(suffix);
-                                }
+                                
+                                createSQL.append(suffix);
+                                
                                 if(MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                                     createSQL.append("UNSIGNED");
                                 }
@@ -2955,6 +2950,8 @@ public class CLASS {
     }
     
     public class RedshiftManager extends PostgreManager {
+
+         String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
          public RedshiftManager(String cid) {
              super(cid);
          }
@@ -2962,11 +2959,36 @@ public class CLASS {
          protected String getDBMSId() {
              return REDSHIFT;
          }
+
+        public String getSelectionSQL() {
+            StringBuilder selectionSQL = new StringBuilder();
+            selectionSQL.append(redshiftTracker +" \\n " + "SELECT COUNT(1) FROM " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+            return selectionSQL.toString();
+        }
+        public String getDeleteTableSQL() {
+            StringBuilder deleteTableSQL = new StringBuilder();
+            deleteTableSQL.append(redshiftTracker +" \\n " + "DELETE FROM " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+            return deleteTableSQL.toString();
+        }
+        public String getTruncateTableSQL() {
+            StringBuilder truncateTableSQL = new StringBuilder();
+            truncateTableSQL.append(redshiftTracker +" \\n " + "TRUNCATE TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+            return truncateTableSQL.toString();
+        }
+
+        public String getDropTableSQL() {
+            StringBuilder dropTableSQL = new StringBuilder();
+            dropTableSQL.append(redshiftTracker +" \\n " + "DROP TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+            return dropTableSQL.toString();
+        }
          
          public String getCreateTableSQL(List<Column> columnList) {
             MappingTypeRetriever mappingType = MetadataTalendType.getMappingTypeRetriever(getDBMSId());
             StringBuilder createSQL = new StringBuilder();
-            createSQL.append("CREATE TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar() + "(");
+            
+        	
+        	
+            createSQL.append(redshiftTracker +" \\n " + "CREATE TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar() + "(");
             List<String> pkList = new ArrayList<String>();
             int count = 0;
             String ending = ",";
@@ -3044,7 +3066,7 @@ public class CLASS {
 	                            createSQL.append(suffix);
 	                        } else {
 	                            if (!lengthIgnored) {
-	                                if (column.getColumn().getLength() == null) {                                  
+	                                if (column.getColumn().getLength() == null) {
 	                                } else { 
 	                                    prefix = "(";
 	                                    suffix = ") ";
@@ -3060,7 +3082,10 @@ public class CLASS {
 	                                } else {
 	                                    comma = ",";
 	                                }
-	                                createSQL.append(comma + precision);
+	                                
+	                                if(column.getColumn().getLength() != null) {
+	                                    createSQL.append(comma + precision);
+	                                }
 	                            }
 	                            if (column.getColumn().getLength() == null) {
 	                            } else {
@@ -3739,12 +3764,9 @@ public class CLASS {
                                 createSQL.append(suffix);
                             } else {
                                 if (!lengthIgnored) {
-                                    if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
-                                    } else { 
-                                        prefix = "(";
-                                        suffix = ") ";
-                                        createSQL.append(prefix + length);                                    
-                                    }
+                                    prefix = "(";
+                                    suffix = ") ";
+                                    createSQL.append(prefix + length);                                    
                                 }
                                 if (!precisionIgnored) {
                                     prefix = (prefix.equals("") ? "(" : prefix);
@@ -3757,10 +3779,9 @@ public class CLASS {
                                     }
                                     createSQL.append(comma + precision);
                                 }
-                                if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
-                                } else {
-                                    createSQL.append(suffix);
-                                }
+                                
+                                createSQL.append(suffix);
+                                
                                 if(MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                                     createSQL.append("UNSIGNED");
                                 }
@@ -4126,7 +4147,9 @@ public class CLASS {
                                     }
                                     createSQL.append(comma + precision);
                                 }
-                                    createSQL.append(suffix);
+                                
+                                createSQL.append(suffix);
+                                
                                 if(MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                                     createSQL.append("UNSIGNED");
                                 }
@@ -4607,12 +4630,9 @@ public class CLASS {
                                 createSQL.append(suffix);
                             } else {
                                 if (!lengthIgnored) {
-                                    if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
-                                    } else { 
-                                        prefix = "(";
-                                        suffix = ") ";
-                                        createSQL.append(prefix + getLengthStringRepresentation(dataType, length));
-                                    }
+                                    prefix = "(";
+                                    suffix = ") ";
+                                    createSQL.append(prefix + getLengthStringRepresentation(dataType, length));
                                 }
                                 if (!precisionIgnored) {
                                     prefix = (prefix.equals("") ? "(" : prefix);
@@ -4623,12 +4643,10 @@ public class CLASS {
                                     } else {
                                         comma = ",";
                                     }
+                                    
                                     createSQL.append(comma + precision);
                                 }
-                                if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
-                                } else {
-                                    createSQL.append(suffix);
-                                }
+                                createSQL.append(suffix);
                                 if(MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                                     createSQL.append("UNSIGNED");
                                 }
