@@ -2037,6 +2037,15 @@ class RedshiftManager extends Manager {
         javaCode.append("}");
         return javaCode.toString();        
     }    
+    String redshiftTracker = org.talend.core.utils.TrackerUtil.getRedshiftTracker();
+    public String getDropTableSQL() {
+        StringBuilder dropTableSQL = new StringBuilder();
+        dropTableSQL.append(redshiftTracker +" \\n " + "DROP TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar());
+        return dropTableSQL.toString();
+    }
+    public String getCreateTableSQL(List<IMetadataColumn> listColumn) {
+        return redshiftTracker +" \\n " + super.getCreateTableSQL(listColumn);
+    }
 }
 
 class SnowflaketManager extends Manager {
