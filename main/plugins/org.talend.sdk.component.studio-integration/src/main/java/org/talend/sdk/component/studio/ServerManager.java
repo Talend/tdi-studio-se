@@ -39,6 +39,7 @@ import org.talend.sdk.component.studio.service.AsciidoctorService;
 import org.talend.sdk.component.studio.service.ComponentService;
 import org.talend.sdk.component.studio.service.Configuration;
 import org.talend.sdk.component.studio.service.UiActionsThreadPool;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
 public class ServerManager {
@@ -91,6 +92,8 @@ public class ServerManager {
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
+
+            TaCoKitUtil.checkM2TacokitStatus();
 
             final BundleContext ctx = SdkComponentPlugin.getDefault().getBundle().getBundleContext();
             final Configuration configuration = new Configuration(!Boolean.getBoolean("component.kit.skip"),
