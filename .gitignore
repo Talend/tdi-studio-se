@@ -11,3 +11,4 @@ main/plugins/org.talend.designer.codegen/resources/sparkstreaming_header.javajet
 main/plugins/org.talend.designer.codegen/resources/sparkstreaming_subprocess_footer.javajet
 main/plugins/org.talend.designer.codegen/resources/sparkstreaming_subprocess_header.javajet
 main/plugins/org.talend.designer.codegen/resources/routelet.skeleton
+.DS_Store
