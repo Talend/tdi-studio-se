@@ -564,7 +564,7 @@ public class TaCoKitUtil {
                 FilesUtils.copyFile(source, targetBasePath.resolve(mvnPath).toFile());
             }
         } catch (IOException e) {
-            ExceptionHandler.process(e);
+            throw new IllegalArgumentException("Failed to re-deploy jar:", e);
         }
     }
 
