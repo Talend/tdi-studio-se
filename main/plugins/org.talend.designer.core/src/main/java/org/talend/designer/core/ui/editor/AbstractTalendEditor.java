@@ -13,6 +13,8 @@
 package org.talend.designer.core.ui.editor;
 
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.HashMap;
@@ -104,6 +106,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.DisposeEvent;
@@ -124,6 +127,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IKeyBindingService;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.SubActionBars;
 import org.eclipse.ui.actions.ActionFactory;
@@ -138,9 +142,9 @@ import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.gmf.draw2d.AnimatableZoomManager;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageUtils;
 import org.talend.commons.utils.workbench.preferences.GlobalConstant;
@@ -183,6 +187,7 @@ import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.ITalendEditor;
 import org.talend.designer.core.assist.TalendEditorComponentCreationUtil;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.StitchPseudoComponent;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.NodePartKeyHander;
 import org.talend.designer.core.ui.action.ConnectionSetAsMainRef;
@@ -212,7 +217,9 @@ import org.talend.designer.core.ui.editor.nodes.NodePart;
 import org.talend.designer.core.ui.editor.notes.Note;
 import org.talend.designer.core.ui.editor.outline.NodeTreeEditPart;
 import org.talend.designer.core.ui.editor.outline.ProcessTreePartFactory;
+import org.talend.designer.core.ui.editor.palette.TalendCombinedTemplateCreationEntry;
 import org.talend.designer.core.ui.editor.palette.TalendDrawerEditPart;
+import org.talend.designer.core.ui.editor.palette.TalendEntryEditPart;
 import org.talend.designer.core.ui.editor.palette.TalendFlyoutPaletteComposite;
 import org.talend.designer.core.ui.editor.palette.TalendPaletteDrawer;
 import org.talend.designer.core.ui.editor.palette.TalendPaletteHelper;
@@ -1590,6 +1597,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
         private int moveOffset = DEFAULT_MOVE_OFFSET;
 
+        private IComponent previousComponent = null;
+
         /**
          * bqian TalendEditDomain constructor comment.
          *
@@ -1636,6 +1645,34 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                 if (flag && getActiveTool() instanceof CreationTool) {
                     CreationTool tool = (CreationTool) getActiveTool();
                     updateNodeOnLink(tool);
+                }
+
+                final StructuredSelection newSelection = (StructuredSelection) viewer.getSelection();
+                if (!newSelection.isEmpty() && newSelection.getFirstElement() instanceof TalendEntryEditPart) {
+                    TalendEntryEditPart editPart = (TalendEntryEditPart) newSelection.getFirstElement();
+                    TalendCombinedTemplateCreationEntry entry =
+                            (TalendCombinedTemplateCreationEntry) editPart.getModel();
+                    IComponent newComponent = entry.getComponent();
+                    if (newComponent != null && newComponent instanceof StitchPseudoComponent) {
+                        if (newComponent.equals(previousComponent)) { // check if we are clicking on it for a 2nd time
+                            StitchPseudoComponent stitchPseudoComponent = (StitchPseudoComponent) newComponent;
+                            try {
+                                final URL compURL = new URL(stitchPseudoComponent.getConnectorURL()
+                                        + StitchDataLoaderConstants.getUTMParamSuffix());
+                                PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL(compURL);
+                            } catch (PartInitException | MalformedURLException e) {
+                                ExceptionHandler.process(e);
+                            }
+                            previousComponent = null; // remove the registered selection
+                        } else { // if it's the first time selecting a stitch connector
+                            previousComponent = newComponent; // register the first click
+                        }
+                        super.mouseUp(mouseEvent, viewer); // simulate the release of button to avoid dropping on canvas
+                    } else { // user click at another component after a stitch component
+                        previousComponent = null; // remove the registered selection
+                    }
+                } else { // user clicks at somewhere outside the palette: the canvas for instance
+                    previousComponent = null; // remove the registered selection
                 }
             }
         }
