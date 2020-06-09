@@ -96,12 +96,6 @@ nb_file_<%=cid%> = getter_<%=cid %>.count;
 			<%}%>
     <%
 		}
-	}else{
-		if(!moveToCurrentDir){
-%>
-	  		ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
-<%	
-		}
 	}
 } else { // *** ftps *** //
 

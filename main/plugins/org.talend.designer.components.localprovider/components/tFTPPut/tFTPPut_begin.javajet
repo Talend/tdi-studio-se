@@ -242,7 +242,7 @@ int nb_file_<%=cid%> = 0;
                 ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPClient) globalMap.get("<%=conn %>");
                 <%if(isLog4jEnabled){%>
                     if(ftp_<%=cid %>!=null) {
-                        log.info("<%=cid%> - Use an existing connection."); 
+                        log.info("<%=cid%> - Use an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + ".");
                     }
                 <%}%>
 <%
