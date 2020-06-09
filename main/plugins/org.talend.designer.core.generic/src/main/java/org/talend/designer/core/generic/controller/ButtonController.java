@@ -80,12 +80,7 @@ public class ButtonController extends AbstractElementPropertySectionController {
             if (elementParameter != null) {
                 Object jdbcUrl = elementParameter.getValue();
                 if (jdbcUrl != null) {
-                    if (beginAndEndWithQuote(String.valueOf(jdbcUrl))) {
-                        // log.log(Priority.INFO, "jdbcUrl should not begin or end with quote", new Exception());
-                        // return null;
-                        // new ErrorDialogWidthDetailArea(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
-                        // IGenericConstants.PLUGIN_ID, mainMsg,
-                        // "hehe");
+                    if (beginOrEndWithQuote(String.valueOf(jdbcUrl))) {
                         Exception tempE = new Exception(Messages.getString("ButtonController.ErrorDialog.reason"));
                         Status status = new Status(IStatus.ERROR, IGenericConstants.PLUGIN_ID, 1, tempE.getMessage(),
                                 tempE.getCause());
@@ -113,11 +108,11 @@ public class ButtonController extends AbstractElementPropertySectionController {
         return null;
     }
 
-    private boolean beginAndEndWithQuote(String s) {
+    private boolean beginOrEndWithQuote(String s) {
         if (s == null) {
             return false;
         }
-        if (s.startsWith("\"") && s.endsWith("\"")) {
+        if (s.startsWith("\"") || s.endsWith("\"")) {
             return true;
         }
         return false;
