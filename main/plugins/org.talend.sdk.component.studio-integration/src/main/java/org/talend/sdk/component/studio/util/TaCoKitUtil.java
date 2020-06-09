@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.data.container.Container;
 import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.model.components.ComponentCategory;
@@ -534,7 +535,7 @@ public class TaCoKitUtil {
         // zero-install CI mode
         List<GAV> cars = TaCoKitUtil.getInstalledComponents(new NullProgressMonitor());
         java.nio.file.Path basePath = new File(MavenPlugin.getMaven().getLocalRepositoryPath()).toPath();
-        java.nio.file.Path defaultBasePath = new File(System.getProperty("user.home"), ".m2/repository/").toPath();
+        java.nio.file.Path defaultBasePath = new File(System.getProperty("user.home"), ".m2/repository/").toPath(); //$NON-NLS-1$ //$NON-NLS-2$
         cars.stream().map(c -> {
             String mvnUrl = MavenUrlHelper.generateMvnUrl(c.getGroupId(), c.getArtifactId(), c.getVersion(), c.getType(),
                     c.getClassifier());
@@ -545,12 +546,12 @@ public class TaCoKitUtil {
             if (!target.exists()) {
                 copyJar(defaultBasePath, basePath, s);
                 try (JarFile jar = new JarFile(target)) {
-                    JarEntry entry = jar.getJarEntry("TALEND-INF/dependencies.txt");
+                    JarEntry entry = jar.getJarEntry("TALEND-INF/dependencies.txt"); //$NON-NLS-1$
                     try (BufferedReader reader = new BufferedReader(new InputStreamReader(jar.getInputStream(entry)))) {
                         reader.lines().map(l -> gavToMvnPath(l)).forEach(dep -> copyJar(defaultBasePath, basePath, dep));
                     }
                 } catch (IOException e) {
-                    throw new IllegalArgumentException("Failed to read jar:", e);
+                    throw new IllegalArgumentException("Failed to read jar:", e); //$NON-NLS-1$
                 }
             }
         });
@@ -558,9 +559,12 @@ public class TaCoKitUtil {
 
     private static void copyJar(java.nio.file.Path sourceBasePath, java.nio.file.Path targetBasePath, String mvnPath) {
         try {
-            FilesUtils.copyFile(sourceBasePath.resolve(mvnPath).toFile(), targetBasePath.resolve(mvnPath).toFile());
+            File source = sourceBasePath.resolve(mvnPath).toFile();
+            if (source.exists()) {
+                FilesUtils.copyFile(source, targetBasePath.resolve(mvnPath).toFile());
+            }
         } catch (IOException e) {
-            throw new IllegalArgumentException("Failed to re-deploy jar:", e);
+            ExceptionHandler.process(e);
         }
     }
 
