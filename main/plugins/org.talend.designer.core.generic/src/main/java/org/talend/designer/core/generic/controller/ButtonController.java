@@ -19,8 +19,11 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,6 +33,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.components.api.properties.ComponentProperties;
@@ -45,6 +49,8 @@ import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
+import org.talend.designer.core.generic.constants.IGenericConstants;
+import org.talend.designer.core.generic.i18n.Messages;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
@@ -70,6 +76,27 @@ public class ButtonController extends AbstractElementPropertySectionController {
     public Command createCommand(Button button) {
         IElementParameter parameter = (IElementParameter) button.getData();
         if(button.getText() != null && button.getText().equals(TEST_CONNECTION)){
+            IElementParameter elementParameter = parameter.getElement().getElementParameter("connection.jdbcUrl");
+            if (elementParameter != null) {
+                Object jdbcUrl = elementParameter.getValue();
+                if (jdbcUrl != null) {
+                    if (beginAndEndWithQuote(String.valueOf(jdbcUrl))) {
+                        // log.log(Priority.INFO, "jdbcUrl should not begin or end with quote", new Exception());
+                        // return null;
+                        // new ErrorDialogWidthDetailArea(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+                        // IGenericConstants.PLUGIN_ID, mainMsg,
+                        // "hehe");
+                        Exception tempE = new Exception(Messages.getString("ButtonController.ErrorDialog.reason"));
+                        Status status = new Status(IStatus.ERROR, IGenericConstants.PLUGIN_ID, 1, tempE.getMessage(),
+                                tempE.getCause());
+                        new ErrorDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                                Messages.getString("ButtonController.ErrorDialog.title"),
+                                Messages.getString("ButtonController.ErrorDialog.message"), status,
+                                IStatus.ERROR).open();
+                        return null;
+                    }
+                }
+            }
             chooseContext();
             Boolean result = loadJars(parameter);
             if (result != null && !result) {
@@ -84,6 +111,16 @@ public class ButtonController extends AbstractElementPropertySectionController {
             return new PropertyChangeCommand(elem, parameter.getName(), null);
         }
         return null;
+    }
+
+    private boolean beginAndEndWithQuote(String s) {
+        if (s == null) {
+            return false;
+        }
+        if (s.startsWith("\"") && s.endsWith("\"")) {
+            return true;
+        }
+        return false;
     }
 
     private void chooseContext(){
