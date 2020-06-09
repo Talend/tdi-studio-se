@@ -64,7 +64,7 @@ public class HealthCheckResolver {
         this.rowNumber = rowNumber;
     }
 
-    public void resolveParameters(final Map<String, IElementParameter> settings) {
+    public void resolveParameters(final String form, final Map<String, IElementParameter> settings) {
         final ButtonParameter button = new ButtonParameter(element);
         button.setCategory(category);
         button.setDisplayName(ofNullable(action.getDisplayName())
@@ -73,6 +73,7 @@ public class HealthCheckResolver {
         button.setName(node.getProperty().getPath() + ".testConnection");
         button.setNumRow(rowNumber);
         button.setShow(true);
+        button.setForm(form);
         final String basePath = node.getProperty().getPath();
         final String alias = getParameterAlias();
         final PathCollector collector = new PathCollector();
