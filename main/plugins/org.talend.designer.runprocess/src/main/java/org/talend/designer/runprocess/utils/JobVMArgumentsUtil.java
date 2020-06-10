@@ -29,6 +29,8 @@ public class JobVMArgumentsUtil {
 
     private static final List<String> EMPTY_STRING_LIST = Collections.unmodifiableList(new ArrayList<String>());
 
+    public static final String[] DEFAULT_JVM_ARGS = new String[] { "-Xms256M", "-Xmx1024M" };
+
     public List<String> readString(String stringList) {
         if (stringList == null || "".equals(stringList)) { //$NON-NLS-1$
             return EMPTY_STRING_LIST;
