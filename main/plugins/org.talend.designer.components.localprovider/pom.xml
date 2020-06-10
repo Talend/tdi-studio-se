@@ -25,7 +25,7 @@
 		<talendMQConnectionUtil.version>1.0.1-20190215</talendMQConnectionUtil.version>
 		<tldapinput.dir>${project.basedir}/components/tLDAPInput</tldapinput.dir>
 		<tproxy.dir>${project.basedir}/components/tSetProxy</tproxy.dir>
-		<tproxy.version>1.0.0</tproxy.version>
+		<tproxy.version>1.0.1</tproxy.version>
 	</properties>
 
 	<build>
