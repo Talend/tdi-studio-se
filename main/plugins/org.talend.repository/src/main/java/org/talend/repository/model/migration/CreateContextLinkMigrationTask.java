@@ -102,7 +102,8 @@ public class CreateContextLinkMigrationTask extends AbstractItemMigrationTask {
                     }
                 }
             }
-            modified = ContextLinkService.getInstance().saveContextLink(item);
+            boolean hasLinkFile = ContextLinkService.getInstance().saveContextLink(item);
+            modified = modified || hasLinkFile;
         } catch (Exception ex) {
             ExceptionHandler.process(ex);
             return ExecutionResult.FAILURE;
