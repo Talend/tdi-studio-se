@@ -57,9 +57,9 @@ if(sftp){ // *** sftp *** //
 <%}else if(!ftps){%> // *** ftp *** //
 	}
 	
-	msg_<%=cid%>.add(ftp_<%=cid %>.getUploadCount() + " files have been uploaded.");
+	msg_<%=cid%>.add(nb_file_<%=cid%> + " files have been uploaded.");
 	
-	String[] msgAll_<%=cid %> = msg_<%=cid%>.getAll();
+	String[] msgAll_<%=cid %> = msg_<%=cid%>.toArray(new String[0]);
     StringBuffer sb_<%=cid %> = new StringBuffer();
     if (msgAll_<%=cid %> != null) {
         for (String item_<%=cid %> : msgAll_<%=cid %>) {
@@ -76,13 +76,13 @@ if(sftp){ // *** sftp *** //
 					<%if(isLog4jEnabled){%>
 						log.info("<%=cid%> - Closing the connection to the server.");
 					<%}%>
-					ftp_<%=cid %>.quit();
+					ftp_<%=cid %>.disconnect();
 					<%if(isLog4jEnabled){%>
 						log.info("<%=cid%> - Connection to the server closed.");
 					<%}%>
-				}catch(java.net.SocketException se_<%=cid%>){
+				}catch(java.io.IOException ioe_<%=cid%>){
 					<%if(isLog4jEnabled){%>
-						log.warn("<%=cid%> - " + se_<%=cid%>.getMessage());
+						log.warn("<%=cid%> - " + ioe_<%=cid%>.getMessage());
 					<%}%>
 					//ignore failure
 				}
@@ -92,7 +92,7 @@ if(sftp){ // *** sftp *** //
 				<%if(isLog4jEnabled){%>
 					log.info("<%=cid%> - Closing the connection to the server.");
 				<%}%>
-				ftp_<%=cid %>.quit();
+				ftp_<%=cid %>.disconnect();
 				<%if(isLog4jEnabled){%>
 					log.info("<%=cid%> - Connection to the server closed.");
 				<%}%>
@@ -101,7 +101,7 @@ if(sftp){ // *** sftp *** //
 		}else{
 		    if(!moveToCurrentDir){
 %>
-		  		ftp_<%=cid %>.chdir(rootDir_<%=cid %>);
+		  		ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
 <%	
 			}
 		}

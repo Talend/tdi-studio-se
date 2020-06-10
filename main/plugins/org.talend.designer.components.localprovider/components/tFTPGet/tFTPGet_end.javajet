@@ -54,8 +54,8 @@ nb_file_<%=cid%> = getter_<%=cid %>.count;
 		<%}%>
 	<%}%>    
 <%} else if (!ftps) {%>
-	msg_<%=cid%>.add(ftp_<%=cid%>.getDownloadCount() + " files have been downloaded.");
-	String[] msgAll_<%=cid %> = msg_<%=cid%>.getAll();
+	msg_<%=cid%>.add(getter_<%=cid%>.count + " files have been downloaded.");
+	String[] msgAll_<%=cid %> = msg_<%=cid%>.toArray(new String[0]);
 	StringBuffer sb_<%=cid %> = new StringBuffer();
 
 	if (msgAll_<%=cid %> != null) {
@@ -74,13 +74,13 @@ nb_file_<%=cid%> = getter_<%=cid %>.count;
 				<%if(isLog4jEnabled){%>
 					log.info("<%=cid%> - Closing the connection to the server.");
 				<%}%>
-        		ftp_<%=cid %>.quit();
+        		ftp_<%=cid %>.disconnect();
 				<%if(isLog4jEnabled){%>
 					log.info("<%=cid%> - Connection to the server closed.");
 				<%}%>
-    		} catch(java.net.SocketException se_<%=cid%>) {
+    		} catch(java.io.IOException ioe_<%=cid%>) {
 				<%if(isLog4jEnabled){%>
-					log.error("<%=cid%> - " + se_<%=cid%>.getMessage());
+					log.error("<%=cid%> - " + ioe_<%=cid%>.getMessage());
 				<%}%>
         		//ignore failure
       		}
@@ -90,17 +90,11 @@ nb_file_<%=cid%> = getter_<%=cid %>.count;
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Closing the connection to the server.");
 			<%}%>
-      		ftp_<%=cid %>.quit();
+      		ftp_<%=cid %>.disconnect();
 			<%if(isLog4jEnabled){%>
 				log.info("<%=cid%> - Connection to the server closed.");
 			<%}%>
     <%
-		}
-	}else{
-		if(!moveToCurrentDir){
-%>
-	  		ftp_<%=cid %>.chdir(rootDir_<%=cid %>);
-<%	
 		}
 	}
 } else { // *** ftps *** //

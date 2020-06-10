@@ -149,7 +149,7 @@ COMPATIBILITY="ALL"
       <DEFAULT>"."</DEFAULT>
     </PARAMETER>
 
-    <PARAMETER NAME="MOVE_TO_THE_CURRENT_DIRECTORY" FIELD="CHECK" NUM_ROW="31" SHOW_IF="USE_EXISTING_CONNECTION == 'true'">
+    <PARAMETER NAME="MOVE_TO_THE_CURRENT_DIRECTORY" FIELD="CHECK" NUM_ROW="31" SHOW_IF="(USE_EXISTING_CONNECTION == 'true') AND (#LINK@NODE.CONNECTION.SFTP == 'false')">
       <DEFAULT>true</DEFAULT>
     </PARAMETER>
 
@@ -254,14 +254,13 @@ COMPATIBILITY="ALL"
 
   <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="Java-FTP" MODULE="edtftpj-2.5.0.jar" MVN="mvn:com.enterprisedt/edtftpj/2.5.0" REQUIRED_IF="(SFTP == 'false') AND (FTPS == 'false') AND (USE_EXISTING_CONNECTION == 'false')"/>
-		<IMPORT NAME="Java-SFTP" MODULE="jsch-0.1.55.jar" MVN="mvn:com.jcraft/jsch/0.1.55" REQUIRED_IF="(SFTP == 'true') AND (USE_EXISTING_CONNECTION == 'false')"/>
 		<IMPORT NAME="jakarta-oro" MODULE="jakarta-oro-2.0.8.jar" MVN="mvn:org.talend.libraries/jakarta-oro-2.0.8/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/jakarta-oro-2.0.8.jar" REQUIRED="true" />
-		<IMPORT NAME="Java-FTPS" MODULE="commons-net-3.6.jar" MVN="mvn:commons-net/commons-net/3.6" REQUIRED_IF="(FTPS == 'true') AND (USE_EXISTING_CONNECTION == 'false')" />
-		<IMPORT NAME="Java-FTPS-talend" MODULE="commons-net-ftps-proxy-3.6.1-talend-20190819.jar" 
+		<IMPORT NAME="Java-SFTP" MODULE="jsch-0.1.55.jar" MVN="mvn:com.jcraft/jsch/0.1.55" REQUIRED_IF="(SFTP == 'true') AND (USE_EXISTING_CONNECTION == 'false')"/>
+		<IMPORT NAME="Java-FTP+S" MODULE="commons-net-3.6.jar" MVN="mvn:commons-net/commons-net/3.6" REQUIRED_IF="(SFTP == 'false') AND (USE_EXISTING_CONNECTION == 'false')" />
+		<IMPORT NAME="FTP+S-Proxy-talend" MODULE="commons-net-ftps-proxy-3.6.1-talend-20190819.jar" 
 			MVN="mvn:org.talend.components.lib/commons-net-ftps-proxy/3.6.1-talend-20190819" 
-			REQUIRED_IF="(FTPS == 'true') AND (USE_EXISTING_CONNECTION == 'false')" />
-		<IMPORT NAME="talend-proxy" MODULE="talend-proxy-1.0.0.jar" MVN="mvn:org.talend.components.lib/talend-proxy/1.0.0" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((FTPS == 'true') OR (SFTP == 'true'))" />
+			REQUIRED_IF="(SFTP == 'false') AND (USE_EXISTING_CONNECTION == 'false')" />
+		<IMPORT NAME="talend-proxy" MODULE="talend-proxy-1.0.1.jar" MVN="mvn:org.talend.components.lib/talend-proxy/1.0.1" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
      </IMPORTS>
    </CODEGENERATION>
   <RETURNS>
