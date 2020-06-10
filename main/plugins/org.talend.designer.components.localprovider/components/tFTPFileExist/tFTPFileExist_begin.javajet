@@ -157,36 +157,38 @@ if (sftp) { // *** sftp *** //
 	  	}
 <%
 	}
-} else if (ftps) { // *** ftps *** //
+} else { // *** ftp+s *** //
+    if (ftps) {
 %>
-    org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
+        org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
 <%
-	if (("false").equals(useExistingConn)) {
-		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
-		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
+        if (("false").equals(useExistingConn)) {
+            String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
+            String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 %>
-		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
 <%
-	} else {
+        } else {
 %>
-		ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
+            ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
 <%
-	}
-} else { // *** ftp *** //
+        }
+    } else { // *** ftp *** //
 %>
-	com.enterprisedt.net.ftp.FTPClient ftp_<%=cid %> = null;
-
-	<% if (("true").equals(useExistingConn)) {%>
-		ftp_<%=cid %> = (com.enterprisedt.net.ftp.FTPClient)globalMap.get("<%=conn %>");
-		<%if(isLog4jEnabled){%>
-			if(ftp_<%=cid %>!=null) {
-				log.info("<%=cid%> - Use an existing connection. Connection hostname: " + ftp_<%=cid %>.getRemoteHost() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
-			}
-		<%}%>
-  	<%} else {
-        passwordFieldName = "__PASSWORD__";
-%>
-        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
+        org.apache.commons.net.ftp.FTPClient ftp_<%=cid %> = null;
 <%
+        if (("true").equals(useExistingConn)) {%>
+            ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPClient) globalMap.get("<%=conn %>");
+            <%if(isLog4jEnabled){%>
+                if(ftp_<%=cid %>!=null) {
+                    log.info("<%=cid%> - Use an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + ".");
+                }
+            <%}%>
+        <%} else {
+            passwordFieldName = "__PASSWORD__";
+%>
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
+<%
+        }
 	}
 }%>

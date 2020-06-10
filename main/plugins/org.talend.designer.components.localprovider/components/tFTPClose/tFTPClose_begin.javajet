@@ -17,20 +17,16 @@
 	 if (connObj != null) {
       try {
 			
-<%        if (sftp == false && ftps == false) { %>
-              com.enterprisedt.net.ftp.FTPClient conn = (com.enterprisedt.net.ftp.FTPClient) connObj;
-              conn.executeCommand("quit");
-<%        } else if (sftp) { %>
+<%        if (sftp) { %>
               com.jcraft.jsch.ChannelSftp channel = (com.jcraft.jsch.ChannelSftp) connObj; 
               com.jcraft.jsch.Session session = channel.getSession();
 			  channel.disconnect();
               session.disconnect();
-<%        } else if (ftps) { %>
-              org.apache.commons.net.ftp.FTPSClient conn = (org.apache.commons.net.ftp.FTPSClient) connObj;
-              conn.disconnect();
 <%        } else { %>
-              System.err.println("Invalid tFTPConnection configuration.");
-<%        } %>
+              org.apache.commons.net.ftp.FTPClient conn = (org.apache.commons.net.ftp.FTPClient) connObj;
+              conn.disconnect();
+<%        } 
+%>
 			
       } catch (Exception e) {
            globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage()); 
