@@ -414,8 +414,14 @@ public final class UpdateManagerUtils {
                                     }
                                     IUpdateItemType jobletContextType = UpdateManagerProviderDetector.INSTANCE
                                             .getUpdateItemType(UpdateManagerHelper.TYPE_JOBLET_CONTEXT);
-                                    if (process != null && jobletContextType != null
-                                            && (jobletContextType.equals(result.getUpdateType()))) {
+                                    // JunitConextUpdateManagerProvider#retrieveUpdateResults added JOB_CONTEXT result
+                                    // JunitConextUpdateManagerProvider#doUpdate said have update in check
+                                    IUpdateItemType testcaseContextType = UpdateManagerProviderDetector.INSTANCE
+                                            .getUpdateItemType(UpdateManagerHelper.TYPE_JOB_CONTEXT);
+                                    if (process != null
+                                            && (jobletContextType != null && jobletContextType.equals(result.getUpdateType())
+                                                    || testcaseContextType != null
+                                                            && testcaseContextType.equals(result.getUpdateType()))) {
                                         if ((result.getParameter() instanceof List) && process.getContextManager() != null) {
                                             process.getContextManager().setListContext((List<IContext>) result.getParameter());
                                         }
