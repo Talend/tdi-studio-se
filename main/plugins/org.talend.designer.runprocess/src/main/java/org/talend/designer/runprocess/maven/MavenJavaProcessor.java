@@ -210,6 +210,8 @@ public class MavenJavaProcessor extends JavaProcessor {
             jobVersion = basePrcess.getVersion();
         }
         String jarName = JavaResourcesHelper.getJobJarName(jobName, jobVersion);
+        String projectFolderName = JavaResourcesHelper.getProjectFolderName(property.getItem());
+        jarName = projectFolderName + "_" + jarName;
         String exportJar = libPrefixPath + jarName + FileExtensions.JAR_FILE_SUFFIX;
 
         if (!isMainJob || isMainJob && !ProcessorUtilities.hasLoopDependency()) {
