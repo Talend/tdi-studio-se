@@ -57,7 +57,6 @@ String rejected_max_value = ElementParameterParser.getValue(node, "__REJECTMAX_V
 boolean is_abort_on_error = ("true").equals(ElementParameterParser.getValue(node, "__ON_ERROR_ABORT_OPTION__"));
 boolean is_no_commit = ("true").equals(ElementParameterParser.getValue(node, "__NO_COMMIT_OPTION__"));
 boolean useSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_SCHEMA_FOR_COPY__"));
-boolean useExistingDynamic = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_DYNAMIC__"));
 
 List<IMetadataColumn> columnList = getColumnList(node);
 String db_version = ElementParameterParser.getValue(node, "__DB_VERSION__");
@@ -144,7 +143,7 @@ Manager manager = null;
 if(columnList != null && columnList.size()>0) {
 	stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null);
 }
-if((columnList != null && columnList.size() > 0) || useExistingDynamic || "CLEAR".equals(tableAction) || "NONE".equals(tableAction) || "TRUNCATE".equals(tableAction)){
+if((columnList != null && columnList.size() > 0) || "CLEAR".equals(tableAction) || "NONE".equals(tableAction) || "TRUNCATE".equals(tableAction)){
 %>
 	if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
 	    tableName_<%=cid%> = <%=table%>;
