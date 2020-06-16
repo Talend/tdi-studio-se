@@ -32,6 +32,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
@@ -40,6 +41,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
@@ -130,6 +132,8 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     TalendJavaProjectManager.generatePom(property.getItem());
                     AggregatorPomsHelper helper = new AggregatorPomsHelper();
                     helper.syncParentJobPomsForPropertyChange(property);
+                    
+                    PropertyProcessUpdater.updateRouteCode(oldName);
                 }
             }
         }
