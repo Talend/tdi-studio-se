@@ -1,0 +1,136 @@
+<%@ jet%>
+
+<%  
+// Written by Steven Maser, Talend (April, 2020) as a DataBricks Delta Lake (as product enhancement/extension, proposed)
+// No Surrogate Key in target SCD Table, as feature in SQL looks currently unavailable (Log Versions is also not yet implemented)
+
+List<Map<String, String>> sourceKeys = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__SOURCE_KEYS__");  //tested with a one-column source key
+
+boolean isEnableType1 = ("true").equals(ElementParameterParser.getValue(node, "__USE_L1__"));
+List<Map<String, String>> type1Attributes = new ArrayList<Map<String, String>>();
+if(isEnableType1) type1Attributes = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__L1_FIELDS__");
+
+boolean isEnableType2 = ("true").equals(ElementParameterParser.getValue(node, "__USE_L2__"));
+List<Map<String, String>> type2Attributes = new ArrayList<Map<String, String>>();
+if(isEnableType2) type2Attributes = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__L2_FIELDS__");
+
+String strFieldName = "";
+String selectColumnString = "";
+String unionColumnString = "";
+String setColumnsString = "";
+String insertNameString = "";
+String insertValuesString = "";
+String whereClauseString = "";
+String whenClauseString  = "";
+List<String> selectColumns = new ArrayList<String>();
+List<String> insertColumnNames = new ArrayList<String>();
+List<String> unionColumnNames = new ArrayList<String>();
+List<String> setColumns = new ArrayList<String>();
+List<String> whereClause = new ArrayList<String>();
+List<String> mergeOnClause = new ArrayList<String>();
+List<String> joinOnClause = new ArrayList<String>();
+String mergeOnClauseString = "";
+String joinOnClauseString = "";
+String activeField = ElementParameterParser.getValue(node,"__L2_ACTIVE_FIELD__");
+String startDateField = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD__");
+String l2StartDateFieldType = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD_TYPE__");
+String l2StartDateFieldInputFieldName =  ElementParameterParser.getValue(node,"__INPUT_FIELD_NAME__");
+String endDateField = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD__");
+String l2EndDateFieldType = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD_TYPE__");
+String l2EndDateFieldFixedDateValue = ElementParameterParser.getValue(node,"__FIXED_DATE_VALUE__");
+l2EndDateFieldFixedDateValue=l2EndDateFieldFixedDateValue.replace("\"","");  // during testing, found this field was returned with quotes?
+String endDateValue = (l2EndDateFieldType.equals("NULL")? "NULL" : "to_date('"+l2EndDateFieldFixedDateValue+ "', 'yyyy-mm-dd')");
+//boolean isEnableVersion = "true".equals(ElementParameterParser.getValue(node,"__USE_L2_VERSION__"));
+boolean isEnableActive = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_ACTIVE__"));
+//String versionField = ElementParameterParser.getValue(node,"__L2_VERSION_FIELD__");
+
+if(true) {  // we have not yet tested all scenarios of this component (current state, Example)
+
+    for(Map<String, String> sk : sourceKeys) {
+        if(surrogateKey.equals(sk.get("NAME"))) {
+			selectColumns.add(sk.get("NAME")+" AS mergeKey");
+            selectColumns.add(" t."+sk.get("NAME"));
+			insertColumnNames.add(" t."+sk.get("NAME"));
+			joinOnClause.add(" d." + sk.get("NAME")+ " = t."+sk.get("NAME"));
+			mergeOnClause.add(" d." + sk.get("NAME")+ " = mergeKey");
+			unionColumnNames.add("NULL AS mergeKey");
+			unionColumnNames.add(" t."+sk.get("NAME"));
+        }
+		else {
+			selectColumns.add(" "+sk.get("NAME"));
+			insertColumnNames.add(" t."+sk.get("NAME"));
+			mergeOnClause.add(" d." + sk.get("NAME")+ " = t." + sk.get("NAME"));
+			joinOnClause.add(" d." + sk.get("NAME")+ " = t." + sk.get("NAME"));
+			unionColumnNames.add(" t."+sk.get("NAME"));
+		}		
+    }
+	if("INPUT_FIELD".equals(l2StartDateFieldType)) {
+		selectColumns.add(" t."+l2StartDateFieldInputFieldName);
+		unionColumnNames.add(" t."+l2StartDateFieldInputFieldName);
+	}
+
+	for(Map<String, String> type1Attribute : type1Attributes) {
+        strFieldName = type1Attribute.get("NAME");
+        selectColumns.add(" t."+strFieldName);
+		insertColumnNames.add(" t."+strFieldName);
+        setColumns.add(" d."+strFieldName +  " = t." + strFieldName);
+		unionColumnNames.add(" t."+strFieldName);	
+    }	
+	
+	if(isEnableType2) {
+		for(Map<String, String> type2Attribute : type2Attributes) {
+			strFieldName = type2Attribute.get("NAME");
+			selectColumns.add(" t."+strFieldName);
+			insertColumnNames.add(" t."+strFieldName);
+			unionColumnNames.add(" t."+strFieldName);
+			whereClause.add(" COALESCE( d." + strFieldName + "<> t."+ strFieldName + ", ( d." + strFieldName + " is null AND not t." + strFieldName + " is null) OR (not d." + strFieldName + " is null AND t." + strFieldName + " is null))");                   
+		}
+		whereClauseString = "( "+StringUtils.join(whereClause.toArray(), " OR ")+")"+(isEnableActive? " AND d."+activeField+"=true":"");
+		whenClauseString = (whereClause.size()>0?" AND ":"")+"("+StringUtils.join(whereClause.toArray(), " OR ")+")"+(isEnableActive? " AND d."+activeField+"=true":"");
+	}
+    selectColumnString = StringUtils.join(selectColumns.toArray(), ", ");
+	unionColumnString = StringUtils.join(unionColumnNames.toArray(), ", ");
+	mergeOnClauseString = StringUtils.join(mergeOnClause.toArray(), " AND ");
+	joinOnClauseString = StringUtils.join(joinOnClause.toArray(), " AND ");
+    setColumnsString = StringUtils.join(setColumns.toArray(), ", ");
+	insertValuesString = StringUtils.join(insertColumnNames.toArray(), ", ");
+	insertColumnNames.add(" t."+startDateField);
+	insertColumnNames.add(" t."+endDateField);
+	if(isEnableActive)  insertColumnNames.add(activeField);
+	insertNameString = StringUtils.join(insertColumnNames.toArray(), ", ");
+    %>
+
+	String selectString_<%=cid%>="SELECT <%=selectColumnString%> FROM " + sourceTable_<%=cid%> + " AS t ";
+	String unionString_<%=cid%>="UNION ALL SELECT <%=unionColumnString%> FROM "+sourceTable_<%=cid%>+" AS t";
+	String updateEndDateValue_<%=cid%> = (<%="INPUT_FIELD".equals(l2StartDateFieldType)%> ? "staged_updates.<%=startDateField%>" : "\""+(new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>")))+"\"");
+	String insertEndDateValue_<%=cid%> = "<%=(l2EndDateFieldType.equals("NULL")? "NULL" : "to_date('"+l2EndDateFieldFixedDateValue+ "', 'yyyy-mm-dd')")%>";
+	String updateString_<%=cid%>="UPDATE SET <%=endDateField%> = "+ updateEndDateValue_<%=cid%> +"<%=(isEnableActive ? ","+activeField+" = false" :"")%>";
+	String startDateValue_<%=cid%> = ("INPUT_FIELD".equals("<%=l2StartDateFieldType%>")?"staged_updates.<%=l2StartDateFieldInputFieldName%>":"\""+(new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>")))+"\"");
+	
+	StringBuffer scdString_<%=cid%>=new StringBuffer();
+    scdString_<%=cid%>.append("MERGE INTO  " + tableName_<%=cid%> + " d");
+	scdString_<%=cid%>.append(" USING ("+selectString_<%=cid%> + unionString_<%=cid%> + " JOIN "+tableName_<%=cid%>+" ON " + "<%=joinOnClauseString%>".replace(" d."," "+tableName_<%=cid%>+"."));
+	scdString_<%=cid%>.append(" WHERE " + "<%=whereClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + ")");
+	scdString_<%=cid%>.append(" staged_updates ON " + "<%=mergeOnClauseString%>".replace(" t."," staged_updates."));
+	scdString_<%=cid%>.append(" WHEN MATCHED " + "<%=whenClauseString%>".replace(" t."," staged_updates."));
+	scdString_<%=cid%>.append(" THEN "+updateString_<%=cid%>);
+	scdString_<%=cid%>.append(" WHEN NOT MATCHED THEN INSERT (<%=insertNameString.replace(" t.","") %>)");
+	scdString_<%=cid%>.append(" VALUES (<%=insertValuesString.replace(" t."," staged_updates.") %>,"+startDateValue_<%=cid%>+","+insertEndDateValue_<%=cid%>+"<%=(isEnableActive?",true":"")%>)");
+	
+	<%
+	if(isEnableDebug) {
+        %>
+        System.out.println("[<%=cid%>] Executing ELT SCD SQL:  " + scdString_<%=cid%>);
+        <%
+    }%>
+    java.sql.Statement stmtScdUpdate_<%=cid%> = conn_<%=cid%>.createStatement();
+    stmtScdUpdate_<%=cid%>.executeUpdate(scdString_<%=cid%>.toString());
+    stmtScdUpdate_<%=cid%>.close();
+    <%
+    if(isEnableDebug) {
+        %>
+        System.out.println("[<%=cid%>] ELT Execution Complete"+updateEndDateValue_<%=cid%>);
+        <%
+    }
+}
+%>
