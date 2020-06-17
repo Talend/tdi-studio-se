@@ -132,6 +132,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     TalendJavaProjectManager.generatePom(property.getItem());
                     AggregatorPomsHelper helper = new AggregatorPomsHelper();
                     helper.syncParentJobPomsForPropertyChange(property);
+                    PropertyProcessUpdater.updateRouteCode(oldName);
                 }
             }
         }
