@@ -660,6 +660,9 @@
                                     } catch (java.lang.RuntimeException e) {
                                         //do nothing
                                     }
+                                } else {
+                                    context.<%=ctxParam.getName()%> = pwd_<%=ctxParam.getName()%>_value;
+                                    context.put("<%=ctxParam.getName()%>",context.<%=ctxParam.getName()%>);
                                 }
                             }
 <%
