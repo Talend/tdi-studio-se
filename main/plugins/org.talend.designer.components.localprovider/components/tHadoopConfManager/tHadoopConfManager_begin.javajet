@@ -141,6 +141,8 @@ if (!fileConfJar.exists()) {
         <% 
     } 
     %>
+    //in case of windows and context and RE + JS local, this.contextStr is the context (Default ie) + a TS, and the hadop conf is like 
+    //hadoop-conf-CLUSTER_CONTEXT.jar, so we get rid of the timestamp
     confJarName = <%=confLib%>.replaceAll(".jar", "") + "_" + this.contextStr.replaceFirst("(_[0-9]+)","") + ".jar";
     libPath_<%=cid%> = dealJobLibrary.replaceJarPathsFromCrcMap(new java.io.File("<%=libFolder%>/" + confJarName).getAbsolutePath());
     fileConfJar = new java.io.File(libPath_<%=cid%>);
