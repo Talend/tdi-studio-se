@@ -290,19 +290,6 @@ public class JobSettingsManagerTest {
     }
 
     @Test
-    public void testDoRegexpQuoteExpress1() {
-        String separator = "context.delimiter";
-        Assert.assertEquals("context.delimiter", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
-    }
-
-    @Test
-    public void testGetSeparatorsRegexpExpress1() {
-        String separator = "context.delimiter";
-        Assert.assertEquals("\"^([^\"+context.delimiter+\"]*)\"+context.delimiter+\"(.*)$\"",
-                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
-    }
-
-    @Test
     public void testGetSeparatorsRegexpDoublePipe() {
         String separator = QUOTE_MARK + "||" + QUOTE_MARK;
         Assert.assertEquals("\"^([^\"+\"\\\\|\\\\|\"+\"]*)\"+\"\\\\|\\\\|\"+\"(.*)$\"",

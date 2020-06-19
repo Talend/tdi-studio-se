@@ -1288,6 +1288,29 @@ public class JobSettingsManager {
 
         private static List<String> METADATA_CHAR = getMetadataChars();
 
+        static String doMultipleRegexpQuote(String separators) {
+            String[] splits = separators.split("+");
+            String[] seqs = new String[splits.length];
+            int posit = 0;
+            for (String split : splits) {
+                String seq = split.trim();
+                // do not use trim value in case of space character
+                if (seq.startsWith("\"") && seq.endsWith("\"")) {
+                    seqs[posit] = split;
+                    posit++;
+                } else {
+                    if (StringUtils.isBlank(seqs[posit])) {
+                        seqs[posit] = split;
+                    } else {
+                        String original = seqs[posit];
+                        seqs[posit] = original + split;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         static String doRegexpQuote(String separators) {
             if (StringUtils.isEmpty(separators)) {
                 return TalendQuoteUtils.addQuotes("");
@@ -1322,11 +1345,10 @@ public class JobSettingsManager {
 
         static String addMarkWithChar(String separatorStr, String charStr, String markStr, boolean beforeChar) {
             String resultStr = "";
-            List<Integer> ignoreCharAtList = getIgnoreCharAtList(separatorStr);
             char[] charArray = separatorStr.toCharArray();
             for (int i = 0; i < charArray.length; i++) {
                 char c = charArray[i];
-                if (charStr.equals(String.valueOf(c)) && !ignoreCharAtList.contains(i)) {
+                if (charStr.equals(String.valueOf(c))) {
                     if (beforeChar) {
                         resultStr = resultStr + markStr + c;
                     } else {
@@ -1337,13 +1359,6 @@ public class JobSettingsManager {
                 }
             }
             return resultStr;
-        }
-
-        public static List<Integer> getIgnoreCharAtList(String separatorStr) {
-            // for context.parm ignore .
-            List<Integer> ignoreList = new ArrayList<Integer>();
-            checkIgnoreCharPosition(separatorStr, "context.", ignoreList, 0, 7);
-            return ignoreList;
         }
 
         private static void checkIgnoreCharPosition(String separatorStr, String searchStr, List<Integer> ignoreList,
