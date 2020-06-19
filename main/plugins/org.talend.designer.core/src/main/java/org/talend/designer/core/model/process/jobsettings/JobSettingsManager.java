@@ -1288,29 +1288,6 @@ public class JobSettingsManager {
 
         private static List<String> METADATA_CHAR = getMetadataChars();
 
-        static String doMultipleRegexpQuote(String separators) {
-            String[] splits = separators.split("+");
-            String[] seqs = new String[splits.length];
-            int posit = 0;
-            for (String split : splits) {
-                String seq = split.trim();
-                // do not use trim value in case of space character
-                if (seq.startsWith("\"") && seq.endsWith("\"")) {
-                    seqs[posit] = split;
-                    posit++;
-                } else {
-                    if (StringUtils.isBlank(seqs[posit])) {
-                        seqs[posit] = split;
-                    } else {
-                        String original = seqs[posit];
-                        seqs[posit] = original + split;
-                    }
-                }
-            }
-
-            return null;
-        }
-
         static String doRegexpQuote(String separators) {
             if (StringUtils.isEmpty(separators)) {
                 return TalendQuoteUtils.addQuotes("");
@@ -1359,15 +1336,6 @@ public class JobSettingsManager {
                 }
             }
             return resultStr;
-        }
-
-        private static void checkIgnoreCharPosition(String separatorStr, String searchStr, List<Integer> ignoreList,
-                int strOffset, int charOffset) {
-            int index = separatorStr.indexOf(searchStr, strOffset);
-            if (index != -1) {
-                ignoreList.add(index + charOffset);
-                checkIgnoreCharPosition(separatorStr, searchStr, ignoreList, strOffset + searchStr.length(), charOffset);
-            }
         }
 
         private static List<String> getMetadataChars() {
