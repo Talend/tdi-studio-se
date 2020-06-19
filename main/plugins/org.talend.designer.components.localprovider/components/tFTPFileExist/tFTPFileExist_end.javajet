@@ -56,35 +56,41 @@ if (sftp) { // *** sftp *** //
 <%
 	}
 } else { // *** ftp *** //
-    if (!("true").equals(useExistingConn)) {
-        if (("true").equals(ignoreFailureAtQuit)) {
-%>
-            try {
-                <%if(isLog4jEnabled){%>
-                    log.info("<%=cid%> - Closing the connection to the server.");
-                <%}%>
-                ftp_<%=cid %>.disconnect();
-                <%if(isLog4jEnabled){%>
-                    log.info("<%=cid%> - Connection to the server closed.");
-                <%}%>
-            } catch(java.io.IOException ioe_<%=cid%>) {
-                <%if(isLog4jEnabled){%>
-                    log.warn("<%=cid%> - " + ioe_<%=cid%>.getMessage());
-                <%}%>
-                //ignore failure
-            }
-    <%
-        } else {
+	if (!("true").equals(useExistingConn)) {
+		if (("true").equals(ignoreFailureAtQuit)) {
     %>
-            <%if(isLog4jEnabled){%>
-                log.info("<%=cid%> - Closing the connection to the server.");
-            <%}%>
-            ftp_<%=cid %>.disconnect();
-            <%if(isLog4jEnabled){%>
-                log.info("<%=cid%> - Connection to the server closed.");
-            <%}%>
+			try {
+				<%if(isLog4jEnabled){%>
+					log.info("<%=cid%> - Closing the connection to the server.");
+				<%}%>
+				ftp_<%=cid %>.quit();
+				<%if(isLog4jEnabled){%>
+					log.info("<%=cid%> - Connection to the server closed.");
+				<%}%>
+      		} catch(java.net.SocketException se_<%=cid%>) {
+				<%if(isLog4jEnabled){%>
+					log.warn("<%=cid%> - " + se_<%=cid%>.getMessage());
+				<%}%>
+        		//ignore failure
+      		}
+    <%
+    	} else {
+    %>
+			<%if(isLog4jEnabled){%>
+				log.info("<%=cid%> - Closing the connection to the server.");
+			<%}%>
+      		ftp_<%=cid %>.quit();
+			<%if(isLog4jEnabled){%>
+				log.info("<%=cid%> - Connection to the server closed.");
+			<%}%>
+    <%
+		}
+	} else {
+		if (moveToCurrentDir) {
+%>
+			ftp_<%=cid %>.chdir(<%=remoteDir %>);
 <%
-        }
-    }
+		}
+	}
 }
 %>

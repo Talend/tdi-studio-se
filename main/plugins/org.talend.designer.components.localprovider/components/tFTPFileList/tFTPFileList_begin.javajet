@@ -236,104 +236,160 @@ if (sftp) {// *** sftp *** //
 		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%>);
 		nb_file_<%=cid%>++;
 <%
-} else {
-    if (ftps) { // *** ftps *** //
+} else if (ftps) { // *** ftps *** //
 %>
-        org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
+    org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
 <%
-        if (("false").equals(useExistingConn)) {
-            String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
-            String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
+	if (("false").equals(useExistingConn)) {
+		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
+		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 %>
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
 <%
-        } else {
+	} else {
 %>
-            ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
+		ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
+		String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
 <%
-        }
-    } else { // *** ftp
+	}
 %>
-        org.apache.commons.net.ftp.FTPClient ftp_<%=cid %> = null;
+	int nb_file_<%=cid%> = 0;
+	org.apache.commons.net.ftp.FTPFile[] ftpFiles_<%=cid %> = null;
+	List<org.apache.commons.net.ftp.FTPFile> fileListTemp_<%=cid %> = new java.util.ArrayList<>();
+
+	<%/*read files*/ %>
+	String remotedir_<%=cid %> = (<%=remotedir%>).replaceAll("\\\\","/");
+	boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+
+	if (!cwdSuccess_<%=cid %>) {
+		throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+	}
+
+	ftpFiles_<%=cid %> = ftp_<%=cid %>.listFiles();
 <%
-        if (("true").equals(useExistingConn)) {%>
-            ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPClient) globalMap.get("<%=conn %>");
-            <%if(isLog4jEnabled){%>
-                if(ftp_<%=cid %>!=null) {
-                    log.info("<%=cid%> - Use an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + ".");
-                }
-            <%}%>
-<%
-        } else {
-            passwordFieldName = "__PASSWORD__";
+	if ("true".equals(useExistingConn) && !moveToCurrentDir) {
 %>
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
+	<%/*return to previous dir */%>
+	ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
 <%
-        }
-    } //common code for ftp and ftps:
+	}
+%>
+	<%/*prepare masks*/ %>
+	for (String filemask_<%=cid %> : maskList_<%=cid %>) {
+		java.util.regex.Pattern fileNamePattern_<%=cid %> = java.util.regex.Pattern.compile(filemask_<%=cid %>.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
+	
+		for (org.apache.commons.net.ftp.FTPFile ftpFile_<%=cid %> : ftpFiles_<%=cid %>) {
+			if (fileNamePattern_<%=cid %>.matcher(ftpFile_<%=cid %>.getName()).matches()) {
+				fileListTemp_<%=cid %>.add(ftpFile_<%=cid %>);
+			}
+		}
+	}
+
+	String currentFilePath_<%=cid%> = remotedir_<%=cid %>;
+	if(!remotedir_<%=cid%>.endsWith("/")&&!remotedir_<%=cid%>.endsWith("\\")){
+		currentFilePath_<%=cid%> += "/";
+	}
+
+	for (int i = 0; i < fileListTemp_<%=cid %>.size(); i++) {
+		org.apache.commons.net.ftp.FTPFile ftpFile_<%=cid %> = fileListTemp_<%=cid %>.get(i);
+		String currentFileName_<%=cid%> = null;
+<%
+		if (dirFull) {
+%>
+			currentFileName_<%=cid%> = ftpFile_<%=cid %>.toString();
+<%
+		} else {
+%>
+			currentFileName_<%=cid%> = ftpFile_<%=cid %>.getName();
+<%
+		}
+
+		if(isLog4jEnabled) {
+%>
+			log.debug("<%=cid%> - List file : '" + currentFilePath_<%=cid%> + "' .");
+<%
+		}
 %> 
-    int nb_file_<%=cid%> = 0;
-    org.apache.commons.net.ftp.FTPFile[] ftpFiles_<%=cid %> = null;
-    String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
-    List<org.apache.commons.net.ftp.FTPFile> fileListTemp_<%=cid %> = new java.util.ArrayList<>();
-
-    <%/*read files*/ %>
-    String remotedir_<%=cid %> = (<%=remotedir%>).replaceAll("\\\\","/");
-    boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
-
-    if (!cwdSuccess_<%=cid %>) {
-        throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
-    }
-
-    ftpFiles_<%=cid %> = ftp_<%=cid %>.listFiles();
+		<%/*set to globalMap*/ %>
+		globalMap.put("<%=cid %>_CURRENT_FILE", currentFileName_<%=cid%>);
+		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%> + ftpFile_<%=cid %>.getName());
+		nb_file_<%=cid %>++;
 <%
-    if ("true".equals(useExistingConn) && !moveToCurrentDir) {
+} else { // *** ftp *** //
 %>
-    <%/*return to previous dir */%>
-    ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
-<%
-    }
-%>
-    <%/*prepare masks*/ %>
-    for (String filemask_<%=cid %> : maskList_<%=cid %>) {
-        java.util.regex.Pattern fileNamePattern_<%=cid %> = java.util.regex.Pattern.compile(filemask_<%=cid %>.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
+	int nb_file_<%=cid%> = 0;
+	com.enterprisedt.net.ftp.FTPClient ftp_<%=cid %> =null;
 
-        for (org.apache.commons.net.ftp.FTPFile ftpFile_<%=cid %> : ftpFiles_<%=cid %>) {
-            if (fileNamePattern_<%=cid %>.matcher(ftpFile_<%=cid %>.getName()).matches()) {
-                fileListTemp_<%=cid %>.add(ftpFile_<%=cid %>);
-            }
-        }
-    }
+	<%if (("true").equals(useExistingConn)) {%>
+		ftp_<%=cid %> = (com.enterprisedt.net.ftp.FTPClient)globalMap.get("<%=conn %>");
+		<%if(isLog4jEnabled){%>
+			if(ftp_<%=cid %>!=null) {
+				log.info("<%=cid%> - Use an existing connection. Connection hostname: " + ftp_<%=cid %>.getRemoteHost() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
+			}
+		<%}%>
+		<%if(!moveToCurrentDir){%>
+			String rootDir_<%=cid %> = ftp_<%=cid %>.pwd();
+		<%}%>
+	<%} else {
+        passwordFieldName = "__PASSWORD__";
+%>
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
+	<%}%>
+	String remotedir_<%=cid %> = (<%=remotedir%>).replaceAll("\\\\","/");
+	ftp_<%=cid %>.chdir(remotedir_<%=cid %>);
+	com.enterprisedt.net.ftp.FTPFile[] fileList_<%=cid %> = ftp_<%=cid %>.dirDetails(null);
+	String[] arrayWithNames_<%=cid %> = ftp_<%=cid %>.dir(null, false);
+<%
+	if (("true").equals(useExistingConn)) {
+		if(!moveToCurrentDir){
+%>
+			ftp_<%=cid %>.chdir(rootDir_<%=cid %>);
+<%	
+		}
+	}
+%>
+	List<String> fileListTemp_<%=cid %> = new java.util.ArrayList<String>();
+	List<String> fileListTempWithNames_<%=cid %> = new java.util.ArrayList<String>();
 
-    String currentFilePath_<%=cid%> = remotedir_<%=cid %>;
-    if(!remotedir_<%=cid%>.endsWith("/")&&!remotedir_<%=cid%>.endsWith("\\")){
-        currentFilePath_<%=cid%> += "/";
-    }
+	for (String filemask_<%=cid %> : maskList_<%=cid %>) {
+		java.util.regex.Pattern fileNamePattern_<%=cid %> = java.util.regex.Pattern.compile(filemask_<%=cid %>.replaceAll("\\.", "\\\\.").replaceAll("\\*", ".*"));
 
-    for (int i = 0; i < fileListTemp_<%=cid %>.size(); i++) {
-        org.apache.commons.net.ftp.FTPFile ftpFile_<%=cid %> = fileListTemp_<%=cid %>.get(i);
-        String currentFileName_<%=cid%> = null;
-<%
-        if (dirFull) {
-%>
-            currentFileName_<%=cid%> = ftpFile_<%=cid %>.toString();
-<%
-        } else {
-%>
-            currentFileName_<%=cid%> = ftpFile_<%=cid %>.getName();
-<%
-        }
+		java.util.Set<String> setWithNames_<%=cid %> = new java.util.HashSet<>(java.util.Arrays.asList(arrayWithNames_<%=cid %>));
+		for (com.enterprisedt.net.ftp.FTPFile ftpFile : fileList_<%=cid %>){
+			String filemaskTemp_<%=cid%> = "";
+			String filemaskTempName_<%=cid%> = "";
+			if (setWithNames_<%=cid %>.contains(ftpFile.getName())){
+				filemaskTemp_<%=cid%> = ftpFile.getRaw();
+				filemaskTempName_<%=cid%> = ftpFile.getName();
+				if (fileNamePattern_<%=cid %>.matcher(filemaskTempName_<%=cid %>).matches()) {
+					fileListTemp_<%=cid %>.add(filemaskTemp_<%=cid %>);
+					fileListTempWithNames_<%=cid%>.add(filemaskTempName_<%=cid%>);
+				}
+			}
+		}
+	}
+	int i_<%=cid %> = -1;
 
-        if(isLog4jEnabled) {
-%>
-            log.debug("<%=cid%> - List file : '" + currentFilePath_<%=cid%> + "' .");
-<%
-        }
-%> 
-        <%/*set to globalMap*/ %>
-        globalMap.put("<%=cid %>_CURRENT_FILE", currentFileName_<%=cid%>);
-        globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%> + ftpFile_<%=cid %>.getName());
-        nb_file_<%=cid %>++;
-<%
-} //end common code part
-%>
+	<%if(isLog4jEnabled){%>
+		log.info("<%=cid%> - Listing files from server.");
+	<%}%> 
+	while (++i_<%=cid %> < fileListTemp_<%=cid %>.size()) {
+<%      if (dirFull){%>
+            String currentFileName_<%=cid%> = fileListTemp_<%=cid %>.get(i_<%=cid %>);
+<%      } else {%>
+            String currentFileName_<%=cid%> = fileListTempWithNames_<%=cid %>.get(i_<%=cid %>);
+<%      }%>
+		 
+		String currentFilePath_<%=cid%> = remotedir_<%=cid %>;
+		if(!remotedir_<%=cid%>.endsWith("/")&&!remotedir_<%=cid%>.endsWith("\\")){
+			currentFilePath_<%=cid%> += "/";
+		}
+        currentFilePath_<%=cid%> += fileListTempWithNames_<%=cid%>.get(i_<%=cid%>);
+        
+		<%if(isLog4jEnabled){%>
+			log.debug("<%=cid%> - List file : '" + currentFilePath_<%=cid%> + "' .");
+		<%}%> 
+		globalMap.put("<%=cid %>_CURRENT_FILE", currentFileName_<%=cid%>);
+		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%>);
+		nb_file_<%=cid%>++;
+<%}%>

@@ -15,13 +15,16 @@
 %>
 	 Object connObj = globalMap.get("conn_<%=connection%>");
 	 if (connObj != null) {   
-<%        if (sftp) { %>
+<%        if (sftp == false && ftps == false) { %>
+              com.enterprisedt.net.ftp.FTPClient conn = (com.enterprisedt.net.ftp.FTPClient) connObj;
+              conn.executeCommand("quit");
+<%        } else if (sftp) { %>
               com.jcraft.jsch.ChannelSftp channel = (com.jcraft.jsch.ChannelSftp) connObj; 
               com.jcraft.jsch.Session session = channel.getSession();
               channel.disconnect();
 			  session.disconnect();
-<%        } else { %>
-              org.apache.commons.net.ftp.FTPClient conn = (org.apache.commons.net.ftp.FTPClient) connObj;
+<%        } else if (ftps) { %>
+              org.apache.commons.net.ftp.FTPSClient conn = (org.apache.commons.net.ftp.FTPSClient) connObj;
               conn.disconnect();
 <%        }  %>
      
