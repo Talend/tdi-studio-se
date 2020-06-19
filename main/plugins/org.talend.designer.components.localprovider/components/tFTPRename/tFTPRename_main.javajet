@@ -57,74 +57,25 @@ try{
    		}
 	
 <%
-	} else { // *** ftp+s *** //
+	} else if (ftps) { // *** ftps *** //
 %>
 		globalMap.put("<%=cid %>_CURRENT_STATUS", "No file renamed.");
 		java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet();
 		for (String key<%=cid %> : keySet<%=cid %>) {
 			try{
-<%
-                if (!ftps && "never".equals(overwrite)) {
-%>
-                    String[] remoteFileArray_<%=cid%> = java.util.Arrays.stream(ftp_<%=cid %>.listFiles()).filter(org.apache.commons.net.ftp.FTPFile::isFile).map(org.apache.commons.net.ftp.FTPFile::getName).filter(map<%=cid %>.get(key<%=cid %>)::equals).toArray(String[]::new);
-                    boolean isRemoteFileExists_<%=cid %> = (remoteFileArray_<%=cid%> != null) && (remoteFileArray_<%=cid%>.length > 0);
-                    if (!isRemoteFileExists_<%=cid%>) {
-                        boolean renameSuccess_<%=cid %> = ftp_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
-                        if (renameSuccess_<%=cid %>) {
-                        nb_file_<%=cid%>++;
-                        <%if(isLog4jEnabled){%>
-                            log.debug("<%=cid%> - '" + key<%=cid %>  + "' rename ok.");
-                        <%}%>
-                        globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
-                        } else {
-                            <%if(isLog4jEnabled){%>
-                                log.warn("<%=cid%> - '" + key<%=cid %>  + "' rename failed. " + ftp_<%=cid %>.getReplyString());
-                            <%}%>
-                            globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
-                        }
-                    }
-<%
-                } else if (!ftps && "size_differ".equals(overwrite)) {
-%>
-                    org.apache.commons.net.ftp.FTPFile toRenameFile_<%=cid %> = java.util.Arrays.stream(ftp_<%=cid %>.listFiles(key<%=cid %>)).filter(org.apache.commons.net.ftp.FTPFile::isFile).findFirst().orElse(null);
-                    if (toRenameFile_<%=cid %> != null) {
-                        org.apache.commons.net.ftp.FTPFile toOverwriteFile_<%=cid %> = java.util.Arrays.stream(ftp_<%=cid %>.listFiles(map<%=cid %>.get(key<%=cid %>))).filter(org.apache.commons.net.ftp.FTPFile::isFile).findFirst().orElse(null);
-                        if ((toOverwriteFile_<%=cid %> != null) && toRenameFile_<%=cid %>.getSize() != toOverwriteFile_<%=cid%>.getSize()) {
-                            ftp_<%=cid %>.deleteFile(map<%=cid %>.get(key<%=cid %>));
-                        }
-                        boolean renameSuccess_<%=cid %> = ftp_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
-                        if (renameSuccess_<%=cid %>) {
-                        nb_file_<%=cid%>++;
-                        <%if(isLog4jEnabled){%>
-                            log.debug("<%=cid%> - '" + key<%=cid %>  + "' rename ok.");
-                        <%}%>
-                        globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
-                        } else {
-                            <%if(isLog4jEnabled){%>
-                                log.warn("<%=cid%> - '" + key<%=cid %>  + "' rename failed. " + ftp_<%=cid %>.getReplyString());
-                            <%}%>
-                            globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
-                        }
-                    }
-<%
-                } else {
-%>
-                    boolean renameSuccess_<%=cid %> = ftp_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
-                    if (renameSuccess_<%=cid %>) {
-                        nb_file_<%=cid%>++;
-                        <%if(isLog4jEnabled){%>
-                            log.debug("<%=cid%> - '" + key<%=cid %>  + "' rename ok.");
-                        <%}%>
-                        globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
-                    } else {
-                        <%if(isLog4jEnabled){%>
-                            log.warn("<%=cid%> - '" + key<%=cid %>  + "' rename failed. " + ftp_<%=cid %>.getReplyString());
-                        <%}%>
-                        globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
-                    }
-<%
-                }
-%>
+				boolean renameSuccess_<%=cid %> = ftp_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
+				if (renameSuccess_<%=cid %>) {
+					nb_file_<%=cid%>++;
+					<%if(isLog4jEnabled){%>
+						log.debug("<%=cid%> - '" + key<%=cid %>  + "' rename ok.");
+					<%}%>
+					globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
+				} else {
+					<%if(isLog4jEnabled){%>
+						log.warn("<%=cid%> - '" + key<%=cid %>  + "' rename failed. " + ftp_<%=cid %>.getReplyString());
+					<%}%>
+					globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
+				}
 			}catch(IOException e){
 				globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
 <%
@@ -143,21 +94,100 @@ try{
 			}
 		}
 <%
-    }
-%>
-} catch (Exception e) {
+	} else {%>//normal ftp
+	 	
+		java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet();
+		String tmp_<%=cid%> = pid + System.currentTimeMillis();
+    	try{  
+    		for (String key<%=cid %> : keySet<%=cid %>) {
+	     		<%if(("always").equals(overwrite)){%>
+    	 		  
+     				String fromFile_<%=cid%> = key<%=cid %>;
+     				String toFile_<%=cid%> = map<%=cid %>.get(key<%=cid %>);
+     			
+     		    	if (!fromFile_<%=cid%>.equals(toFile_<%=cid%>)){
+     		    		if(ftp_<%=cid%>.exists(fromFile_<%=cid%>)){
+		     		    	if(ftp_<%=cid%>.exists(toFile_<%=cid%> + "." + tmp_<%=cid%>)){
+     				    		ftp_<%=cid%>.delete(toFile_<%=cid%> + "." + tmp_<%=cid%>);
+     		    			}
+		     		    	if(ftp_<%=cid%>.exists(toFile_<%=cid%>)){
+			     				ftp_<%=cid %>.rename(toFile_<%=cid%>, toFile_<%=cid%> + "." + tmp_<%=cid%>);
+     			    		}
+	     					ftp_<%=cid %>.rename(fromFile_<%=cid%>, toFile_<%=cid%>);
+	     					if(ftp_<%=cid%>.exists(toFile_<%=cid%> + "." + tmp_<%=cid%>)){
+		     					ftp_<%=cid%>.delete(toFile_<%=cid%> + "." + tmp_<%=cid%>);
+	     					}
+							<%if(isLog4jEnabled){%>
+								log.debug("<%=cid%> - '" + toFile_<%=cid%>  + "' rename ok");
+							<%}%>
+	     					globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
+	     					nb_file_<%=cid%>++;
+     			  		}
+					}
+				<%}%>
+				<%if(("never").equals(overwrite)){%>
+     				if(!(ftp_<%=cid%>.exists(map<%=cid %>.get(key<%=cid %>)))) {
+						ftp_<%=cid %>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
+						<%if(isLog4jEnabled){%>
+							log.debug("<%=cid%> - '" + key<%=cid %>  + "' rename ok");
+						<%}%>
+     					globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
+     					nb_file_<%=cid%>++;
+     				}
+     			<%}%>
+     			<%if(("size_differ").equals(overwrite)){%>
+     				if((ftp_<%=cid%>.exists(map<%=cid %>.get(key<%=cid %>)))){
+						com.enterprisedt.net.ftp.FTPFile ftpnewNamefile<%=cid%>=ftp_<%=cid%>.fileDetails(map<%=cid %>.get(key<%=cid %>));
+						com.enterprisedt.net.ftp.FTPFile ftporigNamefile<%=cid%>=ftp_<%=cid%>.fileDetails(key<%=cid %>);
+						long newNameSize<%=cid%>=ftpnewNamefile<%=cid%>.size();
+						long origNameSize<%=cid%>=ftporigNamefile<%=cid%>.size();
+						if(!(newNameSize<%=cid%>==origNameSize<%=cid%>)) {
+		     				String fromFile_<%=cid%> = key<%=cid %>;
+		     				String toFile_<%=cid%> = map<%=cid %>.get(key<%=cid %>);
+							if(ftp_<%=cid%>.exists(fromFile_<%=cid%>)){
+		     		    		if(ftp_<%=cid%>.exists(toFile_<%=cid%> + "." + tmp_<%=cid%>)){
+		     		    			ftp_<%=cid%>.delete(toFile_<%=cid%> + "." + tmp_<%=cid%>);
+		     		    		}
+		     		    		if(ftp_<%=cid%>.exists(toFile_<%=cid%>)){
+				     				ftp_<%=cid %>.rename(toFile_<%=cid%>, toFile_<%=cid%> + "." + tmp_<%=cid%>);
+		     		    		}
+			     				ftp_<%=cid %>.rename(fromFile_<%=cid%>, toFile_<%=cid%>);
+			     				if(ftp_<%=cid%>.exists(toFile_<%=cid%> + "." + tmp_<%=cid%>)){
+				     				ftp_<%=cid%>.delete(toFile_<%=cid%> + "." + tmp_<%=cid%>);
+			     				}
+								<%if(isLog4jEnabled){%>
+									log.debug("<%=cid%> - '" + toFile_<%=cid%>  + "' rename ok");
+								<%}%>
+			     				globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
+			     				nb_file_<%=cid%>++;
+		     				}
+						}
+					}else{
+						ftp_<%=cid %>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
+						globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
+						nb_file_<%=cid%>++;
+					}
+     			<%}%>
+			}
+		}catch(com.enterprisedt.net.ftp.FTPException e){
+   			globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
+        	throw e;
+   		}
+
+	<%}%>
+}catch(java.lang.Exception e){
 <%
-    if(("true").equals(dieOnError)){
+	if(("true").equals(dieOnError)){
 %>
         throw(e);
 <%
-    }else{
+	}else{
 %>
-        <%if(isLog4jEnabled){%>
-            log.error("<%=cid%> - " + e.getMessage());
-        <%}%>
-        System.err.print(e.getMessage());
+		<%if(isLog4jEnabled){%>
+			log.error("<%=cid%> - " + e.getMessage());
+		<%}%>
+		System.err.print(e.getMessage());
 <%
-    }
+	}
 %>
 }

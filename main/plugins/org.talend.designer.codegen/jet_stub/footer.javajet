@@ -1343,11 +1343,13 @@ if (execStat) {
             } else {
                 type = "ftp";
             }
-            if ("sftp".equals(type)) { %>
+            if ("ftp".equals(type)) { %>
+                ((com.enterprisedt.net.ftp.FTPClient) obj_conn).quit();
+        <%} else if ("sftp".equals(type)) { %>
                 ((com.jcraft.jsch.ChannelSftp) obj_conn).quit();
-            <%} else { %>
-                ((org.apache.commons.net.ftp.FTPClient) obj_conn).disconnect();
-            <%}%>
+        <%} else { %>
+                ((org.apache.commons.net.ftp.FTPSClient) obj_conn).disconnect();
+        <%}%>
             }
 <%  } %>
         } catch (java.lang.Exception e) {
