@@ -683,7 +683,7 @@
 	<PARAMETER
       NAME="CONNECTION_EXASOL"
       FIELD="COMPONENT_LIST"
-      FILTER="tEXAConnection"
+      FILTER="tExasolConnection"
 	  REQUIRED="true"
       NUM_ROW="30"
       SHOW_IF="(DBTYPE=='EXASOL') and (USE_EXISTING_CONNECTION == 'true')"
