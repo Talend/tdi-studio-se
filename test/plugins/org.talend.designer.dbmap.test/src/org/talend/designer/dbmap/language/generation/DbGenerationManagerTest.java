@@ -870,6 +870,10 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         outputConnections.add(connection);
         dbMapComponent.setOutgoingConnections(outputConnections);
 
+        if (dbMapComponent.getElementParameters() == null) {
+            dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        }
+
         Process process = mock(Process.class);
         when(process.getContextManager()).thenReturn(new JobContextManager());
         dbMapComponent.setProcess(process);
@@ -998,6 +1002,10 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         outputConnections.add(dataConnection);
         outputConnections.add(connection);
         dbMapComponent.setOutgoingConnections(outputConnections);
+
+        if (dbMapComponent.getElementParameters() == null) {
+            dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        }
 
         Process process = mock(Process.class);
         when(process.getContextManager()).thenReturn(new JobContextManager());
