@@ -1,0 +1,50 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+"
+%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/HelpClass/HelpClass.javajet"%>
+<%
+	class ConnectionUtil extends DefaultConnectionUtil {
+	
+		public void createURL(INode node) {
+			super.createURL(node);
+			String dbSchema = ElementParameterParser.getValue(node, "__DB_SCHEMA__");
+%>
+<%
+			if (dbproperties == null || "\"\"".equals(dbproperties) || dbproperties.trim().isEmpty()) {
+%>
+				String url_<%=cid %> = "jdbc:exa:" + <%=dbhost%> + ":" + <%=dbport%> + ";schema=" + <%=dbSchema%>;
+<%
+			} else {
+%>
+				String url_<%=cid %> = "jdbc:exa:" + <%=dbhost%> + ":" + <%=dbport%> + ";schema=" + <%=dbSchema%> + ";" + <%=dbproperties%>;
+<%
+			}
+%>
+
+<%	
+		}
+	
+		public String getDirverClassName(INode node) {
+			return "com.exasol.jdbc.EXADriver";
+		}
+		
+	}//end class
+	connUtil = new ConnectionUtil();
+%>
+<%//----------------------------component codes-----------------------------------------%>
+
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/AbstractDBConnection.javajet"%>
+   // provide the schema for usage in input and output components
+   // schemas are always in upper case letters
+	globalMap.put("schema_" + "<%=cid%>",<%=dbschema%>);
+    // provide the connection for further usage in other components
+	globalMap.put("conn_" + "<%=cid%>",conn_<%=cid%>);
+	globalMap.put("host_" + "<%=cid%>", <%=dbhost%>); 
+	globalMap.put("port_" + "<%=cid%>", <%=dbport%>);
+	globalMap.put("username_" + "<%=cid%>", <%=dbuser%>); 
+	globalMap.put("password_" + "<%=cid%>", <%=dbpass%>);
+	
