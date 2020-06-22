@@ -1735,8 +1735,12 @@ public abstract class AbstractElementPropertySectionController implements Proper
                     basePropertyParameter));
             connParameters.setDriverClass(driverClass);
         }else{
+            IElementParameter elementParameter = element.getElementParameter("PASS");//$NON-NLS-1$
+            boolean containContextParam = ContextParameterUtils
+                    .isContainContextParam((elementParameter != null && elementParameter.getValue() != null) ? elementParameter.getValue().toString()
+                            : ""); //$NON-NLS-1$
             connParameters.setPassword(getParameterValueWithContext(element, EConnectionParameterName.PASSWORD.getName(), context,
-                    basePropertyParameter));
+                    basePropertyParameter),containContextParam);
             connParameters.setUserName(getParameterValueWithContext(element, EConnectionParameterName.USERNAME.getName(), context,
                     basePropertyParameter));
             String url = TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
