@@ -42,7 +42,7 @@
 	    <PARAMETER 
 	    	NAME="CONNECTION" 
 	    	FIELD="COMPONENT_LIST" 
-	    	FILTER="tEXAConnection"
+	    	FILTER="tDBConnection"
 	      	NUM_ROW="2" 
 		    REQUIRED="true" 
 	      	SHOW_IF="USE_EXISTING_CONNECTION == 'true'" 
