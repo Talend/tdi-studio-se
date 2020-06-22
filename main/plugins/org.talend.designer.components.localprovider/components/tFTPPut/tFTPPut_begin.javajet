@@ -232,141 +232,103 @@ int nb_file_<%=cid%> = 0;
 	
 	for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
 
-<%} else if (!ftps) {%> // *** ftp *** //
-		com.enterprisedt.net.ftp.FTPClient ftp_<%=cid %> =null;
-
-  <%
-		if (("true").equals(useExistingConn)) {
-			String conn= "conn_" + connection;
-    %>
-			ftp_<%=cid %> = (com.enterprisedt.net.ftp.FTPClient)globalMap.get("<%=conn %>");
-
-			<%if(isLog4jEnabled){%>
-				if(ftp_<%=cid %>!=null) {
-					log.info("<%=cid%> - Uses an existing connection. Connection hostname: " + ftp_<%=cid %>.getRemoteHost() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
-				}
-			<%}%>
-        <%} else {
-        passwordFieldName = "__PASSWORD__";
-%>
-            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
-        <%}%>
-
-		String rootDir_<%=cid %> = ftp_<%=cid %>.pwd();
-		// msg_<%=cid%> likes a String[] to save the message from transfer.  
-		com.enterprisedt.net.ftp.TransferCompleteStrings msg_<%=cid%> = ftp_<%=cid %>.getTransferCompleteMessages();
-		msg_<%=cid%>.clearAll();
-		java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
-
-  <%
-		for (int i = 0; i < files.size(); i++) {
-			Map<String, String> line = files.get(i);
-    %>    
-			java.util.Map<String,String> map<%=cid %><%=i %> = new java.util.HashMap<String,String>();
-			map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>,<%= line.get("NEWNAME") %>);  
-			list<%=cid %>.add(map<%=cid %><%=i %>);
-  <%
-		}
-  %>  
-		String remotedir<%=cid %> = (<%=remotedir%>).replaceAll("\\\\", "/");
+<%} else {
+        if (!ftps) {%> // *** ftp *** //
+            org.apache.commons.net.ftp.FTPClient ftp_<%=cid %> = null;
 <%
-		if (createDirIfNotExist) {
+            if (("true").equals(useExistingConn)) {
+                String conn= "conn_" + connection; 
 %>
-			boolean isDirectoryExist_<%=cid %> = ftp_<%=cid %>.existsDirectory(remotedir<%=cid %>);
+                ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPClient) globalMap.get("<%=conn %>");
+                <%if(isLog4jEnabled){%>
+                    if(ftp_<%=cid %>!=null) {
+                        log.info("<%=cid%> - Use an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + ".");
+                    }
+                <%}%>
+<%
+            } else {
+                passwordFieldName = "__PASSWORD__";
+%>
+                <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
+<%
+            }
 
-			if (!isDirectoryExist_<%=cid %>) {
-				String rootDir = null;
-				String[] dirsTree_<%=cid %> = remotedir<%=cid %>.split("/");
+            if("binary".equalsIgnoreCase(ElementParameterParser.getValue(node, "__MODE__"))){
+%>
+                ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE);
+<%
+            } else {
+%>
+                ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.ASCII_FILE_TYPE);
+<%
+            }
+%>
+            // msg_<%=cid%> likes a String[] to save the message from transfer.  
+            java.util.List<String> msg_<%=cid%> = new java.util.ArrayList<>();
+<%
+        } else { // *** ftps *** //
+            String keystoreFile = ElementParameterParser.getValue(node,"__KEYSTORE_FILE__"); 
+            String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
+%>
+            org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
+<%
+            if(("false").equals(useExistingConn)){
+%>
+                <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
+<%
+            } else {
+                String conn= "conn_" + connection; 
+%>
+                ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient)globalMap.get("<%=conn %>");
+                <%if(isLog4jEnabled){%>
+                    if(ftp_<%=cid %>!=null) {
+                        log.info("<%=cid%> - Uses an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
+                    }
+                <%}%>
+<%
+            }
+        } //common code for ftp and ftps:
+%>
+        String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
+        String remotedir_<%=cid%> = (<%=remotedir%>).replaceAll("\\\\", "/");
+        boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+<%
+        if(createDirIfNotExist) {
+%>
+			if(!cwdSuccess_<%=cid %>){
+				String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
 				for (String dir: dirsTree_<%=cid %>) {
-					if (!ftp_<%=cid %>.existsDirectory(dir)) {
-						ftp_<%=cid %>.mkdir(dir);
-					}
-					ftp_<%=cid %>.chdir(dir);
+					ftp_<%=cid %>.makeDirectory(dir);
+					ftp_<%=cid %>.changeWorkingDirectory(dir);
 				}
-
-				ftp_<%=cid %>.chdir(rootDir_<%=cid %>);
+				ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+				cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
 			}
 <%
-		}
+        }
 %>
-		ftp_<%=cid %>.chdir(remotedir<%=cid %>);
 
-		<%if ("binary".equalsIgnoreCase(ElementParameterParser.getValue(node, "__MODE__"))) {%>  
-			ftp_<%=cid %>.setType(com.enterprisedt.net.ftp.FTPTransferType.BINARY);
-		<%} else { %>  
-			ftp_<%=cid %>.setType(com.enterprisedt.net.ftp.FTPTransferType.ASCII);
-		<%}%>
-		String localdir<%=cid %>  = <%=localdir%>;
+        if (!cwdSuccess_<%=cid %>) {
+            throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+        }
 
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Uploading files to the server.");
-		<%}%>
-		for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
-<%
-} else { // *** ftps *** // 
-		String keystoreFile = ElementParameterParser.getValue(node,"__KEYSTORE_FILE__"); 
-
-		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
-%>
-		org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
-		String rootDir_<%=cid %> = null;
-<%
-		if(("false").equals(useExistingConn)){
-%>
-			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
-<%
-		} else {
-			String conn= "conn_" + connection; 
-%>
-			ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient)globalMap.get("<%=conn %>");
-			<%if(isLog4jEnabled){%>
-				if(ftp_<%=cid %>!=null) {
-					log.info("<%=cid%> - Uses an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
-				}
-			<%}%>
-			
-			rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
-<%
-		}
-%>
-		String remotedir_<%=cid%> = (<%=remotedir%>).replaceAll("\\\\", "/");
+        java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
 
 <%
-		if(createDirIfNotExist) {
+        for (int i = 0; i < files.size(); i++) {
+            Map<String, String> line = files.get(i);
 %>
-			String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
-			for (String dir: dirsTree_<%=cid %>) {
-				ftp_<%=cid %>.makeDirectory(dir);
-				ftp_<%=cid %>.changeWorkingDirectory(dir);
-			}
-
-			ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+            java.util.Map<String,String> map<%=cid %><%=i %> = new java.util.HashMap<String,String>();
+            map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>, <%= line.get("NEWNAME") %>);
+            list<%=cid %>.add(map<%=cid %><%=i %>);
 <%
-		}
+        }
 %>
-		boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
-
-		if (!cwdSuccess_<%=cid %>) {
-			throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
-		}
-
-		java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
-
+        String localdir<%=cid %> = <%=localdir%>;
+        <%if(isLog4jEnabled){%>
+            log.info("<%=cid%> - Uploading files to the server.");
+        <%}%>
+        for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
 <%
-		for (int i = 0; i < files.size(); i++) {
-			Map<String, String> line = files.get(i);
-%>
-			java.util.Map<String,String> map<%=cid %><%=i %> = new java.util.HashMap<String,String>();
-			map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>, <%= line.get("NEWNAME") %>);
-			list<%=cid %>.add(map<%=cid %><%=i %>);
-<%
-		}
-%>
-		String localdir<%=cid %> = <%=localdir%>;
-		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Uploading files to the server.");
-		<%}%>
-		for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
-<%
-} /* close ftps */
+}
 %>

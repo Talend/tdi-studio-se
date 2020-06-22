@@ -95,7 +95,7 @@
    
     
 <%
-		}else if (ftps) { // *** ftps *** //
+		}else { // *** ftp, ftps *** //
 %>
 			for (String key<%=cid %> : keySet<%=cid %>) {
 				<% /*prepare filemask*/ %>
@@ -241,73 +241,6 @@
 
 			<% /*return to root dir for next filemask*/ %>
 			ftp_<%=cid %>.changeWorkingDirectory(rootWorkDir_<%=cid %>);
-<%
-		}else {// *** ftp *** //
-%>
-		    try {
-				for (String key<%=cid %> : keySet<%=cid %>) {     
-					String filemask<%=cid %> = key<%=cid %>; 
-				   	String dir<%=cid %> = null;
-			        <%if(!usePerl5) {//perl5 mode not support windows(\) path separator at the mask string%>
-				        String mask<%=cid %> = filemask<%=cid %>.replaceAll("\\\\", "/") ;
-					<%}else{%>
-					String mask<%=cid %> = filemask<%=cid %>;
-					<%}%>
-					int i<%=cid %> = mask<%=cid %>.lastIndexOf('/');
-					if (i<%=cid %>!=-1) {
-						dir<%=cid %> = mask<%=cid %>.substring(0, i<%=cid %>); 
-						mask<%=cid %> = mask<%=cid %>.substring(i<%=cid %>+1); 
-    				}
-			    	if (dir<%=cid %>!=null && !"".equals(dir<%=cid %>)) ftp_<%=cid %>.chdir(dir<%=cid %>);
-			        <%if(!usePerl5) {%>
-        			    mask<%=cid %> = org.apache.oro.text.GlobCompiler.globToPerl5(mask<%=cid %>.toCharArray(), org.apache.oro.text.GlobCompiler.DEFAULT_MASK);
-			        <%}%>
-			    	String[] fileName_<%=cid%> = null;
-			    	boolean dirFailed_<%=cid%> = false;
-			    	try{
-    					fileName_<%=cid%> = ftp_<%=cid%>.dir(null,false);
-				   	}catch(com.enterprisedt.net.ftp.FTPException e_<%=cid%>){
-			    		dirFailed_<%=cid%> = true;
-						<%if(isLog4jEnabled){%>
-							log.warn("<%=cid%> - " + e_<%=cid%>.getMessage());
-						<%}%>
-			    	}
-			    	if((fileName_<%=cid%> == null) || dirFailed_<%=cid%> || (fileName_<%=cid%>.length <= 0)){
-						com.enterprisedt.net.ftp.FTPFile[] fileList_<%=cid%> = ftp_<%=cid%>.dirDetails(null);
-						fileName_<%=cid%> = new String[fileList_<%=cid%>.length];
-						for (int i_<%=cid%> = 0 ; i_<%=cid%> < fileList_<%=cid%>.length ; i_<%=cid%>++){
-							fileName_<%=cid%>[i_<%=cid%>] = fileList_<%=cid%>[i_<%=cid%>].getName();
-						}
-					}
-					for (String file_<%=cid%> : fileName_<%=cid%>) {
-						if (file_<%=cid%>.matches(mask<%=cid %>)) {
-<%
-							if("FILE".equals(targetType)){
-%>				
-								ftp_<%=cid %>.delete(file_<%=cid%>);
-								<%if(isLog4jEnabled){%>
-									log.debug("<%=cid%> - File '" + file_<%=cid%>  + "' was deleted from the remote directory " + <%=remotedir %> + ".");
-								<%}%>
-<%
-							}else{
-%>					
-								<%if(isLog4jEnabled){%>
-									log.debug("<%=cid%> - Directory '" + file_<%=cid%>  + "' was deleted from the remote directory " + <%=remotedir %> + ".");
-								<%}%>
-								ftp_<%=cid %>.rmdir(file_<%=cid%>);
-<%
-							}
-%>				
-							globalMap.put("<%=cid %>_CURRENT_STATUS", "File deleted.");
-							nb_file_<%=cid%>++;
-						}
-					}
-   				}
-		   	}catch(com.enterprisedt.net.ftp.FTPException e_<%=cid %>){
-   				globalMap.put("<%=cid %>_CURRENT_STATUS", "Deleting file action error");
-   				throw e_<%=cid %>;
-		   	}
-		   ftp_<%=cid %>.chdir(root<%=cid %>);
 <%
 		}
 %>
