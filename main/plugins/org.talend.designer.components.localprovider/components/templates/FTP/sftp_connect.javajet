@@ -1,0 +1,106 @@
+<%@ jet
+%>
+
+boolean retry_<%=cid%> = false;
+int retry_count_<%=cid%> = 0;
+int retry_max_<%=cid%> = 5;
+
+com.jcraft.jsch.Session session_<%=cid%> = null;
+com.jcraft.jsch.Channel channel_<%=cid%> = null;
+do {
+    retry_<%=cid%> = false;
+
+    com.jcraft.jsch.JSch jsch_<%=cid%> = new com.jcraft.jsch.JSch(); 
+
+    <%if (("PUBLICKEY").equals(authMethod)){%>
+        <%if(isLog4jEnabled){%>
+            log.info("<%=cid%> - SFTP authentication using a public key.");
+            log.debug("<%=cid%> - Private key: '" + <%=privateKey%> + "'.");
+        <%}%>
+        jsch_<%=cid%>.addIdentity(<%=privateKey %>, defaultUserInfo_<%=cid%>.getPassphrase());
+    <%}%>
+
+    session_<%=cid%> = jsch_<%=cid%>.getSession(<%=user%>, <%=host%>, <%=port%>);
+    session_<%=cid%>.setConfig("PreferredAuthentications", "publickey,password,keyboard-interactive,gssapi-with-mic");
+
+    <%if (("PASSWORD").equals(authMethod)) {%> 
+        <%if(isLog4jEnabled){%>
+            log.info("<%=cid%> - SFTP authentication using a password.");
+        <%}%>
+
+        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+        session_<%=cid%>.setPassword(decryptedPassword_<%=cid%>); 
+    <%}%>
+
+    session_<%=cid%>.setUserInfo(defaultUserInfo_<%=cid%>); 
+    <%if (!useProxy) {%>
+        if(("true").equals(System.getProperty("http.proxySet"))) {
+            com.jcraft.jsch.ProxyHTTP proxy_<%=cid%> = new com.jcraft.jsch.ProxyHTTP(System.getProperty("http.proxyHost"),Integer.parseInt(System.getProperty("http.proxyPort")));
+            if(!"".equals(System.getProperty("http.proxyUser"))){
+                proxy_<%=cid%>.setUserPasswd(System.getProperty("http.proxyUser"),System.getProperty("http.proxyPassword"));
+            }
+            session_<%=cid%>.setProxy(proxy_<%=cid%>);
+        } else if ("local".equals(System.getProperty("http.proxySet"))) {
+            String uriString = <%=host %> + ":" + <%=port%>;
+            java.net.Proxy proxyToUse = org.talend.proxy.TalendProxySelector.getInstance().getProxyForUriString(uriString);
+
+            if (!proxyToUse.equals(java.net.Proxy.NO_PROXY)) {
+                java.net.InetSocketAddress proxyAddress = (java.net.InetSocketAddress) proxyToUse.address();
+                String proxyHost = proxyAddress.getAddress().getHostAddress();
+                int proxyPort = proxyAddress.getPort();
+
+                com.jcraft.jsch.ProxyHTTP proxy_<%=cid%> = new com.jcraft.jsch.ProxyHTTP(proxyHost, proxyPort);
+
+                org.talend.proxy.ProxyCreds proxyCreds = org.talend.proxy.TalendProxyAuthenticator.getInstance().getCredsForProxyURI(proxyHost + ":" + proxyPort);
+                if (proxyCreds != null) {
+                    proxy_<%=cid%>.setUserPasswd(proxyCreds.getUser(), proxyCreds.getPass());
+                }
+
+                session_<%=cid%>.setProxy(proxy_<%=cid%>);
+            }
+        }
+    <%}%>
+
+    <%if(isLog4jEnabled){%>
+        log.info("<%=cid%> - Attempt to connect to  '" + <%=host %> + "' with username '" + <%=user%> + "'.");
+    <%}%>
+
+    channel_<%=cid%> = null;
+    try {
+        session_<%=cid%>.connect();
+        channel_<%=cid%> = session_<%=cid%>.openChannel("sftp");
+        
+        channel_<%=cid%>.connect();
+        <%if(isLog4jEnabled){%>
+            log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
+        <%}%>
+    } catch (com.jcraft.jsch.JSchException e_<%=cid%>) {
+        try {
+            if(channel_<%=cid%>!=null) {
+                channel_<%=cid%>.disconnect();
+            }
+
+            if(session_<%=cid%>!=null) {
+                session_<%=cid%>.disconnect();
+            }
+        } catch(java.lang.Exception ce_<%=cid%>) {
+            <%if(isLog4jEnabled){%>
+                log.warn("<%=cid%> - close sftp connection failed : " + ce_<%=cid%>.getClass() + " : " + ce_<%=cid%>.getMessage());
+            <%}%>
+        }
+
+        String message_<%=cid%> = new TalendException(null, null, null).getExceptionCauseMessage(e_<%=cid%>);
+        if(message_<%=cid%>.contains("Signature length not correct") || message_<%=cid%>.contains("connection is closed by foreign host")) {
+            retry_<%=cid%> = true;
+            retry_count_<%=cid%>++;
+            <%if(isLog4jEnabled){%>
+            log.info("<%=cid%> - connect: Signature length not correct or connection is closed by foreign host, so retry, retry time : " + retry_count_<%=cid%>);
+            <%}%>
+        } else {
+            throw e_<%=cid%>;
+        }
+    }
+} while(retry_<%=cid%> && (retry_count_<%=cid%> < retry_max_<%=cid%>));
+
+com.jcraft.jsch.ChannelSftp c_<%=cid%> = (com.jcraft.jsch.ChannelSftp)channel_<%=cid%>;
