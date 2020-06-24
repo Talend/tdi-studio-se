@@ -1295,7 +1295,11 @@
 	        		rowstate_<%=cid%>.reset();
 	        
 		        	row<%=cid %>=csvReader<%=cid %>.getValues();
-	        	
+		        	
+		        	if (<%=encoding %>.equalsIgnoreCase("UTF-8") && currentLine<%=cid %> == 0) {
+		        		row<%=cid %>[0] = row<%=cid %>[0].replaceAll(String.valueOf(csvReader<%=cid %>.getQuoteChar()),"");
+		        	}
+		        	
 					<%
 	   				if(("true").equals(removeEmptyRow)){
 	   				%>
