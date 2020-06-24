@@ -165,6 +165,15 @@ if(isEnableType2) {
     System.out.println("[<%=cid%>] type2 merge sql done");
     <%}%>
     
+    StringBuilder sb_type2_active_<%=cid%> = new StringBuilder();
+    sb_type2_active_<%=cid%>.append("MERGE INTO <%=text_util.wrap("tableName", cid)%> AS d ")
+               .append("USING (SELECT NULL as mergeKey, <%=text_util.wrap("sourceTable", cid)%>.* FROM <%=text_util.wrap("sourceTable", cid)%> JOIN <%=text_util.wrap("tableName", cid)%>) ON <%=joinClauseString%> WHERE (<%=whereClauseString%>) AND d.<%=text_util.wrap(endDateField)%>" + <%if("NULL".equals(l2EndDateFieldType)) { %>" IS NULL "<% } else { %>" = " + customEndDate_<%=cid%><%}%> + ") AS staged_updates ")
+               .append("ON d.<%=columnNames.get(0)%> = mergeKey ")//expect not match always as null value for mergeKey, then go to the insert action, never go to update 
+               .append("WHEN MATCHED THEN ")
+               .append("UPDATE SET * ")//should never happen
+               .append("WHEN NOT MATCHED <%if(isEnableType2){%>AND 1!=1 <%}%>THEN ")
+               .append("INSERT (<%=columnNameString%>) VALUES (t.<%=selectColumnString%>)");
+    
     String insertForType2_<%=cid%> = "INSERT INTO <%=text_util.wrap("tableName", cid)%>(<%=columnNameString%>) SELECT t.<%=selectColumnString%>, "
      + <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>"t.<%=l2StartDateFieldInputFieldName%>"<%} else {%>"\"" + startDateTime_<%=cid%> + "\""<%}%> 
      + ", " + <% if("NULL".equals(l2EndDateFieldType)) { %>"NULL "<% } else {%>customEndDate_<%=cid%><%} if(isEnableActive) {%> + ", 1"<%}%><%if(isEnableVersion) {%> + ", d.<%=text_util.wrap(versionField)%> + 1"<%}%>
