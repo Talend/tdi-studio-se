@@ -28,7 +28,6 @@ import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContextParameter;
-import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
@@ -37,8 +36,6 @@ import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.NodeConnector;
-import org.talend.designer.core.model.process.DataConnection;
-import org.talend.designer.core.model.process.DataNode;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -796,126 +793,4 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         assertEquals(exceptQuery.replaceAll("\n", "").trim(), query.trim());
     }
 
-     @Test
-    public void testELTMapJoinWithUpdate() {
-        dbManager = new GenericDbGenerationManager();
-        String schema = "dbo";
-        String inputTable1 = "src1";
-        String inputTable2 = "src2";
-        String outTable1 = "tar";
-
-        dbMapComponent = new DbMapComponent();
-
-        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
-
-        MetadataTable metadataTable = getMetadataTable(new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" });
-        metadataTable.setLabel(schema + "." + outTable1);
-        metadataList.add(metadataTable);
-
-        dbMapComponent.setMetadataList(metadataList);
-
-        // main table
-        ExternalDbMapData externalData = new ExternalDbMapData();
-        List<ExternalDbMapTable> inputs = new ArrayList<ExternalDbMapTable>();
-        List<ExternalDbMapTable> outputs = new ArrayList<ExternalDbMapTable>();
-        // main table
-        ExternalDbMapTable inputTable = new ExternalDbMapTable();
-        inputTable.setTableName(schema + "." + inputTable1);
-        inputTable.setName(schema + "." + inputTable1);
-        inputTable.setAlias("A");
-        List<ExternalDbMapEntry> entities = getMetadataEntities(new String[] { "newColumn", "newColumn1" }, new String[2]);
-        inputTable.setMetadataTableEntries(entities);
-        inputs.add(inputTable);
-
-        // lookup table
-        inputTable = new ExternalDbMapTable();
-        inputTable.setTableName(schema + "." + inputTable2);
-        inputTable.setName(schema + "." + inputTable2);
-        inputTable.setAlias("B");
-        entities = getMetadataEntities(new String[] { "newColumn", "newColumn1" }, new String[2]);
-        ExternalDbMapEntry newColumn = entities.get(0);
-        newColumn.setExpression("A.newColumn");
-        newColumn.setOperator("=");
-        inputTable.setJoinType("INNER_JOIN");
-        newColumn.setJoin(true);
-        inputTable.setMetadataTableEntries(entities);
-        inputs.add(inputTable);
-
-        // output
-        ExternalDbMapTable outputTable = new ExternalDbMapTable();
-        outputTable.setName(schema + "." + outTable1);
-        outputTable.setTableName(schema + "." + outTable1);
-        String[] names = new String[] { "tarColumn", "tarColumn1" };
-        String[] expressions = new String[] { "A.newColumn", "A.newColumn1" };
-        outputTable.setMetadataTableEntries(getMetadataEntities(names, expressions));
-        outputs.add(outputTable);
-
-        externalData.setInputTables(inputs);
-        externalData.setOutputTables(outputs);
-        dbMapComponent.setExternalData(externalData);
-
-        List<IConnection> incomingConnections = new ArrayList<IConnection>();
-        incomingConnections.add(
-                mockConnection(schema, inputTable1, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
-        incomingConnections.add(
-                mockConnection(schema, inputTable2, new String[] { "newColumn", "newColumn1" }, new String[] { "id", "name" }));
-        dbMapComponent.setIncomingConnections(incomingConnections);
-
-        List<IConnection> outputConnections = new ArrayList<IConnection>();
-        Node map1 = mockNode(dbMapComponent);
-        IConnection connection = mockConnection(map1, schema, inputTable1, new String[] { "id", "name" });
-        targetComponent = ComponentsFactoryProvider.getInstance().get("tELTMSSqlOutput",
-                ComponentCategory.CATEGORY_4_DI.getName());
-        connection.getMetadataTable().getColumn("id").setLabel("newColumn");
-        connection.getMetadataTable().getColumn("name").setLabel("newColumn1");
-        // add target
-        DataNode output = new DataNode();
-        List<IElementParameter> paraList = new ArrayList<IElementParameter>();
-        ElementParameter param = new ElementParameter(output);
-        param.setName("USE_UPDATE_STATEMENT"); //$NON-NLS-1$
-        param.setValue("true"); //$NON-NLS-1$
-        paraList.add(param);
-        output.setElementParameters(paraList);
-        output.setComponent(targetComponent);
-
-        DataConnection dataConnection = new DataConnection();
-        dataConnection.setName(schema + "." + outTable1);
-        dataConnection.setActivate(true);
-        dataConnection.setLineStyle(EConnectionType.FLOW_MAIN);
-        dataConnection.setTarget(output);
-        IMetadataTable table = new MetadataTable();
-        table.setLabel(outTable1);
-        table.setTableName(outTable1);
-        List<IMetadataColumn> listColumns = new ArrayList<IMetadataColumn>();
-        for (String columnName : new String[] { "id", "name" }) {
-            IMetadataColumn column = new MetadataColumn();
-            column.setLabel(columnName);
-            column.setOriginalDbColumnName(columnName);
-            listColumns.add(column);
-        }
-        table.setListColumns(listColumns);
-        dataConnection.setMetadataTable(table);
-        // List<DataConnection> dataConnections = new ArrayList<>();
-        outputConnections.add(dataConnection);
-        outputConnections.add(connection);
-        dbMapComponent.setOutgoingConnections(outputConnections);
-
-        if (dbMapComponent.getElementParameters() == null) {
-            dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
-        }
-
-        Process process = mock(Process.class);
-        when(process.getContextManager()).thenReturn(new JobContextManager());
-        dbMapComponent.setProcess(process);
-
-        IContextParameter lookupTableContext = new JobContextParameter();
-        lookupTableContext.setName("lookup");
-        lookupTableContext.setValue("lookupTable");
-        lookupTableContext.setType("String");
-        String query = dbManager.buildSqlSelect(dbMapComponent, schema + "." + outTable1);
-        String expectedQuery = "\"UPDATE dbo.tar\n" + "SET tarColumn = A.id,\n" + "tarColumn1 = A.name\n"
-                + "FROM \" +dbo+\".\"+src1+ \" A , \" +dbo+\".\"+src2+ \" B\n" + "WHERE\n" + "  B.id = A.id\"";
-
-        assertEquals(expectedQuery, query);
-    }
 }
