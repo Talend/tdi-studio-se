@@ -1173,9 +1173,19 @@ if (execStat) {
             }
             if ("sftp".equals(type)) { %>
                 ((com.jcraft.jsch.ChannelSftp) obj_conn).quit();
-            <%} else { %>
-                ((org.apache.commons.net.ftp.FTPClient) obj_conn).disconnect();
-            <%}%>
+            <%} else {
+                String libImplementation = ElementParameterParser.getValue(ftpNode, "__LIB_IMPLEMENTATION__");
+                if ("Apache".equalsIgnoreCase(libImplementation)) {
+%>
+                    ((org.apache.commons.net.ftp.FTPClient) obj_conn).disconnect();
+<%
+                } else {
+%>
+                    ((com.enterprisedt.net.ftp.FTPClient) obj_conn).quit();
+<%
+                }
+            }
+%>
             }
 <%  } %>
         } catch (java.lang.Exception e) {
