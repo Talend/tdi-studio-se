@@ -79,7 +79,7 @@ String tableForSearch_<%=cid%> = tableName_<%=cid%>;
 <%}%>
 
 if(dbschema_<%=cid%>!=null && !dbschema_<%=cid%>.trim().isEmpty()) {
-	tableName_<%=cid%> = dbschema_<%=cid%> + "<%=manager.getRProtectedChar()%>.<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>;
+    tableName_<%=cid%> = dbschema_<%=cid%> + "<%=manager.getRProtectedChar()%>.<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>;
     sourceTable_<%=cid%> = dbschema_<%=cid%> + "<%=manager.getRProtectedChar()%>.<%=manager.getLProtectedChar()%>" + sourceTable_<%=cid%>;
     
     <%if("redshift_id".equals(dbmsId)) {%>
