@@ -107,17 +107,18 @@ if(isEnableType2) {
         whereClause.add("( d." + strFieldName + " <> t." + strFieldName+")");
     }
     String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
-    %>        
-    String changeDateTime_<%=cid%> = (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString();
+    %>
+    final String dateValue_<%=cid %> =(new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString().substring(0, 10);
+    final String changeDateTime_<%=cid%> = "to_date('" + dateValue_<%=cid %> + "', 'yyyy-MM-dd')";
     
     <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>
     
     <%} else {%>
-    String startDateTime_<%=cid%> = changeDateTime_<%=cid%>;
+    final String startDateTime_<%=cid%> = changeDateTime_<%=cid%>;
     <%}%>
     
     <% if("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) {%>
-    String customEndDate_<%=cid%> = "to_date('" + <%=l2EndDateFieldFixedDateValue%> + "', 'yyyy-mm-dd')";
+    String customEndDate_<%=cid%> = "to_date('" + <%=l2EndDateFieldFixedDateValue%> + "', 'yyyy-MM-dd')";
     <%}
     
     List<String> columnNames = new ArrayList<String>();
@@ -146,9 +147,9 @@ if(isEnableType2) {
                .append("USING <%=text_util.wrap("sourceTable", cid)%> AS t ")
                .append("ON <%=joinClauseString%> ")
                .append("WHEN MATCHED AND (<%=whereClauseString%>) AND d.<%=text_util.wrap(endDateField)%>" + <%if("NULL".equals(l2EndDateFieldType)) { %>" IS NULL "<% } else { %>" = " + customEndDate_<%=cid%><%}%> + " THEN ")
-               .append("UPDATE SET <%=text_util.wrap(endDateField)%> = \"" + changeDateTime_<%=cid%> + "\" "<%if(isEnableActive) {%> + ", <%=text_util.wrap(activeField)%> = 0 "<%}%>)
+               .append("UPDATE SET <%=text_util.wrap(endDateField)%> = " + changeDateTime_<%=cid%> + " "<%if(isEnableActive) {%> + ", <%=text_util.wrap(activeField)%> = 0 "<%}%>)
                .append("WHEN NOT MATCHED THEN ")
-               .append("INSERT (<%=columnNameString%>) VALUES (t.<%=selectColumnString%>, " + <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>"t.<%=l2StartDateFieldInputFieldName%>"<%} else {%>"\"" + startDateTime_<%=cid%> + "\""<%}%> + ", " + <%if("NULL".equals(l2EndDateFieldType)) { %>"NULL"<% } else {%>customEndDate_<%=cid%><%}%>
+               .append("INSERT (<%=columnNameString%>) VALUES (t.<%=selectColumnString%>, " + <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>"t.<%=l2StartDateFieldInputFieldName%>"<%} else {%>startDateTime_<%=cid%><%}%> + ", " + <%if("NULL".equals(l2EndDateFieldType)) { %>"NULL"<% } else {%>customEndDate_<%=cid%><%}%>
 <%if(isEnableActive) {%>+ ", 1"<%}%><%if(isEnableVersion) {%>+", 1"<%}%> + ")");
 
     String mergeForType2_<%=cid%> = sb_type2_merge_<%=cid%>.toString();
@@ -167,12 +168,12 @@ if(isEnableType2) {
     
     StringBuilder sb_type2_active_<%=cid%> = new StringBuilder();
     sb_type2_active_<%=cid%>.append("MERGE INTO <%=text_util.wrap("tableName", cid)%> AS d ")
-               .append("USING (SELECT NULL as mergeKey, t.* FROM <%=text_util.wrap("sourceTable", cid)%> AS t JOIN <%=text_util.wrap("tableName", cid)%> ON " + "<%=joinClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + " WHERE (" + "<%=whereClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + ") AND " + tableName_<%=cid%> + ".<%=text_util.wrap(endDateField)%> = \"" + changeDateTime_<%=cid%> + "\") AS staged_updates ")
+               .append("USING (SELECT NULL as mergeKey, t.* FROM <%=text_util.wrap("sourceTable", cid)%> AS t JOIN <%=text_util.wrap("tableName", cid)%> ON " + "<%=joinClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + " WHERE (" + "<%=whereClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + ") AND " + tableName_<%=cid%> + ".<%=text_util.wrap(endDateField)%> = " + changeDateTime_<%=cid%> + ") AS staged_updates ")
                .append("ON d.<%=columnNames.get(0)%> = mergeKey ")//expect not match always as null value for mergeKey, then go to the insert action, never go to update 
                .append("WHEN MATCHED AND 1!=1 THEN ")
-               .append("UPDATE SET <%=text_util.wrap(endDateField)%> = \"" + changeDateTime_<%=cid%> + "\" ")//should never happen
+               .append("UPDATE SET <%=text_util.wrap(endDateField)%> = " + changeDateTime_<%=cid%> + " ")//should never happen
                .append("WHEN NOT MATCHED THEN ")
-               .append("INSERT (<%=columnNameString%>) VALUES (staged_updates.<%=selectColumnString.replace(" t."," staged_updates.")%>, " + <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>"staged_updates.<%=l2StartDateFieldInputFieldName%>"<%} else {%>"\"" + startDateTime_<%=cid%> + "\""<%}%> 
+               .append("INSERT (<%=columnNameString%>) VALUES (staged_updates.<%=selectColumnString.replace(" t."," staged_updates.")%>, " + <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>"staged_updates.<%=l2StartDateFieldInputFieldName%>"<%} else {%>startDateTime_<%=cid%><%}%> 
      + ", " + <% if("NULL".equals(l2EndDateFieldType)) { %>"NULL "<% } else {%>customEndDate_<%=cid%><%} if(isEnableActive) {%> + ", 1"<%}%><%if(isEnableVersion) {%> + ", staged_updates.<%=text_util.wrap(versionField)%> + 1"<%}%> + ")");
      
     String activeForType2_<%=cid%> = sb_type2_active_<%=cid%>.toString();
