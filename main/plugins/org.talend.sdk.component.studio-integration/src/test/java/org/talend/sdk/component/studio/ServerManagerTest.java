@@ -202,7 +202,7 @@ class ServerManagerTest {
         InputStream stream = null;
         try {
             stream = url.openStream();
-            final String content = IOUtils.toString(stream, StandardCharsets.UTF_8);
+            final String content = IOUtils.toString(stream, StandardCharsets.UTF_8.name());
             return content.contains("{\"components\":[");
         } catch (final ConnectException ioe) {
             return false;
