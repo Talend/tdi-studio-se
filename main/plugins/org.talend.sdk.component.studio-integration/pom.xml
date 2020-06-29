@@ -119,7 +119,7 @@
     <!-- Test Dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
+      <artifactId>junit-jupiter-api</artifactId>
       <version>${junit5.version}</version>
       <scope>test</scope>
     </dependency>
