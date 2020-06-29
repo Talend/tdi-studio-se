@@ -171,7 +171,7 @@
     <!-- Replaces log4j dep which is used in Studio plugin -->
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
+      <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j.version}</version>
       <scope>test</scope>
     </dependency>
