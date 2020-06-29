@@ -1180,9 +1180,15 @@ if (execStat) {
                     ((org.apache.commons.net.ftp.FTPClient) obj_conn).disconnect();
 <%
                 } else {
+                    if ("ftp".equals(type)) { 
 %>
-                    ((com.enterprisedt.net.ftp.FTPClient) obj_conn).quit();
+                        ((com.enterprisedt.net.ftp.FTPClient) obj_conn).quit();
 <%
+                    }else{
+%>
+                        ((org.apache.commons.net.ftp.FTPSClient) obj_conn).disconnect();
+<%
+                    }
                 }
             }
 %>
