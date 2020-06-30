@@ -88,8 +88,8 @@
             error_<%=cid %>.start();
 
             ps_<%=cid %>.waitFor();
-            normal_<%=cid %>.join(10000);
-            error_<%=cid %>.join(10000);
+            normal_<%=cid %>.join();
+            error_<%=cid %>.join();
             
             java.io.File file_<%=cid %> = new java.io.File(<%=outputFile %>);
             globalMap.put("<%=cid %>_FILE", file_<%=cid %>.getName());

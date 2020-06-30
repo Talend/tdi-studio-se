@@ -192,8 +192,12 @@
 					if(("true").equals(mailChecked_<%=cid %>[i_<%=cid%>])){
 						String[] sa_<%=cid%> = msg_<%=cid %>.getHeader(part_<%=cid%>);
 						String tempStr_<%=cid%>="";
-						for(int i=0;i<sa_<%=cid%>.length;i++){
-							tempStr_<%=cid%>=tempStr_<%=cid%>+sa_<%=cid%>[i] + sep_<%=cid%>;
+						if(sa_<%=cid%>!=null){
+							for(int i=0;i<sa_<%=cid%>.length;i++){
+								tempStr_<%=cid%>=tempStr_<%=cid%>+sa_<%=cid%>[i] + sep_<%=cid%>;
+							}
+						}else{
+							tempStr_<%=cid%>=null;
 						}
 						list_<%=cid%>.add(decode_<%=cid%>.decode(tempStr_<%=cid%>));
 					}else{

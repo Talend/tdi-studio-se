@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.talend.commons.runtime.xml.XmlUtil;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
@@ -356,6 +357,9 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     repositoryValue = newRepValue;
                     param.setRepositoryValue(repositoryValue);
                     param.setRepositoryValueUsed(true);
+                }
+                if (StringUtils.equals("MAPPING", param.getName())) {//$NON-NLS-1$
+                    repositoryValue = param.getName();
                 }
                 if (repositoryValue == null
                         || param.getRepositoryProperty() != null && !param.getRepositoryProperty().equals(propertyParamName)) {
