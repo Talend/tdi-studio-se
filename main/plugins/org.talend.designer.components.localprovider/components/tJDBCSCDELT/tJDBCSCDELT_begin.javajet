@@ -110,19 +110,19 @@ if(autoIncrease) {
 boolean isDynamic = false;
 %>
 
-<%if("TRUNCATE".equals(tableAction)) {
-%>
-int deletedCount_<%=cid%> = 0;
-<%
-}%>
-
-<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/_tableActionForOutput.javajet"%>
-
-<%
-if(isEnableDebug) {
-    %>
-    System.out.println("[<%=cid%>] table action <%=tableAction%> done\n");
-    <%
+<%if(!databricks_delta_lake) {%>
+	<%if("TRUNCATE".equals(tableAction)) {
+	%>
+	int deletedCount_<%=cid%> = 0;
+	<%
+	}%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/_tableActionForOutput.javajet"%>
+	<%
+	if(isEnableDebug) {
+	    %>
+	    System.out.println("[<%=cid%>] table action <%=tableAction%> done\n");
+	    <%
+	}
 }
 %>
 
