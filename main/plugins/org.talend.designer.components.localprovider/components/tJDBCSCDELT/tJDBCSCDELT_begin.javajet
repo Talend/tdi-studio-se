@@ -94,10 +94,11 @@ String table = ElementParameterParser.getValue(node, "__TABLE__");
 
 String surrogateKey = ElementParameterParser.getValue(node,"__SURROGATE_KEY__");
 
-boolean hive_o_databrick = "hive_id".equals(dbmsId)||"databricks_id".equals(dbmsId);
+//not mean we support hive database here, we support databricks delta lake by hive mapping
+boolean databricks_delta_lake = "hive_id".equals(dbmsId)||"databricks_delta_lake_id".equals(dbmsId);
 
 String surrogateKeyType = ElementParameterParser.getValue(node,"__SK_CREATION__");
-boolean autoIncrease = "AUTO_INCREMENT".equals(surrogateKeyType)&&surrogateKey!=null&&!hive_o_databrick;
+boolean autoIncrease = "AUTO_INCREMENT".equals(surrogateKeyType)&&surrogateKey!=null&&!databricks_delta_lake;
 
 List<Column> stmtStructure = null;
 if(autoIncrease) {
@@ -145,7 +146,7 @@ class TextUtil {
 TextUtil text_util = new TextUtil(manager);
 %>
 
-<%if("DB_SEQUENCE".equals(surrogateKeyType) && !hive_o_databrick) {%>
+<%if("DB_SEQUENCE".equals(surrogateKeyType) && !databricks_delta_lake) {%>
 String sequence_<%=cid%> = <%=ElementParameterParser.getValue(node,"__SK_DB_SEQUENCE__")%>;
     <%if("snowflake_id".equals(dbmsId)) {%>
     String sequenceValueFetchPattern_<%=cid%>;
@@ -182,8 +183,8 @@ String sequenceValueFetchPattern_<%=cid%> = "NEXT VALUE FOR <%=text_util.wrap("s
 	<%@ include file="./vertica.javajet"%>
 <%} else if("saphana_id".equals(dbmsId)){%>
     <%@ include file="./sap_hana.javajet"%>
-<%} else if(hive_o_databrick){%>
-    <%@ include file="./hive.javajet"%>
+<%} else if(databricks_delta_lake){%>
+    <%@ include file="./databricks_delta_lake.javajet"%>
 <%} else {%>
 	<%@ include file="./common_scd_pattern1.javajet"%>
 <%}%>

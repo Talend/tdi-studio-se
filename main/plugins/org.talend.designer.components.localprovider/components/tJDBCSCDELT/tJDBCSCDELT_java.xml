@@ -285,9 +285,9 @@
     >
     </PARAMETER>
     
-    <!-- this field only work for oracle (added HIVE), so now enabling rather than keep it hidden and use the default -->
+    <!-- this field only work for Oracle and Databricks Delta Lake(now use hive mapping for delta lake), so now enabling rather than keep it hidden and use the default -->
     <PARAMETER NAME="L2_STARTDATE_FIELD_TYPE" FIELD="CLOSED_LIST" NUM_ROW="82"
-		SHOW="false"
+		SHOW_IF="MAPPING == 'hive_id'"
 		>
 		<ITEMS DEFAULT="JOB_START_TIME">
 			<ITEM NAME="JOB_START_TIME" VALUE="JOB_START_TIME" />
@@ -295,7 +295,7 @@
 		</ITEMS>
 	</PARAMETER>
 
-	<!-- this field only work for oracle (and Hive), keep it hidden and use the default now -->
+	<!-- this field only work for Oracle and Databricks Delta Lake(now use hive mapping for delta lake), keep it hidden and use the default now -->
     <PARAMETER
       NAME="INPUT_FIELD_NAME"
       FIELD="COLUMN_LIST"
