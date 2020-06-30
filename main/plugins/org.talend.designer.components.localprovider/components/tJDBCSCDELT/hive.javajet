@@ -27,10 +27,39 @@ String strFieldName = "";
 String selectColumnString = "";
 String columnNameString = "";
 
+String startDateField = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD__");
+String endDateField = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD__");
+
+String l2StartDateFieldType = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD_TYPE__");
+String l2StartDateFieldInputFieldName =  ElementParameterParser.getValue(node,"__INPUT_FIELD_NAME__");
+
+String l2EndDateFieldType = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD_TYPE__");
+String l2EndDateFieldFixedDateValue = ElementParameterParser.getValue(node,"__FIXED_DATE_VALUE__");
+
+boolean isEnableActive = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_ACTIVE__"));
+String activeField = ElementParameterParser.getValue(node,"__L2_ACTIVE_FIELD__");
+boolean isEnableVersion = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_VERSION__"));
+String versionField = ElementParameterParser.getValue(node,"__L2_VERSION_FIELD__");
+
 //three cases :
 //type 1 only
 //type 2 only
 //type 1&2
+
+if(isEnableType2) {
+%>
+    final String changeDateTime_<%=cid %> = "\"" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString() + "\"";
+    
+    <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>
+    
+    <%} else {%>
+    final String startDateTime_<%=cid%> = changeDateTime_<%=cid%>;
+    <%}%>
+    
+    <% if("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) {%>
+    String customEndDate_<%=cid%> = "to_date('" + <%=l2EndDateFieldFixedDateValue%> + "', 'yyyy-MM-dd')";
+    <%}
+}
 
 if(isEnableType1) {
     List<String> columnNames = new ArrayList<String>();
@@ -49,7 +78,21 @@ if(isEnableType1) {
        	}
         whereClause.add("( d." + strFieldName + " <> t." + strFieldName+")");
     }
+    for(Map<String, String> type2Attribute : type2Attributes) {
+        columnNames.add(text_util.wrap(type2Attribute.get("NAME")));
+    }
     selectColumnString = StringUtils.join(columnNames.toArray(), ", t.");
+    
+    if(isEnableType2) {
+        columnNames.add(text_util.wrap(startDateField));
+        columnNames.add(text_util.wrap(endDateField));
+        if(isEnableActive) {
+            columnNames.add(text_util.wrap(activeField));
+        }
+        if(isEnableVersion) {
+            columnNames.add(text_util.wrap(versionField));
+        }
+    }
     columnNameString = StringUtils.join(columnNames.toArray(), ", ");
     String setColumnsString = StringUtils.join(setColumns.toArray(), ", ");
     String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
@@ -61,7 +104,12 @@ if(isEnableType1) {
                .append("WHEN MATCHED AND (<%=whereClauseString%>) THEN ")
                .append("UPDATE SET <%=setColumnsString%> ")
                .append("WHEN NOT MATCHED <%if(isEnableType2){%>AND 1!=1 <%}%>THEN ")
+               <%if(isEnableType2) {%>
+               .append("INSERT (<%=columnNameString%>) VALUES (t.<%=selectColumnString%>, " + <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>"t.<%=l2StartDateFieldInputFieldName%>"<%} else {%>startDateTime_<%=cid%><%}%> + ", " + <%if("NULL".equals(l2EndDateFieldType)) { %>"NULL"<% } else {%>customEndDate_<%=cid%><%}%>
+<%if(isEnableActive) {%>+ ", 1"<%}%><%if(isEnableVersion) {%>+", 1"<%}%> + ")");
+               <%} else {%>
                .append("INSERT (<%=columnNameString%>) VALUES (t.<%=selectColumnString%>)");
+               <%}%>
     
     String mergeForType1_<%=cid%> = sb_type1_<%=cid%>.toString();
     
@@ -81,20 +129,6 @@ if(isEnableType1) {
     }
 }
 
-String startDateField = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD__");
-String endDateField = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD__");
-
-String l2StartDateFieldType = ElementParameterParser.getValue(node,"__L2_STARTDATE_FIELD_TYPE__");
-String l2StartDateFieldInputFieldName =  ElementParameterParser.getValue(node,"__INPUT_FIELD_NAME__");
-
-String l2EndDateFieldType = ElementParameterParser.getValue(node,"__L2_ENDDATE_FIELD_TYPE__");
-String l2EndDateFieldFixedDateValue = ElementParameterParser.getValue(node,"__FIXED_DATE_VALUE__");
-
-boolean isEnableActive = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_ACTIVE__"));
-String activeField = ElementParameterParser.getValue(node,"__L2_ACTIVE_FIELD__");
-boolean isEnableVersion = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_VERSION__"));
-String versionField = ElementParameterParser.getValue(node,"__L2_VERSION_FIELD__");
-
 if(isEnableType2) {
     List<String> whereClause = new ArrayList<String>();
     for (Map<String, String> type2Attribute : type2Attributes) {
@@ -106,18 +140,6 @@ if(isEnableType2) {
         whereClause.add("( d." + strFieldName + " <> t." + strFieldName+")");
     }
     String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
-    %>
-    final String changeDateTime_<%=cid %> = "\"" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString() + "\"";
-    
-    <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>
-    
-    <%} else {%>
-    final String startDateTime_<%=cid%> = changeDateTime_<%=cid%>;
-    <%}%>
-    
-    <% if("FIXED_DATE_VALUE".equals(l2EndDateFieldType)) {%>
-    String customEndDate_<%=cid%> = "to_date('" + <%=l2EndDateFieldFixedDateValue%> + "', 'yyyy-MM-dd')";
-    <%}
     
     List<String> columnNames = new ArrayList<String>();
     for(Map<String, String> sourceKey : sourceKeys) {
@@ -166,7 +188,7 @@ if(isEnableType2) {
     
     StringBuilder sb_type2_active_<%=cid%> = new StringBuilder();
     sb_type2_active_<%=cid%>.append("MERGE INTO <%=text_util.wrap("tableName", cid)%> AS d ")
-               .append("USING (SELECT NULL as mergeKey, t.* FROM <%=text_util.wrap("sourceTable", cid)%> AS t JOIN <%=text_util.wrap("tableName", cid)%> ON " + "<%=joinClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + " WHERE (" + "<%=whereClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + ") AND " + tableName_<%=cid%> + ".<%=text_util.wrap(endDateField)%> = " + changeDateTime_<%=cid%> + ") AS staged_updates ")
+               .append("USING (SELECT NULL as mergeKey, <%if(isEnableVersion) {%><%=text_util.wrap("tableName", cid)%>.<%=text_util.wrap(versionField)%>, <%}%>t.* FROM <%=text_util.wrap("sourceTable", cid)%> AS t JOIN <%=text_util.wrap("tableName", cid)%> ON " + "<%=joinClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + " WHERE (" + "<%=whereClauseString%>".replace(" d."," "+tableName_<%=cid%>+".") + ") AND " + tableName_<%=cid%> + ".<%=text_util.wrap(endDateField)%> = " + changeDateTime_<%=cid%> + ") AS staged_updates ")
                .append("ON d.<%=columnNames.get(0)%> = mergeKey ")//expect not match always as null value for mergeKey, then go to the insert action, never go to update 
                .append("WHEN MATCHED AND 1!=1 THEN ")
                .append("UPDATE SET <%=text_util.wrap(endDateField)%> = " + changeDateTime_<%=cid%> + " ")//should never happen
