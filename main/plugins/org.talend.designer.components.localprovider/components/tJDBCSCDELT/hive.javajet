@@ -95,7 +95,6 @@ String activeField = ElementParameterParser.getValue(node,"__L2_ACTIVE_FIELD__")
 boolean isEnableVersion = ("true").equals(ElementParameterParser.getValue(node,"__USE_L2_VERSION__"));
 String versionField = ElementParameterParser.getValue(node,"__L2_VERSION_FIELD__");
 
-//type 2 only
 if(isEnableType2) {
     List<String> whereClause = new ArrayList<String>();
     for (Map<String, String> type2Attribute : type2Attributes) {
@@ -108,8 +107,7 @@ if(isEnableType2) {
     }
     String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
     %>
-    final String dateValue_<%=cid %> =(new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString().substring(0, 10);
-    final String changeDateTime_<%=cid%> = "to_date('" + dateValue_<%=cid %> + "', 'yyyy-MM-dd')";
+    final String changeDateTime_<%=cid %> = "\"" + (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString() + "\"";
     
     <%if("INPUT_FIELD".equals(l2StartDateFieldType)) {%>
     
