@@ -25,11 +25,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 
-	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
-	boolean isHive = "hive_id".equals(dbmsId);
-	
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-	boolean isSuppressColumnNameOnInsertEnabled = isHive && "true".equals(ElementParameterParser.getValue(node, "__SUPPRESS_COLUMNNAMES_ON_INSERT__"));
 	String cid = node.getUniqueName();
 
 	String dbtable = null;
@@ -164,7 +160,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 
         if(("INSERT").equals(dataAction)){
 %>
-            String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%><%if(!isSuppressColumnNameOnInsertEnabled){%>+"(<%=insertColName.toString()%>)"<%}%>+ "("+select_query_<%=cid %>+")";
+            String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>)  ("+select_query_<%=cid %>+")";
 <%
         } else if (("UPDATE").equals(dataAction)){
             if(useUpdateStatement){
@@ -206,33 +202,19 @@ skeleton="../templates/db_output_bulk.skeleton"
         	;
     	<%
     	}
-		else if (isHive && "OVERWRITE".equals(dataAction)){
-    	%>
-          String overwriteQuery_<%=cid %> = "INSERT OVERWRITE TABLE "+ tableName_<%=cid%>+" ("+select_query_<%=cid %>+") "
-        	<%
-        	if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
-        	%>
-        	+"  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
-        	<%
-        	}
-        	%>
-        	;
-    	<%
-    	}
     	%>
 
         int nb_line_<%=cid%> = 0;
         int nb_line_updated_<%=cid%> = 0;
         int nb_line_inserted_<%=cid%> = 0;
         int nb_line_deleted_<%=cid%> = 0;
-        <%if(isHive) {%>
-		int nb_line_overwritten_<%=cid%> = 0;
-        <%}
+        <%
     }
 
 	if(dbtable != null && columnList != null){
 		{//use the block to limit the code scope for table action
     		Manager manager = null;
+    		String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
     		String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
 
     		List<Column> stmtStructure = getELTManager(dbmsId, cid, node).createColumnList(columnList, false, null, null);
@@ -276,17 +258,6 @@ skeleton="../templates/db_output_bulk.skeleton"
     	pstmt_<%=cid %>.close();
 		<%
 		}
-		else if (isHive && "OVERWRITE".equals(dataAction)){
-		%>
-    	System.out.println("Overwrite with : \n" + overwriteQuery_<%=cid %> +"\n");
-		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+overwriteQuery_"+ cid +"+\"");%>
-		java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(overwriteQuery_<%=cid %>);
-		nb_line_overwritten_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
-		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
-    	System.out.println("--> " + nb_line_overwritten_<%=cid%> + " rows inserted. \n");
-    	pstmt_<%=cid %>.close();
-		<%
-		}
 	}
 	// END
 	%>
@@ -300,23 +271,17 @@ skeleton="../templates/db_output_bulk.skeleton"
     <%
     }
     %>
-    nb_line_<%=cid%> = nb_line_updated_<%=cid%> + nb_line_inserted_<%=cid%> + nb_line_deleted_<%=cid%> <%if(isHive){%>+ nb_line_overwritten_<%=cid%><%}%>;
+    nb_line_<%=cid%> = nb_line_updated_<%=cid%> + nb_line_inserted_<%=cid%> + nb_line_deleted_<%=cid%>;
     globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid%>);
     globalMap.put("<%=cid %>_NB_LINE_UPDATED",nb_line_updated_<%=cid%>);
     globalMap.put("<%=cid %>_NB_LINE_INSERTED",nb_line_inserted_<%=cid%>);
     globalMap.put("<%=cid %>_NB_LINE_DELETED",nb_line_deleted_<%=cid%>);
-    <%if(isHive) {%>
-	globalMap.put("<%=cid %>_NB_LINE_OVERWRITTEN",nb_line_overwritten_<%=cid%>);
     <%
-    }
     if(isLog4jEnabled){
     	Map<String,String> actionMap=new java.util.HashMap<String,String>();
     	actionMap.put("INSERT","inserted");
     	actionMap.put("UPDATE","updated");
     	actionMap.put("DELETE","deleted");
-    	if(isHive) {
-			actionMap.put("OVERWRITE","overwritten");
-		}
     	%>
     	log.info("<%=cid%> - Has <%=actionMap.get(dataAction)%> records count: " + nb_line_<%=actionMap.get(dataAction)%>_<%=cid%> + ".");
     <%
