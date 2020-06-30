@@ -158,9 +158,9 @@ try{
                 }
             }else{
                 <%if(isLog4jEnabled){%>
-                    log.error("<%=cid%> - No match file exist!");
+                    log.warn("<%=cid%> - No matches found for mask '" + key<%=cid %> + "'!");
                 <%}%>
-                System.err.println("No match file exist!");
+                System.err.println("No matches found for mask '" + key<%=cid %> + "'!");
             }
 
             //do rename
@@ -319,9 +319,9 @@ try{
                 }
             }else{
                 <%if(isLog4jEnabled){%>
-                    log.error("<%=cid%> - No match file exist!");
+                    log.warn("<%=cid%> - No matches found for mask '" + key<%=cid %> + "'!");
                 <%}%>
-                System.err.println("No match file exist!");
+                System.err.println("No matches found for mask '" + key<%=cid %> + "'!");
             }
 
             //do rename
