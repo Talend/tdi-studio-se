@@ -684,9 +684,12 @@ public final class Expression {
                             Object[] values = testedParameter.getListItemsValue();
                             for (int i = 0; i < values.length && !found; i++) {
                                 if (value.equals(values[i])) {
-                                    String variableCode = testedParameter.getListItemsDisplayCodeName()[i];
-                                    if (variableCode.equals(variableValue)) {
-                                        found = true;
+                                    String[] listItemsDisplayCodeName = testedParameter.getListItemsDisplayCodeName();
+                                    if(listItemsDisplayCodeName!=null) {
+                                        String variableCode = testedParameter.getListItemsDisplayCodeName()[i];
+                                        if (variableCode.equals(variableValue)) {
+                                            found = true;
+                                        }
                                     }
                                 }
                             }

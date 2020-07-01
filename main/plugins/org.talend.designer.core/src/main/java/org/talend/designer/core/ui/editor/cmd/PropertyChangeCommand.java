@@ -492,6 +492,9 @@ public class PropertyChangeCommand extends Command {
         if (currentParam.getName().equals(EParameterName.PROCESS_TYPE_PROCESS.getName())) {
             toUpdate = true;
         }
+        if (currentParam.getName().equals(EParameterName.MAPPING.getName())) {
+            toUpdate = true;
+        }
         // TUP-18405, need update module list
         if (currentParam.getFieldType() == EParameterFieldType.MODULE_LIST) {
             toUpdate = true;
