@@ -2,6 +2,7 @@ package com.talend.mdm.transaction.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.httpclient.Header;
@@ -18,11 +19,13 @@ public class MDMTransactionClient {
 
     public static MDMTransaction newTransaction(String url, String username, String password) throws IOException {
         HttpClient client = new HttpClient();
-        client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+        byte[] authBytes = (username + ":" + password).getBytes("UTF-8");
+        String authString = Base64.getEncoder().encodeToString(authBytes);
         client.getParams().setAuthenticationPreemptive(true);
 
         PutMethod put = new PutMethod(url);
         put.setDoAuthentication(true);
+        put.setRequestHeader("Authorization", "Basic " + authString);
         String tid;
         List<String> cookies;
         try {

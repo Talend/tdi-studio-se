@@ -59,6 +59,12 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
 
     private PropertyNode propertyNode;
 
+    /**
+     * Form that own this tck element paramter.
+     * actually : Main or Advanced.
+     */
+    private String form;
+
     public TaCoKitElementParameter() {
         this(null);
     }
@@ -87,6 +93,14 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
 
     public Optional<IProblemManager> getProblemManager() {
         return problemManager;
+    }
+
+    public String getForm() {
+        return form;
+    }
+
+    public void setForm(String form) {
+        this.form = form;
     }
 
     public void setProblemManager(IProblemManager problemManager) {

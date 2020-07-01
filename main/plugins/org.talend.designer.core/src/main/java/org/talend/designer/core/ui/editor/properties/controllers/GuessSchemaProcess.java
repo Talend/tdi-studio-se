@@ -59,6 +59,7 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
     public GuessSchemaProcess(Property property, INode node, IContext selectContext, String memoSQL, DbInfo info) {
         super(property, node, selectContext);
         this.memoSQL = memoSQL.replace("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        info.setPwd(info.getPwd().replace("\\", "\\\\").replace("\"", "\\\""));
         this.info = info;
         this.conn = info.getConn();
         this.originalProcess = null;
@@ -68,6 +69,7 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
             IProcess originalProcess) {
         super(property, node, selectContext);
         this.memoSQL = memoSQL.replace("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        info.setPwd(info.getPwd().replace("\\", "\\\\").replace("\"", "\\\""));
         this.info = info;
         this.conn = info.getConn();
         this.originalProcess = originalProcess;
