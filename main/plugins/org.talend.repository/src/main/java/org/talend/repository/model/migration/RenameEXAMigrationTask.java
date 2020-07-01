@@ -97,7 +97,9 @@ public class RenameEXAMigrationTask extends AbstractJobMigrationTask {
 											System.out.println(replaceAll);
                                         t.setValue(replaceAll);
                                     }
-                                }
+                                }else{
+									System.out.println("Else UNIQUE_NAME: "+value);
+								}
                                 if ("TABLE".equals(t.getField())) {
                                     if (t.getName() != null && t.getName().contains(source[j])) {
                                         String replaceAll = t.getName().replaceAll(source[j], target[j]);
