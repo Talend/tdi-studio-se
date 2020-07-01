@@ -285,7 +285,7 @@ stmtInsert_<%=cid%>.close();
 	        columnNames.add(strFieldName);
 	        setColumns.add(strFieldName);
 	        whereClause.add("( d." + strFieldName + " is null )");
-			subQueryWhere.add("( t." + strFieldName + " is not null )");
+			subQueryWhere.add(" t." + strFieldName + " is not null ");
 	    }
 	    selectColumnString = StringUtils.join(columnNames.toArray(), ", t.");
 	    columnNameString = StringUtils.join(columnNames.toArray(), ", ");
@@ -294,7 +294,7 @@ stmtInsert_<%=cid%>.close();
 	    String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
 	    %>
 		
-		    String updateForType0_<%=cid%> = "UPDATE " + tableName_<%=cid%> + " d SET (<%=setColumnsString%>) = (SELECT <%=setColumnsString%> FROM " + tableName_<%=cid%> + " t WHERE <%=joinClauseString%> AND (<%=subQueryWhereString%>)) WHERE <%=whereClauseString%>";
+		    String updateForType0_<%=cid%> = "UPDATE " + tableName_<%=cid%> + " d SET (<%=setColumnsString%>) = (SELECT <%=setColumnsString%> FROM " + tableName_<%=cid%> + " t WHERE <%=joinClauseString%> AND (<%=subQueryWhereString%>) AND ROWNUM = 1) WHERE <%=whereClauseString%>";
 
 	    <%
 		    if(isEnableDebug) {
