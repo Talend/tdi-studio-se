@@ -65,6 +65,7 @@ public class RenameEXAMigrationTask extends AbstractJobMigrationTask {
                                     if ("CONDITION".equals(type.getName())) {
                                         if (type.getValue() != null && type.getValue().contains(source[j])) {
                                             String replaceAll = type.getValue().replaceAll(source[j], target[j]);
+
                                             type.setValue(replaceAll);
                                         }
                                         break;
@@ -92,17 +93,23 @@ public class RenameEXAMigrationTask extends AbstractJobMigrationTask {
                                 if (!"UNIQUE_NAME".equals(t.getName()) && value != null) {
                                     if (value.contains(source[j])) {
                                         String replaceAll = value.replaceAll(source[j], target[j]);
+											System.out.println("UNIQUE_NAME: "+type.getValue());
+											System.out.println(replaceAll);
                                         t.setValue(replaceAll);
                                     }
                                 }
                                 if ("TABLE".equals(t.getField())) {
                                     if (t.getName() != null && t.getName().contains(source[j])) {
                                         String replaceAll = t.getName().replaceAll(source[j], target[j]);
+											System.out.println("TABLE: "+type.getValue());
+											System.out.println(replaceAll);
                                         t.setName(replaceAll);
                                     }
                                     for (ElementValueType type : (List<ElementValueType>) t.getElementValue()) {
                                         if (type.getValue() != null && type.getValue().contains(source[j])) {
                                             String replaceAll = type.getValue().replaceAll(source[j], target[j]);
+											System.out.println("type: "+type.getValue());
+											System.out.println(replaceAll);
                                             type.setValue(replaceAll);
                                         }
                                     }
