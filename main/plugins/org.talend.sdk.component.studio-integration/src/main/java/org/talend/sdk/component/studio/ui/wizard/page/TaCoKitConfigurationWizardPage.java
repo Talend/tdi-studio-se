@@ -12,7 +12,6 @@
  */
 package org.talend.sdk.component.studio.ui.wizard.page;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +27,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.process.EComponentCategory;
-import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.DummyComponent;
-import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.process.DataNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
@@ -45,9 +42,7 @@ import org.talend.sdk.component.studio.model.parameter.LayoutParameter;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.PropertyTreeCreator;
-import org.talend.sdk.component.studio.model.parameter.SettingVisitor;
 import org.talend.sdk.component.studio.model.parameter.VersionParameter;
-import org.talend.sdk.component.studio.ui.composite.TaCoKitComposite;
 import org.talend.sdk.component.studio.ui.composite.TaCoKitWizardComposite;
 import org.talend.sdk.component.studio.ui.composite.problemmanager.WizardProblemManager;
 import org.talend.sdk.component.studio.ui.composite.problemmanager.WizardProblemManager.IWizardHandler;
@@ -60,9 +55,7 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
 
     private final boolean isNew;
 
-    private Element element;
-
-    private TaCoKitComposite tacokitComposite;
+    private final Element element;
 
     private TaCoKitConfigurationModel configurationModel;
 
@@ -74,8 +67,10 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
 
     private WizardProblemManager problemManager;
 
-    public TaCoKitConfigurationWizardPage(final TaCoKitConfigurationRuntimeData runtimeData, final String form,
-            final boolean isNew) {
+    public TaCoKitConfigurationWizardPage(final TaCoKitConfigurationRuntimeData runtimeData,
+            final String form,
+            final boolean isNew,
+            List<IElementParameter> parameters) {
         super(Messages.getString("WizardPage.TaCoKitConfiguration"), runtimeData); //$NON-NLS-1$
         this.isNew = isNew;
         final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
@@ -97,6 +92,15 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
         problemManager = new WizardProblemManager();
         runtimeData.registProblemManager(problemManager);
         problemManager.setWizardHandler(new WizardHandler());
+
+        element = new FakeElement(runtimeData.getTaCoKitRepositoryNode().getConfigTypeNode().getDisplayName());
+        element.setReadOnly(runtimeData.isReadonly());
+
+        final PropertyNode root = new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);
+
+        final ElementParameter layoutParameter = createLayoutParameter(root, form, category, element);
+        parameters.add(layoutParameter);
+        element.setElementParameters(parameters);
     }
 
     @Override
@@ -112,18 +116,7 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
             final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
             final DummyComponent component = new DummyComponent(configTypeNode.getDisplayName());
             final DataNode node = new DataNode(component, component.getName());
-            final PropertyNode root = new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);
-            element = new FakeElement(runtimeData.getTaCoKitRepositoryNode().getConfigTypeNode().getDisplayName());
-            element.setReadOnly(runtimeData.isReadonly());
-            final ElementParameter updateParameter = createUpdateComponentsParameter(element);
-            final List<IElementParameter> parameters = new ArrayList<>();
-            parameters.add(updateParameter);
-            final SettingVisitor settingsCreator =
-                    new SettingVisitor(node, updateParameter, configTypeNode).withCategory(category);
-            root.accept(settingsCreator, form);
-            parameters.addAll(settingsCreator.getSettings());
-            final ElementParameter layoutParameter = createLayoutParameter(root, form, category, element);
-            parameters.add(layoutParameter);
+
             //add version params
             Map<String, ConfigTypeNode> nodes = Lookups.taCoKitCache().getConfigTypeNodeMap();
             configTypeNode.getProperties()
@@ -137,8 +130,8 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
                                     .findFirst()
                                     .map(n -> String.valueOf(n.getVersion())).orElse("-1")))
                     .forEach(p -> configurationModel.setValue(p));
-            element.setElementParameters(parameters);
-            tacokitComposite = new TaCoKitWizardComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
+
+            final TaCoKitWizardComposite tacokitComposite = new TaCoKitWizardComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
                     element, configurationModel, true, container.getBackground(), isNew, problemManager);
             tacokitComposite.setLayoutData(createMainFormData(runtimeData.isAddContextFields()));
         } catch (Exception e) {
@@ -169,24 +162,6 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
             data.bottom = new FormAttachment(100, 0);
         }
         return data;
-    }
-
-    /**
-     * Creates and adds {@link EParameterName#UPDATE_COMPONENTS} parameter
-     * This parameter is used to decide whether UI should be redrawn during Composite refresh
-     */
-    // TODO it is duplicated in ElementParameterCreator. Refactor to avoid duplication
-    private ElementParameter createUpdateComponentsParameter(final Element element) {
-        final ElementParameter parameter = new ElementParameter(element);
-        parameter.setName(EParameterName.UPDATE_COMPONENTS.getName());
-        parameter.setValue(false);
-        parameter.setDisplayName(EParameterName.UPDATE_COMPONENTS.getDisplayName());
-        parameter.setFieldType(EParameterFieldType.CHECK);
-        parameter.setCategory(EComponentCategory.TECHNICAL);
-        parameter.setReadOnly(true);
-        parameter.setRequired(false);
-        parameter.setShow(false);
-        return parameter;
     }
 
     // TODO it is duplicated in ElementParameterCreator. Refactor to avoid duplication

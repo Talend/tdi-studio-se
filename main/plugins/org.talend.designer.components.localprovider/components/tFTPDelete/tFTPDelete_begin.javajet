@@ -185,15 +185,6 @@ int nb_file_<%=cid%> = 0;
 %>
 			ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
 <%
-			if (moveToCurrentDir) {
-%>
-				boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(<%=remotedir %>);
-
-				if (!cwdSuccess_<%=cid %>) {
-					throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
-				}
-<%
-			}
 		}
 %>
 
@@ -217,6 +208,17 @@ int nb_file_<%=cid%> = 0;
         <%}%>
 <%
         }//common code ftp and ftps:
+%>
+<%
+        if (("true").equals(useExistingConn) && moveToCurrentDir) {
+%>
+            boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(<%=remotedir %>);
+
+            if (!cwdSuccess_<%=cid %>) {
+                throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+            }
+<%
+        }
 %>
         <% /*store real pwd*/ %>
         String rootWorkDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();

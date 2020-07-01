@@ -34,7 +34,8 @@
     String tokenFile = ElementParameterParser.getValue(node,"__TOKEN_NAME__");
 	boolean isLog4jEnabled = ElementParameterParser.getBooleanValue(node.getProcess(), "__LOG4J_ACTIVATE__");
 	boolean dropTable = ElementParameterParser.getBooleanValue(node, "__DROP__");
-	
+	boolean useCustomNullMarker = ElementParameterParser.getBooleanValue(node, "__USE_CUSTOM_NULL_MARKER__");
+	String nullMarker = useCustomNullMarker ? ElementParameterParser.getValue(node, "__CUSTOM_NULL_MARKER__") : "\"\\\\N\"";
 	String passwordFieldName = "";
 	
 	IConnection incomingConnection = null;
@@ -453,7 +454,7 @@
 		queryLoad_<%=cid%>.setDestinationTable(destinationTable_<%=cid%>);
 		queryLoad_<%=cid%>.setSourceUris(java.util.Arrays.asList(<%=gsFile%>));
 		queryLoad_<%=cid%>.setSkipLeadingRows(<%=gsFileHeader%>);
-		queryLoad_<%=cid%>.setNullMarker("\\N");
+		queryLoad_<%=cid%>.setNullMarker(<%= nullMarker %>);
 		config_<%=cid%>.setLoad(queryLoad_<%=cid%>);
 		
 		job_<%=cid%>.setConfiguration(config_<%=cid%>);
@@ -732,7 +733,7 @@
 	        }
 	        %>		
 			loadJobBuilder_<%=cid%>.setFormatOptions(csvOptions_<%=cid%>.build());
-			loadJobBuilder_<%=cid%>.setNullMarker("\\N");																
+			loadJobBuilder_<%=cid%>.setNullMarker(<%= nullMarker %>);
 			com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(loadJobBuilder_<%=cid%>.build()));
 			job_<%=cid%> = job_<%=cid%>.waitFor(com.google.cloud.RetryOption.initialRetryDelay(org.threeten.bp.Duration.ofSeconds(1)));
 			if (job_<%=cid%> != null && job_<%=cid%>.getStatus().getError() == null) {

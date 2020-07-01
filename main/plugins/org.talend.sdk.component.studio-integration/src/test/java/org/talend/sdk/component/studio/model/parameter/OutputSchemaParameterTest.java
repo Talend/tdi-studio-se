@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -108,7 +109,7 @@ class OutputSchemaParameterTest {
     @Test
     void testIsPersisted() {
         final OutputSchemaParameter parameter = new OutputSchemaParameter(null, "schema", CONNECTOR_NAME, null, true);
-        assertFalse(parameter.isPersisted());
+        Assertions.assertTrue(parameter.isPersisted());
     }
 
     @Test

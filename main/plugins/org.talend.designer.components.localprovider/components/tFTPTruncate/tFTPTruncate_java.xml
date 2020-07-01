@@ -254,7 +254,6 @@ COMPATIBILITY="ALL"
 
   <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="jakarta-oro" MODULE="jakarta-oro-2.0.8.jar" MVN="mvn:org.talend.libraries/jakarta-oro-2.0.8/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/jakarta-oro-2.0.8.jar" REQUIRED="true" />
 		<IMPORT NAME="Java-SFTP" MODULE="jsch-0.1.55.jar" MVN="mvn:com.jcraft/jsch/0.1.55" REQUIRED_IF="(SFTP == 'true') AND (USE_EXISTING_CONNECTION == 'false')"/>
 		<IMPORT NAME="Java-FTP+S" MODULE="commons-net-3.6.jar" MVN="mvn:commons-net/commons-net/3.6" REQUIRED_IF="(SFTP == 'false') AND (USE_EXISTING_CONNECTION == 'false')" />
 		<IMPORT NAME="FTP+S-Proxy-talend" MODULE="commons-net-ftps-proxy-3.6.1-talend-20190819.jar" 

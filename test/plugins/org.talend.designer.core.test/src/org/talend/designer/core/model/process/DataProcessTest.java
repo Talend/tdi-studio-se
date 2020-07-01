@@ -12,12 +12,12 @@
 // ============================================================================
 package org.talend.designer.core.model.process;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.talend.core.context.Context;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.context.JobContextManager;
@@ -28,17 +28,12 @@ import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
-import org.talend.core.model.process.IGenericElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
-import org.talend.core.model.properties.Property;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
-import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.designer.core.model.components.EParameterName;
-import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.test.util.NodeTestCreator;
-import org.talend.designer.core.test.util.SimpleInputComponent;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.TestUtils;
@@ -163,7 +158,8 @@ public class DataProcessTest {
         TestUtils.invokePrivateMethod(dataProcess, "initialize", new Object[0]); //$NON-NLS-1$
 
         // Built in mode
-        TestUtils.invokePrivateMethod(dataProcess, "checkUseHadoopConfs", new Object[] { simpleInputNode }, INode.class); //$NON-NLS-1$
+        TestUtils.invokePrivateMethod(dataProcess, "checkUseHadoopConfs", new Object[] { simpleInputNode, "" }, INode.class, //$NON-NLS-1$
+                String.class);
         assertFalse(containsHadoopConfsNode());
 
         // Repository mode but repository value is null
@@ -172,7 +168,8 @@ public class DataProcessTest {
         propertyElementParameter.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
                 .setValue(EmfComponent.REPOSITORY);
         propertyElementParameter.getChildParameters().get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName()).setValue(null);
-        TestUtils.invokePrivateMethod(dataProcess, "checkUseHadoopConfs", new Object[] { simpleInputNode }, INode.class); //$NON-NLS-1$
+        TestUtils.invokePrivateMethod(dataProcess, "checkUseHadoopConfs", new Object[] { simpleInputNode, "" }, INode.class, //$NON-NLS-1$
+                String.class);
         assertFalse(containsHadoopConfsNode());
     }
 

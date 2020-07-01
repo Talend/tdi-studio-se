@@ -15,6 +15,7 @@
 	String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 	String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
 	boolean moveToCurrentDir = ("true").equals(ElementParameterParser.getValue(node, "__MOVE_TO_THE_CURRENT_DIRECTORY__"));
+	boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
 	boolean sftp = false;
 	boolean ftps = false; 
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
@@ -53,7 +54,11 @@ if(sftp){ // *** sftp *** //
         sb_<%=cid %>.append(item_<%=cid %>).append("\n");
     }
 	globalMap.put("<%=cid%>_TRANSFER_MESSAGES", sb_<%=cid %>.toString());
-    
+    <% if(dieOnError) { %>
+        if(nb_file_<%=cid%> == 0 && !list<%=cid %>.isEmpty()){
+            throw new RuntimeException("Error during component operation!");
+        }
+    <%}%>
 <%}else if(!ftps){%> // *** ftp *** //
 	}
 	
@@ -104,8 +109,13 @@ if(sftp){ // *** sftp *** //
 		  		ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
 <%	
 			}
-		}
-}else{  // *** ftps *** // 
+		}%>
+    <% if(dieOnError) { %>
+        if(nb_file_<%=cid%> == 0 && !list<%=cid %>.isEmpty()){
+            throw new RuntimeException("Error during component operation!");
+        }
+    <%}%>
+<%}else{  // *** ftps *** // 
 %>
 	}
 <%
@@ -134,4 +144,8 @@ globalMap.put("<%=cid %>_NB_FILE",nb_file_<%=cid%>);
 <%if(isLog4jEnabled){%>
 	log.info("<%=cid%> - Uploaded files count: " + nb_file_<%=cid%> +  ".");
 <%}%>
-
+<% if(dieOnError) { %>
+    if(nb_file_<%=cid%> == 0 && !list<%=cid %>.isEmpty()){
+        throw new RuntimeException("Error during component operation!");
+    }
+<%}%>
