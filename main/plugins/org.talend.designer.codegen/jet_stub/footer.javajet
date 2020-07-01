@@ -926,9 +926,11 @@ this.globalResumeTicket = true;//to run tPreJob
 // run tHadoopConfManager component if there is it.
  if(!hadoopConfNodes.isEmpty()) {
     INode hadoopConfNode = hadoopConfNodes.get(0);
+    if (hadoopConfNode.isStart()) {
 %>
 <%=createCallProcess(hadoopConfNode, className, false) %>
 <%
+ }
  }
 %>
 
@@ -1343,13 +1345,11 @@ if (execStat) {
             } else {
                 type = "ftp";
             }
-            if ("ftp".equals(type)) { %>
-                ((com.enterprisedt.net.ftp.FTPClient) obj_conn).quit();
-        <%} else if ("sftp".equals(type)) { %>
+            if ("sftp".equals(type)) { %>
                 ((com.jcraft.jsch.ChannelSftp) obj_conn).quit();
-        <%} else { %>
-                ((org.apache.commons.net.ftp.FTPSClient) obj_conn).disconnect();
-        <%}%>
+            <%} else { %>
+                ((org.apache.commons.net.ftp.FTPClient) obj_conn).disconnect();
+            <%}%>
             }
 <%  } %>
         } catch (java.lang.Exception e) {

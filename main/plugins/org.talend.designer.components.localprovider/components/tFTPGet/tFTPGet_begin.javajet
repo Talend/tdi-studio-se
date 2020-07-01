@@ -307,359 +307,247 @@ if (sftp) { // *** sftp *** //
 				c_<%=cid%>.cd(remotedir_<%=cid %>);
 			}
 <%
-} else if (!ftps) { // *** ftp *** //
-%>  
-	final com.enterprisedt.net.ftp.TransferCompleteStrings msg_<%=cid%> = new com.enterprisedt.net.ftp.TransferCompleteStrings();
+} else {
+%>
+    abstract class FTPGetter_<%=cid%> {
+        protected org.apache.commons.net.ftp.FTPClient ftpClient = null;
+        protected int count = 0;
 
-	class FTPGetter_<%=cid%> {
-		private com.enterprisedt.net.ftp.FTPClient ftpClient = null;
-	    private int count = 0;
+        public void getAllFiles(String remoteDirectory, String localDirectory)
+            throws IllegalStateException, IOException, java.io.FileNotFoundException {
 
-    	public void getAllFiles(String remoteDirectory, String localDirectory) throws java.io.IOException, 
-		com.enterprisedt.net.ftp.FTPException, java.text.ParseException {
+            chdir(remoteDirectory);
+            String path = ftpClient.printWorkingDirectory();
+            org.apache.commons.net.ftp.FTPFile[] ftpFiles = null;
+            ftpFiles = ftpClient.listFiles();
 
-			chdir(remoteDirectory);
-			String path = ftpClient.pwd();
-			String[] ftpFileNames = null;
-			com.enterprisedt.net.ftp.FTPFile[] ftpFiles = null;
+            for (org.apache.commons.net.ftp.FTPFile ftpFile : ftpFiles) {
 
-			try{
-			//use dir() for Bug9562 with FTP server in AS400
-				ftpFileNames = ftpClient.dir(null, false);
-	        //Bug 13272, the same as getFiles().
-    		} catch (com.enterprisedt.net.ftp.FTPException e){
-				<%if(isLog4jEnabled){%>
-					log.warn("<%=cid%> - " + e.getMessage());
-				<%}%>
-        		ftpFileNames = null;
-		        ftpFiles = ftpClient.dirDetails(".");
-			}
+                if (ftpFile.isDirectory()) {
 
-			//if dirDetails(...) doesn't work, then use dir(...), distinguish file type by FTPException
+                    if ((!(".").equals(ftpFile.getName())) && (!("..").equals(ftpFile.getName()))) {
+                        java.io.File localFile = new java.io.File(localDirectory + "/" + ftpFile.getName());
 
-			if ((ftpFiles == null) && (ftpFileNames != null)){
-	        	//if the file is folder, catch the FTPException and recur
-    	    	for (String ftpFileName : ftpFileNames){
-        			try {
-            			downloadFile(localDirectory + "/" + ftpFileName,ftpFileName);
-          			} catch (com.enterprisedt.net.ftp.FTPException e) {
-						<%if(isLog4jEnabled){%>
-							log.warn("<%=cid%> - " + e.getMessage());
-						<%}%>
-      		      		java.io.File localFile = new java.io.File(localDirectory + "/" + ftpFileName);
+                        if (!localFile.exists()) {
+                            localFile.mkdir();
+                        }
+                        getAllFiles(path + "/" + ftpFile.getName(), localDirectory + "/" + ftpFile.getName());
+                        chdir(path);
+                    }
+                } else if (!ftpFile.isSymbolicLink()) {
+                    downloadFile(localDirectory + "/" + ftpFile.getName(),ftpFile.getName());
+                }
+            }
+        }
 
-        	    		if (!localFile.exists()) {
-        	      			localFile.mkdir();
-        	    		}
-						getAllFiles(path + "/" + ftpFileName, localDirectory + "/" + ftpFileName);
-						chdir(path);
-					}
-				}
-			} else {
-				for (com.enterprisedt.net.ftp.FTPFile ftpFile : ftpFiles) {
+        public void getFiles(String remoteDirectory, String localDirectory, String maskStr) 
+            throws IllegalStateException, IOException, java.io.FileNotFoundException {
 
-					if (ftpFile.isDir()) {
-						if ((!(".").equals(ftpFile.getName())) && (!("..").equals(ftpFile.getName()))) {
-							java.io.File localFile = new java.io.File(localDirectory + "/" + ftpFile.getName());
+            chdir(remoteDirectory);
+            org.apache.commons.net.ftp.FTPFile[] ftpFiles = null;
+            ftpFiles = ftpClient.listFiles(".");
 
-							if (!localFile.exists()) {
-				                localFile.mkdir();
-							}
-							getAllFiles(path + "/" + ftpFile.getName(), localDirectory + "/" + ftpFile.getName());
-							chdir(path);
-			            }
-					} else if (!ftpFile.isLink()) {
-			            downloadFile(localDirectory + "/" + ftpFile.getName(),ftpFile.getName());
-					}
-				}
-			}
-		}
+            for(org.apache.commons.net.ftp.FTPFile ftpFile : ftpFiles) {
 
-		public void getFiles(String remoteDirectory, String localDirectory, String maskStr) throws java.io.IOException,
-		com.enterprisedt.net.ftp.FTPException, java.text.ParseException {
-			chdir(remoteDirectory);
-			String[] ftpFileNames = null;
-			com.enterprisedt.net.ftp.FTPFile[] ftpFiles = null;
+                if (ftpFile.isFile()) {
+                    String fileName = ftpFile.getName();
 
-			try {
-				//use dir() for Bug9562 with FTP server in AS400 (the same way as getAllFiles())
-		        ftpFileNames = ftpClient.dir(null, false);
-        		//Bug 13272, if dir() throw exception, use dirDetails().
-			} catch (com.enterprisedt.net.ftp.FTPException e){
-			<%if(isLog4jEnabled){%>
-				log.warn("<%=cid%> - " + e.getMessage());
+                    if (fileName.matches(maskStr)) {
+                        downloadFile(localDirectory + "/" + fileName,fileName);
+                    }
+                }
+            }
+        }
+
+        public void chdir(String path) throws IllegalStateException, IOException {
+            if (!".".equals(path)) {
+                ftpClient.changeWorkingDirectory(path);
+            }
+        }
+
+        public String pwd() throws IllegalStateException, IOException {
+            return ftpClient.printWorkingDirectory();
+        }
+
+        protected abstract void downloadFile(String localFileName, String remoteFileName)
+            throws IllegalStateException, java.io.FileNotFoundException, IOException;
+    }
+<%
+    if (!ftps) { // *** ftp *** //
+%>
+        org.apache.commons.net.ftp.FTPClient ftp_<%=cid %> = null;
+<%
+        if (("true").equals(useExistingConn)) {
+            String conn= "conn_" + connection;
+%>
+            ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPClient) globalMap.get("<%=conn %>");
+			<%if(!moveToCurrentDir){%>
+				String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
 			<%}%>
-	        ftpFileNames = null;
-    	    ftpFiles = ftpClient.dirDetails(".");
-      		}
-			//if dirDetails(...) doesn't work, then use dir(...), but can not distinguish file type
+			<%if(isLog4jEnabled){%>
+                if(ftp_<%=cid %>!=null) {
+                    log.info("<%=cid%> - Use an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + ".");
+                }
+            <%}%>
+<%
+        } else {
+            passwordFieldName = "__PASSWORD__";
+%>
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
+<%
+        }
 
-			if ((ftpFiles == null) && (ftpFileNames != null)){
-				for (String ftpFileName : ftpFileNames) {
-					if (ftpFileName.matches(maskStr)) {
-						downloadFile(localDirectory + "/" + ftpFileName,ftpFileName);
-					}
-				}
-			} else{
-
-		        for (com.enterprisedt.net.ftp.FTPFile ftpFile : ftpFiles) {
-
-					if (!ftpFile.isDir() && !ftpFile.isLink()) {
-						String fileName = ftpFile.getName();
-
-			            if (fileName.matches(maskStr)) {
-            				downloadFile(localDirectory + "/" + fileName,fileName);
-			            }
-          			}
-        		}
-      		}
-		}
-
-	    public void chdir(String path) throws java.io.IOException,  com.enterprisedt.net.ftp.FTPException{
-			if (!".".equals(path)) {
-				ftpClient.chdir(path);
-			}
-		}
-
-		public String pwd() throws java.io.IOException,  com.enterprisedt.net.ftp.FTPException{
-			return ftpClient.pwd();
-		}
-
-		private void downloadFile(String localFileName, String remoteFileName) throws java.io.IOException, com.enterprisedt.net.ftp.FTPException {
-			java.io.File localFile = new java.io.File(localFileName);
-
-			try {
-				<%if (append) {%>
-					java.io.FileOutputStream fout = new java.io.FileOutputStream(localFile, true);
-			        ftpClient.get(fout, remoteFileName);
-					<%if(isLog4jEnabled){%>
-						log.debug("<%=cid%> - Downloaded file " + (count +1) +  " : '" + remoteFileName + "' successfully.");
-					<%}%>
-          			msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded successfully.");
-					<%if (bPrintMsg) {%>
-			            System.out.println("file [" + remoteFileName + "] downloaded successfully.");
-          			<%}%>
-					globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
-        <%
-		        } else if ("never".equals(overwrite)){
-        %>
-        			if (!localFile.exists()) {
-						ftpClient.get(localFileName, remoteFileName);
-						<%if(isLog4jEnabled){%>
-							log.debug("<%=cid%> - Downloaded file " + (count +1) +  " : '" + remoteFileName + "' successfully.");
-						<%}%>
-			            msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded successfully.");
-            			<%if (bPrintMsg) {%>
-							System.out.println("file [" + remoteFileName + "] downloaded successfully.");
-			            <%}%>
-            			globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
-					} else { 
+        if("binary".equalsIgnoreCase(ElementParameterParser.getValue(node, "__MODE__"))){
+%>
+            ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE);
+<%
+        } else {
+%>
+            ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.ASCII_FILE_TYPE);
+<%
+        }
+%>
+        final java.util.List<String> msg_<%=cid%> = new java.util.ArrayList<String>();
+        FTPGetter_<%=cid%> getter_<%=cid%> = new FTPGetter_<%=cid%>() {
+            @Override
+            protected void downloadFile(String localFileName, String remoteFileName) 
+            throws IllegalStateException, java.io.FileNotFoundException, IOException {
+                java.io.File localFile = new java.io.File(localFileName);
+<%
+                if (append) {
+%>
+                    try (java.io.FileOutputStream localFos = new java.io.FileOutputStream(localFileName, true)) {
+                        ftpClient.retrieveFile(remoteFileName, localFos);
                         <%if(isLog4jEnabled){%>
-                               log.info("<%= cid %> - file ["+ remoteFileName +"] exit transmission.");
+                            log.debug("<%=cid%> - Downloaded file " + (count +1) +  " : '" + remoteFileName + "' successfully.");
                         <%}%>
-						msg_<%=cid%>.add("file ["+ remoteFileName +"] exit transmission.");
-			            globalMap.put("<%=cid %>_CURRENT_STATUS", "No file transfered.");
-					}
-        <%
-				} else if ("always".equals(overwrite)){
-        %>
-					ftpClient.get(localFileName, remoteFileName);
-					<%if(isLog4jEnabled){%>
-						log.debug("<%=cid%> - Downloaded file " + (count +1) +  " : '" + remoteFileName + "' successfully.");
-					<%}%>
-					msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded successfully.");
-					<%if (bPrintMsg) {%>
-						System.out.println("file [" + remoteFileName + "] downloaded successfully.");
-					<%}%>
-        <%
-				} else if ("size_differ".equals(overwrite)) {
-        %>
-					if (localFile.exists()) {
-						long ftpSize = ftpClient.size(remoteFileName);
-			            long localSize = localFile.length();
-
-			            if (ftpSize != localSize) {
-							ftpClient.get(localFileName, remoteFileName);
-							<%if(isLog4jEnabled){%>
-								log.debug("<%=cid%> - Downloaded file " + (count +1) +  " : '" + remoteFileName + "' successfully.");
-							<%}%>
-            				msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded successfully.");
-							<%if (bPrintMsg) {%>
-								System.out.println("file [" + remoteFileName + "] downloaded successfully.");
-							<%}%>
-							globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
-			            } else {
-			                 <%if(isLog4jEnabled){%>
+                        msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded successfully.");
+                        <%if (bPrintMsg) {%>
+                            System.out.println("file [" + remoteFileName + "] downloaded successfully.");
+                        <%}%>
+                        globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
+                        count++;
+                    } catch (IOException e) {
+                        msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded unsuccessfully.");
+                        globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer fail.");
+                        throw e;
+                    }
+<%
+                } else if ("never".equals(overwrite)) {
+%>
+                    if (!localFile.exists()) {
+                        downloadFileWithOverwrite(localFileName, remoteFileName);
+                    } else {
+                        <%if(isLog4jEnabled){%>
+                           log.info("<%= cid %> - file ["+ remoteFileName +"] exit transmission.");
+                        <%}%>
+                        msg_<%=cid%>.add("file ["+ remoteFileName +"] exit transmission.");
+                        globalMap.put("<%=cid %>_CURRENT_STATUS", "No file transfered.");
+                    }
+<%
+                } else if ("always".equals(overwrite)){
+%>
+                    downloadFileWithOverwrite(localFileName, remoteFileName);
+<%
+                } else if ("size_differ".equals(overwrite)) {
+%>
+                    if (localFile.exists()) {
+                        long ftpSize = java.util.Arrays.stream(ftpClient.listFiles(remoteFileName)).findFirst().get().getSize();
+                        long localSize = localFile.length();
+                        if (ftpSize != localSize) {
+                            downloadFileWithOverwrite(localFileName, remoteFileName);
+                        } else {
+                            <%if(isLog4jEnabled){%>
                                     log.info("<%= cid %> - file ["+ remoteFileName +"] exit transmission.");
                              <%}%>
-            				msg_<%=cid%>.add("file ["+ remoteFileName +"] exit transmission.");
-							globalMap.put("<%=cid %>_CURRENT_STATUS", "No file transfered.");
-			            }
-					} else {
-						ftpClient.get(localFileName, remoteFileName);
-						<%if(isLog4jEnabled){%>
-								log.debug("<%=cid%> - Downloaded file " + (count +1) +  " : '" + remoteFileName + "' successfully.");
-						<%}%>
-				 		msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded successfully.");
-						<%if (bPrintMsg) {%>
-							System.out.println("file [" + remoteFileName + "] downloaded successfully.");
-			            <%}%>
-            			globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
-					}
-        <%
-		        }
-        %>
-			} catch (com.enterprisedt.net.ftp.FTPException e) {
-		        msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded unsuccessfully.");
-        		globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer fail.");
-        		throw e;
-      		}
-		      count++;
-    	}
+                            msg_<%=cid%>.add("file ["+ remoteFileName +"] exit transmission.");
+                            globalMap.put("<%=cid %>_CURRENT_STATUS", "No file transfered.");
+                        }
+                    } else {
+                        downloadFileWithOverwrite(localFileName, remoteFileName);
+                    }
+<%
+                }
+%>
+            }
+            
+            private void downloadFileWithOverwrite(String localFileName, String remoteFileName) 
+                throws IllegalStateException, java.io.FileNotFoundException, IOException {
+                try (java.io.FileOutputStream localFos = new java.io.FileOutputStream(localFileName)) {
+                        ftpClient.retrieveFile(remoteFileName, localFos);
+                        <%if(isLog4jEnabled){%>
+                            log.debug("<%=cid%> - Downloaded file " + (count +1) +  " : '" + remoteFileName + "' successfully.");
+                        <%}%>
+                        msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded successfully.");
+                        <%if (bPrintMsg) {%>
+                            System.out.println("file [" + remoteFileName + "] downloaded successfully.");
+                        <%}%>
+                        globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
+                        count++;
+                    } catch (IOException e) {
+                        msg_<%=cid%>.add("file [" + remoteFileName + "] downloaded unsuccessfully.");
+                        globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer fail.");
+                        throw e;
+                    }
+            }
+        };
+        getter_<%=cid%>.ftpClient = ftp_<%=cid %>;
+<%
+    } else { // *** ftps *** //
+%>
+        org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> =null;
+<%
+        if ("false".equals(useExistingConn)){
+%>
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
+<%
+        } else {
+            String conn= "conn_" + connection;
+%>
+            <% /* get connection from globalMap*/ %>
+            String rootDir_<%=cid %> = null;
+            ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient)globalMap.get("<%=conn %>");
+<%
+            if (!moveToCurrentDir) {
+%>
+                rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
+<%
+            }
+
+            if(isLog4jEnabled) {
+%>
+                if(ftp_<%=cid %>!=null) {
+                    log.info("<%=cid%> - Use an existing connection.Connection hostname: " + ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + ".");
+                }
+<%
+            }
+        }
+%>
+        FTPGetter_<%=cid%> getter_<%=cid%> = new FTPGetter_<%=cid%>() {
+            @Override
+            protected void downloadFile(String localFileName, String remoteFileName) 
+            throws IllegalStateException, java.io.FileNotFoundException, IOException {
+                try (java.io.FileOutputStream localFos = new java.io.FileOutputStream(localFileName)) {
+                    ftpClient.retrieveFile(remoteFileName, localFos);
+                    <%if(isLog4jEnabled){%>
+                        log.debug("<%=cid%> - Downloaded file " + (count +1) +  " : '" + remoteFileName + "' successfully.");
+                    <%}%>
+                    count++;
+                }
+            }
+        };
+        getter_<%=cid%>.ftpClient = ftp_<%=cid %>;
+<%
+    } //common code for ftp and ftps:
+%>
+    String remotedir_<%=cid%> = <%=remotedir%>;
+    if (!".".equals(remotedir_<%=cid %>)) {
+        boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+
+        if (!cwdSuccess_<%=cid %>) {
+            throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+        }
 	}
-	com.enterprisedt.net.ftp.FTPClient ftp_<%=cid %> = null;
-
-  <%  
-	if ("true".equals(useExistingConn)){
-    	String conn= "conn_" + connection;
-    %>
-	    ftp_<%=cid %> = (com.enterprisedt.net.ftp.FTPClient)globalMap.get("<%=conn %>");
-  		<%if(!moveToCurrentDir){%>
-  			String rootDir_<%=cid %> = ftp_<%=cid %>.pwd();
-	  	<%}%>
-		<%if(isLog4jEnabled){%>
-			if(ftp_<%=cid %>!=null) {
-				log.info("<%=cid%> - Uses an existing connection. Connection hostname: " + ftp_<%=cid %>.getRemoteHost() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
-			}
-		<%}%>
-	<%} else {
-        passwordFieldName = "__PASSWORD__";
-%>
-        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
-    <%} %>
-	msg_<%=cid%>.clearAll();
-	FTPGetter_<%=cid%> getter_<%=cid%> = new FTPGetter_<%=cid%>();
-	getter_<%=cid%>.ftpClient = ftp_<%=cid %>;
-	String remotedir_<%=cid %> = <%=remotedir%>;
-	if (!".".equals(remotedir_<%=cid %>)) {
-		ftp_<%=cid %>.chdir(remotedir_<%=cid %>);
-	}
-<%
-} else { // *** ftps *** //
-%>
-	class FTPSGetter_<%=cid%> {
-		private org.apache.commons.net.ftp.FTPClient ftpClient = null;
-		private int count = 0;
-
-		public void getAllFiles(String remoteDirectory, String localDirectory)
-		throws IllegalStateException, IOException, java.io.FileNotFoundException {
-
-			chdir(remoteDirectory);
-			String path = ftpClient.printWorkingDirectory();
-			org.apache.commons.net.ftp.FTPFile[] ftpFiles = null;
-			ftpFiles = ftpClient.listFiles();
-
-			for (org.apache.commons.net.ftp.FTPFile ftpFile : ftpFiles) {
-
-				if (ftpFile.isDirectory()) {
-
-					if ((!(".").equals(ftpFile.getName())) && (!("..").equals(ftpFile.getName()))) {
-						java.io.File localFile = new java.io.File(localDirectory + "/" + ftpFile.getName());
-
-						if (!localFile.exists()) {
-							localFile.mkdir();
-						}
-						getAllFiles(path + "/" + ftpFile.getName(), localDirectory + "/" + ftpFile.getName());
-						chdir(path);
-					}
-				} else if (!ftpFile.isSymbolicLink()) {
-					downloadFile(localDirectory + "/" + ftpFile.getName(),ftpFile.getName());
-				}
-			}
-		}
-
-		public void getFiles(String remoteDirectory, String localDirectory, String maskStr) 
-		throws IllegalStateException, IOException, java.io.FileNotFoundException {
-
-			chdir(remoteDirectory);
-			org.apache.commons.net.ftp.FTPFile[] ftpFiles = null;
-			ftpFiles = ftpClient.listFiles(".");
-
-			for(org.apache.commons.net.ftp.FTPFile ftpFile : ftpFiles) {
-
-				if (ftpFile.isFile()) {
-					String fileName = ftpFile.getName();
-
-					if (fileName.matches(maskStr)) {
-						downloadFile(localDirectory + "/" + fileName,fileName);
-					}
-				}
-			}
-		}
-
-		public void chdir(String path) 
-		throws IllegalStateException, IOException {
-			if (!".".equals(path)) {
-				ftpClient.changeWorkingDirectory(path);
-			}
-		}
-
-		public String pwd() 
-		throws IllegalStateException, IOException {
-			return ftpClient.printWorkingDirectory();
-		}
-
-		private void downloadFile(String localFileName, String remoteFileName) 
-		throws IllegalStateException, java.io.FileNotFoundException, IOException {
-			try (java.io.FileOutputStream localFos = new java.io.FileOutputStream(localFileName)) {
-				ftpClient.retrieveFile(remoteFileName, localFos);
-				<%if(isLog4jEnabled){%>
-					log.debug("<%=cid%> - Downloaded file " + (count +1) +  " : '" + remoteFileName + "' successfully.");
-				<%}%>
-				count++;
-			}
-		}
-	}
-	org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> =null;
-<%
-	if ("false".equals(useExistingConn)){
-%>
-		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
-<%
-	} else {
-		String conn= "conn_" + connection;
-%>
-		<% /* get connection from globalMap*/ %>
-		String rootDir_<%=cid %> = null;
-		ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient)globalMap.get("<%=conn %>");
-<%
-		if (!moveToCurrentDir) {
-%>
-			rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
-<%
-		}
-		if(isLog4jEnabled) {
-%>
-			if(ftp_<%=cid %>!=null) {
-				log.info("<%=cid%> - Use an existing connection.Connection hostname: " + ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
-			}
-<%
-		}
-	}
-%>
-		FTPSGetter_<%=cid%> getter_<%=cid%> = null;
-		String remotedir_<%=cid%> = null;
-		
-		getter_<%=cid%> = new FTPSGetter_<%=cid%>();
-		getter_<%=cid%>.ftpClient = ftp_<%=cid %>;
-		remotedir_<%=cid%> = <%=remotedir%>;
-		if (!".".equals(remotedir_<%=cid %>)) {
-			boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
-
-			if (!cwdSuccess_<%=cid %>) {
-				throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
-			}
-		}
 <%
 }
 // *** share code *** //
@@ -669,21 +557,9 @@ java.util.List<String> maskList_<%=cid %> = new java.util.ArrayList<String>();
 <%
 for (int i = 0; i < files.size(); i++) {
   Map<String, String> line = files.get(i);
-%>    
-  maskList_<%=cid %>.add(<%= line.get("FILEMASK") %>);       
+%>
+  maskList_<%=cid %>.add(<%= line.get("FILEMASK") %>);
 <%
-}
-
-if (!sftp && !ftps) { // *** ftp *** //
-  if ("binary".equalsIgnoreCase(ElementParameterParser.getValue(node, "__MODE__"))) {
-  %>  
-    ftp_<%=cid %>.setType(com.enterprisedt.net.ftp.FTPTransferType.BINARY);
-  <%
-  }else {  
-  %>  
-    ftp_<%=cid %>.setType(com.enterprisedt.net.ftp.FTPTransferType.ASCII);
-  <%
-  }
 }
 %>
 String localdir_<%=cid %>  = <%=localdir%>;  

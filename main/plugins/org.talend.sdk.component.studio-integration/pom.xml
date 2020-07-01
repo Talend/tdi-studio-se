@@ -109,12 +109,12 @@
       <artifactId>johnzon-jsonb</artifactId>
     </dependency>
 
-    <dependency>
+    <!--<dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>${log4j.version}</version>
       <scope>provided</scope>
-    </dependency>
+    </dependency>-->
 
     <!-- Test Dependencies -->
     <dependency>
@@ -163,18 +163,18 @@
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>${slf4j.version}</version>
-    </dependency>
+    </dependency>-->
     <!-- Replaces log4j dep which is used in Studio plugin -->
-    <dependency>
+  <!--  <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
+      <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.talend.sdk.component</groupId>
       <artifactId>component-runtime-junit-base</artifactId>
@@ -278,7 +278,7 @@
            This profile makes the studio dependencies available
            and let you build this plugin without rebuilding it's studio dependencies.
            use : mvn clean install -P TalendP2
-       -->
+      -->
       <id>TalendP2</id>
       <repositories>
         <repository>

@@ -206,21 +206,52 @@ if (sftp) {  // *** sftp *** //
 		<%}%>
 	}  
 <%
-} else if (ftps) {  // *** ftps *** //
+} else {
+    if (ftps) {  // *** ftps *** //
 %>
-    org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
+        org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
 <%
-	if (("false").equals(useExistingConn)) {
-		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
-		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
+        if (("false").equals(useExistingConn)) {
+            String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
+            String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 %>
-		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftps_connect.javajet"%>
 <%
-	} else {
+        } else {
 %>
-		ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
+            ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
 <%
-	}
+        }
+    } else { // *** ftp *** //
+%>
+        org.apache.commons.net.ftp.FTPClient ftp_<%=cid %> = null;
+<%
+        if (("true").equals(useExistingConn)) {
+%>
+            ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPClient) globalMap.get("<%=conn %>");
+            <%if(isLog4jEnabled){%>
+                if(ftp_<%=cid %>!=null) {
+                    log.info("<%=cid%> - Use an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + ".");
+                }
+            <%}%>
+<%
+        } else {
+            passwordFieldName = "__PASSWORD__";
+%>
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
+<%
+        }
+
+        if("binary".equalsIgnoreCase(mode)){
+%>
+            ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE);
+<%
+        } else {
+%>
+            ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.ASCII_FILE_TYPE);
+<%
+        }
+    } //common code for ftp and ftps:
 %>
 	String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\", "/");
 	org.apache.commons.net.ftp.FTPFile[] allFiles_<%=cid %> = ftp_<%=cid %>.listFiles(remoteDir_<%=cid %>);
@@ -261,60 +292,6 @@ if (sftp) {  // *** sftp *** //
 			is_<%=cid %>.close();
 		<%}%>
 	}
-<%
-} else {// *** ftp *** //
-%>
-	com.enterprisedt.net.ftp.FTPClient ftp_<%=cid %> =null;
-
-	<%if (("true").equals(useExistingConn)) {%>
-		ftp_<%=cid %> = (com.enterprisedt.net.ftp.FTPClient)globalMap.get("<%=conn %>");
-		<%if(isLog4jEnabled){%>
-			if(ftp_<%=cid %>!=null) {
-				log.info("<%=cid%> - Use an existing connection. Connection hostname: " + ftp_<%=cid %>.getRemoteHost() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
-			}
-		<%}%>
-    <%} else {
-        passwordFieldName = "__PASSWORD__";
-%>
-        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/FTP/ftp_connect.javajet"%>
-    <%}%>
-	<%
-  //add feature 19709,add the "Transfer mode" option,
-  //the default transfer mode is ASCII,we don't change the mode when ascii is choosed.
-	if("binary".equalsIgnoreCase(mode)){
-	%>
-		ftp_<%=cid %>.setType(com.enterprisedt.net.ftp.FTPTransferType.BINARY);
-	<%
-	}
-	%>
-	String remoteDir_<%=cid %> = <%=remoteDir %>.replaceAll("\\\\", "/");
-	<%=outputConnName %> = new <%=outputConnName %>Struct();
-  	String remoteFile_<%=cid %> = <%=remoteDir %> + "/" + <%=filename%>;
-
-	if (ftp_<%=cid %>.exists(remoteFile_<%=cid %>)) {
-	    <%=outputConnName %>.abs_path = (remoteFile_<%=cid %>).replaceAll("//", "/");
-	    <%=outputConnName %>.dirname = <%=remoteDir %>;
-	    <%=outputConnName %>.basename = <%=filename%>;
-	    <%=outputConnName %>.size = ftp_<%=cid %>.size(remoteFile_<%=cid %>);
-	    <%=outputConnName %>.mtime = ftp_<%=cid %>.modtime(remoteFile_<%=cid %>).getTime();
-	    <%=outputConnName %>.mtime_string =ftp_<%=cid %>.modtime(remoteFile_<%=cid %>).toString();
-		<%if(isLog4jEnabled){%>
-			log4jSb_<%=cid%>.append("<%=cid%> - File properties for remoteDir is : '" + <%=remoteDir %> + "',file name is : '" + <%=filename%> +"',file size is : '" + <%=outputConnName %>.size + "',file last modify time is : '" + <%=outputConnName %>.mtime_string + "'");
-		<%}%>
-
-	    <%if (MD5) {%>
-	      // Calculation of the Message Digest MD5
-	      java.security.MessageDigest dgs_<%=cid %> = java.security.MessageDigest.getInstance("MD5");
-	      dgs_<%=cid %>.update(ftp_<%=cid %>.get(remoteFile_<%=cid %>));
-	      <%=outputConnName %>.md5 =String.format("%032x", new java.math.BigInteger(1, dgs_<%=cid %>.digest()));
-			<%if(isLog4jEnabled){%>
-				log4jSb_<%=cid%>.append(",md5 message is : '"+ <%=outputConnName %>.md5 + "'.");
-			<%}%>
-	    <%}%>
-		<%if(isLog4jEnabled){%>
-			log.debug(log4jSb_<%=cid%>);
-		<%}%>
-  	}
 <%
 }
 %>

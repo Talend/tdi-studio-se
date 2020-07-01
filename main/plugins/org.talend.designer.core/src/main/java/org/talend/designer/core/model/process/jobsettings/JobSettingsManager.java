@@ -1292,15 +1292,25 @@ public class JobSettingsManager {
             if (StringUtils.isEmpty(separators)) {
                 return TalendQuoteUtils.addQuotes("");
             }
+            boolean needAddQuote = separators.startsWith(TalendQuoteUtils.QUOTATION_MARK)
+                    || separators.endsWith(TalendQuoteUtils.QUOTATION_MARK);
             String filedSeparator = TalendQuoteUtils.removeQuotes(separators);
-            if (filedSeparator.length() == 1) {
-                if (filedSeparator.equals("\\")) { // special \ //$NON-NLS-1$
-                    return TalendQuoteUtils.addQuotes("\\\\\\" + filedSeparator);//$NON-NLS-1$
-                } else if (METADATA_CHAR.contains(filedSeparator)) {
-                    return TalendQuoteUtils.addQuotes("\\\\" + filedSeparator);//$NON-NLS-1$
+
+            for (String charStr : METADATA_CHAR) {
+                if (!filedSeparator.contains(charStr)) {
+                    continue;
                 }
-            } else if (filedSeparator.equals("||")) {// TUP-17232
-                return TalendQuoteUtils.addQuotes("\\\\" + "|" + "\\\\" + "|");//$NON-NLS-1$
+                if("\\".equals(charStr)) {
+                    filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\\\", true); //$NON-NLS-1$
+                }else {
+                    filedSeparator = addMarkWithChar(filedSeparator, charStr, "\\\\", true); //$NON-NLS-1$
+                }
+            }
+            if (needAddQuote) {
+                filedSeparator = TalendQuoteUtils.addQuotes(filedSeparator);
+            }
+            if (!separators.equals(filedSeparator)) {
+                separators = filedSeparator;
             }
             return separators;
         }
@@ -1308,6 +1318,24 @@ public class JobSettingsManager {
         static String getSeparatorsRegexp(String fileSeparator) {
             fileSeparator = doRegexpQuote(fileSeparator);
             return "\"^([^\"+" + fileSeparator + "+\"]*)\"+" + fileSeparator + "+\"(.*)$\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+
+        static String addMarkWithChar(String separatorStr, String charStr, String markStr, boolean beforeChar) {
+            String resultStr = "";
+            char[] charArray = separatorStr.toCharArray();
+            for (int i = 0; i < charArray.length; i++) {
+                char c = charArray[i];
+                if (charStr.equals(String.valueOf(c))) {
+                    if (beforeChar) {
+                        resultStr = resultStr + markStr + c;
+                    } else {
+                        resultStr = resultStr + c + markStr;
+                    }
+                } else {
+                    resultStr += c;
+                }
+            }
+            return resultStr;
         }
 
         private static List<String> getMetadataChars() {
