@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.editor.properties.controllers;
 
 import java.beans.PropertyChangeEvent;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -31,6 +32,7 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQCryptoFileService;
+import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.utils.RepositoryManagerHelper;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
@@ -55,6 +57,7 @@ public class GenerateCryptoFileController extends AbstractElementPropertySection
 
     }
 
+    ITDQCryptoFileService service = null;
     SelectionListener listenerSelection = new SelectionListener() {
 
         public void widgetDefaultSelected(SelectionEvent e) {
@@ -62,6 +65,30 @@ public class GenerateCryptoFileController extends AbstractElementPropertySection
         }
 
         public void widgetSelected(SelectionEvent e) {
+            service = GlobalServiceRegister.getDefault().getService(ITDQCryptoFileService.class);
+            if (service == null) {
+                // nothing need to do if the service is not exist
+                return;
+            }
+            Node node = (Node) elem;
+            String cryptoFilePath =
+                    removeQuotes(service
+                            .getOriginalValue(node, ElementParameterParser.getValue(node, "__CRYPTO_FILE_PATH__")));
+            String passwordM1 =
+                    removeQuotes(
+                            service.getOriginalValue(node, ElementParameterParser.getValue(node, "__PASSWORD_M1__")));
+
+            boolean isParameterValidation = service.checkParameterValidation(cryptoFilePath, passwordM1);
+            if (!isParameterValidation) {
+                return;
+            }
+
+            String cryptoMethod = service.getCryptoMethod();
+            if (!StringUtils.isNotEmpty(cryptoMethod)) {
+                return;
+            }
+
+            // extract check parameter before start a command so that the customer no chance to cancel it again
             executeCommand(new Command() {
 
                 @Override
@@ -73,7 +100,7 @@ public class GenerateCryptoFileController extends AbstractElementPropertySection
                     disp.syncExec(new Runnable() {
 
                         public void run() {
-                            generateSuvivorshipRules();
+                            service.generateCryptoFile(passwordM1, cryptoMethod, cryptoFilePath);
                         }
                     });
                 }
@@ -84,15 +111,21 @@ public class GenerateCryptoFileController extends AbstractElementPropertySection
                 repoView.refreshView();
             }
         }
-
     };
 
-    private void generateSuvivorshipRules() {
-        Node node = (Node) elem;
-        ITDQCryptoFileService service = (ITDQCryptoFileService) GlobalServiceRegister.getDefault()
-                .getService(ITDQCryptoFileService.class);
-        service.generateCryptoFile(node);
+    private String removeQuotes(String text) {
+        if (text == null) {
+            return null;
+        }
+        if (text.startsWith("\"")) {
+            text = text.substring(1);
+        }
+        if (text.endsWith("\"")) {
+            text = text.substring(0, text.length() - 1);
+        }
+        return text;
     }
+
 
     /*
      * (non-Javadoc)
