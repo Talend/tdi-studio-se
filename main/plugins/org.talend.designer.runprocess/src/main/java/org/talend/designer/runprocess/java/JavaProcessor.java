@@ -1729,11 +1729,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             List<String> vmList = new JobVMArgumentsUtil().readString(replaceAll);
             vmargs = vmList.toArray(new String[0]);
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.debug(e.getMessage(), e);
             // UI can not be loaded, use default jvm args
             vmargs = JobVMArgumentsUtil.DEFAULT_JVM_ARGS;
         }
-        LOGGER.info("vmargs: " + vmargs);
         return vmargs;
     }
 
