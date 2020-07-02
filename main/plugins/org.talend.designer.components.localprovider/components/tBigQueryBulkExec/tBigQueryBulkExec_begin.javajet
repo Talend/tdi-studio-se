@@ -728,11 +728,11 @@
 																				
 			<%if(setFieldDelimiter) {
 	        %>
-	         	loadJobBuilder_<%=cid%>.setFormatOptions(csvOptions_<%=cid%>.setFieldDelimiter(<%=fieldDelimiter%>).build());
+	         	csvOptions_<%=cid%>.setFieldDelimiter(<%=fieldDelimiter%>);
 	        <%
 	        }
 	        %>		
-		
+			loadJobBuilder_<%=cid%>.setFormatOptions(csvOptions_<%=cid%>.build());
 			loadJobBuilder_<%=cid%>.setNullMarker(<%= nullMarker %>);
 			com.google.cloud.bigquery.Job job_<%=cid%> = bigquery_<%=cid%>.create(com.google.cloud.bigquery.JobInfo.of(loadJobBuilder_<%=cid%>.build()));
 			job_<%=cid%> = job_<%=cid%>.waitFor(com.google.cloud.RetryOption.initialRetryDelay(org.threeten.bp.Duration.ofSeconds(1)));
