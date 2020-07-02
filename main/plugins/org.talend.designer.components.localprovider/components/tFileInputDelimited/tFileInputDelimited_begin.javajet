@@ -949,6 +949,8 @@
 		    
 		        String filename = ElementParameterParser.getValueWithUIFieldKey(node,"__FILENAME__", "FILENAME");
 		    	String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
+		    	String skipBOM = ElementParameterParser.getValue(node,"__SKIP_BOM__");
+		    	boolean isSkipBOM = (skipBOM!=null&&!("").equals(skipBOM))?("true").equals(skipBOM):false;
 		    	String header = ElementParameterParser.getValue(node, "__HEADER__");
 		    	String footer = ElementParameterParser.getValue(node, "__FOOTER__");
 		    	String limit = ElementParameterParser.getValue(node, "__LIMIT__");
@@ -1118,8 +1120,18 @@
 							%>
 								csvReader<%=cid %>=new com.talend.csv.CSVReader((java.io.InputStream)filename_<%=cid %>, fieldSeparator_<%=cid %>[0], <%=encoding %>);
 							}else{
-								csvReader<%=cid %>=new com.talend.csv.CSVReader(new java.io.BufferedReader(new java.io.InputStreamReader(
-		                		new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)),<%=encoding %>)), fieldSeparator_<%=cid %>[0]);
+							<%
+								if (isSkipBOM) {
+							%>
+									csvReader<%=cid %>=new com.talend.csv.CSVReader(String.valueOf(filename_<%=cid %>),fieldSeparator_<%=cid %>[0], <%=encoding %>);
+							<%
+								} else {
+							%>
+									csvReader<%=cid %>=new com.talend.csv.CSVReader(new java.io.BufferedReader(new java.io.InputStreamReader(
+		                			new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)),<%=encoding %>)), fieldSeparator_<%=cid %>[0]);
+		                	<%
+								}
+							%>
 		        			}
 					<%
 					}
@@ -1223,8 +1235,18 @@
 				        if(filename_<%=cid %> instanceof java.io.InputStream){
 				 			csvReader<%=cid %>=new com.talend.csv.CSVReader((java.io.InputStream)filename_<%=cid %>, fieldSeparator_<%=cid %>[0], <%=encoding %>);
 		        		}else{
-				 			csvReader<%=cid %>=new com.talend.csv.CSVReader(new java.io.BufferedReader(new java.io.InputStreamReader(
-				          	new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)),<%=encoding %>)), fieldSeparator_<%=cid %>[0]);
+				          	<%
+								if (isSkipBOM) {
+							%>
+									csvReader<%=cid %>=new com.talend.csv.CSVReader(String.valueOf(filename_<%=cid %>),fieldSeparator_<%=cid %>[0], <%=encoding %>);
+							<%
+								} else {
+							%>
+									csvReader<%=cid %>=new com.talend.csv.CSVReader(new java.io.BufferedReader(new java.io.InputStreamReader(
+		                			new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)),<%=encoding %>)), fieldSeparator_<%=cid %>[0]);
+		                	<%
+								}
+							%>
 						}
 						csvReader<%=cid %>.setTrimWhitespace(false);
 						if ( (rowSeparator_<%=cid %>[0] != '\n') && (rowSeparator_<%=cid %>[0] != '\r') )	
@@ -1295,10 +1317,6 @@
 	        		rowstate_<%=cid%>.reset();
 	        
 		        	row<%=cid %>=csvReader<%=cid %>.getValues();
-		        	
-		        	if (<%=encoding %>.equalsIgnoreCase("UTF-8") && currentLine<%=cid %> == 0) {
-		        		row<%=cid %>[0] = row<%=cid %>[0].replaceAll(String.valueOf(csvReader<%=cid %>.getQuoteChar()),"");
-		        	}
 		        	
 					<%
 	   				if(("true").equals(removeEmptyRow)){
