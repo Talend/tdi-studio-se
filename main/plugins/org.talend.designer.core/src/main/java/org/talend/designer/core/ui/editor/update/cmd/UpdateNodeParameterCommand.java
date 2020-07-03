@@ -556,6 +556,9 @@ public class UpdateNodeParameterCommand extends Command {
                                             }
                                         }
                                         property.setStoredValue(newValueList);
+                                        PropertyChangeCommand cmd = new PropertyChangeCommand(node, param.getName(),
+                                                objectValue);
+                                        cmd.execute();
                                         update = true;
                                     }
                                 }
