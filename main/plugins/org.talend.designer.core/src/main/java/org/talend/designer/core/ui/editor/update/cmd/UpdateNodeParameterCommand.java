@@ -47,6 +47,7 @@ import org.talend.core.model.metadata.builder.connection.SAPIDocUnit;
 import org.talend.core.model.metadata.builder.connection.ValidationRulesConnection;
 import org.talend.core.model.metadata.builder.connection.XmlFileConnection;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
@@ -84,6 +85,7 @@ import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.process.IGEFProcess;
 import org.talend.core.ui.services.IDesignerCoreUIService;
 import org.talend.cwm.helper.ConnectionHelper;
+import org.talend.daikon.properties.Properties;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
@@ -300,9 +302,8 @@ public class UpdateNodeParameterCommand extends Command {
                     for (IElementParameter param : elemParameters) {
                         String repositoryValue = getReposiotryValueForOldJDBC(node, connectionItem.getConnection(), param);
 
-                        if (param.getRepositoryValue() == null
-                                || (curPropertyParam != null && param.getRepositoryProperty() != null && !param
-                                        .getRepositoryProperty().equals(curPropertyParam.getName()))) {
+                        if (curPropertyParam != null && param.getRepositoryProperty() != null
+                                && !param.getRepositoryProperty().equals(curPropertyParam.getName())) {
                             continue;
                         }
                         if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
@@ -466,7 +467,8 @@ public class UpdateNodeParameterCommand extends Command {
                                         } else
                                         // fix 18011 :after change the jars in wizard, the update manager can't detect
                                         // it in jobs
-                                        if ((param.getName().equals("DRIVER_JAR")  && objectValue instanceof List)) {
+                                        if ((param.getName().equals("DRIVER_JAR")
+                                                && objectValue instanceof List)) {
                                             List valueList = (List) objectValue;
                                             List newValue = new ArrayList<>();
                                             for (Object value : valueList) {
@@ -523,6 +525,40 @@ public class UpdateNodeParameterCommand extends Command {
                                 param.setRepositoryValueUsed(true);
                                 param.setReadOnly(true);
                                 update = true;
+                            }
+                        }
+                        if (param.getFieldType().equals(EParameterFieldType.TABLE)
+                                && EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName().equals(param.getName())
+                                && param.getListItemsDisplayCodeName().length > 0 && node.getComponentProperties() != null) {
+                            Properties properties = node.getComponentProperties().getProperties(param.getName());
+                            if (properties != null) {
+                                org.talend.daikon.properties.property.Property<?> property = properties
+                                        .getValuedProperty(param.getListItemsDisplayCodeName()[0]);
+                                if (property != null) {
+                                    IMetadataTable table = null;
+                                    if (!node.getMetadataList().isEmpty()) {
+                                        table = node.getMetadataList().get(0);
+                                    }
+                                    final String componentName = node.getComponent().getName();
+                                    Object objectValue = RepositoryToComponentProperty.getValue(connectionItem.getConnection(),
+                                            EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName(), table, componentName,
+                                            null);
+                                    if (objectValue instanceof List) {
+                                        List objectValueList = (List) objectValue;
+                                        List newValueList = new ArrayList<>();
+                                        for (int i = 0; i < objectValueList.size(); i++) {
+                                            Object object = objectValueList.get(i);
+                                            if (object instanceof HashMap) {
+                                                Map objectMap = (HashMap) object;
+                                                if (objectMap.containsKey(property.getName())) {
+                                                    newValueList.add(objectMap.get(property.getName()));
+                                                }
+                                            }
+                                        }
+                                        property.setStoredValue(newValueList);
+                                        update = true;
+                                    }
+                                }
                             }
                         }
                     }
@@ -612,6 +648,8 @@ public class UpdateNodeParameterCommand extends Command {
                         repositoryValue = "connection.driverTable";
                     } else if (EParameterName.DRIVER_CLASS.getName().equals(repositoryValue)) {
                         repositoryValue = "connection.driverClass";
+                    } else if ("connection.driverTable".equals(param.getName())) {
+                        repositoryValue = "connection.driverTable";
                     }
 
                 }
@@ -1132,5 +1170,4 @@ public class UpdateNodeParameterCommand extends Command {
             }
         }
     }
-
 }
