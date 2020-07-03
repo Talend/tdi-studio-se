@@ -33,7 +33,7 @@ imports="
 
     String theDistribution = ElementParameterParser.getValue(node, "__DISTRIBUTION__");
     String theVersion = ElementParameterParser.getValue(node, "__HIVE_VERSION__");
-    
+
 	final String studioVersion = org.talend.commons.utils.VersionUtils.getDisplayVersion();
 
 	String quboleClusterLabel = null;
@@ -48,7 +48,7 @@ imports="
                	if (ElementParameterParser.getBooleanValue(pNode, "__QUBOLE_CLUSTER__")) {
 					quboleClusterLabel = ElementParameterParser.getValue(pNode, "__QUBOLE_CLUSTER_LABEL__");
 				}
-                
+
             }
         }
     } else { // without connection
@@ -101,6 +101,12 @@ imports="
             if (dbname_<%=cid%>!=null && !"".equals(dbname_<%=cid%>.trim()) && !"default".equals(dbname_<%=cid%>.trim())) {
                 bw_<%=cid%>.write("use " + dbname_<%=cid%> + ";");
             }
+<%
+    }
+    if ("MICROSOFT_HD_INSIGHT_4_0".equals(theVersion)) {
+%>
+bw_<%=cid%>.write("!set outputformat tsv2\n");
+bw_<%=cid%>.write("!set showHeader false\n");
 <%
         }
     }
@@ -386,7 +392,7 @@ imports="
         			<% } %>
         		}
         	}
-        	
+
         	String query_<%=cid %> = <%=dbquery%>;
         	queries_<%=cid%> = queries_<%=cid%> + query_<%=cid %>;
 
