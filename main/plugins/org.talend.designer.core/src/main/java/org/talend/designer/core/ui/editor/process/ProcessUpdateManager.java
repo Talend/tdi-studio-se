@@ -2547,10 +2547,10 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName(), table, componentName, null);
                             Object storedValue = property.getStoredValue();
                             if (objectValue instanceof List) {
-                                List list = (List) objectValue;
+                                List objectValueList = (List) objectValue;
                                 List newValueList = new ArrayList<>();
-                                for (int i = 0; i < list.size(); i++) {
-                                    Object object = list.get(i);
+                                for (int i = 0; i < objectValueList.size(); i++) {
+                                    Object object = objectValueList.get(i);
                                     if (object instanceof HashMap) {
                                         Map objectMap = (HashMap) object;
                                         if (objectMap.containsKey(property.getName())) {
