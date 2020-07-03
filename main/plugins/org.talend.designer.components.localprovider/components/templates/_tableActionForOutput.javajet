@@ -280,23 +280,23 @@ if (!isParallelize) {
                             <%
                             } else if(MYSQL.equalsIgnoreCase(dbmsId)) {
                                 boolean useExistMySQLConn = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-                                String dbnameMySQL = "";
+                                String dbnameMySQL = null;
                                 if (useExistMySQLConn) {
                                     List< ? extends INode> nodes =  node.getProcess().getNodesOfType("tMysqlConnection");
                                     String connectionMySQL = ElementParameterParser.getValue(node,"__CONNECTION__");
                                     for (INode ne : nodes) {
                                         if (connectionMySQL.equals(ne.getUniqueName())) {
                                             dbnameMySQL = ElementParameterParser.getValue(ne, "__DBNAME__");
+                                            break;
                                         }
                                     }
                                 } else {
                                     dbnameMySQL = ElementParameterParser.getValue(node, "__DBNAME__");
                                 }
-                                if (dbnameMySQL == null || dbnameMySQL.isEmpty()) dbnameMySQL = "\"\"";
                             %>
                                 java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
                                 boolean whetherExist_<%=cid%> = false;
-                                try (java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE"})) {
+                                try (java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(<%=dbnameMySQL%>, null, null, new String[]{"TABLE","SYSTEM TABLE"})) {
                                     while(rsTable_<%=cid%>.next()) {
                                         String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
                                         if(table_<%=cid%>.equalsIgnoreCase(<%=table%>)) {
