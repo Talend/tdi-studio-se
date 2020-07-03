@@ -648,10 +648,7 @@ public class UpdateNodeParameterCommand extends Command {
                         repositoryValue = "connection.driverTable";
                     } else if (EParameterName.DRIVER_CLASS.getName().equals(repositoryValue)) {
                         repositoryValue = "connection.driverClass";
-                    } else if ("connection.driverTable".equals(param.getName())) {
-                        repositoryValue = "connection.driverTable";
                     }
-
                 }
             }
         }
