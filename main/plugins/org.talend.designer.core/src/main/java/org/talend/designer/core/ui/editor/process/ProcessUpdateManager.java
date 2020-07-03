@@ -70,6 +70,7 @@ import org.talend.core.model.metadata.builder.connection.ValidationRulesConnecti
 import org.talend.core.model.metadata.builder.connection.XmlFileConnection;
 import org.talend.core.model.metadata.builder.connection.impl.XmlFileConnectionImpl;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IContext;
@@ -116,6 +117,7 @@ import org.talend.core.ui.ICDCProviderService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.cwm.helper.SAPBWTableHelper;
+import org.talend.daikon.properties.Properties;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
@@ -2241,6 +2243,35 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     }
                                 }
                             }
+                            if (repositoryValue == null && param.getFieldType().equals(EParameterFieldType.TABLE)
+                                    && node.getComponentProperties() != null && param.getListItemsDisplayCodeName().length > 0) {
+                                Properties properties = node.getComponentProperties().getProperties(param.getName());
+                                if (properties != null) {
+                                    org.talend.daikon.properties.property.Property<?> property = properties
+                                            .getValuedProperty(param.getListItemsDisplayCodeName()[0]);
+                                    Object storedValue = property.getStoredValue();
+                                    if (storedValue != null) {
+                                        Object value = RepositoryToComponentProperty.getValue(repositoryConnection, param.getName(),
+                                                null);
+                                        if (value instanceof List) {
+                                            List listValue = (List) value;
+                                            for (Object obj : listValue) {
+                                                if (obj instanceof Map) {
+                                                    Map map = (Map) obj;
+                                                    Object mapObj = map.get("drivers");
+                                                    sameValues = false;
+                                                    // if (mapObj instanceof String && storedValue instanceof String) {
+                                                    // if (!StringUtils.equals(mapObj.toString(),
+                                                    // storedValue.toString())) {
+                                                    // sameValues = false;
+                                                    // }
+                                                    // }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             if (!sameValues) {
                                 break;
                             }
@@ -2274,6 +2305,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                 (ConnectionItem) lastVersion.getProperty().getItem(), null, contextData);
                         if (contextResults != null) {
                             propertiesResults.addAll(contextResults);
+                        }
+                        List<UpdateResult> comPropertiesResults = checkNodeGenericPropertiesFromRepository(node,
+                                ((ConnectionItem) item));
+                        if (comPropertiesResults.size() > 0) {
+                            propertiesResults.addAll(comPropertiesResults);
                         }
                     } else if (item != null && "pattern".equalsIgnoreCase(item.getFileExtension())) {
                         // Added TDQ-11688, check pattern update
@@ -2332,6 +2368,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 }
             }
         }
+
         return propertiesResults;
     }
 
@@ -2511,6 +2548,71 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             }
         }
         return contextResults;
+    }
+
+    private List<UpdateResult> checkNodeGenericPropertiesFromRepository(final Node node,
+            ConnectionItem repositoryConnectionItem) {
+        List<UpdateResult> results = new ArrayList<UpdateResult>();
+        boolean isChanged = false;
+        if (node.getComponentProperties() != null && repositoryConnectionItem.getConnection().getCompProperties() != null) {
+            for (IElementParameter param : node.getElementParameters()) {
+                if (isChanged) {
+                    break;
+                }
+                if (EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName().equals(param.getName())
+                        && param.getFieldType().equals(EParameterFieldType.TABLE)
+                        && param.getListItemsDisplayCodeName().length > 0) {
+                    Properties properties = node.getComponentProperties().getProperties(param.getName());
+                    if (properties != null) {
+                        org.talend.daikon.properties.property.Property<?> property = properties
+                                .getValuedProperty(param.getListItemsDisplayCodeName()[0]);
+                        if (property != null) {
+                            IMetadataTable table = null;
+                            if (!node.getMetadataList().isEmpty()) {
+                                table = node.getMetadataList().get(0);
+                            }
+                            final String componentName = node.getComponent().getName();
+                            Object objectValue = RepositoryToComponentProperty.getValue(repositoryConnectionItem.getConnection(),
+                                    EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName(), table, componentName, null);
+                            Object storedValue = property.getStoredValue();
+                            if (objectValue instanceof List) {
+                                List objectValueList = (List) objectValue;
+                                List newValueList = new ArrayList<>();
+                                for (int i = 0; i < objectValueList.size(); i++) {
+                                    Object object = objectValueList.get(i);
+                                    if (object instanceof HashMap) {
+                                        Map objectMap = (HashMap) object;
+                                        if (objectMap.containsKey(property.getName())) {
+                                            newValueList.add(objectMap.get(property.getName()));
+                                        }
+                                    }
+                                }
+                                if (storedValue instanceof List) {
+                                    List storeValueList = (List) storedValue;
+                                    if (storeValueList.size() != newValueList.size()) {
+                                        isChanged = true;
+                                        break;
+                                    }
+                                    for (int i = 0; i < storeValueList.size(); i++) {
+                                        if (!storeValueList.get(i).equals(newValueList.get(i))) {
+                                            isChanged = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (isChanged) {
+                UpdateCheckResult result = new UpdateCheckResult(node);
+                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, repositoryConnectionItem);
+                result.setJob(getProcess());
+                results.add(result);
+            }
+        }
+        return results;
     }
 
     /*
@@ -2761,7 +2863,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 try {
                     tmpResults = checkNodesParameters(type, onlySimpleShow, contextData);
                 } catch (PersistenceException ex) {
-
+                    ExceptionHandler.process(ex);
                 }
                 break;
             case JOB_PROPERTY_EXTRA:
